@@ -15,7 +15,7 @@ export class FieldDefinitionsBuilder<TFields extends z.ZodRawShape = {}> {
         configure: (field: IFieldBuilderRegistry) => FieldBuilder<TZod>
     ): FieldDefinitionsBuilder<TFields & Record<K, TZod>> {
         this.registerField(name, configure(this.registry));
-        return this as any;
+        return this;
     }
 
     // Internal method to build from object
@@ -25,7 +25,7 @@ export class FieldDefinitionsBuilder<TFields extends z.ZodRawShape = {}> {
         for (const [fieldId, fieldBuilder] of Object.entries(shape)) {
             this.registerField(fieldId, fieldBuilder);
         }
-        return this as any;
+        return this;
     }
 
     private registerField(fieldId: string, fieldBuilder: FieldBuilder<any>): void {

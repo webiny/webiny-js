@@ -54,29 +54,29 @@ export class TextFieldBuilder<TZod extends z.ZodString = z.ZodString> extends Fi
     }
 
     required(message?: string): TextFieldBuilder<z.ZodString> {
-        const newSchema = (this.zodSchema as z.ZodString).min(1, message || "Field is required");
-        this.zodSchema = newSchema as any;
+        const newSchema = this.zodSchema.min(1, message || "Field is required");
+        this.zodSchema = newSchema;
         this.config.validation?.push({
             name: "required",
             message: message || "Field is required",
             settings: {}
         });
-        return this as any;
+        return this;
     }
 
     minLength(length: number, message?: string): this {
-        this.zodSchema = (this.zodSchema as z.ZodString).min(length, message) as TZod;
+        this.zodSchema = this.zodSchema.min(length, message) as TZod;
         return this;
     }
 
     maxLength(length: number, message?: string): this {
-        this.zodSchema = (this.zodSchema as z.ZodString).max(length, message) as TZod;
+        this.zodSchema = this.zodSchema.max(length, message) as TZod;
         return this;
     }
 
     slug(): this {
         return this.addStringValidator(
-            (this.zodSchema as z.ZodString).regex(
+            this.zodSchema.regex(
                 /^[a-z0-9-]+$/,
                 "Must be a valid slug (lowercase letters, numbers, and hyphens only)"
             ),
@@ -87,7 +87,7 @@ export class TextFieldBuilder<TZod extends z.ZodString = z.ZodString> extends Fi
 
     email(): this {
         return this.addStringValidator(
-            (this.zodSchema as z.ZodString).email("Must be a valid email"),
+            this.zodSchema.email("Must be a valid email"),
             "email",
             "Must be a valid email"
         );
@@ -95,7 +95,7 @@ export class TextFieldBuilder<TZod extends z.ZodString = z.ZodString> extends Fi
 
     url(): this {
         return this.addStringValidator(
-            (this.zodSchema as z.ZodString).url("Must be a valid URL"),
+            this.zodSchema.url("Must be a valid URL"),
             "url",
             "Must be a valid URL"
         );
@@ -121,7 +121,7 @@ export class TextFieldBuilder<TZod extends z.ZodString = z.ZodString> extends Fi
 export class ObjectFieldBuilder<TShape extends z.ZodRawShape> extends FieldBuilder<
     z.ZodObject<TShape>
 > {
-    private nestedFields: FieldConfig[] = [];
+    private readonly nestedFields: FieldConfig[] = [];
 
     constructor(
         fields: (registry: IFieldBuilderRegistry) => {
@@ -150,15 +150,15 @@ export class ObjectFieldBuilder<TShape extends z.ZodRawShape> extends FieldBuild
     optional(): ObjectFieldBuilder<TShape> & {
         getZodSchema(): z.ZodOptional<z.ZodObject<TShape>>;
     } {
-        this.zodSchema = this.zodSchema.optional() as any;
-        return this as any;
+        this.zodSchema = this.zodSchema.optional();
+        return this;
     }
 
     nullable(): ObjectFieldBuilder<TShape> & {
         getZodSchema(): z.ZodNullable<z.ZodObject<TShape>>;
     } {
-        this.zodSchema = this.zodSchema.nullable() as any;
-        return this as any;
+        this.zodSchema = this.zodSchema.nullable();
+        return this;
     }
 
     override toConfig(): FieldConfig {
