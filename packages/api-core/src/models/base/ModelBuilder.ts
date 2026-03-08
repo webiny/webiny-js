@@ -23,8 +23,23 @@ export const createModelSchema = <TReturn extends z.ZodRawShape>(
     return z.object({ ...factory(z) });
 };
 
+const shouldAssign = (inner: InnerType): boolean => {
+    if (!inner) {
+        return false;
+    } else if (!("def" in inner)) {
+        return false;
+    } else if (inner.def.type === "optional") {
+        return true;
+    } else if (inner.def.type === "nullable") {
+        return true;
+    } else if (inner.def.type === "default") {
+        return true;
+    }
+    return false;
+};
+
 export class ModelBuilder<TModel extends BaseModel<any>> {
-    private methods: Partial<Record<keyof TModel, any>> = {};
+    private readonly methods: Partial<Record<keyof TModel, any>> = {};
 
     constructor(
         private name: string,
@@ -42,14 +57,8 @@ export class ModelBuilder<TModel extends BaseModel<any>> {
             baseExtensionsObject = baseExtensions;
         } else if (baseExtensions) {
             let inner = baseExtensions as InnerType;
-            /**
-             * TODO This could be "inner?.def.type"?
-             */
-            while (
-                inner &&
-                "def" in inner &&
-                ["optional", "nullable", "default"].includes(inner.def.type)
-            ) {
+
+            while (shouldAssign(inner)) {
                 inner = inner.def.innerType!;
             }
             baseExtensionsObject = inner instanceof z.ZodObject ? inner : z.object({});
