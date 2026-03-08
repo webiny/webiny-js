@@ -47,7 +47,7 @@ describe("task event validation", () => {
             invalidFields: {
                 webinyTaskId: {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected string, received undefined",
                     data: {
                         path: ["webinyTaskId"]
                     }
@@ -81,7 +81,7 @@ describe("task event validation", () => {
             invalidFields: {
                 webinyTaskDefinitionId: {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected string, received undefined",
                     data: {
                         path: ["webinyTaskDefinitionId"]
                     }
@@ -115,7 +115,7 @@ describe("task event validation", () => {
             invalidFields: {
                 tenant: {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected string, received undefined",
                     data: {
                         path: ["tenant"]
                     }
@@ -149,7 +149,7 @@ describe("task event validation", () => {
             invalidFields: {
                 stateMachineId: {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected string, received undefined",
                     data: {
                         path: ["stateMachineId"]
                     }
@@ -183,7 +183,7 @@ describe("task event validation", () => {
             invalidFields: {
                 endpoint: {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected string, received undefined",
                     data: {
                         path: ["endpoint"]
                     }
@@ -211,42 +211,42 @@ describe("task event validation", () => {
             invalidFields: {
                 webinyTaskId: {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected string, received undefined",
                     data: {
                         path: ["webinyTaskId"]
                     }
                 },
                 webinyTaskDefinitionId: {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected string, received undefined",
                     data: {
                         path: ["webinyTaskDefinitionId"]
                     }
                 },
                 tenant: {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected string, received undefined",
                     data: {
                         path: ["tenant"]
                     }
                 },
                 stateMachineId: {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected string, received undefined",
                     data: {
                         path: ["stateMachineId"]
                     }
                 },
                 endpoint: {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected string, received undefined",
                     data: {
                         path: ["endpoint"]
                     }
                 },
                 executionName: {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected string, received undefined",
                     data: {
                         path: ["executionName"]
                     }
