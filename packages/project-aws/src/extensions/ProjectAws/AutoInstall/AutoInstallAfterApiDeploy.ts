@@ -76,7 +76,7 @@ class AutoInstallAfterApiDeployImpl implements ApiAfterDeploy.Interface {
         if (adminAutoInstallExtensions.length === 0) {
             return;
         }
-        
+
         const config = adminAutoInstallExtensions[0].params;
 
         // Check if system is already installed

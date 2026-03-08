@@ -23,7 +23,9 @@ describe("step validation", () => {
             notifications: [{ id: "notification1" }]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.issues[0].message).toBe("Invalid input: expected string, received undefined");
+        expect(result.error!.issues[0].message).toBe(
+            "Invalid input: expected string, received undefined"
+        );
     });
 
     it("should fail validation if 'title' is missing", async () => {
@@ -35,7 +37,9 @@ describe("step validation", () => {
             notifications: [{ id: "notification1" }]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.issues[0].message).toBe("Invalid input: expected string, received undefined");
+        expect(result.error!.issues[0].message).toBe(
+            "Invalid input: expected string, received undefined"
+        );
     });
 
     it("should fail validation if 'color' is missing", async () => {
@@ -47,7 +51,9 @@ describe("step validation", () => {
             notifications: [{ id: "notification1" }]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.issues[0].message).toBe("Invalid input: expected string, received undefined");
+        expect(result.error!.issues[0].message).toBe(
+            "Invalid input: expected string, received undefined"
+        );
     });
 
     it("should fail validation if 'teams' is empty", async () => {

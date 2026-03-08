@@ -35,7 +35,9 @@ describe("workflow validation", () => {
             ]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.issues[0].message).toBe("Invalid input: expected string, received undefined");
+        expect(result.error!.issues[0].message).toBe(
+            "Invalid input: expected string, received undefined"
+        );
     });
 
     it("should fail validation if 'steps' is empty", async () => {

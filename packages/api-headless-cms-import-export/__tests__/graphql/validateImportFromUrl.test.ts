@@ -149,8 +149,7 @@ describe("validate import from url - graphql", () => {
                                     data: {
                                         path: ["files", 0, "type"]
                                     },
-                                    message:
-                                        'Invalid option: expected one of "entries"|"assets"'
+                                    message: 'Invalid option: expected one of "entries"|"assets"'
                                 }
                             }
                         },

@@ -68,7 +68,7 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
         if (!route) {
             return;
         }
-        
+
         const params =
             typeof route.params?.parse === "function"
                 ? route.params.parse(matchedRoute.params)
