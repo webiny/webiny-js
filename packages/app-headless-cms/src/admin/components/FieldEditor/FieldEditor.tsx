@@ -11,8 +11,8 @@ import { useModelFieldEditor } from "./useModelFieldEditor.js";
 import type { IsVisibleCallable } from "./FieldEditorContext.js";
 import { FieldEditorProvider } from "./FieldEditorContext.js";
 import type { CmsEditorFieldsLayout, CmsModelField, DragSource } from "~/types.js";
-import type { CmsLayoutDescriptor } from "@webiny/app-headless-cms-common/types/model.js";
-import { isLayoutDescriptor } from "@webiny/app-headless-cms-common/types/model.js";
+import type { CmsLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
+import { isLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
 import { cn, Icon } from "@webiny/admin-ui";
 
@@ -43,13 +43,13 @@ const Editor = () => {
      * Collect all data fields referenced inside a layout descriptor (e.g. fields inside tabs).
      * Delegates to the layout field plugin's `collectFields` method if available.
      */
-    const collectDescriptorFields = (descriptor: CmsLayoutDescriptor): CmsModelField[] => {
-        const plugin = getLayoutFieldPlugin(descriptor.type);
+    const collectLayoutFieldFields = (layoutField: CmsLayoutField): CmsModelField[] => {
+        const plugin = getLayoutFieldPlugin(layoutField.type);
         if (!plugin?.field.collectFields) {
             return [];
         }
         return plugin.field.collectFields({
-            descriptor,
+            field: layoutField,
             getField: (id: string) => getField({ id })
         });
     };
@@ -127,9 +127,7 @@ const Editor = () => {
             {fields.map((row, index) => {
                 // Build a stable key for the row
                 const rowKey = row
-                    .map(cell =>
-                        isLayoutDescriptor(cell) ? cell.id : (cell as CmsModelField).fieldId
-                    )
+                    .map(cell => (isLayoutField(cell) ? cell.id : (cell as CmsModelField).fieldId))
                     .join(".");
 
                 return (
@@ -137,9 +135,7 @@ const Editor = () => {
                         beginDrag={{
                             parent: parent ? parent.fieldId : null,
                             type: "row",
-                            fields: row.filter(
-                                cell => !isLayoutDescriptor(cell)
-                            ) as CmsModelField[],
+                            fields: row.filter(cell => !isLayoutField(cell)) as CmsModelField[],
                             pos: { row: index }
                         }}
                         endDrag={onEndDrag}
@@ -188,15 +184,15 @@ const Editor = () => {
                                     data-testid={"cms.editor.field-row"}
                                 >
                                     {row.map((cell, fieldIndex) => {
-                                        if (isLayoutDescriptor(cell)) {
+                                        if (isLayoutField(cell)) {
                                             return (
                                                 <Draggable
                                                     key={cell.id}
                                                     beginDrag={{
                                                         parent: parent ? parent.fieldId : null,
                                                         type: "layoutField",
-                                                        descriptor: cell,
-                                                        fields: collectDescriptorFields(cell)
+                                                        layoutField: cell,
+                                                        fields: collectLayoutFieldFields(cell)
                                                     }}
                                                     endDrag={onEndDrag}
                                                 >
@@ -215,7 +211,7 @@ const Editor = () => {
                                                                 }
                                                             >
                                                                 <LayoutCell
-                                                                    descriptor={cell}
+                                                                    field={cell}
                                                                     rowIndex={index}
                                                                     cellIndex={fieldIndex}
                                                                 />

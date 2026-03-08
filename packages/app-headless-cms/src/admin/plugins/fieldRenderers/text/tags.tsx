@@ -1,7 +1,7 @@
 import React from "react";
 import { Tags } from "@webiny/admin-ui";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
-import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 export const tags: CmsModelFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -15,7 +15,7 @@ export const tags: CmsModelFieldRendererPlugin = {
         },
         render({ getBind }) {
             const { field } = useModelField();
-            const rules = useEffectiveRules(field);
+            const rules = useFieldEffectiveRules(field);
             const disabled = !rules.canEdit || rules.disabled;
             const Bind = getBind();
 

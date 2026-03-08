@@ -19,7 +19,7 @@ import { parseIdentifier } from "@webiny/utils";
 import { Entries } from "./Entries.js";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog.js";
 import { FormComponentErrorMessage, FormComponentLabel } from "@webiny/admin-ui";
-import { CanEditField, useEffectiveRules } from "@webiny/app-headless-cms-common";
+import { CanEditField, useFieldEffectiveRules } from "@webiny/app-headless-cms-common";
 
 interface AdvancedMultipleReferenceFieldProps extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue[] | undefined | null>;
@@ -29,7 +29,7 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
     const { bind } = props;
     const { showSnackbar } = useSnackbar();
     const { field } = useModelField();
-    const rules = useEffectiveRules(field);
+    const rules = useFieldEffectiveRules(field);
     const requestContext = useModelFieldGraphqlContext();
     const disabled = !rules.canEdit || rules.disabled;
 

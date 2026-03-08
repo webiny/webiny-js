@@ -8,7 +8,11 @@ import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCms
 import { useForm } from "@webiny/form";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
 import { IconButton } from "@webiny/admin-ui";
-import { CanEditField, useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
+import {
+    CanEditField,
+    useFieldEffectiveRules,
+    useModelField
+} from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -33,7 +37,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         },
         render(props) {
             const { field } = useModelField();
-            const rules = useEffectiveRules(field);
+            const rules = useFieldEffectiveRules(field);
             const form = useForm();
 
             const disabled = !rules.canEdit || rules.disabled;

@@ -17,7 +17,7 @@ import {
     ObjectItem
 } from "~/admin/plugins/fieldRenderers/object/StyledComponents.js";
 import { FieldSettings } from "~/admin/plugins/fieldRenderers/object/FieldSettings.js";
-import { useEffectiveRules } from "@webiny/app-headless-cms-common";
+import { useFieldEffectiveRules } from "@webiny/app-headless-cms-common";
 import { useModelField } from "~/admin/components/ModelFieldProvider/index.js";
 import { useModel } from "~/admin/components/ModelProvider/index.js";
 
@@ -35,7 +35,7 @@ export const MultiValueContainer = (props: MultiValueContainerProps) => {
 
     const { model } = useModel();
     const { field } = useModelField();
-    const rules = useEffectiveRules(field);
+    const rules = useFieldEffectiveRules(field);
     const disabled = !rules.canEdit || rules.disabled;
 
     const { showConfirmation } = useConfirmationDialog({

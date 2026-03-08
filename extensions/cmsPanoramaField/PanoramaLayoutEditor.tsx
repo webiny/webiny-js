@@ -1,6 +1,5 @@
 import React from "react";
-import type { CmsBaseLayoutDescriptor } from "webiny/admin/cms/model";
-import type { CmsLayoutDescriptor } from "webiny/admin/cms/model";
+import type { CmsModelLayoutField } from "webiny/admin/cms";
 import { PermissionsTab } from "webiny/admin/cms/model";
 import { ReactComponent as EditIcon } from "webiny/admin/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "webiny/admin/icons/delete.svg";
@@ -8,7 +7,7 @@ import { Grid, Heading, IconButton, Input, Tabs, Text } from "webiny/admin/ui";
 import { useDialogs } from "webiny/admin/ui";
 import { Bind } from "webiny/admin/form";
 
-export interface PanoramaDescriptor extends CmsBaseLayoutDescriptor {
+export interface PanoramaField extends CmsModelLayoutField {
     type: "panorama";
     label: string;
     imageFieldPath: string;
@@ -60,16 +59,12 @@ const PanoramaDialogContent = () => {
 };
 
 interface PanoramaLayoutEditorProps {
-    descriptor: PanoramaDescriptor;
-    onUpdate: (d: CmsLayoutDescriptor) => void;
+    field: PanoramaField;
+    onUpdate: (d: PanoramaField) => void;
     onDelete: () => void;
 }
 
-export const PanoramaLayoutEditor = ({
-    descriptor,
-    onUpdate,
-    onDelete
-}: PanoramaLayoutEditorProps) => {
+export const PanoramaLayoutEditor = ({ field, onUpdate, onDelete }: PanoramaLayoutEditorProps) => {
     const dialogs = useDialogs();
 
     const openSettings = () => {
@@ -79,18 +74,18 @@ export const PanoramaLayoutEditor = ({
             acceptLabel: "Save",
             cancelLabel: "Cancel",
             formData: {
-                label: descriptor.label,
-                imageFieldPath: descriptor.imageFieldPath ?? "",
-                rules: descriptor.rules ?? []
+                label: field.label,
+                imageFieldPath: field.imageFieldPath ?? "",
+                rules: field.rules ?? []
             },
             content: <PanoramaDialogContent />,
             onAccept: data => {
                 onUpdate({
-                    ...descriptor,
+                    ...field,
                     label: data.label ?? "",
                     imageFieldPath: data.imageFieldPath ?? "",
                     rules: data.rules ?? []
-                } as unknown as CmsLayoutDescriptor);
+                });
             }
         });
     };
@@ -98,9 +93,9 @@ export const PanoramaLayoutEditor = ({
     return (
         <div className={"flex items-center gap-sm"}>
             <div className={"flex-1"}>
-                <Heading level={6}>{descriptor.label}</Heading>
+                <Heading level={6}>{field.label}</Heading>
                 <Text size={"sm"} className={"text-neutral-strong"}>
-                    Image: {descriptor.imageFieldPath || "(not configured)"}
+                    Image: {field.imageFieldPath || "(not configured)"}
                 </Text>
             </div>
             <div className={"flex items-center gap-xs"}>

@@ -4,7 +4,7 @@ import type { DragSourceMonitor, XYCoord } from "react-dnd";
 import type { DragDropManager, Identifier, Listener, Unsubscribe } from "dnd-core";
 
 export type * from "@webiny/app-headless-cms-common/types/index.js";
-export { isLayoutDescriptor } from "@webiny/app-headless-cms-common/types/index.js";
+export { isLayoutField, isLayoutDescriptor } from "@webiny/app-headless-cms-common/types/index.js";
 
 /***
  * ###### TABLE ########

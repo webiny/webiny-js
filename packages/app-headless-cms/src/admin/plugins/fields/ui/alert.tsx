@@ -1,8 +1,8 @@
 import React from "react";
-import type { CmsLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
+import type { CmsModelLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
 import type {
-    CmsAlertLayoutDescriptor,
-    CmsLayoutDescriptor
+    CmsAlertLayoutField,
+    CmsLayoutField
 } from "@webiny/app-headless-cms-common/types/model.js";
 import { ReactComponent as AlertIcon } from "@webiny/icons/warning.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
@@ -74,12 +74,12 @@ const AlertDialogContent = ({ fieldOptions }: { fieldOptions: FieldOption[] }) =
 };
 
 interface AlertLayoutCellProps {
-    descriptor: CmsAlertLayoutDescriptor;
-    onUpdate: (d: CmsLayoutDescriptor) => void;
+    field: CmsAlertLayoutField;
+    onUpdate: (d: CmsLayoutField) => void;
     onDelete: () => void;
 }
 
-const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProps) => {
+const AlertLayoutCell = ({ field, onUpdate, onDelete }: AlertLayoutCellProps) => {
     const { fieldOptions } = useModelEditor();
     const dialogs = useDialogs();
 
@@ -90,16 +90,16 @@ const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProp
             acceptLabel: "Save",
             cancelLabel: "Cancel",
             formData: {
-                label: descriptor.label,
-                alertType: descriptor.alertType,
-                rules: descriptor.rules ?? []
+                label: field.label,
+                alertType: field.alertType,
+                rules: field.rules ?? []
             },
             content: <AlertDialogContent fieldOptions={fieldOptions} />,
             onAccept: data => {
                 onUpdate({
-                    ...descriptor,
+                    ...field,
                     label: data.label ?? "",
-                    alertType: (data.alertType as CmsAlertLayoutDescriptor["alertType"]) ?? "info",
+                    alertType: (data.alertType as CmsAlertLayoutField["alertType"]) ?? "info",
                     rules: data.rules ?? []
                 });
             }
@@ -109,8 +109,8 @@ const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProp
     return (
         <div className={"flex items-center justify-between"}>
             <div className={"flex-1"}>
-                {descriptor.label ? (
-                    <Alert type={descriptor.alertType}>{descriptor.label}</Alert>
+                {field.label ? (
+                    <Alert type={field.alertType}>{field.label}</Alert>
                 ) : (
                     <Text size={"sm"} className={"text-neutral-strong italic"}>
                         Alert (no message set)
@@ -135,7 +135,7 @@ const AlertLayoutCell = ({ descriptor, onUpdate, onDelete }: AlertLayoutCellProp
     );
 };
 
-export const uiAlertField: CmsLayoutFieldTypePlugin = {
+export const uiAlertField: CmsModelLayoutFieldTypePlugin = {
     type: "cms-editor-layout-field-type",
     name: "cms-editor-layout-field-type-alert",
     field: {
@@ -144,13 +144,13 @@ export const uiAlertField: CmsLayoutFieldTypePlugin = {
         description: t`Show an alert message in the form.`,
         icon: <AlertIcon />,
         canEditSettings: true,
-        createDescriptor() {
+        createField() {
             return { type: "alert", label: "", alertType: "info" };
         },
-        render({ descriptor, onUpdate, onDelete }) {
+        render({ field, onUpdate, onDelete }) {
             return (
                 <AlertLayoutCell
-                    descriptor={descriptor as CmsAlertLayoutDescriptor}
+                    field={field as CmsAlertLayoutField}
                     onUpdate={onUpdate}
                     onDelete={onDelete}
                 />

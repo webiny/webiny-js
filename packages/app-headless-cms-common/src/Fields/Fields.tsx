@@ -9,11 +9,11 @@ import type {
     CmsModelField
 } from "~/types/index.js";
 import type { CmsEditorLayoutCell } from "~/types/model.js";
-import { isLayoutDescriptor } from "~/types/model.js";
+import { isLayoutField } from "~/types/model.js";
 import { LayoutDescriptorCell } from "./LayoutDescriptorCell.js";
 import { useAuthentication } from "@webiny/app-admin";
 import { FieldRulesProvider, useParentRules } from "./FieldRulesProvider.js";
-import { evaluateAccessControlRules, useEffectiveRules } from "./useFieldRules.js";
+import { evaluateAccessControlRules, useFieldEffectiveRules } from "./useFieldRules.js";
 
 interface FieldsProps {
     Bind: BindComponent;
@@ -48,8 +48,8 @@ interface LayoutCellProps {
 }
 
 const LayoutCell = ({ cell, Bind, fields, contentModel, gridClassName }: LayoutCellProps) => {
-    const isLayout = isLayoutDescriptor(cell);
-    const rules = useEffectiveRules(isLayout ? cell : {});
+    const isLayout = isLayoutField(cell);
+    const rules = useFieldEffectiveRules(isLayout ? cell : {});
 
     if (!isLayout) {
         return null;
@@ -62,7 +62,7 @@ const LayoutCell = ({ cell, Bind, fields, contentModel, gridClassName }: LayoutC
     return (
         <FieldRulesProvider rules={rules}>
             <LayoutDescriptorCell
-                descriptor={cell}
+                field={cell}
                 Bind={Bind}
                 fields={fields}
                 contentModel={contentModel}
@@ -84,7 +84,7 @@ interface FieldCellProps {
 }
 
 const FieldCell = ({ id, field, span, Bind, contentModel }: FieldCellProps) => {
-    const rules = useEffectiveRules(field ?? {});
+    const rules = useFieldEffectiveRules(field ?? {});
 
     if (!rules.canView || rules.hidden) {
         return null;
@@ -147,7 +147,7 @@ const RowRenderer = ({ row, fields, Bind, contentModel, gridClassName }: RowRend
     return (
         <>
             {row.map(cell => {
-                if (isLayoutDescriptor(cell)) {
+                if (isLayoutField(cell)) {
                     return (
                         <LayoutCell
                             key={cell.id}

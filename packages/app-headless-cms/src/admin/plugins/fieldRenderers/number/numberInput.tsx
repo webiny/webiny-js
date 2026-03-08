@@ -3,7 +3,7 @@ import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { DelayedOnChange, Input } from "@webiny/admin-ui";
-import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/number");
 
@@ -21,7 +21,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         },
         render({ getBind }) {
             const { field } = useModelField();
-            const rules = useEffectiveRules(field);
+            const rules = useFieldEffectiveRules(field);
             const disabled = !rules.canEdit || rules.disabled;
             const Bind = getBind();
 

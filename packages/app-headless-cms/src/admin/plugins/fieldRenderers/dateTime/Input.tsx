@@ -2,7 +2,7 @@ import * as React from "react";
 import type { CmsModelField } from "~/types.js";
 import type { BindComponentRenderProp } from "@webiny/form";
 import { Input as UiInput, Icon } from "@webiny/admin-ui";
-import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 export interface TrailingIcon {
     icon: React.ReactNode;
@@ -19,7 +19,7 @@ export interface InputProps {
 
 export const Input = ({ bind, trailingIcon, ...props }: InputProps) => {
     const { field } = useModelField();
-    const rules = useEffectiveRules(field);
+    const rules = useFieldEffectiveRules(field);
     const disabled = !rules.canEdit || rules.disabled;
 
     const endIcon = React.useMemo(() => {

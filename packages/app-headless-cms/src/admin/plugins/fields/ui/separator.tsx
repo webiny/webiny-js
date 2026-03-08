@@ -1,8 +1,8 @@
 import React from "react";
-import type { CmsLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
+import type { CmsModelLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
 import type {
-    CmsSeparatorLayoutDescriptor,
-    CmsLayoutDescriptor
+    CmsSeparatorLayoutField,
+    CmsLayoutField
 } from "@webiny/app-headless-cms-common/types/model.js";
 import { ReactComponent as SeparatorIcon } from "@webiny/icons/line_style.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
@@ -65,12 +65,12 @@ const SeparatorDialogContent = ({ fieldOptions }: { fieldOptions: FieldOption[] 
 };
 
 interface SeparatorLayoutCellProps {
-    descriptor: CmsSeparatorLayoutDescriptor;
-    onUpdate: (d: CmsLayoutDescriptor) => void;
+    field: CmsSeparatorLayoutField;
+    onUpdate: (d: CmsLayoutField) => void;
     onDelete: () => void;
 }
 
-const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayoutCellProps) => {
+const SeparatorLayoutCell = ({ field, onUpdate, onDelete }: SeparatorLayoutCellProps) => {
     const { fieldOptions } = useModelEditor();
     const dialogs = useDialogs();
 
@@ -81,14 +81,14 @@ const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayout
             acceptLabel: "Save",
             cancelLabel: "Cancel",
             formData: {
-                label: descriptor.label,
-                description: descriptor.description ?? "",
-                rules: descriptor.rules ?? []
+                label: field.label,
+                description: field.description ?? "",
+                rules: field.rules ?? []
             },
             content: <SeparatorDialogContent fieldOptions={fieldOptions} />,
             onAccept: data => {
                 onUpdate({
-                    ...descriptor,
+                    ...field,
                     label: data.label ?? "",
                     description: data.description ?? "",
                     rules: data.rules ?? []
@@ -101,11 +101,11 @@ const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayout
         <div className={"flex items-center gap-sm"}>
             <div className={"flex-1"}>
                 <Separator variant={"accent"} labelPosition={"start"}>
-                    {descriptor.label}
+                    {field.label}
                 </Separator>
-                {descriptor.description && (
+                {field.description && (
                     <Text as={"div"} size={"sm"} className={"text-neutral-strong mt-sm"}>
-                        {descriptor.description}
+                        {field.description}
                     </Text>
                 )}
             </div>
@@ -127,7 +127,7 @@ const SeparatorLayoutCell = ({ descriptor, onUpdate, onDelete }: SeparatorLayout
     );
 };
 
-export const uiSeparatorField: CmsLayoutFieldTypePlugin = {
+export const uiSeparatorField: CmsModelLayoutFieldTypePlugin = {
     type: "cms-editor-layout-field-type",
     name: "cms-editor-layout-field-type-separator",
     field: {
@@ -136,17 +136,17 @@ export const uiSeparatorField: CmsLayoutFieldTypePlugin = {
         description: t`Show a visual separator between fields.`,
         icon: <SeparatorIcon />,
         canEditSettings: true,
-        createDescriptor() {
+        createField() {
             return {
                 type: "separator",
                 label: "Section",
                 description: "Your description goes here"
             };
         },
-        render({ descriptor, onUpdate, onDelete }) {
+        render({ field, onUpdate, onDelete }) {
             return (
                 <SeparatorLayoutCell
-                    descriptor={descriptor as CmsSeparatorLayoutDescriptor}
+                    field={field as CmsSeparatorLayoutField}
                     onUpdate={onUpdate}
                     onDelete={onDelete}
                 />

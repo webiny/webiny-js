@@ -1,20 +1,20 @@
 import React from "react";
 import { Grid, Separator, Text } from "@webiny/admin-ui";
-import type { CmsSeparatorLayoutDescriptor } from "~/types/model.js";
+import type { CmsSeparatorLayoutField } from "~/types/model.js";
 
 interface SeparatorFieldRendererProps {
-    descriptor: CmsSeparatorLayoutDescriptor;
+    field: CmsSeparatorLayoutField;
 }
 
-export const SeparatorFieldRenderer = ({ descriptor }: SeparatorFieldRendererProps) => {
+export const SeparatorFieldRenderer = ({ field }: SeparatorFieldRendererProps) => {
     return (
         <Grid.Column span={12}>
             <Separator variant={"accent"} labelPosition={"start"}>
-                {descriptor.label}
+                {field.label}
             </Separator>
-            {descriptor.description && (
+            {field.description && (
                 <Text as={"div"} size={"sm"} className={"text-neutral-strong mt-sm"}>
-                    {descriptor.description}
+                    {field.description}
                 </Text>
             )}
         </Grid.Column>

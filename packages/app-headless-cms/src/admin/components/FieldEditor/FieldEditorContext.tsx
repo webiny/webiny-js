@@ -3,19 +3,19 @@ import dot from "dot-prop-immutable";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import type {
     CmsEditorFieldId,
-    CmsEditorFieldRendererPlugin,
+    CmsModelFieldRendererPlugin,
     CmsEditorFieldsLayout,
-    CmsEditorFieldTypePlugin,
-    CmsLayoutFieldTypePlugin,
+    CmsModelFieldTypePlugin,
+    CmsModelLayoutFieldTypePlugin,
     CmsModelField,
     DragSource,
     FieldLayoutPosition
 } from "~/types.js";
 import type {
-    CmsLayoutDescriptor,
+    CmsLayoutField,
     CmsEditorLayoutCell
 } from "@webiny/app-headless-cms-common/types/model.js";
-import { isLayoutDescriptor } from "@webiny/app-headless-cms-common/types/model.js";
+import { isLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
 import { plugins } from "@webiny/plugins";
 import * as utils from "./utils/index.js";
 import type { FieldEditorProps } from "./FieldEditor.js";
@@ -51,34 +51,31 @@ interface MoveFieldParams {
     position: FieldLayoutPosition;
 }
 interface GetFieldsInLayoutCallable {
-    (): (CmsModelField | CmsLayoutDescriptor)[][];
+    (): (CmsModelField | CmsLayoutField)[][];
 }
 interface InsertLayoutCellCallable {
-    (
-        descriptor: Omit<CmsLayoutDescriptor, "id"> | CmsLayoutDescriptor,
-        position: FieldLayoutPosition
-    ): void;
+    (field: Omit<CmsLayoutField, "id"> | CmsLayoutField, position: FieldLayoutPosition): void;
 }
 interface UpdateLayoutCellCallable {
-    (descriptorId: string, descriptor: CmsLayoutDescriptor): void;
+    (fieldId: string, field: CmsLayoutField): void;
 }
 interface DeleteLayoutCellCallable {
-    (descriptorId: string): void;
+    (fieldId: string): void;
 }
 interface MoveLayoutCellCallable {
-    (descriptorId: string, position: FieldLayoutPosition): void;
+    (fieldId: string, position: FieldLayoutPosition): void;
 }
 interface GetLayoutFieldPluginCallable {
-    (type: string): CmsLayoutFieldTypePlugin | undefined;
+    (type: string): CmsModelLayoutFieldTypePlugin | undefined;
 }
 interface GetFieldPluginCallable {
-    (type: string): CmsEditorFieldTypePlugin | undefined;
+    (type: string): CmsModelFieldTypePlugin | undefined;
 }
 interface GetFieldCallable {
     (query: GetFieldParams): CmsModelField | undefined;
 }
 interface GetFieldRendererCallable {
-    (rendererName: string): CmsEditorFieldRendererPlugin | undefined;
+    (rendererName: string): CmsModelFieldRendererPlugin | undefined;
 }
 interface OnFieldDropCallable {
     (source: Partial<DragSource>, target: DropTarget): void;
@@ -108,7 +105,7 @@ interface NoConflictCallable {
     (cb?: IsVisibleCallable): (item: DragSource) => boolean;
 }
 export interface FieldEditorContext {
-    fields: (CmsModelField | CmsLayoutDescriptor)[][];
+    fields: (CmsModelField | CmsLayoutField)[][];
     noConflict: NoConflictCallable;
     layout: CmsEditorFieldsLayout;
     onChange?: (data: any) => void;
@@ -245,18 +242,18 @@ export const FieldEditorProvider = ({
             if (!plugin) {
                 return null;
             }
-            const descriptor = plugin.field.createDescriptor();
-            insertLayoutCell(descriptor, dropTarget);
+            const layoutField = plugin.field.createField();
+            insertLayoutCell(layoutField, dropTarget);
             return null;
         }
 
         // Handle moving an existing layout field to a new position
         if (type === "layoutField") {
-            if (source.descriptor) {
+            if (source.layoutField) {
                 if (parentId !== source.parent) {
-                    // Cross-parent: insert a copy of the descriptor into this context
-                    insertLayoutCell(source.descriptor, dropTarget);
-                    // Also add any fields carried by this descriptor (e.g. fields inside tabs)
+                    // Cross-parent: insert a copy of the layout field into this context
+                    insertLayoutCell(source.layoutField, dropTarget);
+                    // Also add any fields carried by this layout field (e.g. fields inside tabs)
                     if (fields.length > 0) {
                         for (const f of fields) {
                             addField(f);
@@ -264,7 +261,7 @@ export const FieldEditorProvider = ({
                     }
                 } else {
                     // Same parent: move within this context
-                    moveLayoutCell(source.descriptor.id, dropTarget);
+                    moveLayoutCell(source.layoutField.id, dropTarget);
                 }
             }
             return onDropTarget;
@@ -308,7 +305,7 @@ export const FieldEditorProvider = ({
     }, []);
 
     const onEndDrag: OnEndDragCallable<DragObject, DropResult> = (
-        { type, field, fields, descriptor },
+        { type, field, fields, layoutField },
         monitor
     ) => {
         if (!monitor.didDrop()) {
@@ -322,8 +319,8 @@ export const FieldEditorProvider = ({
             return;
         }
 
-        if (type === "layoutField" && descriptor?.id) {
-            deleteLayoutCell(descriptor.id);
+        if (type === "layoutField" && layoutField?.id) {
+            deleteLayoutCell(layoutField.id);
             return;
         }
 
@@ -332,13 +329,13 @@ export const FieldEditorProvider = ({
     };
 
     const getFieldsInLayout: GetFieldsInLayoutCallable = () => {
-        // Replace every field ID with actual field object, pass through layout descriptors.
+        // Replace every field ID with actual field object, pass through layout fields.
         return state.layout
             .filter(arr => arr.length)
             .map(row => {
                 return row
                     .map((cell: CmsEditorLayoutCell) => {
-                        if (isLayoutDescriptor(cell)) {
+                        if (isLayoutField(cell)) {
                             return cell;
                         }
                         return getField({ id: cell });
@@ -347,7 +344,7 @@ export const FieldEditorProvider = ({
             })
             .filter(row => {
                 return row.length > 0;
-            }) as (CmsModelField | CmsLayoutDescriptor)[][];
+            }) as (CmsModelField | CmsLayoutField)[][];
     };
 
     /**
@@ -355,13 +352,13 @@ export const FieldEditorProvider = ({
      */
     const getFieldPlugin: GetFieldPluginCallable = type => {
         return plugins
-            .byType<CmsEditorFieldTypePlugin>("cms-editor-field-type")
+            .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
             .find(plugin => plugin.field.type === type);
     };
 
     const getFieldRendererPlugin: GetFieldRendererCallable = name => {
         return plugins
-            .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
+            .byType<CmsModelFieldRendererPlugin>("cms-editor-field-renderer")
             .find(plugin => plugin.renderer.rendererName === name);
     };
 
@@ -485,19 +482,19 @@ export const FieldEditorProvider = ({
      */
     const getLayoutFieldPlugin: GetLayoutFieldPluginCallable = type => {
         return plugins
-            .byType<CmsLayoutFieldTypePlugin>("cms-editor-layout-field-type")
+            .byType<CmsModelLayoutFieldTypePlugin>("cms-editor-layout-field-type")
             .find(plugin => plugin.field.type === type);
     };
 
     /**
-     * Insert a layout descriptor into the layout at the given position.
+     * Insert a layout field into the layout at the given position.
      */
-    const insertLayoutCell: InsertLayoutCellCallable = (descriptor, position) => {
-        // Auto-assign a unique ID to the descriptor.
+    const insertLayoutCell: InsertLayoutCellCallable = (layoutField, position) => {
+        // Auto-assign a unique ID to the layout field.
         const cell = {
-            ...descriptor,
+            ...layoutField,
             id: generateAlphaNumericLowerCaseId(8)
-        } as CmsLayoutDescriptor;
+        } as CmsLayoutField;
 
         setState(prev => {
             const newLayout = [...prev.layout.map(row => [...row])];
@@ -511,14 +508,14 @@ export const FieldEditorProvider = ({
     };
 
     /**
-     * Update a layout descriptor found by its ID.
+     * Update a layout field found by its ID.
      */
-    const updateLayoutCell: UpdateLayoutCellCallable = (descriptorId, descriptor) => {
+    const updateLayoutCell: UpdateLayoutCellCallable = (fieldId, layoutField) => {
         setState(prev => {
             const newLayout = prev.layout.map(row =>
                 row.map(cell => {
-                    if (isLayoutDescriptor(cell) && cell.id === descriptorId) {
-                        return { ...descriptor, id: descriptorId };
+                    if (isLayoutField(cell) && cell.id === fieldId) {
+                        return { ...layoutField, id: fieldId };
                     }
                     return cell;
                 })
@@ -528,25 +525,21 @@ export const FieldEditorProvider = ({
     };
 
     /**
-     * Delete a layout descriptor found by its ID.
-     * If it's a tabs descriptor, also remove all hoisted fields from the fields array.
+     * Delete a layout field found by its ID.
+     * If it's a tabs layout field, also remove all hoisted fields from the fields array.
      */
-    const deleteLayoutCell: DeleteLayoutCellCallable = descriptorId => {
+    const deleteLayoutCell: DeleteLayoutCellCallable = fieldId => {
         setState(prev => {
             let fields = prev.fields;
 
             // Find the descriptor to check if it's tabs (need to clean up hoisted fields)
             for (const row of prev.layout) {
                 for (const cell of row) {
-                    if (
-                        isLayoutDescriptor(cell) &&
-                        cell.id === descriptorId &&
-                        cell.type === "tabs"
-                    ) {
-                        const tabsDescriptor =
-                            cell as import("@webiny/app-headless-cms-common/types/model.js").CmsTabLayoutDescriptor;
+                    if (isLayoutField(cell) && cell.id === fieldId && cell.type === "tabs") {
+                        const tabsField =
+                            cell as import("@webiny/app-headless-cms-common/types/model.js").CmsTabLayoutField;
                         const fieldIdsInTabs = new Set<string>();
-                        tabsDescriptor.tabs.forEach(tab => {
+                        tabsField.tabs.forEach(tab => {
                             tab.layout.forEach(r => {
                                 r.forEach(c => {
                                     if (typeof c === "string") {
@@ -563,7 +556,7 @@ export const FieldEditorProvider = ({
             }
 
             const newLayout = prev.layout.map(row =>
-                row.filter(cell => !(isLayoutDescriptor(cell) && cell.id === descriptorId))
+                row.filter(cell => !(isLayoutField(cell) && cell.id === fieldId))
             );
 
             return {
@@ -575,34 +568,34 @@ export const FieldEditorProvider = ({
     };
 
     /**
-     * Move a layout descriptor (found by its ID) to a new position.
+     * Move a layout field (found by its ID) to a new position.
      */
-    const moveLayoutCell: MoveLayoutCellCallable = (descriptorId, position) => {
+    const moveLayoutCell: MoveLayoutCellCallable = (fieldId, position) => {
         setState(prev => {
-            // Find the descriptor by ID.
-            let descriptor: CmsLayoutDescriptor | undefined;
+            // Find the layout field by ID.
+            let layoutField: CmsLayoutField | undefined;
             let sourceRow = -1;
 
             for (let ri = 0; ri < prev.layout.length; ri++) {
                 for (const cell of prev.layout[ri]) {
-                    if (isLayoutDescriptor(cell) && cell.id === descriptorId) {
-                        descriptor = cell;
+                    if (isLayoutField(cell) && cell.id === fieldId) {
+                        layoutField = cell;
                         sourceRow = ri;
                         break;
                     }
                 }
-                if (descriptor) {
+                if (layoutField) {
                     break;
                 }
             }
 
-            if (!descriptor || sourceRow === -1) {
+            if (!layoutField || sourceRow === -1) {
                 return prev;
             }
 
-            // 1. Remove the descriptor from its source position.
+            // 1. Remove the layout field from its source position.
             const withoutSource = prev.layout.map(row =>
-                row.filter(cell => !(isLayoutDescriptor(cell) && cell.id === descriptorId))
+                row.filter(cell => !(isLayoutField(cell) && cell.id === fieldId))
             );
 
             // 2. Was the source row emptied?
@@ -619,9 +612,9 @@ export const FieldEditorProvider = ({
             // 4. Remove empty rows.
             const cleaned = withoutSource.filter(r => r.length > 0);
 
-            // 5. Clamp target row and insert the descriptor as its own row.
+            // 5. Clamp target row and insert the layout field as its own row.
             targetRow = Math.max(0, Math.min(targetRow, cleaned.length));
-            cleaned.splice(targetRow, 0, [descriptor]);
+            cleaned.splice(targetRow, 0, [layoutField]);
 
             return { ...prev, layout: cleaned };
         });

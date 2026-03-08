@@ -2,7 +2,7 @@ import type { DragEventHandler } from "react";
 import React from "react";
 import { plugins } from "@webiny/plugins";
 import Draggable from "../Draggable.js";
-import type { CmsModelFieldTypePlugin, CmsLayoutFieldTypePlugin } from "~/types.js";
+import type { CmsModelFieldTypePlugin, CmsModelLayoutFieldTypePlugin } from "~/types.js";
 import { Heading, Icon, Text } from "@webiny/admin-ui";
 
 interface FieldProps {
@@ -50,7 +50,7 @@ const Field = (props: FieldProps) => {
 
 interface LayoutFieldItemProps {
     onFieldDragStart: DragEventHandler;
-    layoutField: CmsLayoutFieldTypePlugin["field"];
+    layoutField: CmsModelLayoutFieldTypePlugin["field"];
 }
 
 const LayoutFieldItem = (props: LayoutFieldItemProps) => {
@@ -95,7 +95,7 @@ export const FieldsSidebar = ({ onFieldDragStart }: FieldsSidebarProps) => {
         .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
         .filter(p => !p.field.hideInAdmin);
 
-    const layoutFieldPlugins = plugins.byType<CmsLayoutFieldTypePlugin>(
+    const layoutFieldPlugins = plugins.byType<CmsModelLayoutFieldTypePlugin>(
         "cms-editor-layout-field-type"
     );
 

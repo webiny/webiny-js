@@ -6,7 +6,7 @@ import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/expand_more.svg";
 import { AddTemplateButton } from "./AddTemplate.js";
 import { TemplateIcon } from "./TemplateIcon.js";
-import { useEffectiveRules } from "@webiny/app-headless-cms-common";
+import { useFieldEffectiveRules } from "@webiny/app-headless-cms-common";
 import { ParentFieldProvider, useModelField } from "~/admin/hooks/index.js";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields.js";
 import type {
@@ -141,7 +141,7 @@ const TemplateValueForm = ({
     onClone
 }: TemplateValueFormProps) => {
     const { field } = useModelField();
-    const rules = useEffectiveRules(field);
+    const rules = useFieldEffectiveRules(field);
     const disabled = !rules.canEdit || rules.disabled;
     const templates = field.settings?.templates || [];
 

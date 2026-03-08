@@ -4,14 +4,14 @@ import type {
     CmsModelFieldRendererProps
 } from "@webiny/app-headless-cms/types.js";
 import { FileManager } from "@webiny/app-admin";
-import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 import { FilePicker } from "@webiny/admin-ui";
 import { EditFileUsingUrl } from "~/components/EditFileUsingUrl/index.js";
 import { getSupportedExtensionsLabelHint } from "~/modules/HeadlessCms/fileRenderer/utils.js";
 
 const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
     const { field } = useModelField();
-    const rules = useEffectiveRules(field);
+    const rules = useFieldEffectiveRules(field);
     const disabled = !rules.canEdit || rules.disabled;
     const Bind = getBind();
 

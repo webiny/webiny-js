@@ -15,7 +15,7 @@ import type {
 } from "~/types.js";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields.js";
 import { ParentFieldProvider } from "~/admin/components/ContentEntryForm/ParentValue.js";
-import { useEffectiveRules } from "@webiny/app-headless-cms-common";
+import { useFieldEffectiveRules } from "@webiny/app-headless-cms-common";
 import {
     ParentValueIndexProvider,
     ModelFieldProvider,
@@ -83,7 +83,7 @@ export const SingleValueDynamicZone = ({
     getBind
 }: SingleValueDynamicZoneProps) => {
     const { field } = useModelField();
-    const rules = useEffectiveRules(field);
+    const rules = useFieldEffectiveRules(field);
     const disabled = !rules.canEdit || rules.disabled;
 
     const { showConfirmation } = useConfirmationDialog({

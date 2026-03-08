@@ -5,7 +5,7 @@ import { useContentModels } from "./useContentModels.js";
 import { useReferences } from "./useReferences.js";
 import { CheckboxGroup } from "@webiny/admin-ui";
 import { Loader } from "./Loader.js";
-import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 interface SimpleMultipleRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue[] | undefined | null>;
@@ -16,7 +16,7 @@ export const SimpleMultipleRenderer = (props: SimpleMultipleRendererProps) => {
     const { bind } = props;
 
     const { field } = useModelField();
-    const rules = useEffectiveRules(field);
+    const rules = useFieldEffectiveRules(field);
     const disabled = !rules.canEdit || rules.disabled;
 
     const values = useMemo(() => {

@@ -7,9 +7,9 @@ import { ReactComponent as ArrowDownIcon } from "@webiny/icons/expand_more.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import type {
-    CmsTabLayoutDescriptor,
+    CmsTabLayoutField,
     CmsTabLayoutTab,
-    CmsLayoutDescriptor,
+    CmsLayoutField,
     CmsEditorFieldsLayout
 } from "@webiny/app-headless-cms-common/types/model.js";
 import { useConfirmationDialog, useDialogs } from "@webiny/app-admin";
@@ -31,8 +31,8 @@ import { useModelEditor } from "~/admin/components/ContentModelEditor/useModelEd
 import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
 
 interface TabsLayoutEditorProps {
-    descriptor: CmsTabLayoutDescriptor;
-    onUpdate: (d: CmsLayoutDescriptor) => void;
+    field: CmsTabLayoutField;
+    onUpdate: (d: CmsLayoutField) => void;
     onDelete: () => void;
 }
 
@@ -40,9 +40,9 @@ interface TabItemProps {
     tab: CmsTabLayoutTab;
     index: number;
     totalTabs: number;
-    descriptor: CmsTabLayoutDescriptor;
+    field: CmsTabLayoutField;
     parentFields: CmsModelField[];
-    onUpdate: (d: CmsLayoutDescriptor) => void;
+    onUpdate: (d: CmsLayoutField) => void;
     onInsertField: (field: CmsModelField) => void;
     onRemoveField: (fieldId: string) => void;
     onUpdateField: (field: CmsModelField) => void;
@@ -178,7 +178,7 @@ const TabItem = ({
     tab,
     index,
     totalTabs,
-    descriptor,
+    field,
     parentFields,
     onUpdate,
     onInsertField,
@@ -232,31 +232,31 @@ const TabItem = ({
                 }
             }
 
-            // Update the tab's layout in the descriptor
-            const updatedTabs = [...descriptor.tabs];
+            // Update the tab's layout in the field
+            const updatedTabs = [...field.tabs];
             updatedTabs[index] = { ...tab, layout: newLayout };
-            onUpdate({ ...descriptor, tabs: updatedTabs });
+            onUpdate({ ...field, tabs: updatedTabs });
         },
-        [tab, index, descriptor, tabFields, onUpdate, onInsertField, onRemoveField, onUpdateField]
+        [tab, index, field, tabFields, onUpdate, onInsertField, onRemoveField, onUpdateField]
     );
 
     const moveTabUp = useCallback(() => {
         if (isFirst) {
             return;
         }
-        const tabs = [...descriptor.tabs];
+        const tabs = [...field.tabs];
         [tabs[index - 1], tabs[index]] = [tabs[index], tabs[index - 1]];
-        onUpdate({ ...descriptor, tabs });
-    }, [descriptor, index, isFirst, onUpdate]);
+        onUpdate({ ...field, tabs });
+    }, [field, index, isFirst, onUpdate]);
 
     const moveTabDown = useCallback(() => {
         if (isLast) {
             return;
         }
-        const tabs = [...descriptor.tabs];
+        const tabs = [...field.tabs];
         [tabs[index + 1], tabs[index]] = [tabs[index], tabs[index + 1]];
-        onUpdate({ ...descriptor, tabs });
-    }, [descriptor, index, isLast, onUpdate]);
+        onUpdate({ ...field, tabs });
+    }, [field, index, isLast, onUpdate]);
 
     const deleteTab = useCallback(() => {
         showConfirmation(() => {
@@ -269,10 +269,10 @@ const TabItem = ({
                 }
             }
 
-            const tabs = descriptor.tabs.filter((_, i) => i !== index);
-            onUpdate({ ...descriptor, tabs });
+            const tabs = field.tabs.filter((_, i) => i !== index);
+            onUpdate({ ...field, tabs });
         });
-    }, [descriptor, index, tab, onUpdate, onRemoveField, showConfirmation]);
+    }, [field, index, tab, onUpdate, onRemoveField, showConfirmation]);
 
     const editTab = useCallback(() => {
         dialogs.showDialog({
@@ -287,17 +287,17 @@ const TabItem = ({
             },
             content: <TabDialogContent fieldOptions={fieldOptions} />,
             onAccept: data => {
-                const updatedTabs = [...descriptor.tabs];
+                const updatedTabs = [...field.tabs];
                 updatedTabs[index] = {
                     ...tab,
                     label: data.label ?? tab.label,
                     icon: data.icon || undefined,
                     rules: data.rules ?? []
                 };
-                onUpdate({ ...descriptor, tabs: updatedTabs });
+                onUpdate({ ...field, tabs: updatedTabs });
             }
         });
-    }, [dialogs, descriptor, index, tab, onUpdate]);
+    }, [dialogs, field, index, tab, onUpdate]);
 
     return (
         <Accordion.Item
@@ -337,7 +337,7 @@ const TabItem = ({
     );
 };
 
-export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutEditorProps) => {
+export const TabsLayoutEditor = ({ field, onUpdate, onDelete }: TabsLayoutEditorProps) => {
     const parentEditor = useModelFieldEditor();
     const { fieldOptions } = useModelEditor();
     const { showDialog } = useDialogs();
@@ -354,11 +354,11 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
         newTabId.current = undefined;
     }, []);
 
-    // Resolve all fields that exist in any tab of this descriptor from the parent's fields
+    // Resolve all fields that exist in any tab of this field from the parent's fields
     const getAllParentFields = useCallback((): CmsModelField[] => {
-        // Collect all field IDs that exist in any tab of this descriptor
+        // Collect all field IDs that exist in any tab of this field
         const allFieldIds = new Set<string>();
-        for (const tab of descriptor.tabs) {
+        for (const tab of field.tabs) {
             for (const row of tab.layout) {
                 for (const cell of row) {
                     if (typeof cell === "string") {
@@ -371,20 +371,20 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
         // Resolve them from the parent editor
         const resolved: CmsModelField[] = [];
         for (const id of allFieldIds) {
-            const field = parentEditor.getField({ id });
-            if (field) {
-                resolved.push(field);
+            const f = parentEditor.getField({ id });
+            if (f) {
+                resolved.push(f);
             }
         }
         return resolved;
-    }, [descriptor, parentEditor]);
+    }, [field, parentEditor]);
 
     const handleInsertField = useCallback(
-        (field: CmsModelField) => {
+        (f: CmsModelField) => {
             // Hoist the field to the parent context's fields (without placing in parent's layout)
-            const existingField = parentEditor.getField({ id: field.id });
+            const existingField = parentEditor.getField({ id: f.id });
             if (!existingField) {
-                parentEditor.addField(field);
+                parentEditor.addField(f);
             }
         },
         [parentEditor]
@@ -399,8 +399,8 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
     );
 
     const handleUpdateField = useCallback(
-        (field: CmsModelField) => {
-            parentEditor.updateField(field);
+        (f: CmsModelField) => {
+            parentEditor.updateField(f);
         },
         [parentEditor]
     );
@@ -410,11 +410,11 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
         newTabId.current = id;
         const newTab: CmsTabLayoutTab = {
             id,
-            label: `Tab ${descriptor.tabs.length + 1}`,
+            label: `Tab ${field.tabs.length + 1}`,
             layout: []
         };
-        onUpdate({ ...descriptor, tabs: [...descriptor.tabs, newTab] });
-    }, [descriptor, onUpdate]);
+        onUpdate({ ...field, tabs: [...field.tabs, newTab] });
+    }, [field, onUpdate]);
 
     const handleDeleteTabs = useCallback(() => {
         showDeleteConfirmation(() => {
@@ -429,15 +429,15 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
             acceptLabel: "Save",
             cancelLabel: "Cancel",
             formData: {
-                label: descriptor.label ?? "",
-                description: descriptor.description ?? "",
-                help: descriptor.help ?? "",
-                rules: descriptor.rules ?? []
+                label: field.label ?? "",
+                description: field.description ?? "",
+                help: field.help ?? "",
+                rules: field.rules ?? []
             },
             content: <TabsDialogContent fieldOptions={fieldOptions} />,
             onAccept: data => {
                 onUpdate({
-                    ...descriptor,
+                    ...field,
                     label: data.label ?? "",
                     description: data.description || null,
                     help: data.help || null,
@@ -445,7 +445,7 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
                 });
             }
         });
-    }, [descriptor, onUpdate]);
+    }, [field, onUpdate]);
 
     const resolvedParentFields = getAllParentFields();
 
@@ -455,7 +455,7 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
                 <div className={"flex flex-col"}>
                     <div className={"flex flex-row items-center"}>
                         <Heading level={6} className={"text-nowrap"}>
-                            {descriptor.label || "No label"}
+                            {field.label || "No label"}
                         </Heading>
                     </div>
                     <Text size="sm" className={"flex w-full text-neutral-strong"}>
@@ -477,15 +477,15 @@ export const TabsLayoutEditor = ({ descriptor, onUpdate, onDelete }: TabsLayoutE
                     />
                 </div>
             </div>
-            {descriptor.tabs.length > 0 && (
+            {field.tabs.length > 0 && (
                 <Accordion>
-                    {descriptor.tabs.map((tab, index) => (
+                    {field.tabs.map((tab, index) => (
                         <TabItem
                             key={tab.id}
                             tab={tab}
                             index={index}
-                            totalTabs={descriptor.tabs.length}
-                            descriptor={descriptor}
+                            totalTabs={field.tabs.length}
+                            field={field}
                             parentFields={resolvedParentFields}
                             onUpdate={onUpdate}
                             onInsertField={handleInsertField}

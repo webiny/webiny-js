@@ -2,9 +2,6 @@ export type {
     CmsContentEntry,
     CmsModel,
     CmsModelField,
-    CmsIdentity,
-    CmsLayoutFieldTypePlugin,
-    CmsLayoutDescriptorRendererPlugin,
-    CmsBaseLayoutDescriptor,
-    CmsLayoutDescriptor
+    CmsModelLayoutField,
+    CmsIdentity
 } from "~/types/index.ts";

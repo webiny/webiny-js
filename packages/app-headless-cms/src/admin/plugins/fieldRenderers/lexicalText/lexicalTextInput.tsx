@@ -7,7 +7,7 @@ import { FormComponentDescription } from "@webiny/admin-ui";
 import type { CmsModelFieldRendererPlugin, CmsModelField } from "~/types.js";
 import { useForm } from "@webiny/form";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor.js";
-import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -32,7 +32,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         },
         render({ getBind }) {
             const { field } = useModelField();
-            const rules = useEffectiveRules(field);
+            const rules = useFieldEffectiveRules(field);
             const form = useForm();
 
             const Bind = getBind();

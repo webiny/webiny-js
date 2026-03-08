@@ -5,7 +5,7 @@ import { useContentModels } from "./useContentModels.js";
 import { useReferences } from "./useReferences.js";
 import { Loader } from "~/admin/plugins/fieldRenderers/ref/simple/components/Loader.js";
 import { RadioGroup } from "@webiny/admin-ui";
-import { useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 interface SimpleSingleRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | undefined | null>;
@@ -16,7 +16,7 @@ export const SimpleSingleRenderer = (props: SimpleSingleRendererProps) => {
     const { bind } = props;
 
     const { field } = useModelField();
-    const rules = useEffectiveRules(field);
+    const rules = useFieldEffectiveRules(field);
     const disabled = !rules.canEdit || rules.disabled;
 
     const value = useMemo(() => {

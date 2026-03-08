@@ -14,9 +14,9 @@ import type {
     CmsModelFieldValidatorsGroup
 } from "./validation.js";
 import type {
-    CmsBaseLayoutDescriptor,
+    CmsModelLayoutField,
     CmsEditorFieldsLayout,
-    CmsLayoutDescriptor,
+    CmsLayoutField,
     CmsModel,
     CmsModelField
 } from "./model.js";
@@ -32,7 +32,7 @@ export type DragObjectWithType = {
 
 export type * from "./validation.js";
 export type * from "./model.js";
-export { isLayoutDescriptor } from "./model.js";
+export { isLayoutField, isLayoutDescriptor } from "./model.js";
 export type * from "./shared.js";
 
 interface QueryFieldParams {
@@ -58,13 +58,8 @@ export interface DragSource extends DragObjectWithType {
     layoutFieldType?: string;
     field?: CmsModelField | null;
     fields?: CmsModelField[];
-    descriptor?: CmsLayoutDescriptor;
+    layoutField?: CmsLayoutField;
 }
-
-/**
- * @deprecated Use `CmsModelFieldTypePlugin`.
- */
-export type CmsEditorFieldTypePlugin = CmsModelFieldTypePlugin;
 
 export interface CmsModelFieldTypePlugin extends Plugin {
     /**
@@ -243,52 +238,55 @@ export interface CmsModelFieldTypePlugin extends Plugin {
     };
 }
 
-export interface CmsLayoutFieldTypePlugin extends Plugin {
+export interface CmsModelLayoutFieldTypePlugin<T extends CmsModelLayoutField = CmsModelLayoutField>
+    extends Plugin {
     type: "cms-editor-layout-field-type";
     field: {
-        type: CmsLayoutDescriptor["type"];
+        type: T["type"];
         label: string;
         description: string;
         icon: React.ReactElement;
-        createDescriptor(): Omit<CmsLayoutDescriptor, "id">;
+        createField(): Omit<T, "id">;
         canEditSettings?: boolean;
         renderSettings?(): React.ReactNode;
         /**
-         * Collect all model fields embedded inside a layout descriptor's nested layout.
-         * Used during drag-and-drop to move embedded fields along with the descriptor
-         * across parent boundaries. Return `[]` or omit for descriptors with no nested fields.
+         * Collect all model fields embedded inside a layout field's nested layout.
+         * Used during drag-and-drop to move embedded fields along with the layout field
+         * across parent boundaries. Return `[]` or omit for layout fields with no nested fields.
          */
         collectFields?(params: {
-            descriptor: CmsLayoutDescriptor;
+            field: T;
             getField: (id: string) => CmsModelField | undefined;
         }): CmsModelField[];
         /**
-         * Return a label prefix for each field ID nested inside this layout descriptor.
+         * Return a label prefix for each field ID nested inside this layout field.
          * Used by `buildFieldOptions` to include layout hierarchy in field labels.
          *
-         * For example, a tabs descriptor with label "My Tabs" containing a tab "SEO"
+         * For example, a tabs layout field with label "My Tabs" containing a tab "SEO"
          * with field "metaTitle" would return: `{ "metaTitle": "My Tabs › SEO" }`.
          *
-         * Omit or return `{}` for descriptors that don't group fields.
+         * Omit or return `{}` for layout fields that don't group fields.
          */
-        getFieldLabelPrefixes?(params: { descriptor: CmsLayoutDescriptor }): Record<string, string>;
+        getFieldLabelPrefixes?(params: { field: T }): Record<string, string>;
         /**
          * Controls how this layout field looks on the model editor canvas.
          * Each plugin fully owns its visual representation.
          */
         render(params: {
-            descriptor: CmsLayoutDescriptor;
-            onUpdate: (d: CmsLayoutDescriptor) => void;
+            field: T;
+            onUpdate: (d: T) => void;
             onDelete: () => void;
         }): React.ReactElement;
     };
 }
 
-export interface CmsLayoutDescriptorRendererPlugin extends Plugin {
-    type: "cms-layout-descriptor-renderer";
-    descriptorType: string;
+export interface CmsModelLayoutFieldRendererPlugin<
+    T extends CmsModelLayoutField = CmsModelLayoutField
+> extends Plugin {
+    type: "cms-layout-field-renderer";
+    fieldType: string;
     render(props: {
-        descriptor: CmsBaseLayoutDescriptor;
+        field: T;
         Bind: BindComponent;
         fields: CmsModelField[];
         contentModel: CmsModel;
@@ -306,16 +304,6 @@ export interface CmsModelFieldRendererProps {
     getBind: <T = any>(index?: number, key?: string) => BindComponent<T>;
     contentModel: CmsModel;
 }
-
-/**
- * @deprecated Use `CmsModelFieldRendererProps`.
- */
-export type CmsEditorFieldRendererProps = CmsModelFieldRendererProps;
-
-/**
- * @deprecated Use `CmsModelFieldRendererPlugin`.
- */
-export type CmsEditorFieldRendererPlugin = CmsModelFieldRendererPlugin;
 
 export interface CmsModelFieldRendererPlugin extends Plugin {
     /**

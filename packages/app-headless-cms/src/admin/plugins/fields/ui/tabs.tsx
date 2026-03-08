@@ -1,6 +1,6 @@
 import React from "react";
-import type { CmsLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
-import type { CmsTabLayoutDescriptor } from "@webiny/app-headless-cms-common/types/model.js";
+import type { CmsModelLayoutFieldTypePlugin } from "@webiny/app-headless-cms-common/types/index.js";
+import type { CmsTabLayoutField } from "@webiny/app-headless-cms-common/types/model.js";
 import { ReactComponent as TabsIcon } from "@webiny/icons/tab.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
@@ -8,7 +8,7 @@ import { TabsLayoutEditor } from "./TabsLayoutEditor.js";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 
-export const uiTabsField: CmsLayoutFieldTypePlugin = {
+export const uiTabsField: CmsModelLayoutFieldTypePlugin = {
     type: "cms-editor-layout-field-type",
     name: "cms-editor-layout-field-type-tabs",
     field: {
@@ -17,7 +17,7 @@ export const uiTabsField: CmsLayoutFieldTypePlugin = {
         description: t`Group fields into tabs.`,
         icon: <TabsIcon />,
         canEditSettings: true,
-        createDescriptor() {
+        createField() {
             return {
                 type: "tabs",
                 label: "Tabs",
@@ -26,8 +26,8 @@ export const uiTabsField: CmsLayoutFieldTypePlugin = {
                 tabs: [{ id: generateAlphaNumericLowerCaseId(8), label: "Tab 1", layout: [] }]
             };
         },
-        collectFields({ descriptor, getField }) {
-            const tabs = (descriptor as CmsTabLayoutDescriptor).tabs;
+        collectFields({ field, getField }) {
+            const tabs = (field as CmsTabLayoutField).tabs;
             if (!tabs) {
                 return [];
             }
@@ -46,17 +46,17 @@ export const uiTabsField: CmsLayoutFieldTypePlugin = {
             }
             return result;
         },
-        getFieldLabelPrefixes({ descriptor }) {
-            const tabsDescriptor = descriptor as CmsTabLayoutDescriptor;
-            const tabs = tabsDescriptor.tabs;
+        getFieldLabelPrefixes({ field }) {
+            const tabsField = field as CmsTabLayoutField;
+            const tabs = tabsField.tabs;
             if (!tabs) {
                 return {};
             }
-            const descriptorLabel = tabsDescriptor.label || "Tabs";
+            const fieldLabel = tabsField.label || "Tabs";
             const prefixes: Record<string, string> = {};
             for (const tab of tabs) {
                 const tabLabel = tab.label || "Tab";
-                const prefix = `${descriptorLabel} › ${tabLabel}`;
+                const prefix = `${fieldLabel} › ${tabLabel}`;
                 for (const row of tab.layout) {
                     for (const cell of row) {
                         if (typeof cell === "string") {
@@ -67,10 +67,10 @@ export const uiTabsField: CmsLayoutFieldTypePlugin = {
             }
             return prefixes;
         },
-        render({ descriptor, onUpdate, onDelete }) {
+        render({ field, onUpdate, onDelete }) {
             return (
                 <TabsLayoutEditor
-                    descriptor={descriptor as CmsTabLayoutDescriptor}
+                    field={field as CmsTabLayoutField}
                     onUpdate={onUpdate}
                     onDelete={onDelete}
                 />

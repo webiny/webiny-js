@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useForm } from "webiny/admin/form";
-import type { CmsBaseLayoutDescriptor } from "webiny/admin/cms/model";
 import { Button, Grid, Text } from "webiny/admin/ui";
+import type { PanoramaField } from "@/extensions/cmsPanoramaField/PanoramaLayoutEditor.js";
 import {
     PanoramaViewer,
     type PanoramaHotspot,
@@ -14,21 +14,12 @@ const hotspotsFieldPath = "panorama.hotspots";
 const startPositionFieldPath = "panorama.startPosition";
 const panLimitsFovFieldPath = "panorama.panLimitsFov";
 
-interface PanoramaDescriptor extends CmsBaseLayoutDescriptor {
-    type: "panorama";
-    label: string;
-    imageFieldPath: string;
-    hotspotsFieldPath: string;
-    startPositionFieldPath: string;
-    panLimitsFovFieldPath: string;
-}
-
 interface PanoramaFieldRendererProps {
-    descriptor: CmsBaseLayoutDescriptor;
+    field: PanoramaField;
 }
 
-export const PanoramaFieldRenderer = ({ descriptor }: PanoramaFieldRendererProps) => {
-    const panorama = descriptor as PanoramaDescriptor;
+export const PanoramaFieldRenderer = ({ field }: PanoramaFieldRendererProps) => {
+    const panorama = field;
     const [scenePosition, setScenePosition] = useState<ScenePosition>();
     const form = useForm();
     const viewerRef = useRef<PanoramaViewerHandle>(null);

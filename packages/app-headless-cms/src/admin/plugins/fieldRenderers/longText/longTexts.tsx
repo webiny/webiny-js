@@ -6,7 +6,11 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import DynamicSection from "../DynamicSection.js";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
 import { DelayedOnChange, IconButton, Textarea } from "@webiny/admin-ui";
-import { CanEditField, useEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
+import {
+    CanEditField,
+    useFieldEffectiveRules,
+    useModelField
+} from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -26,7 +30,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         },
         render(props) {
             const { field } = useModelField();
-            const rules = useEffectiveRules(field);
+            const rules = useFieldEffectiveRules(field);
             const disabled = !rules.canEdit || rules.disabled;
 
             return (

@@ -16,7 +16,7 @@ import { useSnackbar } from "@webiny/app-admin";
 import type { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types.js";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog.js";
 import { FormComponentErrorMessage, FormComponentLabel, OverlayLoader } from "@webiny/admin-ui";
-import { CanEditField, useEffectiveRules } from "@webiny/app-headless-cms-common";
+import { CanEditField, useFieldEffectiveRules } from "@webiny/app-headless-cms-common";
 
 interface AdvancedSingleReferenceFieldProps extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | null>;
@@ -26,7 +26,7 @@ export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceField
     const { bind } = props;
     const { showSnackbar } = useSnackbar();
     const { field } = useModelField();
-    const rules = useEffectiveRules(field);
+    const rules = useFieldEffectiveRules(field);
 
     const [linkEntryDialogModel, setLinkEntryDialogModel] = useState<CmsModel | null>(null);
     const [newEntryDialogModel, setNewEntryDialogModel] = useState<CmsModel | null>(null);

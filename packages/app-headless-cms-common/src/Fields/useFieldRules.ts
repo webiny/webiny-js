@@ -139,7 +139,7 @@ function useFieldRules(item: HasRules): EffectiveFieldRules {
  * Composes useParentRules and useFieldRules into a single hook
  * that returns the effective (intersected) rules.
  */
-export function useEffectiveRules(item: HasRules): EffectiveFieldRules {
+export function useFieldEffectiveRules(item: HasRules): EffectiveFieldRules {
     const parentRules = useParentRules();
     const itemRules = useFieldRules(item);
     return {

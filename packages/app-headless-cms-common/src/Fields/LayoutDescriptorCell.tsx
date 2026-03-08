@@ -1,14 +1,14 @@
 import React from "react";
 import type {
-    CmsAlertLayoutDescriptor,
-    CmsLayoutDescriptor,
-    CmsSeparatorLayoutDescriptor,
-    CmsTabLayoutDescriptor
+    CmsAlertLayoutField,
+    CmsLayoutField,
+    CmsSeparatorLayoutField,
+    CmsTabLayoutField
 } from "~/types/model.js";
 import type {
     BindComponent,
     CmsEditorContentModel,
-    CmsLayoutDescriptorRendererPlugin,
+    CmsModelLayoutFieldRendererPlugin,
     CmsModelField
 } from "~/types/index.js";
 import { plugins } from "@webiny/plugins";
@@ -17,7 +17,7 @@ import { AlertFieldRenderer } from "./layoutFieldRenderers/AlertFieldRenderer.js
 import { TabsFieldRenderer } from "./layoutFieldRenderers/TabsFieldRenderer.js";
 
 interface LayoutDescriptorCellProps {
-    descriptor: CmsLayoutDescriptor;
+    field: CmsLayoutField;
     Bind: BindComponent;
     fields: CmsModelField[];
     contentModel: CmsEditorContentModel;
@@ -25,23 +25,21 @@ interface LayoutDescriptorCellProps {
 }
 
 export const LayoutDescriptorCell = ({
-    descriptor,
+    field,
     Bind,
     fields,
     contentModel,
     gridClassName
 }: LayoutDescriptorCellProps) => {
-    switch (descriptor.type) {
+    switch (field.type) {
         case "separator":
-            return (
-                <SeparatorFieldRenderer descriptor={descriptor as CmsSeparatorLayoutDescriptor} />
-            );
+            return <SeparatorFieldRenderer field={field as CmsSeparatorLayoutField} />;
         case "alert":
-            return <AlertFieldRenderer descriptor={descriptor as CmsAlertLayoutDescriptor} />;
+            return <AlertFieldRenderer field={field as CmsAlertLayoutField} />;
         case "tabs":
             return (
                 <TabsFieldRenderer
-                    descriptor={descriptor as CmsTabLayoutDescriptor}
+                    field={field as CmsTabLayoutField}
                     Bind={Bind}
                     fields={fields}
                     contentModel={contentModel}
@@ -50,11 +48,11 @@ export const LayoutDescriptorCell = ({
             );
         default: {
             const rendererPlugin = plugins
-                .byType<CmsLayoutDescriptorRendererPlugin>("cms-layout-descriptor-renderer")
-                .find(p => p.descriptorType === descriptor.type);
+                .byType<CmsModelLayoutFieldRendererPlugin>("cms-layout-field-renderer")
+                .find(p => p.fieldType === field.type);
             if (rendererPlugin) {
                 return rendererPlugin.render({
-                    descriptor,
+                    field,
                     Bind,
                     fields,
                     contentModel,

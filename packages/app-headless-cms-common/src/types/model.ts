@@ -8,11 +8,6 @@ import type {
 import type { CmsIdentity } from "~/types/shared.js";
 import type React from "react";
 
-/**
- * @deprecated Use `CmsModelField` instead.
- */
-export type CmsEditorField<T = unknown> = CmsModelField<T>;
-
 export interface CmsModelFieldSettings<T = unknown> {
     defaultValue?: string | boolean | number | null | undefined;
     defaultSetValue?: string;
@@ -66,19 +61,19 @@ export type CmsModelField<T = unknown> = T & {
 
 export type CmsEditorFieldId = string;
 
-export interface CmsBaseLayoutDescriptor {
+export interface CmsModelLayoutField {
     id: string;
     type: string;
     rules?: FieldRule[];
 }
 
-export interface CmsSeparatorLayoutDescriptor extends CmsBaseLayoutDescriptor {
+export interface CmsSeparatorLayoutField extends CmsModelLayoutField {
     type: "separator";
     label: string;
     description?: string;
 }
 
-export interface CmsAlertLayoutDescriptor extends CmsBaseLayoutDescriptor {
+export interface CmsAlertLayoutField extends CmsModelLayoutField {
     type: "alert";
     label: string;
     alertType: "info" | "success" | "warning" | "danger";
@@ -92,7 +87,7 @@ export interface CmsTabLayoutTab {
     rules?: FieldRule[];
 }
 
-export interface CmsTabLayoutDescriptor extends CmsBaseLayoutDescriptor {
+export interface CmsTabLayoutField extends CmsModelLayoutField {
     type: "tabs";
     label: string;
     description?: string | null;
@@ -100,26 +95,26 @@ export interface CmsTabLayoutDescriptor extends CmsBaseLayoutDescriptor {
     tabs: CmsTabLayoutTab[];
 }
 
-export type CmsLayoutDescriptor =
-    | CmsSeparatorLayoutDescriptor
-    | CmsAlertLayoutDescriptor
-    | CmsTabLayoutDescriptor
-    | CmsBaseLayoutDescriptor;
+export type CmsLayoutField =
+    | CmsSeparatorLayoutField
+    | CmsAlertLayoutField
+    | CmsTabLayoutField
+    | CmsModelLayoutField;
 
-export type CmsEditorLayoutCell = CmsEditorFieldId | CmsLayoutDescriptor;
+export type CmsEditorLayoutCell = CmsEditorFieldId | CmsLayoutField;
 export type CmsEditorFieldsLayout = CmsEditorLayoutCell[][];
 
 /**
- * Distinguish layout descriptors from field IDs (strings) and CmsModelField objects.
+ * Distinguish layout fields from field IDs (strings) and CmsModelField objects.
  *
  * In raw layout data (`CmsEditorFieldsLayout`), cells are either strings (field IDs)
- * or layout descriptor objects — the `typeof` check handles that.
+ * or layout field objects — the `typeof` check handles that.
  *
  * In resolved layout data (after `getFieldsInLayout`), cells are either `CmsModelField`
- * or layout descriptor objects — both have `{ id, type }`, but only `CmsModelField`
+ * or layout field objects — both have `{ id, type }`, but only `CmsModelField`
  * has `fieldId`, so we use its absence as the discriminator.
  */
-export function isLayoutDescriptor(cell: unknown): cell is CmsLayoutDescriptor {
+export function isLayoutField(cell: unknown): cell is CmsLayoutField {
     return (
         typeof cell === "object" &&
         cell !== null &&
@@ -128,6 +123,11 @@ export function isLayoutDescriptor(cell: unknown): cell is CmsLayoutDescriptor {
         !("fieldId" in cell)
     );
 }
+
+/**
+ * @deprecated Use `isLayoutField` instead.
+ */
+export const isLayoutDescriptor = isLayoutField;
 
 /**
  * @category GraphQL

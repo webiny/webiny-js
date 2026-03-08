@@ -1,15 +1,15 @@
 import React from "react";
 import { Grid, FormComponentLabel, FormComponentDescription, Tabs } from "@webiny/admin-ui";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { CmsTabLayoutDescriptor, CmsTabLayoutTab } from "~/types/model.js";
+import type { CmsTabLayoutField, CmsTabLayoutTab } from "~/types/model.js";
 import type { BindComponent, CmsEditorContentModel, CmsModelField } from "~/types/index.js";
 import { normalizeIcon } from "~/normalizeIcon.js";
 import { Fields } from "~/Fields/index.js";
 import { FieldRulesProvider } from "~/Fields/FieldRulesProvider.js";
-import { useEffectiveRules } from "~/Fields/useFieldRules.js";
+import { useFieldEffectiveRules } from "~/Fields/useFieldRules.js";
 
 interface TabsFieldRendererProps {
-    descriptor: CmsTabLayoutDescriptor;
+    field: CmsTabLayoutField;
     Bind: BindComponent;
     fields: CmsModelField[];
     contentModel: CmsEditorContentModel;
@@ -25,7 +25,7 @@ interface TabPanelProps {
 }
 
 const TabPanel = ({ tab, Bind, fields, contentModel, gridClassName }: TabPanelProps) => {
-    const rules = useEffectiveRules(tab);
+    const rules = useFieldEffectiveRules(tab);
 
     const icon = normalizeIcon(tab.icon);
 
@@ -63,13 +63,13 @@ const tabsWrapperClassName = [
 ].join(" ");
 
 export const TabsFieldRenderer = ({
-    descriptor,
+    field,
     Bind,
     fields,
     contentModel,
     gridClassName
 }: TabsFieldRendererProps) => {
-    const tabElements = descriptor.tabs.map(tab => (
+    const tabElements = field.tabs.map(tab => (
         <TabPanel
             key={tab.id}
             tab={tab}
@@ -80,16 +80,12 @@ export const TabsFieldRenderer = ({
         />
     ));
 
-    const firstTab = descriptor.tabs[0];
+    const firstTab = field.tabs[0];
 
     return (
         <Grid.Column span={12}>
-            {descriptor.label ? (
-                <FormComponentLabel text={descriptor.label} hint={descriptor.help} />
-            ) : null}
-            {descriptor.description ? (
-                <FormComponentDescription text={descriptor.description} />
-            ) : null}
+            {field.label ? <FormComponentLabel text={field.label} hint={field.help} /> : null}
+            {field.description ? <FormComponentDescription text={field.description} /> : null}
             <div className={tabsWrapperClassName}>
                 <Tabs
                     size="md"

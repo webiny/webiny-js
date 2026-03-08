@@ -1,6 +1,6 @@
 import type { CmsModelField, CmsEditorFieldsLayout } from "~/types/model.js";
-import type { CmsLayoutFieldTypePlugin } from "~/types/index.js";
-import { isLayoutDescriptor } from "~/types/model.js";
+import type { CmsModelLayoutFieldTypePlugin } from "~/types/index.js";
+import { isLayoutField } from "~/types/model.js";
 
 export interface FieldOption {
     label: string;
@@ -17,14 +17,14 @@ export interface FieldOption {
  */
 export function buildFieldLabelPrefixes(
     layout: CmsEditorFieldsLayout,
-    plugins: CmsLayoutFieldTypePlugin[]
+    plugins: CmsModelLayoutFieldTypePlugin[]
 ): Map<string, string> {
     const map = new Map<string, string>();
     const pluginByType = new Map(plugins.map(p => [p.field.type, p]));
 
     for (const row of layout) {
         for (const cell of row) {
-            if (!isLayoutDescriptor(cell)) {
+            if (!isLayoutField(cell)) {
                 continue;
             }
 
@@ -33,7 +33,7 @@ export function buildFieldLabelPrefixes(
                 continue;
             }
 
-            const prefixes = plugin.field.getFieldLabelPrefixes({ descriptor: cell });
+            const prefixes = plugin.field.getFieldLabelPrefixes({ field: cell });
             for (const [fieldId, prefix] of Object.entries(prefixes)) {
                 map.set(fieldId, prefix);
             }
@@ -68,7 +68,7 @@ export function buildFieldOptions(
     prefix = "",
     labelPrefix = "",
     fieldLabelPrefixes?: Map<string, string>,
-    layoutPlugins?: CmsLayoutFieldTypePlugin[]
+    layoutPlugins?: CmsModelLayoutFieldTypePlugin[]
 ): FieldOption[] {
     const options: FieldOption[] = [];
 
