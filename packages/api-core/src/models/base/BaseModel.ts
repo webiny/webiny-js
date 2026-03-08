@@ -44,7 +44,7 @@ export abstract class BaseModel<TModel extends z.ZodObject<any> = any> {
     }
 
     toData(): IModelData<TModel> {
-        if (this.__schema && this.__schema._def?.type === "object") {
+        if (this.__schema && this.__schema.def?.type === "object") {
             const result = {} as IModelData<TModel>;
             const shape = this.__schema.shape;
             for (const key in shape) {

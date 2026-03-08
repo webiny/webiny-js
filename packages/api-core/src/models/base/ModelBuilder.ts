@@ -1,10 +1,20 @@
 import { z } from "zod";
 import { BaseModel, type IModelData as ExtractModelData } from "./BaseModel.js";
+import type { $ZodTypeDef } from "zod/v4/core";
 
 export type ModelClass<TModel extends BaseModel<any>> = {
     __schema: TModel["__schema"];
     new (data: ExtractModelData<TModel>): TModel;
     create(data: ExtractModelData<TModel>): TModel;
+};
+
+/**
+ * Custom type to compare Zod types and extract the inner type if it's wrapped in ZodOptional, ZodNullable, or ZodDefault.
+ */
+type InnerType = z.ZodTypeAny & {
+    def: $ZodTypeDef & {
+        innerType?: z.ZodObject<any>;
+    };
 };
 
 export const createModelSchema = <TReturn extends z.ZodRawShape>(
@@ -25,19 +35,22 @@ export class ModelBuilder<TModel extends BaseModel<any>> {
 
     extendSchema<TExt extends z.ZodRawShape>(extensionFn: (zod: typeof z) => TExt): this {
         const shape = extensionFn(z);
-        const baseExtensions = (this.schema.shape as any).extensions;
+        const baseExtensions = this.schema.shape.extensions;
 
         let baseExtensionsObject: z.ZodObject<any>;
         if (baseExtensions instanceof z.ZodObject) {
             baseExtensionsObject = baseExtensions;
         } else if (baseExtensions) {
-            let inner = baseExtensions as any;
+            let inner = baseExtensions as InnerType;
+            /**
+             * TODO This could be "inner?.def.type"?
+             */
             while (
                 inner &&
-                "_def" in inner &&
-                ["ZodOptional", "ZodNullable", "ZodDefault"].includes(inner._def.typeName)
+                "def" in inner &&
+                ["optional", "nullable", "default"].includes(inner.def.type)
             ) {
-                inner = inner._def.innerType;
+                inner = inner.def.innerType!;
             }
             baseExtensionsObject = inner instanceof z.ZodObject ? inner : z.object({});
         } else {
