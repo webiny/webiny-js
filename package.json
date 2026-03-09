@@ -117,7 +117,7 @@
     "ts-expect": "^1.3.0",
     "tsx": "^4.21.0",
     "type-fest": "^5.4.4",
-    "typescript": "5.9.3",
+    "typescript": "6.0.1-rc",
     "validator": "^13.15.26",
     "verdaccio": "^6.3.1",
     "vite-tsconfig-paths": "^6.1.1",

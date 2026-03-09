@@ -46,7 +46,7 @@
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
     "rimraf": "^6.1.3",
-    "typescript": "5.9.3",
+    "typescript": "6.0.1-rc",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.0.18"
   },
