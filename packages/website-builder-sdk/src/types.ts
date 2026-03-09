@@ -293,7 +293,7 @@ export interface ListPagesMeta {
 }
 
 export interface ListPagesResult {
-    data: Array<Omit<PublicPage, "properties" | "bindings">>;
+    data: Array<Omit<PublicPage, "elements" | "bindings">>;
     meta: ListPagesMeta;
 }
 
