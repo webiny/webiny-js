@@ -9,7 +9,7 @@ import { createElasticsearchClient } from "~/client.js";
 import { getElasticsearchOperators } from "~/operators.js";
 import { Client } from "@elastic/elasticsearch/index.js";
 
-export * from "./indexConfiguration/index.js";
+export { getBaseConfiguration, getCommonMappings } from "./indexConfiguration/index.js";
 export * from "./plugins/index.js";
 export * from "./sort.js";
 export * from "./indices.js";
@@ -17,7 +17,7 @@ export * from "./where.js";
 export * from "./limit.js";
 export * from "./normalize.js";
 export * from "./compression.js";
-export * from "./operators.js";
+export { getElasticsearchOperators } from "./operators.js";
 export * from "./cursors.js";
 export * from "./client.js";
 export * from "./utils/index.js";
@@ -26,10 +26,8 @@ export * from "./sharedIndex.js";
 export * from "./indexPrefix.js";
 export * from "./db/index.js";
 
-/**
- * We must accept either Elasticsearch client or options that create the client.
- */
-export default (
+
+const clientContextPlugin = (
     params: ElasticsearchClientOptions | Client
 ): ContextPlugin<ElasticsearchContext> => {
     return new ContextPlugin<ElasticsearchContext>(context => {
@@ -48,3 +46,4 @@ export default (
         context.plugins.register(getElasticsearchOperators());
     });
 };
+export default clientContextPlugin;

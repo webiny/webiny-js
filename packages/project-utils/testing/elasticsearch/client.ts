@@ -1,8 +1,6 @@
 import type { Client } from "@elastic/elasticsearch/index.js";
-import {
-    createElasticsearchClient as createClient,
-    ElasticsearchClientOptions
-} from "@webiny/api-elasticsearch/client";
+import { createElasticsearchClient as createClient } from "@webiny/api-elasticsearch/client.js";
+import type { ElasticsearchClientOptions } from "@webiny/api-elasticsearch/client.js";
 import type { IndicesCreate, IndicesExists } from "@elastic/elasticsearch/api/requestParams.js";
 import type { TransportRequestOptions } from "@elastic/elasticsearch/lib/Transport.js";
 
