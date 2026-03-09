@@ -16,6 +16,11 @@ interface MockSubmissionData {
 }
 interface MockSubmissionMeta {
     ip: string;
+    submittedOn: string;
+    url: {
+        location: string;
+        query: Record<string, string>;
+    };
 }
 class MockSubmission {
     public data: MockSubmissionData;
@@ -28,7 +33,15 @@ class MockSubmission {
             email: `${prefix}email@gmail.com`
         };
         this.meta = {
-            ip: "150.129.183.18"
+            ip: "150.129.183.18",
+            submittedOn: new Date("2020-01-01").toISOString(),
+            url: {
+                location: "https://example.com",
+                query: {
+                    param1: "value1",
+                    param2: "value2"
+                }
+            }
         };
     }
 }
@@ -256,11 +269,13 @@ describe("Forms Submission Security Test", () => {
                 ...new MockSubmission(`B${b}-`)
             });
 
-            expect(createFormSubmissionResponse).toEqual({
+            expect(createFormSubmissionResponse).toMatchObject({
                 data: {
                     formBuilder: {
                         createFormSubmission: {
-                            data: expect.any(Object),
+                            data: {
+                                ...new MockSubmission(`B${b}-`)
+                            },
                             error: null
                         }
                     }

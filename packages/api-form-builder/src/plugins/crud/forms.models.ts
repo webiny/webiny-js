@@ -92,7 +92,17 @@ export const FormSubmissionCreateDataModel = zod.object({
     meta: zod
         .object({
             ip: zod.string().optional().default(""),
-            submittedOn: zod.string().optional().default(new Date().toISOString()),
+            submittedOn: zod
+                .string()
+                .optional()
+                .transform(value => {
+                    if (!!value) {
+                        try {
+                            return new Date(value).toISOString();
+                        } catch (ex) {}
+                    }
+                    return new Date().toISOString();
+                }),
             url: zod
                 .object({
                     location: zod.string().optional(),
