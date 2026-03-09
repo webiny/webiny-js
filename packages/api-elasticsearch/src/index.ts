@@ -7,7 +7,7 @@ import { ContextPlugin } from "@webiny/api";
 import type { ElasticsearchClientOptions } from "~/client.js";
 import { createElasticsearchClient } from "~/client.js";
 import { getElasticsearchOperators } from "~/operators.js";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@elastic/elasticsearch/index.js";
 
 export * from "./indexConfiguration/index.js";
 export * from "./plugins/index.js";

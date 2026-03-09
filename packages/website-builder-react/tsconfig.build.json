@@ -11,7 +11,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
       "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

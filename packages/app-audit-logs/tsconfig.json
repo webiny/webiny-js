@@ -31,7 +31,6 @@
       "@webiny/react-properties": ["../react-properties/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

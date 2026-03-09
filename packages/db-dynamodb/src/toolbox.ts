@@ -29,4 +29,5 @@ export type {
     AttributeDefinition,
     EntityQueryOptions,
     AttributeDefinitions
-} from "dynamodb-toolbox/dist/cjs/classes/Entity/index.js";
+    // @ts-expect-error
+} from "dynamodb-toolbox/dist/cjs/classes/Entity/index.ts";

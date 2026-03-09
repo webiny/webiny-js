@@ -226,7 +226,7 @@ class McpServerCommand implements CliCommandFactory.Interface<IMcpServerParams> 
                         content: [{ type: "text", text: buildCatalog(getSkills()) }]
                     })
                 );
-
+                
                 server.registerTool(
                     "get_webiny_skill",
                     {
