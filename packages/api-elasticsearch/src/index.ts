@@ -27,7 +27,7 @@ export * from "./indexPrefix.js";
 export * from "./db/index.js";
 
 
-const clientContextPlugin = (
+export const clientContextPlugin = (
     params: ElasticsearchClientOptions | Client
 ): ContextPlugin<ElasticsearchContext> => {
     return new ContextPlugin<ElasticsearchContext>(context => {
