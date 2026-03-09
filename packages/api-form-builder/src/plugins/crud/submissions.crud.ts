@@ -358,7 +358,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                                     submission.logs.push(log);
                                 },
                                 data: sanitizeFormSubmissionData(form.fields, data),
-                                meta,
+                                meta: validation.data.meta,
                                 trigger: form.triggers[plugin.trigger]
                             });
                         }

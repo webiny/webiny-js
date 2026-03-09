@@ -5,6 +5,10 @@ export const DATA_FIELD = /* GraphQL */ `
         meta {
             ip
             submittedOn
+            url {
+                location
+                query
+            }
         }
         form {
             id

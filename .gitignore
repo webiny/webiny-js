@@ -4,6 +4,7 @@
 .artifacts
 .env*
 .npmrc
+.run/
 htpasswd
 lerna-debug.log
 npm-debug.log

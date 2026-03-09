@@ -17,13 +17,25 @@ const plugin: FbFormTriggerHandlerPlugin = {
              * work in Lambda, so for now, let's await the result of the request, and update form submission
              * logs accordingly.
              */
+            let submittedOn = format(new Date(), "yyyy-MM-dd HH:mm:ss");
+            try {
+                submittedOn = format(new Date(meta.submittedOn || data), "yyyy-MM-dd HH:mm:ss");
+            } catch {
+                console.warn({
+                    message:
+                        "Failed to parse `submittedOn` date from meta. Using current date instead.",
+                    metaSubmittedOn: meta.submittedOn,
+                    data,
+                    meta
+                });
+            }
             try {
                 const response = await fetch(url, {
                     method: "POST",
                     body: JSON.stringify({
                         ...data,
                         meta: {
-                            submittedOn: format(new Date(meta.submittedOn), "yyyy-MM-dd HH:mm:ss"),
+                            submittedOn,
                             // We don't spread the full `meta` object in order to ensure sensitive data
                             // doesn't end up being included (at the moment, that's IP address).
                             url: meta.url
