@@ -14,8 +14,10 @@ export let sealEnvVariables: () => void;
 const magicPrefixes = [
     "WEBINY_",
     "WEBINY_API_",
-    // Added WCP vars separately. We don't need any other `WCP_PROJECT_` variables, apart from these two.
+    // Added WCP vars separately. We don't need any other `WCP_PROJECT_` variables, apart from these.
+    // WEBINY_PROJECT_API_KEY is the new naming (preferred), WCP_PROJECT_ENVIRONMENT_API_KEY is for backward compatibility.
     // This will be later removed because we'll be using `Api.BuildParam` extension.
+    "WEBINY_PROJECT_API_KEY",
     "WCP_PROJECT_ENVIRONMENT",
     "WCP_PROJECT_ENVIRONMENT_API_KEY",
     "OKTA_",
