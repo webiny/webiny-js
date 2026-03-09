@@ -35,7 +35,7 @@ class EnsureTelemetryEnabledForOssImpl implements BeforeDeploy.Interface {
             const message = [
                 `You are trying to deploy your project, but telemetry is currently disabled.`,
                 `The open-source edition of Webiny requires telemetry to be enabled.`,
-                `Please re-enable telemetry to proceed with the deployment, or connect your project to Webiny Control Panel (WCP).`,
+                `To proceed with the deployment, please re-enable telemetry or upgrade your project via https://www.webiny.com/pricing.`,
                 `Learn more: https://webiny.link/telemetry-oss`
             ].join(" ");
 
