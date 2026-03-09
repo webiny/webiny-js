@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import type { FloatingLinkEditorPlugin } from "@webiny/lexical-editor";
 import { Button, Grid, Icon, IconButton, Input, Switch } from "@webiny/admin-ui";
 import { Form, useBind } from "@webiny/form";
@@ -44,10 +44,20 @@ export const LexicalLinkForm = ({ linkData, onSave, removeLink }: LinkFormProps)
 };
 
 const UrlInput = () => {
+    const inputRef = useRef<HTMLInputElement | null>(null);
+
     const urlBind = useBind({
         name: "url",
-        validators: validation.create("required,url")
+        validators: validation.create("required,url:allowRelative:allowHref")
     });
+
+    useEffect(() => {
+        if (inputRef.current) {
+            setTimeout(() => {
+                inputRef.current?.focus();
+            }, 10);
+        }
+    }, []);
 
     const openInNewTab = () => {
         if (urlBind.validation.isValid !== false && urlBind.value) {
@@ -58,6 +68,7 @@ const UrlInput = () => {
     return (
         <Input
             {...urlBind}
+            inputRef={ref => (inputRef.current = ref)}
             variant={"secondary"}
             placeholder={"Enter link"}
             autoFocus={true}

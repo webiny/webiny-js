@@ -163,4 +163,42 @@ describe("Config Priority Ordering", () => {
 
         expect(data.actions.map(a => a.name)).toEqual(["emoji"]);
     });
+
+    it("should preserve declaration order across multiple Config calls at the same priority", async () => {
+        /**
+         * This test guards the children ordering inside createHOC.
+         * Each <Config> composes a HOC via Compose; the outermost HOC is the last
+         * one composed. Placing {newChildren} before {children} in the HOC ensures
+         * the first-declared Config's properties mount first.
+         *
+         * If the order were accidentally swapped ({children} before {newChildren}),
+         * the resulting array would be reversed: ["gamma", "beta", "alpha"].
+         */
+        const onChange = vi.fn();
+
+        const view = (
+            <CompositionProvider>
+                <ToolbarConfig>
+                    <ToolbarAction name={"alpha"} />
+                </ToolbarConfig>
+                <ToolbarConfig>
+                    <ToolbarAction name={"beta"} />
+                </ToolbarConfig>
+                <ToolbarConfig>
+                    <ToolbarAction name={"gamma"} />
+                </ToolbarConfig>
+                <ToolbarWithConfig onProperties={onChange}>
+                    <div />
+                </ToolbarWithConfig>
+            </CompositionProvider>
+        );
+
+        render(view);
+        await flush();
+
+        const properties = getLastCall(onChange);
+        const data = toObject<ToolbarConfig>(properties);
+
+        expect(data.actions.map(a => a.name)).toEqual(["alpha", "beta", "gamma"]);
+    });
 });

@@ -393,6 +393,7 @@ Resources:
               - s3:GetBucketPublicAccessBlock
               - s3:PutBucketPublicAccessBlock
               - s3:PutObject*
+              - s3:PutBucketOwnershipControls
               - s3:GetObject*
               - s3:DeleteObject*
             Resource: arn:aws:s3:::wby-*

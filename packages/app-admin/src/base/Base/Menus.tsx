@@ -7,14 +7,18 @@ import { ReactComponent as SlackIcon } from "@webiny/icons/numbers.svg";
 import { ReactComponent as DocsIcon } from "@webiny/icons/summarize.svg";
 import { ReactComponent as GithubIcon } from "@webiny/icons/route.svg";
 import { ReactComponent as MoreIcon } from "@webiny/icons/more_vert.svg";
+import { ReactComponent as UpgradeIcon } from "@webiny/icons/electric_bolt.svg";
 import { DropdownMenu } from "@webiny/admin-ui";
-import { WebinyVersion } from "./Menus/WebinyVersion.js";
 import { SupportMenuItems } from "./Menus/SupportMenuItems.js";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { HasPermission } from "~/presentation/security/components/HasPermission.js";
 import { Menu } from "~/config/AdminConfig/Menu.js";
+import { useWcp } from "~/index.js";
 
 export const Menus = React.memo(() => {
+    const wcp = useWcp();
+    const hasWcpLicense = Boolean(wcp.getProject());
+
     return (
         <AdminConfig>
             <Menu
@@ -97,16 +101,32 @@ export const Menus = React.memo(() => {
                 }
             />
 
-            <Menu.Support
-                name={"webiny-version"}
-                pin={"end"}
-                element={
-                    <>
-                        <DropdownMenu.Separator />
-                        <DropdownMenu.Item text={<WebinyVersion />} readOnly />
-                    </>
-                }
-            />
+            {!hasWcpLicense && (
+                <Menu.Support
+                    name={"upgrade-webiny"}
+                    pin={"end"}
+                    element={
+                        <>
+                            <DropdownMenu.Separator />
+                            <Menu.Support.Link
+                                text={"Upgrade"}
+                                icon={
+                                    <Menu.Support.Link.Icon
+                                        label="Upgrade"
+                                        element={<UpgradeIcon />}
+                                    />
+                                }
+                                to={"https://www.webiny.com/pricing"}
+                                rel={"noopener noreferrer"}
+                                target={"_blank"}
+                                className={
+                                    "[&_a]:text-accent-primary! [&_svg]:fill-accent-default! font-semibold"
+                                }
+                            />
+                        </>
+                    }
+                />
+            )}
 
             <Menu.Footer
                 name={"support"}

@@ -6,6 +6,7 @@
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../cli-core/tsconfig.build.json" },
     { "path": "../data-migration/tsconfig.build.json" },
+    { "path": "../mcp/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
     { "path": "../pulumi/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" }
@@ -25,6 +26,8 @@
       "@webiny/cli-core": ["../cli-core/src"],
       "@webiny/data-migration/*": ["../data-migration/src/*"],
       "@webiny/data-migration": ["../data-migration/src"],
+      "@webiny/mcp/*": ["../mcp/src/*"],
+      "@webiny/mcp": ["../mcp/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],

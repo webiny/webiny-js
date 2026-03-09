@@ -36,7 +36,7 @@ export const SecurityPermissions = () => {
 
         return {
             prefix: "security",
-            fullAccess: { name: "security.*" },
+            fullAccess: true,
             entities
         };
     }, [teams]);

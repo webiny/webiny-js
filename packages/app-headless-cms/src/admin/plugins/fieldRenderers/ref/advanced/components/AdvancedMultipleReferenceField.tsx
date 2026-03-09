@@ -12,22 +12,26 @@ import { Options } from "./Options.js";
 import { useReferences } from "../hooks/useReferences.js";
 import { Entry } from "./Entry.js";
 import { ReferencesDialog } from "./ReferencesDialog.js";
-import { useModelFieldGraphqlContext, useQuery } from "~/admin/hooks/index.js";
+import { useModelField, useModelFieldGraphqlContext, useQuery } from "~/admin/hooks/index.js";
 import { useSnackbar } from "@webiny/app-admin";
 import type { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types.js";
 import { parseIdentifier } from "@webiny/utils";
 import { Entries } from "./Entries.js";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog.js";
 import { FormComponentErrorMessage, FormComponentLabel } from "@webiny/admin-ui";
+import { CanEditField, useFieldEffectiveRules } from "@webiny/app-headless-cms-common";
 
 interface AdvancedMultipleReferenceFieldProps extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue[] | undefined | null>;
 }
 
 export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceFieldProps) => {
-    const { bind, field } = props;
+    const { bind } = props;
     const { showSnackbar } = useSnackbar();
+    const { field } = useModelField();
+    const rules = useFieldEffectiveRules(field);
     const requestContext = useModelFieldGraphqlContext();
+    const disabled = !rules.canEdit || rules.disabled;
 
     const values = useMemo(() => {
         return bind.value || [];
@@ -197,7 +201,7 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
     return (
         <>
             <div className={"flex items-center justify-between"}>
-                <FormComponentLabel text={field.label} invalid={invalid} />
+                <FormComponentLabel text={field.label} invalid={invalid} disabled={disabled} />
             </div>
             <div className={"webiny_ref-field-container"}>
                 <Entries entries={entries} loadMore={loadMore}>
@@ -212,6 +216,7 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
                         }
                         return (
                             <Entry
+                                disabled={disabled}
                                 model={model}
                                 placement="multiRef"
                                 key={`reference-entry-${entry.id}`}
@@ -225,14 +230,20 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
                     }}
                 </Entries>
             </div>
-            <FormComponentErrorMessage text={validationMessage} invalid={invalid} />
+            <FormComponentErrorMessage
+                text={validationMessage}
+                invalid={invalid}
+                disabled={disabled}
+            />
             {values.length > 0 && <div className="mb-md" />}
 
-            <Options
-                models={models}
-                onNewRecord={onNewRecord}
-                onLinkExistingRecord={onExistingRecord}
-            />
+            <CanEditField>
+                <Options
+                    models={models}
+                    onNewRecord={onNewRecord}
+                    onLinkExistingRecord={onExistingRecord}
+                />
+            </CanEditField>
 
             {newEntryDialogModel && (
                 <NewReferencedEntryDialog

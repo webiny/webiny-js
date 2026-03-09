@@ -9,21 +9,24 @@ import { Options } from "./Options.js";
 import { useReferences } from "../hooks/useReferences.js";
 import { Entry } from "./Entry.js";
 import { ReferencesDialog } from "./ReferencesDialog.js";
-import { useQuery, useModelFieldGraphqlContext } from "~/admin/hooks/index.js";
+import { useQuery, useModelFieldGraphqlContext, useModelField } from "~/admin/hooks/index.js";
 import type { ListCmsModelsQueryResponse } from "~/admin/viewsGraphql.js";
 import * as GQL from "~/admin/viewsGraphql.js";
 import { useSnackbar } from "@webiny/app-admin";
 import type { CmsReferenceValue } from "~/admin/plugins/fieldRenderers/ref/components/types.js";
 import { NewReferencedEntryDialog } from "~/admin/plugins/fieldRenderers/ref/components/NewReferencedEntryDialog.js";
 import { FormComponentErrorMessage, FormComponentLabel, OverlayLoader } from "@webiny/admin-ui";
+import { CanEditField, useFieldEffectiveRules } from "@webiny/app-headless-cms-common";
 
 interface AdvancedSingleReferenceFieldProps extends CmsModelFieldRendererProps {
     bind: BindComponentRenderProp<CmsReferenceValue | null>;
 }
 
 export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceFieldProps) => {
-    const { bind, field } = props;
+    const { bind } = props;
     const { showSnackbar } = useSnackbar();
+    const { field } = useModelField();
+    const rules = useFieldEffectiveRules(field);
 
     const [linkEntryDialogModel, setLinkEntryDialogModel] = useState<CmsModel | null>(null);
     const [newEntryDialogModel, setNewEntryDialogModel] = useState<CmsModel | null>(null);
@@ -167,9 +170,11 @@ export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceField
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
 
+    const disabled = !rules.canEdit || rules.disabled;
+
     return (
         <>
-            <FormComponentLabel text={field.label} invalid={invalid} />
+            <FormComponentLabel text={field.label} invalid={invalid} disabled={disabled} />
             <div className={"webiny_ref-field-container"}>
                 {loading && <OverlayLoader size={"md"} />}
                 {initialValue && (
@@ -182,13 +187,19 @@ export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceField
                     />
                 )}
             </div>
-            <FormComponentErrorMessage text={validationMessage} invalid={invalid} />
-            {initialValue && <div className="mb-md" />}
-            <Options
-                models={models}
-                onNewRecord={onNewRecord}
-                onLinkExistingRecord={onExistingRecord}
+            <FormComponentErrorMessage
+                text={validationMessage}
+                invalid={invalid}
+                disabled={disabled}
             />
+            {initialValue && <div className="mb-md" />}
+            <CanEditField>
+                <Options
+                    models={models}
+                    onNewRecord={onNewRecord}
+                    onLinkExistingRecord={onExistingRecord}
+                />
+            </CanEditField>
 
             {newEntryDialogModel && (
                 <NewReferencedEntryDialog

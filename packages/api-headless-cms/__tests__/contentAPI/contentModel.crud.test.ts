@@ -646,11 +646,13 @@ describe("content model test", () => {
                         fields: [
                             {
                                 ...textField,
-                                storageId: `${textField.type}@${textField.id}`
+                                storageId: `${textField.type}@${textField.id}`,
+                                rules: []
                             },
                             {
                                 ...numberField,
-                                storageId: `${numberField.type}@${numberField.id}`
+                                storageId: `${numberField.type}@${numberField.id}`,
+                                rules: []
                             }
                         ],
                         group: contentModelGroup.slug,
@@ -660,6 +662,159 @@ describe("content model test", () => {
                         plugin: false,
                         icon: null,
                         tenant: "root"
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should create and update a model with field rules", async () => {
+        const { createContentModelMutation, updateContentModelMutation } =
+            useGraphQLHandler(manageHandlerOpts);
+
+        const fieldWithRules: CmsModelFieldInput = {
+            id: "permFieldId",
+            fieldId: "permField",
+            label: "Permission field",
+            type: "text",
+            validation: [],
+            listValidation: [],
+            rules: [
+                {
+                    type: "accessControl",
+                    target: "identity",
+                    operator: "matches",
+                    value: "admin:user-1",
+                    action: "disable"
+                },
+                {
+                    type: "accessControl",
+                    target: "identity",
+                    operator: "matches",
+                    value: "team:team-1",
+                    action: "hide"
+                }
+            ]
+        };
+
+        const [createResponse] = await createContentModelMutation({
+            data: {
+                name: "Permissions Test Model",
+                modelId: "permissionsTestModel",
+                singularApiName: "PermissionsTestModel",
+                pluralApiName: "PermissionsTestModels",
+                group: contentModelGroup.slug,
+                fields: [fieldWithRules],
+                layout: [[fieldWithRules.id]]
+            }
+        });
+
+        expect(createResponse).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        fields: [
+                            {
+                                fieldId: "permField",
+                                rules: [
+                                    {
+                                        type: "accessControl",
+                                        target: "identity",
+                                        operator: "matches",
+                                        value: "admin:user-1",
+                                        action: "disable"
+                                    },
+                                    {
+                                        type: "accessControl",
+                                        target: "identity",
+                                        operator: "matches",
+                                        value: "team:team-1",
+                                        action: "hide"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const contentModel = createResponse.data.createContentModel.data;
+
+        // Update rules
+        const updatedField: CmsModelFieldInput = {
+            ...fieldWithRules,
+            rules: [
+                {
+                    type: "accessControl",
+                    target: "identity",
+                    operator: "matches",
+                    value: "admin:user-2",
+                    action: "hide"
+                }
+            ]
+        };
+
+        const [updateResponse] = await updateContentModelMutation({
+            modelId: contentModel.modelId,
+            data: {
+                name: contentModel.name,
+                fields: [updatedField],
+                layout: [[updatedField.id]]
+            }
+        });
+
+        expect(updateResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        fields: [
+                            {
+                                fieldId: "permField",
+                                rules: [
+                                    {
+                                        type: "accessControl",
+                                        target: "identity",
+                                        operator: "matches",
+                                        value: "admin:user-2",
+                                        action: "hide"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    error: null
+                }
+            }
+        });
+
+        // Remove rules
+        const fieldNoRules: CmsModelFieldInput = {
+            ...fieldWithRules,
+            rules: []
+        };
+
+        const [removeResponse] = await updateContentModelMutation({
+            modelId: contentModel.modelId,
+            data: {
+                name: contentModel.name,
+                fields: [fieldNoRules],
+                layout: [[fieldNoRules.id]]
+            }
+        });
+
+        expect(removeResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        fields: [
+                            {
+                                fieldId: "permField",
+                                rules: []
+                            }
+                        ]
                     },
                     error: null
                 }

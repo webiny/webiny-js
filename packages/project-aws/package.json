@@ -23,6 +23,7 @@
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli-core": "0.0.0",
     "@webiny/data-migration": "0.0.0",
+    "@webiny/mcp": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/pulumi": "0.0.0",
     "@webiny/utils": "0.0.0",

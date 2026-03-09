@@ -10,6 +10,8 @@ export type ElementMap = Record<string, DocumentElement>;
 
 export type DocumentState = Record<string, any>;
 
+export type DocumentMetadata = Record<string, any>;
+
 export type InputValueBinding<T = any> = ValueBinding<T> & {
     id: string;
     type: string;
@@ -155,13 +157,14 @@ export type Document = {
     state: DocumentState;
     version: number;
     properties: Record<string, any>;
+    metadata: DocumentMetadata;
     bindings: DocumentBindings;
     elements: ElementMap;
 };
 
 export type PublicPage = Pick<
     Page,
-    "id" | "version" | "properties" | "bindings" | "elements" | "extensions" | "state"
+    "id" | "version" | "properties" | "bindings" | "elements" | "extensions" | "metadata" | "state"
 >;
 
 export type PublicRedirect = {
@@ -215,6 +218,7 @@ export type Page = Document & {
         };
     };
     extensions: Record<string, any>;
+    metadata: DocumentMetadata;
 };
 
 export type Box = {
@@ -273,12 +277,30 @@ export type PreviewViewportData = {
 export type ApiOptions = Record<string, any>;
 
 export type GetPageOptions = ApiOptions;
-export type ListPagesOptions = ApiOptions;
+
+export interface ListPagesOptions {
+    where?: Record<string, any>;
+    limit?: number;
+    after?: string;
+    sort?: string[];
+    search?: string;
+}
+
+export interface ListPagesMeta {
+    hasMoreItems: boolean;
+    totalCount: number;
+    cursor: string | null;
+}
+
+export interface ListPagesResult {
+    data: Array<Omit<PublicPage, "properties" | "bindings">>;
+    meta: ListPagesMeta;
+}
 
 export interface IDataProvider {
     getPageByPath(path: string, options?: GetPageOptions): Promise<PublicPage | null>;
     getPageById(id: string, options?: GetPageOptions): Promise<PublicPage | null>;
-    listPages(options?: ListPagesOptions): Promise<PublicPage[]>;
+    listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
 }
 
 export interface IEnvironment {
@@ -289,7 +311,7 @@ export interface IEnvironment {
 
 export interface IContentSdk {
     getPage(path: string): Promise<PublicPage | null>;
-    listPages(options?: ListPagesOptions): Promise<PublicPage[]>;
+    listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
 }
 
 // Input types

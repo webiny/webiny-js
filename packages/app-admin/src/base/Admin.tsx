@@ -17,6 +17,7 @@ import { TelemetryAdminAppStart } from "./TelemetryAdminAppStart.js";
 import { ApolloClientFeature } from "~/features/apolloClient/feature.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
+import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
@@ -48,8 +49,10 @@ export const Admin = ({ children, createApolloClient, createLegacyPlugins }: Adm
             <ApolloProvider>
                 <WcpProvider>
                     <App
+                        plugins={[AdminConfigPlugin]}
                         routes={[]}
                         providers={[
+                            AdminConfigProvider,
                             UIProviders,
                             UiStateProvider,
                             DialogsProvider,

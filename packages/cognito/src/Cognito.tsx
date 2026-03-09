@@ -1,7 +1,6 @@
 import React from "react";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
-import { EnvVar } from "@webiny/project/extensions/index.js";
-import { Api, Admin } from "@webiny/project-aws";
+import { Api, Admin, Infra } from "@webiny/project-aws";
 import { z } from "zod";
 
 export const Cognito = defineExtension({
@@ -14,7 +13,7 @@ export const Cognito = defineExtension({
     render: props => {
         return (
             <>
-                <EnvVar varName={"REACT_APP_IDP_TYPE"} value={"cognito"} />
+                <Infra.EnvVar varName={"REACT_APP_IDP_TYPE"} value={"cognito"} />
                 {/* Api extensions */}
                 <Api.Extension
                     src={import.meta.dirname + "/api/CognitoApiFeature.js"}

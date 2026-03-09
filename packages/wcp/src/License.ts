@@ -76,6 +76,15 @@ export class License implements ILicense {
             .folderLevelPermissions;
     }
 
+    canUseHcmsFieldPermissions() {
+        if (!this.canUseAacl()) {
+            return false;
+        }
+
+        return this.license.package.features.advancedAccessControlLayer.options
+            .hcmsFieldPermissions;
+    }
+
     canUsePrivateFiles() {
         if (!this.canUseAacl()) {
             return false;

@@ -31,13 +31,14 @@ export interface UseModelField {
  */
 export const useModelField = makeDecoratable((): UseModelField => {
     const field = useContext(ModelFieldContext);
-    const parentValueIndex = useParentValueIndex();
 
     if (!field) {
         throw Error(
             `Missing "ModelFieldProvider" in the component tree. Are you using the "useModelField()" hook in the right place?`
         );
     }
+
+    const parentValueIndex = useParentValueIndex();
 
     const fieldPlugin = getFieldPlugin(field.type);
 

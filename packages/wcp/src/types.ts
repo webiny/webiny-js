@@ -22,6 +22,7 @@ export interface ILicense {
     canUseFolderLevelPermissions: () => boolean;
     canUseRecordLocking: () => boolean;
     canUseWorkflows: () => boolean;
+    canUseHcmsFieldPermissions: () => boolean;
 }
 
 export declare type WcpProjectEnvironment = {
@@ -89,7 +90,12 @@ export interface ProjectPackageFeatures {
     };
     [PROJECT_PACKAGE_FEATURE_NAME.AACL]: {
         enabled: boolean;
-        options: { teams: boolean; privateFiles: boolean; folderLevelPermissions: boolean };
+        options: {
+            teams: boolean;
+            privateFiles: boolean;
+            folderLevelPermissions: boolean;
+            hcmsFieldPermissions: boolean;
+        };
     };
     [PROJECT_PACKAGE_FEATURE_NAME.AL]: {
         enabled: boolean;

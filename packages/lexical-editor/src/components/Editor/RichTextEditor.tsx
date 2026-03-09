@@ -28,6 +28,7 @@ export type InitialEditorConfig = React.ComponentProps<typeof LexicalComposer>["
 export interface RichTextEditorProps {
     children?: React.ReactNode | React.ReactNode[];
     classes?: string;
+    disabled?: boolean;
     contentEditableStyles?: React.CSSProperties;
     focus?: boolean;
     height?: number | string;
@@ -58,6 +59,7 @@ const BaseRichTextEditor = ({
     focus,
     styles,
     width,
+    disabled = false,
     height,
     contentEditableStyles,
     placeholderStyles,
@@ -92,6 +94,7 @@ const BaseRichTextEditor = ({
 
     const initialConfig = {
         editorId: useId(),
+        editable: !disabled,
         namespace: "webiny",
         onError: () => {
             // Ignore errors. We don't want to break the app because of errors caused by config/value updates.
@@ -126,7 +129,7 @@ const BaseRichTextEditor = ({
                     theme={props.theme}
                     toolbarActionPlugins={props.toolbarActionPlugins}
                 >
-                    {staticToolbar ? staticToolbar : null}
+                    {staticToolbar && !disabled ? staticToolbar : null}
                     <div data-role={"overlays"} className={"relative"}></div>
                     <div
                         /* This className is necessary for targeting of editor container from CSS files. */
@@ -140,7 +143,10 @@ const BaseRichTextEditor = ({
                         }}
                     >
                         {/* State plugins. */}
-                        <StateHandlingPlugin value={props.value} onChange={onChange} />
+                        <StateHandlingPlugin
+                            value={props.value}
+                            onChange={disabled ? undefined : onChange}
+                        />
                         <ClearEditorPlugin />
                         <HistoryPlugin externalHistoryState={historyState} />
                         {/* Event plugins. */}
@@ -154,6 +160,7 @@ const BaseRichTextEditor = ({
                                 <div className="editor-scroller" style={{ ...sizeStyle }}>
                                     <div className="editor" ref={onRef}>
                                         <ContentEditable
+                                            disabled={disabled}
                                             style={{ outline: 0, ...contentEditableStyles }}
                                         />
                                     </div>
@@ -163,7 +170,7 @@ const BaseRichTextEditor = ({
                             ErrorBoundary={LexicalErrorBoundary}
                         />
                         {/* Toolbar. */}
-                        {floatingAnchorElem && toolbar}
+                        {disabled ? null : floatingAnchorElem && toolbar}
                     </div>
                 </RichTextEditorProvider>
             </LexicalComposer>

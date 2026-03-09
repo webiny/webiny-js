@@ -33,7 +33,8 @@ export const WB_REDIRECT_LATEST_VISITED_FOLDER = "wb/redirect/list/last-folder";
 
 export const WB_PERMISSIONS_SCHEMA = createPermissionSchema({
     prefix: "wb",
-    fullAccess: { name: "wb.*" },
+    fullAccess: true,
+    readOnlyAccess: true,
     entities: [
         {
             id: "page",

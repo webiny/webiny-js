@@ -6,6 +6,11 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import DynamicSection from "../DynamicSection.js";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
 import { DelayedOnChange, Icon, Input } from "@webiny/admin-ui";
+import {
+    CanEditField,
+    useFieldEffectiveRules,
+    useModelField
+} from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -22,8 +27,11 @@ const plugin: CmsModelFieldRendererPlugin = {
             );
         },
         render(props) {
+            const { field } = useModelField();
+            const rules = useFieldEffectiveRules(field);
+
             return (
-                <DynamicSection {...props}>
+                <DynamicSection {...props} disabled={!rules.canEdit}>
                     {({ bind, index }) => (
                         <DelayedOnChange
                             value={bind.index.value}
@@ -31,6 +39,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                             onBlur={bind.index.validate}
                         >
                             <Input
+                                disabled={!rules.canEdit}
                                 validation={bind.index.validation}
                                 onEnter={() => bind.field.appendValue("")}
                                 label={t`Value {number}`({ number: index + 1 })}
@@ -38,12 +47,14 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 data-testid={`fr.input.numbers.${props.field.label}.${index + 1}`}
                                 type="number"
                                 endIcon={
-                                    <Icon
-                                        icon={<DeleteIcon />}
-                                        label={"Delete"}
-                                        onClick={() => bind.field.removeValue(index)}
-                                        className={"cursor-pointer"}
-                                    />
+                                    <CanEditField>
+                                        <Icon
+                                            icon={<DeleteIcon />}
+                                            label={"Delete"}
+                                            onClick={() => bind.field.removeValue(index)}
+                                            className={"cursor-pointer"}
+                                        />
+                                    </CanEditField>
                                 }
                             />
                         </DelayedOnChange>

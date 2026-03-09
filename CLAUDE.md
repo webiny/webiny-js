@@ -6,14 +6,6 @@ Read `AGENTS.md`.
 
 This file is read by Claude Code on every run. Keep it up to date with your project's conventions.
 
-## Project Overview
-
-<!-- Describe what this project does in 2–3 sentences. -->
-
-## Tech Stack
-
-<!-- e.g. Node 20, TypeScript, React 18, PostgreSQL, tested with Vitest -->
-
 ## Development Commands
 
 Always suppress verbose output to keep token usage low.
@@ -27,8 +19,11 @@ yarn > /dev/null 2>&1
 # Run tests  (keep output – failures matter, but cap at last 50 lines)
 yarn test packages/{package-name} 2>&1 | tail -50
 
-# Build  (capture last 30 lines to see result without full log)
+# Build all changed packages  (capture last 30 lines to see result without full log)
 yarn build 2>&1 | tail -30
+
+# Build a single package  (capture last 30 lines to see result without full log)
+yarn build -p @webiny/api-core 2>&1 | tail -30
 ```
 
 ## Before Commit
@@ -100,3 +95,11 @@ When creating a plan on an issue, Claude should:
 - Modify `.github/workflows/` files
 - Change secrets or environment variable definitions
 - Install new dependencies without explaining the rationale in the PR description
+
+## Webiny
+
+This project uses the Webiny framework.
+A `webiny` MCP server is available.
+When helping with Webiny-related tasks:
+1. Call `list_webiny_skills` to see available skills.
+2. Call `get_webiny_skill` with the relevant topic before writing code.

@@ -35,7 +35,3 @@ When new backend features are discovered, update `ai-context/core-features-refer
   - feat: for new features
   - fix: for bug fixes
   - docs: for documentation changes
-
-## Skills
-
-Discover skills in `.claude/skills`.

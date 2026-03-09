@@ -2,6 +2,7 @@ import * as React from "react";
 import type { CmsModelField } from "~/types.js";
 import type { BindComponentRenderProp } from "@webiny/form";
 import { Input as UiInput, Icon } from "@webiny/admin-ui";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 export interface TrailingIcon {
     icon: React.ReactNode;
@@ -17,6 +18,10 @@ export interface InputProps {
 }
 
 export const Input = ({ bind, trailingIcon, ...props }: InputProps) => {
+    const { field } = useModelField();
+    const rules = useFieldEffectiveRules(field);
+    const disabled = !rules.canEdit || rules.disabled;
+
     const endIcon = React.useMemo(() => {
         if (!trailingIcon) {
             return undefined;
@@ -36,6 +41,7 @@ export const Input = ({ bind, trailingIcon, ...props }: InputProps) => {
         <UiInput
             {...props}
             {...bind}
+            disabled={disabled}
             onChange={value => {
                 if (props.type === "number") {
                     value = parseFloat(value);
@@ -45,10 +51,10 @@ export const Input = ({ bind, trailingIcon, ...props }: InputProps) => {
             label={null}
             note={null}
             description={null}
-            placeholder={props.field.placeholder}
+            placeholder={field.placeholder}
             type={props.type}
             endIcon={endIcon}
-            data-testid={`fr.input.${props.field.label}`}
+            data-testid={`fr.input.${field.label}`}
         />
     );
 };

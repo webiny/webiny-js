@@ -87,9 +87,10 @@
     "./admin/tenancy": "./admin/tenancy.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
     "./admin/cms/entry/list": "./admin/cms/entry/list.js",
-    "./admin/cms/fieldRenderers/dynamic-zone": "./admin/cms/fieldRenderers/dynamic-zone.js",
-    "./admin/cms/fieldRenderers/object": "./admin/cms/fieldRenderers/object.js",
+    "./admin/cms/field-renderers/dynamic-zone": "./admin/cms/field-renderers/dynamic-zone.js",
+    "./admin/cms/field-renderers/object": "./admin/cms/field-renderers/object.js",
     "./admin/cms/lexical": "./admin/cms/lexical.js",
+    "./admin/cms/model": "./admin/cms/model.js",
     "./admin/cms": "./admin/cms.js",
     "./admin/website-builder/lexical": "./admin/website-builder/lexical.js",
     "./admin/website-builder/page/editor": "./admin/website-builder/page/editor.js",
@@ -100,11 +101,11 @@
     "./cli/index": "./cli/index.js",
     "./api": "./api.js",
     "./admin/lexical": "./admin/lexical.js",
-    "./extensions": "./extensions.js",
     "./infra/admin": "./infra/admin.js",
     "./infra/api": "./infra/api.js",
     "./infra/core": "./infra/core.js",
     "./infra/index": "./infra/index.js",
+    "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   }
 }

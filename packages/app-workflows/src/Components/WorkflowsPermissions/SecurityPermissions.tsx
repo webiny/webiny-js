@@ -14,7 +14,7 @@ export const SecurityPermissions = () => {
                 icon={<PermissionsIcon />}
                 schema={{
                     prefix: "workflows",
-                    fullAccess: { name: "workflows", editor: true }
+                    fullAccess: { editor: true }
                 }}
             />
         </AdminConfig>

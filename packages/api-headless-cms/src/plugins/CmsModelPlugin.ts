@@ -293,12 +293,29 @@ export class CmsModelPlugin extends Plugin {
         if (this.options.validateLayout === false) {
             return;
         }
-        for (const field of model.fields) {
+
+        const countFieldInLayout = (fieldId: string, layout: any[][]): number => {
             let total = 0;
-            for (const row of model.layout) {
-                const count = row.filter(cell => cell === field.id).length;
-                total = total + count;
+            for (const row of layout) {
+                for (const cell of row) {
+                    if (typeof cell === "string") {
+                        if (cell === fieldId) {
+                            total++;
+                        }
+                    } else if (cell && typeof cell === "object" && Array.isArray(cell.tabs)) {
+                        for (const tab of cell.tabs) {
+                            if (Array.isArray(tab.layout)) {
+                                total += countFieldInLayout(fieldId, tab.layout);
+                            }
+                        }
+                    }
+                }
             }
+            return total;
+        };
+
+        for (const field of model.fields) {
+            const total = countFieldInLayout(field.id, model.layout);
             if (total === 1) {
                 continue;
             } else if (total > 1) {

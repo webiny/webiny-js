@@ -8,7 +8,7 @@ export const SidebarHeader = () => {
 
     return (
         <div>
-            <div className={"p-md pl-lg"}>
+            <div className={"py-sm px-md"}>
                 <Heading level={5}>{model.pluralApiName}</Heading>
                 <IsModelPublishable>
                     <Text size={"sm"} className={"text-neutral-muted"}>

@@ -13,7 +13,13 @@ import type {
     CmsModelFieldValidatorsFactory,
     CmsModelFieldValidatorsGroup
 } from "./validation.js";
-import type { CmsModel, CmsModelField } from "./model.js";
+import type {
+    CmsModelLayoutField,
+    CmsEditorFieldsLayout,
+    CmsLayoutField,
+    CmsModel,
+    CmsModelField
+} from "./model.js";
 import type { CmsIdentity } from "~/types/shared.js";
 import type { SourceType } from "dnd-core";
 import type { IconPickerIconDto } from "@webiny/admin-ui";
@@ -26,6 +32,7 @@ export type DragObjectWithType = {
 
 export type * from "./validation.js";
 export type * from "./model.js";
+export { isLayoutField, isLayoutDescriptor } from "./model.js";
 export type * from "./shared.js";
 
 interface QueryFieldParams {
@@ -46,16 +53,13 @@ interface Location {
 export interface DragSource extends DragObjectWithType {
     parent?: string;
     pos?: Partial<Position>;
-    type: "row" | "field" | "newField";
+    type: "row" | "field" | "newField" | "newLayoutField" | "layoutField";
     fieldType?: string;
+    layoutFieldType?: string;
     field?: CmsModelField | null;
     fields?: CmsModelField[];
+    layoutField?: CmsLayoutField;
 }
-
-/**
- * @deprecated Use `CmsModelFieldTypePlugin`.
- */
-export type CmsEditorFieldTypePlugin = CmsModelFieldTypePlugin;
 
 export interface CmsModelFieldTypePlugin extends Plugin {
     /**
@@ -234,6 +238,62 @@ export interface CmsModelFieldTypePlugin extends Plugin {
     };
 }
 
+export interface CmsModelLayoutFieldTypePlugin<T extends CmsModelLayoutField = CmsModelLayoutField>
+    extends Plugin {
+    type: "cms-editor-layout-field-type";
+    field: {
+        type: T["type"];
+        label: string;
+        description: string;
+        icon: React.ReactElement;
+        createField(): Omit<T, "id">;
+        canEditSettings?: boolean;
+        renderSettings?(): React.ReactNode;
+        /**
+         * Collect all model fields embedded inside a layout field's nested layout.
+         * Used during drag-and-drop to move embedded fields along with the layout field
+         * across parent boundaries. Return `[]` or omit for layout fields with no nested fields.
+         */
+        collectFields?(params: {
+            field: T;
+            getField: (id: string) => CmsModelField | undefined;
+        }): CmsModelField[];
+        /**
+         * Return a label prefix for each field ID nested inside this layout field.
+         * Used by `buildFieldOptions` to include layout hierarchy in field labels.
+         *
+         * For example, a tabs layout field with label "My Tabs" containing a tab "SEO"
+         * with field "metaTitle" would return: `{ "metaTitle": "My Tabs › SEO" }`.
+         *
+         * Omit or return `{}` for layout fields that don't group fields.
+         */
+        getFieldLabelPrefixes?(params: { field: T }): Record<string, string>;
+        /**
+         * Controls how this layout field looks on the model editor canvas.
+         * Each plugin fully owns its visual representation.
+         */
+        render(params: {
+            field: T;
+            onUpdate: (d: T) => void;
+            onDelete: () => void;
+        }): React.ReactElement;
+    };
+}
+
+export interface CmsModelLayoutFieldRendererPlugin<
+    T extends CmsModelLayoutField = CmsModelLayoutField
+> extends Plugin {
+    type: "cms-layout-field-renderer";
+    fieldType: string;
+    render(props: {
+        field: T;
+        Bind: BindComponent;
+        fields: CmsModelField[];
+        contentModel: CmsModel;
+        gridClassName?: string;
+    }): React.ReactElement | null;
+}
+
 export interface CmsModelFieldRendererSettingsProps {
     field: CmsModelField;
 }
@@ -244,16 +304,6 @@ export interface CmsModelFieldRendererProps {
     getBind: <T = any>(index?: number, key?: string) => BindComponent<T>;
     contentModel: CmsModel;
 }
-
-/**
- * @deprecated Use `CmsModelFieldRendererProps`.
- */
-export type CmsEditorFieldRendererProps = CmsModelFieldRendererProps;
-
-/**
- * @deprecated Use `CmsModelFieldRendererPlugin`.
- */
-export type CmsEditorFieldRendererPlugin = CmsModelFieldRendererPlugin;
 
 export interface CmsModelFieldRendererPlugin extends Plugin {
     /**
@@ -346,7 +396,7 @@ export interface CmsDynamicZoneTemplate {
     description: string;
     icon: string;
     fields: CmsModelField[];
-    layout: string[][];
+    layout: CmsEditorFieldsLayout;
     validation: CmsModelFieldValidator[];
     tags?: string[];
 }

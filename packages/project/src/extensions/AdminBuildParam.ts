@@ -199,7 +199,7 @@ export const AdminBuildParam = defineExtension({
         // Check if file already exists.
         if (!fs.existsSync(filePath)) {
             // Create the BuildParam implementation file.
-            const fileContent = `import { BuildParam } from "webiny/admin/buildParams";
+            const fileContent = `import { BuildParam } from "webiny/admin/build-params";
 
 class ${className} implements BuildParam.Interface {
     key = "${paramName}";

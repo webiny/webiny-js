@@ -60,7 +60,7 @@ export class ModelPersistenceError extends BaseError<{ error: Error }> {
 export class ModelValidationError extends BaseError<GenericRecord<string> | undefined> {
     override readonly code = "Cms/Model/ValidationError" as const;
 
-    constructor(params: { message: string; data?: GenericRecord<string> } | string) {
+    constructor(params: { message: string; data?: GenericRecord<string> | null } | string) {
         if (typeof params === "string") {
             super({ message: params });
             return;

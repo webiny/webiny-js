@@ -23,18 +23,19 @@ export const Extensions = () => {
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
 
+            {/*<Infra.EnvVar varName="MY_ENV_VAR" value="myValue" />*/}
             {/*<Infra.Api.LambdaFunction*/}
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}
             {/*    pulumiSrc="/extensions/myLambdaFunction/pulumi.ts"*/}
             {/*/>*/}
 
-            <Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />
-            <Api.Extension src={"/extensions/models/ProductModel.ts"} />
-            <Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />
-            <Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionHook.ts"} />
-            <Admin.Extension
-                src={"/extensions/models/contactSubmission/EmailEntryListColumn.tsx"}
-            />
+            {/*<Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />*/}
+            {/*<Api.Extension src={"/extensions/models/ProductModel.ts"} />*/}
+            {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}
+            {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionHook.ts"} />*/}
+            {/*<Admin.Extension*/}
+            {/*    src={"/extensions/models/contactSubmission/EmailEntryListColumn.tsx"}*/}
+            {/*/>*/}
 
             {/*<Api.BuildParam paramName="MY_CUSTOM_BUILD_PARAM" value="customValue" />*/}
             {/*<Api.BuildParam*/}

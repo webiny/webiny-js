@@ -1,7 +1,7 @@
 import { plugins } from "@webiny/plugins";
 import type {
     CmsModelField,
-    CmsEditorFieldTypePlugin,
+    CmsModelFieldTypePlugin,
     CmsModelFieldValidatorPlugin,
     CmsModelFieldValidatorsGroup,
     CmsModelFieldValidatorConfig,
@@ -24,7 +24,7 @@ const isValidatorDefinitionFactory = (obj: unknown): obj is CmsModelFieldValidat
 
 interface GetValidatorsParams {
     field: CmsModelField;
-    fieldPlugin: CmsEditorFieldTypePlugin;
+    fieldPlugin: CmsModelFieldTypePlugin;
     key: "validators" | "listValidators";
     defaultValidators: string[];
 }
@@ -99,7 +99,7 @@ const getValidators = ({
     };
 };
 
-export const getListValidators = (field: CmsModelField, fieldPlugin: CmsEditorFieldTypePlugin) => {
+export const getListValidators = (field: CmsModelField, fieldPlugin: CmsModelFieldTypePlugin) => {
     return getValidators({
         field,
         fieldPlugin,
@@ -108,7 +108,7 @@ export const getListValidators = (field: CmsModelField, fieldPlugin: CmsEditorFi
     });
 };
 
-export const getFieldValidators = (field: CmsModelField, fieldPlugin: CmsEditorFieldTypePlugin) => {
+export const getFieldValidators = (field: CmsModelField, fieldPlugin: CmsModelFieldTypePlugin) => {
     return getValidators({
         field,
         fieldPlugin,

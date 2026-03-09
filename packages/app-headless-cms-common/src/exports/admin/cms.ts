@@ -1,1 +1,7 @@
-export type { CmsContentEntry, CmsModel, CmsModelField, CmsIdentity } from "~/types/index.ts";
+export type {
+    CmsContentEntry,
+    CmsModel,
+    CmsModelField,
+    CmsModelLayoutField,
+    CmsIdentity
+} from "~/types/index.ts";

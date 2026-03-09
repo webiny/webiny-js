@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useMemo } from "react";
+import type { ErrorInfo } from "react";
 import { useComponent } from "./Context.js";
 import type {
     DecoratableComponent,
@@ -7,6 +8,57 @@ import type {
     GenericHook
 } from "~/types.js";
 import { withDecoratorFactory, withHookDecoratorFactory } from "~/decorators.js";
+
+interface ErrorBoundaryProps {
+    name: string;
+    children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+    hasError: boolean;
+    error: Error | undefined;
+}
+
+class DecoratableErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    constructor(props: ErrorBoundaryProps) {
+        super(props);
+        this.state = { hasError: false, error: undefined };
+    }
+
+    static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+        return { hasError: true, error };
+    }
+
+    override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+        console.groupCollapsed(
+            `%cCOMPONENT ERROR%c: "${this.props.name}" failed to render.`,
+            "color:red",
+            "color:default"
+        );
+        console.error(error, errorInfo);
+        console.groupEnd();
+    }
+
+    override render() {
+        if (this.state.hasError) {
+            return (
+                <div
+                    style={{
+                        padding: "8px 12px",
+                        border: "1px solid #e53e3e",
+                        borderRadius: 4,
+                        background: "#fff5f5",
+                        color: "#c53030",
+                        fontSize: 13
+                    }}
+                >
+                    <strong>{this.props.name}</strong>: {this.state.error?.message}
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
 
 const ComposableContext = createContext<string[]>([]);
 ComposableContext.displayName = "ComposableContext";
@@ -36,7 +88,9 @@ function makeDecoratableComponent<T extends GenericComponent>(
 
         return (
             <ComposableContext.Provider value={context}>
-                <ComposedComponent {...props}>{props.children}</ComposedComponent>
+                <DecoratableErrorBoundary name={name}>
+                    <ComposedComponent {...props}>{props.children}</ComposedComponent>
+                </DecoratableErrorBoundary>
             </ComposableContext.Provider>
         );
     };

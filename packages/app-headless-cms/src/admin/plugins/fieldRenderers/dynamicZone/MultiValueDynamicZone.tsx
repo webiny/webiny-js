@@ -6,6 +6,7 @@ import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/expand_more.svg";
 import { AddTemplateButton } from "./AddTemplate.js";
 import { TemplateIcon } from "./TemplateIcon.js";
+import { useFieldEffectiveRules } from "@webiny/app-headless-cms-common";
 import { ParentFieldProvider, useModelField } from "~/admin/hooks/index.js";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields.js";
 import type {
@@ -19,7 +20,10 @@ import type {
 } from "~/types.js";
 import { makeDecoratable } from "@webiny/react-composition";
 import { TemplateProvider } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateProvider.js";
-import { ParentValueIndexProvider } from "~/admin/components/ModelFieldProvider/index.js";
+import {
+    CanEditField,
+    ParentValueIndexProvider
+} from "~/admin/components/ModelFieldProvider/index.js";
 import { useConfirmationDialog } from "@webiny/app-admin";
 import { Accordion, Tooltip } from "@webiny/admin-ui";
 
@@ -30,6 +34,7 @@ export interface MultiValueItemContainerProps {
     contentModel: CmsModel;
     isFirst: boolean;
     isLast: boolean;
+    disabled?: boolean;
     onMoveUp: () => void;
     onMoveDown: () => void;
     onDelete: () => void;
@@ -75,7 +80,7 @@ export const MultiValueItemContainer = makeDecoratable(
                 title={props.title}
                 description={props.description}
                 icon={props.icon}
-                actions={actions}
+                actions={props.disabled ? null : actions}
             >
                 {children}
             </Accordion.Item>
@@ -136,6 +141,8 @@ const TemplateValueForm = ({
     onClone
 }: TemplateValueFormProps) => {
     const { field } = useModelField();
+    const rules = useFieldEffectiveRules(field);
+    const disabled = !rules.canEdit || rules.disabled;
     const templates = field.settings?.templates || [];
 
     const template: CmsDynamicZoneTemplate | undefined = templates.find(
@@ -160,6 +167,7 @@ const TemplateValueForm = ({
             description={template.description}
             icon={<TemplateIcon icon={template.icon} />}
             template={template}
+            disabled={disabled}
         >
             <MultiValueItem template={template} contentModel={contentModel} Bind={Bind} />
         </MultiValueItemContainer>
@@ -249,7 +257,9 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
                     </MultiValueContainer>
                 </ParentFieldProvider>
             ) : null}
-            <AddTemplateButton onTemplate={onTemplate} />
+            <CanEditField>
+                <AddTemplateButton onTemplate={onTemplate} />
+            </CanEditField>
         </div>
     );
 };

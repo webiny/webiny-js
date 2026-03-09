@@ -1,15 +1,14 @@
-import { Result } from "@webiny/feature/api";
-import { createImplementation } from "@webiny/feature/api";
+import { createImplementation, Result } from "@webiny/feature/api";
 import {
-    GetUniqueFieldValuesUseCase as UseCaseAbstraction,
+    GetUniqueFieldValuesParams,
     GetUniqueFieldValuesRepository,
-    GetUniqueFieldValuesParams
+    GetUniqueFieldValuesUseCase as UseCaseAbstraction
 } from "./abstractions.js";
 import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
 import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { FieldNotSearchableError, InvalidWhereConditionError } from "./errors.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
-import type { CmsModel, CmsEntryUniqueValue } from "~/types/index.js";
+import type { CmsEntryUniqueValue, CmsModel } from "~/types/index.js";
 
 class GetUniqueFieldValuesUseCaseImpl implements UseCaseAbstraction.Interface {
     public constructor(
@@ -71,12 +70,15 @@ class GetUniqueFieldValuesUseCaseImpl implements UseCaseAbstraction.Interface {
             input: []
         });
 
-        if (!searchableFields.includes(fieldId)) {
+        if (!searchableFields.includes(`values.${fieldId}`)) {
             return Result.fail(new FieldNotSearchableError(fieldId));
         }
 
         // Execute repository call
-        const result = await this.repository.execute(model, { where, fieldId });
+        const result = await this.repository.execute(model, {
+            where,
+            fieldId
+        });
         if (result.isFail()) {
             return Result.fail(result.error);
         }
