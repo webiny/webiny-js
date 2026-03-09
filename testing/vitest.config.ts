@@ -83,7 +83,13 @@ export default async () => {
     });
 
     if (parsed) {
-        ["WCP_PROJECT_ID", "WCP_PROJECT_ENVIRONMENT", "WCP_PROJECT_LICENSE"].forEach(key => {
+        [
+            "WEBINY_PROJECT_ID",
+            "WEBINY_PROJECT_API_KEY",
+            "WCP_PROJECT_ID",
+            "WCP_PROJECT_ENVIRONMENT",
+            "WCP_PROJECT_LICENSE"
+        ].forEach(key => {
             delete parsed[key];
             delete process.env[key];
         });

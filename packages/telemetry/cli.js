@@ -38,8 +38,8 @@ export const sendEvent = async ({ event, user, version, properties }) => {
 };
 
 const getWcpOrgProjectId = () => {
-    // In CLI, WCP project ID is stored in the `WCP_PROJECT_ID` environment variable.
-    const id = process.env.WCP_PROJECT_ID;
+    // In CLI, project ID is stored in the `WEBINY_PROJECT_ID` or `WCP_PROJECT_ID` environment variable.
+    const id = process.env.WEBINY_PROJECT_ID || process.env.WCP_PROJECT_ID;
     if (typeof id === "string") {
         return id.split("/");
     }

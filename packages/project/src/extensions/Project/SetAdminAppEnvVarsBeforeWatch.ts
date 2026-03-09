@@ -21,6 +21,7 @@ class SetAdminAppEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface {
         const telemetry = await this.isTelemetryEnabled.execute();
 
         if (projectId) {
+            process.env.REACT_APP_WEBINY_PROJECT_ID = projectId;
             process.env.REACT_APP_WCP_PROJECT_ID = projectId;
         }
 

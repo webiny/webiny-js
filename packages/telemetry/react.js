@@ -31,8 +31,8 @@ export const sendEvent = async (event, properties = {}) => {
 };
 
 const getWcpOrgProjectId = () => {
-    // In React applications, WCP project ID is stored in the `REACT_APP_WCP_PROJECT_ID` environment variable.
-    const id = process.env.REACT_APP_WCP_PROJECT_ID;
+    // In React applications, project ID is stored in the `REACT_APP_WEBINY_PROJECT_ID` or `REACT_APP_WCP_PROJECT_ID` environment variable.
+    const id = process.env.REACT_APP_WEBINY_PROJECT_ID || process.env.REACT_APP_WCP_PROJECT_ID;
     if (typeof id === "string") {
         return id.split("/");
     }

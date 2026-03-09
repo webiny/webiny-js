@@ -12,7 +12,7 @@ class DefaultGetProjectIdService implements GetProjectIdService.Interface {
             return this.cachedProjectId;
         }
 
-        const envProjectId = process.env.WCP_PROJECT_ID;
+        const envProjectId = process.env.WEBINY_PROJECT_ID || process.env.WCP_PROJECT_ID;
         if (envProjectId) {
             this.cachedProjectId = envProjectId;
             return this.cachedProjectId;
