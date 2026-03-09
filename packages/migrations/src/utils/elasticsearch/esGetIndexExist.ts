@@ -1,4 +1,4 @@
-import type { Client } from "@elastic/elasticsearch";
+import type { Client } from "@webiny/api-elasticsearch";
 import { esGetIndexName } from "~/utils/index.js";
 
 export interface GetIndexExistParams {

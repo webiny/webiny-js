@@ -187,6 +187,7 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

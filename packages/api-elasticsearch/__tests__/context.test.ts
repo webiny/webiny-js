@@ -3,7 +3,7 @@ import elasticsearchContext from "~/index";
 import { ContextPlugin } from "@webiny/api";
 import { PluginsContainer } from "@webiny/plugins";
 import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
-import { Client } from "@elastic/elasticsearch";
+import { Client } from "@elastic/elasticsearch/index.js";
 import { ElasticsearchContext } from "~/types";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 

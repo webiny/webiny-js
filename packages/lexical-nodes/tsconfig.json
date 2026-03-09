@@ -11,6 +11,7 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
       "@webiny/lexical-theme": ["../lexical-theme/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

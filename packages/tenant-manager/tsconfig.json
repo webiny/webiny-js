@@ -163,6 +163,7 @@
       "@webiny/project": ["../project/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],
       "@webiny/project-aws": ["../project-aws/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

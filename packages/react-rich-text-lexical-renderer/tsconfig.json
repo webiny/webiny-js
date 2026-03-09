@@ -19,6 +19,7 @@
       "@webiny/lexical-theme": ["../lexical-theme/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

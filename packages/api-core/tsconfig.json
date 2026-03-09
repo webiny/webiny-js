@@ -48,6 +48,7 @@
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

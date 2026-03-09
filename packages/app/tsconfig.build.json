@@ -30,6 +30,7 @@
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
       "@webiny/react-properties": ["../react-properties/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

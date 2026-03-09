@@ -31,6 +31,7 @@
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

@@ -11,6 +11,7 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

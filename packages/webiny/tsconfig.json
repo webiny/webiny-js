@@ -190,6 +190,7 @@
       "@webiny/tenant-manager": ["../tenant-manager/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

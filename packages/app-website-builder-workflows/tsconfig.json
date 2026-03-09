@@ -30,6 +30,7 @@
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

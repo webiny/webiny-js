@@ -19,6 +19,7 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

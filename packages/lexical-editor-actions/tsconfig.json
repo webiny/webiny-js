@@ -13,6 +13,7 @@
       "@webiny/lexical-editor": ["../lexical-editor/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

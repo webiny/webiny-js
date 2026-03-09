@@ -11,6 +11,7 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/cli-core/*": ["../cli-core/src/*"],
       "@webiny/cli-core": ["../cli-core/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

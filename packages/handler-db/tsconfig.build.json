@@ -13,6 +13,7 @@
       "@webiny/api": ["../api/src"],
       "@webiny/db/*": ["../db/src/*"],
       "@webiny/db": ["../db/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

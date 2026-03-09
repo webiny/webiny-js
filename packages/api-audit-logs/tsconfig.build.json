@@ -214,6 +214,7 @@
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
-    }
+    },
+    "baseUrl": "."
   }
 }

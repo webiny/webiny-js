@@ -1,4 +1,4 @@
-import { Client } from "@elastic/elasticsearch";
+import type { Client } from "@elastic/elasticsearch/index.js";
 import { ElasticsearchClientOptions } from "../../../api-elasticsearch/src/client";
 
 interface ElasticsearchClient extends Client {
