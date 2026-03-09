@@ -11,7 +11,7 @@
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
-    "typescript": "5.9.3",
+    "typescript": "6.0.1-rc",
     "typescript-eslint": "^8.56.0",
     "webiny": "latest"
   },

@@ -16,7 +16,6 @@
       "@webiny/project": ["../project/src"],
       "@webiny/pulumi-sdk/*": ["../pulumi-sdk/src/*"],
       "@webiny/pulumi-sdk": ["../pulumi-sdk/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

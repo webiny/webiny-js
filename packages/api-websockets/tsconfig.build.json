@@ -169,7 +169,6 @@
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }
