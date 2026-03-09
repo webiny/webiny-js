@@ -26,7 +26,6 @@ export * from "./sharedIndex.js";
 export * from "./indexPrefix.js";
 export * from "./db/index.js";
 
-
 export const clientContextPlugin = (
     params: ElasticsearchClientOptions | Client
 ): ContextPlugin<ElasticsearchContext> => {
