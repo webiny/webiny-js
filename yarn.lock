@@ -13719,6 +13719,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-website-builder-scheduler@workspace:packages/api-website-builder-scheduler":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-website-builder-scheduler@workspace:packages/api-website-builder-scheduler"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-scheduler": "npm:0.0.0"
+    "@webiny/api-website-builder": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-aws": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
+    aws-sdk-client-mock: "npm:^4.1.0"
+    typescript: "npm:5.9.3"
+    vitest: "npm:^4.0.18"
+    zod: "npm:^3.25.76"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-website-builder-workflows@npm:*, @webiny/api-website-builder-workflows@workspace:packages/api-website-builder-workflows":
   version: 0.0.0-use.local
   resolution: "@webiny/api-website-builder-workflows@workspace:packages/api-website-builder-workflows"
