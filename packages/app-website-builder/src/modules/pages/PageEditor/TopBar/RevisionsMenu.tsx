@@ -13,7 +13,7 @@ import { Routes } from "~/routes.js";
 
 const { Item } = DropdownMenu;
 
-const statusIcon: Record<string, JSX.Element> = {
+const statusIcon: Record<string, React.JSX.Element> = {
     draft: <Draft />,
     published: <Published />,
     unpublished: <Unpublished />

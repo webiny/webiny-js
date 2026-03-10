@@ -49,5 +49,5 @@ export type Decoratable = DecoratableComponent | DecoratableHook;
  * @internal Add `null` to the ReturnType of the given function.
  */
 export type CanReturnNullOrElement<T> = T extends (...args: any) => any
-    ? (...args: Parameters<T>) => JSX.Element | null
+    ? (...args: Parameters<T>) => React.JSX.Element | null
     : never;

@@ -36,7 +36,7 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
     const { tenant } = useTenantContext();
     const { authenticationContext } = useFeature(AuthenticationContextFeature);
 
-    const socketsRef = useRef<IWebsocketsManager>();
+    const socketsRef = useRef<IWebsocketsManager>(null);
 
     const [current, setCurrent] = useState<ICurrentData>({});
 

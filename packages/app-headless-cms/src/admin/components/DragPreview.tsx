@@ -19,7 +19,7 @@ const onOffsetChange = (monitor: DragSourceMonitor) => () => {
 
     const transform = `translate(${offset.x - 15}px, ${offset.y - 15}px)`;
     dragPreviewRef.style["transform"] = transform;
-    // TODO @ts-refactor figure out better type
+    // TODO @ts-refactor figure out better type / possibly not needed in newer browsers
     // @ts-expect-error
     dragPreviewRef.style["-webkit-transform"] = transform;
 };
@@ -75,7 +75,9 @@ const DragPreview = () => {
             className="fixed pointer-events-none left-0 top-0 w-full h-full"
         >
             <div
-                ref={el => (dragPreviewRef = el)}
+                ref={el => {
+                    dragPreviewRef = el;
+                }}
                 className="transition-opacity duration-250 ease-in-out block"
                 style={{ opacity: dragHelperOpacity }}
             >

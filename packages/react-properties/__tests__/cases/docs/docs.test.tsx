@@ -7,7 +7,7 @@ import { Navigation } from "./navigation";
 
 type Catalog = { catalog: any[]; groups: { [key: string]: any } };
 
-const renderNavigation = async (element: JSX.Element): Promise<Catalog> => {
+const renderNavigation = async (element: React.JSX.Element): Promise<Catalog> => {
     const onChange = vi.fn();
 
     const view = <Properties onChange={onChange}>{element}</Properties>;

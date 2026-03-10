@@ -12,6 +12,7 @@ import { eslint } from "./eslint";
 import { prettier } from "./prettier";
 import { vitest } from "./vitest";
 import { storybook } from "./storybook";
+import { emotion } from "./emotion.js";
 
 export const presets = [
     react,
@@ -27,5 +28,6 @@ export const presets = [
     eslint,
     prettier,
     vitest,
-    storybook
+    storybook,
+    emotion
 ];

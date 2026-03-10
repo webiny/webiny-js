@@ -126,7 +126,7 @@ export const DelayedOnChange = <TValue = any>({
         ? renderProp(newProps)
         : React.cloneElement(children as unknown as React.ReactElement, newProps);
 
-    const props = { ...child.props };
+    const props = { ...(child.props as DelayedOnChangeProps<TValue>) };
     const realOnKeyDown = props.onKeyDown || emptyFunction;
     const realOnBlur = props.onBlur || emptyFunction;
 
@@ -136,7 +136,7 @@ export const DelayedOnChange = <TValue = any>({
             return;
         }
         ev.persist();
-        applyValue((ev.target as HTMLInputElement).value as any as TValue);
+        applyValue((ev.target as HTMLInputElement).value as TValue);
         realOnBlur(ev);
     };
 
@@ -144,15 +144,16 @@ export const DelayedOnChange = <TValue = any>({
     const onKeyDown: OnKeyDownCallable = ev => {
         ev.persist();
         if (ev.key === "Tab") {
-            applyValue((ev.target as HTMLInputElement).value as any as TValue);
+            applyValue((ev.target as HTMLInputElement).value as TValue);
             realOnKeyDown(ev);
         } else if (ev.key === "Enter") {
-            applyValue((ev.target as HTMLInputElement).value as any as TValue);
+            applyValue((ev.target as HTMLInputElement).value as TValue);
             realOnKeyDown(ev);
         } else {
             realOnKeyDown(ev);
         }
     };
 
+    // @ts-expect-error
     return React.cloneElement(child, { ...props, onBlur, onKeyDown });
 };

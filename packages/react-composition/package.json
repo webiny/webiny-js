@@ -15,12 +15,12 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@types/react": "18.2.79",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "@types/react": "19.2.14",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "@testing-library/react": "^15.0.7",
+    "@testing-library/react": "^16.3.2",
     "@webiny/build-tools": "0.0.0",
     "typescript": "5.9.3",
     "vitest": "^4.0.18"

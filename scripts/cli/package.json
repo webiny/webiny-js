@@ -16,7 +16,7 @@
     "pino": "^9.14.0",
     "ts-morph": "^27.0.2",
     "type-fest": "^5.4.4",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "rimraf": "^6.1.3",
