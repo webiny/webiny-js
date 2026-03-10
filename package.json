@@ -97,7 +97,7 @@
     "git-cz": "^1.8.4",
     "github-actions-wac": "^2.0.0",
     "glob": "^7.2.3",
-    "graphql": "^16.13.0",
+    "graphql": "^16.13.1",
     "husky": "^4.3.8",
     "inquirer": "^12.11.1",
     "jest-extended": "^6.0.0",
