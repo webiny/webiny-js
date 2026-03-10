@@ -12,8 +12,9 @@ export class UserBeforeDeleteEvent extends DomainEvent<UserBeforeDeletePayload> 
     }
 }
 
-export const UserBeforeDeleteEventHandler =
-    createAbstraction<IEventHandler<UserBeforeDeleteEvent>>("UserBeforeDeleteEventHandler");
+export const UserBeforeDeleteEventHandler = createAbstraction<IEventHandler<UserBeforeDeleteEvent>>(
+    "UserBeforeDeleteEventHandler"
+);
 
 export namespace UserBeforeDeleteEventHandler {
     export type Interface = IEventHandler<UserBeforeDeleteEvent>;
@@ -29,8 +30,9 @@ export class UserAfterDeleteEvent extends DomainEvent<UserAfterDeletePayload> {
     }
 }
 
-export const UserAfterDeleteEventHandler =
-    createAbstraction<IEventHandler<UserAfterDeleteEvent>>("UserAfterDeleteEventHandler");
+export const UserAfterDeleteEventHandler = createAbstraction<IEventHandler<UserAfterDeleteEvent>>(
+    "UserAfterDeleteEventHandler"
+);
 
 export namespace UserAfterDeleteEventHandler {
     export type Interface = IEventHandler<UserAfterDeleteEvent>;

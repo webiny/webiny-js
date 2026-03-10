@@ -1,5 +1,8 @@
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import { RedirectBeforeUpdateEventHandler, RedirectAfterUpdateEventHandler } from "./abstractions.js";
+import {
+    RedirectBeforeUpdateEventHandler,
+    RedirectAfterUpdateEventHandler
+} from "./abstractions.js";
 import type { RedirectBeforeUpdatePayload, RedirectAfterUpdatePayload } from "./abstractions.js";
 
 // RedirectBeforeUpdate Event

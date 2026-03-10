@@ -21,7 +21,9 @@ class RedirectAfterDeleteHandlerImpl implements RedirectAfterDeleteEventHandler.
     }
 }
 
-export const RedirectAfterDeleteAuditHandler = RedirectAfterDeleteEventHandler.createImplementation({
-    implementation: RedirectAfterDeleteHandlerImpl,
-    dependencies: [AuditLogsContext]
-});
+export const RedirectAfterDeleteAuditHandler = RedirectAfterDeleteEventHandler.createImplementation(
+    {
+        implementation: RedirectAfterDeleteHandlerImpl,
+        dependencies: [AuditLogsContext]
+    }
+);

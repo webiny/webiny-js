@@ -12,7 +12,8 @@ class DeleteWorkflowStateOnPageAfterDeleteImpl implements PageAfterDeleteEventHa
     }
 }
 
-export const DeleteWorkflowStateOnPageAfterDelete = PageAfterDeleteEventHandler.createImplementation({
-    implementation: DeleteWorkflowStateOnPageAfterDeleteImpl,
-    dependencies: [DeleteTargetWorkflowStateUseCase]
-});
+export const DeleteWorkflowStateOnPageAfterDelete =
+    PageAfterDeleteEventHandler.createImplementation({
+        implementation: DeleteWorkflowStateOnPageAfterDeleteImpl,
+        dependencies: [DeleteTargetWorkflowStateUseCase]
+    });

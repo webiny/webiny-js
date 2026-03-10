@@ -96,8 +96,9 @@ export namespace PageBeforeMoveEventHandler {
     export type Page = WbPage;
 }
 
-export const PageAfterMoveEventHandler =
-    createAbstraction<IEventHandler<DomainEvent<PageAfterMovePayload>>>("Wb/PageAfterMoveEventHandler");
+export const PageAfterMoveEventHandler = createAbstraction<
+    IEventHandler<DomainEvent<PageAfterMovePayload>>
+>("Wb/PageAfterMoveEventHandler");
 
 export namespace PageAfterMoveEventHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterMovePayload>>;

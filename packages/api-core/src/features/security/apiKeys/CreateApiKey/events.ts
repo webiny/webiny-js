@@ -11,9 +11,9 @@ export class ApiKeyBeforeCreateEvent extends DomainEvent<ApiKeyBeforeCreatePaylo
     }
 }
 
-export const ApiKeyBeforeCreateEventHandler = createAbstraction<IEventHandler<ApiKeyBeforeCreateEvent>>(
-    "ApiKeyBeforeCreateEventHandler"
-);
+export const ApiKeyBeforeCreateEventHandler = createAbstraction<
+    IEventHandler<ApiKeyBeforeCreateEvent>
+>("ApiKeyBeforeCreateEventHandler");
 
 export namespace ApiKeyBeforeCreateEventHandler {
     export type Interface = IEventHandler<ApiKeyBeforeCreateEvent>;
@@ -28,9 +28,9 @@ export class ApiKeyAfterCreateEvent extends DomainEvent<ApiKeyAfterCreatePayload
     }
 }
 
-export const ApiKeyAfterCreateEventHandler = createAbstraction<IEventHandler<ApiKeyAfterCreateEvent>>(
-    "ApiKeyAfterCreateEventHandler"
-);
+export const ApiKeyAfterCreateEventHandler = createAbstraction<
+    IEventHandler<ApiKeyAfterCreateEvent>
+>("ApiKeyAfterCreateEventHandler");
 
 export namespace ApiKeyAfterCreateEventHandler {
     export type Interface = IEventHandler<ApiKeyAfterCreateEvent>;

@@ -11,8 +11,9 @@ export class RoleBeforeDeleteEvent extends DomainEvent<RoleBeforeDeletePayload> 
     }
 }
 
-export const RoleBeforeDeleteEventHandler =
-    createAbstraction<IEventHandler<RoleBeforeDeleteEvent>>("RoleBeforeDeleteEventHandler");
+export const RoleBeforeDeleteEventHandler = createAbstraction<IEventHandler<RoleBeforeDeleteEvent>>(
+    "RoleBeforeDeleteEventHandler"
+);
 
 export namespace RoleBeforeDeleteEventHandler {
     export type Interface = IEventHandler<RoleBeforeDeleteEvent>;
@@ -27,8 +28,9 @@ export class RoleAfterDeleteEvent extends DomainEvent<RoleAfterDeletePayload> {
     }
 }
 
-export const RoleAfterDeleteEventHandler =
-    createAbstraction<IEventHandler<RoleAfterDeleteEvent>>("RoleAfterDeleteEventHandler");
+export const RoleAfterDeleteEventHandler = createAbstraction<IEventHandler<RoleAfterDeleteEvent>>(
+    "RoleAfterDeleteEventHandler"
+);
 
 export namespace RoleAfterDeleteEventHandler {
     export type Interface = IEventHandler<RoleAfterDeleteEvent>;

@@ -3,7 +3,9 @@ import { PageBeforePublishEventHandler } from "@webiny/api-website-builder/featu
 import { WB_PAGE_APP } from "~/utils/appName.js";
 import { GetTargetWorkflowStateUseCase } from "@webiny/api-workflows/features/workflowState/GetTargetWorkflowState/index.js";
 
-class ValidateWorkflowStateOnPageBeforePublishImpl implements PageBeforePublishEventHandler.Interface {
+class ValidateWorkflowStateOnPageBeforePublishImpl
+    implements PageBeforePublishEventHandler.Interface
+{
     constructor(private getTargetState: GetTargetWorkflowStateUseCase.Interface) {}
 
     async handle(event: PageBeforePublishEventHandler.Event): Promise<void> {

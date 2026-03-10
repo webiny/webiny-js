@@ -21,7 +21,9 @@ class RedirectAfterCreateHandlerImpl implements RedirectAfterCreateEventHandler.
     }
 }
 
-export const RedirectAfterCreateAuditHandler = RedirectAfterCreateEventHandler.createImplementation({
-    implementation: RedirectAfterCreateHandlerImpl,
-    dependencies: [AuditLogsContext]
-});
+export const RedirectAfterCreateAuditHandler = RedirectAfterCreateEventHandler.createImplementation(
+    {
+        implementation: RedirectAfterCreateHandlerImpl,
+        dependencies: [AuditLogsContext]
+    }
+);

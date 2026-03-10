@@ -12,8 +12,9 @@ export class UserBeforeCreateEvent extends DomainEvent<UserBeforeCreatePayload> 
     }
 }
 
-export const UserBeforeCreateEventHandler =
-    createAbstraction<IEventHandler<UserBeforeCreateEvent>>("UserBeforeCreateEventHandler");
+export const UserBeforeCreateEventHandler = createAbstraction<IEventHandler<UserBeforeCreateEvent>>(
+    "UserBeforeCreateEventHandler"
+);
 
 export namespace UserBeforeCreateEventHandler {
     export type Interface = IEventHandler<UserBeforeCreateEvent>;
@@ -29,8 +30,9 @@ export class UserAfterCreateEvent extends DomainEvent<UserAfterCreatePayload> {
     }
 }
 
-export const UserAfterCreateEventHandler =
-    createAbstraction<IEventHandler<UserAfterCreateEvent>>("UserAfterCreateEventHandler");
+export const UserAfterCreateEventHandler = createAbstraction<IEventHandler<UserAfterCreateEvent>>(
+    "UserAfterCreateEventHandler"
+);
 
 export namespace UserAfterCreateEventHandler {
     export type Interface = IEventHandler<UserAfterCreateEvent>;

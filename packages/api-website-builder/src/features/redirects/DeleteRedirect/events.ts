@@ -1,5 +1,8 @@
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import { RedirectBeforeDeleteEventHandler, RedirectAfterDeleteEventHandler } from "./abstractions.js";
+import {
+    RedirectBeforeDeleteEventHandler,
+    RedirectAfterDeleteEventHandler
+} from "./abstractions.js";
 import type { RedirectBeforeDeletePayload, RedirectAfterDeletePayload } from "./abstractions.js";
 
 // RedirectBeforeDelete Event

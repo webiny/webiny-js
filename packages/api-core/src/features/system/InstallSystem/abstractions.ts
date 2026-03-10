@@ -43,8 +43,9 @@ export namespace InstallSystemUseCase {
 /**
  * Event Handler Abstraction
  */
-export const SystemInstalledEventHandler =
-    createAbstraction<IEventHandler<DomainEvent>>("SystemInstalledEventHandler");
+export const SystemInstalledEventHandler = createAbstraction<IEventHandler<DomainEvent>>(
+    "SystemInstalledEventHandler"
+);
 
 export namespace SystemInstalledEventHandler {
     export type Interface = IEventHandler<DomainEvent>;
