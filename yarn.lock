@@ -14439,6 +14439,40 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/app-website-builder-scheduler@workspace:packages/app-website-builder-scheduler":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-website-builder-scheduler@workspace:packages/app-website-builder-scheduler"
+  dependencies:
+    "@emotion/babel-plugin": "npm:^11.13.5"
+    "@emotion/react": "npm:11.10.8"
+    "@emotion/styled": "npm:11.10.6"
+    "@material-design-icons/svg": "npm:^0.14.15"
+    "@types/react": "npm:18.2.79"
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/app-aco": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/app-utils": "npm:0.0.0"
+    "@webiny/app-website-builder": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/form": "npm:0.0.0"
+    "@webiny/icons": "npm:0.0.0"
+    "@webiny/react-composition": "npm:0.0.0"
+    "@webiny/react-properties": "npm:0.0.0"
+    "@webiny/ui": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    "@webiny/validation": "npm:0.0.0"
+    apollo-client: "npm:^2.6.10"
+    lodash: "npm:^4.17.23"
+    mobx: "npm:^6.15.0"
+    mobx-react-lite: "npm:^3.4.3"
+    prop-types: "npm:^15.8.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/app-website-builder-workflows@npm:0.0.0, @webiny/app-website-builder-workflows@workspace:packages/app-website-builder-workflows":
   version: 0.0.0-use.local
   resolution: "@webiny/app-website-builder-workflows@workspace:packages/app-website-builder-workflows"
