@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@webiny/api-core": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler": "0.0.0",

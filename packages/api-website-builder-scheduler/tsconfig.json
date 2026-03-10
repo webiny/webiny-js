@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api" },
+    { "path": "../api-headless-cms" },
     { "path": "../api-scheduler" },
     { "path": "../api-website-builder" },
     { "path": "../feature" },
@@ -41,6 +42,8 @@
       ],
       "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
       "@webiny/api-scheduler": ["../api-scheduler/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],
       "@webiny/api-website-builder": ["../api-website-builder/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],

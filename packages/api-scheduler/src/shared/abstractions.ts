@@ -17,7 +17,7 @@ export interface Identity {
 export interface IScheduledAction<T extends GenericRecord> {
     id: string;
     namespace: string; // Resource scope: "Cms/Entry/Article", "Mailer/Email"
-    actionType: string; // Operation: "Publish", "Unpublish", "Send", "Delete"
+    actionType: "Publish" | "Unpublish" | "Send" | "Delete";
     targetId: string; // Resource identifier (entry ID, email ID, etc.)
     scheduledBy: Identity;
     scheduledFor: string;
