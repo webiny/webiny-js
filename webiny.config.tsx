@@ -6,6 +6,8 @@ import { Cognito } from "@webiny/cognito";
 export const Extensions = () => {
     return (
         <>
+            {/*test*/}
+            <Admin.Extension src={"@/extensions/LexicalPlugin.tsx"} />
             {/* Admin 👇 */}
             {/*<Admin.Extension src={"@/extensions/sampleEcommerce/index.tsx"} />*/}
             {/*<Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />*/}
