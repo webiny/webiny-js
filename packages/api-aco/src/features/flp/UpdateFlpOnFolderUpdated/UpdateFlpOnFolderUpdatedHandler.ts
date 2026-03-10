@@ -3,9 +3,9 @@ import { UpdateFlpUseCase } from "../UpdateFlp/abstractions.js";
 import type { FolderAfterUpdateEvent } from "~/features/folder/UpdateFolder/events.js";
 import type { IUpdateFlpTaskInput } from "~/types.js";
 import { UPDATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
-import { FolderAfterUpdateHandler } from "~/features/folder/UpdateFolder/index.js";
+import { FolderAfterUpdateEventHandler } from "~/features/folder/UpdateFolder/index.js";
 
-class UpdateFlpOnFolderUpdatedHandlerImpl implements FolderAfterUpdateHandler.Interface {
+class UpdateFlpOnFolderUpdatedHandlerImpl implements FolderAfterUpdateEventHandler.Interface {
     constructor(
         private updateFlpUseCase: UpdateFlpUseCase.Interface,
         private tasks?: TaskService.Interface
@@ -29,7 +29,7 @@ class UpdateFlpOnFolderUpdatedHandlerImpl implements FolderAfterUpdateHandler.In
     }
 }
 
-export const UpdateFlpOnFolderUpdatedHandler = FolderAfterUpdateHandler.createImplementation({
+export const UpdateFlpOnFolderUpdatedHandler = FolderAfterUpdateEventHandler.createImplementation({
     implementation: UpdateFlpOnFolderUpdatedHandlerImpl,
     dependencies: [UpdateFlpUseCase, [TaskService, { optional: true }]]
 });

@@ -1,5 +1,5 @@
 export {
     SaveSettingsUseCase,
-    MailerSettingsAfterSaveHandler,
-    MailerSettingsBeforeSaveHandler
+    MailerSettingsAfterSaveEventHandler,
+    MailerSettingsBeforeSaveEventHandler
 } from "./abstractions.js";

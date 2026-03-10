@@ -1,17 +1,17 @@
 export {
     CreateUserUseCase,
-    UserAfterCreateHandler,
-    UserBeforeCreateHandler
+    UserAfterCreateEventHandler,
+    UserBeforeCreateEventHandler
 } from "@webiny/api-core/features/users/CreateUser/index.js";
 export {
     DeleteUserUseCase,
-    UserAfterDeleteHandler,
-    UserBeforeDeleteHandler
+    UserAfterDeleteEventHandler,
+    UserBeforeDeleteEventHandler
 } from "@webiny/api-core/features/users/DeleteUser/index.js";
 export {
     UpdateUserUseCase,
-    UserAfterUpdateHandler,
-    UserBeforeUpdateHandler
+    UserAfterUpdateEventHandler,
+    UserBeforeUpdateEventHandler
 } from "@webiny/api-core/features/users/UpdateUser/index.js";
 export { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 export { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";

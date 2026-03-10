@@ -13,187 +13,197 @@ description: >
 
 ## TL;DR
 
-Add custom GraphQL queries and mutations using the `GraphQLSchemaFactory` pattern. Define `typeDefs` and `resolvers`, inject backend services (identity, tenancy, CMS use-cases) via constructor DI, and export with `GraphQLSchemaFactory.createImplementation()`. Register in `webiny.config.tsx` as `<Api.Extension>`.
+Add custom GraphQL queries and mutations using the `GraphQLSchemaFactory` builder pattern. Implement `GraphQLSchemaFactory.Interface`, use the builder to add type definitions and resolvers (with per-resolver DI), and export with `GraphQLSchemaFactory.createImplementation()`. Register as `<Api.Extension>`.
 
 ## The GraphQLSchemaFactory Pattern
 
+The `execute` method receives a `builder` (`GraphQLSchemaBuilder.Interface`) and returns it after adding type defs and resolvers.
+
 ```typescript
-// extensions/MyGraphQLSchema.ts
+// extensions/mySchema/MyGraphQLSchema.ts
 import { GraphQLSchemaFactory } from "webiny/api/graphql";
 
-class SchemaImpl implements GraphQLSchemaFactory.Interface {
-    execute(): GraphQLSchemaFactory.Return {
-        return [
-            {
-                typeDefs: /* GraphQL */ `
-                    type Query {
-                        hello: String
-                    }
-                `,
-                resolvers: {
-                    Query: {
-                        hello: () => "Hello, World!"
-                    }
-                }
-            }
-        ];
-    }
+class MySchema implements GraphQLSchemaFactory.Interface {
+  async execute(
+    builder: GraphQLSchemaFactory.SchemaBuilder
+  ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
+    builder.addTypeDefs(/* GraphQL */ `
+      extend type Query {
+        hello: String!
+      }
+    `);
+
+    builder.addResolver({
+      path: "Query.hello",
+      resolver: () => {
+        return () => "Hello, World!";
+      }
+    });
+
+    return builder;
+  }
 }
 
 export default GraphQLSchemaFactory.createImplementation({
-    implementation: SchemaImpl,
-    dependencies: []
+  implementation: MySchema,
+  dependencies: []
 });
 ```
 
-Register in `webiny.config.tsx`:
+Register as an extension:
 
 ```tsx
-<Api.Extension src={"/extensions/MyGraphQLSchema.ts"} />
+// extensions/mySchema/Extension.tsx
+import React from "react";
+import { Api } from "webiny/extensions";
+
+export const MySchema = () => {
+  return <Api.Extension src={"@/extensions/mySchema/MyGraphQLSchema.ts"} />;
+};
 ```
 
-## Using Dependency Injection
+## Builder API Reference
 
-Inject backend services to access user identity, tenant info, or CMS data:
+| Method                                  | Description                                                                                   |
+| --------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `builder.addTypeDefs(typeDefs: string)` | Add GraphQL type definitions (use `extend type Query/Mutation` to add to existing root types) |
+| `builder.addResolver<TArgs>(config)`    | Add a resolver with optional per-resolver DI dependencies                                     |
+
+### `addResolver` Config
 
 ```typescript
-// extensions/MyGraphQLSchema.ts
+builder.addResolver<TArgs>({
+    path: "TypeName.fieldName",         // dot-separated path
+    dependencies: [SomeAbstraction],    // optional: DI tokens resolved at request time
+    resolver: (dep1, dep2, ...) => {    // factory: receives resolved deps
+        return ({ parent, args, context, info }) => {
+            // actual resolver logic
+            return result;
+        };
+    }
+});
+```
+
+Key points:
+
+- **`path`**: Dot-separated GraphQL type path, e.g. `"Query.hello"`, `"Mutation.createOrder"`, `"OrderMutation.create"`
+- **`dependencies`**: Array of DI abstraction tokens. Resolved **per-request** from `context.container`, not at schema build time
+- **`resolver`**: A factory function that receives resolved dependencies and returns the actual resolver function
+- **Resolver params**: The inner function receives `{ parent, args, context, info }` (named object, not positional)
+
+## Per-Resolver Dependency Injection
+
+Dependencies in `addResolver` are resolved at request time from the request-scoped container. This is different from class-level constructor DI -- it gives each resolver access to request-scoped services like identity and tenant context.
+
+```typescript
 import { GraphQLSchemaFactory } from "webiny/api/graphql";
 import { IdentityContext } from "webiny/api/security";
 
-class SchemaImpl implements GraphQLSchemaFactory.Interface {
-    constructor(private identityContext: IdentityContext.Interface) {}
+class WhoAmISchema implements GraphQLSchemaFactory.Interface {
+  async execute(
+    builder: GraphQLSchemaFactory.SchemaBuilder
+  ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
+    builder.addTypeDefs(/* GraphQL */ `
+      extend type Query {
+        whoAmI: String
+      }
+    `);
 
-    execute(): GraphQLSchemaFactory.Return {
-        return [
-            {
-                typeDefs: /* GraphQL */ `
-                    type Query {
-                        whoAmI: String
-                    }
-                `,
-                resolvers: {
-                    Query: {
-                        whoAmI: () => {
-                            const identity = this.identityContext.getIdentity();
-                            return `Hello, ${identity.displayName}!`;
-                        }
-                    }
-                }
-            }
-        ];
-    }
+    builder.addResolver({
+      path: "Query.whoAmI",
+      dependencies: [IdentityContext],
+      resolver: (identityContext: IdentityContext.Interface) => {
+        return () => {
+          const identity = identityContext.getIdentity();
+          return `Hello, ${identity.displayName}!`;
+        };
+      }
+    });
+
+    return builder;
+  }
 }
 
 export default GraphQLSchemaFactory.createImplementation({
-    implementation: SchemaImpl,
-    dependencies: [IdentityContext]
+  implementation: WhoAmISchema,
+  dependencies: []
 });
 ```
 
-## Injecting CMS Use-Cases
+## Nested Mutation Pattern
 
-You can inject Headless CMS features to read/write content entries from within your custom resolvers:
+For namespaced mutations (e.g. `mutation { tenantManager { installTenant } }`), add a pass-through resolver for the namespace type:
 
 ```typescript
 import { GraphQLSchemaFactory } from "webiny/api/graphql";
-import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
-import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
+import { IdentityContext } from "webiny/api/security";
+import { MyService } from "@/extensions/myFeature/MyFeature.js";
 
-class SchemaImpl implements GraphQLSchemaFactory.Interface {
-    constructor(
-        private listEntries: ListLatestEntriesUseCase.Interface,
-        private getModel: GetModelUseCase.Interface
-    ) {}
+class OrderSchema implements GraphQLSchemaFactory.Interface {
+  async execute(
+    builder: GraphQLSchemaFactory.SchemaBuilder
+  ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
+    builder.addTypeDefs(/* GraphQL */ `
+      type Order {
+        id: ID!
+        total: Float!
+      }
 
-    execute(): GraphQLSchemaFactory.Return {
-        return [
-            {
-                typeDefs: /* GraphQL */ `
-                    type ProductSummary {
-                        totalCount: Int
-                    }
-                    type Query {
-                        productSummary: ProductSummary
-                    }
-                `,
-                resolvers: {
-                    Query: {
-                        productSummary: async () => {
-                            const model = await this.getModel.execute("product");
-                            const result = await this.listEntries.execute(model, {
-                                limit: 1000
-                            });
-                            return { totalCount: result.items.length };
-                        }
-                    }
-                }
-            }
-        ];
-    }
+      type OrderMutation {
+        create(total: Float!): Order
+      }
+
+      extend type Mutation {
+        orders: OrderMutation
+      }
+    `);
+
+    // Pass-through resolver for the namespace
+    builder.addResolver({
+      path: "Mutation.orders",
+      resolver: () => {
+        return () => ({});
+      }
+    });
+
+    // Actual mutation with DI
+    builder.addResolver<{ total: number }>({
+      path: "OrderMutation.create",
+      dependencies: [IdentityContext, MyService],
+      resolver: (identityContext: IdentityContext.Interface, myService: MyService.Interface) => {
+        return async ({ args }) => {
+          if (!identityContext.getPermission("orders.create")) {
+            throw new Error("Not authorized");
+          }
+          return { id: "order-1", total: args.total };
+        };
+      }
+    });
+
+    return builder;
+  }
 }
 
 export default GraphQLSchemaFactory.createImplementation({
-    implementation: SchemaImpl,
-    dependencies: [ListLatestEntriesUseCase, GetModelUseCase]
+  implementation: OrderSchema,
+  dependencies: []
 });
 ```
-
-## Available Injectable Services
-
-### Core Features
-
-| Feature | Import Path                                  | Purpose |
-|---|----------------------------------------------|---|
-| `IdentityContext` | `"webiny/api/security"`                      | Access current user identity and permissions |
-| `TenantContext` | `"@webiny/api-core/features/TenantContext"`  | Access current tenant information |
-| `EventPublisher` | `"@webiny/api-core/features/EventPublisher"` | Publish domain events |
-| `WcpContext` | `"@webiny/api-core/features/WcpContext"`     | Webiny Control Panel integration |
-| `Logger` | `"webiny/api/logger"`                        | Logging (persists to CloudWatch) |
-| `BuildParams` | `"webiny/api/build-params"`                  | Access build-time parameters |
-
-### Headless CMS Use-Cases
-
-| Feature | Import Path | Purpose |
-|---|---|---|
-| `GetEntryByIdUseCase` | `"@webiny/api-headless-cms/features/contentEntry/GetEntryById"` | Fetch entry by exact revision ID |
-| `GetEntryUseCase` | `"@webiny/api-headless-cms/features/contentEntry/GetEntry"` | Get entry by query (where + sort) |
-| `ListLatestEntriesUseCase` | `"@webiny/api-headless-cms/features/contentEntry/ListEntries"` | List latest entries |
-| `ListPublishedEntriesUseCase` | `"@webiny/api-headless-cms/features/contentEntry/ListEntries"` | List published entries |
-| `CreateEntryUseCase` | `"@webiny/api-headless-cms/features/contentEntry/CreateEntry"` | Create a new entry |
-| `UpdateEntryUseCase` | `"@webiny/api-headless-cms/features/contentEntry/UpdateEntry"` | Update an existing entry |
-| `DeleteEntryUseCase` | `"@webiny/api-headless-cms/features/contentEntry/DeleteEntry"` | Delete an entry |
-| `GetModelUseCase` | `"@webiny/api-headless-cms/features/contentModel/GetModel"` | Retrieve a content model by ID |
-| `ListModelsUseCase` | `"@webiny/api-headless-cms/features/contentModel/ListModels"` | List all accessible models |
-
-### Settings
-
-| Feature | Import Path | Purpose |
-|---|---|---|
-| `GetSettings` | `"@webiny/api-core/features/settings/GetSettings"` | Retrieve settings by name |
-| `UpdateSettings` | `"@webiny/api-core/features/settings/UpdateSettings"` | Create or update settings |
-
-### Tenancy
-
-| Feature | Import Path | Purpose |
-|---|---|---|
-| `GetTenantByIdUseCase` | `"@webiny/api-core/features/tenancy/GetTenantById"` | Fetch a tenant by ID |
-| `CreateTenantUseCase` | `"@webiny/api-core/features/tenancy/CreateTenant"` | Create a new tenant |
-| `UpdateTenantUseCase` | `"@webiny/api-core/features/tenancy/UpdateTenant"` | Update a tenant |
-| `DeleteTenantUseCase` | `"@webiny/api-core/features/tenancy/DeleteTenant"` | Delete a tenant |
 
 ## Quick Reference
 
 ```
 Import:       import { GraphQLSchemaFactory } from "webiny/api/graphql";
 Interface:    GraphQLSchemaFactory.Interface
-Return type:  GraphQLSchemaFactory.Return
-Export:        GraphQLSchemaFactory.createImplementation({ implementation, dependencies })
-Register:     <Api.Extension src={"/extensions/MyGraphQLSchema.ts"} />
-Deploy:       yarn webiny deploy api
+Builder:      GraphQLSchemaFactory.SchemaBuilder (param type for execute)
+Return:       Promise<GraphQLSchemaFactory.SchemaBuilder>
+Export:       GraphQLSchemaFactory.createImplementation({ implementation, dependencies })
+Register:     <Api.Extension src={"@/extensions/mySchema/MyGraphQLSchema.ts"} />
+Deploy:       yarn webiny deploy api --env=dev
 ```
 
 ## Related Skills
 
+- `api-custom-feature` -- Define custom abstractions and services consumed by resolvers
 - `dependency-injection` -- Full DI reference for all injectable services
 - `project-structure` -- How to register extensions in `webiny.config.tsx`

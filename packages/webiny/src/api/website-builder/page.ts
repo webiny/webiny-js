@@ -1,22 +1,22 @@
 export {
     CreatePageUseCase,
-    PageAfterCreateHandler,
-    PageBeforeCreateHandler
+    PageAfterCreateEventHandler,
+    PageBeforeCreateEventHandler
 } from "@webiny/api-website-builder/features/pages/CreatePage/abstractions.js";
 export {
     CreatePageRevisionFromUseCase,
-    PageAfterCreateRevisionFromHandler,
-    PageBeforeCreateRevisionFromHandler
+    PageAfterCreateRevisionFromEventHandler,
+    PageBeforeCreateRevisionFromEventHandler
 } from "@webiny/api-website-builder/features/pages/CreatePageRevisionFrom/abstractions.js";
 export {
     DeletePageUseCase,
-    PageAfterDeleteHandler,
-    PageBeforeDeleteHandler
+    PageAfterDeleteEventHandler,
+    PageBeforeDeleteEventHandler
 } from "@webiny/api-website-builder/features/pages/DeletePage/abstractions.js";
 export {
     DuplicatePageUseCase,
-    PageAfterDuplicateHandler,
-    PageBeforeDuplicateHandler
+    PageAfterDuplicateEventHandler,
+    PageBeforeDuplicateEventHandler
 } from "@webiny/api-website-builder/features/pages/DuplicatePage/abstractions.js";
 export { GetPageByIdUseCase } from "@webiny/api-website-builder/features/pages/GetPageById/abstractions.js";
 export { GetPageByPathUseCase } from "@webiny/api-website-builder/features/pages/GetPageByPath/abstractions.js";
@@ -24,21 +24,21 @@ export { GetPageRevisionsUseCase } from "@webiny/api-website-builder/features/pa
 export { ListPagesUseCase } from "@webiny/api-website-builder/features/pages/ListPages/abstractions.js";
 export {
     MovePageUseCase,
-    PageAfterMoveHandler,
-    PageBeforeMoveHandler
+    PageAfterMoveEventHandler,
+    PageBeforeMoveEventHandler
 } from "@webiny/api-website-builder/features/pages/MovePage/abstractions.js";
 export {
     PublishPageUseCase,
-    PageAfterPublishHandler,
-    PageBeforePublishHandler
+    PageAfterPublishEventHandler,
+    PageBeforePublishEventHandler
 } from "@webiny/api-website-builder/features/pages/PublishPage/abstractions.js";
 export {
     UnpublishPageUseCase,
-    PageAfterUnpublishHandler,
-    PageBeforeUnpublishHandler
+    PageAfterUnpublishEventHandler,
+    PageBeforeUnpublishEventHandler
 } from "@webiny/api-website-builder/features/pages/UnpublishPage/abstractions.js";
 export {
     UpdatePageUseCase,
-    PageAfterUpdateHandler,
-    PageBeforeUpdateHandler
+    PageAfterUpdateEventHandler,
+    PageBeforeUpdateEventHandler
 } from "@webiny/api-website-builder/features/pages/UpdatePage/abstractions.js";

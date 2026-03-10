@@ -1,6 +1,6 @@
 import { DomainEvent } from "~/features/eventPublisher/index.js";
 import type { Tenant } from "~/types/tenancy.js";
-import { TenantInstalledHandler } from "./abstractions.js";
+import { TenantInstalledEventHandler } from "./abstractions.js";
 
 export interface TenantInstalledPayload {
     tenant: Tenant;
@@ -11,6 +11,6 @@ export class TenantInstalledEvent extends DomainEvent<TenantInstalledPayload> {
     eventType = "tenant.installed" as const;
 
     getHandlerAbstraction() {
-        return TenantInstalledHandler;
+        return TenantInstalledEventHandler;
     }
 }

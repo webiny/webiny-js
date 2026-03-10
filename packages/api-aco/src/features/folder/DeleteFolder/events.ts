@@ -1,5 +1,5 @@
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import { FolderBeforeDeleteHandler, FolderAfterDeleteHandler } from "./abstractions.js";
+import { FolderBeforeDeleteEventHandler, FolderAfterDeleteEventHandler } from "./abstractions.js";
 import type { FolderBeforeDeletePayload, FolderAfterDeletePayload } from "./abstractions.js";
 
 // FolderBeforeDelete Event
@@ -7,7 +7,7 @@ export class FolderBeforeDeleteEvent extends DomainEvent<FolderBeforeDeletePaylo
     eventType = "folder.beforeDelete" as const;
 
     getHandlerAbstraction() {
-        return FolderBeforeDeleteHandler;
+        return FolderBeforeDeleteEventHandler;
     }
 }
 
@@ -16,6 +16,6 @@ export class FolderAfterDeleteEvent extends DomainEvent<FolderAfterDeletePayload
     eventType = "folder.afterDelete" as const;
 
     getHandlerAbstraction() {
-        return FolderAfterDeleteHandler;
+        return FolderAfterDeleteEventHandler;
     }
 }

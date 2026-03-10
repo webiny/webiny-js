@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/feature/api";
-import { AfterLoginHandler } from "~/features/security/login/index.js";
+import { AfterLoginEventHandler } from "~/features/security/login/index.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
 import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
@@ -7,7 +7,7 @@ import { GetUserUseCase } from "~/features/users/GetUser/index.js";
 import { CreateUserUseCase } from "~/features/users/CreateUser/index.js";
 import { UpdateUserUseCase } from "~/features/users/UpdateUser/index.js";
 
-class ExternalIdpUserSyncHandlerImpl implements AfterLoginHandler.Interface {
+class ExternalIdpUserSyncHandlerImpl implements AfterLoginEventHandler.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private getUserUseCase: GetUserUseCase.Interface,
@@ -17,7 +17,7 @@ class ExternalIdpUserSyncHandlerImpl implements AfterLoginHandler.Interface {
         private listTeamsUseCase: ListTeamsUseCase.Interface
     ) {}
 
-    async handle(event: AfterLoginHandler.Event): Promise<void> {
+    async handle(event: AfterLoginEventHandler.Event): Promise<void> {
         const { identity } = event.payload;
 
         // We only sync external identities
@@ -76,7 +76,7 @@ class ExternalIdpUserSyncHandlerImpl implements AfterLoginHandler.Interface {
 }
 
 export const ExternalIdpUserSyncHandler = createImplementation({
-    abstraction: AfterLoginHandler,
+    abstraction: AfterLoginEventHandler,
     implementation: ExternalIdpUserSyncHandlerImpl,
     dependencies: [
         IdentityContext,

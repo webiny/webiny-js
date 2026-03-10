@@ -1,6 +1,6 @@
 export { CreateFolderFeature } from "./feature.js";
 export {
-    FolderAfterCreateHandler,
-    FolderBeforeCreateHandler,
+    FolderAfterCreateEventHandler,
+    FolderBeforeCreateEventHandler,
     CreateFolderUseCase
 } from "./abstractions.js";

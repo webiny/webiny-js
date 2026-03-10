@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { RoleAfterDeleteHandler } from "@webiny/api-core/features/security/roles/DeleteRole/index.js";
+import { RoleAfterDeleteEventHandler } from "@webiny/api-core/features/security/roles/DeleteRole/index.js";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
-class AuditLogRoleAfterDeleteHandlerImpl implements RoleAfterDeleteHandler.Interface {
+class AuditLogRoleAfterDeleteHandlerImpl implements RoleAfterDeleteEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: RoleAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: RoleAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { role } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.ROLE.DELETE);
@@ -22,7 +22,7 @@ class AuditLogRoleAfterDeleteHandlerImpl implements RoleAfterDeleteHandler.Inter
     }
 }
 
-export const AuditLogRoleAfterDeleteHandler = RoleAfterDeleteHandler.createImplementation({
+export const AuditLogRoleAfterDeleteHandler = RoleAfterDeleteEventHandler.createImplementation({
     implementation: AuditLogRoleAfterDeleteHandlerImpl,
     dependencies: [AuditLogsContext]
 });

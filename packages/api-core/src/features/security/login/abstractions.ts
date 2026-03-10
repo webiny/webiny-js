@@ -11,14 +11,14 @@ export class AfterLoginEvent extends DomainEvent<AfterLoginPayload> {
     eventType = "login.afterLogin" as const;
 
     getHandlerAbstraction() {
-        return AfterLoginHandler;
+        return AfterLoginEventHandler;
     }
 }
 
-export const AfterLoginHandler =
-    createAbstraction<IEventHandler<AfterLoginEvent>>("AfterLoginHandler");
+export const AfterLoginEventHandler =
+    createAbstraction<IEventHandler<AfterLoginEvent>>("AfterLoginEventHandler");
 
-export namespace AfterLoginHandler {
+export namespace AfterLoginEventHandler {
     export type Interface = IEventHandler<AfterLoginEvent>;
     export type Event = AfterLoginEvent;
 }

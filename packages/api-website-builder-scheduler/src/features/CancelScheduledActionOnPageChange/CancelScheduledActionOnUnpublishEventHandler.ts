@@ -1,4 +1,4 @@
-import { PageAfterUnpublishHandler } from "@webiny/api-website-builder/features/pages/UnpublishPage/abstractions.js";
+import { PageAfterUnpublishEventHandler } from "@webiny/api-website-builder/features/pages/UnpublishPage/abstractions.js";
 import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webiny/api-scheduler";
 
 /**
@@ -9,14 +9,14 @@ import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webi
  * takes precedence.
  */
 class CancelScheduledActionOnUnpublishEventHandlerImpl
-    implements PageAfterUnpublishHandler.Interface
+    implements PageAfterUnpublishEventHandler.Interface
 {
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
         private cancelScheduledAction: CancelScheduledActionUseCase.Interface
     ) {}
 
-    async handle(event: PageAfterUnpublishHandler.Event): Promise<void> {
+    async handle(event: PageAfterUnpublishEventHandler.Event): Promise<void> {
         const { page } = event.payload;
 
         const actionsResult = await this.listScheduledActions.execute({
@@ -44,7 +44,7 @@ class CancelScheduledActionOnUnpublishEventHandlerImpl
 }
 
 export const CancelScheduledActionOnUnpublishEventHandler =
-    PageAfterUnpublishHandler.createImplementation({
+    PageAfterUnpublishEventHandler.createImplementation({
         implementation: CancelScheduledActionOnUnpublishEventHandlerImpl,
         dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase]
     });

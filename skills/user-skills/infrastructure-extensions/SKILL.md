@@ -25,19 +25,19 @@ import { Ui } from "webiny/infra";
 import { CorePulumi } from "webiny/infra/core";
 
 class MyCorePulumiHandlerImpl implements CorePulumi.Interface {
-    constructor(private ui: Ui.Interface) {}
+  constructor(private ui: Ui.Interface) {}
 
-    execute(app: any) {
-        this.ui.info("Executing MyCorePulumiHandler with environment:", app.env);
+  execute(app: any) {
+    this.ui.info("Executing MyCorePulumiHandler with environment:", app.env);
 
-        // Access and modify Pulumi resources here
-        // app.resources gives you access to all provisioned resources
-    }
+    // Access and modify Pulumi resources here
+    // app.resources gives you access to all provisioned resources
+  }
 }
 
 export default CorePulumi.createImplementation({
-    implementation: MyCorePulumiHandlerImpl,
-    dependencies: [Ui]
+  implementation: MyCorePulumiHandlerImpl,
+  dependencies: [Ui]
 });
 ```
 
@@ -72,30 +72,38 @@ These components go directly in `webiny.config.tsx` -- no separate extension fil
 ### Search & Networking
 
 ```tsx
-{/* Enable/disable OpenSearch */}
-<Infra.OpenSearch enabled={true} />
+{
+  /* Enable/disable OpenSearch */
+}
+<Infra.OpenSearch enabled={true} />;
 
-{/* Enable/disable VPC deployment */}
-<Infra.Vpc enabled={false} />
+{
+  /* Enable/disable VPC deployment */
+}
+<Infra.Vpc enabled={false} />;
 ```
 
 ### Resource Naming
 
 ```tsx
-{/* Prefix all Pulumi resource names */}
-<Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
+{
+  /* Prefix all Pulumi resource names */
+}
+<Infra.PulumiResourceNamePrefix prefix={"myproj-"} />;
 
-{/* Define which environments use production-grade infrastructure */}
-<Infra.ProductionEnvironments environments={["prod", "staging"]} />
+{
+  /* Define which environments use production-grade infrastructure */
+}
+<Infra.ProductionEnvironments environments={["prod", "staging"]} />;
 ```
 
 ### Custom Domains
 
 ```tsx
 <Infra.Admin.CustomDomains
-    domains={["admin.example.com"]}
-    sslMethod="sni-only"
-    certificateArn="arn:aws:acm:us-east-1:123456789:certificate/abc-123"
+  domains={["admin.example.com"]}
+  sslMethod="sni-only"
+  certificateArn="arn:aws:acm:us-east-1:123456789:certificate/abc-123"
 />
 ```
 
@@ -103,21 +111,21 @@ These components go directly in `webiny.config.tsx` -- no separate extension fil
 
 ```tsx
 <Infra.BlueGreenDeployments
-    enabled={true}
-    domains={{
-        acmCertificateArn: "arn:aws:acm:us-east-1:123456789:certificate/abc-123",
-        sslSupportMethod: "sni-only",
-        domains: {
-            api: ["api.example.com"],
-            admin: ["admin.example.com"],
-            website: ["website.example.com"],
-            preview: ["preview.example.com"]
-        }
-    }}
-    deployments={[
-        { name: "green", env: "dev", variant: "green" },
-        { name: "blue", env: "dev", variant: "blue" }
-    ]}
+  enabled={true}
+  domains={{
+    acmCertificateArn: "arn:aws:acm:us-east-1:123456789:certificate/abc-123",
+    sslSupportMethod: "sni-only",
+    domains: {
+      api: ["api.example.com"],
+      admin: ["admin.example.com"],
+      website: ["website.example.com"],
+      preview: ["preview.example.com"]
+    }
+  }}
+  deployments={[
+    { name: "green", env: "dev", variant: "green" },
+    { name: "blue", env: "dev", variant: "blue" }
+  ]}
 />
 ```
 
@@ -126,54 +134,64 @@ These components go directly in `webiny.config.tsx` -- no separate extension fil
 Use `<Infra.Env.Is>` to apply settings only in specific environments:
 
 ```tsx
-{/* Production only */}
+{
+  /* Production only */
+}
 <Infra.Env.Is env="prod">
-    <Infra.Aws.Tags tags={{ ENV: "production" }} />
-    <Infra.OpenSearch enabled={true} />
-</Infra.Env.Is>
+  <Infra.Aws.Tags tags={{ ENV: "production" }} />
+  <Infra.OpenSearch enabled={true} />
+</Infra.Env.Is>;
 
-{/* Non-production (accepts array) */}
+{
+  /* Non-production (accepts array) */
+}
 <Infra.Env.Is env={["dev", "staging"]}>
-    <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
-    <Infra.OpenSearch enabled={false} />
-</Infra.Env.Is>
+  <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
+  <Infra.OpenSearch enabled={false} />
+</Infra.Env.Is>;
 ```
 
 ## Project-Level Settings
 
 ```tsx
-{/* Disable telemetry */}
-<Project.Telemetry enabled={false} />
+{
+  /* Disable telemetry */
+}
+<Project.Telemetry enabled={false} />;
 
-{/* Auto-install for CI/CD (skip the installation wizard) */}
-{process.env.WEBINY_CLI_AUTO_INSTALL && (
+{
+  /* Auto-install for CI/CD (skip the installation wizard) */
+}
+{
+  process.env.WEBINY_CLI_AUTO_INSTALL && (
     <Project.AutoInstall
-        adminUser={{
-            firstName: "Ad",
-            lastName: "Min",
-            email: "admin@webiny.com",
-            password: "12345678"
-        }}
+      adminUser={{
+        firstName: "Ad",
+        lastName: "Min",
+        email: "admin@webiny.com",
+        password: "12345678"
+      }}
     />
-)}
+  );
+}
 ```
 
 ## All Infrastructure Components Reference
 
-| Component | Purpose |
-|---|---|
-| `<Infra.Aws.DefaultRegion name="..." />` | Set the AWS region |
-| `<Infra.Aws.Tags tags={{ ... }} />` | Tag all AWS resources |
-| `<Infra.OpenSearch enabled={bool} />` | Enable/disable OpenSearch cluster |
-| `<Infra.Vpc enabled={bool} />` | Enable/disable VPC deployment |
-| `<Infra.PulumiResourceNamePrefix prefix="..." />` | Prefix Pulumi resource names |
+| Component                                               | Purpose                              |
+| ------------------------------------------------------- | ------------------------------------ |
+| `<Infra.Aws.DefaultRegion name="..." />`                | Set the AWS region                   |
+| `<Infra.Aws.Tags tags={{ ... }} />`                     | Tag all AWS resources                |
+| `<Infra.OpenSearch enabled={bool} />`                   | Enable/disable OpenSearch cluster    |
+| `<Infra.Vpc enabled={bool} />`                          | Enable/disable VPC deployment        |
+| `<Infra.PulumiResourceNamePrefix prefix="..." />`       | Prefix Pulumi resource names         |
 | `<Infra.ProductionEnvironments environments={[...]} />` | Define production-grade environments |
-| `<Infra.Admin.CustomDomains ... />` | Custom domains for Admin app |
-| `<Infra.BlueGreenDeployments ... />` | Blue-green deployment configuration |
-| `<Infra.Env.Is env="..." />` | Conditional config per environment |
-| `<Infra.Core.Pulumi src="..." />` | Register a custom Pulumi handler |
-| `<Project.Telemetry enabled={bool} />` | Enable/disable telemetry |
-| `<Project.AutoInstall adminUser={{ ... }} />` | Auto-install for CI/CD |
+| `<Infra.Admin.CustomDomains ... />`                     | Custom domains for Admin app         |
+| `<Infra.BlueGreenDeployments ... />`                    | Blue-green deployment configuration  |
+| `<Infra.Env.Is env="..." />`                            | Conditional config per environment   |
+| `<Infra.Core.Pulumi src="..." />`                       | Register a custom Pulumi handler     |
+| `<Project.Telemetry enabled={bool} />`                  | Enable/disable telemetry             |
+| `<Project.AutoInstall adminUser={{ ... }} />`           | Auto-install for CI/CD               |
 
 ## Quick Reference
 

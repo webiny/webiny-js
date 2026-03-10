@@ -1,15 +1,15 @@
-import { FileBeforeUpdateHandler } from "@webiny/api-file-manager/features/file/UpdateFile/events.js";
+import { FileBeforeUpdateEventHandler } from "@webiny/api-file-manager/features/file/UpdateFile/events.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { CdnPathsGenerator } from "~/utils/CdnPathsGenerator.js";
 
-class FlushCacheOnFileUpdateHandlerImpl implements FileBeforeUpdateHandler.Interface {
+class FlushCacheOnFileUpdateHandlerImpl implements FileBeforeUpdateEventHandler.Interface {
     private readonly pathsGenerator: CdnPathsGenerator;
 
     constructor(private taskService: TaskService.Interface) {
         this.pathsGenerator = new CdnPathsGenerator();
     }
 
-    async handle(event: FileBeforeUpdateHandler.Event): Promise<void> {
+    async handle(event: FileBeforeUpdateEventHandler.Event): Promise<void> {
         const { file, original } = event.payload;
 
         const prevAccessControl = original.accessControl;
@@ -30,7 +30,7 @@ class FlushCacheOnFileUpdateHandlerImpl implements FileBeforeUpdateHandler.Inter
     }
 }
 
-export const FlushCacheOnFileUpdateHandler = FileBeforeUpdateHandler.createImplementation({
+export const FlushCacheOnFileUpdateHandler = FileBeforeUpdateEventHandler.createImplementation({
     implementation: FlushCacheOnFileUpdateHandlerImpl,
     dependencies: [TaskService]
 });

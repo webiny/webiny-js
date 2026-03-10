@@ -1,4 +1,4 @@
 export {
-    AfterAuthenticationHandler,
-    BeforeAuthenticationHandler
+    AfterAuthenticationEventHandler,
+    BeforeAuthenticationEventHandler
 } from "~/features/security/authentication/AuthenticationContext/index.js";

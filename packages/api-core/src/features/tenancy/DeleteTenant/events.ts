@@ -1,6 +1,6 @@
 import { DomainEvent } from "~/features/eventPublisher/index.js";
 import type { Tenant } from "~/types/tenancy.js";
-import { TenantBeforeDeleteHandler, TenantAfterDeleteHandler } from "./abstractions.js";
+import { TenantBeforeDeleteEventHandler, TenantAfterDeleteEventHandler } from "./abstractions.js";
 
 export interface TenantBeforeDeletePayload {
     tenant: Tenant;
@@ -14,7 +14,7 @@ export class TenantBeforeDeleteEvent extends DomainEvent<TenantBeforeDeletePaylo
     eventType = "tenant.beforeDelete" as const;
 
     getHandlerAbstraction() {
-        return TenantBeforeDeleteHandler;
+        return TenantBeforeDeleteEventHandler;
     }
 }
 
@@ -22,6 +22,6 @@ export class TenantAfterDeleteEvent extends DomainEvent<TenantAfterDeletePayload
     eventType = "tenant.afterDelete" as const;
 
     getHandlerAbstraction() {
-        return TenantAfterDeleteHandler;
+        return TenantAfterDeleteEventHandler;
     }
 }

@@ -2,24 +2,24 @@ export { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 export {
     CreateTenantUseCase,
     CreateTenantRepository,
-    TenantBeforeCreateHandler,
-    TenantAfterCreateHandler
+    TenantBeforeCreateEventHandler,
+    TenantAfterCreateEventHandler
 } from "@webiny/api-core/features/tenancy/CreateTenant/index.js";
 export { GetTenantByIdUseCase } from "@webiny/api-core/features/tenancy/GetTenantById/index.js";
 export {
     UpdateTenantUseCase,
     UpdateTenantRepository,
-    TenantAfterUpdateHandler,
-    TenantBeforeUpdateHandler
+    TenantAfterUpdateEventHandler,
+    TenantBeforeUpdateEventHandler
 } from "@webiny/api-core/features/tenancy/UpdateTenant/index.js";
 export {
     DeleteTenantUseCase,
     DeleteTenantRepository,
-    TenantAfterDeleteHandler,
-    TenantBeforeDeleteHandler
+    TenantAfterDeleteEventHandler,
+    TenantBeforeDeleteEventHandler
 } from "@webiny/api-core/features/tenancy/DeleteTenant/index.js";
 export {
     InstallTenantUseCase,
     AppInstaller,
-    TenantInstalledHandler
+    TenantInstalledEventHandler
 } from "@webiny/api-core/features/tenancy/InstallTenant/index.js";

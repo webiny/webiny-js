@@ -7,14 +7,15 @@ export class TeamBeforeUpdateEvent extends DomainEvent<TeamBeforeUpdatePayload> 
     eventType = "team.beforeUpdate" as const;
 
     getHandlerAbstraction() {
-        return TeamBeforeUpdateHandler;
+        return TeamBeforeUpdateEventHandler;
     }
 }
 
-export const TeamBeforeUpdateHandler =
-    createAbstraction<IEventHandler<TeamBeforeUpdateEvent>>("TeamBeforeUpdateHandler");
+export const TeamBeforeUpdateEventHandler = createAbstraction<IEventHandler<TeamBeforeUpdateEvent>>(
+    "TeamBeforeUpdateEventHandler"
+);
 
-export namespace TeamBeforeUpdateHandler {
+export namespace TeamBeforeUpdateEventHandler {
     export type Interface = IEventHandler<TeamBeforeUpdateEvent>;
     export type Event = TeamBeforeUpdateEvent;
 }
@@ -23,14 +24,15 @@ export class TeamAfterUpdateEvent extends DomainEvent<TeamAfterUpdatePayload> {
     eventType = "team.afterUpdate" as const;
 
     getHandlerAbstraction() {
-        return TeamAfterUpdateHandler;
+        return TeamAfterUpdateEventHandler;
     }
 }
 
-export const TeamAfterUpdateHandler =
-    createAbstraction<IEventHandler<TeamAfterUpdateEvent>>("TeamAfterUpdateHandler");
+export const TeamAfterUpdateEventHandler = createAbstraction<IEventHandler<TeamAfterUpdateEvent>>(
+    "TeamAfterUpdateEventHandler"
+);
 
-export namespace TeamAfterUpdateHandler {
+export namespace TeamAfterUpdateEventHandler {
     export type Interface = IEventHandler<TeamAfterUpdateEvent>;
     export type Event = TeamAfterUpdateEvent;
 }

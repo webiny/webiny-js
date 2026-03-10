@@ -1,8 +1,8 @@
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import {
-    MailBeforeSendHandler,
-    MailAfterSendHandler,
-    MailSendErrorHandler
+    MailBeforeSendEventHandler,
+    MailAfterSendEventHandler,
+    MailSendErrorEventHandler
 } from "./abstractions.js";
 import type {
     MailBeforeSendPayload,
@@ -14,7 +14,7 @@ export class MailBeforeSendEvent extends DomainEvent<MailBeforeSendPayload> {
     eventType = "mailer.mail.beforeSend" as const;
 
     getHandlerAbstraction() {
-        return MailBeforeSendHandler;
+        return MailBeforeSendEventHandler;
     }
 }
 
@@ -22,7 +22,7 @@ export class MailAfterSendEvent extends DomainEvent<MailAfterSendPayload> {
     eventType = "mailer.mail.afterSend" as const;
 
     getHandlerAbstraction() {
-        return MailAfterSendHandler;
+        return MailAfterSendEventHandler;
     }
 }
 
@@ -30,6 +30,6 @@ export class MailSendErrorEvent extends DomainEvent<MailSendErrorPayload> {
     eventType = "mailer.mail.sendError" as const;
 
     getHandlerAbstraction() {
-        return MailSendErrorHandler;
+        return MailSendErrorEventHandler;
     }
 }

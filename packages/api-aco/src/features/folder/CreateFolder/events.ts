@@ -1,5 +1,5 @@
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import { FolderBeforeCreateHandler, FolderAfterCreateHandler } from "./abstractions.js";
+import { FolderBeforeCreateEventHandler, FolderAfterCreateEventHandler } from "./abstractions.js";
 import type { FolderBeforeCreatePayload, FolderAfterCreatePayload } from "./abstractions.js";
 
 // FolderBeforeCreate Event
@@ -7,7 +7,7 @@ export class FolderBeforeCreateEvent extends DomainEvent<FolderBeforeCreatePaylo
     eventType = "folder.beforeCreate" as const;
 
     getHandlerAbstraction() {
-        return FolderBeforeCreateHandler;
+        return FolderBeforeCreateEventHandler;
     }
 }
 
@@ -16,6 +16,6 @@ export class FolderAfterCreateEvent extends DomainEvent<FolderAfterCreatePayload
     eventType = "folder.afterCreate" as const;
 
     getHandlerAbstraction() {
-        return FolderAfterCreateHandler;
+        return FolderAfterCreateEventHandler;
     }
 }

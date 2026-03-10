@@ -18,15 +18,15 @@ export class EntryBeforeUnlockEvent extends DomainEvent<EntryBeforeUnlockPayload
     eventType = "RecordLocking/Entry/BeforeUnlock" as const;
 
     getHandlerAbstraction() {
-        return EntryBeforeUnlockHandler;
+        return EntryBeforeUnlockEventHandler;
     }
 }
 
-export const EntryBeforeUnlockHandler = createAbstraction<IEventHandler<EntryBeforeUnlockEvent>>(
-    "EntryBeforeUnlockHandler"
-);
+export const EntryBeforeUnlockEventHandler = createAbstraction<
+    IEventHandler<EntryBeforeUnlockEvent>
+>("EntryBeforeUnlockEventHandler");
 
-export namespace EntryBeforeUnlockHandler {
+export namespace EntryBeforeUnlockEventHandler {
     export type Interface = IEventHandler<EntryBeforeUnlockEvent>;
     export type Event = EntryBeforeUnlockEvent;
 }
@@ -45,14 +45,15 @@ export class EntryAfterUnlockEvent extends DomainEvent<EntryAfterUnlockPayload> 
     eventType = "RecordLocking/Entry/AfterUnlock" as const;
 
     getHandlerAbstraction() {
-        return EntryAfterUnlockHandler;
+        return EntryAfterUnlockEventHandler;
     }
 }
 
-export const EntryAfterUnlockHandler =
-    createAbstraction<IEventHandler<EntryAfterUnlockEvent>>("EntryAfterUnlockHandler");
+export const EntryAfterUnlockEventHandler = createAbstraction<IEventHandler<EntryAfterUnlockEvent>>(
+    "EntryAfterUnlockEventHandler"
+);
 
-export namespace EntryAfterUnlockHandler {
+export namespace EntryAfterUnlockEventHandler {
     export type Interface = IEventHandler<EntryAfterUnlockEvent>;
     export type Event = EntryAfterUnlockEvent;
 }
@@ -71,14 +72,15 @@ export class EntryUnlockErrorEvent extends DomainEvent<EntryUnlockErrorPayload> 
     eventType = "RecordLocking/Entry/UnlockError" as const;
 
     getHandlerAbstraction() {
-        return EntryUnlockErrorHandler;
+        return EntryUnlockErrorEventHandler;
     }
 }
 
-export const EntryUnlockErrorHandler =
-    createAbstraction<IEventHandler<EntryUnlockErrorEvent>>("EntryUnlockErrorHandler");
+export const EntryUnlockErrorEventHandler = createAbstraction<IEventHandler<EntryUnlockErrorEvent>>(
+    "EntryUnlockErrorEventHandler"
+);
 
-export namespace EntryUnlockErrorHandler {
+export namespace EntryUnlockErrorEventHandler {
     export type Interface = IEventHandler<EntryUnlockErrorEvent>;
     export type Event = EntryUnlockErrorEvent;
 }

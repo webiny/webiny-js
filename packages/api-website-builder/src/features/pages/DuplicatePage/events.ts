@@ -1,5 +1,5 @@
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import { PageBeforeDuplicateHandler, PageAfterDuplicateHandler } from "./abstractions.js";
+import { PageBeforeDuplicateEventHandler, PageAfterDuplicateEventHandler } from "./abstractions.js";
 import type { PageBeforeDuplicatePayload, PageAfterDuplicatePayload } from "./abstractions.js";
 
 // PageBeforeDuplicate Event
@@ -7,7 +7,7 @@ export class PageBeforeDuplicateEvent extends DomainEvent<PageBeforeDuplicatePay
     eventType = "page.beforeDuplicate" as const;
 
     getHandlerAbstraction() {
-        return PageBeforeDuplicateHandler;
+        return PageBeforeDuplicateEventHandler;
     }
 }
 
@@ -16,6 +16,6 @@ export class PageAfterDuplicateEvent extends DomainEvent<PageAfterDuplicatePaylo
     eventType = "page.afterDuplicate" as const;
 
     getHandlerAbstraction() {
-        return PageAfterDuplicateHandler;
+        return PageAfterDuplicateEventHandler;
     }
 }

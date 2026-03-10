@@ -1,5 +1,5 @@
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import { PageBeforeMoveHandler, PageAfterMoveHandler } from "./abstractions.js";
+import { PageBeforeMoveEventHandler, PageAfterMoveEventHandler } from "./abstractions.js";
 import type { PageBeforeMovePayload, PageAfterMovePayload } from "./abstractions.js";
 
 // PageBeforeMove Event
@@ -7,7 +7,7 @@ export class PageBeforeMoveEvent extends DomainEvent<PageBeforeMovePayload> {
     eventType = "page.beforeMove" as const;
 
     getHandlerAbstraction() {
-        return PageBeforeMoveHandler;
+        return PageBeforeMoveEventHandler;
     }
 }
 
@@ -16,6 +16,6 @@ export class PageAfterMoveEvent extends DomainEvent<PageAfterMovePayload> {
     eventType = "page.afterMove" as const;
 
     getHandlerAbstraction() {
-        return PageAfterMoveHandler;
+        return PageAfterMoveEventHandler;
     }
 }

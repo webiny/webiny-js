@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { TeamAfterCreateHandler } from "@webiny/api-core/features/CreateTeam";
+import { TeamAfterCreateEventHandler } from "@webiny/api-core/features/CreateTeam";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
-class AuditLogTeamAfterCreateHandlerImpl implements TeamAfterCreateHandler.Interface {
+class AuditLogTeamAfterCreateHandlerImpl implements TeamAfterCreateEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: TeamAfterCreateHandler.Event): Promise<void> {
+    async handle(event: TeamAfterCreateEventHandler.Event): Promise<void> {
         try {
             const { team } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.TEAM.CREATE);
@@ -22,7 +22,7 @@ class AuditLogTeamAfterCreateHandlerImpl implements TeamAfterCreateHandler.Inter
     }
 }
 
-export const AuditLogTeamAfterCreateHandler = TeamAfterCreateHandler.createImplementation({
+export const AuditLogTeamAfterCreateHandler = TeamAfterCreateEventHandler.createImplementation({
     implementation: AuditLogTeamAfterCreateHandlerImpl,
     dependencies: [AuditLogsContext]
 });

@@ -39,26 +39,29 @@ export interface MailSendErrorPayload {
 }
 
 // Event Handler Abstractions
-export const MailBeforeSendHandler =
-    createAbstraction<IEventHandler<DomainEvent<MailBeforeSendPayload>>>("MailBeforeSendHandler");
+export const MailBeforeSendEventHandler = createAbstraction<
+    IEventHandler<DomainEvent<MailBeforeSendPayload>>
+>("MailBeforeSendEventHandler");
 
-export namespace MailBeforeSendHandler {
+export namespace MailBeforeSendEventHandler {
     export type Interface = IEventHandler<DomainEvent<MailBeforeSendPayload>>;
     export type Event = DomainEvent<MailBeforeSendPayload>;
 }
 
-export const MailAfterSendHandler =
-    createAbstraction<IEventHandler<DomainEvent<MailAfterSendPayload>>>("MailAfterSendHandler");
+export const MailAfterSendEventHandler = createAbstraction<
+    IEventHandler<DomainEvent<MailAfterSendPayload>>
+>("MailAfterSendEventHandler");
 
-export namespace MailAfterSendHandler {
+export namespace MailAfterSendEventHandler {
     export type Interface = IEventHandler<DomainEvent<MailAfterSendPayload>>;
     export type Event = DomainEvent<MailAfterSendPayload>;
 }
 
-export const MailSendErrorHandler =
-    createAbstraction<IEventHandler<DomainEvent<MailSendErrorPayload>>>("MailSendErrorHandler");
+export const MailSendErrorEventHandler = createAbstraction<
+    IEventHandler<DomainEvent<MailSendErrorPayload>>
+>("MailSendErrorEventHandler");
 
-export namespace MailSendErrorHandler {
+export namespace MailSendErrorEventHandler {
     export type Interface = IEventHandler<DomainEvent<MailSendErrorPayload>>;
     export type Event = DomainEvent<MailSendErrorPayload>;
 }

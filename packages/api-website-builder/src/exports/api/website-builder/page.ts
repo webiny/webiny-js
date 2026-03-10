@@ -1,22 +1,22 @@
 export {
     CreatePageUseCase,
-    PageAfterCreateHandler,
-    PageBeforeCreateHandler
+    PageAfterCreateEventHandler,
+    PageBeforeCreateEventHandler
 } from "~/features/pages/CreatePage/abstractions.js";
 export {
     CreatePageRevisionFromUseCase,
-    PageAfterCreateRevisionFromHandler,
-    PageBeforeCreateRevisionFromHandler
+    PageAfterCreateRevisionFromEventHandler,
+    PageBeforeCreateRevisionFromEventHandler
 } from "~/features/pages/CreatePageRevisionFrom/abstractions.js";
 export {
     DeletePageUseCase,
-    PageAfterDeleteHandler,
-    PageBeforeDeleteHandler
+    PageAfterDeleteEventHandler,
+    PageBeforeDeleteEventHandler
 } from "~/features/pages/DeletePage/abstractions.js";
 export {
     DuplicatePageUseCase,
-    PageAfterDuplicateHandler,
-    PageBeforeDuplicateHandler
+    PageAfterDuplicateEventHandler,
+    PageBeforeDuplicateEventHandler
 } from "~/features/pages/DuplicatePage/abstractions.js";
 export { GetPageByIdUseCase } from "~/features/pages/GetPageById/abstractions.js";
 export { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/abstractions.js";
@@ -24,21 +24,21 @@ export { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/abstr
 export { ListPagesUseCase } from "~/features/pages/ListPages/abstractions.js";
 export {
     MovePageUseCase,
-    PageAfterMoveHandler,
-    PageBeforeMoveHandler
+    PageAfterMoveEventHandler,
+    PageBeforeMoveEventHandler
 } from "~/features/pages/MovePage/abstractions.js";
 export {
     PublishPageUseCase,
-    PageAfterPublishHandler,
-    PageBeforePublishHandler
+    PageAfterPublishEventHandler,
+    PageBeforePublishEventHandler
 } from "~/features/pages/PublishPage/abstractions.js";
 export {
     UnpublishPageUseCase,
-    PageAfterUnpublishHandler,
-    PageBeforeUnpublishHandler
+    PageAfterUnpublishEventHandler,
+    PageBeforeUnpublishEventHandler
 } from "~/features/pages/UnpublishPage/abstractions.js";
 export {
     UpdatePageUseCase,
-    PageAfterUpdateHandler,
-    PageBeforeUpdateHandler
+    PageAfterUpdateEventHandler,
+    PageBeforeUpdateEventHandler
 } from "~/features/pages/UpdatePage/abstractions.js";
