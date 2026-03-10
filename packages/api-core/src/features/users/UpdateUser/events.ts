@@ -8,14 +8,14 @@ export class UserBeforeUpdateEvent extends DomainEvent<UserBeforeUpdatePayload> 
     eventType = "user.beforeUpdate" as const;
 
     getHandlerAbstraction() {
-        return UserBeforeUpdateHandler;
+        return UserBeforeUpdateEventHandler;
     }
 }
 
-export const UserBeforeUpdateHandler =
-    createAbstraction<IEventHandler<UserBeforeUpdateEvent>>("UserBeforeUpdateHandler");
+export const UserBeforeUpdateEventHandler =
+    createAbstraction<IEventHandler<UserBeforeUpdateEvent>>("UserBeforeUpdateEventHandler");
 
-export namespace UserBeforeUpdateHandler {
+export namespace UserBeforeUpdateEventHandler {
     export type Interface = IEventHandler<UserBeforeUpdateEvent>;
     export type Event = UserBeforeUpdateEvent;
 }
@@ -25,14 +25,14 @@ export class UserAfterUpdateEvent extends DomainEvent<UserAfterUpdatePayload> {
     eventType = "user.afterUpdate" as const;
 
     getHandlerAbstraction() {
-        return UserAfterUpdateHandler;
+        return UserAfterUpdateEventHandler;
     }
 }
 
-export const UserAfterUpdateHandler =
-    createAbstraction<IEventHandler<UserAfterUpdateEvent>>("UserAfterUpdateHandler");
+export const UserAfterUpdateEventHandler =
+    createAbstraction<IEventHandler<UserAfterUpdateEvent>>("UserAfterUpdateEventHandler");
 
-export namespace UserAfterUpdateHandler {
+export namespace UserAfterUpdateEventHandler {
     export type Interface = IEventHandler<UserAfterUpdateEvent>;
     export type Event = UserAfterUpdateEvent;
 }

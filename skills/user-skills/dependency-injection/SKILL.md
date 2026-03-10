@@ -55,7 +55,7 @@ Key rules:
 | Content Models  | `ModelFactory`                        | `"webiny/api/cms/model"`       |
 | GraphQL Schemas | `GraphQLSchemaFactory`                | `"webiny/api/graphql"`         |
 | CMS Entry Hooks | `EntryBeforeCreateEventHandler`, etc. | `"webiny/api/cms/entry"`       |
-| API Key Hooks   | `ApiKeyAfterUpdateHandler`            | `"webiny/api/security/apiKey"` |
+| API Key Hooks   | `ApiKeyAfterUpdateEventHandler`       | `"webiny/api/security/apiKey"` |
 | API Keys        | `ApiKeyFactory`                       | `"webiny/api/security"`        |
 | CLI Commands    | `CliCommandFactory`                   | `"webiny/cli/command"`         |
 | Pulumi Handlers | `CorePulumi`                          | `"webiny/infra/core"`          |

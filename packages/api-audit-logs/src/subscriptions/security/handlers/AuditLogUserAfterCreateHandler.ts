@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { UserAfterCreateHandler } from "@webiny/api-core/features/CreateUser";
+import { UserAfterCreateEventHandler } from "@webiny/api-core/features/CreateUser";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
-class AuditLogUserAfterCreateHandlerImpl implements UserAfterCreateHandler.Interface {
+class AuditLogUserAfterCreateHandlerImpl implements UserAfterCreateEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: UserAfterCreateHandler.Event): Promise<void> {
+    async handle(event: UserAfterCreateEventHandler.Event): Promise<void> {
         try {
             const { user } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.USER.CREATE);
@@ -22,7 +22,7 @@ class AuditLogUserAfterCreateHandlerImpl implements UserAfterCreateHandler.Inter
     }
 }
 
-export const AuditLogUserAfterCreateHandler = UserAfterCreateHandler.createImplementation({
+export const AuditLogUserAfterCreateHandler = UserAfterCreateEventHandler.createImplementation({
     implementation: AuditLogUserAfterCreateHandlerImpl,
     dependencies: [AuditLogsContext]
 });

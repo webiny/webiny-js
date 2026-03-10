@@ -37,7 +37,7 @@ Every handler receives an `event` with:
 
 - `event.modelId` -- The model ID string (e.g., `"contactSubmission"`)
 - `event.payload` -- The entry data object
-  - `event.payload.values` -- The field values (can be mutated in `before` hooks)
+- `event.payload.values` -- The field values (can be mutated in `before` hooks)
 
 ### Pattern
 
@@ -153,11 +153,11 @@ export default Handler.createImplementation({
 
 ```typescript
 // extensions/MyApiKeyAfterUpdate.ts
-import { ApiKeyAfterUpdateHandler } from "webiny/api/security/api-key";
+import { ApiKeyAfterUpdateEventHandler } from "webiny/api/security/api-key";
 import { Logger } from "webiny/api/logger";
 import { BuildParams } from "webiny/api/build-params";
 
-class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
+class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateEventHandler.Interface {
     constructor(
         private logger: Logger.Interface,
         private buildParams: BuildParams.Interface
@@ -171,7 +171,7 @@ class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
     }
 }
 
-const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
+const MyApiKeyAfterUpdate = ApiKeyAfterUpdateEventHandler.createImplementation({
     implementation: MyApiKeyAfterUpdateImpl,
     dependencies: [Logger, BuildParams]
 });
@@ -189,7 +189,7 @@ Register with a dedicated JSX element:
 
 ```
 CMS hooks import:   import { EntryBeforeCreateEventHandler } from "webiny/api/cms/entry";
-Security import:    import { ApiKeyAfterUpdateHandler } from "webiny/api/security/apiKey";
+Security import:    import { ApiKeyAfterUpdateEventHandler } from "webiny/api/security/apiKey";
 Event shape:        event.modelId (string), event.payload (object), event.payload.values (object)
 Export:             Handler.createImplementation({ implementation, dependencies })
 Register CMS:       <Api.Extension src={"/extensions/MyHook.ts"} />

@@ -3,7 +3,7 @@ export {
     CreateTenantUseCase,
     CreateTenantRepository,
     CreateTenantGateway,
-    TenantBeforeCreateHandler,
-    TenantAfterCreateHandler
+    TenantBeforeCreateEventHandler,
+    TenantAfterCreateEventHandler
 } from "./abstractions.js";
 export { TenantBeforeCreateEvent, TenantAfterCreateEvent } from "./events.js";

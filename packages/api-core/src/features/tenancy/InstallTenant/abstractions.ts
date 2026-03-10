@@ -75,10 +75,10 @@ export namespace InstallTenantUseCase {
 /**
  * Event Handler Abstraction
  */
-export const TenantInstalledHandler =
-    createAbstraction<IEventHandler<DomainEvent<TenantInstalledPayload>>>("TenantInstalledHandler");
+export const TenantInstalledEventHandler =
+    createAbstraction<IEventHandler<DomainEvent<TenantInstalledPayload>>>("TenantInstalledEventHandler");
 
-export namespace TenantInstalledHandler {
+export namespace TenantInstalledEventHandler {
     export type Interface = IEventHandler<DomainEvent<TenantInstalledPayload>>;
     export type Event = DomainEvent<TenantInstalledPayload>;
 }

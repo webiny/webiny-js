@@ -7,15 +7,15 @@ export class ApiKeyBeforeDeleteEvent extends DomainEvent<ApiKeyBeforeDeletePaylo
     eventType = "apiKey.beforeDelete" as const;
 
     getHandlerAbstraction() {
-        return ApiKeyBeforeDeleteHandler;
+        return ApiKeyBeforeDeleteEventHandler;
     }
 }
 
-export const ApiKeyBeforeDeleteHandler = createAbstraction<IEventHandler<ApiKeyBeforeDeleteEvent>>(
-    "ApiKeyBeforeDeleteHandler"
+export const ApiKeyBeforeDeleteEventHandler = createAbstraction<IEventHandler<ApiKeyBeforeDeleteEvent>>(
+    "ApiKeyBeforeDeleteEventHandler"
 );
 
-export namespace ApiKeyBeforeDeleteHandler {
+export namespace ApiKeyBeforeDeleteEventHandler {
     export type Interface = IEventHandler<ApiKeyBeforeDeleteEvent>;
     export type Event = ApiKeyBeforeDeleteEvent;
 }
@@ -24,15 +24,15 @@ export class ApiKeyAfterDeleteEvent extends DomainEvent<ApiKeyAfterDeletePayload
     eventType = "apiKey.afterDelete" as const;
 
     getHandlerAbstraction() {
-        return ApiKeyAfterDeleteHandler;
+        return ApiKeyAfterDeleteEventHandler;
     }
 }
 
-export const ApiKeyAfterDeleteHandler = createAbstraction<IEventHandler<ApiKeyAfterDeleteEvent>>(
-    "ApiKeyAfterDeleteHandler"
+export const ApiKeyAfterDeleteEventHandler = createAbstraction<IEventHandler<ApiKeyAfterDeleteEvent>>(
+    "ApiKeyAfterDeleteEventHandler"
 );
 
-export namespace ApiKeyAfterDeleteHandler {
+export namespace ApiKeyAfterDeleteEventHandler {
     export type Interface = IEventHandler<ApiKeyAfterDeleteEvent>;
     export type Event = ApiKeyAfterDeleteEvent;
 }
