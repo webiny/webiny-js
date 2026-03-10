@@ -14470,6 +14470,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
+    zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
 

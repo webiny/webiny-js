@@ -382,4 +382,13 @@ import { createWbScheduler } from "@webiny/app-website-builder-scheduler";
 
 ## Implementation Notes (deviations from original plan)
 
-_To be filled in post-implementation._
+### Task 5 — PageListConfig integration
+
+**Bulk action: publish only (not publish + unpublish).**
+The original plan described a bulk action for "Schedule for publishing" that would handle both publish and unpublish. The implemented `ScheduleBulkAction` only schedules a publish action. Scheduling an unpublish requires knowing the current page status for each selected entry (published → unpublish, draft → publish), which would require per-item status checks before presenting the correct dialog. Given that the single-page `WbScheduler` component already handles this gracefully (it inspects `entry.status` at dialog-open time), the bulk action was scoped to publish scheduling only to keep the implementation simple and avoid N status fetches.
+
+**Sidebar button: conditional render based on bulk selection.**
+The plan assumed the sidebar had a "selected page" context (like a detail panel). In the actual WB admin, the left sidebar is a folder navigation tree — it has no active-page context. The `ScheduleSidebarButton` instead reads `vm.selected` from `useDocumentList()` and renders only when exactly one non-folder row is selected, giving it the same effective behaviour as a selection-aware sidebar action.
+
+**Table column: static indicator, no live fetch.**
+The plan implied the "Scheduled" column cell might do a live fetch per row. This was intentionally not implemented to avoid N+1 API requests on every page list load. The cell reads `page.extensions.wbScheduler.publishOn` / `unpublishOn` from data already present in the list response.
