@@ -44,9 +44,8 @@ class CancelScheduledActionOnDeleteEventHandlerImpl implements PageAfterDeleteHa
     }
 }
 
-export const CancelScheduledActionOnDeleteEventHandler = PageAfterDeleteHandler.createImplementation(
-    {
+export const CancelScheduledActionOnDeleteEventHandler =
+    PageAfterDeleteHandler.createImplementation({
         implementation: CancelScheduledActionOnDeleteEventHandlerImpl,
         dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase]
-    }
-);
+    });

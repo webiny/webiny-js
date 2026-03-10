@@ -41,7 +41,8 @@ class CancelScheduledActionOnPublishEventHandlerImpl implements PageAfterPublish
     }
 }
 
-export const CancelScheduledActionOnPublishEventHandler = PageAfterPublishHandler.createImplementation({
-    implementation: CancelScheduledActionOnPublishEventHandlerImpl,
-    dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase]
-});
+export const CancelScheduledActionOnPublishEventHandler =
+    PageAfterPublishHandler.createImplementation({
+        implementation: CancelScheduledActionOnPublishEventHandlerImpl,
+        dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase]
+    });
