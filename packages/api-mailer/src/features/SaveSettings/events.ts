@@ -1,5 +1,8 @@
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import { MailerSettingsBeforeSaveHandler, MailerSettingsAfterSaveHandler } from "./abstractions.js";
+import {
+    MailerSettingsBeforeSaveEventHandler,
+    MailerSettingsAfterSaveEventHandler
+} from "./abstractions.js";
 import type {
     MailerSettingsBeforeSavePayload,
     MailerSettingsAfterSavePayload
@@ -9,7 +12,7 @@ export class MailerSettingsBeforeSaveEvent extends DomainEvent<MailerSettingsBef
     eventType = "mailer.settings.beforeSave" as const;
 
     getHandlerAbstraction() {
-        return MailerSettingsBeforeSaveHandler;
+        return MailerSettingsBeforeSaveEventHandler;
     }
 }
 
@@ -17,6 +20,6 @@ export class MailerSettingsAfterSaveEvent extends DomainEvent<MailerSettingsAfte
     eventType = "mailer.settings.afterSave" as const;
 
     getHandlerAbstraction() {
-        return MailerSettingsAfterSaveHandler;
+        return MailerSettingsAfterSaveEventHandler;
     }
 }

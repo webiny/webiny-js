@@ -1,2 +1,2 @@
 export { CreateFileUseCase } from "./abstractions.js";
-export { FileAfterCreateHandler, FileBeforeCreateHandler } from "./events.js";
+export { FileAfterCreateEventHandler, FileBeforeCreateEventHandler } from "./events.js";

@@ -1,11 +1,11 @@
 import { WebinyError } from "@webiny/error";
-import { FolderBeforeDeleteHandler } from "~/features/folder/DeleteFolder/abstractions.js";
+import { FolderBeforeDeleteEventHandler } from "~/features/folder/DeleteFolder/abstractions.js";
 import type { FolderBeforeDeleteEvent } from "~/features/folder/DeleteFolder/events.js";
 import { EnsureFolderIsEmpty } from "~/features/folder/EnsureFolderIsEmpty/abstractions.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ListEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/abstractions.js";
 
-class ModelFolderBeforeDeleteHandlerImpl implements FolderBeforeDeleteHandler.Interface {
+class ModelFolderBeforeDeleteHandlerImpl implements FolderBeforeDeleteEventHandler.Interface {
     constructor(
         private ensureFolderIsEmpty: EnsureFolderIsEmpty.Interface,
         private getModel: GetModelUseCase.Interface,
@@ -52,7 +52,7 @@ class ModelFolderBeforeDeleteHandlerImpl implements FolderBeforeDeleteHandler.In
     }
 }
 
-export const ModelFolderBeforeDeleteHandler = FolderBeforeDeleteHandler.createImplementation({
+export const ModelFolderBeforeDeleteHandler = FolderBeforeDeleteEventHandler.createImplementation({
     implementation: ModelFolderBeforeDeleteHandlerImpl,
     dependencies: [EnsureFolderIsEmpty, GetModelUseCase, ListEntriesUseCase]
 });

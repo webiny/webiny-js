@@ -64,20 +64,20 @@ export interface FolderAfterDeletePayload {
 }
 
 // Event Handler Abstractions
-export const FolderBeforeDeleteHandler = createAbstraction<
+export const FolderBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderBeforeDeletePayload>>
->("FolderBeforeDeleteHandler");
+>("FolderBeforeDeleteEventHandler");
 
-export namespace FolderBeforeDeleteHandler {
+export namespace FolderBeforeDeleteEventHandler {
     export type Interface = IEventHandler<DomainEvent<FolderBeforeDeletePayload>>;
     export type Event = DomainEvent<FolderBeforeDeletePayload>;
 }
 
-export const FolderAfterDeleteHandler = createAbstraction<
+export const FolderAfterDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderAfterDeletePayload>>
->("FolderAfterDeleteHandler");
+>("FolderAfterDeleteEventHandler");
 
-export namespace FolderAfterDeleteHandler {
+export namespace FolderAfterDeleteEventHandler {
     export type Interface = IEventHandler<DomainEvent<FolderAfterDeletePayload>>;
     export type Event = DomainEvent<FolderAfterDeletePayload>;
 }

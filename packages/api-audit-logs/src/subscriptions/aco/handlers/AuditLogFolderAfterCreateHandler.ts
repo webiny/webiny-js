@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { FolderAfterCreateHandler } from "@webiny/api-aco/features/folder/CreateFolder";
+import { FolderAfterCreateEventHandler } from "@webiny/api-aco/features/folder/CreateFolder";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
-class AuditLogFolderAfterCreateHandlerImpl implements FolderAfterCreateHandler.Interface {
+class AuditLogFolderAfterCreateHandlerImpl implements FolderAfterCreateEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: FolderAfterCreateHandler.Event): Promise<void> {
+    async handle(event: FolderAfterCreateEventHandler.Event): Promise<void> {
         try {
             const { folder } = event.payload;
             if (folder.type === "FmFile") {
@@ -26,7 +26,7 @@ class AuditLogFolderAfterCreateHandlerImpl implements FolderAfterCreateHandler.I
     }
 }
 
-export const AuditLogFolderAfterCreateHandler = FolderAfterCreateHandler.createImplementation({
+export const AuditLogFolderAfterCreateHandler = FolderAfterCreateEventHandler.createImplementation({
     implementation: AuditLogFolderAfterCreateHandlerImpl,
     dependencies: [AuditLogsContext]
 });

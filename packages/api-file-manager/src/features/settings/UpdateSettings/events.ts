@@ -18,15 +18,15 @@ export class SettingsBeforeUpdateEvent extends DomainEvent<SettingsBeforeUpdateP
     eventType = "FileManager/Settings/BeforeUpdate" as const;
 
     getHandlerAbstraction() {
-        return SettingsBeforeUpdateHandler;
+        return SettingsBeforeUpdateEventHandler;
     }
 }
 
-export const SettingsBeforeUpdateHandler = createAbstraction<
+export const SettingsBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<SettingsBeforeUpdateEvent>
->("SettingsBeforeUpdateHandler");
+>("SettingsBeforeUpdateEventHandler");
 
-export namespace SettingsBeforeUpdateHandler {
+export namespace SettingsBeforeUpdateEventHandler {
     export type Interface = IEventHandler<SettingsBeforeUpdateEvent>;
     export type Event = SettingsBeforeUpdateEvent;
 }
@@ -45,15 +45,15 @@ export class SettingsAfterUpdateEvent extends DomainEvent<SettingsAfterUpdatePay
     eventType = "FileManager/Settings/AfterUpdate" as const;
 
     getHandlerAbstraction() {
-        return SettingsAfterUpdateHandler;
+        return SettingsAfterUpdateEventHandler;
     }
 }
 
-export const SettingsAfterUpdateHandler = createAbstraction<
+export const SettingsAfterUpdateEventHandler = createAbstraction<
     IEventHandler<SettingsAfterUpdateEvent>
->("SettingsAfterUpdateHandler");
+>("SettingsAfterUpdateEventHandler");
 
-export namespace SettingsAfterUpdateHandler {
+export namespace SettingsAfterUpdateEventHandler {
     export type Interface = IEventHandler<SettingsAfterUpdateEvent>;
     export type Event = SettingsAfterUpdateEvent;
 }

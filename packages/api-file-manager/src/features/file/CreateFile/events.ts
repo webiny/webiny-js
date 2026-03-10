@@ -16,14 +16,15 @@ export class FileBeforeCreateEvent extends DomainEvent<FileBeforeCreatePayload> 
     eventType = "FileManager/File/BeforeCreate" as const;
 
     getHandlerAbstraction() {
-        return FileBeforeCreateHandler;
+        return FileBeforeCreateEventHandler;
     }
 }
 
-export const FileBeforeCreateHandler =
-    createAbstraction<IEventHandler<FileBeforeCreateEvent>>("FileBeforeCreateHandler");
+export const FileBeforeCreateEventHandler = createAbstraction<IEventHandler<FileBeforeCreateEvent>>(
+    "FileBeforeCreateEventHandler"
+);
 
-export namespace FileBeforeCreateHandler {
+export namespace FileBeforeCreateEventHandler {
     export type Interface = IEventHandler<FileBeforeCreateEvent>;
     export type Event = FileBeforeCreateEvent;
 }
@@ -41,14 +42,15 @@ export class FileAfterCreateEvent extends DomainEvent<FileAfterCreatePayload> {
     eventType = "FileManager/File/AfterCreate" as const;
 
     getHandlerAbstraction() {
-        return FileAfterCreateHandler;
+        return FileAfterCreateEventHandler;
     }
 }
 
-export const FileAfterCreateHandler =
-    createAbstraction<IEventHandler<FileAfterCreateEvent>>("FileAfterCreateHandler");
+export const FileAfterCreateEventHandler = createAbstraction<IEventHandler<FileAfterCreateEvent>>(
+    "FileAfterCreateEventHandler"
+);
 
-export namespace FileAfterCreateHandler {
+export namespace FileAfterCreateEventHandler {
     export type Interface = IEventHandler<FileAfterCreateEvent>;
     export type Event = FileAfterCreateEvent;
 }

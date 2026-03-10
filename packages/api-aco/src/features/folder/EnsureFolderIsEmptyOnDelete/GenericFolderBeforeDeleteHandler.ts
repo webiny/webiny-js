@@ -1,9 +1,9 @@
 import { WebinyError } from "@webiny/error";
-import { FolderBeforeDeleteHandler } from "~/features/folder/DeleteFolder/abstractions.js";
+import { FolderBeforeDeleteEventHandler } from "~/features/folder/DeleteFolder/abstractions.js";
 import type { FolderBeforeDeleteEvent } from "~/features/folder/DeleteFolder/events.js";
 import { EnsureFolderIsEmpty } from "~/features/folder/EnsureFolderIsEmpty/abstractions.js";
 
-class GenericFolderBeforeDeleteHandlerImpl implements FolderBeforeDeleteHandler.Interface {
+class GenericFolderBeforeDeleteHandlerImpl implements FolderBeforeDeleteEventHandler.Interface {
     constructor(private ensureFolderIsEmpty: EnsureFolderIsEmpty.Interface) {}
 
     async handle(event: FolderBeforeDeleteEvent): Promise<void> {
@@ -26,7 +26,9 @@ class GenericFolderBeforeDeleteHandlerImpl implements FolderBeforeDeleteHandler.
     }
 }
 
-export const GenericFolderBeforeDeleteHandler = FolderBeforeDeleteHandler.createImplementation({
-    implementation: GenericFolderBeforeDeleteHandlerImpl,
-    dependencies: [EnsureFolderIsEmpty]
-});
+export const GenericFolderBeforeDeleteHandler = FolderBeforeDeleteEventHandler.createImplementation(
+    {
+        implementation: GenericFolderBeforeDeleteHandlerImpl,
+        dependencies: [EnsureFolderIsEmpty]
+    }
+);

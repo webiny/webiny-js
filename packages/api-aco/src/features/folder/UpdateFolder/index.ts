@@ -1,6 +1,6 @@
 export { UpdateFolderFeature } from "./feature.js";
 export {
-    FolderAfterUpdateHandler,
-    FolderBeforeUpdateHandler,
+    FolderAfterUpdateEventHandler,
+    FolderBeforeUpdateEventHandler,
     UpdateFolderUseCase
 } from "./abstractions.js";

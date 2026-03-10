@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { FileAfterCreateHandler } from "@webiny/api-file-manager/features/file/CreateFile/index.js";
+import { FileAfterCreateEventHandler } from "@webiny/api-file-manager/features/file/CreateFile/index.js";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
-class AuditLogFileAfterCreateHandlerImpl implements FileAfterCreateHandler.Interface {
+class AuditLogFileAfterCreateHandlerImpl implements FileAfterCreateEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: FileAfterCreateHandler.Event): Promise<void> {
+    async handle(event: FileAfterCreateEventHandler.Event): Promise<void> {
         try {
             const { file } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE.CREATE);
@@ -22,7 +22,7 @@ class AuditLogFileAfterCreateHandlerImpl implements FileAfterCreateHandler.Inter
     }
 }
 
-export const AuditLogFileAfterCreateHandler = FileAfterCreateHandler.createImplementation({
+export const AuditLogFileAfterCreateHandler = FileAfterCreateEventHandler.createImplementation({
     implementation: AuditLogFileAfterCreateHandlerImpl,
     dependencies: [AuditLogsContext]
 });

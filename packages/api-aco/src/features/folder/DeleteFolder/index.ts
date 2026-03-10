@@ -1,6 +1,6 @@
 export { DeleteFolderFeature } from "./feature.js";
 export {
-    FolderAfterDeleteHandler,
-    FolderBeforeDeleteHandler,
+    FolderAfterDeleteEventHandler,
+    FolderBeforeDeleteEventHandler,
     DeleteFolderUseCase
 } from "./abstractions.js";
