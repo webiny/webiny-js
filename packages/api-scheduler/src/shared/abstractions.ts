@@ -11,13 +11,14 @@ export interface Identity {
     displayName: string;
 }
 
+export type ScheduledActionType = "Publish" | "Unpublish" | "Send" | "Delete";
 /**
  * Scheduled Action Record - The data stored for a scheduled action
  */
 export interface IScheduledAction<T extends GenericRecord> {
     id: string;
     namespace: string; // Resource scope: "Cms/Entry/Article", "Mailer/Email"
-    actionType: string; // Operation: "Publish", "Unpublish", "Send", "Delete"
+    actionType: ScheduledActionType;
     targetId: string; // Resource identifier (entry ID, email ID, etc.)
     scheduledBy: Identity;
     scheduledFor: string;

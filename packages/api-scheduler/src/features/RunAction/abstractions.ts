@@ -1,5 +1,5 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
-import type { IScheduledAction } from "~/shared/abstractions.js";
+import type { IScheduledAction, ScheduledActionType } from "~/shared/abstractions.js";
 import {
     InvalidScheduleDateError,
     ScheduledActionPersistenceError,
@@ -27,7 +27,7 @@ type RunActionError = IRunActionErrors[keyof IRunActionErrors];
 
 interface IRunActionParams<T extends GenericRecord> {
     namespace: string;
-    actionType: string;
+    actionType: ScheduledActionType;
     targetId: string;
     payload: T;
 }

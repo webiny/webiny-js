@@ -12,7 +12,7 @@ import type { FieldRule } from "~/types.js";
 import { FieldPermissionsSelection } from "./FieldPermissionsSelection.js";
 import { CannotUsePermissions } from "./CannotUsePermissions.js";
 
-export const PermissionsTab = ({ gridClassName }: { gridClassName?: string }) => {
+export const PermissionsEditor = () => {
     const wcp = useWcp();
     const bind = useBind({ name: "rules" });
     const allRules: FieldRule[] = bind.value || [];
@@ -53,7 +53,7 @@ export const PermissionsTab = ({ gridClassName }: { gridClassName?: string }) =>
 
     if (!wcp.canUseHcmsFieldPermissions()) {
         return (
-            <Grid className={gridClassName}>
+            <Grid>
                 <Grid.Column span={12}>
                     <CannotUsePermissions />
                 </Grid.Column>
@@ -62,7 +62,7 @@ export const PermissionsTab = ({ gridClassName }: { gridClassName?: string }) =>
     }
 
     return (
-        <Grid className={gridClassName}>
+        <Grid>
             <Grid.Column span={12}>
                 <UsersTeamsMultiAutocomplete
                     options={targetsList}

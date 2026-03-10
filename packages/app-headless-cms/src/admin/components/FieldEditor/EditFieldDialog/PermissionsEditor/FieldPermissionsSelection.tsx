@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ReactComponent as More } from "@webiny/icons/arrow_drop_down.svg";
-import { Button, DropdownMenu, List, Scrollbar, Text, Avatar } from "@webiny/admin-ui";
+import { Button, DropdownMenu, List, Text, Avatar } from "@webiny/admin-ui";
 import type { FolderLevelPermissionsTarget } from "@webiny/app-aco";
 import type { FieldRule } from "~/types.js";
 
@@ -135,29 +135,31 @@ export const FieldPermissionsSelection = ({
         })
         .filter(Boolean) as Selection;
 
+    const hasRules = selection.length > 0;
+
     return (
         <>
-            <Text as={"div"} className={"mb-md"}>
-                People and teams with access
-            </Text>
-            <Scrollbar style={{ minHeight: "100px" }}>
-                <List>
-                    {selection?.map(item => (
-                        <List.Item
-                            key={String(item.rule.value)}
-                            title={<ListItemText target={item.target} />}
-                            icon={<ListItemGraphic target={item.target} />}
-                            actions={
-                                <ListItemMeta
-                                    rule={item.rule}
-                                    onRemoveAccess={onRemoveAccess}
-                                    onUpdatePermission={onUpdatePermission}
-                                />
-                            }
-                        />
-                    ))}
-                </List>
-            </Scrollbar>
+            {hasRules ? (
+                <Text as={"div"} className={"mb-md"}>
+                    People and teams with access
+                </Text>
+            ) : null}
+            <List>
+                {selection?.map(item => (
+                    <List.Item
+                        key={String(item.rule.value)}
+                        title={<ListItemText target={item.target} />}
+                        icon={<ListItemGraphic target={item.target} />}
+                        actions={
+                            <ListItemMeta
+                                rule={item.rule}
+                                onRemoveAccess={onRemoveAccess}
+                                onUpdatePermission={onUpdatePermission}
+                            />
+                        }
+                    />
+                ))}
+            </List>
         </>
     );
 };

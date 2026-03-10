@@ -1,4 +1,5 @@
-export { PermissionsTab } from "@webiny/app-headless-cms/admin/components/FieldEditor/EditFieldDialog/PermissionsTab/PermissionsTab.js";
+export { RulesEditor } from "@webiny/app-headless-cms/admin/components/FieldEditor/EditFieldDialog/RulesEditor/index.js";
+export { PermissionsEditor } from "@webiny/app-headless-cms/admin/components/FieldEditor/EditFieldDialog/PermissionsEditor/PermissionsEditor.js";
 export {
     useFieldAccessControlRules,
     useFieldEffectiveRules
