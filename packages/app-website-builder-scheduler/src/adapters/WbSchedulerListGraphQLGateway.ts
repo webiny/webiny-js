@@ -1,5 +1,5 @@
 import type { ApolloClient } from "apollo-client";
-import type { CmsErrorResponse, SchedulerMetaResponse } from "~/types.js";
+import type { CmsErrorResponse, SchedulerMetaResponse, WbSchedulerEntry } from "~/types.js";
 import gql from "graphql-tag";
 import zod from "zod";
 import { createZodError } from "@webiny/utils/createZodError.js";
@@ -11,7 +11,6 @@ import type {
     IWbSchedulerListGateway,
     IWbSchedulerListGatewayResponse
 } from "~/Gateways/index.js";
-import type { WbSchedulerEntry } from "~/types.js";
 import { WB_SCHEDULE_RECORD_FIELDS } from "./graphql/fields.js";
 
 const createWbSchedulerListQuery = () => {
@@ -84,14 +83,17 @@ export class WbSchedulerListGraphQLGateway implements IWbSchedulerListGateway {
     public async execute(
         params: IWbSchedulerListExecuteParams
     ): Promise<IWbSchedulerListGatewayResponse> {
-        const { modelId, ...variables } = params;
-
         const { data: response, errors } = await this.client.query<
             WbSchedulerListGraphQLQueryResponse,
             WbSchedulerListGraphQLQueryVariables
         >({
             query: createWbSchedulerListQuery(),
-            variables,
+            variables: {
+                after: params.after,
+                limit: params.limit,
+                sort: params.sort,
+                where: params.where
+            },
             fetchPolicy: "network-only"
         });
 
