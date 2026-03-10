@@ -185,11 +185,156 @@ Register with a dedicated JSX element:
 <Security.ApiKey.AfterUpdate src={"/extensions/MyApiKeyAfterUpdate.ts"} />
 ```
 
+## All Available Event Handlers
+
+### `webiny/api/cms/entry`
+
+| Handler | Fires When |
+| --- | --- |
+| `EntryBeforeCreateEventHandler` | Before a new entry is saved |
+| `EntryAfterCreateEventHandler` | After a new entry is saved |
+| `EntryRevisionBeforeCreateEventHandler` | Before a revision is created |
+| `EntryRevisionAfterCreateEventHandler` | After a revision is created |
+| `EntryBeforeUpdateEventHandler` | Before an entry is updated |
+| `EntryAfterUpdateEventHandler` | After an entry is updated |
+| `EntryBeforeDeleteEventHandler` | Before an entry is deleted |
+| `EntryAfterDeleteEventHandler` | After an entry is deleted |
+| `EntryRevisionBeforeDeleteEventHandler` | Before a revision is deleted |
+| `EntryRevisionAfterDeleteEventHandler` | After a revision is deleted |
+| `EntryBeforeDeleteMultipleEventHandler` | Before multiple entries are deleted |
+| `EntryAfterDeleteMultipleEventHandler` | After multiple entries are deleted |
+| `EntryBeforeMoveEventHandler` | Before an entry is moved |
+| `EntryAfterMoveEventHandler` | After an entry is moved |
+| `EntryBeforePublishEventHandler` | Before an entry is published |
+| `EntryAfterPublishEventHandler` | After an entry is published |
+| `EntryBeforeRepublishEventHandler` | Before an entry is republished |
+| `EntryAfterRepublishEventHandler` | After an entry is republished |
+| `EntryBeforeRestoreFromBinEventHandler` | Before an entry is restored from bin |
+| `EntryAfterRestoreFromBinEventHandler` | After an entry is restored from bin |
+| `EntryBeforeUnpublishEventHandler` | Before an entry is unpublished |
+| `EntryAfterUnpublishEventHandler` | After an entry is unpublished |
+
+### `webiny/api/cms/model`
+
+| Handler | Fires When |
+| --- | --- |
+| `ModelBeforeCreateEventHandler` | Before a model is created |
+| `ModelAfterCreateEventHandler` | After a model is created |
+| `ModelBeforeCreateFromEventHandler` | Before a model is cloned |
+| `ModelAfterCreateFromEventHandler` | After a model is cloned |
+| `ModelBeforeUpdateEventHandler` | Before a model is updated |
+| `ModelAfterUpdateEventHandler` | After a model is updated |
+| `ModelBeforeDeleteEventHandler` | Before a model is deleted |
+| `ModelAfterDeleteEventHandler` | After a model is deleted |
+
+### `webiny/api/cms/group`
+
+| Handler | Fires When |
+| --- | --- |
+| `GroupBeforeCreateEventHandler` | Before a group is created |
+| `GroupAfterCreateEventHandler` | After a group is created |
+| `GroupBeforeUpdateEventHandler` | Before a group is updated |
+| `GroupAfterUpdateEventHandler` | After a group is updated |
+| `GroupBeforeDeleteEventHandler` | Before a group is deleted |
+| `GroupAfterDeleteEventHandler` | After a group is deleted |
+
+### `webiny/api/security/authentication`
+
+| Handler | Fires When |
+| --- | --- |
+| `BeforeAuthenticationEventHandler` | Before authentication |
+| `AfterAuthenticationEventHandler` | After authentication |
+
+### `webiny/api/security/api-key`
+
+| Handler | Fires When |
+| --- | --- |
+| `ApiKeyBeforeCreateEventHandler` | Before an API key is created |
+| `ApiKeyAfterCreateEventHandler` | After an API key is created |
+| `ApiKeyBeforeDeleteEventHandler` | Before an API key is deleted |
+| `ApiKeyAfterDeleteEventHandler` | After an API key is deleted |
+| `ApiKeyBeforeUpdateEventHandler` | Before an API key is updated |
+| `ApiKeyAfterUpdateEventHandler` | After an API key is updated |
+
+### `webiny/api/security/role`
+
+| Handler | Fires When |
+| --- | --- |
+| `RoleBeforeCreateEventHandler` | Before a role is created |
+| `RoleAfterCreateEventHandler` | After a role is created |
+| `RoleBeforeDeleteEventHandler` | Before a role is deleted |
+| `RoleAfterDeleteEventHandler` | After a role is deleted |
+| `RoleBeforeUpdateEventHandler` | Before a role is updated |
+| `RoleAfterUpdateEventHandler` | After a role is updated |
+
+### `webiny/api/security/user`
+
+| Handler | Fires When |
+| --- | --- |
+| `UserBeforeCreateEventHandler` | Before a user is created |
+| `UserAfterCreateEventHandler` | After a user is created |
+| `UserBeforeDeleteEventHandler` | Before a user is deleted |
+| `UserAfterDeleteEventHandler` | After a user is deleted |
+| `UserBeforeUpdateEventHandler` | Before a user is updated |
+| `UserAfterUpdateEventHandler` | After a user is updated |
+
+### `webiny/api/tenancy`
+
+| Handler | Fires When |
+| --- | --- |
+| `TenantBeforeCreateEventHandler` | Before a tenant is created |
+| `TenantAfterCreateEventHandler` | After a tenant is created |
+| `TenantBeforeUpdateEventHandler` | Before a tenant is updated |
+| `TenantAfterUpdateEventHandler` | After a tenant is updated |
+| `TenantBeforeDeleteEventHandler` | Before a tenant is deleted |
+| `TenantAfterDeleteEventHandler` | After a tenant is deleted |
+| `TenantInstalledEventHandler` | After a tenant is installed |
+
+### `webiny/api/system`
+
+| Handler | Fires When |
+| --- | --- |
+| `SystemInstalledEventHandler` | After the system is installed |
+
+### `webiny/api/website-builder/page`
+
+| Handler | Fires When |
+| --- | --- |
+| `PageBeforeCreateEventHandler` | Before a page is created |
+| `PageAfterCreateEventHandler` | After a page is created |
+| `PageBeforeCreateRevisionFromEventHandler` | Before a page revision is created |
+| `PageAfterCreateRevisionFromEventHandler` | After a page revision is created |
+| `PageBeforeDeleteEventHandler` | Before a page is deleted |
+| `PageAfterDeleteEventHandler` | After a page is deleted |
+| `PageBeforeDuplicateEventHandler` | Before a page is duplicated |
+| `PageAfterDuplicateEventHandler` | After a page is duplicated |
+| `PageBeforeMoveEventHandler` | Before a page is moved |
+| `PageAfterMoveEventHandler` | After a page is moved |
+| `PageBeforePublishEventHandler` | Before a page is published |
+| `PageAfterPublishEventHandler` | After a page is published |
+| `PageBeforeUnpublishEventHandler` | Before a page is unpublished |
+| `PageAfterUnpublishEventHandler` | After a page is unpublished |
+| `PageBeforeUpdateEventHandler` | Before a page is updated |
+| `PageAfterUpdateEventHandler` | After a page is updated |
+
+### `webiny/api/website-builder/redirect`
+
+| Handler | Fires When |
+| --- | --- |
+| `RedirectBeforeCreateEventHandler` | Before a redirect is created |
+| `RedirectAfterCreateEventHandler` | After a redirect is created |
+| `RedirectBeforeDeleteEventHandler` | Before a redirect is deleted |
+| `RedirectAfterDeleteEventHandler` | After a redirect is deleted |
+| `RedirectBeforeMoveEventHandler` | Before a redirect is moved |
+| `RedirectAfterMoveEventHandler` | After a redirect is moved |
+| `RedirectBeforeUpdateEventHandler` | Before a redirect is updated |
+| `RedirectAfterUpdateEventHandler` | After a redirect is updated |
+
 ## Quick Reference
 
 ```
 CMS hooks import:   import { EntryBeforeCreateEventHandler } from "webiny/api/cms/entry";
-Security import:    import { ApiKeyAfterUpdateEventHandler } from "webiny/api/security/apiKey";
+Security import:    import { ApiKeyAfterUpdateEventHandler } from "webiny/api/security/api-key";
 Event shape:        event.modelId (string), event.payload (object), event.payload.values (object)
 Export:             Handler.createImplementation({ implementation, dependencies })
 Register CMS:       <Api.Extension src={"/extensions/MyHook.ts"} />
@@ -200,4 +345,4 @@ Deploy:             yarn webiny deploy api
 ## Related Skills
 
 - `content-models` -- Define the models your hooks target
-- `dependency-injection` -- Inject Logger, BuildParams, and other services
+- `dependency-injection` -- Inject Logger, BuildParams, and other services into event handlers
