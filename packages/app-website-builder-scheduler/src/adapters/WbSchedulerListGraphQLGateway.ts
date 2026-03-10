@@ -84,7 +84,7 @@ export class WbSchedulerListGraphQLGateway implements IWbSchedulerListGateway {
     public async execute(
         params: IWbSchedulerListExecuteParams
     ): Promise<IWbSchedulerListGatewayResponse> {
-        const { modelId: _modelId, ...variables } = params;
+        const { modelId, ...variables } = params;
 
         const { data: response, errors } = await this.client.query<
             WbSchedulerListGraphQLQueryResponse,
