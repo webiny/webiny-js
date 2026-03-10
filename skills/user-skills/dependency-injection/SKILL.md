@@ -60,82 +60,313 @@ Key rules:
 | CLI Commands    | `CliCommandFactory`                   | `"webiny/cli/command"`         |
 | Pulumi Handlers | `CorePulumi`                          | `"webiny/infra/core"`          |
 
-## Injectable Services
+## Injectable Abstractions
 
-### Utility Services
+Every Abstraction listed below can be used as a constructor dependency or as a base for `createImplementation`. Import from the `"webiny/..."` path shown.
 
-| Service       | Import                      | Interface               | Available In | Purpose                          |
-| ------------- | --------------------------- | ----------------------- | ------------ | -------------------------------- |
-| `Logger`      | `"webiny/api/logger"`       | `Logger.Interface`      | API          | Logging (persists to CloudWatch) |
-| `BuildParams` | `"webiny/api/build-params"` | `BuildParams.Interface` | API          | Access build-time parameters     |
-| `Ui` (CLI)    | `"webiny/cli"`              | `Ui.Interface`          | CLI          | Terminal output formatting       |
-| `Ui` (Infra)  | `"webiny/infra"`            | `Ui.Interface`          | Infra        | Terminal output during deploy    |
+### `webiny/api/build-params`
 
-### Logger Methods
+| Abstraction  | Purpose                  |
+| ------------ | ------------------------ |
+| `BuildParam` | Define a build parameter |
+| `BuildParams` | Access build-time parameters |
 
-```typescript
-this.logger.info("Informational message");
-this.logger.warn("Warning message");
-this.logger.error("Error message");
-this.logger.debug("Debug message");
-```
+### `webiny/api/logger`
 
-### BuildParams Methods
+| Abstraction | Purpose                          |
+| ----------- | -------------------------------- |
+| `Logger`    | Logging (persists to CloudWatch) |
 
-```typescript
-// Get a string parameter
-const value = this.buildParams.get<string>("MY_PARAM");
+### `webiny/api/key-value-store`
 
-// Get a complex parameter
-const config = this.buildParams.get<{ myKey: number; nested: { foo: string } }>("MY_CONFIG");
-```
+| Abstraction          | Purpose                        |
+| -------------------- | ------------------------------ |
+| `GlobalKeyValueStore` | Global (cross-tenant) key-value store |
+| `KeyValueStore`      | Tenant-scoped key-value store  |
 
-Parameters are set in `webiny.config.tsx`:
+### `webiny/api/event-publisher`
 
-```tsx
-<Api.BuildParam paramName="MY_PARAM" value="customValue" />
-<Api.BuildParam paramName="MY_CONFIG" value={{ myKey: 2, nested: { foo: "bar" } }} />
-```
+| Abstraction      | Purpose              |
+| ---------------- | -------------------- |
+| `EventPublisher` | Publish domain events |
 
-### Core Context Features
+### `webiny/api/graphql`
 
-| Feature           | Import Path                                                              | Purpose                               |
-| ----------------- | ------------------------------------------------------------------------ | ------------------------------------- |
-| `IdentityContext` | `"webiny/api/security"` or `"@webiny/api-core/features/IdentityContext"` | Current user identity and permissions |
-| `TenantContext`   | `"@webiny/api-core/features/TenantContext"`                              | Current tenant information            |
-| `EventPublisher`  | `"@webiny/api-core/features/EventPublisher"`                             | Publish domain events                 |
-| `WcpContext`      | `"@webiny/api-core/features/WcpContext"`                                 | Webiny Control Panel integration      |
-| `GetSettings`     | `"@webiny/api-core/features/settings/GetSettings"`                       | Retrieve settings records             |
-| `UpdateSettings`  | `"@webiny/api-core/features/settings/UpdateSettings"`                    | Create/update settings records        |
+| Abstraction            | Purpose               |
+| ---------------------- | --------------------- |
+| `GraphQLSchemaFactory` | Define GraphQL schemas |
 
-### Headless CMS Use-Cases
+### `webiny/api/tasks`
 
-| Feature                       | Import Path                                                     | Purpose                      |
-| ----------------------------- | --------------------------------------------------------------- | ---------------------------- |
-| `GetEntryByIdUseCase`         | `"@webiny/api-headless-cms/features/contentEntry/GetEntryById"` | Fetch entry by revision ID   |
-| `GetEntryUseCase`             | `"@webiny/api-headless-cms/features/contentEntry/GetEntry"`     | Get entry by query           |
-| `ListLatestEntriesUseCase`    | `"@webiny/api-headless-cms/features/contentEntry/ListEntries"`  | List latest entries          |
-| `ListPublishedEntriesUseCase` | `"@webiny/api-headless-cms/features/contentEntry/ListEntries"`  | List published entries       |
-| `ListDeletedEntriesUseCase`   | `"@webiny/api-headless-cms/features/contentEntry/ListEntries"`  | List deleted entries         |
-| `CreateEntryUseCase`          | `"@webiny/api-headless-cms/features/contentEntry/CreateEntry"`  | Create entry                 |
-| `UpdateEntryUseCase`          | `"@webiny/api-headless-cms/features/contentEntry/UpdateEntry"`  | Update entry                 |
-| `DeleteEntryUseCase`          | `"@webiny/api-headless-cms/features/contentEntry/DeleteEntry"`  | Delete entry                 |
-| `GetModelUseCase`             | `"@webiny/api-headless-cms/features/contentModel/GetModel"`     | Get model by ID              |
-| `ListModelsUseCase`           | `"@webiny/api-headless-cms/features/contentModel/ListModels"`   | List all models              |
-| `GetModelRepository`          | `"@webiny/api-headless-cms/features/contentModel/GetModel"`     | Fetch model from cache       |
-| `ListModelsRepository`        | `"@webiny/api-headless-cms/features/contentModel/ListModels"`   | Fetch all models from cache  |
-| `ModelsFetcher`               | `"@webiny/api-headless-cms/features/contentModel/shared"`       | Centralized model fetching   |
-| `ListEntriesRepository`       | `"@webiny/api-headless-cms/features/contentEntry/ListEntries"`  | Storage-level entry fetching |
+| Abstraction      | Purpose                |
+| ---------------- | ---------------------- |
+| `TaskService`    | Task management service |
+| `TaskDefinition` | Define a background task |
 
-### Tenancy Use-Cases
+### `webiny/api/system`
 
-| Feature                | Import Path                                         | Purpose            |
-| ---------------------- | --------------------------------------------------- | ------------------ |
-| `GetTenantByIdUseCase` | `"@webiny/api-core/features/tenancy/GetTenantById"` | Fetch tenant by ID |
-| `CreateTenantUseCase`  | `"@webiny/api-core/features/tenancy/CreateTenant"`  | Create a tenant    |
-| `UpdateTenantUseCase`  | `"@webiny/api-core/features/tenancy/UpdateTenant"`  | Update a tenant    |
-| `DeleteTenantUseCase`  | `"@webiny/api-core/features/tenancy/DeleteTenant"`  | Delete a tenant    |
-| `InstallTenantUseCase` | `"@webiny/api-core/features/tenancy/InstallTenant"` | Install a tenant   |
+| Abstraction                 | Purpose                    |
+| --------------------------- | -------------------------- |
+| `InstallSystemUseCase`      | System installation logic  |
+| `SystemInstalledEventHandler` | Hook into system installed event |
+
+### `webiny/api/security`
+
+| Abstraction           | Purpose                               |
+| --------------------- | ------------------------------------- |
+| `IdentityContext`     | Current user identity and permissions |
+| `ApiKeyFactory`       | Define custom API key types           |
+| `IdentityProvider`    | Base identity provider abstraction    |
+| `OidcIdentityProvider` | OIDC identity provider               |
+| `JwtIdentityProvider` | JWT identity provider                 |
+| `Authenticator`       | Authentication logic                  |
+| `Authorizer`          | Authorization logic                   |
+
+### `webiny/api/security/authentication`
+
+| Abstraction                        | Purpose                        |
+| ---------------------------------- | ------------------------------ |
+| `BeforeAuthenticationEventHandler` | Hook before authentication     |
+| `AfterAuthenticationEventHandler`  | Hook after authentication      |
+
+### `webiny/api/security/api-key`
+
+| Abstraction                        | Purpose                  |
+| ---------------------------------- | ------------------------ |
+| `CreateApiKeyUseCase`              | Create an API key        |
+| `DeleteApiKeyUseCase`              | Delete an API key        |
+| `GetApiKeyUseCase`                 | Get API key by ID        |
+| `GetApiKeyByTokenUseCase`          | Get API key by token     |
+| `ListApiKeysUseCase`               | List all API keys        |
+| `UpdateApiKeyUseCase`              | Update an API key        |
+| `ApiKeyFactory`                    | Define custom API key types |
+| `ApiKeyBeforeCreateEventHandler`   | Hook before API key create |
+| `ApiKeyAfterCreateEventHandler`    | Hook after API key create |
+| `ApiKeyBeforeDeleteEventHandler`   | Hook before API key delete |
+| `ApiKeyAfterDeleteEventHandler`    | Hook after API key delete |
+| `ApiKeyBeforeUpdateEventHandler`   | Hook before API key update |
+| `ApiKeyAfterUpdateEventHandler`    | Hook after API key update |
+
+### `webiny/api/security/role`
+
+| Abstraction                      | Purpose                |
+| -------------------------------- | ---------------------- |
+| `CreateRoleUseCase`              | Create a role          |
+| `DeleteRoleUseCase`              | Delete a role          |
+| `GetRoleUseCase`                 | Get role by ID         |
+| `ListRolesUseCase`               | List all roles         |
+| `UpdateRoleUseCase`              | Update a role          |
+| `RoleBeforeCreateEventHandler`   | Hook before role create |
+| `RoleAfterCreateEventHandler`    | Hook after role create |
+| `RoleBeforeDeleteEventHandler`   | Hook before role delete |
+| `RoleAfterDeleteEventHandler`    | Hook after role delete |
+| `RoleBeforeUpdateEventHandler`   | Hook before role update |
+| `RoleAfterUpdateEventHandler`    | Hook after role update |
+
+### `webiny/api/security/user`
+
+| Abstraction                      | Purpose                |
+| -------------------------------- | ---------------------- |
+| `CreateUserUseCase`              | Create a user          |
+| `DeleteUserUseCase`              | Delete a user          |
+| `UpdateUserUseCase`              | Update a user          |
+| `GetUserUseCase`                 | Get user by ID         |
+| `ListUsersUseCase`               | List all users         |
+| `ListUserTeamsUseCase`           | List user's teams      |
+| `UserBeforeCreateEventHandler`   | Hook before user create |
+| `UserAfterCreateEventHandler`    | Hook after user create |
+| `UserBeforeDeleteEventHandler`   | Hook before user delete |
+| `UserAfterDeleteEventHandler`    | Hook after user delete |
+| `UserBeforeUpdateEventHandler`   | Hook before user update |
+| `UserAfterUpdateEventHandler`    | Hook after user update |
+
+### `webiny/api/tenancy`
+
+| Abstraction                        | Purpose                    |
+| ---------------------------------- | -------------------------- |
+| `TenantContext`                    | Current tenant information |
+| `CreateTenantUseCase`              | Create a tenant            |
+| `CreateTenantRepository`           | Tenant creation storage    |
+| `GetTenantByIdUseCase`             | Fetch tenant by ID         |
+| `UpdateTenantUseCase`              | Update a tenant            |
+| `UpdateTenantRepository`           | Tenant update storage      |
+| `DeleteTenantUseCase`              | Delete a tenant            |
+| `DeleteTenantRepository`           | Tenant deletion storage    |
+| `InstallTenantUseCase`             | Install a tenant           |
+| `AppInstaller`                     | App installation during tenant install |
+| `TenantBeforeCreateEventHandler`   | Hook before tenant create  |
+| `TenantAfterCreateEventHandler`    | Hook after tenant create   |
+| `TenantBeforeUpdateEventHandler`   | Hook before tenant update  |
+| `TenantAfterUpdateEventHandler`    | Hook after tenant update   |
+| `TenantBeforeDeleteEventHandler`   | Hook before tenant delete  |
+| `TenantAfterDeleteEventHandler`    | Hook after tenant delete   |
+| `TenantInstalledEventHandler`      | Hook after tenant installed |
+
+### `webiny/api/tenant-manager`
+
+| Abstraction            | Purpose                        |
+| ---------------------- | ------------------------------ |
+| `TenantModelExtension` | Extend tenant data model       |
+
+### `webiny/api/cms/entry`
+
+| Abstraction                                        | Purpose                              |
+| -------------------------------------------------- | ------------------------------------ |
+| `CreateEntryUseCase`                               | Create a CMS entry                   |
+| `CreateEntryRevisionFromUseCase`                   | Create entry revision from existing  |
+| `DeleteEntryUseCase`                               | Delete an entry                      |
+| `MoveEntryToBinUseCase`                            | Move entry to bin                    |
+| `DeleteEntryRevisionUseCase`                       | Delete a specific revision           |
+| `DeleteMultipleEntriesUseCase`                     | Delete multiple entries              |
+| `MoveEntryUseCase`                                 | Move entry to folder                 |
+| `PublishEntryUseCase`                              | Publish an entry                     |
+| `RepublishEntryUseCase`                            | Republish an entry                   |
+| `RestoreEntryFromBinUseCase`                       | Restore entry from bin               |
+| `UnpublishEntryUseCase`                            | Unpublish an entry                   |
+| `UpdateEntryUseCase`                               | Update an entry                      |
+| `UpdateSingletonEntryUseCase`                      | Update a singleton entry             |
+| `GetEntriesByIdsUseCase`                           | Get entries by IDs                   |
+| `GetEntryUseCase`                                  | Get entry by query                   |
+| `GetEntryByIdUseCase`                              | Get entry by revision ID             |
+| `GetLatestEntriesByIdsUseCase`                     | Get latest entries by IDs            |
+| `GetLatestRevisionByEntryIdBaseUseCase`            | Get latest revision (base)           |
+| `GetLatestRevisionByEntryIdUseCase`                | Get latest revision                  |
+| `GetLatestDeletedRevisionByEntryIdUseCase`         | Get latest deleted revision          |
+| `GetLatestRevisionByEntryIdIncludingDeletedUseCase` | Get latest revision (incl. deleted) |
+| `GetPreviousRevisionByEntryIdBaseUseCase`          | Get previous revision (base)         |
+| `GetPreviousRevisionByEntryIdUseCase`              | Get previous revision                |
+| `GetPublishedEntriesByIdsUseCase`                  | Get published entries by IDs         |
+| `GetPublishedRevisionByEntryIdUseCase`             | Get published revision               |
+| `GetRevisionByIdUseCase`                           | Get revision by ID                   |
+| `GetRevisionsByEntryIdUseCase`                     | Get all revisions of an entry        |
+| `GetSingletonEntryUseCase`                         | Get singleton entry                  |
+| `ListEntriesUseCase`                               | List entries (base)                  |
+| `ListLatestEntriesUseCase`                         | List latest entries                  |
+| `ListPublishedEntriesUseCase`                      | List published entries               |
+| `ListDeletedEntriesUseCase`                        | List deleted entries                 |
+| `ValidateEntryUseCase`                             | Validate entry data                  |
+| `CmsWhereMapper`                                   | Map CMS where conditions             |
+| `CmsSortMapper`                                    | Map CMS sort conditions              |
+| `EntryBeforeCreateEventHandler`                    | Hook before entry create             |
+| `EntryAfterCreateEventHandler`                     | Hook after entry create              |
+| `EntryRevisionBeforeCreateEventHandler`            | Hook before revision create          |
+| `EntryRevisionAfterCreateEventHandler`             | Hook after revision create           |
+| `EntryBeforeDeleteEventHandler`                    | Hook before entry delete             |
+| `EntryAfterDeleteEventHandler`                     | Hook after entry delete              |
+| `EntryRevisionBeforeDeleteEventHandler`            | Hook before revision delete          |
+| `EntryRevisionAfterDeleteEventHandler`             | Hook after revision delete           |
+| `EntryBeforeDeleteMultipleEventHandler`            | Hook before multi-delete             |
+| `EntryAfterDeleteMultipleEventHandler`             | Hook after multi-delete              |
+| `EntryBeforeMoveEventHandler`                      | Hook before entry move               |
+| `EntryAfterMoveEventHandler`                       | Hook after entry move                |
+| `EntryBeforePublishEventHandler`                   | Hook before entry publish            |
+| `EntryAfterPublishEventHandler`                    | Hook after entry publish             |
+| `EntryBeforeRepublishEventHandler`                 | Hook before entry republish          |
+| `EntryAfterRepublishEventHandler`                  | Hook after entry republish           |
+| `EntryBeforeRestoreFromBinEventHandler`            | Hook before restore from bin         |
+| `EntryAfterRestoreFromBinEventHandler`             | Hook after restore from bin          |
+| `EntryBeforeUnpublishEventHandler`                 | Hook before entry unpublish          |
+| `EntryAfterUnpublishEventHandler`                  | Hook after entry unpublish           |
+| `EntryBeforeUpdateEventHandler`                    | Hook before entry update             |
+| `EntryAfterUpdateEventHandler`                     | Hook after entry update              |
+
+### `webiny/api/cms/model`
+
+| Abstraction                        | Purpose                      |
+| ---------------------------------- | ---------------------------- |
+| `ModelFactory`                     | Define CMS content models    |
+| `FieldType`                        | Define custom field types    |
+| `CreateModelUseCase`               | Create a model               |
+| `CreateModelFromUseCase`           | Clone a model                |
+| `UpdateModelUseCase`               | Update a model               |
+| `DeleteModelUseCase`               | Delete a model               |
+| `GetModelUseCase`                  | Get model by ID              |
+| `ListModelsUseCase`                | List all models              |
+| `ModelBeforeCreateEventHandler`    | Hook before model create     |
+| `ModelAfterCreateEventHandler`     | Hook after model create      |
+| `ModelBeforeCreateFromEventHandler` | Hook before model clone     |
+| `ModelAfterCreateFromEventHandler` | Hook after model clone       |
+| `ModelBeforeUpdateEventHandler`    | Hook before model update     |
+| `ModelAfterUpdateEventHandler`     | Hook after model update      |
+| `ModelBeforeDeleteEventHandler`    | Hook before model delete     |
+| `ModelAfterDeleteEventHandler`     | Hook after model delete      |
+
+### `webiny/api/cms/group`
+
+| Abstraction                        | Purpose                  |
+| ---------------------------------- | ------------------------ |
+| `ModelGroupFactory`                | Define model groups      |
+| `CreateGroupUseCase`               | Create a group           |
+| `UpdateGroupUseCase`               | Update a group           |
+| `DeleteGroupUseCase`               | Delete a group           |
+| `ListGroupsUseCase`                | List all groups          |
+| `GetGroupUseCase`                  | Get group by ID          |
+| `GroupBeforeCreateEventHandler`    | Hook before group create |
+| `GroupAfterCreateEventHandler`     | Hook after group create  |
+| `GroupBeforeUpdateEventHandler`    | Hook before group update |
+| `GroupAfterUpdateEventHandler`     | Hook after group update  |
+| `GroupBeforeDeleteEventHandler`    | Hook before group delete |
+| `GroupAfterDeleteEventHandler`     | Hook after group delete  |
+
+### `webiny/api/website-builder/nextjs`
+
+| Abstraction   | Purpose                    |
+| ------------- | -------------------------- |
+| `NextjsConfig` | Configure Next.js integration |
+
+### `webiny/api/website-builder/page`
+
+| Abstraction                                  | Purpose                          |
+| -------------------------------------------- | -------------------------------- |
+| `CreatePageUseCase`                          | Create a page                    |
+| `CreatePageRevisionFromUseCase`              | Create page revision from existing |
+| `DeletePageUseCase`                          | Delete a page                    |
+| `DuplicatePageUseCase`                       | Duplicate a page                 |
+| `GetPageByIdUseCase`                         | Get page by ID                   |
+| `GetPageByPathUseCase`                       | Get page by path                 |
+| `GetPageRevisionsUseCase`                    | Get page revisions               |
+| `ListPagesUseCase`                           | List pages                       |
+| `MovePageUseCase`                            | Move a page                      |
+| `PublishPageUseCase`                         | Publish a page                   |
+| `UnpublishPageUseCase`                       | Unpublish a page                 |
+| `UpdatePageUseCase`                          | Update a page                    |
+| `PageBeforeCreateEventHandler`               | Hook before page create          |
+| `PageAfterCreateEventHandler`                | Hook after page create           |
+| `PageBeforeCreateRevisionFromEventHandler`   | Hook before page revision create |
+| `PageAfterCreateRevisionFromEventHandler`    | Hook after page revision create  |
+| `PageBeforeDeleteEventHandler`               | Hook before page delete          |
+| `PageAfterDeleteEventHandler`                | Hook after page delete           |
+| `PageBeforeDuplicateEventHandler`            | Hook before page duplicate       |
+| `PageAfterDuplicateEventHandler`             | Hook after page duplicate        |
+| `PageBeforeMoveEventHandler`                 | Hook before page move            |
+| `PageAfterMoveEventHandler`                  | Hook after page move             |
+| `PageBeforePublishEventHandler`              | Hook before page publish         |
+| `PageAfterPublishEventHandler`               | Hook after page publish          |
+| `PageBeforeUnpublishEventHandler`            | Hook before page unpublish       |
+| `PageAfterUnpublishEventHandler`             | Hook after page unpublish        |
+| `PageBeforeUpdateEventHandler`               | Hook before page update          |
+| `PageAfterUpdateEventHandler`                | Hook after page update           |
+
+### `webiny/api/website-builder/redirect`
+
+| Abstraction                            | Purpose                          |
+| -------------------------------------- | -------------------------------- |
+| `CreateRedirectUseCase`                | Create a redirect                |
+| `DeleteRedirectUseCase`                | Delete a redirect                |
+| `GetActiveRedirectsUseCase`            | Get active redirects             |
+| `GetRedirectByIdUseCase`               | Get redirect by ID               |
+| `InvalidateRedirectsCacheUseCase`      | Invalidate redirects cache       |
+| `ListRedirectsUseCase`                 | List redirects                   |
+| `MoveRedirectUseCase`                  | Move a redirect                  |
+| `UpdateRedirectUseCase`                | Update a redirect                |
+| `RedirectBeforeCreateEventHandler`     | Hook before redirect create      |
+| `RedirectAfterCreateEventHandler`      | Hook after redirect create       |
+| `RedirectBeforeDeleteEventHandler`     | Hook before redirect delete      |
+| `RedirectAfterDeleteEventHandler`      | Hook after redirect delete       |
+| `RedirectBeforeMoveEventHandler`       | Hook before redirect move        |
+| `RedirectAfterMoveEventHandler`        | Hook after redirect move         |
+| `RedirectBeforeUpdateEventHandler`     | Hook before redirect update      |
+| `RedirectAfterUpdateEventHandler`      | Hook after redirect update       |
 
 ## Examples Across Extension Types
 
