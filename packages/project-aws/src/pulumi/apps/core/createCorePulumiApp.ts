@@ -13,7 +13,7 @@ import {
     type TableDefinition
 } from "~/pulumi/utils/addServiceManifestTableItem.js";
 import * as random from "@pulumi/random";
-import { LogDynamo } from "./LogDynamo.js";
+
 import { getProjectSdk } from "@webiny/project";
 import { CorePulumi } from "@webiny/project/abstractions/index.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
@@ -215,7 +215,6 @@ export function createCorePulumiApp() {
 
             // Setup DynamoDB table
             const dynamoDbTable = app.addModule(CoreDynamo, { protect });
-            const logDynamoDbTable = app.addModule(LogDynamo, { protect });
             const auditLogsDynamoDbTable = app.addModule(CoreAuditLogsDynamo, { protect });
 
             // Setup VPC
@@ -253,10 +252,6 @@ export function createCorePulumiApp() {
                 primaryDynamodbTableName: dynamoDbTable.output.name,
                 primaryDynamodbTableHashKey: dynamoDbTable.output.hashKey,
                 primaryDynamodbTableRangeKey: dynamoDbTable.output.rangeKey,
-                logDynamodbTableArn: logDynamoDbTable.output.arn,
-                logDynamodbTableName: logDynamoDbTable.output.name,
-                logDynamodbTableHashKey: logDynamoDbTable.output.hashKey,
-                logDynamodbTableRangeKey: logDynamoDbTable.output.rangeKey,
                 auditLogsDynamodbTableArn: auditLogsDynamoDbTable.output.arn,
                 auditLogsDynamodbTableName: auditLogsDynamoDbTable.output.name,
                 auditLogsDynamodbTableHashKey: auditLogsDynamoDbTable.output.hashKey,
@@ -274,7 +269,6 @@ export function createCorePulumiApp() {
 
             return {
                 dynamoDbTable,
-                logDynamoDbTable,
                 vpc,
                 ...cognito,
                 fileManagerBucket,

@@ -18,7 +18,6 @@ import {
 import { getAwsAccountId } from "../awsUtils.js";
 import { CoreVpc } from "./CoreVpc.js";
 import { LAMBDA_RUNTIME } from "~/pulumi/constants.js";
-import { LogDynamo } from "~/pulumi/apps/core/LogDynamo.js";
 
 export interface OpenSearchParams {
     protect: boolean;
@@ -50,8 +49,6 @@ export const OpenSearch = createAppModule({
         const isProduction = app.env.isProduction;
 
         const vpc = app.getModule(CoreVpc, { optional: true });
-
-        const logDynamoDbTable = app.getModule(LogDynamo);
 
         // This needs to be implemented in order to be able to use a shared OpenSearch cluster.
         let domain:
@@ -248,8 +245,7 @@ export const OpenSearch = createAppModule({
                 environment: {
                     variables: {
                         DEBUG: String(process.env.DEBUG),
-                        OPENSEARCH_ENDPOINT: domain.output.endpoint,
-                        DB_TABLE_LOG: logDynamoDbTable.output.name
+                        OPENSEARCH_ENDPOINT: domain.output.endpoint
                     }
                 },
                 description: "Process DynamoDB Stream.",

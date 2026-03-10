@@ -151,7 +151,6 @@ export const createApiPulumiApp = () => {
                     COGNITO_REGION: getEnvVariableAwsRegion(),
                     COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
                     DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_LOG: core.logDynamodbTableName,
                     DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName,
                     DB_TABLE_OPENSEARCH: core.opensearchDynamodbTableName,
                     OPENSEARCH_ENDPOINT: core.opensearchDomainEndpoint,
@@ -173,7 +172,6 @@ export const createApiPulumiApp = () => {
             const fileManager = app.addModule(ApiFileManager, {
                 env: {
                     DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_LOG: core.logDynamodbTableName,
                     DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName
                 }
             });

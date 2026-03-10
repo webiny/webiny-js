@@ -7,7 +7,6 @@ export type AllCommandType = ExtendedCommandType | "batchWrite" | "null";
 export enum DynamoDBTableType {
     REGULAR = "regular",
     OPENSEARCH = "opensearch",
-    LOG = "log",
     UNKNOWN = "unknown"
 }
 

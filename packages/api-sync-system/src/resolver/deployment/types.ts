@@ -11,8 +11,6 @@ export interface IDeploymentServices {
     primaryDynamoDbRangeKey: string;
     opensearchDynamodbTableArn?: string;
     opensearchDynamodbTableName?: string;
-    logDynamodbTableArn: string;
-    logDynamodbTableName: string;
     cognitoUserPoolId: string;
 }
 
