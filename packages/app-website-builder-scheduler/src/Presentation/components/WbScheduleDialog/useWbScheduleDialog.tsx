@@ -41,7 +41,10 @@ const dateToLocaleStringFormatter = new Intl.DateTimeFormat(undefined, {
     hour12: false
 });
 
-const ReschedulingAlert = ({ scheduleOn, type }: Pick<FormComponentProps, "scheduleOn" | "type">) => {
+const ReschedulingAlert = ({
+    scheduleOn,
+    type
+}: Pick<FormComponentProps, "scheduleOn" | "type">) => {
     if (!scheduleOn || !type) {
         return null;
     }
@@ -130,9 +133,7 @@ const FormComponent = ({ scheduleOn, type }: FormComponentProps) => {
                         validators={[validation.create("required"), minDateValidator]}
                     >
                         {bind => {
-                            return (
-                                <WbSchedulerDialogFormComponentDateTimeInput bind={bind} />
-                            );
+                            return <WbSchedulerDialogFormComponentDateTimeInput bind={bind} />;
                         }}
                     </Bind>
                 </Grid.Column>
@@ -183,12 +184,7 @@ export const useWbScheduleDialog = (): UseShowWbScheduleDialogResponse => {
 
         dialogClose.current = dialog.showDialog({
             title: `Schedule "${entry.title}"`,
-            content: (
-                <FormComponent
-                    type={schedulerEntry?.type}
-                    scheduleOn={scheduleOn}
-                />
-            ),
+            content: <FormComponent type={schedulerEntry?.type} scheduleOn={scheduleOn} />,
             formData: {
                 scheduleOn
             },

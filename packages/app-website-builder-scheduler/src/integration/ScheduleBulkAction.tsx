@@ -22,10 +22,7 @@ export const ScheduleBulkAction = () => {
     const dialog = useDialogs();
     const { showResultsDialog } = useDialog();
 
-    const publishGateway = useMemo(
-        () => new WbSchedulerPublishGraphQLGateway(client),
-        [client]
-    );
+    const publishGateway = useMemo(() => new WbSchedulerPublishGraphQLGateway(client), [client]);
 
     const pagesLabel = useMemo(() => {
         return getPagesLabel(worker.items.length);
@@ -64,27 +61,25 @@ export const ScheduleBulkAction = () => {
 
                 const scheduleOn = new Date(data.scheduleOn);
 
-                await worker.processInSeries(
-                    async ({ item, report }: CallbackParams<PageDto>) => {
-                        try {
-                            await publishGateway.execute({
-                                modelId: WB_PAGE_MODEL_ID,
-                                id: item.id,
-                                scheduleOn
-                            });
+                await worker.processInSeries(async ({ item, report }: CallbackParams<PageDto>) => {
+                    try {
+                        await publishGateway.execute({
+                            modelId: WB_PAGE_MODEL_ID,
+                            id: item.id,
+                            scheduleOn
+                        });
 
-                            report.success({
-                                title: item.properties.title,
-                                message: "Schedule successfully created."
-                            });
-                        } catch (e: any) {
-                            report.error({
-                                title: item.properties.title,
-                                message: e.message
-                            });
-                        }
+                        report.success({
+                            title: item.properties.title,
+                            message: "Schedule successfully created."
+                        });
+                    } catch (e: any) {
+                        report.error({
+                            title: item.properties.title,
+                            message: e.message
+                        });
                     }
-                );
+                });
 
                 worker.resetItems();
 

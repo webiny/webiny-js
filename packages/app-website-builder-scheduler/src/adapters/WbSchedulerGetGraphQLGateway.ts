@@ -4,10 +4,7 @@ import gql from "graphql-tag";
 import zod from "zod";
 import { createZodError } from "@webiny/utils/createZodError.js";
 import { wbSchedulerEntrySchema } from "./schema/wbSchedulerEntry.js";
-import type {
-    IWbSchedulerGetExecuteParams,
-    IWbSchedulerGetGateway
-} from "~/Gateways/index.js";
+import type { IWbSchedulerGetExecuteParams, IWbSchedulerGetGateway } from "~/Gateways/index.js";
 import type { WbSchedulerEntry } from "~/types.js";
 import { WB_SCHEDULE_RECORD_FIELDS } from "./graphql/fields.js";
 
