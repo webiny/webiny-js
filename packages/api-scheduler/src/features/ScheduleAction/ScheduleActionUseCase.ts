@@ -6,7 +6,7 @@ import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { parseIdentifier } from "@webiny/utils";
 import { ScheduleActionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
-import type { Identity, IScheduledAction } from "~/shared/abstractions.js";
+import type { Identity, IScheduledAction, ScheduledActionType } from "~/shared/abstractions.js";
 import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
 import {
     InvalidScheduleDateError,
@@ -91,7 +91,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         id: string,
         title: string,
         namespace: string,
-        actionType: string,
+        actionType: ScheduledActionType,
         targetId: string,
         scheduleFor: string,
         identity: Identity,
