@@ -8,11 +8,11 @@ import { ReactComponent as SeparatorIcon } from "@webiny/icons/line_style.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { Grid, IconButton, Input, Separator, Tabs, Text } from "@webiny/admin-ui";
+import { Grid, IconButton, Input, ScrollArea, Separator, Tabs, Text } from "@webiny/admin-ui";
 import { useDialogs } from "@webiny/app-admin";
 import { Bind } from "@webiny/form";
-import { PermissionsTab } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsTab/PermissionsTab.js";
-import { RulesTab } from "~/admin/components/FieldEditor/EditFieldDialog/RulesTab/RulesTab.js";
+import { PermissionsEditor } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsEditor/PermissionsEditor.js";
+import { RulesEditor } from "~/admin/components/FieldEditor/EditFieldDialog/RulesEditor/RulesEditor.js";
 import { useModelEditor } from "~/admin/components/ContentModelEditor/useModelEditor.js";
 import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
 
@@ -37,30 +37,40 @@ const SeparatorSettings = () => {
 
 const SeparatorDialogContent = ({ fieldOptions }: { fieldOptions: FieldOption[] }) => {
     return (
-        <Tabs
-            size={"md"}
-            separator
-            tabs={[
-                <Tabs.Tab
-                    key={"separator"}
-                    trigger={"Separator"}
-                    value={"separator"}
-                    content={<SeparatorSettings />}
-                />,
-                <Tabs.Tab
-                    key={"permissions"}
-                    trigger={"Permissions"}
-                    value={"permissions"}
-                    content={<PermissionsTab gridClassName={"mt-md"} />}
-                />,
-                <Tabs.Tab
-                    key={"rules"}
-                    trigger={"Rules"}
-                    value={"rules"}
-                    content={<RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />}
-                />
-            ]}
-        />
+        <ScrollArea className="max-h-[70vh] flex flex-col">
+            <Tabs
+                size={"md"}
+                separator
+                tabs={[
+                    <Tabs.Tab
+                        key={"separator"}
+                        trigger={"Separator"}
+                        value={"separator"}
+                        content={<SeparatorSettings />}
+                    />,
+                    <Tabs.Tab
+                        key={"permissions"}
+                        trigger={"Permissions"}
+                        value={"permissions"}
+                        content={
+                            <div className={"mt-md"}>
+                                <PermissionsEditor />
+                            </div>
+                        }
+                    />,
+                    <Tabs.Tab
+                        key={"rules"}
+                        trigger={"Rules"}
+                        value={"rules"}
+                        content={
+                            <div className={"mt-md"}>
+                                <RulesEditor fieldOptions={fieldOptions} />
+                            </div>
+                        }
+                    />
+                ]}
+            />
+        </ScrollArea>
     );
 };
 

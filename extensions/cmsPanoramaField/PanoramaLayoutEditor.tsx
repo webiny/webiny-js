@@ -1,9 +1,9 @@
 import React from "react";
 import type { CmsModelLayoutField } from "webiny/admin/cms";
-import { PermissionsTab } from "webiny/admin/cms/model";
+import { PermissionsEditor } from "webiny/admin/cms/model";
 import { ReactComponent as EditIcon } from "webiny/admin/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "webiny/admin/icons/delete.svg";
-import { Grid, Heading, IconButton, Input, Tabs, Text } from "webiny/admin/ui";
+import { Grid, Heading, IconButton, Input, ScrollArea, Tabs, Text } from "webiny/admin/ui";
 import { useDialogs } from "webiny/admin/ui";
 import { Bind } from "webiny/admin/form";
 
@@ -37,24 +37,30 @@ const PanoramaSettings = () => {
 
 const PanoramaDialogContent = () => {
     return (
-        <Tabs
-            size={"md"}
-            separator
-            tabs={[
-                <Tabs.Tab
-                    key={"panorama"}
-                    trigger={"Panorama"}
-                    value={"panorama"}
-                    content={<PanoramaSettings />}
-                />,
-                <Tabs.Tab
-                    key={"permissions"}
-                    trigger={"Permissions"}
-                    value={"permissions"}
-                    content={<PermissionsTab gridClassName={"mt-md"} />}
-                />
-            ]}
-        />
+        <ScrollArea className="max-h-[70vh] flex flex-col">
+            <Tabs
+                size={"md"}
+                separator
+                tabs={[
+                    <Tabs.Tab
+                        key={"panorama"}
+                        trigger={"Panorama"}
+                        value={"panorama"}
+                        content={<PanoramaSettings />}
+                    />,
+                    <Tabs.Tab
+                        key={"permissions"}
+                        trigger={"Permissions"}
+                        value={"permissions"}
+                        content={
+                            <div className={"mt-md"}>
+                                <PermissionsEditor />
+                            </div>
+                        }
+                    />
+                ]}
+            />
+        </ScrollArea>
     );
 };
 

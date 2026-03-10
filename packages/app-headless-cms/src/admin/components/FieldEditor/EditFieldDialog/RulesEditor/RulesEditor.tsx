@@ -205,13 +205,11 @@ const RuleRow = ({
 };
 
 interface RulesTabProps {
-    gridClassName?: string;
     fieldOptions: FieldOption[];
     actionOptions?: ActionOption[];
 }
 
-export const RulesTab = ({
-    gridClassName,
+export const RulesEditor = ({
     fieldOptions,
     actionOptions = DEFAULT_ACTION_OPTIONS
 }: RulesTabProps) => {
@@ -242,7 +240,7 @@ export const RulesTab = ({
     };
 
     return (
-        <Grid className={gridClassName}>
+        <Grid>
             <Grid.Column span={12}>
                 {entryRules.map((rule, index) => (
                     <RuleRow

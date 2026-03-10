@@ -6,8 +6,8 @@ import GeneralTab from "./GeneralTab.js";
 import AppearanceTab from "./AppearanceTab.js";
 import PredefinedValues from "./PredefinedValues.js";
 import { ValidationTab } from "./ValidationTab/index.js";
-import { PermissionsTab } from "./PermissionsTab/PermissionsTab.js";
-import { RulesTab } from "./RulesTab/RulesTab.js";
+import { PermissionsEditor } from "./PermissionsEditor/PermissionsEditor.js";
+import { RulesEditor } from "./RulesEditor/RulesEditor.js";
 import { ModelFieldProvider } from "~/admin/components/ModelFieldProvider/index.js";
 import { useModelEditor } from "~/admin/components/ContentModelEditor/useModelEditor.js";
 
@@ -66,13 +66,13 @@ export const FieldSettingsTabs = ({
                         key={"permissions"}
                         trigger={t`Permissions`}
                         value={"permissions"}
-                        content={<PermissionsTab />}
+                        content={<PermissionsEditor />}
                     />,
                     <Tabs.Tab
                         key={"rules"}
                         trigger={t`Rules`}
                         value={"rules"}
-                        content={<RulesTab fieldOptions={fieldOptions} />}
+                        content={<RulesEditor fieldOptions={fieldOptions} />}
                     />
                 ]}
             />

@@ -8,11 +8,20 @@ import { ReactComponent as AlertIcon } from "@webiny/icons/warning.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { Alert, Grid, IconButton, Tabs, Textarea, Select, Text } from "@webiny/admin-ui";
+import {
+    Alert,
+    Grid,
+    IconButton,
+    Tabs,
+    Textarea,
+    Select,
+    Text,
+    ScrollArea
+} from "@webiny/admin-ui";
 import { useDialogs } from "@webiny/app-admin";
 import { Bind } from "@webiny/form";
-import { PermissionsTab } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsTab/PermissionsTab.js";
-import { RulesTab } from "~/admin/components/FieldEditor/EditFieldDialog/RulesTab/RulesTab.js";
+import { PermissionsEditor } from "~/admin/components/FieldEditor/EditFieldDialog/PermissionsEditor/PermissionsEditor.js";
+import { RulesEditor } from "~/admin/components/FieldEditor/EditFieldDialog/RulesEditor/RulesEditor.js";
 import { useModelEditor } from "~/admin/components/ContentModelEditor/useModelEditor.js";
 import type { FieldOption } from "@webiny/app-headless-cms-common/Fields/fieldOptions.js";
 
@@ -46,30 +55,40 @@ const AlertSettings = () => {
 
 const AlertDialogContent = ({ fieldOptions }: { fieldOptions: FieldOption[] }) => {
     return (
-        <Tabs
-            size={"md"}
-            separator
-            tabs={[
-                <Tabs.Tab
-                    key={"alert"}
-                    trigger={"Alert"}
-                    value={"alert"}
-                    content={<AlertSettings />}
-                />,
-                <Tabs.Tab
-                    key={"permissions"}
-                    trigger={"Permissions"}
-                    value={"permissions"}
-                    content={<PermissionsTab gridClassName={"mt-md"} />}
-                />,
-                <Tabs.Tab
-                    key={"rules"}
-                    trigger={"Rules"}
-                    value={"rules"}
-                    content={<RulesTab gridClassName={"mt-md"} fieldOptions={fieldOptions} />}
-                />
-            ]}
-        />
+        <ScrollArea className="max-h-[70vh] flex flex-col">
+            <Tabs
+                size={"md"}
+                separator
+                tabs={[
+                    <Tabs.Tab
+                        key={"alert"}
+                        trigger={"Alert"}
+                        value={"alert"}
+                        content={<AlertSettings />}
+                    />,
+                    <Tabs.Tab
+                        key={"permissions"}
+                        trigger={"Permissions"}
+                        value={"permissions"}
+                        content={
+                            <div className={"mt-md"}>
+                                <PermissionsEditor />
+                            </div>
+                        }
+                    />,
+                    <Tabs.Tab
+                        key={"rules"}
+                        trigger={"Rules"}
+                        value={"rules"}
+                        content={
+                            <div className={"mt-md"}>
+                                <RulesEditor fieldOptions={fieldOptions} />
+                            </div>
+                        }
+                    />
+                ]}
+            />
+        </ScrollArea>
     );
 };
 
