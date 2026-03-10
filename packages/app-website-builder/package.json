@@ -11,8 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@emotion/react": "11.10.8",
-    "@emotion/styled": "11.10.6",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
     "@lexical/utils": "^0.40.0",
     "@monaco-editor/react": "^4.7.0",
     "@svgr/webpack": "^6.5.1",

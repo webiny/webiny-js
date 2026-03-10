@@ -13,8 +13,8 @@
   "dependencies": {
     "@apollo/react-components": "^3.1.5",
     "@apollo/react-hooks": "^3.1.5",
-    "@emotion/react": "11.10.8",
-    "@emotion/styled": "11.10.6",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
     "@iconify/json": "^2.2.448",
     "@monaco-editor/react": "^4.7.0",
     "@svgr/webpack": "^6.5.1",
