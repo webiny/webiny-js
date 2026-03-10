@@ -9,7 +9,7 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "find-up": "^5.0.0",
-    "fs-extra": "^11.3.3",
+    "fs-extra": "^11.3.4",
     "get-yarn-workspaces": "1.0.2",
     "load-json-file": "^7.0.1",
     "write-json-file": "^7.0.0"
