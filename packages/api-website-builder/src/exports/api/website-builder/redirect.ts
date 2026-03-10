@@ -1,12 +1,12 @@
 export {
     CreateRedirectUseCase,
-    RedirectAfterCreateHandler,
-    RedirectBeforeCreateHandler
+    RedirectAfterCreateEventHandler,
+    RedirectBeforeCreateEventHandler
 } from "~/features/redirects/CreateRedirect/abstractions.js";
 export {
     DeleteRedirectUseCase,
-    RedirectAfterDeleteHandler,
-    RedirectBeforeDeleteHandler
+    RedirectAfterDeleteEventHandler,
+    RedirectBeforeDeleteEventHandler
 } from "~/features/redirects/DeleteRedirect/abstractions.js";
 export { GetActiveRedirectsUseCase } from "~/features/redirects/GetActiveRedirects/abstractions.js";
 export { GetRedirectByIdUseCase } from "~/features/redirects/GetRedirectById/abstractions.js";
@@ -14,11 +14,11 @@ export { InvalidateRedirectsCacheUseCase } from "~/features/redirects/Invalidate
 export { ListRedirectsUseCase } from "~/features/redirects/ListRedirects/abstractions.js";
 export {
     MoveRedirectUseCase,
-    RedirectAfterMoveHandler,
-    RedirectBeforeMoveHandler
+    RedirectAfterMoveEventHandler,
+    RedirectBeforeMoveEventHandler
 } from "~/features/redirects/MoveRedirect/abstractions.js";
 export {
     UpdateRedirectUseCase,
-    RedirectAfterUpdateHandler,
-    RedirectBeforeUpdateHandler
+    RedirectAfterUpdateEventHandler,
+    RedirectBeforeUpdateEventHandler
 } from "~/features/redirects/UpdateRedirect/abstractions.js";

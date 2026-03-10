@@ -82,21 +82,21 @@ export interface PageAfterDeletePayload {
 // Event Handler Abstractions
 // ============================================================================
 
-export const PageBeforeDeleteHandler = createAbstraction<
+export const PageBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeDeletePayload>>
->("Wb/PageBeforeDeleteHandler");
+>("Wb/PageBeforeDeleteEventHandler");
 
-export namespace PageBeforeDeleteHandler {
+export namespace PageBeforeDeleteEventHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeDeletePayload>>;
     export type Event = DomainEvent<PageBeforeDeletePayload>;
     export type Page = WbPage;
 }
 
-export const PageAfterDeleteHandler = createAbstraction<
+export const PageAfterDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterDeletePayload>>
->("Wb/PageAfterDeleteHandler");
+>("Wb/PageAfterDeleteEventHandler");
 
-export namespace PageAfterDeleteHandler {
+export namespace PageAfterDeleteEventHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterDeletePayload>>;
     export type Event = DomainEvent<PageAfterDeletePayload>;
     export type Page = WbPage;

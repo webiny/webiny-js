@@ -1,1 +1,1 @@
-export { PageAfterMoveHandler, PageBeforeMoveHandler, MovePageUseCase } from "./abstractions.js";
+export { PageAfterMoveEventHandler, PageBeforeMoveEventHandler, MovePageUseCase } from "./abstractions.js";

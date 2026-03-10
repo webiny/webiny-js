@@ -1,5 +1,5 @@
 export {
-    RedirectAfterMoveHandler,
-    RedirectBeforeMoveHandler,
+    RedirectAfterMoveEventHandler,
+    RedirectBeforeMoveEventHandler,
     MoveRedirectUseCase
 } from "./abstractions.js";

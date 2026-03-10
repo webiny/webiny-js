@@ -1,11 +1,11 @@
 import { createImplementation } from "@webiny/feature/api";
-import { RedirectAfterUpdateHandler } from "~/features/redirects/UpdateRedirect/index.js";
+import { RedirectAfterUpdateEventHandler } from "~/features/redirects/UpdateRedirect/index.js";
 import { InvalidateRedirectsCacheUseCase } from "./abstractions.js";
 
-class RedirectAfterUpdateHandlerImpl implements RedirectAfterUpdateHandler.Interface {
+class RedirectAfterUpdateHandlerImpl implements RedirectAfterUpdateEventHandler.Interface {
     constructor(private invalidateCache: InvalidateRedirectsCacheUseCase.Interface) {}
 
-    async handle(event: RedirectAfterUpdateHandler.Event): Promise<void> {
+    async handle(event: RedirectAfterUpdateEventHandler.Event): Promise<void> {
         const { redirect, original } = event.payload;
 
         // Invalidate cache if any redirect-related field changed or isEnabled changed
@@ -20,7 +20,7 @@ class RedirectAfterUpdateHandlerImpl implements RedirectAfterUpdateHandler.Inter
 }
 
 export const RedirectAfterUpdateCacheHandler = createImplementation({
-    abstraction: RedirectAfterUpdateHandler,
+    abstraction: RedirectAfterUpdateEventHandler,
     implementation: RedirectAfterUpdateHandlerImpl,
     dependencies: [InvalidateRedirectsCacheUseCase]
 });

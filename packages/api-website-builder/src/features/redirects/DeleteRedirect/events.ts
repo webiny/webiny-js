@@ -1,5 +1,5 @@
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import { RedirectBeforeDeleteHandler, RedirectAfterDeleteHandler } from "./abstractions.js";
+import { RedirectBeforeDeleteEventHandler, RedirectAfterDeleteEventHandler } from "./abstractions.js";
 import type { RedirectBeforeDeletePayload, RedirectAfterDeletePayload } from "./abstractions.js";
 
 // RedirectBeforeDelete Event
@@ -7,7 +7,7 @@ export class RedirectBeforeDeleteEvent extends DomainEvent<RedirectBeforeDeleteP
     eventType = "redirect.beforeDelete" as const;
 
     getHandlerAbstraction() {
-        return RedirectBeforeDeleteHandler;
+        return RedirectBeforeDeleteEventHandler;
     }
 }
 
@@ -16,6 +16,6 @@ export class RedirectAfterDeleteEvent extends DomainEvent<RedirectAfterDeletePay
     eventType = "redirect.afterDelete" as const;
 
     getHandlerAbstraction() {
-        return RedirectAfterDeleteHandler;
+        return RedirectAfterDeleteEventHandler;
     }
 }

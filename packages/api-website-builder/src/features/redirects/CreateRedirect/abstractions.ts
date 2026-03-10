@@ -88,21 +88,21 @@ export interface RedirectAfterCreatePayload {
 // Event Handler Abstractions
 // ============================================================================
 
-export const RedirectBeforeCreateHandler = createAbstraction<
+export const RedirectBeforeCreateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectBeforeCreatePayload>>
->("Wb/RedirectBeforeCreateHandler");
+>("Wb/RedirectBeforeCreateEventHandler");
 
-export namespace RedirectBeforeCreateHandler {
+export namespace RedirectBeforeCreateEventHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectBeforeCreatePayload>>;
     export type Event = DomainEvent<RedirectBeforeCreatePayload>;
     export type Redirect = WbRedirect;
 }
 
-export const RedirectAfterCreateHandler = createAbstraction<
+export const RedirectAfterCreateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectAfterCreatePayload>>
->("Wb/RedirectAfterCreateHandler");
+>("Wb/RedirectAfterCreateEventHandler");
 
-export namespace RedirectAfterCreateHandler {
+export namespace RedirectAfterCreateEventHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectAfterCreatePayload>>;
     export type Event = DomainEvent<RedirectAfterCreatePayload>;
     export type Redirect = WbRedirect;

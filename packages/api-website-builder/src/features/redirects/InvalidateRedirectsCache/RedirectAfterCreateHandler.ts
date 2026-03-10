@@ -1,11 +1,11 @@
 import { createImplementation } from "@webiny/feature/api";
-import { RedirectAfterCreateHandler } from "~/features/redirects/CreateRedirect/index.js";
+import { RedirectAfterCreateEventHandler } from "~/features/redirects/CreateRedirect/index.js";
 import { InvalidateRedirectsCacheUseCase } from "./abstractions.js";
 
-class RedirectAfterCreateHandlerImpl implements RedirectAfterCreateHandler.Interface {
+class RedirectAfterCreateHandlerImpl implements RedirectAfterCreateEventHandler.Interface {
     constructor(private invalidateCache: InvalidateRedirectsCacheUseCase.Interface) {}
 
-    async handle(event: RedirectAfterCreateHandler.Event): Promise<void> {
+    async handle(event: RedirectAfterCreateEventHandler.Event): Promise<void> {
         const { redirect } = event.payload;
 
         // Only invalidate cache if the redirect is enabled
@@ -16,7 +16,7 @@ class RedirectAfterCreateHandlerImpl implements RedirectAfterCreateHandler.Inter
 }
 
 export const RedirectAfterCreateCacheHandler = createImplementation({
-    abstraction: RedirectAfterCreateHandler,
+    abstraction: RedirectAfterCreateEventHandler,
     implementation: RedirectAfterCreateHandlerImpl,
     dependencies: [InvalidateRedirectsCacheUseCase]
 });

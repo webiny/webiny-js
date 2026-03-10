@@ -1,5 +1,5 @@
 export {
-    PageAfterDuplicateHandler,
-    PageBeforeDuplicateHandler,
+    PageAfterDuplicateEventHandler,
+    PageBeforeDuplicateEventHandler,
     DuplicatePageUseCase
 } from "./abstractions.js";

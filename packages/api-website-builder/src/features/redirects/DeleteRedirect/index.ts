@@ -1,5 +1,5 @@
 export {
-    RedirectAfterDeleteHandler,
-    RedirectBeforeDeleteHandler,
+    RedirectAfterDeleteEventHandler,
+    RedirectBeforeDeleteEventHandler,
     DeleteRedirectUseCase
 } from "./abstractions.js";

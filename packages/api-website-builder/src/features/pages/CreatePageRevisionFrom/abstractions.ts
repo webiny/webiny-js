@@ -90,21 +90,21 @@ export interface PageAfterCreateRevisionFromPayload {
 // Event Handler Abstractions
 // ============================================================================
 
-export const PageBeforeCreateRevisionFromHandler = createAbstraction<
+export const PageBeforeCreateRevisionFromEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeCreateRevisionFromPayload>>
->("Wb/PageBeforeCreateRevisionFromHandler");
+>("Wb/PageBeforeCreateRevisionFromEventHandler");
 
-export namespace PageBeforeCreateRevisionFromHandler {
+export namespace PageBeforeCreateRevisionFromEventHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeCreateRevisionFromPayload>>;
     export type Event = DomainEvent<PageBeforeCreateRevisionFromPayload>;
     export type Page = WbPage;
 }
 
-export const PageAfterCreateRevisionFromHandler = createAbstraction<
+export const PageAfterCreateRevisionFromEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterCreateRevisionFromPayload>>
->("Wb/PageAfterCreateRevisionFromHandler");
+>("Wb/PageAfterCreateRevisionFromEventHandler");
 
-export namespace PageAfterCreateRevisionFromHandler {
+export namespace PageAfterCreateRevisionFromEventHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterCreateRevisionFromPayload>>;
     export type Event = DomainEvent<PageAfterCreateRevisionFromPayload>;
     export type Page = WbPage;

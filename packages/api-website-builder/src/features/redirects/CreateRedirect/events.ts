@@ -1,5 +1,5 @@
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import { RedirectBeforeCreateHandler, RedirectAfterCreateHandler } from "./abstractions.js";
+import { RedirectBeforeCreateEventHandler, RedirectAfterCreateEventHandler } from "./abstractions.js";
 import type { RedirectBeforeCreatePayload, RedirectAfterCreatePayload } from "./abstractions.js";
 
 // RedirectBeforeCreate Event
@@ -7,7 +7,7 @@ export class RedirectBeforeCreateEvent extends DomainEvent<RedirectBeforeCreateP
     eventType = "redirect.beforeCreate" as const;
 
     getHandlerAbstraction() {
-        return RedirectBeforeCreateHandler;
+        return RedirectBeforeCreateEventHandler;
     }
 }
 
@@ -16,6 +16,6 @@ export class RedirectAfterCreateEvent extends DomainEvent<RedirectAfterCreatePay
     eventType = "redirect.afterCreate" as const;
 
     getHandlerAbstraction() {
-        return RedirectAfterCreateHandler;
+        return RedirectAfterCreateEventHandler;
     }
 }

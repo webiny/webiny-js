@@ -1,12 +1,12 @@
 import { WebinyError } from "@webiny/error";
-import { PageBeforePublishHandler } from "@webiny/api-website-builder/features/pages/PublishPage/index.js";
+import { PageBeforePublishEventHandler } from "@webiny/api-website-builder/features/pages/PublishPage/index.js";
 import { WB_PAGE_APP } from "~/utils/appName.js";
 import { GetTargetWorkflowStateUseCase } from "@webiny/api-workflows/features/workflowState/GetTargetWorkflowState/index.js";
 
-class ValidateWorkflowStateOnPageBeforePublishImpl implements PageBeforePublishHandler.Interface {
+class ValidateWorkflowStateOnPageBeforePublishImpl implements PageBeforePublishEventHandler.Interface {
     constructor(private getTargetState: GetTargetWorkflowStateUseCase.Interface) {}
 
-    async handle(event: PageBeforePublishHandler.Event): Promise<void> {
+    async handle(event: PageBeforePublishEventHandler.Event): Promise<void> {
         const { page } = event.payload;
 
         const stateResult = await this.getTargetState.execute({
@@ -44,7 +44,7 @@ class ValidateWorkflowStateOnPageBeforePublishImpl implements PageBeforePublishH
 }
 
 export const ValidateWorkflowStateOnPageBeforePublish =
-    PageBeforePublishHandler.createImplementation({
+    PageBeforePublishEventHandler.createImplementation({
         implementation: ValidateWorkflowStateOnPageBeforePublishImpl,
         dependencies: [GetTargetWorkflowStateUseCase]
     });
