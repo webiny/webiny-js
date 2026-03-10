@@ -8,20 +8,19 @@ describe("cat nodes", () => {
         const client = createElasticsearchClient();
         const catNodes = new ElasticsearchCatNodes(client);
 
-        const expected: Partial<IElasticsearchCatNodeResponse>[] = [
-            {
-                "heap.percent": expect.any(String),
-                "ram.percent": expect.any(String),
-                cpu: expect.any(String),
-                load_1m: expect.any(String),
-                "node.role": expect.any(String),
-                ip: expect.any(String),
-                name: expect.any(String)
-            }
-        ];
-
+        const expected: Partial<IElasticsearchCatNodeResponse> = {
+            "heap.percent": expect.any(String),
+            "ram.percent": expect.any(String),
+            cpu: expect.any(String),
+            load_1m: expect.any(String),
+            "node.role": expect.any(String),
+            ip: expect.any(String),
+            name: expect.any(String)
+        };
         const result = await catNodes.getNodes();
-
-        expect(result).toMatchObject(expected);
+        expect(result.length).toBeGreaterThanOrEqual(1);
+        for (const node of result) {
+            expect(node).toMatchObject(expected);
+        }
     });
 });
