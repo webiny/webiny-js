@@ -17,8 +17,8 @@
     "@webiny/error": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "date-fns": "^2.30.0",
-    "dot-prop": "^6.0.1",
+    "date-fns": "^4.1.0",
+    "dot-prop": "^10.1.0",
     "dynamodb-toolbox": "^0.9.5",
     "fuse.js": "7.1.0",
     "lodash": "^4.17.23"
