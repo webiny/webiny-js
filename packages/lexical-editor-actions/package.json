@@ -5,7 +5,7 @@
   "dependencies": {
     "@emotion/css": "^11.13.5",
     "@emotion/styled": "^11.14.1",
-    "@lexical/selection": "^0.40.0",
+    "@lexical/selection": "^0.41.0",
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/ui": "0.0.0",
     "react": "19.2.4",
