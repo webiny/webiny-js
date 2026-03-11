@@ -24,7 +24,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@faker-js/faker": "^9.9.0",
+    "@faker-js/faker": "^10.3.0",
     "@types/lodash": "^4.17.24",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",

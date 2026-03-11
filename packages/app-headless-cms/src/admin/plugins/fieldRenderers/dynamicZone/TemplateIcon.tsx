@@ -6,7 +6,7 @@ import { normalizeIcon } from "~/utils/normalizeIcon.js";
 interface TemplateIconProps {
     icon: string;
     size?: FontAwesomeIconProps["size"];
-    style?: React.CSSProperties;
+    style?: FontAwesomeIconProps["style"];
 }
 
 export const TemplateIcon = ({ icon, size, style }: TemplateIconProps) => {

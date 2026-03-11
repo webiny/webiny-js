@@ -9,7 +9,6 @@ import { ReactComponent as NotificationIcon } from "@webiny/icons/notifications_
 import { Tabs } from "~/Tabs/index.js";
 import { IconPicker } from "~/IconPicker/index.js";
 
-// @ts-expect-error
 library.add(fas);
 
 const meta: Meta<typeof Dialog> = {
