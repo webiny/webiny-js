@@ -78,14 +78,14 @@ export const AppBase = React.memo(
             });
         }, []);
 
-    const addPlugin = useCallback((element: React.JSX.Element) => {
-        setState(state => {
-            return {
-                ...state,
-                plugins: [...state.plugins, element]
-            };
-        });
-    }, []);
+        const addPlugin = useCallback((element: React.JSX.Element) => {
+            setState(state => {
+                return {
+                    ...state,
+                    plugins: [...state.plugins, element]
+                };
+            });
+        }, []);
 
         const appContext = useMemo(
             () => ({
