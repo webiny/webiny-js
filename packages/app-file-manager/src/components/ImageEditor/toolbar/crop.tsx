@@ -35,7 +35,7 @@ const tool: ImageEditorTool = {
     },
     renderForm,
     onActivate: ({ canvas, options }) => {
-        cropper = new Cropper(canvas.current as HTMLCanvasElement, options);
+        cropper = new Cropper(canvas.current!, options);
     },
     cancel: () => cropper && cropper.destroy(),
     apply: ({ canvas }) => {
