@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { Alert, Grid, Input } from "@webiny/admin-ui";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import { Bind, type BindComponentRenderProp } from "@webiny/form";
@@ -6,28 +6,31 @@ import { validation } from "@webiny/validation";
 import type { SchedulerEntry } from "~/types.js";
 import { ScheduleType } from "~/types.js";
 import type { CmsContentEntryStatusType } from "@webiny/app-headless-cms-common/types/index.js";
-import type { IScheduleDialogAction } from "./types.js";
 import type { Validator } from "@webiny/validation/types.js";
 import ValidationError from "@webiny/validation/validationError.js";
 import { makeDecoratable } from "@webiny/react-composition";
+import ApolloClient from "apollo-client/ApolloClient.js";
+import { ScheduleDialogAction } from "~/Presentation/index.js";
+import { SchedulerCancelGraphQLGateway } from "~/Gateways/SchedulerCancelGraphQLGateway.js";
+import { SchedulerPublishGraphQLGateway } from "~/Gateways/SchedulerPublishGraphQLGateway.js";
+import { SchedulerUnpublishGraphQLGateway } from "~/Gateways/SchedulerUnpublishGraphQLGateway.js";
+import {useQuery} from "@apollo/react-hooks";
 
 export type ShowDialogParamsEntryStatus = CmsContentEntryStatusType;
 
-export interface ShowDialogParamsEntry {
+export interface IShowDialogParamsEntry {
     id: string;
     status: ShowDialogParamsEntryStatus;
     title: string;
     app: string;
 }
 
-export interface ShowDialogParams {
-    entry: ShowDialogParamsEntry;
-    schedulerEntry: SchedulerEntry | null;
-    action: IScheduleDialogAction;
+export interface IShowDialogParams {
+    target: IShowDialogParamsEntry;
 }
 
 interface UseShowScheduleDialogResponse {
-    showDialog: (params: ShowDialogParams) => void;
+    showDialog: (params: IShowDialogParams) => void;
 }
 
 interface FormComponentProps {
@@ -148,14 +151,12 @@ interface ScheduleFormData {
 }
 
 interface IOnAcceptParams {
-    action: IScheduleDialogAction;
     scheduleOn: Date;
-    entry: ShowDialogParamsEntry;
+    target: IShowDialogParamsEntry;
     type: ScheduleType;
 }
 
 interface IOnCancelParams {
-    action: IScheduleDialogAction;
     schedulerEntry: SchedulerEntry;
 }
 
@@ -163,25 +164,47 @@ interface OnCancelCallable {
     (params: IOnCancelParams): Promise<void>;
 }
 
-export const useScheduleDialog = (): UseShowScheduleDialogResponse => {
+export interface IUseScheduleDialogProps {
+    client: ApolloClient<object>;
+    target: IShowDialogParamsEntry;
+}
+
+export const useScheduleDialog = (
+    props: IUseScheduleDialogProps
+): UseShowScheduleDialogResponse => {
+    const { client } = props;
     const dialog = useDialogs();
     const { showSnackbar } = useSnackbar();
+
+    const action = useMemo(() => {
+        const cancelGateway = new SchedulerCancelGraphQLGateway(client);
+        const publishGateway = new SchedulerPublishGraphQLGateway(client);
+        const unpublishGateway = new SchedulerUnpublishGraphQLGateway(client);
+
+        return new ScheduleDialogAction({
+            cancelGateway,
+            publishGateway,
+            unpublishGateway
+        });
+    }, [client]);
+    
+    const schedulerEntryQuery = useQuery(SCHEDULER_ENTRY_QUERY, {});
 
     const dialogClose = useRef<null | (() => void)>(() => {
         return;
     });
 
     const onAccept = useCallback(async (params: IOnAcceptParams) => {
-        const { action, entry, scheduleOn, type } = params;
+        const { target, scheduleOn, type } = params;
 
         try {
             await action.schedule({
-                id: entry.id,
-                app: entry.app,
+                id: target.id,
+                app: target.app,
                 scheduleOn,
                 type
             });
-            showSnackbar(`Scheduled ${type} action for "${entry.title}"!`);
+            showSnackbar(`Scheduled ${type} action for "${target.title}"!`);
         } catch (error) {
             showSnackbar(error.message);
             console.error(error);
@@ -189,7 +212,7 @@ export const useScheduleDialog = (): UseShowScheduleDialogResponse => {
     }, []);
 
     const onCancel = useCallback(async (params: IOnCancelParams) => {
-        const { action, schedulerEntry } = params;
+        const { schedulerEntry } = params;
 
         try {
             await action.cancel({
@@ -207,8 +230,10 @@ export const useScheduleDialog = (): UseShowScheduleDialogResponse => {
         dialogClose.current = null;
     }, []);
 
-    const showDialog = (params: ShowDialogParams) => {
-        const { schedulerEntry, entry } = params;
+    const showDialog = (params: IShowDialogParams) => {
+        const { target } = params;
+
+        const isPublished = target.status === "published";
 
         const scheduleOn = schedulerEntry?.publishOn || schedulerEntry?.unpublishOn;
 
@@ -224,7 +249,7 @@ export const useScheduleDialog = (): UseShowScheduleDialogResponse => {
             formData: {
                 scheduleOn
             },
-            acceptLabel: entry.status === "published" ? "Schedule Unpublish" : "Schedule Publish",
+            acceptLabel: isPublished ? "Schedule Unpublish" : "Schedule Publish",
             cancelLabel: "Discard",
             loadingLabel: "Scheduling...",
             onAccept: (data: Partial<ScheduleFormData>) => {
@@ -249,11 +274,12 @@ export const useScheduleDialog = (): UseShowScheduleDialogResponse => {
                     return;
                 }
 
-                onAccept({
-                    ...params,
+                const type = isPublished ? ScheduleType.unpublish : ScheduleType.publish;
+
+                return onAccept({
+                    target: params.target,
                     scheduleOn,
-                    type:
-                        entry.status === "published" ? ScheduleType.unpublish : ScheduleType.publish
+                    type
                 });
             }
         });

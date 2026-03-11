@@ -35,9 +35,9 @@ interface SchedulerCancelGraphQLMutationResponse {
 }
 
 export class SchedulerCancelGraphQLGateway implements ICancelScheduleActionGateway {
-    private readonly client: ApolloClient<any>;
+    private readonly client: ApolloClient<object>;
 
-    public constructor(client: ApolloClient<any>) {
+    public constructor(client: ApolloClient<object>) {
         this.client = client;
     }
 

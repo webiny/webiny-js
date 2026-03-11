@@ -10,7 +10,7 @@ import type {
 } from "./abstractions/GetScheduleActionGateway.js";
 import type { SchedulerEntry, SchedulerErrorResponse } from "~/types.js";
 
-const createGetScheduleActionQuery = () => {
+export const createGetScheduleActionQuery = () => {
     return gql`
         query GetScheduleActionQuery($app: String!, $id: ID!) {
             getScheduleAction(app: $app, id: $id) {
