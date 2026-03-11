@@ -1,4 +1,4 @@
-import glob from "glob";
+import { glob } from "glob";
 
 const defaultIgnore = ["**/node_modules/**", "**/dist/**", "**/build/**"];
 
