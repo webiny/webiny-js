@@ -158,7 +158,12 @@ export const OpenSearch = createAppModule({
                 globalSecondaryIndexes: [
                     {
                         name: "GSI_TENANT",
-                        hashKey: "GSI_TENANT",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI_TENANT",
+                                keyType: "HASH"
+                            }
+                        ],
                         projectionType: "KEYS_ONLY"
                     }
                 ],
