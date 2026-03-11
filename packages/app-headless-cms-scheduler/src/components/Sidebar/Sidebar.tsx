@@ -1,7 +1,7 @@
 import React from "react";
 import { Components, useApolloClient } from "@webiny/app-headless-cms";
 import { IsModelPublishable } from "@webiny/app-headless-cms/exports/admin/cms.js";
-import { useContentEntryEditor } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
+import { useModel } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { usePermissions } from "~/hooks/usePermissions.js";
 import { Scheduler as BaseScheduler } from "@webiny/app-scheduler";
 import { SchedulerButton } from "./SchedulerButton.js";
@@ -9,10 +9,10 @@ import { SchedulerButton } from "./SchedulerButton.js";
 export const Sidebar = Components.Sidebar.Footer.createDecorator(Original => {
     return function ScheduleSidebarFooter({ children }) {
         const client = useApolloClient();
-        const { contentModel } = useContentEntryEditor();
+        const { model } = useModel();
         const { canPublish, canUnpublish } = usePermissions();
 
-        const app = `cms:${contentModel.modelId}`;
+        const app = `cms:${model.modelId}`;
 
         if (!canPublish() && !canUnpublish()) {
             return <Original>{children}</Original>;
