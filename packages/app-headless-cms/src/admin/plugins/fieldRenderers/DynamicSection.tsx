@@ -41,7 +41,7 @@ export interface DynamicSectionProps {
     getBind: GetBindCallable;
     disabled?: boolean;
     showLabel?: boolean;
-    children: (params: DynamicSectionPropsChildrenParams) => JSX.Element;
+    children: (params: DynamicSectionPropsChildrenParams) => React.JSX.Element;
     emptyValue?: any;
     gridClassName?: string;
     onAddItem?: (index: number) => void;

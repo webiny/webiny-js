@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 
 export const PayloadWrapper = styled("div")`
     #brace-editor {

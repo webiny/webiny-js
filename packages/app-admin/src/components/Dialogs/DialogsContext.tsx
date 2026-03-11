@@ -11,8 +11,8 @@ interface ShowDialogParams {
     description?: ReactNode;
     dismissible?: boolean;
     content: ReactNode;
-    actions?: JSX.Element;
-    icon?: JSX.Element;
+    actions?: React.JSX.Element;
+    icon?: React.JSX.Element;
     acceptLabel?: ReactNode;
     cancelLabel?: ReactNode;
     loadingLabel?: ReactNode;
@@ -36,7 +36,7 @@ interface DialogState extends ShowDialogParams {
     id: string;
     open: boolean;
     loading: boolean;
-    element?: JSX.Element;
+    element?: React.JSX.Element;
 }
 
 export const initializeState = (params: Partial<DialogState> = {}): DialogState => ({

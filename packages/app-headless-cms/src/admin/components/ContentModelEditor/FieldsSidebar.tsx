@@ -19,7 +19,9 @@ const Field = (props: FieldProps) => {
         <Draggable beginDrag={{ type: "newField", fieldType: type }}>
             {({ drag }) => (
                 <div
-                    ref={drag}
+                    ref={element => {
+                        drag(element);
+                    }}
                     data-testid={`cms-editor-fields-field-${type}`}
                     onDragStart={onFieldDragStart}
                     className={
@@ -62,7 +64,9 @@ const LayoutFieldItem = (props: LayoutFieldItemProps) => {
         <Draggable beginDrag={{ type: "newLayoutField", layoutFieldType: type }}>
             {({ drag }) => (
                 <div
-                    ref={drag}
+                    ref={element => {
+                        drag(element);
+                    }}
                     data-testid={`cms-editor-fields-layout-field-${type}`}
                     onDragStart={onFieldDragStart}
                     className={

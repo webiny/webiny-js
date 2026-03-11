@@ -27,14 +27,14 @@
     "rimraf": "^6.1.3",
     "type-fest": "^5.4.4",
     "uuid": "^13.0.0",
-    "validate-npm-package-name": "^6.0.2",
+    "validate-npm-package-name": "^7.0.2",
     "write-json-file": "^7.0.0",
-    "yargs": "^17.7.2",
+    "yargs": "^18.0.0",
     "yesno": "^0.4.0"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
-    "@types/validate-npm-package-name": "^3.0.3"
+    "@types/validate-npm-package-name": "^4.0.2"
   },
   "publishConfig": {
     "access": "public",

@@ -4,12 +4,12 @@ import { Property, useIdGenerator } from "@webiny/react-properties";
 
 export interface ThumbnailConfig {
     type: string;
-    element: JSX.Element;
+    element: React.JSX.Element;
 }
 
 export interface RendererProps {
     type: string;
-    element: JSX.Element;
+    element: React.JSX.Element;
 }
 
 export const Thumbnail = makeDecoratable("Thumbnail", ({ type, element }: RendererProps) => {

@@ -34,7 +34,7 @@ export interface TableInnerProps<T extends TableRow> {
 
 export const TableInner = observer(<T extends TableRow>(props: TableInnerProps<T>) => {
     const cellRenderer = useCallback(
-        (row: T, cell: string | React.ReactElement): string | number | JSX.Element | null => {
+        (row: T, cell: string | React.ReactElement): string | number | React.JSX.Element | null => {
             if (typeof cell === "string") {
                 return cell;
             }

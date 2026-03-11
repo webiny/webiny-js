@@ -9,9 +9,12 @@ interface OverlayRootProps {
 }
 
 const OverlayRoot = ({ visible, onExited, children }: OverlayRootProps) => {
+    const ref = React.useRef<HTMLDivElement>(null);
     return (
-        <Transition in={visible} timeout={100} appear onExited={onExited}>
-            <div className={"pointer-events-auto"}>{children}</div>
+        <Transition nodeRef={ref} in={visible} timeout={100} appear onExited={onExited}>
+            <div ref={ref} className={"pointer-events-auto"}>
+                {children}
+            </div>
         </Transition>
     );
 };

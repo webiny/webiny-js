@@ -46,13 +46,11 @@ const MultiAutoCompleteInput = ({
     ...props
 }: MultiAutoCompleteInputProps) => {
     const [focused, setFocused] = React.useState<boolean>(false);
-    const inputRef = React.useMemo<React.RefObject<HTMLInputElement>>(
-        () =>
-            parentInputRef && typeof parentInputRef !== "function"
-                ? parentInputRef
-                : React.createRef<HTMLInputElement>(),
-        [parentInputRef]
-    );
+    const inputRef = React.useMemo<React.RefObject<HTMLInputElement | null>>(() => {
+        return parentInputRef && typeof parentInputRef !== "function"
+            ? parentInputRef
+            : React.createRef<HTMLInputElement>();
+    }, [parentInputRef]);
 
     const renderSelectedOptions = React.useCallback(
         (options: CommandOptionFormatted[]) => {

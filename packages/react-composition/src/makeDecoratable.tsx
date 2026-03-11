@@ -78,7 +78,7 @@ function makeDecoratableComponent<T extends GenericComponent>(
     name: string,
     Component: T = nullRenderer as unknown as T
 ) {
-    const Decoratable = (props: React.ComponentProps<T>): JSX.Element | null => {
+    const Decoratable = (props: React.ComponentProps<T>): React.JSX.Element | null => {
         const parents = useComposableParents();
         const ComposedComponent = useComponent(Component) as GenericComponent<
             React.ComponentProps<T>
@@ -122,7 +122,7 @@ export function makeDecoratableHook<T extends GenericHook>(hook: T) {
 
 export function createVoidComponent<T>() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return (props: T): JSX.Element | null => {
+    return (props: T): React.JSX.Element | null => {
         return null;
     };
 }

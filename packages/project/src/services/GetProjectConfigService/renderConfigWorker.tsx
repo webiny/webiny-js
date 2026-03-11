@@ -2,9 +2,10 @@ import "tsx/esm";
 import { Properties, toObject } from "@webiny/react-properties";
 import debounce from "debounce";
 import React from "react";
-import Renderer from "react-test-renderer";
+import { createRoot } from "react-dom/client";
+import { JSDOM } from "jsdom";
 import { serializeError } from "serialize-error";
-import type { RenderConfigWorkerMessageDto, RenderConfigParamsDto } from "./renderConfig.js";
+import type { RenderConfigParamsDto, RenderConfigWorkerMessageDto } from "./renderConfig.js";
 import { ProjectModel } from "~/models/ProjectModel.js";
 import { EnvProvider } from "./EnvContext.js";
 import { WcpProjectLicenseProvider } from "./WcpProjectLicenseContext.js";
@@ -58,7 +59,17 @@ const onChange = debounce((value: any) => {
     process.exit(0);
 });
 
-Renderer.create(
+const { window } = new JSDOM(`<div id="root"/>`);
+
+(global as any).window = window;
+
+(global as any).document = window.document;
+
+const root = window.document.getElementById("root")!;
+
+const reactRoot = createRoot(root);
+
+reactRoot.render(
     <WcpProjectLicenseProvider>
         <EnvProvider>
             <Properties onChange={onChange}>

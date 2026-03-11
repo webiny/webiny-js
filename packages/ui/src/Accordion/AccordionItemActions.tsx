@@ -11,7 +11,7 @@ export const AccordionItemActions = ({ children }: AccordionItemActionsProps) =>
 };
 
 export interface AccordionItemActionProps {
-    icon: JSX.Element;
+    icon: React.JSX.Element;
     onClick: () => void;
     tooltip?: string;
     disabled?: boolean;
@@ -50,7 +50,7 @@ export const AccordionItemAction = ({
 };
 
 export interface AccordionItemElementProps {
-    element: JSX.Element;
+    element: React.JSX.Element;
 }
 
 /**
