@@ -18,10 +18,6 @@ export interface ICoreOutput {
     primaryDynamodbTableName: string;
     primaryDynamodbTableHashKey: string;
     primaryDynamodbTableRangeKey: string;
-    logDynamodbTableArn: string;
-    logDynamodbTableName: string;
-    logDynamodbTableHashKey: string;
-    logDynamodbTableRangeKey: string;
     auditLogsDynamodbTableArn: string;
     auditLogsDynamodbTableName: string;
     auditLogsDynamodbTableHashKey: string;
@@ -56,10 +52,6 @@ export const CoreOutput = createAppModule({
                 primaryDynamodbTableName: output["primaryDynamodbTableName"],
                 primaryDynamodbTableHashKey: output["primaryDynamodbTableHashKey"],
                 primaryDynamodbTableRangeKey: output["primaryDynamodbTableRangeKey"],
-                logDynamodbTableArn: output["logDynamodbTableArn"],
-                logDynamodbTableName: output["logDynamodbTableName"],
-                logDynamodbTableHashKey: output["logDynamodbTableHashKey"],
-                logDynamodbTableRangeKey: output["logDynamodbTableRangeKey"],
                 auditLogsDynamodbTableArn: output["auditLogsDynamodbTableArn"],
                 auditLogsDynamodbTableName: output["auditLogsDynamodbTableName"],
                 auditLogsDynamodbTableHashKey: output["auditLogsDynamodbTableHashKey"],

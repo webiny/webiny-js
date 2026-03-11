@@ -48,8 +48,6 @@ export interface ICreateMockDeploymentItem {
     primaryDynamoDbRangeKey: string;
     opensearchDynamodbTableArn?: string;
     opensearchDynamodbTableName?: string;
-    logDynamodbTableArn: string;
-    logDynamodbTableName: string;
 }
 
 export const createMockDeploymentData = (item: Partial<ICreateMockDeploymentItem> = {}) => {
@@ -67,8 +65,6 @@ export const createMockDeploymentData = (item: Partial<ICreateMockDeploymentItem
         primaryDynamoDbRangeKey: "primaryDynamoDbRangeKey",
         opensearchDynamodbTableArn: "opensearchDynamodbTableArn",
         opensearchDynamodbTableName: "opensearchDynamodbTableName",
-        logDynamodbTableArn: "logDynamodbTableArn",
-        logDynamodbTableName: "logDynamodbTableName",
         cognitoUserPoolId: "cognitoUserPoolId",
         ...item
     };
@@ -90,9 +86,7 @@ export const createMockDeployment = (
             primaryDynamoDbHashKey: item.primaryDynamoDbHashKey,
             primaryDynamoDbRangeKey: item.primaryDynamoDbRangeKey,
             opensearchDynamodbTableArn: item.opensearchDynamodbTableArn,
-            opensearchDynamodbTableName: item.opensearchDynamodbTableName,
-            logDynamodbTableArn: item.logDynamodbTableArn,
-            logDynamodbTableName: item.logDynamodbTableName
+            opensearchDynamodbTableName: item.opensearchDynamodbTableName
         }
     });
 };

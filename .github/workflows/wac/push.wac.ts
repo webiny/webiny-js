@@ -122,9 +122,9 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             ...(storageOps.shortId === "ddb-os"
                 ? [
                       {
-                          name: "Configure OpenSearch domain name in webiny.config.tsx",
+                          name: "Configure OpenSearch domain name and index prefix in webiny.config.tsx",
                           "working-directory": DIR_TEST_PROJECT,
-                          run: `sed -i 's|<Infra.OpenSearch enabled={true} />|<Infra.OpenSearch enabled={true} domainName={process.env.AWS_OPENSEARCH_DOMAIN_NAME \\|\\| ""} />|g' webiny.config.tsx`
+                          run: `sed -i 's|<Infra.OpenSearch enabled={true} />|<Infra.OpenSearch enabled={true} domainName={process.env.AWS_OPENSEARCH_DOMAIN_NAME \\|\\| ""} indexPrefix={process.env.OPENSEARCH_INDEX_PREFIX \\|\\| ""} />|g' webiny.config.tsx`
                       }
                   ]
                 : []),

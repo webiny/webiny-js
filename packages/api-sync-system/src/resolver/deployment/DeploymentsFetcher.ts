@@ -114,9 +114,7 @@ export class DeploymentsFetcher implements IDeploymentsFetcher {
                     primaryDynamoDbHashKey: item.primaryDynamoDbHashKey,
                     primaryDynamoDbRangeKey: item.primaryDynamoDbRangeKey,
                     opensearchDynamodbTableArn: item.opensearchDynamodbTableArn,
-                    opensearchDynamodbTableName: item.opensearchDynamodbTableName,
-                    logDynamodbTableName: item.primaryDynamoDbName,
-                    logDynamodbTableArn: item.primaryDynamoDbArn
+                    opensearchDynamodbTableName: item.opensearchDynamodbTableName
                 }
             });
         });
