@@ -1,7 +1,7 @@
 import type { CmsIdentity } from "@webiny/app-headless-cms-common/types/index.js";
 import type { TableRow } from "@webiny/app-aco";
 
-type SchedulerIdentity = CmsIdentity;
+type SchedulerIdentity = Pick<CmsIdentity, "id" | "displayName" | "type">;
 
 export type { SchedulerIdentity };
 

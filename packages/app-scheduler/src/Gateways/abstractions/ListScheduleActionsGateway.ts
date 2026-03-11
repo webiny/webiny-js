@@ -1,5 +1,4 @@
-import type { CmsMetaResponse } from "@webiny/app-headless-cms-common/types/index.js";
-import type { SchedulerEntry } from "~/types.js";
+import type { SchedulerEntry, SchedulerMetaResponse } from "~/types.js";
 import type { ScheduleType } from "~/types.js";
 
 export interface IListScheduleActionsExecuteParamsWhere {
@@ -25,7 +24,7 @@ export interface IListScheduleActionsGatewayExecuteParams {
 
 export interface IListScheduleActionsGatewayExecuteResponse {
     items: SchedulerEntry[];
-    meta: CmsMetaResponse;
+    meta: SchedulerMetaResponse;
 }
 
 export interface IListScheduleActionsGateway {

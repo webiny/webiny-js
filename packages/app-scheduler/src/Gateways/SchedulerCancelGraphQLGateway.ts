@@ -1,6 +1,6 @@
 import type { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
-import type {SchedulerErrorResponse} from "~/types.js";
+import type { SchedulerErrorResponse } from "~/types.js";
 import type {
     ICancelScheduleActionGateway,
     ICancelScheduleActionGatewayParams

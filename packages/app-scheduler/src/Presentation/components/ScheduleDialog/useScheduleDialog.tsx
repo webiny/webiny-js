@@ -5,13 +5,13 @@ import { Bind, type BindComponentRenderProp } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import type { SchedulerEntry } from "~/types.js";
 import { ScheduleType } from "~/types.js";
-import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
+import type { CmsContentEntryStatusType } from "@webiny/app-headless-cms-common/types/index.js";
 import type { IScheduleDialogAction } from "./types.js";
 import type { Validator } from "@webiny/validation/types.js";
 import ValidationError from "@webiny/validation/validationError.js";
 import { makeDecoratable } from "@webiny/react-composition";
 
-export type ShowDialogParamsEntryStatus = CmsContentEntry["meta"]["status"];
+export type ShowDialogParamsEntryStatus = CmsContentEntryStatusType;
 
 export interface ShowDialogParamsEntry {
     id: string;
