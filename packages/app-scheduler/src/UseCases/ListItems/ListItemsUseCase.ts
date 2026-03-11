@@ -10,7 +10,7 @@ export class ListItemsUseCase implements IListItemsUseCase {
         makeAutoObservable(this);
     }
 
-    async execute(params: ISchedulerListExecuteParams) {
+    async execute(params?: Omit<ISchedulerListExecuteParams, "app">) {
         await this.itemsRepository.listItems(params);
     }
 }

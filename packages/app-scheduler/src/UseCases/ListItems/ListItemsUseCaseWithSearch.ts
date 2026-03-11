@@ -13,10 +13,12 @@ export class ListItemsUseCaseWithSearch implements IListItemsUseCase {
         makeAutoObservable(this);
     }
 
-    async execute(params: Omit<ISchedulerListExecuteParams, "app">) {
+    async execute(params?: Omit<ISchedulerListExecuteParams, "app">) {
         const search = this.searchRepository.get();
         await this.useCase.execute({
-            ...params,
+            sort: params?.sort,
+            limit: params?.limit,
+            after: params?.after,
             where: {
                 ...params?.where,
                 title_contains: search.length > 0 ? search : undefined

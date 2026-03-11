@@ -17,12 +17,14 @@ export class ListItemsUseCaseWithSorting implements IListItemsUseCase {
         makeAutoObservable(this);
     }
 
-    public async execute(params: ISchedulerListExecuteParams) {
+    public async execute(params?: Omit<ISchedulerListExecuteParams, "app">) {
         const sort = this.sortingRepository.get().map(sort => {
             return SortingMapper.fromDTOtoDb(sort);
         });
         await this.useCase.execute({
-            ...params,
+            where: params?.where,
+            limit: params?.limit,
+            after: params?.after,
             sort: sort as ISchedulerListExecuteParamsSort[]
         });
     }

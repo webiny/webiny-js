@@ -9,7 +9,7 @@ export class GetItemController implements IGetItemController {
         this.useCaseFactory = useCaseFactory;
     }
 
-    async execute(params: ISchedulerGetExecuteParams) {
+    async execute(params: Omit<ISchedulerGetExecuteParams, "app">) {
         const getItemUseCase = this.useCaseFactory();
         await getItemUseCase.execute(params);
     }
