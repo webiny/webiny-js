@@ -4,7 +4,7 @@ import { IsModelPublishable } from "@webiny/app-headless-cms/exports/admin/cms.j
 import { useContentEntryEditor } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
 import { usePermissions } from "~/hooks/usePermissions.js";
 import { Scheduler as BaseScheduler } from "@webiny/app-scheduler";
-import { SchedulerButton } from "~/Components/Sidebar/SchedulerButton.js";
+import { SchedulerButton } from "./SchedulerButton.js";
 
 export const Sidebar = Components.Sidebar.Footer.createDecorator(Original => {
     return function ScheduleSidebarFooter({ children }) {
