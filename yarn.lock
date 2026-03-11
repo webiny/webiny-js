@@ -14677,7 +14677,7 @@ __metadata:
     "@types/aws-lambda": "npm:8.10.161"
     "@webiny/build-tools": "npm:0.0.0"
     cheerio: "npm:^1.2.0"
-    srcset: "npm:^4.0.0"
+    srcset: "npm:^5.0.3"
   languageName: unknown
   linkType: soft
 
@@ -15643,7 +15643,7 @@ __metadata:
     ci-info: "npm:^4.4.0"
     jsesc: "npm:^3.1.0"
     load-json-file: "npm:^7.0.1"
-    strip-ansi: "npm:^6.0.1"
+    strip-ansi: "npm:^7.2.0"
     wts-client: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -32128,10 +32128,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"srcset@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "srcset@npm:4.0.0"
-  checksum: 10/903c951fbf7afb9a73bb5356f2e7c714e67d03f9dd48dccf63da2a70b108f7ba07b944d529eeed56a36c8dd194d979ef92fe75e798611a575a41cf730be582aa
+"srcset@npm:^5.0.3":
+  version: 5.0.3
+  resolution: "srcset@npm:5.0.3"
+  checksum: 10/51859c8d2ecb8b5c006c10ddec9d1bfec28ee8695291dd5f99e7ebe01724b522dc05d69e1e22ce73edb15312780c8362c8388e109523173e63f31803ee2df1f4
   languageName: node
   linkType: hard
 
@@ -32505,7 +32505,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strip-ansi@npm:^7.0.1, strip-ansi@npm:^7.1.0, strip-ansi@npm:^7.1.2":
+"strip-ansi@npm:^7.0.1, strip-ansi@npm:^7.1.0, strip-ansi@npm:^7.1.2, strip-ansi@npm:^7.2.0":
   version: 7.2.0
   resolution: "strip-ansi@npm:7.2.0"
   dependencies:
