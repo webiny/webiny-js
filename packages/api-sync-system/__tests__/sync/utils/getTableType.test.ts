@@ -12,11 +12,6 @@ describe("getTableType", () => {
         expect(result).toEqual("opensearch");
     });
 
-    it("should return log table type", () => {
-        const result = getTableType(process.env.DB_TABLE_LOG as string);
-        expect(result).toEqual("log");
-    });
-
     it("should return null for unknown table type", () => {
         const result = getTableType("unknown");
         expect(result).toBe("unknown");

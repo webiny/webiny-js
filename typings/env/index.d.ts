@@ -3,7 +3,6 @@ declare namespace NodeJS {
         NODE_ENV?: "test" | "prod" | "dev" | string;
         DB_TABLE?: string;
         DB_TABLE_OPENSEARCH?: string;
-        DB_TABLE_LOG?: string;
         DB_TABLE_AUDIT_LOGS?: string;
         OPENSEARCH_SHARED_INDEXES?: "true" | "false" | string;
         WEBINY_VERSION?: string;

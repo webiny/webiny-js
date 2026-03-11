@@ -42,12 +42,6 @@ export class Deployment implements IDeployment {
                     arn: this.services.opensearchDynamodbTableArn,
                     type
                 };
-            case "log":
-                return {
-                    name: this.services.logDynamodbTableName,
-                    arn: this.services.logDynamodbTableArn,
-                    type
-                };
             default:
                 throw new Error(`Unknown table type "${type}".`);
         }
