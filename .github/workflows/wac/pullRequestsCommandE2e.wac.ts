@@ -121,6 +121,15 @@ const createCypressJobs = (dbSetup: string) => {
                 run: `npx create-webiny-project@local-npm ${DIR_TEST_PROJECT} --tag local-npm --no-interactive --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"region":"\${{ env.AWS_REGION }}","storageOps":"${dbSetup}"}'
 `
             },
+            ...(dbSetup === "ddb-os"
+                ? [
+                      {
+                          name: "Configure OpenSearch domain name in webiny.config.tsx",
+                          "working-directory": DIR_TEST_PROJECT,
+                          run: `sed -i 's|<Infra.OpenSearch enabled={true} />|<Infra.OpenSearch enabled={true} domainName={process.env.AWS_OPENSEARCH_DOMAIN_NAME} />|g' webiny.config.tsx`
+                      }
+                  ]
+                : []),
             {
                 name: "Print CLI version",
                 "working-directory": DIR_TEST_PROJECT,
@@ -142,6 +151,15 @@ const createCypressJobs = (dbSetup: string) => {
                 }
             },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
+            ...(dbSetup === "ddb-os"
+                ? [
+                      {
+                          name: "Verify DDB+OS deployment",
+                          "working-directory": DIR_TEST_PROJECT,
+                          run: `OUTPUT=$(yarn webiny output core --env dev --json) && echo "$OUTPUT" && echo "$OUTPUT" | jq -e '.databaseSetup == "ddb+os"' || (echo "ERROR: Expected databaseSetup to be 'ddb+os' but got a different value" && exit 1)`
+                      }
+                  ]
+                : []),
             ...withCommonParams(
                 [
                     // Commented this out b/c of an issue. Basically, the
