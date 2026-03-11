@@ -1,5 +1,5 @@
 import React from "react";
-import mime from "mime/lite.js";
+import mime from "mime/lite";
 import { Separator } from "@webiny/admin-ui";
 
 import type { SupportedFileTypesProps } from "./SupportedFileTypes.js";

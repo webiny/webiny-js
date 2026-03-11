@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { Text } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
-import mime from "mime/lite.js";
+import mime from "mime/lite";
 
 mime.define({ "image/x-icon": ["ico"] }, true);
 mime.define({ "image/jpg": ["jpg"] }, true);
