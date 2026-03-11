@@ -13,7 +13,7 @@ description: >
 
 ## TL;DR
 
-Webiny supports Okta as an external identity provider (IDP) to replace the default Cognito authentication. You create two files: an API config class that maps Okta JWT claims to Webiny identity data (`OktaIdpConfig`), and a React extension component (`<Okta />`) that wires issuer URL, client ID, and the API config path. Register the extension in `webiny.config.tsx`, set two environment variables (`OKTA_ISSUER`, `OKTA_CLIENT_ID`), and deploy.
+Webiny supports Okta as an external identity provider (IDP) to replace the default Cognito authentication. First, install the `@webiny/okta` package (using the same version as the `webiny` dependency in `package.json`). Then create two files: an API config class that maps Okta JWT claims to Webiny identity data (`OktaIdpConfig`), and a React extension component (`<Okta />`) that wires issuer URL, client ID, and the API config path. Register the extension in `webiny.config.tsx`, set two environment variables (`OKTA_ISSUER`, `OKTA_CLIENT_ID`), and deploy.
 
 ## Pattern / Core Concept
 
@@ -70,6 +70,18 @@ The `<Okta />` component (from `@webiny/okta`) is a `defineExtension` that:
 ## Full Examples
 
 ### Example 1: Basic Okta Configuration
+
+**Step 0: Install the `@webiny/okta` dependency**
+
+`@webiny/okta` is an optional dependency. Add it to `package.json` using the same version as the `webiny` dependency, then install:
+
+```bash
+# Check the webiny version in package.json, then add @webiny/okta with the same version
+# For example, if "webiny": "^0.0.0-unstable.xxx":
+yarn add @webiny/okta@^0.0.0-unstable.xxx
+```
+
+> **Important:** After adding the dependency, tell the user to run `yarn` to install it. Do NOT run `yarn` automatically — let the user do it.
 
 **Step 1: Create the API config**
 

@@ -13,7 +13,7 @@ description: >
 
 ## TL;DR
 
-Webiny supports Auth0 as an external identity provider (IDP) to replace the default Cognito authentication. You create two files: an API config class that maps Auth0 JWT claims to Webiny identity data (`Auth0IdpConfig`), and a React extension component (`<Auth0 />`) that wires issuer URL, client ID, and the API config path. Register the extension in `webiny.config.tsx`, set two environment variables (`AUTH0_ISSUER`, `AUTH0_CLIENT_ID`), and deploy.
+Webiny supports Auth0 as an external identity provider (IDP) to replace the default Cognito authentication. First, install the `@webiny/auth0` package (using the same version as the `webiny` dependency in `package.json`). Then create two files: an API config class that maps Auth0 JWT claims to Webiny identity data (`Auth0IdpConfig`), and a React extension component (`<Auth0 />`) that wires issuer URL, client ID, and the API config path. Register the extension in `webiny.config.tsx`, set two environment variables (`AUTH0_ISSUER`, `AUTH0_CLIENT_ID`), and deploy.
 
 ## Pattern / Core Concept
 
@@ -70,6 +70,18 @@ The `<Auth0 />` component (from `@webiny/auth0`) is a `defineExtension` that:
 ## Full Examples
 
 ### Example 1: Basic Auth0 Configuration
+
+**Step 0: Install the `@webiny/auth0` dependency**
+
+`@webiny/auth0` is an optional dependency. Add it to `package.json` using the same version as the `webiny` dependency, then install:
+
+```bash
+# Check the webiny version in package.json, then add @webiny/auth0 with the same version
+# For example, if "webiny": "^0.0.0-unstable.xxx":
+yarn add @webiny/auth0@^0.0.0-unstable.xxx
+```
+
+> **Important:** After adding the dependency, tell the user to run `yarn` to install it. Do NOT run `yarn` automatically — let the user do it.
 
 **Step 1: Create the API config**
 
