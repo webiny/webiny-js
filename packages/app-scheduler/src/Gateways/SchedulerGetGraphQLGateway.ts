@@ -1,15 +1,14 @@
 import type { ApolloClient } from "apollo-client";
-import type { CmsErrorResponse } from "@webiny/app-headless-cms-common/types/index.js";
 import gql from "graphql-tag";
 import zod from "zod";
 import { createZodError } from "@webiny/utils/createZodError.js";
 import { schedulerEntrySchema } from "./schema/schedulerEntry.js";
-import type {
-    ISchedulerGetExecuteParams,
-    IGetScheduleActionGateway
-} from "@webiny/app-headless-cms-scheduler";
-import type { SchedulerEntry } from "@webiny/app-headless-cms-scheduler/types.js";
 import { createSchedulerEntryFields } from "./graphql/fields.js";
+import type {
+    IGetScheduleActionGateway,
+    IGetScheduleActionGatewayExecuteParams
+} from "./abstractions/GetScheduleActionGateway.js";
+import type { SchedulerEntry, SchedulerErrorResponse } from "~/types.js";
 
 const createGetScheduleActionQuery = () => {
     return gql`
@@ -29,12 +28,10 @@ const createGetScheduleActionQuery = () => {
     `;
 };
 
-type SchedulerGetGraphQLQueryVariables = ISchedulerGetExecuteParams;
-
 interface SchedulerGetGraphQLQueryResponse {
     getScheduleAction: {
         data: SchedulerEntry | null;
-        error: CmsErrorResponse | null;
+        error: SchedulerErrorResponse | null;
     };
 }
 
@@ -49,14 +46,15 @@ export class SchedulerGetGraphQLGateway implements IGetScheduleActionGateway {
         this.client = client;
     }
 
-    public async execute(params: ISchedulerGetExecuteParams) {
+    public async execute(params: IGetScheduleActionGatewayExecuteParams) {
         const { data: response, errors } = await this.client.query<
             SchedulerGetGraphQLQueryResponse,
-            SchedulerGetGraphQLQueryVariables
+            IGetScheduleActionGatewayExecuteParams
         >({
             query: createGetScheduleActionQuery(),
             variables: {
-                ...params
+                app: params.app,
+                id: params.id
             },
             fetchPolicy: "network-only"
         });

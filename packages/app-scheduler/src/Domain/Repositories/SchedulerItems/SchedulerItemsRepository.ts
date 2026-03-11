@@ -8,9 +8,9 @@ import type {
     IScheduleUnpublishActionGateway
 } from "~/Gateways/index.js";
 import {
-    type IGetScheduleActionExecuteParams,
+    type IGetScheduleActionGatewayExecuteParams,
     type IGetScheduleActionGateway,
-    type IListScheduleActionsExecuteParams
+    type IListScheduleActionsGatewayExecuteParams
 } from "~/Gateways/index.js";
 import type { IMetaRepository } from "@webiny/app-utils";
 import { Meta } from "@webiny/app-utils";
@@ -35,7 +35,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
     private readonly publishGateway: ISchedulePublishActionGateway;
     private readonly app: string;
     private items: SchedulerItem[] = [];
-    private params: IListScheduleActionsExecuteParams;
+    private params: IListScheduleActionsGatewayExecuteParams;
 
     public constructor(params: ISchedulerItemsRepositoryParams) {
         this.metaRepository = params.metaRepository;
@@ -63,7 +63,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         return {};
     }
 
-    public async getItem(params: Omit<IGetScheduleActionExecuteParams, "app">) {
+    public async getItem(params: Omit<IGetScheduleActionGatewayExecuteParams, "app">) {
         const item = await this.getGateway.execute({
             id: params.id,
             app: this.app
@@ -84,7 +84,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         });
     }
 
-    public async listItems(params?: Omit<IListScheduleActionsExecuteParams, "app">) {
+    public async listItems(params?: Omit<IListScheduleActionsGatewayExecuteParams, "app">) {
         this.params = {
             where: params?.where,
             limit: params?.limit,

@@ -1,5 +1,5 @@
 import zod from "zod";
-import { ScheduleType } from "@webiny/app-headless-cms-scheduler/types.js";
+import { ScheduleType } from "~/types.js";
 
 export const schedulerEntrySchema = zod.object({
     id: zod.string(),

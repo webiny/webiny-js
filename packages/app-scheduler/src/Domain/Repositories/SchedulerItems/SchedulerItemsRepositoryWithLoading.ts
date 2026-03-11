@@ -2,7 +2,10 @@ import { makeAutoObservable } from "mobx";
 import type { ILoadingRepository } from "@webiny/app-utils";
 import type { ISchedulerItemsRepository } from "./ISchedulerItemsRepository.js";
 import { LoadingActions } from "~/types.js";
-import type { IGetScheduleActionExecuteParams, IListScheduleActionsExecuteParams } from "~/Gateways/index.js";
+import type {
+    IGetScheduleActionGatewayExecuteParams,
+    IListScheduleActionsGatewayExecuteParams
+} from "~/Gateways/index.js";
 
 export class SchedulerItemsRepositoryWithLoading implements ISchedulerItemsRepository {
     private readonly loadingRepository: ILoadingRepository;
@@ -29,14 +32,14 @@ export class SchedulerItemsRepositoryWithLoading implements ISchedulerItemsRepos
         return this.loadingRepository.get();
     }
 
-    public async getItem(params: Omit<IGetScheduleActionExecuteParams, "app">) {
+    public async getItem(params: Omit<IGetScheduleActionGatewayExecuteParams, "app">) {
         await this.loadingRepository.runCallBack(
             this.schedulerItemsRepository.getItem(params),
             LoadingActions.get
         );
     }
 
-    public async listItems(params?: Omit<IListScheduleActionsExecuteParams, "app">) {
+    public async listItems(params?: Omit<IListScheduleActionsGatewayExecuteParams, "app">) {
         await this.loadingRepository.runCallBack(
             this.schedulerItemsRepository.listItems(params),
             LoadingActions.list

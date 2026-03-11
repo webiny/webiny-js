@@ -1,4 +1,4 @@
-import type { CmsIdentity, SchedulerEntry, ScheduleType } from "~/types.js";
+import type { SchedulerIdentity, SchedulerEntry, ScheduleType } from "~/types.js";
 
 export class SchedulerItem {
     public readonly id: string;
@@ -6,7 +6,7 @@ export class SchedulerItem {
     public readonly type: ScheduleType;
     public readonly targetId: string;
     public readonly app: string;
-    public readonly scheduledBy: CmsIdentity;
+    public readonly scheduledBy: SchedulerIdentity;
     public readonly publishOn?: Date;
     public readonly unpublishOn?: Date;
 

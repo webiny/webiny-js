@@ -15,7 +15,7 @@ export interface IListScheduleActionsExecuteParamsWhere {
 
 export type IListScheduleActionsExecuteParamsSort = "scheduledFor_ASC" | "scheduledFor_DESC";
 
-export interface IListScheduleActionsExecuteParams {
+export interface IListScheduleActionsGatewayExecuteParams {
     app: string;
     where?: IListScheduleActionsExecuteParamsWhere;
     sort?: IListScheduleActionsExecuteParamsSort[];
@@ -23,11 +23,13 @@ export interface IListScheduleActionsExecuteParams {
     after?: string;
 }
 
-export interface IListScheduleActionsGatewayResponse {
+export interface IListScheduleActionsGatewayExecuteResponse {
     items: SchedulerEntry[];
     meta: CmsMetaResponse;
 }
 
 export interface IListScheduleActionsGateway {
-    execute(params: IListScheduleActionsExecuteParams): Promise<IListScheduleActionsGatewayResponse>;
+    execute(
+        params: IListScheduleActionsGatewayExecuteParams
+    ): Promise<IListScheduleActionsGatewayExecuteResponse>;
 }

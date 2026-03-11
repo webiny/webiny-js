@@ -1,16 +1,14 @@
 import type { ApolloClient } from "apollo-client";
-import type { CmsErrorResponse } from "@webiny/app-headless-cms-common/types/index.js";
 import zod from "zod";
 import { schedulerEntrySchema } from "./schema/schedulerEntry.js";
 import { createZodError } from "@webiny/utils/createZodError.js";
 import gql from "graphql-tag";
-import type {
-    IScheduleUnpublishActionExecuteParams,
-    IScheduleUnpublishActionGateway
-} from "@webiny/app-headless-cms-scheduler";
-import type { SchedulerEntry } from "@webiny/app-headless-cms-scheduler/types.js";
-import { ScheduleType } from "@webiny/app-headless-cms-scheduler/types.js";
 import { createSchedulerEntryFields } from "./graphql/fields.js";
+import { type SchedulerEntry, type SchedulerErrorResponse, ScheduleType } from "~/types.js";
+import type {
+    IScheduleUnpublishActionGateway,
+    IScheduleUnpublishActionGatewayExecuteParams
+} from "./abstractions/ScheduleUnpublishActionGateway.js";
 
 const createScheduleUnpublishActionMutation = () => {
     return gql`
@@ -40,7 +38,7 @@ interface SchedulerUnpublishGraphQLMutationVariables {
 interface SchedulerUnpublishGraphQLMutationResponse {
     createScheduleAction: {
         data: SchedulerEntry | null;
-        error: CmsErrorResponse | null;
+        error: SchedulerErrorResponse | null;
     };
 }
 
@@ -55,7 +53,7 @@ export class SchedulerUnpublishGraphQLGateway implements IScheduleUnpublishActio
         this.client = client;
     }
 
-    public async execute(params: IScheduleUnpublishActionExecuteParams) {
+    public async execute(params: IScheduleUnpublishActionGatewayExecuteParams) {
         const { data: response, errors } = await this.client.mutate<
             SchedulerUnpublishGraphQLMutationResponse,
             SchedulerUnpublishGraphQLMutationVariables

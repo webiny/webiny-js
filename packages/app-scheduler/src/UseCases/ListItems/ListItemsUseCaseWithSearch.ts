@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import type { ISearchRepository } from "~/Domain/index.js";
 import type { IListItemsUseCase } from "./IListItemsUseCase.js";
-import type { IListScheduleActionsExecuteParams } from "~/Gateways/index.js";
+import type { IListScheduleActionsGatewayExecuteParams } from "~/Gateways/index.js";
 
 export class ListItemsUseCaseWithSearch implements IListItemsUseCase {
     private searchRepository: ISearchRepository;
@@ -13,7 +13,7 @@ export class ListItemsUseCaseWithSearch implements IListItemsUseCase {
         makeAutoObservable(this);
     }
 
-    async execute(params?: Omit<IListScheduleActionsExecuteParams, "app">) {
+    async execute(params?: Omit<IListScheduleActionsGatewayExecuteParams, "app">) {
         const search = this.searchRepository.get();
         await this.useCase.execute({
             sort: params?.sort,

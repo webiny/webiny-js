@@ -1,6 +1,6 @@
 import type { SchedulerEntry } from "~/types.js";
 
-export interface IGetScheduleActionExecuteParams {
+export interface IGetScheduleActionGatewayExecuteParams {
     app: string;
     id: string;
 }
@@ -8,5 +8,7 @@ export interface IGetScheduleActionExecuteParams {
 export type IGetScheduleActionGatewayResponse = SchedulerEntry | null;
 
 export interface IGetScheduleActionGateway {
-    execute(params: IGetScheduleActionExecuteParams): Promise<IGetScheduleActionGatewayResponse>;
+    execute(
+        params: IGetScheduleActionGatewayExecuteParams
+    ): Promise<IGetScheduleActionGatewayResponse>;
 }

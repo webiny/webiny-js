@@ -1,15 +1,17 @@
 import type { SchedulerEntry } from "~/types.js";
 
-export interface ISchedulePublishActionExecuteParams {
+export interface ISchedulePublishActionGatewayExecuteParams {
     app: string;
     id: string;
     scheduleOn: Date;
 }
 
-export interface ISchedulePublishActionGatewayResponse {
+export interface ISchedulePublishActionGatewayExecuteResponse {
     item: SchedulerEntry;
 }
 
 export interface ISchedulePublishActionGateway {
-    execute(params: ISchedulePublishActionExecuteParams): Promise<ISchedulePublishActionGatewayResponse>;
+    execute(
+        params: ISchedulePublishActionGatewayExecuteParams
+    ): Promise<ISchedulePublishActionGatewayExecuteResponse>;
 }

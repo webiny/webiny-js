@@ -1,17 +1,15 @@
 import type { ApolloClient } from "apollo-client";
-import type { CmsErrorResponse } from "@webiny/app-headless-cms-common/types/index.js";
 import zod from "zod";
 import { schedulerEntrySchema } from "./schema/schedulerEntry.js";
 import { createZodError } from "@webiny/utils/createZodError.js";
 import gql from "graphql-tag";
-import type { SchedulerEntry } from "@webiny/app-headless-cms-scheduler/types.js";
-import { ScheduleType } from "@webiny/app-headless-cms-scheduler/types.js";
-import type {
-    ISchedulePublishActionExecuteParams,
-    ISchedulePublishActionGateway,
-    ISchedulePublishActionGatewayResponse
-} from "@webiny/app-headless-cms-scheduler";
 import { createSchedulerEntryFields } from "./graphql/fields.js";
+import { type SchedulerEntry, type SchedulerErrorResponse, ScheduleType } from "~/types.js";
+import type {
+    ISchedulePublishActionGateway,
+    ISchedulePublishActionGatewayExecuteParams,
+    ISchedulePublishActionGatewayExecuteResponse
+} from "./abstractions/SchedulePublishActionGateway.js";
 
 const createSchedulePublishActionMutation = () => {
     return gql`
@@ -41,7 +39,7 @@ interface SchedulerPublishGraphQLMutationVariables {
 interface SchedulerPublishGraphQLMutationResponse {
     createScheduleAction: {
         data: SchedulerEntry | null;
-        error: CmsErrorResponse | null;
+        error: SchedulerErrorResponse | null;
     };
 }
 
@@ -57,8 +55,8 @@ export class SchedulerPublishGraphQLGateway implements ISchedulePublishActionGat
     }
 
     public async execute(
-        params: ISchedulePublishActionExecuteParams
-    ): Promise<ISchedulePublishActionGatewayResponse> {
+        params: ISchedulePublishActionGatewayExecuteParams
+    ): Promise<ISchedulePublishActionGatewayExecuteResponse> {
         const { data: response, errors } = await this.client.mutate<
             SchedulerPublishGraphQLMutationResponse,
             SchedulerPublishGraphQLMutationVariables

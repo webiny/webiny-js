@@ -1,26 +1,22 @@
 import type { ApolloClient } from "apollo-client";
-import type {
-    CmsErrorResponse,
-    CmsMetaResponse
-} from "@webiny/app-headless-cms-common/types/index.js";
 import gql from "graphql-tag";
 import zod from "zod";
 import { createZodError } from "@webiny/utils/createZodError.js";
 import { schedulerEntrySchema } from "./schema/schedulerEntry.js";
-import type {
-    IListScheduleActionsExecuteParams,
-    IListScheduleActionsGateway,
-    IListScheduleActionsGatewayResponse
-} from "@webiny/app-headless-cms-scheduler";
-import type { SchedulerEntry } from "@webiny/app-headless-cms-scheduler/types.js";
 import { createSchedulerEntryFields } from "./graphql/fields.js";
+import type {
+    IListScheduleActionsGateway,
+    IListScheduleActionsGatewayExecuteParams,
+    IListScheduleActionsGatewayExecuteResponse
+} from "./abstractions/ListScheduleActionsGateway.js";
+import type { SchedulerEntry, SchedulerErrorResponse, SchedulerMetaResponse } from "~/types.js";
 
 const createListScheduleActionsQuery = () => {
     return gql`
         query ListScheduleActions(
             $app: String!
-            $where: ListSchedulesWhereInput
-            $sort: [ListSchedulesSorter!]
+            $where: ListScheduleActionsWhereInput
+            $sort: [ListScheduleActionsSorter!]
             $limit: Int
             $after: String
         ) {
@@ -50,13 +46,11 @@ const createListScheduleActionsQuery = () => {
     `;
 };
 
-type SchedulerListGraphQLQueryVariables = IListScheduleActionsExecuteParams;
-
 interface SchedulerListGraphQLQueryResponse {
     listScheduleActions: {
         data: SchedulerEntry[] | null;
-        meta: CmsMetaResponse | null;
-        error: CmsErrorResponse | null;
+        meta: SchedulerMetaResponse | null;
+        error: SchedulerErrorResponse | null;
     };
 }
 
@@ -77,15 +71,19 @@ export class SchedulerListGraphQLGateway implements IListScheduleActionsGateway 
     }
 
     public async execute(
-        params: IListScheduleActionsExecuteParams
-    ): Promise<IListScheduleActionsGatewayResponse> {
+        params: IListScheduleActionsGatewayExecuteParams
+    ): Promise<IListScheduleActionsGatewayExecuteResponse> {
         const { data: response, errors } = await this.client.query<
             SchedulerListGraphQLQueryResponse,
-            SchedulerListGraphQLQueryVariables
+            IListScheduleActionsGatewayExecuteParams
         >({
             query: createListScheduleActionsQuery(),
             variables: {
-                ...params
+                app: params.app,
+                where: params.where,
+                limit: params.limit,
+                after: params.after,
+                sort: params.sort
             },
             fetchPolicy: "network-only"
         });
