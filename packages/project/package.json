@@ -47,7 +47,7 @@
     "react-dom": "19.2.4",
     "read-json-sync": "2.0.1",
     "replace-in-path": "^1.1.0",
-    "serialize-error": "^12.0.0",
+    "serialize-error": "^13.0.1",
     "ts-morph": "^27.0.2",
     "tsx": "^4.21.0",
     "write-json-file": "^7.0.0",
