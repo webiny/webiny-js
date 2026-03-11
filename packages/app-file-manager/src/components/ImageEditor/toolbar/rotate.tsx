@@ -7,6 +7,7 @@ import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
 
 let cropper: Cropper;
+let prevAngle = 0;
 
 class RenderForm extends React.Component<any, any> {
     public override state = {
@@ -25,7 +26,9 @@ class RenderForm extends React.Component<any, any> {
                     onValueChange={(value: number) => {
                         this.setState({ rangeInput: value }, async () => {
                             if (cropper) {
-                                cropper.rotateTo(parseInt(String(value), 10));
+                                const delta = value - prevAngle;
+                                prevAngle = value;
+                                cropper.getCropperImage()?.$rotate(`${delta}deg`);
                             }
                         });
                     }}
@@ -57,44 +60,32 @@ const tool: ImageEditorTool = {
         return <RenderForm {...props} />;
     },
     onActivate: ({ canvas }) => {
+        prevAngle = 0;
         /**
-         * We can safely cast canvas.current as HTMLCanvasElement
+         * We can safely cast canvas.current as HTMLCanvasElement.
          */
         cropper = new Cropper(canvas.current as HTMLCanvasElement, {
-            background: false,
-            modal: false,
-            guides: false,
-            dragMode: "none",
-            highlight: false,
-            autoCrop: false
+            template:
+                "<cropper-canvas><cropper-image rotatable translatable></cropper-image></cropper-canvas>"
         });
     },
     cancel: () => cropper && cropper.destroy(),
-    apply: ({ canvas }) => {
-        return new Promise((resolve: any) => {
-            if (!cropper) {
-                resolve();
-                return;
-            }
+    apply: async ({ canvas }) => {
+        if (!cropper) {
+            return;
+        }
 
-            const current = canvas.current;
-            const src = cropper.getCroppedCanvas().toDataURL();
-            if (current) {
-                const image = new window.Image();
-                const ctx = current.getContext("2d") as CanvasRenderingContext2D;
-                image.onload = () => {
-                    ctx.drawImage(image, 0, 0);
-                    current.width = image.width;
-                    current.height = image.height;
+        const current = canvas.current;
+        const rotatedCanvas = await cropper.getCropperCanvas()?.$toCanvas();
 
-                    ctx.drawImage(image, 0, 0);
-                };
-                image.src = src;
-                resolve();
-            }
+        if (current && rotatedCanvas) {
+            const ctx = current.getContext("2d") as CanvasRenderingContext2D;
+            current.width = rotatedCanvas.width;
+            current.height = rotatedCanvas.height;
+            ctx.drawImage(rotatedCanvas, 0, 0);
+        }
 
-            cropper.destroy();
-        });
+        cropper.destroy();
     }
 };
 

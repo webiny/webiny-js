@@ -38,32 +38,23 @@ const tool: ImageEditorTool = {
         cropper = new Cropper(canvas.current!, options);
     },
     cancel: () => cropper && cropper.destroy(),
-    apply: ({ canvas }) => {
-        return new Promise((resolve: any) => {
-            if (!cropper) {
-                resolve();
-                return;
-            }
+    apply: async ({ canvas }) => {
+        if (!cropper) {
+            return;
+        }
 
-            const current = canvas.current;
-            const src = cropper.getCroppedCanvas().toDataURL();
-            if (current) {
-                const image = new window.Image();
-                const ctx = current.getContext("2d") as CanvasRenderingContext2D;
-                image.onload = () => {
-                    ctx.drawImage(image, 0, 0);
-                    current.width = image.width;
-                    current.height = image.height;
+        const current = canvas.current;
+        const croppedCanvas = await cropper.getCropperSelection()?.$toCanvas();
 
-                    ctx.drawImage(image, 0, 0);
-                    resolve();
-                };
-                image.src = src;
-            }
+        if (current && croppedCanvas) {
+            const ctx = current.getContext("2d") as CanvasRenderingContext2D;
+            current.width = croppedCanvas.width;
+            current.height = croppedCanvas.height;
+            ctx.drawImage(croppedCanvas, 0, 0);
+        }
 
-            cropper.destroy();
-            cropper = undefined;
-        });
+        cropper.destroy();
+        cropper = undefined;
     }
 };
 
