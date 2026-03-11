@@ -15,7 +15,7 @@ export const listVitestPackages = (storageOps, whitelistedPackages = []) => {
             }
 
             const packageFolderPath = path.join(packagesFolderPath, name);
-            return new TestablePackage(packageFolderPath);
+            return new TestablePackage(packageFolderPath, storageOps);
         })
         .filter(Boolean)
         .filter(pkg => pkg.testingEnabled() && pkg.hasTests())
