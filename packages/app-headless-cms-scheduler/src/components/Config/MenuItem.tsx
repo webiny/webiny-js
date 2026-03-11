@@ -3,11 +3,10 @@ import {
     ContentEntryEditorConfig,
     useContentEntryEditor
 } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
-import { usePermission } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
 import { useApolloClient } from "@webiny/app-headless-cms";
 import { useScheduleDialog } from "@webiny/app-scheduler";
-import {usePermissions} from "~/hooks/usePermissions.js";
+import { usePermissions } from "~/hooks/usePermissions.js";
 
 export const MenuItem = () => {
     const { entry, loading, contentModel } = useContentEntryEditor();

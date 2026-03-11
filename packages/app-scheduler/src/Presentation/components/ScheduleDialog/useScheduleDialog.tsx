@@ -3,7 +3,6 @@ import { Alert, Grid, Input } from "@webiny/admin-ui";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import { Bind, type BindComponentRenderProp } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import type { SchedulerEntry } from "~/types.js";
 import { ScheduleType } from "~/types.js";
 import type { CmsContentEntryStatusType } from "@webiny/app-headless-cms-common/types/index.js";
 import type { Validator } from "@webiny/validation/types.js";
