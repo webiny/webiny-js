@@ -1,5 +1,5 @@
 export {
-    RedirectAfterUpdateHandler,
-    RedirectBeforeUpdateHandler,
+    RedirectAfterUpdateEventHandler,
+    RedirectBeforeUpdateEventHandler,
     UpdateRedirectUseCase
 } from "./abstractions.js";

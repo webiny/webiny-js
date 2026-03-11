@@ -18,14 +18,15 @@ export class FileBeforeUpdateEvent extends DomainEvent<FileBeforeUpdatePayload> 
     eventType = "FileManager/File/BeforeUpdate" as const;
 
     getHandlerAbstraction() {
-        return FileBeforeUpdateHandler;
+        return FileBeforeUpdateEventHandler;
     }
 }
 
-export const FileBeforeUpdateHandler =
-    createAbstraction<IEventHandler<FileBeforeUpdateEvent>>("FileBeforeUpdateHandler");
+export const FileBeforeUpdateEventHandler = createAbstraction<IEventHandler<FileBeforeUpdateEvent>>(
+    "FileBeforeUpdateEventHandler"
+);
 
-export namespace FileBeforeUpdateHandler {
+export namespace FileBeforeUpdateEventHandler {
     export type Interface = IEventHandler<FileBeforeUpdateEvent>;
     export type Event = FileBeforeUpdateEvent;
 }
@@ -44,14 +45,15 @@ export class FileAfterUpdateEvent extends DomainEvent<FileAfterUpdatePayload> {
     eventType = "FileManager/File/AfterUpdate" as const;
 
     getHandlerAbstraction() {
-        return FileAfterUpdateHandler;
+        return FileAfterUpdateEventHandler;
     }
 }
 
-export const FileAfterUpdateHandler =
-    createAbstraction<IEventHandler<FileAfterUpdateEvent>>("FileAfterUpdateHandler");
+export const FileAfterUpdateEventHandler = createAbstraction<IEventHandler<FileAfterUpdateEvent>>(
+    "FileAfterUpdateEventHandler"
+);
 
-export namespace FileAfterUpdateHandler {
+export namespace FileAfterUpdateEventHandler {
     export type Interface = IEventHandler<FileAfterUpdateEvent>;
     export type Event = FileAfterUpdateEvent;
 }

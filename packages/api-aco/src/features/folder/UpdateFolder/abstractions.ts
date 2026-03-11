@@ -70,20 +70,20 @@ export interface FolderAfterUpdatePayload {
 }
 
 // Event Handler Abstractions
-export const FolderBeforeUpdateHandler = createAbstraction<
+export const FolderBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderBeforeUpdatePayload>>
->("FolderBeforeUpdateHandler");
+>("FolderBeforeUpdateEventHandler");
 
-export namespace FolderBeforeUpdateHandler {
+export namespace FolderBeforeUpdateEventHandler {
     export type Interface = IEventHandler<DomainEvent<FolderBeforeUpdatePayload>>;
     export type Event = DomainEvent<FolderBeforeUpdatePayload>;
 }
 
-export const FolderAfterUpdateHandler = createAbstraction<
+export const FolderAfterUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderAfterUpdatePayload>>
->("FolderAfterUpdateHandler");
+>("FolderAfterUpdateEventHandler");
 
-export namespace FolderAfterUpdateHandler {
+export namespace FolderAfterUpdateEventHandler {
     export type Interface = IEventHandler<DomainEvent<FolderAfterUpdatePayload>>;
     export type Event = DomainEvent<FolderAfterUpdatePayload>;
 }

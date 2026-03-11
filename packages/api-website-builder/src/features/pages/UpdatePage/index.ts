@@ -1,5 +1,5 @@
 export {
-    PageAfterUpdateHandler,
-    PageBeforeUpdateHandler,
+    PageAfterUpdateEventHandler,
+    PageBeforeUpdateEventHandler,
     UpdatePageUseCase
 } from "./abstractions.js";

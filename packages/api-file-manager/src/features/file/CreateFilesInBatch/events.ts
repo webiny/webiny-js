@@ -16,15 +16,15 @@ export class FileBeforeBatchCreateEvent extends DomainEvent<FileBeforeBatchCreat
     eventType = "FileManager/File/BeforeBatchCreate" as const;
 
     getHandlerAbstraction() {
-        return FileBeforeBatchCreateHandler;
+        return FileBeforeBatchCreateEventHandler;
     }
 }
 
-export const FileBeforeBatchCreateHandler = createAbstraction<
+export const FileBeforeBatchCreateEventHandler = createAbstraction<
     IEventHandler<FileBeforeBatchCreateEvent>
->("FileBeforeBatchCreateHandler");
+>("FileBeforeBatchCreateEventHandler");
 
-export namespace FileBeforeBatchCreateHandler {
+export namespace FileBeforeBatchCreateEventHandler {
     export type Interface = IEventHandler<FileBeforeBatchCreateEvent>;
     export type Event = FileBeforeBatchCreateEvent;
 }
@@ -42,15 +42,15 @@ export class FileAfterBatchCreateEvent extends DomainEvent<FileAfterBatchCreateP
     eventType = "FileManager/File/AfterBatchCreate" as const;
 
     getHandlerAbstraction() {
-        return FileAfterBatchCreateHandler;
+        return FileAfterBatchCreateEventHandler;
     }
 }
 
-export const FileAfterBatchCreateHandler = createAbstraction<
+export const FileAfterBatchCreateEventHandler = createAbstraction<
     IEventHandler<FileAfterBatchCreateEvent>
->("FileAfterBatchCreateHandler");
+>("FileAfterBatchCreateEventHandler");
 
-export namespace FileAfterBatchCreateHandler {
+export namespace FileAfterBatchCreateEventHandler {
     export type Interface = IEventHandler<FileAfterBatchCreateEvent>;
     export type Event = FileAfterBatchCreateEvent;
 }

@@ -1,5 +1,5 @@
 export {
-    PageAfterCreateRevisionFromHandler,
-    PageBeforeCreateRevisionFromHandler,
+    PageAfterCreateRevisionFromEventHandler,
+    PageBeforeCreateRevisionFromEventHandler,
     CreatePageRevisionFromUseCase
 } from "./abstractions.js";

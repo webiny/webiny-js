@@ -1,4 +1,4 @@
-import { PageAfterDeleteHandler } from "@webiny/api-website-builder/features/pages/DeletePage/abstractions.js";
+import { PageAfterDeleteEventHandler } from "@webiny/api-website-builder/features/pages/DeletePage/abstractions.js";
 import { ListScheduledActionsUseCase, CancelScheduledActionUseCase } from "@webiny/api-scheduler";
 
 /**
@@ -8,13 +8,15 @@ import { ListScheduledActionsUseCase, CancelScheduledActionUseCase } from "@webi
  * actions for all of its revisions should be canceled since the page
  * no longer exists.
  */
-class CancelScheduledActionOnDeleteEventHandlerImpl implements PageAfterDeleteHandler.Interface {
+class CancelScheduledActionOnDeleteEventHandlerImpl
+    implements PageAfterDeleteEventHandler.Interface
+{
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
         private cancelScheduledAction: CancelScheduledActionUseCase.Interface
     ) {}
 
-    async handle(event: PageAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: PageAfterDeleteEventHandler.Event): Promise<void> {
         const { page } = event.payload;
 
         const schedules = await this.listSchedules(page.entryId);
@@ -45,7 +47,7 @@ class CancelScheduledActionOnDeleteEventHandlerImpl implements PageAfterDeleteHa
 }
 
 export const CancelScheduledActionOnDeleteEventHandler =
-    PageAfterDeleteHandler.createImplementation({
+    PageAfterDeleteEventHandler.createImplementation({
         implementation: CancelScheduledActionOnDeleteEventHandlerImpl,
         dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase]
     });

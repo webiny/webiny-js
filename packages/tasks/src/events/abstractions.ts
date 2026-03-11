@@ -10,12 +10,11 @@ export interface TaskBeforeCreatePayload {
     input: ITaskCreateData;
 }
 
-export const TaskBeforeCreateHandler =
-    createAbstraction<IEventHandler<DomainEvent<TaskBeforeCreatePayload>>>(
-        "TaskBeforeCreateHandler"
-    );
+export const TaskBeforeCreateEventHandler = createAbstraction<
+    IEventHandler<DomainEvent<TaskBeforeCreatePayload>>
+>("TaskBeforeCreateEventHandler");
 
-export namespace TaskBeforeCreateHandler {
+export namespace TaskBeforeCreateEventHandler {
     export type Interface = IEventHandler<DomainEvent<TaskBeforeCreatePayload>>;
     export type Event = DomainEvent<TaskBeforeCreatePayload>;
 }
@@ -29,10 +28,11 @@ export interface TaskAfterCreatePayload {
     task: ITask;
 }
 
-export const TaskAfterCreateHandler =
-    createAbstraction<IEventHandler<DomainEvent<TaskAfterCreatePayload>>>("TaskAfterCreateHandler");
+export const TaskAfterCreateEventHandler = createAbstraction<
+    IEventHandler<DomainEvent<TaskAfterCreatePayload>>
+>("TaskAfterCreateEventHandler");
 
-export namespace TaskAfterCreateHandler {
+export namespace TaskAfterCreateEventHandler {
     export type Interface = IEventHandler<DomainEvent<TaskAfterCreatePayload>>;
     export type Event = DomainEvent<TaskAfterCreatePayload>;
 }
@@ -46,12 +46,11 @@ export interface TaskBeforeUpdatePayload {
     original: ITask;
 }
 
-export const TaskBeforeUpdateHandler =
-    createAbstraction<IEventHandler<DomainEvent<TaskBeforeUpdatePayload>>>(
-        "TaskBeforeUpdateHandler"
-    );
+export const TaskBeforeUpdateEventHandler = createAbstraction<
+    IEventHandler<DomainEvent<TaskBeforeUpdatePayload>>
+>("TaskBeforeUpdateEventHandler");
 
-export namespace TaskBeforeUpdateHandler {
+export namespace TaskBeforeUpdateEventHandler {
     export type Interface = IEventHandler<DomainEvent<TaskBeforeUpdatePayload>>;
     export type Event = DomainEvent<TaskBeforeUpdatePayload>;
 }
@@ -65,10 +64,11 @@ export interface TaskAfterUpdatePayload {
     task: ITask;
 }
 
-export const TaskAfterUpdateHandler =
-    createAbstraction<IEventHandler<DomainEvent<TaskAfterUpdatePayload>>>("TaskAfterUpdateHandler");
+export const TaskAfterUpdateEventHandler = createAbstraction<
+    IEventHandler<DomainEvent<TaskAfterUpdatePayload>>
+>("TaskAfterUpdateEventHandler");
 
-export namespace TaskAfterUpdateHandler {
+export namespace TaskAfterUpdateEventHandler {
     export type Interface = IEventHandler<DomainEvent<TaskAfterUpdatePayload>>;
     export type Event = DomainEvent<TaskAfterUpdatePayload>;
 }
@@ -81,12 +81,11 @@ export interface TaskBeforeDeletePayload {
     task: ITask;
 }
 
-export const TaskBeforeDeleteHandler =
-    createAbstraction<IEventHandler<DomainEvent<TaskBeforeDeletePayload>>>(
-        "TaskBeforeDeleteHandler"
-    );
+export const TaskBeforeDeleteEventHandler = createAbstraction<
+    IEventHandler<DomainEvent<TaskBeforeDeletePayload>>
+>("TaskBeforeDeleteEventHandler");
 
-export namespace TaskBeforeDeleteHandler {
+export namespace TaskBeforeDeleteEventHandler {
     export type Interface = IEventHandler<DomainEvent<TaskBeforeDeletePayload>>;
     export type Event = DomainEvent<TaskBeforeDeletePayload>;
 }
@@ -99,10 +98,11 @@ export interface TaskAfterDeletePayload {
     task: ITask;
 }
 
-export const TaskAfterDeleteHandler =
-    createAbstraction<IEventHandler<DomainEvent<TaskAfterDeletePayload>>>("TaskAfterDeleteHandler");
+export const TaskAfterDeleteEventHandler = createAbstraction<
+    IEventHandler<DomainEvent<TaskAfterDeletePayload>>
+>("TaskAfterDeleteEventHandler");
 
-export namespace TaskAfterDeleteHandler {
+export namespace TaskAfterDeleteEventHandler {
     export type Interface = IEventHandler<DomainEvent<TaskAfterDeletePayload>>;
     export type Event = DomainEvent<TaskAfterDeletePayload>;
 }

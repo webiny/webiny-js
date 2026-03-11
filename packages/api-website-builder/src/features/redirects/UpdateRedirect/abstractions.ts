@@ -104,21 +104,21 @@ export interface RedirectAfterUpdatePayload {
 // Event Handler Abstractions
 // ============================================================================
 
-export const RedirectBeforeUpdateHandler = createAbstraction<
+export const RedirectBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectBeforeUpdatePayload>>
->("Wb/RedirectBeforeUpdateHandler");
+>("Wb/RedirectBeforeUpdateEventHandler");
 
-export namespace RedirectBeforeUpdateHandler {
+export namespace RedirectBeforeUpdateEventHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectBeforeUpdatePayload>>;
     export type Event = DomainEvent<RedirectBeforeUpdatePayload>;
     export type Redirect = WbRedirect;
 }
 
-export const RedirectAfterUpdateHandler = createAbstraction<
+export const RedirectAfterUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectAfterUpdatePayload>>
->("Wb/RedirectAfterUpdateHandler");
+>("Wb/RedirectAfterUpdateEventHandler");
 
-export namespace RedirectAfterUpdateHandler {
+export namespace RedirectAfterUpdateEventHandler {
     export type Interface = IEventHandler<DomainEvent<RedirectAfterUpdatePayload>>;
     export type Event = DomainEvent<RedirectAfterUpdatePayload>;
     export type Redirect = WbRedirect;

@@ -101,21 +101,21 @@ export interface PageAfterUpdatePayload {
 // Event Handler Abstractions
 // ============================================================================
 
-export const PageBeforeUpdateHandler = createAbstraction<
+export const PageBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeUpdatePayload>>
->("Wb/PageBeforeUpdateHandler");
+>("Wb/PageBeforeUpdateEventHandler");
 
-export namespace PageBeforeUpdateHandler {
+export namespace PageBeforeUpdateEventHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeUpdatePayload>>;
     export type Event = DomainEvent<PageBeforeUpdatePayload>;
     export type Page = WbPage;
 }
 
-export const PageAfterUpdateHandler = createAbstraction<
+export const PageAfterUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterUpdatePayload>>
->("Wb/PageAfterUpdateHandler");
+>("Wb/PageAfterUpdateEventHandler");
 
-export namespace PageAfterUpdateHandler {
+export namespace PageAfterUpdateEventHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterUpdatePayload>>;
     export type Event = DomainEvent<PageAfterUpdatePayload>;
     export type Page = WbPage;

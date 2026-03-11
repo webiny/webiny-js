@@ -24,24 +24,25 @@ import { Logger } from "webiny/api/logger";
 import { BuildParams } from "webiny/api/build-params";
 
 class MyImplementation implements SomeFactory.Interface {
-    constructor(
-        private logger: Logger.Interface,
-        private buildParams: BuildParams.Interface
-    ) {}
+  constructor(
+    private logger: Logger.Interface,
+    private buildParams: BuildParams.Interface
+  ) {}
 
-    execute(/* factory-specific params */) {
-        this.logger.info("Doing something...");
-        const value = this.buildParams.get<string>("MY_PARAM");
-    }
+  execute(/* factory-specific params */) {
+    this.logger.info("Doing something...");
+    const value = this.buildParams.get<string>("MY_PARAM");
+  }
 }
 
 export default SomeFactory.createImplementation({
-    implementation: MyImplementation,
-    dependencies: [Logger, BuildParams]
+  implementation: MyImplementation,
+  dependencies: [Logger, BuildParams]
 });
 ```
 
 Key rules:
+
 1. **One class per file** -- each extension file exports a single implementation.
 2. **Constructor injection** -- dependencies are received as constructor parameters, in the same order as the `dependencies` array.
 3. **Dependencies array** -- must exactly match the constructor parameter order and types.
@@ -49,146 +50,273 @@ Key rules:
 
 ## Where This Pattern Appears
 
-| Extension Type | Factory | Import Path |
-|---|---|---|
-| Content Models | `ModelFactory` | `"webiny/api/cms/model"` |
-| GraphQL Schemas | `GraphQLSchemaFactory` | `"webiny/api/graphql"` |
-| CMS Entry Hooks | `EntryBeforeCreateEventHandler`, etc. | `"webiny/api/cms/entry"` |
-| API Key Hooks | `ApiKeyAfterUpdateHandler` | `"webiny/api/security/apiKey"` |
-| API Keys | `ApiKeyFactory` | `"webiny/api/security"` |
-| CLI Commands | `CliCommandFactory` | `"webiny/cli/command"` |
-| Pulumi Handlers | `CorePulumi` | `"webiny/infra/core"` |
+| Extension Type  | Factory                | Import Path              |
+| --------------- | ---------------------- | ------------------------ |
+| Content Models  | `ModelFactory`         | `"webiny/api/cms/model"` |
+| GraphQL Schemas | `GraphQLSchemaFactory` | `"webiny/api/graphql"`   |
+| API Keys        | `ApiKeyFactory`        | `"webiny/api/security"`  |
+| CLI Commands    | `CliCommandFactory`    | `"webiny/cli/command"`   |
+| Pulumi Handlers | `CorePulumi`           | `"webiny/infra/core"`    |
 
-## Injectable Services
+> **Event handlers** use the same `createImplementation` pattern but are not injectable dependencies. See the `lifecycle-events` skill for the full list.
 
-### Utility Services
+## Injectable Abstractions
 
-| Service | Import                      | Interface | Available In | Purpose |
-|---|-----------------------------|---|---|---|
-| `Logger` | `"webiny/api/logger"`       | `Logger.Interface` | API | Logging (persists to CloudWatch) |
-| `BuildParams` | `"webiny/api/build-params"` | `BuildParams.Interface` | API | Access build-time parameters |
-| `Ui` (CLI) | `"webiny/cli"`              | `Ui.Interface` | CLI | Terminal output formatting |
-| `Ui` (Infra) | `"webiny/infra"`            | `Ui.Interface` | Infra | Terminal output during deploy |
+Every Abstraction listed below can be used as a constructor dependency or as a base for `createImplementation`. Import from the `"webiny/..."` path shown.
 
-### Logger Methods
+### `webiny/api/build-params`
 
-```typescript
-this.logger.info("Informational message");
-this.logger.warn("Warning message");
-this.logger.error("Error message");
-this.logger.debug("Debug message");
-```
+| Abstraction  | Purpose                  |
+| ------------ | ------------------------ |
+| `BuildParam` | Define a build parameter |
+| `BuildParams` | Access build-time parameters |
 
-### BuildParams Methods
+### `webiny/api/logger`
 
-```typescript
-// Get a string parameter
-const value = this.buildParams.get<string>("MY_PARAM");
+| Abstraction | Purpose                          |
+| ----------- | -------------------------------- |
+| `Logger`    | Logging (persists to CloudWatch) |
 
-// Get a complex parameter
-const config = this.buildParams.get<{ myKey: number; nested: { foo: string } }>("MY_CONFIG");
-```
+### `webiny/api/key-value-store`
 
-Parameters are set in `webiny.config.tsx`:
+| Abstraction          | Purpose                        |
+| -------------------- | ------------------------------ |
+| `GlobalKeyValueStore` | Global (cross-tenant) key-value store |
+| `KeyValueStore`      | Tenant-scoped key-value store  |
 
-```tsx
-<Api.BuildParam paramName="MY_PARAM" value="customValue" />
-<Api.BuildParam paramName="MY_CONFIG" value={{ myKey: 2, nested: { foo: "bar" } }} />
-```
+### `webiny/api/event-publisher`
 
-### Core Context Features
+| Abstraction      | Purpose              |
+| ---------------- | -------------------- |
+| `EventPublisher` | Publish domain events |
 
-| Feature | Import Path | Purpose |
-|---|---|---|
-| `IdentityContext` | `"webiny/api/security"` or `"@webiny/api-core/features/IdentityContext"` | Current user identity and permissions |
-| `TenantContext` | `"@webiny/api-core/features/TenantContext"` | Current tenant information |
-| `EventPublisher` | `"@webiny/api-core/features/EventPublisher"` | Publish domain events |
-| `WcpContext` | `"@webiny/api-core/features/WcpContext"` | Webiny Control Panel integration |
-| `GetSettings` | `"@webiny/api-core/features/settings/GetSettings"` | Retrieve settings records |
-| `UpdateSettings` | `"@webiny/api-core/features/settings/UpdateSettings"` | Create/update settings records |
+### `webiny/api/graphql`
 
-### Headless CMS Use-Cases
+| Abstraction            | Purpose               |
+| ---------------------- | --------------------- |
+| `GraphQLSchemaFactory` | Define GraphQL schemas |
 
-| Feature | Import Path | Purpose |
-|---|---|---|
-| `GetEntryByIdUseCase` | `"@webiny/api-headless-cms/features/contentEntry/GetEntryById"` | Fetch entry by revision ID |
-| `GetEntryUseCase` | `"@webiny/api-headless-cms/features/contentEntry/GetEntry"` | Get entry by query |
-| `ListLatestEntriesUseCase` | `"@webiny/api-headless-cms/features/contentEntry/ListEntries"` | List latest entries |
-| `ListPublishedEntriesUseCase` | `"@webiny/api-headless-cms/features/contentEntry/ListEntries"` | List published entries |
-| `ListDeletedEntriesUseCase` | `"@webiny/api-headless-cms/features/contentEntry/ListEntries"` | List deleted entries |
-| `CreateEntryUseCase` | `"@webiny/api-headless-cms/features/contentEntry/CreateEntry"` | Create entry |
-| `UpdateEntryUseCase` | `"@webiny/api-headless-cms/features/contentEntry/UpdateEntry"` | Update entry |
-| `DeleteEntryUseCase` | `"@webiny/api-headless-cms/features/contentEntry/DeleteEntry"` | Delete entry |
-| `GetModelUseCase` | `"@webiny/api-headless-cms/features/contentModel/GetModel"` | Get model by ID |
-| `ListModelsUseCase` | `"@webiny/api-headless-cms/features/contentModel/ListModels"` | List all models |
-| `GetModelRepository` | `"@webiny/api-headless-cms/features/contentModel/GetModel"` | Fetch model from cache |
-| `ListModelsRepository` | `"@webiny/api-headless-cms/features/contentModel/ListModels"` | Fetch all models from cache |
-| `ModelsFetcher` | `"@webiny/api-headless-cms/features/contentModel/shared"` | Centralized model fetching |
-| `ListEntriesRepository` | `"@webiny/api-headless-cms/features/contentEntry/ListEntries"` | Storage-level entry fetching |
+### `webiny/api/tasks`
 
-### Tenancy Use-Cases
+| Abstraction      | Purpose                |
+| ---------------- | ---------------------- |
+| `TaskService`    | Task management service |
+| `TaskDefinition` | Define a background task |
 
-| Feature | Import Path | Purpose |
-|---|---|---|
-| `GetTenantByIdUseCase` | `"@webiny/api-core/features/tenancy/GetTenantById"` | Fetch tenant by ID |
-| `CreateTenantUseCase` | `"@webiny/api-core/features/tenancy/CreateTenant"` | Create a tenant |
-| `UpdateTenantUseCase` | `"@webiny/api-core/features/tenancy/UpdateTenant"` | Update a tenant |
-| `DeleteTenantUseCase` | `"@webiny/api-core/features/tenancy/DeleteTenant"` | Delete a tenant |
-| `InstallTenantUseCase` | `"@webiny/api-core/features/tenancy/InstallTenant"` | Install a tenant |
+### `webiny/api/system`
+
+| Abstraction            | Purpose                   |
+| ---------------------- | ------------------------- |
+| `InstallSystemUseCase` | System installation logic |
+
+### `webiny/api/security`
+
+| Abstraction           | Purpose                               |
+| --------------------- | ------------------------------------- |
+| `IdentityContext`     | Current user identity and permissions |
+| `ApiKeyFactory`       | Define custom API key types           |
+| `IdentityProvider`    | Base identity provider abstraction    |
+| `OidcIdentityProvider` | OIDC identity provider               |
+| `JwtIdentityProvider` | JWT identity provider                 |
+| `Authenticator`       | Authentication logic                  |
+| `Authorizer`          | Authorization logic                   |
+
+### `webiny/api/security/api-key`
+
+| Abstraction             | Purpose                     |
+| ----------------------- | --------------------------- |
+| `CreateApiKeyUseCase`   | Create an API key           |
+| `DeleteApiKeyUseCase`   | Delete an API key           |
+| `GetApiKeyUseCase`      | Get API key by ID           |
+| `GetApiKeyByTokenUseCase` | Get API key by token      |
+| `ListApiKeysUseCase`    | List all API keys           |
+| `UpdateApiKeyUseCase`   | Update an API key           |
+| `ApiKeyFactory`         | Define custom API key types |
+
+### `webiny/api/security/role`
+
+| Abstraction       | Purpose        |
+| ----------------- | -------------- |
+| `CreateRoleUseCase` | Create a role |
+| `DeleteRoleUseCase` | Delete a role |
+| `GetRoleUseCase`    | Get role by ID |
+| `ListRolesUseCase`  | List all roles |
+| `UpdateRoleUseCase` | Update a role |
+
+### `webiny/api/security/user`
+
+| Abstraction          | Purpose           |
+| -------------------- | ----------------- |
+| `CreateUserUseCase`  | Create a user     |
+| `DeleteUserUseCase`  | Delete a user     |
+| `UpdateUserUseCase`  | Update a user     |
+| `GetUserUseCase`     | Get user by ID    |
+| `ListUsersUseCase`   | List all users    |
+| `ListUserTeamsUseCase` | List user's teams |
+
+### `webiny/api/tenancy`
+
+| Abstraction              | Purpose                              |
+| ------------------------ | ------------------------------------ |
+| `TenantContext`          | Current tenant information           |
+| `CreateTenantUseCase`    | Create a tenant                      |
+| `CreateTenantRepository` | Tenant creation storage              |
+| `GetTenantByIdUseCase`   | Fetch tenant by ID                   |
+| `UpdateTenantUseCase`    | Update a tenant                      |
+| `UpdateTenantRepository` | Tenant update storage                |
+| `DeleteTenantUseCase`    | Delete a tenant                      |
+| `DeleteTenantRepository` | Tenant deletion storage              |
+| `InstallTenantUseCase`   | Install a tenant                     |
+| `AppInstaller`           | App installation during tenant install |
+
+### `webiny/api/tenant-manager`
+
+| Abstraction            | Purpose                        |
+| ---------------------- | ------------------------------ |
+| `TenantModelExtension` | Extend tenant data model       |
+
+### `webiny/api/cms/entry`
+
+| Abstraction                                         | Purpose                             |
+| --------------------------------------------------- | ----------------------------------- |
+| `CreateEntryUseCase`                                | Create a CMS entry                  |
+| `CreateEntryRevisionFromUseCase`                    | Create entry revision from existing |
+| `DeleteEntryUseCase`                                | Delete an entry                     |
+| `MoveEntryToBinUseCase`                             | Move entry to bin                   |
+| `DeleteEntryRevisionUseCase`                        | Delete a specific revision          |
+| `DeleteMultipleEntriesUseCase`                      | Delete multiple entries             |
+| `MoveEntryUseCase`                                  | Move entry to folder                |
+| `PublishEntryUseCase`                               | Publish an entry                    |
+| `RepublishEntryUseCase`                             | Republish an entry                  |
+| `RestoreEntryFromBinUseCase`                        | Restore entry from bin              |
+| `UnpublishEntryUseCase`                             | Unpublish an entry                  |
+| `UpdateEntryUseCase`                                | Update an entry                     |
+| `UpdateSingletonEntryUseCase`                       | Update a singleton entry            |
+| `GetEntriesByIdsUseCase`                            | Get entries by IDs                  |
+| `GetEntryUseCase`                                   | Get entry by query                  |
+| `GetEntryByIdUseCase`                               | Get entry by revision ID            |
+| `GetLatestEntriesByIdsUseCase`                      | Get latest entries by IDs           |
+| `GetLatestRevisionByEntryIdBaseUseCase`             | Get latest revision (base)          |
+| `GetLatestRevisionByEntryIdUseCase`                 | Get latest revision                 |
+| `GetLatestDeletedRevisionByEntryIdUseCase`          | Get latest deleted revision         |
+| `GetLatestRevisionByEntryIdIncludingDeletedUseCase` | Get latest revision (incl. deleted) |
+| `GetPreviousRevisionByEntryIdBaseUseCase`           | Get previous revision (base)        |
+| `GetPreviousRevisionByEntryIdUseCase`               | Get previous revision               |
+| `GetPublishedEntriesByIdsUseCase`                   | Get published entries by IDs        |
+| `GetPublishedRevisionByEntryIdUseCase`              | Get published revision              |
+| `GetRevisionByIdUseCase`                            | Get revision by ID                  |
+| `GetRevisionsByEntryIdUseCase`                      | Get all revisions of an entry       |
+| `GetSingletonEntryUseCase`                          | Get singleton entry                 |
+| `ListEntriesUseCase`                                | List entries (base)                 |
+| `ListLatestEntriesUseCase`                          | List latest entries                 |
+| `ListPublishedEntriesUseCase`                       | List published entries              |
+| `ListDeletedEntriesUseCase`                         | List deleted entries                |
+| `ValidateEntryUseCase`                              | Validate entry data                 |
+| `CmsWhereMapper`                                    | Map CMS where conditions            |
+| `CmsSortMapper`                                     | Map CMS sort conditions             |
+
+### `webiny/api/cms/model`
+
+| Abstraction           | Purpose                   |
+| --------------------- | ------------------------- |
+| `ModelFactory`        | Define CMS content models |
+| `FieldType`           | Define custom field types |
+| `CreateModelUseCase`  | Create a model            |
+| `CreateModelFromUseCase` | Clone a model          |
+| `UpdateModelUseCase`  | Update a model            |
+| `DeleteModelUseCase`  | Delete a model            |
+| `GetModelUseCase`     | Get model by ID           |
+| `ListModelsUseCase`   | List all models           |
+
+### `webiny/api/cms/group`
+
+| Abstraction          | Purpose         |
+| -------------------- | --------------- |
+| `ModelGroupFactory`  | Define model groups |
+| `CreateGroupUseCase` | Create a group  |
+| `UpdateGroupUseCase` | Update a group  |
+| `DeleteGroupUseCase` | Delete a group  |
+| `ListGroupsUseCase`  | List all groups |
+| `GetGroupUseCase`    | Get group by ID |
+
+### `webiny/api/website-builder/nextjs`
+
+| Abstraction   | Purpose                    |
+| ------------- | -------------------------- |
+| `NextjsConfig` | Configure Next.js integration |
+
+### `webiny/api/website-builder/page`
+
+| Abstraction                     | Purpose                            |
+| ------------------------------- | ---------------------------------- |
+| `CreatePageUseCase`             | Create a page                      |
+| `CreatePageRevisionFromUseCase` | Create page revision from existing |
+| `DeletePageUseCase`             | Delete a page                      |
+| `DuplicatePageUseCase`          | Duplicate a page                   |
+| `GetPageByIdUseCase`            | Get page by ID                     |
+| `GetPageByPathUseCase`          | Get page by path                   |
+| `GetPageRevisionsUseCase`       | Get page revisions                 |
+| `ListPagesUseCase`              | List pages                         |
+| `MovePageUseCase`               | Move a page                        |
+| `PublishPageUseCase`            | Publish a page                     |
+| `UnpublishPageUseCase`          | Unpublish a page                   |
+| `UpdatePageUseCase`             | Update a page                      |
+
+### `webiny/api/website-builder/redirect`
+
+| Abstraction                       | Purpose                    |
+| --------------------------------- | -------------------------- |
+| `CreateRedirectUseCase`           | Create a redirect          |
+| `DeleteRedirectUseCase`           | Delete a redirect          |
+| `GetActiveRedirectsUseCase`       | Get active redirects       |
+| `GetRedirectByIdUseCase`          | Get redirect by ID         |
+| `InvalidateRedirectsCacheUseCase` | Invalidate redirects cache |
+| `ListRedirectsUseCase`            | List redirects             |
+| `MoveRedirectUseCase`             | Move a redirect            |
+| `UpdateRedirectUseCase`           | Update a redirect          |
 
 ## Examples Across Extension Types
 
 ### API Extension (GraphQL Schema with DI)
 
+GraphQL schemas use the **builder pattern**. The `execute` method receives a `builder` and uses `addTypeDefs` and `addResolver` to define the schema. Resolver-level DI is declared per-resolver via `dependencies` in `addResolver`, resolved at request time from the request-scoped container.
+
 ```typescript
 import { GraphQLSchemaFactory } from "webiny/api/graphql";
 import { IdentityContext } from "webiny/api/security";
 
-class SchemaImpl implements GraphQLSchemaFactory.Interface {
-    constructor(private identityContext: IdentityContext.Interface) {}
+class WhoAmISchema implements GraphQLSchemaFactory.Interface {
+  async execute(
+    builder: GraphQLSchemaFactory.SchemaBuilder
+  ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
+    builder.addTypeDefs(/* GraphQL */ `
+      extend type Query {
+        whoAmI: String
+      }
+    `);
 
-    execute(): GraphQLSchemaFactory.Return {
-        return [{
-            typeDefs: /* GraphQL */ `
-                type Query { whoAmI: String }
-            `,
-            resolvers: {
-                Query: {
-                    whoAmI: () => {
-                        const identity = this.identityContext.getIdentity();
-                        return `Hello, ${identity.displayName}!`;
-                    }
-                }
-            }
-        }];
-    }
+    builder.addResolver({
+      path: "Query.whoAmI",
+      dependencies: [IdentityContext],
+      resolver: (identityContext: IdentityContext.Interface) => {
+        return () => {
+          const identity = identityContext.getIdentity();
+          return `Hello, ${identity.displayName}!`;
+        };
+      }
+    });
+
+    return builder;
+  }
 }
 
 export default GraphQLSchemaFactory.createImplementation({
-    implementation: SchemaImpl,
-    dependencies: [IdentityContext]
+  implementation: WhoAmISchema,
+  dependencies: []
 });
 ```
 
-### CMS Lifecycle Hook with DI
-
-```typescript
-import { EntryBeforeCreateEventHandler as Handler } from "webiny/api/cms/entry";
-import { Logger } from "webiny/api/logger";
-
-class MyHookImpl implements Handler.Interface {
-    constructor(private logger: Logger.Interface) {}
-
-    async handle(event: Handler.Event): Promise<void> {
-        this.logger.info(`Entry created for model: ${event.modelId}`);
-    }
-}
-
-export default Handler.createImplementation({
-    implementation: MyHookImpl,
-    dependencies: [Logger]
-});
-```
+Note: `GraphQLSchemaFactory` implementations typically have `dependencies: []` because DI happens at the resolver level via `addResolver({ dependencies })`, not at the class constructor level.
 
 ### CLI Command with DI
 
@@ -197,23 +325,23 @@ import { Ui } from "webiny/cli";
 import { CliCommandFactory } from "webiny/cli/command";
 
 class MyCommandImpl implements CliCommandFactory.Interface<{ name: string }> {
-    constructor(private ui: Ui.Interface) {}
+  constructor(private ui: Ui.Interface) {}
 
-    execute(): CliCommandFactory.CommandDefinition<{ name: string }> {
-        return {
-            name: "greet",
-            description: "Greet someone",
-            params: [{ name: "name", description: "Name", type: "string" }],
-            handler: async params => {
-                this.ui.success(`Hello, ${params.name}!`);
-            }
-        };
-    }
+  execute(): CliCommandFactory.CommandDefinition<{ name: string }> {
+    return {
+      name: "greet",
+      description: "Greet someone",
+      params: [{ name: "name", description: "Name", type: "string" }],
+      handler: async params => {
+        this.ui.success(`Hello, ${params.name}!`);
+      }
+    };
+  }
 }
 
 export default CliCommandFactory.createImplementation({
-    implementation: MyCommandImpl,
-    dependencies: [Ui]
+  implementation: MyCommandImpl,
+  dependencies: [Ui]
 });
 ```
 
@@ -224,16 +352,16 @@ import { Ui } from "webiny/infra";
 import { CorePulumi } from "webiny/infra/core";
 
 class MyPulumiImpl implements CorePulumi.Interface {
-    constructor(private ui: Ui.Interface) {}
+  constructor(private ui: Ui.Interface) {}
 
-    execute(app: any) {
-        this.ui.info("Deploying with environment:", app.env);
-    }
+  execute(app: any) {
+    this.ui.info("Deploying with environment:", app.env);
+  }
 }
 
 export default CorePulumi.createImplementation({
-    implementation: MyPulumiImpl,
-    dependencies: [Ui]
+  implementation: MyPulumiImpl,
+  dependencies: [Ui]
 });
 ```
 

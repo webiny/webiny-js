@@ -85,21 +85,21 @@ export interface PageAfterUnpublishPayload {
 // Event Handler Abstractions
 // ============================================================================
 
-export const PageBeforeUnpublishHandler = createAbstraction<
+export const PageBeforeUnpublishEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeUnpublishPayload>>
->("Wb/PageBeforeUnpublishHandler");
+>("Wb/PageBeforeUnpublishEventHandler");
 
-export namespace PageBeforeUnpublishHandler {
+export namespace PageBeforeUnpublishEventHandler {
     export type Interface = IEventHandler<DomainEvent<PageBeforeUnpublishPayload>>;
     export type Event = DomainEvent<PageBeforeUnpublishPayload>;
     export type Page = WbPage;
 }
 
-export const PageAfterUnpublishHandler = createAbstraction<
+export const PageAfterUnpublishEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterUnpublishPayload>>
->("Wb/PageAfterUnpublishHandler");
+>("Wb/PageAfterUnpublishEventHandler");
 
-export namespace PageAfterUnpublishHandler {
+export namespace PageAfterUnpublishEventHandler {
     export type Interface = IEventHandler<DomainEvent<PageAfterUnpublishPayload>>;
     export type Event = DomainEvent<PageAfterUnpublishPayload>;
     export type Page = WbPage;

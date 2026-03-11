@@ -60,20 +60,20 @@ export interface MailerSettingsAfterSavePayload {
 }
 
 // Event Handler Abstractions
-export const MailerSettingsBeforeSaveHandler = createAbstraction<
+export const MailerSettingsBeforeSaveEventHandler = createAbstraction<
     IEventHandler<DomainEvent<MailerSettingsBeforeSavePayload>>
->("MailerSettingsBeforeSaveHandler");
+>("MailerSettingsBeforeSaveEventHandler");
 
-export namespace MailerSettingsBeforeSaveHandler {
+export namespace MailerSettingsBeforeSaveEventHandler {
     export type Interface = IEventHandler<DomainEvent<MailerSettingsBeforeSavePayload>>;
     export type Event = DomainEvent<MailerSettingsBeforeSavePayload>;
 }
 
-export const MailerSettingsAfterSaveHandler = createAbstraction<
+export const MailerSettingsAfterSaveEventHandler = createAbstraction<
     IEventHandler<DomainEvent<MailerSettingsAfterSavePayload>>
->("MailerSettingsAfterSaveHandler");
+>("MailerSettingsAfterSaveEventHandler");
 
-export namespace MailerSettingsAfterSaveHandler {
+export namespace MailerSettingsAfterSaveEventHandler {
     export type Interface = IEventHandler<DomainEvent<MailerSettingsAfterSavePayload>>;
     export type Event = DomainEvent<MailerSettingsAfterSavePayload>;
 }

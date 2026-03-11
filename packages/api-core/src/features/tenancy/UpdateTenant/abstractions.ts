@@ -36,20 +36,20 @@ export namespace UpdateTenantGateway {
     export type Interface = IUpdateTenantGateway;
 }
 
-export const TenantBeforeUpdateHandler = createAbstraction<
+export const TenantBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<TenantBeforeUpdatePayload>>
->("TenantBeforeUpdateHandler");
+>("TenantBeforeUpdateEventHandler");
 
-export namespace TenantBeforeUpdateHandler {
+export namespace TenantBeforeUpdateEventHandler {
     export type Interface = IEventHandler<DomainEvent<TenantBeforeUpdatePayload>>;
     export type Event = DomainEvent<TenantBeforeUpdatePayload>;
 }
 
-export const TenantAfterUpdateHandler = createAbstraction<
+export const TenantAfterUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<TenantAfterUpdatePayload>>
->("TenantAfterUpdateHandler");
+>("TenantAfterUpdateEventHandler");
 
-export namespace TenantAfterUpdateHandler {
+export namespace TenantAfterUpdateEventHandler {
     export type Interface = IEventHandler<DomainEvent<TenantAfterUpdatePayload>>;
     export type Event = DomainEvent<TenantAfterUpdatePayload>;
 }

@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { UserAfterDeleteHandler } from "@webiny/api-core/features/DeleteUser";
+import { UserAfterDeleteEventHandler } from "@webiny/api-core/features/DeleteUser";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
-class AuditLogUserAfterDeleteHandlerImpl implements UserAfterDeleteHandler.Interface {
+class AuditLogUserAfterDeleteHandlerImpl implements UserAfterDeleteEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: UserAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: UserAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { user } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.USER.DELETE);
@@ -22,7 +22,7 @@ class AuditLogUserAfterDeleteHandlerImpl implements UserAfterDeleteHandler.Inter
     }
 }
 
-export const AuditLogUserAfterDeleteHandler = UserAfterDeleteHandler.createImplementation({
+export const AuditLogUserAfterDeleteHandler = UserAfterDeleteEventHandler.createImplementation({
     implementation: AuditLogUserAfterDeleteHandlerImpl,
     dependencies: [AuditLogsContext]
 });

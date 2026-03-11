@@ -1,5 +1,5 @@
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import { PageBeforeUnpublishHandler, PageAfterUnpublishHandler } from "./abstractions.js";
+import { PageBeforeUnpublishEventHandler, PageAfterUnpublishEventHandler } from "./abstractions.js";
 import type { PageBeforeUnpublishPayload, PageAfterUnpublishPayload } from "./abstractions.js";
 
 // PageBeforeUnpublish Event
@@ -7,7 +7,7 @@ export class PageBeforeUnpublishEvent extends DomainEvent<PageBeforeUnpublishPay
     eventType = "page.beforeUnpublish" as const;
 
     getHandlerAbstraction() {
-        return PageBeforeUnpublishHandler;
+        return PageBeforeUnpublishEventHandler;
     }
 }
 
@@ -16,6 +16,6 @@ export class PageAfterUnpublishEvent extends DomainEvent<PageAfterUnpublishPaylo
     eventType = "page.afterUnpublish" as const;
 
     getHandlerAbstraction() {
-        return PageAfterUnpublishHandler;
+        return PageAfterUnpublishEventHandler;
     }
 }

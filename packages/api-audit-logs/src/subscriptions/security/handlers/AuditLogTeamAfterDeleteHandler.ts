@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { TeamAfterDeleteHandler } from "@webiny/api-core/features/DeleteTeam";
+import { TeamAfterDeleteEventHandler } from "@webiny/api-core/features/DeleteTeam";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
-class AuditLogTeamAfterDeleteHandlerImpl implements TeamAfterDeleteHandler.Interface {
+class AuditLogTeamAfterDeleteHandlerImpl implements TeamAfterDeleteEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: TeamAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: TeamAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { team } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.TEAM.DELETE);
@@ -22,7 +22,7 @@ class AuditLogTeamAfterDeleteHandlerImpl implements TeamAfterDeleteHandler.Inter
     }
 }
 
-export const AuditLogTeamAfterDeleteHandler = TeamAfterDeleteHandler.createImplementation({
+export const AuditLogTeamAfterDeleteHandler = TeamAfterDeleteEventHandler.createImplementation({
     implementation: AuditLogTeamAfterDeleteHandlerImpl,
     dependencies: [AuditLogsContext]
 });

@@ -1,17 +1,17 @@
-import { FileAfterDeleteHandler } from "@webiny/api-file-manager/features/file/DeleteFile/events.js";
+import { FileAfterDeleteEventHandler } from "@webiny/api-file-manager/features/file/DeleteFile/events.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import type { DeleteS3FolderInput } from "~/features/DeleteFileFromBucket/DeleteS3FolderTask.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 
-class DeleteFileFromBucketHandlerImpl implements FileAfterDeleteHandler.Interface {
+class DeleteFileFromBucketHandlerImpl implements FileAfterDeleteEventHandler.Interface {
     constructor(
         private tenantContext: TenantContext.Interface,
         private taskService: TaskService.Interface,
         private keyValueStore: GlobalKeyValueStore.Interface
     ) {}
 
-    async handle(event: FileAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: FileAfterDeleteEventHandler.Event): Promise<void> {
         const { file } = event.payload;
         const tenant = this.tenantContext.getTenant();
 
@@ -30,7 +30,7 @@ class DeleteFileFromBucketHandlerImpl implements FileAfterDeleteHandler.Interfac
     }
 }
 
-export const DeleteFileFromBucketHandler = FileAfterDeleteHandler.createImplementation({
+export const DeleteFileFromBucketHandler = FileAfterDeleteEventHandler.createImplementation({
     implementation: DeleteFileFromBucketHandlerImpl,
     dependencies: [TenantContext, TaskService, GlobalKeyValueStore]
 });

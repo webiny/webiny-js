@@ -11,15 +11,15 @@ export class BeforeAuthenticationEvent extends DomainEvent<BeforeAuthenticationP
     eventType = "authentication.beforeAuthentication" as const;
 
     getHandlerAbstraction() {
-        return BeforeAuthenticationHandler;
+        return BeforeAuthenticationEventHandler;
     }
 }
 
-export const BeforeAuthenticationHandler = createAbstraction<
+export const BeforeAuthenticationEventHandler = createAbstraction<
     IEventHandler<BeforeAuthenticationEvent>
->("BeforeAuthenticationHandler");
+>("BeforeAuthenticationEventHandler");
 
-export namespace BeforeAuthenticationHandler {
+export namespace BeforeAuthenticationEventHandler {
     export type Interface = IEventHandler<BeforeAuthenticationEvent>;
     export type Event = BeforeAuthenticationEvent;
 }
@@ -33,15 +33,15 @@ export class AfterAuthenticationEvent extends DomainEvent<AfterAuthenticationPay
     eventType = "authentication.afterAuthentication" as const;
 
     getHandlerAbstraction() {
-        return AfterAuthenticationHandler;
+        return AfterAuthenticationEventHandler;
     }
 }
 
-export const AfterAuthenticationHandler = createAbstraction<
+export const AfterAuthenticationEventHandler = createAbstraction<
     IEventHandler<AfterAuthenticationEvent>
->("AfterAuthenticationHandler");
+>("AfterAuthenticationEventHandler");
 
-export namespace AfterAuthenticationHandler {
+export namespace AfterAuthenticationEventHandler {
     export type Interface = IEventHandler<AfterAuthenticationEvent>;
     export type Event = AfterAuthenticationEvent;
 }

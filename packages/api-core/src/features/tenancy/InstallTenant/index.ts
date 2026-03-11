@@ -2,7 +2,7 @@ export { InstallTenantFeature } from "./feature.js";
 export {
     InstallTenantUseCase,
     AppInstaller,
-    TenantInstalledHandler,
+    TenantInstalledEventHandler,
     type AppInstallationData,
     type TenantInstallationInput
 } from "./abstractions.js";

@@ -1,2 +1,2 @@
 export { DeleteFileUseCase } from "./abstractions.js";
-export { FileBeforeDeleteHandler, FileAfterDeleteHandler } from "./events.js";
+export { FileBeforeDeleteEventHandler, FileAfterDeleteEventHandler } from "./events.js";

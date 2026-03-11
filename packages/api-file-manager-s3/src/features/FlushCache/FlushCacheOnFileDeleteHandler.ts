@@ -1,15 +1,15 @@
-import { FileAfterDeleteHandler } from "@webiny/api-file-manager/features/file/DeleteFile/events.js";
+import { FileAfterDeleteEventHandler } from "@webiny/api-file-manager/features/file/DeleteFile/events.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { CdnPathsGenerator } from "~/utils/CdnPathsGenerator.js";
 
-class FlushCacheOnFileDeleteHandlerImpl implements FileAfterDeleteHandler.Interface {
+class FlushCacheOnFileDeleteHandlerImpl implements FileAfterDeleteEventHandler.Interface {
     private readonly pathsGenerator: CdnPathsGenerator;
 
     constructor(private taskService: TaskService.Interface) {
         this.pathsGenerator = new CdnPathsGenerator();
     }
 
-    async handle(event: FileAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: FileAfterDeleteEventHandler.Event): Promise<void> {
         const { file } = event.payload;
 
         await this.taskService.trigger({
@@ -22,7 +22,7 @@ class FlushCacheOnFileDeleteHandlerImpl implements FileAfterDeleteHandler.Interf
     }
 }
 
-export const FlushCacheOnFileDeleteHandler = FileAfterDeleteHandler.createImplementation({
+export const FlushCacheOnFileDeleteHandler = FileAfterDeleteEventHandler.createImplementation({
     implementation: FlushCacheOnFileDeleteHandlerImpl,
     dependencies: [TaskService]
 });

@@ -1,11 +1,11 @@
 import { createImplementation } from "@webiny/feature/api";
-import { RedirectAfterDeleteHandler } from "~/features/redirects/DeleteRedirect/index.js";
+import { RedirectAfterDeleteEventHandler } from "~/features/redirects/DeleteRedirect/index.js";
 import { InvalidateRedirectsCacheUseCase } from "./abstractions.js";
 
-class RedirectAfterDeleteHandlerImpl implements RedirectAfterDeleteHandler.Interface {
+class RedirectAfterDeleteHandlerImpl implements RedirectAfterDeleteEventHandler.Interface {
     constructor(private invalidateCache: InvalidateRedirectsCacheUseCase.Interface) {}
 
-    async handle(event: RedirectAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: RedirectAfterDeleteEventHandler.Event): Promise<void> {
         const { redirect } = event.payload;
 
         // Only invalidate cache if the redirect was enabled
@@ -16,7 +16,7 @@ class RedirectAfterDeleteHandlerImpl implements RedirectAfterDeleteHandler.Inter
 }
 
 export const RedirectAfterDeleteCacheHandler = createImplementation({
-    abstraction: RedirectAfterDeleteHandler,
+    abstraction: RedirectAfterDeleteEventHandler,
     implementation: RedirectAfterDeleteHandlerImpl,
     dependencies: [InvalidateRedirectsCacheUseCase]
 });

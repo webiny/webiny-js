@@ -3,7 +3,7 @@ export {
     DeleteTenantUseCase,
     DeleteTenantRepository,
     DeleteTenantGateway,
-    TenantBeforeDeleteHandler,
-    TenantAfterDeleteHandler
+    TenantBeforeDeleteEventHandler,
+    TenantAfterDeleteEventHandler
 } from "./abstractions.js";
 export { TenantBeforeDeleteEvent, TenantAfterDeleteEvent } from "./events.js";

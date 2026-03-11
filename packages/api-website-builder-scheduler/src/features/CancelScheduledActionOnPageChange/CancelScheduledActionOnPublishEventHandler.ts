@@ -1,4 +1,4 @@
-import { PageAfterPublishHandler } from "@webiny/api-website-builder/features/pages/PublishPage/abstractions.js";
+import { PageAfterPublishEventHandler } from "@webiny/api-website-builder/features/pages/PublishPage/abstractions.js";
 import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webiny/api-scheduler";
 
 /**
@@ -8,13 +8,15 @@ import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webi
  * action for that page should be canceled since the manual action
  * takes precedence.
  */
-class CancelScheduledActionOnPublishEventHandlerImpl implements PageAfterPublishHandler.Interface {
+class CancelScheduledActionOnPublishEventHandlerImpl
+    implements PageAfterPublishEventHandler.Interface
+{
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
         private cancelScheduledAction: CancelScheduledActionUseCase.Interface
     ) {}
 
-    async handle(event: PageAfterPublishHandler.Event): Promise<void> {
+    async handle(event: PageAfterPublishEventHandler.Event): Promise<void> {
         const { page } = event.payload;
 
         const actionsResult = await this.listScheduledActions.execute({
@@ -42,7 +44,7 @@ class CancelScheduledActionOnPublishEventHandlerImpl implements PageAfterPublish
 }
 
 export const CancelScheduledActionOnPublishEventHandler =
-    PageAfterPublishHandler.createImplementation({
+    PageAfterPublishEventHandler.createImplementation({
         implementation: CancelScheduledActionOnPublishEventHandlerImpl,
         dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase]
     });

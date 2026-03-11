@@ -1,5 +1,5 @@
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import { PageBeforeCreateHandler, PageAfterCreateHandler } from "./abstractions.js";
+import { PageBeforeCreateEventHandler, PageAfterCreateEventHandler } from "./abstractions.js";
 import type { PageBeforeCreatePayload, PageAfterCreatePayload } from "./abstractions.js";
 
 // PageBeforeCreate Event
@@ -7,7 +7,7 @@ export class PageBeforeCreateEvent extends DomainEvent<PageBeforeCreatePayload> 
     eventType = "page.beforeCreate" as const;
 
     getHandlerAbstraction() {
-        return PageBeforeCreateHandler;
+        return PageBeforeCreateEventHandler;
     }
 }
 
@@ -16,6 +16,6 @@ export class PageAfterCreateEvent extends DomainEvent<PageAfterCreatePayload> {
     eventType = "page.afterCreate" as const;
 
     getHandlerAbstraction() {
-        return PageAfterCreateHandler;
+        return PageAfterCreateEventHandler;
     }
 }

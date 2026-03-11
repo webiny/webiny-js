@@ -75,12 +75,14 @@ yarn webiny watch api
 ```
 
 How it works:
+
 1. **Lambda stubs deployed** -- real Lambda functions are replaced with stubs that forward events
 2. **Events forwarded** -- requests to AWS get forwarded to your local machine
 3. **Local execution** -- your code runs locally with full AWS Lambda environment
 4. **Response routing** -- responses sent back through the Lambda stub
 
 Benefits:
+
 - See backend code changes instantly (no redeployment)
 - Debug locally with standard Node.js tools
 - Console logs appear directly in your terminal
@@ -112,6 +114,7 @@ yarn webiny watch admin
 ### Long-Lived Environments
 
 Persistent environments maintained over time:
+
 - **dev** -- daily development
 - **staging** -- pre-production testing
 - **prod** -- production
@@ -121,6 +124,7 @@ Best practice: manage via CI/CD pipelines.
 ### Short-Lived Environments
 
 Temporary environments for specific purposes:
+
 - Feature branch testing
 - PR previews
 - Experimentation
@@ -136,6 +140,7 @@ yarn webiny destroy --env feature-123
 ### Deployment Modes
 
 Webiny has two deployment templates:
+
 - **dev** -- smaller, cheaper infrastructure for development
 - **prod** -- production-grade infrastructure with HA, backups, auto-scaling
 
@@ -149,6 +154,7 @@ The mode is determined by whether the environment name is in the `ProductionEnvi
 ## State Files
 
 State files are JSON files that track the current state of your deployment:
+
 - Store infrastructure resource info, configurations, and metadata
 - Essential for managing environments and tracking changes
 - Stored in S3 by default
@@ -170,12 +176,12 @@ Access in API extensions:
 import { BuildParams } from "webiny/api/build-params";
 
 class MyExtension implements SomeFactory.Interface {
-    constructor(private buildParams: BuildParams.Interface) {}
+  constructor(private buildParams: BuildParams.Interface) {}
 
-    execute() {
-        const value = this.buildParams.get<string>("MY_PARAM");
-        const config = this.buildParams.get<{ myKey: number }>("MY_CONFIG");
-    }
+  execute() {
+    const value = this.buildParams.get<string>("MY_PARAM");
+    const config = this.buildParams.get<{ myKey: number }>("MY_CONFIG");
+  }
 }
 ```
 
@@ -184,6 +190,7 @@ class MyExtension implements SomeFactory.Interface {
 ### API Errors
 
 During `yarn webiny watch api`:
+
 - **Console logs** appear directly in the terminal
 - Use `console.log()` for quick debugging
 - Use `Logger` (DI-injected) for production logging to CloudWatch
@@ -200,6 +207,7 @@ this.logger.error("Something failed");
 ### Admin Errors
 
 Use browser DevTools:
+
 - **Console** -- view logs and errors
 - **Network tab** -- inspect GraphQL requests/responses
 - **React Developer Tools** -- debug component state/props
@@ -208,6 +216,7 @@ Use browser DevTools:
 ### Infrastructure Errors
 
 Deployment errors from Pulumi typically relate to:
+
 - IAM permission issues
 - AWS service quotas
 - Resource configuration problems
@@ -216,17 +225,17 @@ Check the deployment output for specific error messages.
 
 ## CLI Commands Reference
 
-| Command | Purpose |
-|---|---|
-| `yarn webiny deploy` | Deploy all applications |
-| `yarn webiny deploy [core\|api\|admin]` | Deploy specific application |
-| `yarn webiny deploy --env <name>` | Deploy to specific environment |
-| `yarn webiny destroy --env <name>` | Destroy an environment |
-| `yarn webiny watch api` | Start local API development |
-| `yarn webiny watch admin` | Start local Admin development |
-| `yarn webiny info` | Show deployment info and URLs |
-| `yarn webiny info --env <name>` | Show info for specific environment |
-| `yarn webiny extension <name>` | Install a pre-built extension |
+| Command                                 | Purpose                            |
+| --------------------------------------- | ---------------------------------- |
+| `yarn webiny deploy`                    | Deploy all applications            |
+| `yarn webiny deploy [core\|api\|admin]` | Deploy specific application        |
+| `yarn webiny deploy --env <name>`       | Deploy to specific environment     |
+| `yarn webiny destroy --env <name>`      | Destroy an environment             |
+| `yarn webiny watch api`                 | Start local API development        |
+| `yarn webiny watch admin`               | Start local Admin development      |
+| `yarn webiny info`                      | Show deployment info and URLs      |
+| `yarn webiny info --env <name>`         | Show info for specific environment |
+| `yarn webiny extension <name>`          | Install a pre-built extension      |
 
 ## Quick Reference
 

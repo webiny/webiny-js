@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { FileAfterDeleteHandler } from "@webiny/api-file-manager/features/file/DeleteFile/index.js";
+import { FileAfterDeleteEventHandler } from "@webiny/api-file-manager/features/file/DeleteFile/index.js";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
-class AuditLogFileAfterDeleteHandlerImpl implements FileAfterDeleteHandler.Interface {
+class AuditLogFileAfterDeleteHandlerImpl implements FileAfterDeleteEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: FileAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: FileAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { file } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE.DELETE);
@@ -22,7 +22,7 @@ class AuditLogFileAfterDeleteHandlerImpl implements FileAfterDeleteHandler.Inter
     }
 }
 
-export const AuditLogFileAfterDeleteHandler = FileAfterDeleteHandler.createImplementation({
+export const AuditLogFileAfterDeleteHandler = FileAfterDeleteEventHandler.createImplementation({
     implementation: AuditLogFileAfterDeleteHandlerImpl,
     dependencies: [AuditLogsContext]
 });

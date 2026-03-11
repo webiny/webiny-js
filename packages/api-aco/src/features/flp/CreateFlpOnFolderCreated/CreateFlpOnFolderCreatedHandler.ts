@@ -1,11 +1,11 @@
 import { CreateFlpUseCase } from "../CreateFlp/abstractions.js";
-import { FolderAfterCreateHandler } from "~/features/folder/CreateFolder/abstractions.js";
+import { FolderAfterCreateEventHandler } from "~/features/folder/CreateFolder/abstractions.js";
 import type { FolderAfterCreateEvent } from "~/features/folder/CreateFolder/events.js";
 import type { ICreateFlpTaskInput } from "~/types.js";
 import { CREATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 
-class CreateFlpOnFolderCreatedHandlerImpl implements FolderAfterCreateHandler.Interface {
+class CreateFlpOnFolderCreatedHandlerImpl implements FolderAfterCreateEventHandler.Interface {
     constructor(
         private createFlpUseCase: CreateFlpUseCase.Interface,
         private tasks?: TaskService.Interface
@@ -29,7 +29,7 @@ class CreateFlpOnFolderCreatedHandlerImpl implements FolderAfterCreateHandler.In
     }
 }
 
-export const CreateFlpOnFolderCreatedHandler = FolderAfterCreateHandler.createImplementation({
+export const CreateFlpOnFolderCreatedHandler = FolderAfterCreateEventHandler.createImplementation({
     implementation: CreateFlpOnFolderCreatedHandlerImpl,
     dependencies: [CreateFlpUseCase, [TaskService, { optional: true }]]
 });

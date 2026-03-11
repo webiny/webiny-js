@@ -1,11 +1,11 @@
 import { DeleteFlpUseCase } from "../DeleteFlp/abstractions.js";
-import { FolderAfterDeleteHandler } from "~/features/folder/DeleteFolder/abstractions.js";
+import { FolderAfterDeleteEventHandler } from "~/features/folder/DeleteFolder/abstractions.js";
 import type { FolderAfterDeleteEvent } from "~/features/folder/DeleteFolder/events.js";
 import type { IDeleteFlpTaskInput } from "~/types.js";
 import { DELETE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 
-class DeleteFlpOnFolderDeletedHandlerImpl implements FolderAfterDeleteHandler.Interface {
+class DeleteFlpOnFolderDeletedHandlerImpl implements FolderAfterDeleteEventHandler.Interface {
     constructor(
         private deleteFlpUseCase: DeleteFlpUseCase.Interface,
         private tasks?: TaskService.Interface
@@ -29,7 +29,7 @@ class DeleteFlpOnFolderDeletedHandlerImpl implements FolderAfterDeleteHandler.In
     }
 }
 
-export const DeleteFlpOnFolderDeletedHandler = FolderAfterDeleteHandler.createImplementation({
+export const DeleteFlpOnFolderDeletedHandler = FolderAfterDeleteEventHandler.createImplementation({
     implementation: DeleteFlpOnFolderDeletedHandlerImpl,
     dependencies: [DeleteFlpUseCase, [TaskService, { optional: true }]]
 });

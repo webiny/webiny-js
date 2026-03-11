@@ -1,5 +1,5 @@
 export {
-    PageAfterDeleteHandler,
-    PageBeforeDeleteHandler,
+    PageAfterDeleteEventHandler,
+    PageBeforeDeleteEventHandler,
     DeletePageUseCase
 } from "./abstractions.js";

@@ -1,13 +1,13 @@
 import WebinyError from "@webiny/error";
-import { FolderAfterUpdateHandler } from "@webiny/api-aco/features/folder/UpdateFolder";
+import { FolderAfterUpdateEventHandler } from "@webiny/api-aco/features/folder/UpdateFolder";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 
-class AuditLogFolderAfterUpdateHandlerImpl implements FolderAfterUpdateHandler.Interface {
+class AuditLogFolderAfterUpdateHandlerImpl implements FolderAfterUpdateEventHandler.Interface {
     constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: FolderAfterUpdateHandler.Event): Promise<void> {
+    async handle(event: FolderAfterUpdateEventHandler.Event): Promise<void> {
         try {
             const { folder, original } = event.payload;
             if (folder.type === "FmFile") {
@@ -36,7 +36,7 @@ class AuditLogFolderAfterUpdateHandlerImpl implements FolderAfterUpdateHandler.I
     }
 }
 
-export const AuditLogFolderAfterUpdateHandler = FolderAfterUpdateHandler.createImplementation({
+export const AuditLogFolderAfterUpdateHandler = FolderAfterUpdateEventHandler.createImplementation({
     implementation: AuditLogFolderAfterUpdateHandlerImpl,
     dependencies: [AuditLogsContext]
 });
