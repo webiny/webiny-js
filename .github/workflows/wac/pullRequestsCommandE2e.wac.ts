@@ -126,7 +126,7 @@ const createCypressJobs = (dbSetup: string) => {
                       {
                           name: "Configure OpenSearch domain name in webiny.config.tsx",
                           "working-directory": DIR_TEST_PROJECT,
-                          run: `sed -i 's|<Infra.OpenSearch enabled={true} />|<Infra.OpenSearch enabled={true} domainName={process.env.AWS_OPENSEARCH_DOMAIN_NAME} />|g' webiny.config.tsx`
+                          run: `sed -i 's|<Infra.OpenSearch enabled={true} />|<Infra.OpenSearch enabled={true} domainName={process.env.AWS_OPENSEARCH_DOMAIN_NAME \\|\\| ""} />|g' webiny.config.tsx`
                       }
                   ]
                 : []),
