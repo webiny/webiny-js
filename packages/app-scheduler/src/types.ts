@@ -1,14 +1,16 @@
 import type { CmsIdentity } from "@webiny/app-headless-cms-common/types/index.js";
 import type { TableRow } from "@webiny/app-aco";
 
-export type { CmsIdentity };
+type SchedulerIdentity = CmsIdentity;
+
+export type { SchedulerIdentity };
 
 export enum ScheduleType {
     publish = "publish",
     unpublish = "unpublish"
 }
 
-export interface CmsErrorResponse {
+export interface SchedulerErrorResponse {
     code: string;
     message: string;
     data?: Record<string, any>;
@@ -25,7 +27,7 @@ export interface SchedulerEntry {
     id: string;
     targetId: string;
     app: string;
-    scheduledBy: CmsIdentity;
+    scheduledBy: SchedulerIdentity;
     publishOn?: Date;
     unpublishOn?: Date;
     type: ScheduleType;

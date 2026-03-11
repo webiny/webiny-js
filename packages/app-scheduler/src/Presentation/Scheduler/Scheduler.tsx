@@ -17,21 +17,21 @@ import {
     SortingRepositoryWithDefaults
 } from "~/Domain/index.js";
 import type {
-    ISchedulerCancelGateway,
-    ISchedulerGetGateway,
-    ISchedulerListGateway,
-    ISchedulerPublishGateway,
-    ISchedulerUnpublishGateway
+    ICancelScheduleActionGateway,
+    IGetScheduleActionGateway,
+    IListScheduleActionsGateway,
+    ISchedulePublishActionGateway,
+    IScheduleUnpublishActionGateway
 } from "~/Gateways/index.js";
 import { SchedulerControllers } from "~/Presentation/Scheduler/SchedulerControllers.js";
 
 export interface SchedulerProps {
     app: string;
-    getGateway: ISchedulerGetGateway;
-    listGateway: ISchedulerListGateway;
-    cancelGateway: ISchedulerCancelGateway;
-    publishGateway: ISchedulerPublishGateway;
-    unpublishGateway: ISchedulerUnpublishGateway;
+    getGateway: IGetScheduleActionGateway;
+    listGateway: IListScheduleActionsGateway;
+    cancelGateway: ICancelScheduleActionGateway;
+    publishGateway: ISchedulePublishActionGateway;
+    unpublishGateway: IScheduleUnpublishActionGateway;
     onClose: () => void;
     sorting: Sorting[];
     title: string;

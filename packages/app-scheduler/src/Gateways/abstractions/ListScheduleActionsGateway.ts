@@ -2,7 +2,7 @@ import type { CmsMetaResponse } from "@webiny/app-headless-cms-common/types/inde
 import type { SchedulerEntry } from "~/types.js";
 import type { ScheduleType } from "~/types.js";
 
-export interface ISchedulerListExecuteParamsWhere {
+export interface IListScheduleActionsExecuteParamsWhere {
     targetId?: string;
     title_contains?: string;
     title_not_contains?: string;
@@ -13,21 +13,21 @@ export interface ISchedulerListExecuteParamsWhere {
     scheduledFor_lte?: Date;
 }
 
-export type ISchedulerListExecuteParamsSort = "scheduledFor_ASC" | "scheduledFor_DESC";
+export type IListScheduleActionsExecuteParamsSort = "scheduledFor_ASC" | "scheduledFor_DESC";
 
-export interface ISchedulerListExecuteParams {
+export interface IListScheduleActionsExecuteParams {
     app: string;
-    where?: ISchedulerListExecuteParamsWhere;
-    sort?: ISchedulerListExecuteParamsSort[];
+    where?: IListScheduleActionsExecuteParamsWhere;
+    sort?: IListScheduleActionsExecuteParamsSort[];
     limit?: number;
     after?: string;
 }
 
-export interface ISchedulerListGatewayResponse {
+export interface IListScheduleActionsGatewayResponse {
     items: SchedulerEntry[];
     meta: CmsMetaResponse;
 }
 
-export interface ISchedulerListGateway {
-    execute(params: ISchedulerListExecuteParams): Promise<ISchedulerListGatewayResponse>;
+export interface IListScheduleActionsGateway {
+    execute(params: IListScheduleActionsExecuteParams): Promise<IListScheduleActionsGatewayResponse>;
 }

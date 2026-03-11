@@ -5,14 +5,14 @@ import { schedulerEntrySchema } from "./schema/schedulerEntry.js";
 import { createZodError } from "@webiny/utils/createZodError.js";
 import gql from "graphql-tag";
 import type {
-    ISchedulerUnpublishExecuteParams,
-    ISchedulerUnpublishGateway
+    IScheduleUnpublishActionExecuteParams,
+    IScheduleUnpublishActionGateway
 } from "@webiny/app-headless-cms-scheduler";
 import type { SchedulerEntry } from "@webiny/app-headless-cms-scheduler/types.js";
 import { ScheduleType } from "@webiny/app-headless-cms-scheduler/types.js";
 import { createSchedulerEntryFields } from "./graphql/fields.js";
 
-const createSchedulerUnpublishMutation = () => {
+const createScheduleUnpublishActionMutation = () => {
     return gql`
         mutation ScheduleUnpublishAction($app: String!, $id: ID!, $scheduleFor: DateTime, $type: ScheduleRecordType!) {
             createScheduleAction(app: $app, id: $id, scheduleFor: $scheduleFor, type: $type) {
@@ -48,19 +48,19 @@ const schema = zod.object({
     data: schedulerEntrySchema
 });
 
-export class SchedulerUnpublishGraphQLGateway implements ISchedulerUnpublishGateway {
+export class SchedulerUnpublishGraphQLGateway implements IScheduleUnpublishActionGateway {
     private readonly client: ApolloClient<any>;
 
     public constructor(client: ApolloClient<any>) {
         this.client = client;
     }
 
-    public async execute(params: ISchedulerUnpublishExecuteParams) {
+    public async execute(params: IScheduleUnpublishActionExecuteParams) {
         const { data: response, errors } = await this.client.mutate<
             SchedulerUnpublishGraphQLMutationResponse,
             SchedulerUnpublishGraphQLMutationVariables
         >({
-            mutation: createSchedulerUnpublishMutation(),
+            mutation: createScheduleUnpublishActionMutation(),
             variables: {
                 app: params.app,
                 id: params.id,

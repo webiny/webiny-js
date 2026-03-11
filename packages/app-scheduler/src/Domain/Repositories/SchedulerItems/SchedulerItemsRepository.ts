@@ -2,15 +2,15 @@ import { makeAutoObservable, runInAction } from "mobx";
 import uniqBy from "lodash/uniqBy.js";
 import type { SchedulerItem } from "~/Domain/index.js";
 import type {
-    ISchedulerCancelGateway,
-    ISchedulerListGateway,
-    ISchedulerPublishGateway,
-    ISchedulerUnpublishGateway
+    ICancelScheduleActionGateway,
+    IListScheduleActionsGateway,
+    ISchedulePublishActionGateway,
+    IScheduleUnpublishActionGateway
 } from "~/Gateways/index.js";
 import {
-    type ISchedulerGetExecuteParams,
-    type ISchedulerGetGateway,
-    type ISchedulerListExecuteParams
+    type IGetScheduleActionExecuteParams,
+    type IGetScheduleActionGateway,
+    type IListScheduleActionsExecuteParams
 } from "~/Gateways/index.js";
 import type { IMetaRepository } from "@webiny/app-utils";
 import { Meta } from "@webiny/app-utils";
@@ -18,24 +18,24 @@ import type { ISchedulerItemsRepository } from "./ISchedulerItemsRepository.js";
 
 export interface ISchedulerItemsRepositoryParams {
     metaRepository: IMetaRepository;
-    getGateway: ISchedulerGetGateway;
-    listGateway: ISchedulerListGateway;
-    cancelGateway: ISchedulerCancelGateway;
-    unpublishGateway: ISchedulerUnpublishGateway;
-    publishGateway: ISchedulerPublishGateway;
+    getGateway: IGetScheduleActionGateway;
+    listGateway: IListScheduleActionsGateway;
+    cancelGateway: ICancelScheduleActionGateway;
+    unpublishGateway: IScheduleUnpublishActionGateway;
+    publishGateway: ISchedulePublishActionGateway;
     app: string;
 }
 
 export class SchedulerItemsRepository implements ISchedulerItemsRepository {
     private readonly metaRepository: IMetaRepository;
-    private readonly getGateway: ISchedulerGetGateway;
-    private readonly listGateway: ISchedulerListGateway;
-    private readonly cancelGateway: ISchedulerCancelGateway;
-    private readonly unpublishGateway: ISchedulerUnpublishGateway;
-    private readonly publishGateway: ISchedulerPublishGateway;
+    private readonly getGateway: IGetScheduleActionGateway;
+    private readonly listGateway: IListScheduleActionsGateway;
+    private readonly cancelGateway: ICancelScheduleActionGateway;
+    private readonly unpublishGateway: IScheduleUnpublishActionGateway;
+    private readonly publishGateway: ISchedulePublishActionGateway;
     private readonly app: string;
     private items: SchedulerItem[] = [];
-    private params: ISchedulerListExecuteParams;
+    private params: IListScheduleActionsExecuteParams;
 
     public constructor(params: ISchedulerItemsRepositoryParams) {
         this.metaRepository = params.metaRepository;
@@ -63,7 +63,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         return {};
     }
 
-    public async getItem(params: Omit<ISchedulerGetExecuteParams, "app">) {
+    public async getItem(params: Omit<IGetScheduleActionExecuteParams, "app">) {
         const item = await this.getGateway.execute({
             id: params.id,
             app: this.app
@@ -84,7 +84,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         });
     }
 
-    public async listItems(params?: Omit<ISchedulerListExecuteParams, "app">) {
+    public async listItems(params?: Omit<IListScheduleActionsExecuteParams, "app">) {
         this.params = {
             where: params?.where,
             limit: params?.limit,

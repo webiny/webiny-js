@@ -1,6 +1,6 @@
 import type { IListItemsController } from "./IListItemsController.js";
 import type { IListItemsUseCase } from "~/UseCases/index.js";
-import type { ISchedulerListExecuteParams } from "~/Gateways/index.js";
+import type { IListScheduleActionsExecuteParams } from "~/Gateways/index.js";
 
 export class ListItemsController implements IListItemsController {
     private readonly useCaseFactory: () => IListItemsUseCase;
@@ -9,7 +9,7 @@ export class ListItemsController implements IListItemsController {
         this.useCaseFactory = useCaseFactory;
     }
 
-    async execute(params?: Omit<ISchedulerListExecuteParams, "app">) {
+    async execute(params?: Omit<IListScheduleActionsExecuteParams, "app">) {
         const listItemsUseCase = this.useCaseFactory();
         await listItemsUseCase.execute(params);
     }

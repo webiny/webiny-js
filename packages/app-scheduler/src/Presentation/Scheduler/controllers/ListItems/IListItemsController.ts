@@ -1,5 +1,5 @@
-import type { ISchedulerListExecuteParams } from "~/Gateways/index.js";
+import type { IListScheduleActionsExecuteParams } from "~/Gateways/index.js";
 
 export interface IListItemsController {
-    execute: (params?: Omit<ISchedulerListExecuteParams, "app">) => Promise<void>;
+    execute: (params?: Omit<IListScheduleActionsExecuteParams, "app">) => Promise<void>;
 }

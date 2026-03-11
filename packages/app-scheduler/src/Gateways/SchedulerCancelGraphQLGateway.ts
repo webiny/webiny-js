@@ -1,15 +1,12 @@
 import type { ApolloClient } from "apollo-client";
-import type { CmsErrorResponse } from "@webiny/app-headless-cms-common/types/index.js";
 import gql from "graphql-tag";
-import type {
-    IScheduleCancelExecuteParams,
-    ISchedulerCancelGateway
-} from "@webiny/app-headless-cms-scheduler";
+import type {SchedulerErrorResponse} from "~/types.js";
+import type {ICancelScheduleActionGateway, ICancelScheduleActionGatewayParams} from "~/Gateways/abstractions/CancelScheduleActionGateway.js";
 
-const createSchedulerCancelMutation = () => {
+const createScheduleCancelActionMutation = () => {
     return gql`
-        mutation SchedulerCancel($modelId: String!, $id: ID!) {
-            cancelCmsSchedule(modelId: $modelId, id: $id) {
+        mutation ScheduleCancelAction($app: String!, $id: ID!) {
+            cancelScheduleAction(app: $app, id: $id) {
                 data
                 error {
                     message
@@ -23,47 +20,47 @@ const createSchedulerCancelMutation = () => {
 };
 
 interface SchedulerCancelGraphQLMutationVariables {
-    modelId: string;
+    app: string;
     id: string;
 }
 
 interface SchedulerCancelGraphQLMutationResponse {
-    cancelCmsSchedule: {
+    cancelScheduleAction: {
         data: boolean | null;
-        error: CmsErrorResponse | null;
+        error: SchedulerErrorResponse | null;
     };
 }
 
-export class SchedulerCancelGraphQLGateway implements ISchedulerCancelGateway {
+export class SchedulerCancelGraphQLGateway implements ICancelScheduleActionGateway {
     private readonly client: ApolloClient<any>;
 
     public constructor(client: ApolloClient<any>) {
         this.client = client;
     }
 
-    public async execute(params: IScheduleCancelExecuteParams) {
+    public async execute(params: ICancelScheduleActionGatewayParams) {
         const { data: response, errors } = await this.client.mutate<
             SchedulerCancelGraphQLMutationResponse,
             SchedulerCancelGraphQLMutationVariables
         >({
-            mutation: createSchedulerCancelMutation(),
+            mutation: createScheduleCancelActionMutation(),
             variables: {
-                modelId: params.modelId,
+                app: params.app,
                 id: params.id
             },
             fetchPolicy: "no-cache"
         });
 
-        const result = response?.cancelCmsSchedule;
+        const result = response?.cancelScheduleAction;
         if (!result || errors?.length) {
             console.error({
                 errors
             });
-            throw new Error("Network error while canceling a schedule.");
+            throw new Error("Network error while canceling a scheduled action.");
         }
 
         if (!result.data) {
-            throw new Error(result.error?.message || "Could not cancel schedule entry.");
+            throw new Error(result.error?.message || "Could not cancel scheduled action.");
         }
     }
 }

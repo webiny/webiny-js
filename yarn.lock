@@ -14146,6 +14146,7 @@ __metadata:
     "@webiny/app-aco": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-headless-cms-common": "npm:0.0.0"
+    "@webiny/app-scheduler": "npm:0.0.0"
     "@webiny/app-utils": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
@@ -14313,7 +14314,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-scheduler@workspace:packages/app-scheduler":
+"@webiny/app-scheduler@npm:0.0.0, @webiny/app-scheduler@workspace:packages/app-scheduler":
   version: 0.0.0-use.local
   resolution: "@webiny/app-scheduler@workspace:packages/app-scheduler"
   dependencies:

@@ -6,15 +6,15 @@ import { createZodError } from "@webiny/utils/createZodError.js";
 import { schedulerEntrySchema } from "./schema/schedulerEntry.js";
 import type {
     ISchedulerGetExecuteParams,
-    ISchedulerGetGateway
+    IGetScheduleActionGateway
 } from "@webiny/app-headless-cms-scheduler";
 import type { SchedulerEntry } from "@webiny/app-headless-cms-scheduler/types.js";
 import { createSchedulerEntryFields } from "./graphql/fields.js";
 
-const createSchedulerGetQuery = () => {
+const createGetScheduleActionQuery = () => {
     return gql`
-        query SchedulerGetQuery($modelId: String!, $id: ID!) {
-            getCmsSchedule(modelId: $modelId, id: $id) {
+        query GetScheduleActionQuery($app: String!, $id: ID!) {
+            getScheduleAction(app: $app, id: $id) {
                 data {
                     ${createSchedulerEntryFields()}
                 }
@@ -32,7 +32,7 @@ const createSchedulerGetQuery = () => {
 type SchedulerGetGraphQLQueryVariables = ISchedulerGetExecuteParams;
 
 interface SchedulerGetGraphQLQueryResponse {
-    getCmsSchedule: {
+    getScheduleAction: {
         data: SchedulerEntry | null;
         error: CmsErrorResponse | null;
     };
@@ -42,7 +42,7 @@ const schema = zod.object({
     data: schedulerEntrySchema
 });
 
-export class SchedulerGetGraphQLGateway implements ISchedulerGetGateway {
+export class SchedulerGetGraphQLGateway implements IGetScheduleActionGateway {
     private readonly client: ApolloClient<any>;
 
     public constructor(client: ApolloClient<any>) {
@@ -54,24 +54,24 @@ export class SchedulerGetGraphQLGateway implements ISchedulerGetGateway {
             SchedulerGetGraphQLQueryResponse,
             SchedulerGetGraphQLQueryVariables
         >({
-            query: createSchedulerGetQuery(),
+            query: createGetScheduleActionQuery(),
             variables: {
                 ...params
             },
             fetchPolicy: "network-only"
         });
 
-        const result = response.getCmsSchedule;
+        const result = response.getScheduleAction;
         if (!result || errors?.length) {
             console.error({
                 errors
             });
-            throw new Error("Network error while getting schedule entry.");
+            throw new Error("Network error while getting scheduled action.");
         } else if (result.error) {
             console.error({
                 error: result.error
             });
-            throw new Error(result.error.message || "Could not fetch scheduled entry.");
+            throw new Error(result.error.message || "Could not fetch scheduled action.");
         } else if (!result.data) {
             return null;
         }

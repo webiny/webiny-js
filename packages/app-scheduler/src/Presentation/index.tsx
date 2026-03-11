@@ -3,11 +3,11 @@ import { SchedulerRenderer } from "~/Presentation/SchedulerRenderer/index.js";
 import { CompositionScope } from "@webiny/react-composition";
 import { SchedulerListWithConfig } from "~/Presentation/configs/index.js";
 import type {
-    ISchedulerCancelGateway,
-    ISchedulerGetGateway,
-    ISchedulerListGateway,
-    ISchedulerPublishGateway,
-    ISchedulerUnpublishGateway
+    ICancelScheduleActionGateway,
+    IGetScheduleActionGateway,
+    IListScheduleActionsGateway,
+    ISchedulePublishActionGateway,
+    IScheduleUnpublishActionGateway
 } from "~/Gateways/index.js";
 
 export * from "./components/ScheduleDialog/index.js";
@@ -29,11 +29,11 @@ interface SchedulerRenderProps {
 export interface SchedulerProps {
     app: string;
     render: SchedulerRenderProps;
-    getGateway: ISchedulerGetGateway;
-    listGateway: ISchedulerListGateway;
-    cancelGateway: ISchedulerCancelGateway;
-    publishGateway: ISchedulerPublishGateway;
-    unpublishGateway: ISchedulerUnpublishGateway;
+    getGateway: IGetScheduleActionGateway;
+    listGateway: IListScheduleActionsGateway;
+    cancelGateway: ICancelScheduleActionGateway;
+    publishGateway: ISchedulePublishActionGateway;
+    unpublishGateway: IScheduleUnpublishActionGateway;
     onClose?: () => void;
     show?: boolean;
     title?: string;

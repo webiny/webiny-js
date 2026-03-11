@@ -1,5 +1,5 @@
-import type { ISchedulerGetExecuteParams } from "~/Gateways/index.js";
+import type { IGetScheduleActionExecuteParams } from "~/Gateways/index.js";
 
 export interface IGetItemUseCase {
-    execute: (params: Omit<ISchedulerGetExecuteParams, "app">) => Promise<void>;
+    execute: (params: Omit<IGetScheduleActionExecuteParams, "app">) => Promise<void>;
 }

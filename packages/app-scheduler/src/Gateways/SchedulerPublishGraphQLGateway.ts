@@ -7,16 +7,16 @@ import gql from "graphql-tag";
 import type { SchedulerEntry } from "@webiny/app-headless-cms-scheduler/types.js";
 import { ScheduleType } from "@webiny/app-headless-cms-scheduler/types.js";
 import type {
-    ISchedulerPublishExecuteParams,
-    ISchedulerPublishGateway,
-    ISchedulerPublishGatewayResponse
+    ISchedulePublishActionExecuteParams,
+    ISchedulePublishActionGateway,
+    ISchedulePublishActionGatewayResponse
 } from "@webiny/app-headless-cms-scheduler";
 import { createSchedulerEntryFields } from "./graphql/fields.js";
 
-const createSchedulerPublishMutation = () => {
+const createSchedulePublishActionMutation = () => {
     return gql`
-        mutation SchedulerPublish($modelId: String!, $id: ID!, $scheduleFor: DateTime, $type: CmsScheduleRecordType!) {
-            createCmsSchedule(modelId: $modelId, id: $id, scheduleFor: $scheduleFor, type: $type) {
+        mutation SchedulePublishAction($app: String!, $id: ID!, $scheduleFor: DateTime, $type: ScheduleRecordType!) {
+            createScheduleAction(app: $app, id: $id, scheduleFor: $scheduleFor, type: $type) {
                 data {
                     ${createSchedulerEntryFields()}
                 }
@@ -32,14 +32,14 @@ const createSchedulerPublishMutation = () => {
 };
 
 interface SchedulerPublishGraphQLMutationVariables {
-    modelId: string;
+    app: string;
     id: string;
     scheduleFor: Date;
     type: ScheduleType.publish;
 }
 
 interface SchedulerPublishGraphQLMutationResponse {
-    createCmsSchedule: {
+    createScheduleAction: {
         data: SchedulerEntry | null;
         error: CmsErrorResponse | null;
     };
@@ -49,7 +49,7 @@ const schema = zod.object({
     data: schedulerEntrySchema
 });
 
-export class SchedulerPublishGraphQLGateway implements ISchedulerPublishGateway {
+export class SchedulerPublishGraphQLGateway implements ISchedulePublishActionGateway {
     private readonly client: ApolloClient<any>;
 
     public constructor(client: ApolloClient<any>) {
@@ -57,15 +57,15 @@ export class SchedulerPublishGraphQLGateway implements ISchedulerPublishGateway 
     }
 
     public async execute(
-        params: ISchedulerPublishExecuteParams
-    ): Promise<ISchedulerPublishGatewayResponse> {
+        params: ISchedulePublishActionExecuteParams
+    ): Promise<ISchedulePublishActionGatewayResponse> {
         const { data: response, errors } = await this.client.mutate<
             SchedulerPublishGraphQLMutationResponse,
             SchedulerPublishGraphQLMutationVariables
         >({
-            mutation: createSchedulerPublishMutation(),
+            mutation: createSchedulePublishActionMutation(),
             variables: {
-                modelId: params.modelId,
+                app: params.app,
                 id: params.id,
                 scheduleFor: params.scheduleOn,
                 type: ScheduleType.publish
@@ -73,7 +73,7 @@ export class SchedulerPublishGraphQLGateway implements ISchedulerPublishGateway 
             fetchPolicy: "no-cache"
         });
 
-        const result = response?.createCmsSchedule;
+        const result = response?.createScheduleAction;
         if (!result || errors?.length) {
             console.error({
                 errors
@@ -82,7 +82,7 @@ export class SchedulerPublishGraphQLGateway implements ISchedulerPublishGateway 
         }
 
         if (!result.data) {
-            throw new Error(result.error?.message || "Could not schedule entry to be published.");
+            throw new Error(result.error?.message || "Could execute schedule publish action.");
         }
 
         const validated = await schema.safeParseAsync(result);

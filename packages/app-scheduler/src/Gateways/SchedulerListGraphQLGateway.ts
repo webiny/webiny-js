@@ -8,24 +8,24 @@ import zod from "zod";
 import { createZodError } from "@webiny/utils/createZodError.js";
 import { schedulerEntrySchema } from "./schema/schedulerEntry.js";
 import type {
-    ISchedulerListExecuteParams,
-    ISchedulerListGateway,
-    ISchedulerListGatewayResponse
+    IListScheduleActionsExecuteParams,
+    IListScheduleActionsGateway,
+    IListScheduleActionsGatewayResponse
 } from "@webiny/app-headless-cms-scheduler";
 import type { SchedulerEntry } from "@webiny/app-headless-cms-scheduler/types.js";
 import { createSchedulerEntryFields } from "./graphql/fields.js";
 
-const createSchedulerListQuery = () => {
+const createListScheduleActionsQuery = () => {
     return gql`
-        query SchedulerListQuery(
-            $modelId: String!
-            $where: CmsListSchedulesWhereInput
-            $sort: [CmsListSchedulesSorter!]
+        query ListScheduleActions(
+            $app: String!
+            $where: ListSchedulesWhereInput
+            $sort: [ListSchedulesSorter!]
             $limit: Int
             $after: String
         ) {
-            listCmsSchedules(
-                modelId: $modelId
+            listScheduleActions(
+                app: $app
                 where: $where
                 sort: $sort
                 limit: $limit
@@ -50,10 +50,10 @@ const createSchedulerListQuery = () => {
     `;
 };
 
-type SchedulerListGraphQLQueryVariables = ISchedulerListExecuteParams;
+type SchedulerListGraphQLQueryVariables = IListScheduleActionsExecuteParams;
 
 interface SchedulerListGraphQLQueryResponse {
-    listCmsSchedules: {
+    listScheduleActions: {
         data: SchedulerEntry[] | null;
         meta: CmsMetaResponse | null;
         error: CmsErrorResponse | null;
@@ -69,7 +69,7 @@ const schema = zod.object({
     })
 });
 
-export class SchedulerListGraphQLGateway implements ISchedulerListGateway {
+export class SchedulerListGraphQLGateway implements IListScheduleActionsGateway {
     private readonly client: ApolloClient<any>;
 
     public constructor(client: ApolloClient<any>) {
@@ -77,29 +77,29 @@ export class SchedulerListGraphQLGateway implements ISchedulerListGateway {
     }
 
     public async execute(
-        params: ISchedulerListExecuteParams
-    ): Promise<ISchedulerListGatewayResponse> {
+        params: IListScheduleActionsExecuteParams
+    ): Promise<IListScheduleActionsGatewayResponse> {
         const { data: response, errors } = await this.client.query<
             SchedulerListGraphQLQueryResponse,
             SchedulerListGraphQLQueryVariables
         >({
-            query: createSchedulerListQuery(),
+            query: createListScheduleActionsQuery(),
             variables: {
                 ...params
             },
             fetchPolicy: "network-only"
         });
 
-        const result = response.listCmsSchedules;
+        const result = response.listScheduleActions;
         if (!result || errors?.length) {
             console.error({
                 errors
             });
-            throw new Error("Network error while listing scheduled entries.");
+            throw new Error("Network error while listing scheduled actions.");
         }
 
         if (!result.data || !result.meta) {
-            throw new Error(result.error?.message || "Could not fetch scheduled entries.");
+            throw new Error(result.error?.message || "Could not list schedule actions.");
         }
 
         const validated = await schema.safeParseAsync(result);

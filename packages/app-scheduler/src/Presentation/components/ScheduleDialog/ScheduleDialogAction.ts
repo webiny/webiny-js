@@ -1,8 +1,8 @@
 import { ScheduleType } from "~/types.js";
 import type {
-    ISchedulerCancelGateway,
-    ISchedulerPublishGateway,
-    ISchedulerUnpublishGateway
+    ICancelScheduleActionGateway,
+    ISchedulePublishActionGateway,
+    IScheduleUnpublishActionGateway
 } from "~/Gateways/index.js";
 import type {
     IScheduleDialogAction,
@@ -11,15 +11,15 @@ import type {
 } from "./types.js";
 
 export interface IScheduleDialogActionParams {
-    cancelGateway: ISchedulerCancelGateway;
-    publishGateway: ISchedulerPublishGateway;
-    unpublishGateway: ISchedulerUnpublishGateway;
+    cancelGateway: ICancelScheduleActionGateway;
+    publishGateway: ISchedulePublishActionGateway;
+    unpublishGateway: IScheduleUnpublishActionGateway;
 }
 
 export class ScheduleDialogAction implements IScheduleDialogAction {
-    public readonly cancelGateway: ISchedulerCancelGateway;
-    public readonly publishGateway: ISchedulerPublishGateway;
-    public readonly unpublishGateway: ISchedulerUnpublishGateway;
+    public readonly cancelGateway: ICancelScheduleActionGateway;
+    public readonly publishGateway: ISchedulePublishActionGateway;
+    public readonly unpublishGateway: IScheduleUnpublishActionGateway;
 
     public constructor(params: IScheduleDialogActionParams) {
         const { publishGateway, unpublishGateway, cancelGateway } = params;
