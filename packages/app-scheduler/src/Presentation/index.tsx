@@ -1,14 +1,13 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { SchedulerRenderer } from "~/Presentation/SchedulerRenderer/index.js";
 import { CompositionScope } from "@webiny/react-composition";
 import { SchedulerListWithConfig } from "~/Presentation/configs/index.js";
-import type {
-    ICancelScheduleActionGateway,
-    IGetScheduleActionGateway,
-    IListScheduleActionsGateway,
-    ISchedulePublishActionGateway,
-    IScheduleUnpublishActionGateway
-} from "~/Gateways/index.js";
+import type ApolloClient from "apollo-client";
+import { SchedulerGetGraphQLGateway } from "~/Gateways/SchedulerGetGraphQLGateway.js";
+import { SchedulerListGraphQLGateway } from "~/Gateways/SchedulerListGraphQLGateway.js";
+import { SchedulerCancelGraphQLGateway } from "~/Gateways/SchedulerCancelGraphQLGateway.js";
+import { SchedulerPublishGraphQLGateway } from "~/Gateways/SchedulerPublishGraphQLGateway.js";
+import { SchedulerUnpublishGraphQLGateway } from "~/Gateways/SchedulerUnpublishGraphQLGateway.js";
 
 export * from "./components/ScheduleDialog/index.js";
 export * from "~/Presentation/SchedulerConfigs/index.js";
@@ -29,18 +28,14 @@ interface SchedulerRenderProps {
 export interface SchedulerProps {
     app: string;
     render: SchedulerRenderProps;
-    getGateway: IGetScheduleActionGateway;
-    listGateway: IListScheduleActionsGateway;
-    cancelGateway: ICancelScheduleActionGateway;
-    publishGateway: ISchedulePublishActionGateway;
-    unpublishGateway: IScheduleUnpublishActionGateway;
+    client: ApolloClient<object>;
     onClose?: () => void;
     show?: boolean;
     title?: string;
 }
 
-export const Scheduler = ({ render, ...rest }: SchedulerProps) => {
-    const [show, setShow] = useState(rest.show ?? false);
+export const Scheduler = ({ render, client, show: initialShow, ...rest }: SchedulerProps) => {
+    const [show, setShow] = useState(initialShow ?? false);
 
     const showScheduler = useCallback(() => {
         setShow(true);
@@ -54,12 +49,30 @@ export const Scheduler = ({ render, ...rest }: SchedulerProps) => {
         setShow(false);
     }, [rest.onClose]);
 
+    const gateways = useMemo(() => {
+        return {
+            getGateway: new SchedulerGetGraphQLGateway(client),
+            listGateway: new SchedulerListGraphQLGateway(client),
+            cancelGateway: new SchedulerCancelGraphQLGateway(client),
+            publishGateway: new SchedulerPublishGraphQLGateway(client),
+            unpublishGateway: new SchedulerUnpublishGraphQLGateway(client)
+        };
+    }, [client]);
+
     return (
         <>
             {show && (
                 <CompositionScope name={"scheduler"}>
                     <SchedulerListWithConfig>
-                        <SchedulerRenderer {...rest} onClose={onClose} />
+                        <SchedulerRenderer
+                            {...rest}
+                            cancelGateway={gateways.cancelGateway}
+                            publishGateway={gateways.publishGateway}
+                            unpublishGateway={gateways.unpublishGateway}
+                            listGateway={gateways.listGateway}
+                            getGateway={gateways.getGateway}
+                            onClose={onClose}
+                        />
                     </SchedulerListWithConfig>
                 </CompositionScope>
             )}

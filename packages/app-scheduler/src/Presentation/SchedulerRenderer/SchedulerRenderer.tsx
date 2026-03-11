@@ -1,11 +1,10 @@
 import React from "react";
 import { Sorting } from "@webiny/app-utils";
-import type { SchedulerProps } from "~/Presentation/index.js";
-import { Scheduler } from "../Scheduler/index.js";
+import { Scheduler, type SchedulerProps } from "../Scheduler/index.js";
 import { useSchedulerListConfig } from "~/Presentation/configs/index.js";
 
-export type SchedulerRendererProps = Omit<SchedulerProps, "render"> & {
-    onClose: () => void;
+export type SchedulerRendererProps = Omit<SchedulerProps, "render" | "sorting" | "title"> & {
+    title?: string;
 };
 
 export const SchedulerRenderer = ({ title = "Scheduler", ...props }: SchedulerRendererProps) => {

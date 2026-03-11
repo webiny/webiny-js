@@ -14,7 +14,8 @@ import { ScheduleDialogAction } from "~/Presentation/index.js";
 import { SchedulerCancelGraphQLGateway } from "~/Gateways/SchedulerCancelGraphQLGateway.js";
 import { SchedulerPublishGraphQLGateway } from "~/Gateways/SchedulerPublishGraphQLGateway.js";
 import { SchedulerUnpublishGraphQLGateway } from "~/Gateways/SchedulerUnpublishGraphQLGateway.js";
-import {useQuery} from "@apollo/react-hooks";
+import { useGetScheduleAction } from "~/Presentation/components/ScheduleDialog/useGetScheduleAction.js";
+import { SchedulerGetGraphQLGateway } from "~/Gateways/SchedulerGetGraphQLGateway.js";
 
 export type ShowDialogParamsEntryStatus = CmsContentEntryStatusType;
 
@@ -25,12 +26,8 @@ export interface IShowDialogParamsEntry {
     app: string;
 }
 
-export interface IShowDialogParams {
-    target: IShowDialogParamsEntry;
-}
-
 interface UseShowScheduleDialogResponse {
-    showDialog: (params: IShowDialogParams) => void;
+    showDialog: () => void;
 }
 
 interface FormComponentProps {
@@ -152,16 +149,11 @@ interface ScheduleFormData {
 
 interface IOnAcceptParams {
     scheduleOn: Date;
-    target: IShowDialogParamsEntry;
     type: ScheduleType;
 }
 
-interface IOnCancelParams {
-    schedulerEntry: SchedulerEntry;
-}
-
 interface OnCancelCallable {
-    (params: IOnCancelParams): Promise<void>;
+    (): Promise<void>;
 }
 
 export interface IUseScheduleDialogProps {
@@ -172,7 +164,7 @@ export interface IUseScheduleDialogProps {
 export const useScheduleDialog = (
     props: IUseScheduleDialogProps
 ): UseShowScheduleDialogResponse => {
-    const { client } = props;
+    const { client, target } = props;
     const dialog = useDialogs();
     const { showSnackbar } = useSnackbar();
 
@@ -187,15 +179,23 @@ export const useScheduleDialog = (
             unpublishGateway
         });
     }, [client]);
-    
-    const schedulerEntryQuery = useQuery(SCHEDULER_ENTRY_QUERY, {});
+
+    const getGateway = useMemo(() => {
+        return new SchedulerGetGraphQLGateway(client);
+    }, [client]);
+
+    const schedulerEntry = useGetScheduleAction({
+        gateway: getGateway,
+        app: target.app,
+        id: target.id
+    });
 
     const dialogClose = useRef<null | (() => void)>(() => {
         return;
     });
 
     const onAccept = useCallback(async (params: IOnAcceptParams) => {
-        const { target, scheduleOn, type } = params;
+        const { scheduleOn, type } = params;
 
         try {
             await action.schedule({
@@ -211,9 +211,15 @@ export const useScheduleDialog = (
         }
     }, []);
 
-    const onCancel = useCallback(async (params: IOnCancelParams) => {
-        const { schedulerEntry } = params;
-
+    const onCancel = useCallback(async () => {
+        if (!schedulerEntry) {
+            showSnackbar(`No scheduled action found for "${target.title}"!`);
+            if (dialogClose.current) {
+                dialogClose.current();
+                dialogClose.current = null;
+            }
+            return;
+        }
         try {
             await action.cancel({
                 id: schedulerEntry.id,
@@ -230,15 +236,12 @@ export const useScheduleDialog = (
         dialogClose.current = null;
     }, []);
 
-    const showDialog = (params: IShowDialogParams) => {
-        const { target } = params;
-
+    const showDialog = () => {
         const isPublished = target.status === "published";
-
         const scheduleOn = schedulerEntry?.publishOn || schedulerEntry?.unpublishOn;
 
         dialogClose.current = dialog.showDialog({
-            title: `Schedule "${entry.title}"`,
+            title: `Schedule "${target.title}"`,
             content: (
                 <FormComponent
                     type={schedulerEntry?.type}
@@ -277,7 +280,6 @@ export const useScheduleDialog = (
                 const type = isPublished ? ScheduleType.unpublish : ScheduleType.publish;
 
                 return onAccept({
-                    target: params.target,
                     scheduleOn,
                     type
                 });

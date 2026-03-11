@@ -2,7 +2,8 @@ import type {
     IGetScheduleActionGateway,
     IGetScheduleActionGatewayResponse
 } from "~/Gateways/index.js";
-import {useState} from "react";
+import { useEffect, useState } from "react";
+import { useSnackbar } from "@webiny/app-admin";
 
 export interface IGetScheduleActionParams {
     app: string;
@@ -10,22 +11,30 @@ export interface IGetScheduleActionParams {
     gateway: IGetScheduleActionGateway;
 }
 
-export interface  IUseGetScheduleActionResponse {
-    loading: boolean;
-    error: Error | null;
-    data: IGetScheduleActionGatewayResponse;
-}
+export const useGetScheduleAction = (
+    params: IGetScheduleActionParams
+): IGetScheduleActionGatewayResponse | null => {
+    const { gateway, app, id } = params;
 
-export const useGetScheduleAction = (params: IGetScheduleActionParams): IUseGetScheduleActionResponse => {
-    
-    const [item, setItem] = useState<IGetScheduleActionGatewayResponse | null>(null);
-    
-    
-    
-    
-    return {
-        loading: false,
-        error: null,
-        data: item
-    }
-}
+    const { showSnackbar } = useSnackbar();
+
+    const [response, setResponse] = useState<IGetScheduleActionGatewayResponse | null>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const data = await gateway.execute({
+                    app,
+                    id
+                });
+                setResponse(data);
+            } catch (err) {
+                console.error(err);
+                showSnackbar(err.message);
+            }
+        };
+        fetchData();
+    }, []);
+
+    return response;
+};

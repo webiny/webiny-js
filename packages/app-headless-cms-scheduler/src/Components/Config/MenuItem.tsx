@@ -1,15 +1,19 @@
 import React, { useCallback } from "react";
-import { ContentEntryEditorConfig, useContentEntryEditor } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
+import {
+    ContentEntryEditorConfig,
+    useContentEntryEditor
+} from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
 import { usePermission } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
 import { useApolloClient } from "@webiny/app-headless-cms";
 import { useScheduleDialog } from "@webiny/app-scheduler";
+import {usePermissions} from "~/hooks/usePermissions.js";
 
 export const MenuItem = () => {
     const { entry, loading, contentModel } = useContentEntryEditor();
-    const { canPublish, canUnpublish } = usePermission();
+    const { canPublish, canUnpublish } = usePermissions();
     const client = useApolloClient();
-    
+
     const { showDialog: showSchedulerDialog } = useScheduleDialog({
         client,
         target: {
@@ -17,29 +21,22 @@ export const MenuItem = () => {
             title: entry.meta.title,
             app: contentModel.modelId,
             status: entry.meta.status
-        },
+        }
     });
-    
+
     const { OptionsMenuItem } =
         ContentEntryEditorConfig.Actions.MenuItemAction.useOptionsMenuItem();
-    
+
     const showDialog = useCallback(() => {
-        showSchedulerDialog({
-            target: {
-                id: entry.id,
-                title: entry.meta.title,
-                app: contentModel.modelId,
-                status: entry.meta.status
-            },
-        });
-    }, [entry.id, showSchedulerDialog, contentModel.modelId]);
-    
-    if (!canPublish("cms.contentEntry") && !canUnpublish("cms.contentEntry")) {
+        showSchedulerDialog();
+    }, [showSchedulerDialog]);
+
+    if (!canPublish() && !canUnpublish()) {
         return null;
     }
-    
+
     const action = entry.meta?.status === "published" ? "unpublish" : "publish";
-    
+
     return (
         <OptionsMenuItem
             icon={<ScheduleIcon />}
@@ -49,4 +46,4 @@ export const MenuItem = () => {
             data-testid={"cms.content-form.header.schedule"}
         />
     );
-}
+};
