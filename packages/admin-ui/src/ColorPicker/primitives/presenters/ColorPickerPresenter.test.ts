@@ -1,4 +1,3 @@
-import type { ColorResult } from "react-color";
 import { ColorPickerPresenter } from "./ColorPickerPresenter.js";
 import { describe, expect, it, vi } from "vitest";
 

@@ -3911,6 +3911,127 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cropper/element-canvas@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@cropper/element-canvas@npm:2.1.0"
+  dependencies:
+    "@cropper/element": "npm:^2.1.0"
+    "@cropper/utils": "npm:^2.1.0"
+  checksum: 10/b258e3b9b22545cdd907f098acd3f46b036c84e13ac7490037422a465e018d0382d0cb2cb200495655a2b2bd84c2612e0fbd7b05ec84be01d6cae1c6f7dea064
+  languageName: node
+  linkType: hard
+
+"@cropper/element-crosshair@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@cropper/element-crosshair@npm:2.1.0"
+  dependencies:
+    "@cropper/element": "npm:^2.1.0"
+    "@cropper/utils": "npm:^2.1.0"
+  checksum: 10/213a7df5fa68cf17d74efb4a21b9ec9b3038b6f5caab3ab9abb58af23ee029f83088030766cb18239a613ffe3d29402dede5f3ecc19291a2e05a183b3465df21
+  languageName: node
+  linkType: hard
+
+"@cropper/element-grid@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@cropper/element-grid@npm:2.1.0"
+  dependencies:
+    "@cropper/element": "npm:^2.1.0"
+    "@cropper/utils": "npm:^2.1.0"
+  checksum: 10/81951138c00533e879553474400d0b72d697f653e4b16832536746a3119dd0a33545b955a1298f06dc33ef8edee207202cb9a2133d65f428096206ebb55a2fe6
+  languageName: node
+  linkType: hard
+
+"@cropper/element-handle@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@cropper/element-handle@npm:2.1.0"
+  dependencies:
+    "@cropper/element": "npm:^2.1.0"
+    "@cropper/utils": "npm:^2.1.0"
+  checksum: 10/3a608257eefe75d747caa2d417e6eeb760e44beb9024e45fddd6fde5845ed5c2a0cb31515f5eed8d58a616a64a7a63a90663fb1c1aabff5593a1a1a1f51830ed
+  languageName: node
+  linkType: hard
+
+"@cropper/element-image@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@cropper/element-image@npm:2.1.0"
+  dependencies:
+    "@cropper/element": "npm:^2.1.0"
+    "@cropper/element-canvas": "npm:^2.1.0"
+    "@cropper/utils": "npm:^2.1.0"
+  checksum: 10/f27411e23e1d9ef8013fa9a38aa2da59af4fedee80c85178497ace35023e09ad89f7cc77534266c578845fe04d143c4cca8aeb811bf7228c567ed58656bc1f4e
+  languageName: node
+  linkType: hard
+
+"@cropper/element-selection@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@cropper/element-selection@npm:2.1.0"
+  dependencies:
+    "@cropper/element": "npm:^2.1.0"
+    "@cropper/element-canvas": "npm:^2.1.0"
+    "@cropper/element-image": "npm:^2.1.0"
+    "@cropper/utils": "npm:^2.1.0"
+  checksum: 10/ec132e6c4352ad66537c0719717d6ed15544e87ce8be1341f93effb47eb30838847cc232786dedbc64eb968dc843f30ebd37ec1529d049b7b206a8b05aaa5a6e
+  languageName: node
+  linkType: hard
+
+"@cropper/element-shade@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@cropper/element-shade@npm:2.1.0"
+  dependencies:
+    "@cropper/element": "npm:^2.1.0"
+    "@cropper/element-canvas": "npm:^2.1.0"
+    "@cropper/element-selection": "npm:^2.1.0"
+    "@cropper/utils": "npm:^2.1.0"
+  checksum: 10/74e9a59a4da6fc51b083d2ec9380b1bda7750696ce2baa14e19ba0d53eb9aebd36934d07ee55cce42ef93c1bf67a2c20d865f69ce58537fbb60a785d955fe9ec
+  languageName: node
+  linkType: hard
+
+"@cropper/element-viewer@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@cropper/element-viewer@npm:2.1.0"
+  dependencies:
+    "@cropper/element": "npm:^2.1.0"
+    "@cropper/element-canvas": "npm:^2.1.0"
+    "@cropper/element-image": "npm:^2.1.0"
+    "@cropper/element-selection": "npm:^2.1.0"
+    "@cropper/utils": "npm:^2.1.0"
+  checksum: 10/dac55e9eb9cf5353daee08ecd277934631780799e6ae9dbd7575064bbdbe0659a259cd5af22480bb2bc9521a519ac5ff35c53a3c800ab44ff18353ac46a360f8
+  languageName: node
+  linkType: hard
+
+"@cropper/element@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@cropper/element@npm:2.1.0"
+  dependencies:
+    "@cropper/utils": "npm:^2.1.0"
+  checksum: 10/2308ff83b9cc83d79332c1436083890eccb48c21dcadb68ad583c9557e57c8badbb1c388ddef05e035ce5d29644957e9ca766fd35dbe70af60b4a6531b751c2e
+  languageName: node
+  linkType: hard
+
+"@cropper/elements@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@cropper/elements@npm:2.1.0"
+  dependencies:
+    "@cropper/element": "npm:^2.1.0"
+    "@cropper/element-canvas": "npm:^2.1.0"
+    "@cropper/element-crosshair": "npm:^2.1.0"
+    "@cropper/element-grid": "npm:^2.1.0"
+    "@cropper/element-handle": "npm:^2.1.0"
+    "@cropper/element-image": "npm:^2.1.0"
+    "@cropper/element-selection": "npm:^2.1.0"
+    "@cropper/element-shade": "npm:^2.1.0"
+    "@cropper/element-viewer": "npm:^2.1.0"
+  checksum: 10/98f5bdc3208bfd6ca943ee3c269d179c4eea30ecd780c6f254f3b1f64cb5ae2b6782d0e06bf7a8d7b08191f58679ae67697b9048a5f050242765f912c28e5a92
+  languageName: node
+  linkType: hard
+
+"@cropper/utils@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@cropper/utils@npm:2.1.0"
+  checksum: 10/8f6fd8248c46b48f24db28c69a186dd60b7ce83e67ed460cf6633a85c24865d076796105d6ea22250fcd52d5b9ecf41f040cc3860ff1a8e3c5059ad893deff43
+  languageName: node
+  linkType: hard
+
 "@csstools/color-helpers@npm:^6.0.2":
   version: 6.0.2
   resolution: "@csstools/color-helpers@npm:6.0.2"
@@ -4197,6 +4318,13 @@ __metadata:
   version: 0.4.0
   resolution: "@emotion/weak-memoize@npm:0.4.0"
   checksum: 10/db5da0e89bd752c78b6bd65a1e56231f0abebe2f71c0bd8fc47dff96408f7065b02e214080f99924f6a3bfe7ee15afc48dad999d76df86b39b16e513f7a94f52
+  languageName: node
+  linkType: hard
+
+"@epic-web/invariant@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@epic-web/invariant@npm:1.0.0"
+  checksum: 10/28b36a7447f60b84f9d6a23571480042170ef4239a577577ad8447f64a2e4f1a4e57e6fe1b592e61534c5ab53ff67776130e6c88a68cbd997eb6e9c9759a5934
   languageName: node
   linkType: hard
 
@@ -12787,7 +12915,7 @@ __metadata:
   dependencies:
     "@types/folder-hash": "npm:^4.0.4"
     "@types/yargs": "npm:^17.0.35"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     execa: "npm:^5.1.1"
     folder-hash: "npm:^4.1.2"
     fs-extra: "npm:^11.3.4"
@@ -12824,7 +12952,7 @@ __metadata:
   resolution: "@webiny-scripts/cli@workspace:scripts/cli"
   dependencies:
     "@webiny/di": "npm:^0.2.3"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     find-up: "npm:^5.0.0"
     pino: "npm:^10.3.1"
     rimraf: "npm:^6.1.3"
@@ -12839,7 +12967,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly"
   dependencies:
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     find-up: "npm:^5.0.0"
     fs-extra: "npm:^11.3.4"
     get-yarn-workspaces: "npm:1.0.2"
@@ -12878,7 +13006,7 @@ __metadata:
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     bytes: "npm:^3.1.2"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
     cmdk: "npm:^1.1.1"
@@ -13965,7 +14093,7 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     apollo-utilities: "npm:^1.3.4"
     bytes: "npm:^3.1.2"
-    cropperjs: "npm:^1.6.2"
+    cropperjs: "npm:^2.1.0"
     dataurl-to-blob: "npm:^0.0.1"
     dayjs: "npm:^1.11.19"
     dot-prop-immutable: "npm:^2.1.1"
@@ -14583,7 +14711,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/aws-layers@workspace:packages/aws-layers"
   dependencies:
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
   languageName: unknown
   linkType: soft
 
@@ -14640,8 +14768,8 @@ __metadata:
     "@swc/plugin-emotion": "npm:^14.7.0"
     "@tailwindcss/postcss": "npm:^4.2.1"
     "@types/webpack-env": "npm:^1.18.8"
-    chalk: "npm:^4.1.2"
-    chokidar: "npm:^4.0.3"
+    chalk: "npm:^5.6.2"
+    chokidar: "npm:^5.0.0"
     css-loader: "npm:^7.1.4"
     eslint: "npm:^10.0.3"
     fast-glob: "npm:^3.3.3"
@@ -14678,7 +14806,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     ci-info: "npm:^4.4.0"
     execa: "npm:^5.1.1"
     find-up: "npm:^5.0.0"
@@ -14780,7 +14908,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     center-align: "npm:^1.0.1"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     jest-dynalite: "npm:^3.6.1"
     minimatch: "npm:^10.2.4"
     pino-pretty: "npm:^13.1.3"
@@ -15294,7 +15422,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     find-up: "npm:^5.0.0"
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.17.23"
@@ -15352,8 +15480,8 @@ __metadata:
     "@webiny/telemetry": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    chalk: "npm:^4.1.2"
-    chokidar: "npm:^4.0.3"
+    chalk: "npm:^5.6.2"
+    chokidar: "npm:^5.0.0"
     ci-info: "npm:^4.4.0"
     debounce: "npm:^1.2.1"
     deepmerge: "npm:^4.3.1"
@@ -15496,7 +15624,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/system-requirements@workspace:packages/system-requirements"
   dependencies:
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     cli-table3: "npm:^0.6.5"
     execa: "npm:^5.1.1"
     semver: "npm:^7.7.4"
@@ -17872,6 +18000,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chalk@npm:^5.6.2":
+  version: 5.6.2
+  resolution: "chalk@npm:5.6.2"
+  checksum: 10/1b2f48f6fba1370670d5610f9cd54c391d6ede28f4b7062dd38244ea5768777af72e5be6b74fb6c6d54cb84c4a2dff3f3afa9b7cb5948f7f022cfd3d087989e0
+  languageName: node
+  linkType: hard
+
 "chardet@npm:^2.1.1":
   version: 2.1.1
   resolution: "chardet@npm:2.1.1"
@@ -17938,12 +18073,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:^4.0.0, chokidar@npm:^4.0.3":
+"chokidar@npm:^4.0.0":
   version: 4.0.3
   resolution: "chokidar@npm:4.0.3"
   dependencies:
     readdirp: "npm:^4.0.1"
   checksum: 10/bf2a575ea5596000e88f5db95461a9d59ad2047e939d5a4aac59dd472d126be8f1c1ff3c7654b477cf532d18f42a97279ef80ee847972fd2a25410bf00b80b59
+  languageName: node
+  linkType: hard
+
+"chokidar@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "chokidar@npm:5.0.0"
+  dependencies:
+    readdirp: "npm:^5.0.0"
+  checksum: 10/a1c2a4ee6ee81ba6409712c295a47be055fb9de1186dfbab33c1e82f28619de962ba02fc5f9d433daaedc96c35747460d8b2079ac2907de2c95e3f7cce913113
   languageName: node
   linkType: hard
 
@@ -18899,7 +19043,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/system-requirements": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     execa: "npm:^5.1.1"
     find-up: "npm:^5.0.0"
     fs-extra: "npm:^11.3.4"
@@ -18921,22 +19065,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"cropperjs@npm:^1.6.2":
-  version: 1.6.2
-  resolution: "cropperjs@npm:1.6.2"
-  checksum: 10/4b97ac27b7fd65316a531372dd96ce1073b4620c1b012fbad5acb0fdc28952112466bc333a98c510fe2bc9dcdeee58f5c8619522c045c6166300621673e3d759
+"cropperjs@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "cropperjs@npm:2.1.0"
+  dependencies:
+    "@cropper/elements": "npm:^2.1.0"
+    "@cropper/utils": "npm:^2.1.0"
+  checksum: 10/30eac8fdc738e89ef4b1e1c0a955a6e470bdcb086ff65cdeb04312da3a9cd04b35efa12d72dc93c25422dfc5b74e007be6c900d7f1ebe54536bfdf886c35acd4
   languageName: node
   linkType: hard
 
-"cross-env@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "cross-env@npm:5.2.1"
+"cross-env@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "cross-env@npm:10.1.0"
   dependencies:
-    cross-spawn: "npm:^6.0.5"
+    "@epic-web/invariant": "npm:^1.0.0"
+    cross-spawn: "npm:^7.0.6"
   bin:
     cross-env: dist/bin/cross-env.js
     cross-env-shell: dist/bin/cross-env-shell.js
-  checksum: 10/5a81dc207e61b90f3ec9053e7651e07ed6dc880df6098bbf739c7fdcd00f09dce057416bca36fccef6c9491fdad35f740fec9f7a401180d15648f3952998cc7e
+  checksum: 10/0e5d8bdefbbcd000460b69755e0eeb22953510abac8375e4f8b638ff7c45406141acfd57b8a4c1d1cf0b5ea42f33451b302062fb9b34408753b4d465e901b845
   languageName: node
   linkType: hard
 
@@ -18970,7 +19118,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn@npm:^6.0.0, cross-spawn@npm:^6.0.5, cross-spawn@npm:^6.0.6":
+"cross-spawn@npm:^6.0.0, cross-spawn@npm:^6.0.6":
   version: 6.0.6
   resolution: "cross-spawn@npm:6.0.6"
   dependencies:
@@ -30501,6 +30649,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"readdirp@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "readdirp@npm:5.0.0"
+  checksum: 10/a17a591b51d8b912083660df159e8bd17305dc1a9ef27c869c818bd95ff59e3a6496f97e91e724ef433e789d559d24e39496ea1698822eb5719606dc9c1a923d
+  languageName: node
+  linkType: hard
+
 "readdirp@npm:~3.6.0":
   version: 3.6.0
   resolution: "readdirp@npm:3.6.0"
@@ -31127,8 +31282,8 @@ __metadata:
     babel-plugin-dynamic-import-node: "npm:^2.3.3"
     babel-plugin-macros: "npm:^3.1.0"
     babel-plugin-module-resolver: "npm:^5.0.2"
-    chalk: "npm:^4.1.2"
-    cross-env: "npm:^5.2.1"
+    chalk: "npm:^5.6.2"
+    cross-env: "npm:^10.1.0"
     cross-spawn: "npm:^6.0.6"
     deepmerge: "npm:^4.3.1"
     env-ci: "npm:2.6.0"
