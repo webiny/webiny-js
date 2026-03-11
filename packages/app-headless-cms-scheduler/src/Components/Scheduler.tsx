@@ -1,11 +1,6 @@
 import React, { useMemo } from "react";
-import { SchedulerGetGraphQLGateway } from "../Adapters/SchedulerGetGraphQLGateway.js";
-import { SchedulerListGraphQLGateway } from "../Adapters/SchedulerListGraphQLGateway.js";
-import { SchedulerCancelGraphQLGateway } from "../Adapters/SchedulerCancelGraphQLGateway.js";
-import { SchedulerPublishGraphQLGateway } from "../Adapters/SchedulerPublishGraphQLGateway.js";
-import { SchedulerUnpublishGraphQLGateway } from "../Adapters/SchedulerUnpublishGraphQLGateway.js";
 import { SchedulerButton } from "./ScheduleSidebarButton.js";
-import { Scheduler as BaseScheduler } from "@webiny/app-headless-cms-scheduler";
+import { Scheduler as BaseScheduler } from "@webiny/app-scheduler";
 import type ApolloClient from "apollo-client";
 
 export interface ISchedulerProps {

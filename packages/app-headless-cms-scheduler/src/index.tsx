@@ -1,2 +1,1 @@
-export * from "./Presentation/index.js";
-export type * from "./Gateways/index.js";
+export * from "./Components/index.js";

@@ -3,7 +3,6 @@ import {
     ContentEntryEditorConfig,
     InternalContentEntryListConfig
 } from "~/admin/config/contentEntries/index.js";
-
 import {
     ActionDelete,
     ActionMove,
@@ -27,10 +26,10 @@ import {
     CellActions,
     CellAuthor,
     CellCreated,
+    CellLive,
     CellModified,
     CellName,
-    CellStatus,
-    CellLive
+    CellStatus
 } from "~/admin/components/ContentEntries/Table/Cells/index.js";
 import { Ref } from "~/admin/components/ContentEntries/Filters/RefFieldRenderer/index.js";
 import { ShowConfirmationOnDelete } from "~/admin/components/Decorators/ShowConfirmationOnDelete.js";
@@ -39,7 +38,6 @@ import { ShowConfirmationOnUnpublish } from "~/admin/components/Decorators/ShowC
 import { ShowConfirmationOnDeleteRevision } from "~/admin/components/Decorators/ShowConfirmationOnDeleteRevision.js";
 import { FullScreenContentEntry } from "~/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/index.js";
 import { ShowRevisionList } from "~/admin/components/ContentEntryForm/Header/ShowRevisionsList/index.js";
-import { ScheduleEntryMenuItem } from "~/admin/components/ContentEntries/Scheduler/actions/ScheduleEntryAction.js";
 import { AdvancedSearchConfigs } from "@webiny/app-aco/components/AdvancedSearch/AdvancedSearchConfigs";
 import { IsModelPublishable } from "~/admin/components/IsModelPublishable.js";
 
@@ -136,7 +134,6 @@ export const ContentEntriesModule = () => {
                 </IsModelPublishable>
                 <Actions.MenuItemAction name={"delete"} element={<DeleteEntryMenuItem />} />
                 <IsModelPublishable>
-                    <Actions.MenuItemAction name={"schedule"} element={<ScheduleEntryMenuItem />} />
                     <Actions.MenuItemAction
                         name={"showRevisionsList"}
                         element={<ShowRevisionList />}
