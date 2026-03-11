@@ -45,27 +45,27 @@ The `<Auth0 />` component (from `@webiny/auth0`) is a `defineExtension` that:
 
 | Field         | Type                             | Description                                      |
 | ------------- | -------------------------------- | ------------------------------------------------ |
-| `id`          | `string`                         | Unique user ID (typically `token["sub"]`)         |
+| `id`          | `string`                         | Unique user ID (typically `token["sub"]`)        |
 | `displayName` | `string`                         | User's display name                              |
 | `roles`       | `string[]`                       | Webiny security roles to assign                  |
-| `teams`       | `string[]`                       | Webiny teams (optional, filter out falsy values)  |
+| `teams`       | `string[]`                       | Webiny teams (optional, filter out falsy values) |
 | `profile`     | `{ firstName, lastName, email }` | User profile fields                              |
 | `context`     | `object`                         | Runtime data (not stored in DB)                  |
 
 ### `<Auth0 />` Component Props
 
-| Prop        | Type     | Description                                                   |
-| ----------- | -------- | ------------------------------------------------------------- |
-| `issuer`    | `string` | Auth0 issuer URL (e.g., `https://your-tenant.auth0.com`)     |
-| `clientId`  | `string` | Auth0 application client ID                                   |
-| `apiConfig` | `string` | Absolute path to the API config file                          |
+| Prop        | Type     | Description                                              |
+| ----------- | -------- | -------------------------------------------------------- |
+| `issuer`    | `string` | Auth0 issuer URL (e.g., `https://your-tenant.auth0.com`) |
+| `clientId`  | `string` | Auth0 application client ID                              |
+| `apiConfig` | `string` | Absolute path to the API config file                     |
 
 ### Environment Variables
 
-| Variable          | Used By     | Description                     |
-| ----------------- | ----------- | ------------------------------- |
-| `AUTH0_ISSUER`    | API + Admin | Auth0 issuer URL                |
-| `AUTH0_CLIENT_ID` | API + Admin | Auth0 application client ID     |
+| Variable          | Used By     | Description                 |
+| ----------------- | ----------- | --------------------------- |
+| `AUTH0_ISSUER`    | API + Admin | Auth0 issuer URL            |
+| `AUTH0_CLIENT_ID` | API + Admin | Auth0 application client ID |
 
 ## Full Examples
 
@@ -209,7 +209,7 @@ If your config needs access to other Webiny services (e.g., to look up tenant-sp
 
 ```typescript
 import { Auth0IdpConfig } from "@webiny/auth0";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantContext } from "webiny/api/tenancy";
 
 class MyIdpConfig implements Auth0IdpConfig.Interface {
   constructor(private tenantContext: TenantContext.Interface) {}

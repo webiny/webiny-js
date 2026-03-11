@@ -211,7 +211,7 @@ If your config needs access to other Webiny services (e.g., to look up tenant-sp
 
 ```typescript
 import { OktaIdpConfig } from "@webiny/okta";
-import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { TenantContext } from "webiny/api/tenancy";
 
 class MyIdpConfig implements OktaIdpConfig.Interface {
   constructor(private tenantContext: TenantContext.Interface) {}
