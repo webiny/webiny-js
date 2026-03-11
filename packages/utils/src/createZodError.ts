@@ -30,7 +30,6 @@ const createValidationErrorData = (error: ZodError) => {
                 code: issue.code,
                 message: issue.message,
                 data: {
-                    fatal: issue.fatal,
                     path: issue.path
                 }
             };

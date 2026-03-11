@@ -1,14 +1,22 @@
 import { z } from "zod";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
+import type { NonEmptyArray } from "../apps/blueGreen/types.js";
+
+const nonEmptyStringArray = z
+    .array(z.string())
+    .nonempty()
+    .transform(item => {
+        return item as NonEmptyArray<string>;
+    });
 
 const domainsSchema = z.object({
     acmCertificateArn: z.string(),
     sslSupportMethod: z.enum(["sni-only", "vip"]),
     domains: z.object({
-        api: z.array(z.string()).nonempty(),
-        admin: z.array(z.string()).nonempty(),
-        website: z.array(z.string()).nonempty(),
-        preview: z.array(z.string()).nonempty()
+        api: nonEmptyStringArray,
+        admin: nonEmptyStringArray,
+        website: nonEmptyStringArray,
+        preview: nonEmptyStringArray
     })
 });
 

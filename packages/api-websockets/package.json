@@ -28,7 +28,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
     "type-fest": "^5.4.4",
-    "zod": "^3.25.76"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@webiny/api-headless-cms": "0.0.0",

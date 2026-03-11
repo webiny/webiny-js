@@ -34,7 +34,7 @@ class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
         // Validate input
         const validationResult = saveValidation.safeParse(input);
         if (!validationResult.success) {
-            return Result.fail(new SettingsValidationError(validationResult.error.errors));
+            return Result.fail(new SettingsValidationError(validationResult.error.issues));
         }
 
         // Publish before save event

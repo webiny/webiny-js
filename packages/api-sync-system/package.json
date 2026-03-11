@@ -21,7 +21,7 @@
     "bytes": "^3.1.2",
     "lodash": "^4.17.23",
     "semver": "^7.7.4",
-    "zod": "^3.25.76"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",

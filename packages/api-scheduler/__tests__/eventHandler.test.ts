@@ -36,7 +36,7 @@ describe("Scheduler Event Handler", () => {
         context.container.registerInstance(SchedulerService, new VoidSchedulerService());
     });
 
-    it.skip("should trigger handle an event which matches scheduled event", async () => {
+    it("should trigger handle an event which matches scheduled event", async () => {
         const eventHandler = createScheduledActionEventHandler();
 
         expect(eventHandler).toBeInstanceOf(RawEventHandler);

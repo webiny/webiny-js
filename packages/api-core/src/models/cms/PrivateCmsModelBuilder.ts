@@ -100,7 +100,7 @@ class PrivateCmsModelConfiguration<TModel extends BaseModel<any>>
         let finalSchema = baseSchema;
 
         if (this.extensionFields.size > 0) {
-            const extensionsShape: z.ZodRawShape = {};
+            const extensionsShape: Record<string, z.ZodTypeAny> = {};
 
             for (const [fieldId, { zodSchema }] of this.extensionFields) {
                 // Make each extension field optional

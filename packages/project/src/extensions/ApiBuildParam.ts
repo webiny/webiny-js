@@ -15,7 +15,7 @@ export const BuildParam = defineExtension({
             paramName: z.string(),
             value: z.union([
                 z.string(),
-                z.record(z.any()),
+                z.record(z.string(), z.any()),
                 z.array(z.any()),
                 z.number(),
                 z.boolean()

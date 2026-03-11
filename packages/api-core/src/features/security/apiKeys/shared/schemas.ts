@@ -5,7 +5,7 @@ export const createApiKeyInputSchema = z.object({
     slug: z.string().min(1),
     description: z.string(),
     permissions: z
-        .array(z.object({ name: z.string() }).passthrough())
+        .array(z.looseObject({ name: z.string() }))
         .optional()
         .default([])
 });
@@ -14,7 +14,7 @@ export const updateApiKeyInputSchema = z.object({
     name: z.string().min(1).optional(),
     description: z.string().optional(),
     permissions: z
-        .array(z.object({ name: z.string() }).passthrough())
+        .array(z.looseObject({ name: z.string() }))
         .optional()
         .default([])
 });

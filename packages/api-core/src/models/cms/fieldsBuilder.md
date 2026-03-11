@@ -194,7 +194,7 @@ import type { FieldBuilder } from "./FieldBuilder.js";
 export interface IFieldBuilderRegistry {
   text(): ITextFieldBuilder;
   // object is special - needs registry reference
-  object<TShape extends z.ZodRawShape>(
+  object<TShape extends  Record<string, z.ZodTypeAny>>(
     fields: (registry: IFieldBuilderRegistry) => { [K in keyof TShape]: FieldBuilder<TShape[K]> }
   ): FieldBuilder<z.ZodObject<TShape>>;
 }

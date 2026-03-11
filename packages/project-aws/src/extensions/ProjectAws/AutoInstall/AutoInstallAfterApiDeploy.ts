@@ -98,7 +98,10 @@ class AutoInstallAfterApiDeployImpl implements ApiAfterDeploy.Interface {
         }
 
         this.ui.info("Auto-installing...");
-
+        /**
+         * Type Error introduced with Zod v4. V3 had any type.
+         */
+        // @ts-expect-error
         const adminUser = config.adminUser || {
             firstName: "John",
             lastName: "Smith",
