@@ -49,7 +49,7 @@
     "history": "^5.3.0",
     "is-hotkey": "^0.2.0",
     "lodash": "^4.17.23",
-    "markdown-to-jsx": "^9.7.8",
+    "markdown-to-jsx": "^9.7.9",
     "minimatch": "^10.2.4",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^3.4.3",
