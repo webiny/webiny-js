@@ -12929,7 +12929,7 @@ __metadata:
     "@webiny/di": "npm:^0.2.3"
     chalk: "npm:^4.1.2"
     find-up: "npm:^5.0.0"
-    pino: "npm:^9.14.0"
+    pino: "npm:^10.3.1"
     rimraf: "npm:^6.1.3"
     ts-morph: "npm:^27.0.2"
     type-fest: "npm:^5.4.4"
@@ -13150,7 +13150,7 @@ __metadata:
     jsonwebtoken: "npm:^9.0.3"
     lodash: "npm:^4.17.23"
     minimatch: "npm:^10.2.4"
-    pino: "npm:^9.14.0"
+    pino: "npm:^10.3.1"
     pino-lambda: "npm:^4.4.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^6.0.1-rc"
@@ -14791,8 +14791,8 @@ __metadata:
     load-json-file: "npm:^7.0.1"
     open: "npm:^10.2.0"
     ora: "npm:4.1.1"
-    pino: "npm:^9.14.0"
-    pino-pretty: "npm:^9.4.1"
+    pino: "npm:^10.3.1"
+    pino-pretty: "npm:^13.1.3"
     rimraf: "npm:^6.1.3"
     semver: "npm:^7.7.4"
     type-fest: "npm:^5.4.4"
@@ -14885,7 +14885,7 @@ __metadata:
     chalk: "npm:^4.1.2"
     jest-dynalite: "npm:^3.6.1"
     minimatch: "npm:^10.2.4"
-    pino-pretty: "npm:^9.4.1"
+    pino-pretty: "npm:^13.1.3"
     rimraf: "npm:^6.1.3"
     semver: "npm:^7.7.4"
     typescript: "npm:^6.0.1-rc"
@@ -15245,7 +15245,7 @@ __metadata:
   resolution: "@webiny/logger@workspace:packages/logger"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
-    pino: "npm:^9.14.0"
+    pino: "npm:^10.3.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:^6.0.1-rc"
   languageName: unknown
@@ -15420,8 +15420,8 @@ __metadata:
     listr2: "npm:^5.0.8"
     load-json-file: "npm:^7.0.1"
     lodash: "npm:^4.17.23"
-    pino: "npm:^9.14.0"
-    pino-pretty: "npm:^9.4.1"
+    pino: "npm:^10.3.1"
+    pino-pretty: "npm:^13.1.3"
     vitest: "npm:^4.0.18"
     yargs: "npm:^18.0.0"
   peerDependencies:
@@ -15475,8 +15475,8 @@ __metadata:
     mqtt: "npm:^5.15.0"
     neverthrow: "npm:^8.2.0"
     p-retry: "npm:^7.1.1"
-    pino: "npm:^9.14.0"
-    pino-pretty: "npm:^9.4.1"
+    pino: "npm:^10.3.1"
+    pino-pretty: "npm:^13.1.3"
     react: "npm:19.2.4"
     react-dom: "npm:19.2.4"
     read-json-sync: "npm:2.0.1"
@@ -15830,8 +15830,8 @@ __metadata:
     mobx: "npm:^6.15.0"
     nanoid: "npm:^5.1.6"
     nanoid-dictionary: "npm:^5.0.0"
-    pino: "npm:^9.14.0"
-    pino-pretty: "npm:^9.4.1"
+    pino: "npm:^10.3.1"
+    pino-pretty: "npm:^13.1.3"
     typescript: "npm:^6.0.1-rc"
     vitest: "npm:^4.0.18"
   languageName: unknown
@@ -21611,10 +21611,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-copy@npm:^3.0.0":
-  version: 3.0.2
-  resolution: "fast-copy@npm:3.0.2"
-  checksum: 10/97e1022e2aaa27acf4a986d679310bfd66bfb87fe8da9dd33b698e3e50189484001cf1eeb9670e19b59d9d299828ed86c8da354c954f125995ab2a6331c5f290
+"fast-copy@npm:^4.0.0":
+  version: 4.0.2
+  resolution: "fast-copy@npm:4.0.2"
+  checksum: 10/45114c4e45dc839a49563ca27ebf643df026bce29863c3e913bde5402c8ae04fee4a0351f6438741e7797f7d49f1496e1fc8903a31b310562aed31b0a2957461
   languageName: node
   linkType: hard
 
@@ -22812,7 +22812,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^8.0.0, glob@npm:^8.0.1":
+"glob@npm:^8.0.1":
   version: 8.1.0
   resolution: "glob@npm:8.1.0"
   dependencies:
@@ -23179,16 +23179,6 @@ __metadata:
   bin:
     he: bin/he
   checksum: 10/d09b2243da4e23f53336e8de3093e5c43d2c39f8d0d18817abfa32ce3e9355391b2edb4bb5edc376aea5d4b0b59d6a0482aab4c52bc02ef95751e4b818e847f1
-  languageName: node
-  linkType: hard
-
-"help-me@npm:^4.0.1":
-  version: 4.2.0
-  resolution: "help-me@npm:4.2.0"
-  dependencies:
-    glob: "npm:^8.0.0"
-    readable-stream: "npm:^3.6.0"
-  checksum: 10/2c5ea6d2aae62b9a27708f5a9d19dfdc73331f62521a7cb904aeafbb69bc6fd9934d65c31b653f4387dab31a744e81701a5b434b126ac37a8cc981a1426eea21
   languageName: node
   linkType: hard
 
@@ -28751,7 +28741,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino-abstract-transport@npm:1.2.0, pino-abstract-transport@npm:^1.0.0":
+"pino-abstract-transport@npm:1.2.0":
   version: 1.2.0
   resolution: "pino-abstract-transport@npm:1.2.0"
   dependencies:
@@ -28788,27 +28778,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino-pretty@npm:^9.4.1":
-  version: 9.4.1
-  resolution: "pino-pretty@npm:9.4.1"
+"pino-pretty@npm:^13.1.3":
+  version: 13.1.3
+  resolution: "pino-pretty@npm:13.1.3"
   dependencies:
     colorette: "npm:^2.0.7"
     dateformat: "npm:^4.6.3"
-    fast-copy: "npm:^3.0.0"
+    fast-copy: "npm:^4.0.0"
     fast-safe-stringify: "npm:^2.1.1"
-    help-me: "npm:^4.0.1"
+    help-me: "npm:^5.0.0"
     joycon: "npm:^3.1.1"
     minimist: "npm:^1.2.6"
     on-exit-leak-free: "npm:^2.1.0"
-    pino-abstract-transport: "npm:^1.0.0"
+    pino-abstract-transport: "npm:^3.0.0"
     pump: "npm:^3.0.0"
-    readable-stream: "npm:^4.0.0"
-    secure-json-parse: "npm:^2.4.0"
-    sonic-boom: "npm:^3.0.0"
-    strip-json-comments: "npm:^3.1.1"
+    secure-json-parse: "npm:^4.0.0"
+    sonic-boom: "npm:^4.0.1"
+    strip-json-comments: "npm:^5.0.2"
   bin:
     pino-pretty: bin.js
-  checksum: 10/44eb788e9c50291baf7448a9266aa9e599e27591cca3ed7f3ec16fdf6f3521e736f178b4b5ca71b73488a537b1c81853d7b65765df815f3e7d4e018cf77400f6
+  checksum: 10/4bb721e1ece378c1c9000457e4fe4a914ea5b8e036551608f5681ca58c8fbacc6b8a31807e93bc0c66d17fb5d96e74b3e4051fb53152955dc51ac58848428e27
   languageName: node
   linkType: hard
 
@@ -28819,7 +28808,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino@npm:9.14.0, pino@npm:^9.14.0":
+"pino@npm:9.14.0":
   version: 9.14.0
   resolution: "pino@npm:9.14.0"
   dependencies:
@@ -28840,7 +28829,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino@npm:^9.14.0 || ^10.1.0":
+"pino@npm:^10.3.1, pino@npm:^9.14.0 || ^10.1.0":
   version: 10.3.1
   resolution: "pino@npm:10.3.1"
   dependencies:
@@ -31348,7 +31337,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"secure-json-parse@npm:^2.3.1, secure-json-parse@npm:^2.4.0":
+"secure-json-parse@npm:^2.3.1":
   version: 2.7.0
   resolution: "secure-json-parse@npm:2.7.0"
   checksum: 10/974386587060b6fc5b1ac06481b2f9dbbb0d63c860cc73dc7533f27835fdb67b0ef08762dbfef25625c15bc0a0c366899e00076cb0d556af06b71e22f1dede4c
@@ -31986,7 +31975,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sonic-boom@npm:3.8.1, sonic-boom@npm:^3.0.0":
+"sonic-boom@npm:3.8.1":
   version: 3.8.1
   resolution: "sonic-boom@npm:3.8.1"
   dependencies:
@@ -32591,6 +32580,13 @@ __metadata:
   version: 3.1.1
   resolution: "strip-json-comments@npm:3.1.1"
   checksum: 10/492f73e27268f9b1c122733f28ecb0e7e8d8a531a6662efbd08e22cccb3f9475e90a1b82cab06a392f6afae6d2de636f977e231296400d0ec5304ba70f166443
+  languageName: node
+  linkType: hard
+
+"strip-json-comments@npm:^5.0.2":
+  version: 5.0.3
+  resolution: "strip-json-comments@npm:5.0.3"
+  checksum: 10/3ccbf26f278220f785e4b71f8a719a6a063d72558cc63cb450924254af258a4f4c008b8c9b055373a680dc7bd525be9e543ad742c177f8a7667e0b726258e0e4
   languageName: node
   linkType: hard
 
