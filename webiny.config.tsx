@@ -4,6 +4,8 @@ import { Cognito } from "@webiny/cognito";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
+// test.
+
 export const Extensions = () => {
     return (
         <>
