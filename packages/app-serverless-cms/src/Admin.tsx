@@ -54,7 +54,7 @@ const App = (props: AdminProps) => {
             <HeadlessCMS createApolloClient={createApolloClient} />
             <AuditLogs />
             <MailerSettings />
-            <SchedulerConfigs/>
+            <SchedulerConfigs />
             <CmsScheduler />
             <TrashBinConfigs />
             <AdvancedContentOrganisation />
