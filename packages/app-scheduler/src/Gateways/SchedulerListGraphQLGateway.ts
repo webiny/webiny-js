@@ -20,26 +20,28 @@ const createListScheduledActionsQuery = () => {
             $limit: Int
             $after: String
         ) {
-            listScheduledActions(
-                namespace: $namespace
-                where: $where
-                sort: $sort
-                limit: $limit
-                after: $after
-            ) {
-                data {
-                    ${createSchedulerEntryFields()}
-                }
-                meta {
-                    totalCount
-                    cursor
-                    hasMoreItems
-                }
-                error {
-                    message
-                    code
-                    data
-                    stack
+            scheduler {
+                listScheduledActions(
+                    namespace: $namespace
+                    where: $where
+                    sort: $sort
+                    limit: $limit
+                    after: $after
+                ) {
+                    data {
+                        ${createSchedulerEntryFields()}
+                    }
+                    meta {
+                        totalCount
+                        cursor
+                        hasMoreItems
+                    }
+                    error {
+                        message
+                        code
+                        data
+                        stack
+                    }
                 }
             }
         }
@@ -47,10 +49,12 @@ const createListScheduledActionsQuery = () => {
 };
 
 interface SchedulerListGraphQLQueryResponse {
-    listScheduledActions: {
-        data: SchedulerEntry[] | null;
-        meta: SchedulerMetaResponse | null;
-        error: SchedulerErrorResponse | null;
+    scheduler: {
+        listScheduledActions: {
+            data: SchedulerEntry[] | null;
+            meta: SchedulerMetaResponse | null;
+            error: SchedulerErrorResponse | null;
+        };
     };
 }
 
@@ -88,7 +92,7 @@ export class SchedulerListGraphQLGateway implements IListScheduledActionsGateway
             fetchPolicy: "network-only"
         });
 
-        const result = response.listScheduledActions;
+        const result = response?.scheduler?.listScheduledActions;
         if (!result || errors?.length) {
             console.error({
                 errors

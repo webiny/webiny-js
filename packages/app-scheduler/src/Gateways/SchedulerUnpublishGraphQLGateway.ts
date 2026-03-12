@@ -13,15 +13,17 @@ import type {
 const createScheduleUnpublishActionMutation = () => {
     return gql`
         mutation ScheduleUnpublishAction($namespace: String!, $id: ID!, $scheduleFor: DateTime, $type: ScheduleRecordType!) {
-            createScheduledAction(namespace: $namespace, id: $id, scheduleFor: $scheduleFor, type: $type) {
-                data {
-                    ${createSchedulerEntryFields()}
-                }
-                error {
-                    message
-                    code
-                    data
-                    stack
+            scheduler {
+                createScheduledAction(namespace: $namespace, id: $id, scheduleFor: $scheduleFor, type: $type) {
+                    data {
+                        ${createSchedulerEntryFields()}
+                    }
+                    error {
+                        message
+                        code
+                        data
+                        stack
+                    }
                 }
             }
         }
@@ -36,10 +38,12 @@ interface SchedulerUnpublishGraphQLMutationVariables {
 }
 
 interface SchedulerUnpublishGraphQLMutationResponse {
-    createScheduledAction: {
-        data: SchedulerEntry | null;
-        error: SchedulerErrorResponse | null;
-    };
+    scheduler: {
+        createScheduledAction: {
+            data: SchedulerEntry | null;
+            error: SchedulerErrorResponse | null;
+        };
+    }
 }
 
 const schema = zod.object({
@@ -68,7 +72,7 @@ export class SchedulerUnpublishGraphQLGateway implements IScheduleUnpublishActio
             fetchPolicy: "no-cache"
         });
 
-        const result = response?.createScheduledAction;
+        const result = response?.scheduler?.createScheduledAction;
         if (!result || errors?.length) {
             console.error({
                 errors

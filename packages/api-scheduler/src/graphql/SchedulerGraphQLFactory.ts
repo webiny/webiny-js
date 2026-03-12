@@ -89,8 +89,16 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 scheduledFor_ASC
                 scheduledFor_DESC
             }
+            
+            type SchedulerQuery {
+                _empty: String
+            }
+            
+            type SchedulerQuery {
+                _empty: String
+            }
 
-            extend type Query {
+            extend type SchedulerQuery {
                 getScheduledAction(namespace: String!, id: ID!): GetScheduledActionResponse!
                 
                 listScheduledActions(
@@ -102,7 +110,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 ): ListScheduledActionsResponse!
             }
 
-            extend type Mutation {
+            extend type SchedulerMutation {
                 createScheduledAction(
                     namespace: String!
                     id: ID!
@@ -121,10 +129,18 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 
                 cancelScheduledAction(namespace: String!, id: ID!): CancelScheduledActionResponse!
             }
+            
+            extend type Query {
+                scheduler: SchedulerQuery
+            }
+            
+            extend type Mutation {
+                scheduler: SchedulerMutation
+            }
         `);
 
         builder.addResolver<GetScheduledActionUseCase.Params>({
-            path: "Query.getScheduledAction",
+            path: "Query.scheduler.getScheduledAction",
             dependencies: [GetScheduledActionUseCase],
             resolver: (useCase: GetScheduledActionUseCase.Interface) => {
                 return async ({ args }) => {
@@ -140,7 +156,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
         });
 
         builder.addResolver<ListScheduledActionsUseCase.Params>({
-            path: "Query.listScheduledActions",
+            path: "Query.scheduler.listScheduledActions",
             dependencies: [ListScheduledActionsUseCase],
             resolver: (useCase: ListScheduledActionsUseCase.Interface) => {
                 return async ({ args }) => {

@@ -9,13 +9,15 @@ import type {
 const createScheduleCancelActionMutation = () => {
     return gql`
         mutation ScheduleCancelAction($namespace: String!, $id: ID!) {
-            cancelScheduledAction(namespace: $namespace, id: $id) {
-                data
-                error {
-                    message
-                    code
+            scheduler {
+                cancelScheduledAction(namespace: $namespace, id: $id) {
                     data
-                    stack
+                    error {
+                        message
+                        code
+                        data
+                        stack
+                    }
                 }
             }
         }
@@ -28,9 +30,11 @@ interface SchedulerCancelGraphQLMutationVariables {
 }
 
 interface SchedulerCancelGraphQLMutationResponse {
-    cancelScheduledAction: {
-        data: boolean | null;
-        error: SchedulerErrorResponse | null;
+    scheduler: {
+        cancelScheduledAction: {
+            data: boolean | null;
+            error: SchedulerErrorResponse | null;
+        };
     };
 }
 
@@ -54,7 +58,7 @@ export class SchedulerCancelGraphQLGateway implements ICancelScheduledActionGate
             fetchPolicy: "no-cache"
         });
 
-        const result = response?.cancelScheduledAction;
+        const result = response?.scheduler?.cancelScheduledAction;
         if (!result || errors?.length) {
             console.error({
                 errors
