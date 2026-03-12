@@ -1,1 +1,1 @@
-export { useScheduleDialog, Scheduler } from "./Presentation/index.js";
+export { useScheduleDialog, Scheduler, SchedulerConfigs } from "./Presentation/index.js";

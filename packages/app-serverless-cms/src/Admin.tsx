@@ -19,6 +19,7 @@ import { RecordLocking } from "@webiny/app-record-locking";
 import { TrashBinConfigs } from "@webiny/app-trash-bin";
 import { AdvancedContentOrganisation } from "@webiny/app-aco";
 import { Extension as WebsiteBuilder } from "@webiny/app-website-builder/Extension.js";
+import { SchedulerConfigs } from "@webiny/app-scheduler";
 import { CmsScheduler } from "@webiny/app-headless-cms-scheduler";
 import { Components as WorkflowComponents } from "@webiny/app-workflows";
 import { CmsWorkflows } from "@webiny/app-headless-cms-workflows";
@@ -53,6 +54,7 @@ const App = (props: AdminProps) => {
             <HeadlessCMS createApolloClient={createApolloClient} />
             <AuditLogs />
             <MailerSettings />
+            <SchedulerConfigs/>
             <CmsScheduler />
             <TrashBinConfigs />
             <AdvancedContentOrganisation />

@@ -65,9 +65,7 @@ export const Scheduler = ({ render, client, show: initialShow, ...rest }: Schedu
         <>
             {show ? (
                 <CompositionScope name={"scheduler"}>
-                    <>RENDERING!!!!</>
                     <SchedulerListWithConfig>
-                        <>NOT RENDERING</>
                         <SchedulerRenderer
                             {...rest}
                             cancelGateway={gateways.cancelGateway}
