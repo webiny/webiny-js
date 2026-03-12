@@ -6,6 +6,7 @@ import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/index.js";
 
 export interface IScheduledActionEventPayload {
+    namespace: string;
     id: string;
     scheduleFor: string;
 }
@@ -47,7 +48,7 @@ export const createScheduledActionEventHandler = () => {
             const input = payload[SCHEDULED_ACTION_EVENT_IDENTIFIER];
 
             const executeScheduledAction = context.container.resolve(ExecuteScheduledActionUseCase);
-            const result = await executeScheduledAction.execute(input.id);
+            const result = await executeScheduledAction.execute(input);
 
             if (result.isFail()) {
                 const error = result.error;

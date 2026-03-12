@@ -54,7 +54,10 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         const actionId = ScheduledActionId.from(params);
         const scheduleId = ScheduledActionIdWithVersion.from(actionId);
 
-        const existingResult = await this.getScheduledAction.execute(scheduleId);
+        const existingResult = await this.getScheduledAction.execute({
+            namespace: params.namespace,
+            id: scheduleId
+        });
 
         if (existingResult.isFail()) {
             const error = existingResult.error;
@@ -133,6 +136,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         try {
             await this.schedulerService.create({
                 id: scheduleId,
+                namespace,
                 scheduleFor: new Date(scheduleFor)
             });
         } catch (error) {
@@ -192,6 +196,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         try {
             await this.schedulerService.update({
                 id: existing.id,
+                namespace: existing.namespace,
                 scheduleFor: new Date(scheduleFor)
             });
         } catch (error) {

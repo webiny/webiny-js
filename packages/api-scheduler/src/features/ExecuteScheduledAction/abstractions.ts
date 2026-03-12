@@ -26,8 +26,13 @@ export interface IExecuteScheduledActionErrors {
 type ExecuteScheduledActionError =
     IExecuteScheduledActionErrors[keyof IExecuteScheduledActionErrors];
 
+export interface IExecuteScheduledActionUseCaseParams {
+    namespace: string;
+    id: string;
+}
+
 export interface IExecuteScheduledActionUseCase {
-    execute(scheduleId: string): Promise<Result<void, ExecuteScheduledActionError>>;
+    execute(params: IExecuteScheduledActionUseCaseParams): Promise<Result<void, ExecuteScheduledActionError>>;
 }
 
 export const ExecuteScheduledActionUseCase = createAbstraction<IExecuteScheduledActionUseCase>(
@@ -37,6 +42,7 @@ export const ExecuteScheduledActionUseCase = createAbstraction<IExecuteScheduled
 export namespace ExecuteScheduledActionUseCase {
     export type Interface = IExecuteScheduledActionUseCase;
     export type Error = ExecuteScheduledActionError;
+    export type Params = IExecuteScheduledActionUseCaseParams;
 }
 
 /**

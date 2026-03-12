@@ -1,5 +1,4 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type { IScheduledAction } from "~/shared/abstractions.js";
 import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 import type { GenericRecord } from "@webiny/api/types.js";
@@ -20,9 +19,14 @@ export interface IGetScheduledActionErrors {
 
 type GetScheduledActionError = IGetScheduledActionErrors[keyof IGetScheduledActionErrors];
 
+export interface IGetScheduledActionUseCaseParams {
+    namespace: string;
+    id: string;
+}
+
 export interface IGetScheduledActionUseCase {
     execute<T extends GenericRecord>(
-        scheduleId: string
+        params: IGetScheduledActionUseCaseParams
     ): Promise<Result<IScheduledAction<T>, GetScheduledActionError>>;
 }
 
@@ -33,4 +37,5 @@ export const GetScheduledActionUseCase = createAbstraction<IGetScheduledActionUs
 export namespace GetScheduledActionUseCase {
     export type Interface = IGetScheduledActionUseCase;
     export type Error = GetScheduledActionError;
+    export type Params = IGetScheduledActionUseCaseParams;
 }

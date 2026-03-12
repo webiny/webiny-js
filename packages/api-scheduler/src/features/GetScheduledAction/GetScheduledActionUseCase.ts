@@ -22,8 +22,9 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute<T extends GenericRecord>(
-        id: string
+        params: UseCaseAbstraction.Params
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
+        const { id, namespace } = params;
         // Get entry from CMS
         const scheduleId = ScheduledActionIdWithVersion.from(id);
         const entryResult = await this.getEntryByIdUseCase.execute<IScheduledAction<T>>(
@@ -40,6 +41,12 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const entry = entryResult.value;
+        /**
+         * Always check if the namespace is correct because entry is loaded directly, not via filtering.
+         */
+        if (entry.values.namespace !== namespace) {
+            return Result.fail(new ScheduledActionNotFoundError(scheduleId));
+        }
 
         return Result.ok({
             id: entry.entryId,

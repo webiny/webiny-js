@@ -63,10 +63,12 @@ export namespace ScheduledActionHandler {
 
 export interface ISchedulerServiceCreateParams {
     id: string;
+    namespace: string;
     scheduleFor: Date;
 }
 export interface ISchedulerServiceUpdateParams {
     id: string;
+    namespace: string;
     scheduleFor: Date;
 }
 

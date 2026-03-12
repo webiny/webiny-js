@@ -61,4 +61,5 @@ export const ListScheduledActionsUseCase = createAbstraction<IListScheduledActio
 export namespace ListScheduledActionsUseCase {
     export type Interface = IListScheduledActionsUseCase;
     export type Error = ListScheduledActionsError;
+    export type Params = IListScheduledActionsParams;
 }

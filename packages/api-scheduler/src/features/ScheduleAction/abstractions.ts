@@ -23,7 +23,7 @@ export interface IScheduleActionErrors {
 
 type ScheduleActionError = IScheduleActionErrors[keyof IScheduleActionErrors];
 
-interface IScheduleActionParams<T extends GenericRecord> {
+export interface IScheduleActionParams<T extends GenericRecord> {
     namespace: string;
     actionType: ScheduledActionType;
     targetId: string;

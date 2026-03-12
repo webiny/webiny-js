@@ -1,5 +1,4 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import {
     ScheduledActionNotFoundError,
     ScheduledActionPersistenceError,
@@ -21,9 +20,14 @@ export interface ICancelScheduledActionErrors {
 }
 
 type CancelScheduledActionError = ICancelScheduledActionErrors[keyof ICancelScheduledActionErrors];
-
+export interface ICancelScheduledActionUseCaseParams {
+    namespace: string;
+    id: string;
+}
 export interface ICancelScheduledActionUseCase {
-    execute(scheduleId: string): Promise<Result<void, CancelScheduledActionError>>;
+    execute(
+        params: ICancelScheduledActionUseCaseParams
+    ): Promise<Result<void, CancelScheduledActionError>>;
 }
 
 export const CancelScheduledActionUseCase = createAbstraction<ICancelScheduledActionUseCase>(
@@ -33,4 +37,5 @@ export const CancelScheduledActionUseCase = createAbstraction<ICancelScheduledAc
 export namespace CancelScheduledActionUseCase {
     export type Interface = ICancelScheduledActionUseCase;
     export type Error = CancelScheduledActionError;
+    export type Params = ICancelScheduledActionUseCaseParams;
 }

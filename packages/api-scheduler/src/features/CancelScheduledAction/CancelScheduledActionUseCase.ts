@@ -24,9 +24,12 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         private model: ScheduledActionModel.Interface
     ) {}
 
-    async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
+    async execute(
+        params: UseCaseAbstraction.Params
+    ): Promise<Result<void, UseCaseAbstraction.Error>> {
+        const { id } = params;
         // Check if scheduled action exists
-        const getResult = await this.getScheduledActionUseCase.execute(id);
+        const getResult = await this.getScheduledActionUseCase.execute(params);
 
         if (getResult.isFail()) {
             const error = getResult.error;
