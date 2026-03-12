@@ -60,14 +60,14 @@ export const Scheduler = ({ render, client, show: initialShow, ...rest }: Schedu
             unpublishGateway: new SchedulerUnpublishGraphQLGateway(client)
         };
     }, [client]);
-    console.log({
-        showingScheduler: show
-    });
+
     return (
         <>
             {show ? (
                 <CompositionScope name={"scheduler"}>
+                    <>RENDERING!!!!</>
                     <SchedulerListWithConfig>
+                        <>NOT RENDERING</>
                         <SchedulerRenderer
                             {...rest}
                             cancelGateway={gateways.cancelGateway}
