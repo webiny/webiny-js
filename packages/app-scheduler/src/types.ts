@@ -26,7 +26,7 @@ export interface SchedulerMetaResponse {
 export interface SchedulerEntry {
     id: string;
     targetId: string;
-    app: string;
+    namespace: string;
     scheduledBy: SchedulerIdentity;
     publishOn?: Date;
     unpublishOn?: Date;

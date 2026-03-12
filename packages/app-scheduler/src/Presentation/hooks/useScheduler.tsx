@@ -8,6 +8,7 @@ import type {
 import type { SchedulerEntry } from "~/types.js";
 
 export interface SchedulerContext {
+    namespace: string;
     controllers: ISchedulerControllers;
     presenter: ISchedulerPresenter;
 }
@@ -88,6 +89,7 @@ export const useScheduler = () => {
     );
 
     return {
+        namespace: context.namespace,
         vm,
         cancelItem,
         publishItem,

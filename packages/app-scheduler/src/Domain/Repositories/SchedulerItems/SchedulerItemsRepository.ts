@@ -23,7 +23,7 @@ export interface ISchedulerItemsRepositoryParams {
     cancelGateway: ICancelScheduleActionGateway;
     unpublishGateway: IScheduleUnpublishActionGateway;
     publishGateway: ISchedulePublishActionGateway;
-    app: string;
+    namespace: string;
 }
 
 export class SchedulerItemsRepository implements ISchedulerItemsRepository {
@@ -33,7 +33,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
     private readonly cancelGateway: ICancelScheduleActionGateway;
     private readonly unpublishGateway: IScheduleUnpublishActionGateway;
     private readonly publishGateway: ISchedulePublishActionGateway;
-    private readonly app: string;
+    private readonly namespace: string;
     private items: SchedulerItem[] = [];
     private params: IListScheduleActionsGatewayExecuteParams;
 
@@ -44,9 +44,9 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         this.cancelGateway = params.cancelGateway;
         this.unpublishGateway = params.unpublishGateway;
         this.publishGateway = params.publishGateway;
-        this.app = params.app;
+        this.namespace = params.namespace;
         this.params = {
-            app: this.app
+            namespace: this.namespace
         };
         makeAutoObservable(this);
     }
@@ -63,10 +63,10 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         return {};
     }
 
-    public async getItem(params: Omit<IGetScheduleActionGatewayExecuteParams, "app">) {
+    public async getItem(params: Omit<IGetScheduleActionGatewayExecuteParams, "namespace">) {
         const item = await this.getGateway.execute({
             id: params.id,
-            app: this.app
+            namespace: this.namespace
         });
         /**
          * TODO Do we want to reset the items list?
@@ -84,13 +84,13 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         });
     }
 
-    public async listItems(params?: Omit<IListScheduleActionsGatewayExecuteParams, "app">) {
+    public async listItems(params?: Omit<IListScheduleActionsGatewayExecuteParams, "namespace">) {
         this.params = {
             where: params?.where,
             limit: params?.limit,
             sort: params?.sort,
             after: params?.after,
-            app: this.app
+            namespace: this.namespace
         };
 
         const response = await this.listGateway.execute({ ...this.params });
@@ -126,7 +126,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
 
     public async scheduleCancelItem(id: string) {
         await this.cancelGateway.execute({
-            app: this.app,
+            namespace: this.namespace,
             id
         });
 
@@ -138,7 +138,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
 
     public async schedulePublishItem(id: string, scheduleOn: Date) {
         const { item } = await this.publishGateway.execute({
-            app: this.app,
+            namespace: this.namespace,
             id,
             scheduleOn
         });
@@ -155,7 +155,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
 
     public async scheduleUnpublishItem(id: string, scheduleOn: Date) {
         const { item } = await this.unpublishGateway.execute({
-            app: this.app,
+            namespace: this.namespace,
             id,
             scheduleOn
         });

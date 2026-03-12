@@ -5,7 +5,7 @@ export class SchedulerItem {
     public readonly title: string;
     public readonly type: ScheduleType;
     public readonly targetId: string;
-    public readonly app: string;
+    public readonly namespace: string;
     public readonly scheduledBy: SchedulerIdentity;
     public readonly publishOn?: Date;
     public readonly unpublishOn?: Date;
@@ -15,7 +15,7 @@ export class SchedulerItem {
         this.title = item.title;
         this.type = item.type;
         this.targetId = item.targetId;
-        this.app = item.app;
+        this.namespace = item.namespace;
         this.scheduledBy = item.scheduledBy;
         this.publishOn = item.publishOn;
         this.unpublishOn = item.unpublishOn;

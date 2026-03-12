@@ -12,7 +12,7 @@ export const Sidebar = Components.Sidebar.Footer.createDecorator(Original => {
         const { model } = useModel();
         const { canPublish, canUnpublish } = usePermissions();
 
-        const app = `cms:${model.modelId}`;
+        const namespace = `cms:${model.modelId}`;
 
         if (!canPublish && !canUnpublish) {
             return <Original>{children}</Original>;
@@ -23,7 +23,7 @@ export const Sidebar = Components.Sidebar.Footer.createDecorator(Original => {
                 <IsModelPublishable>
                     {children}
                     <BaseScheduler
-                        app={app}
+                        namespace={namespace}
                         client={client}
                         canPublish={canPublish}
                         canUnpublish={canUnpublish}

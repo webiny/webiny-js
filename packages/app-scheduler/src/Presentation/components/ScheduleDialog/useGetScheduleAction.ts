@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useSnackbar } from "@webiny/app-admin";
 
 export interface IGetScheduleActionParams {
-    app: string;
+    namespace: string;
     id: string;
     gateway: IGetScheduleActionGateway;
 }
@@ -14,7 +14,7 @@ export interface IGetScheduleActionParams {
 export const useGetScheduleAction = (
     params: IGetScheduleActionParams
 ): IGetScheduleActionGatewayResponse | null => {
-    const { gateway, app, id } = params;
+    const { gateway, namespace, id } = params;
 
     const { showSnackbar } = useSnackbar();
 
@@ -24,7 +24,7 @@ export const useGetScheduleAction = (
         const fetchData = async () => {
             try {
                 const data = await gateway.execute({
-                    app,
+                    namespace,
                     id
                 });
                 setResponse(data);

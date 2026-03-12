@@ -6,8 +6,8 @@ import type {
 } from "~/Gateways/index.js";
 
 export interface ISchedulerItemsRepository {
-    getItem(params: Omit<IGetScheduleActionGatewayExecuteParams, "app">): Promise<void>;
-    listItems: (params?: Omit<IListScheduleActionsGatewayExecuteParams, "app">) => Promise<void>;
+    getItem(params: Omit<IGetScheduleActionGatewayExecuteParams, "namespace">): Promise<void>;
+    listItems: (params?: Omit<IListScheduleActionsGatewayExecuteParams, "namespace">) => Promise<void>;
     listMoreItems: () => Promise<void>;
     scheduleCancelItem: (id: string) => Promise<void>;
     schedulePublishItem: (id: string, scheduleOn: Date) => Promise<void>;

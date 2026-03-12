@@ -36,9 +36,9 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
             }
             
             type ScheduleRecord {
-                id: String!
+                id: ID!
                 targetId: String!
-                namespace: string!
+                namespace: String!
                 scheduledBy: ScheduleIdentity!
                 publishOn: DateTime
                 unpublishOn: DateTime
@@ -73,7 +73,6 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
             }
 
             input ListScheduledActionsWhereInput {
-                namespace: String
                 targetId: ID
                 title_contains: String
                 title_not_contains: String

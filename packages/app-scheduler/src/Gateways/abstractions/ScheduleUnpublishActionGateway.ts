@@ -1,7 +1,7 @@
 import type { SchedulerEntry } from "~/types.js";
 
 export interface IScheduleUnpublishActionGatewayExecuteParams {
-    app: string;
+    namespace: string;
     id: string;
     scheduleOn: Date;
 }

@@ -8,8 +8,8 @@ import type {
 
 const createScheduleCancelActionMutation = () => {
     return gql`
-        mutation ScheduleCancelAction($app: String!, $id: ID!) {
-            cancelScheduleAction(app: $app, id: $id) {
+        mutation ScheduleCancelAction($namespace: String!, $id: ID!) {
+            cancelScheduleAction(namespace: $namespace, id: $id) {
                 data
                 error {
                     message
@@ -23,7 +23,7 @@ const createScheduleCancelActionMutation = () => {
 };
 
 interface SchedulerCancelGraphQLMutationVariables {
-    app: string;
+    namespace: string;
     id: string;
 }
 
@@ -48,7 +48,7 @@ export class SchedulerCancelGraphQLGateway implements ICancelScheduleActionGatew
         >({
             mutation: createScheduleCancelActionMutation(),
             variables: {
-                app: params.app,
+                namespace: params.namespace,
                 id: params.id
             },
             fetchPolicy: "no-cache"

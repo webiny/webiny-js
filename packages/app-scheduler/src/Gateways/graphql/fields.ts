@@ -2,7 +2,7 @@ export const createSchedulerEntryFields = (): string => {
     return `
         id
         targetId
-        app
+        namespace
         scheduledBy {
             id
             displayName

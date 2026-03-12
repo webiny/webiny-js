@@ -14,14 +14,14 @@ import type { SchedulerEntry, SchedulerErrorResponse, SchedulerMetaResponse } fr
 const createListScheduleActionsQuery = () => {
     return gql`
         query ListScheduleActions(
-            $app: String!
+            $namespace: String!
             $where: ListScheduleActionsWhereInput
             $sort: [ListScheduleActionsSorter!]
             $limit: Int
             $after: String
         ) {
             listScheduleActions(
-                app: $app
+                namespace: $namespace
                 where: $where
                 sort: $sort
                 limit: $limit
@@ -79,7 +79,7 @@ export class SchedulerListGraphQLGateway implements IListScheduleActionsGateway 
         >({
             query: createListScheduleActionsQuery(),
             variables: {
-                app: params.app,
+                namespace: params.namespace,
                 where: params.where,
                 limit: params.limit,
                 after: params.after,

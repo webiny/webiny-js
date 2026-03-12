@@ -15,7 +15,7 @@ export interface IListScheduleActionsExecuteParamsWhere {
 export type IListScheduleActionsExecuteParamsSort = "scheduledFor_ASC" | "scheduledFor_DESC";
 
 export interface IListScheduleActionsGatewayExecuteParams {
-    app: string;
+    namespace: string;
     where?: IListScheduleActionsExecuteParamsWhere;
     sort?: IListScheduleActionsExecuteParamsSort[];
     limit?: number;

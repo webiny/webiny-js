@@ -4,7 +4,7 @@ import { ScheduleType } from "~/types.js";
 export const schedulerEntrySchema = zod.object({
     id: zod.string(),
     targetId: zod.string(),
-    app: zod.string(),
+    namespace: zod.string(),
     scheduledBy: zod.object({
         id: zod.string(),
         displayName: zod.string(),

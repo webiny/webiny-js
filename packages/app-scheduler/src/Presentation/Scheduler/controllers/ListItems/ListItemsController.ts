@@ -9,7 +9,7 @@ export class ListItemsController implements IListItemsController {
         this.useCaseFactory = useCaseFactory;
     }
 
-    async execute(params?: Omit<IListScheduleActionsGatewayExecuteParams, "app">) {
+    async execute(params?: Omit<IListScheduleActionsGatewayExecuteParams, "namespace">) {
         const listItemsUseCase = this.useCaseFactory();
         await listItemsUseCase.execute(params);
     }

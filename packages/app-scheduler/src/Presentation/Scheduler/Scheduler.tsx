@@ -26,7 +26,7 @@ import type {
 import { SchedulerControllers } from "~/Presentation/Scheduler/SchedulerControllers.js";
 
 export interface SchedulerProps {
-    app: string;
+    namespace: string;
     getGateway: IGetScheduleActionGateway;
     listGateway: IListScheduleActionsGateway;
     cancelGateway: ICancelScheduleActionGateway;
@@ -67,7 +67,7 @@ export const Scheduler = observer((props: SchedulerProps) => {
             publishGateway: props.publishGateway,
             unpublishGateway: props.unpublishGateway,
             listGateway: props.listGateway,
-            app: props.app
+            namespace: props.namespace
         });
 
         return new SchedulerItemsRepositoryWithLoading(loadingRepository, schedulerItemsRepository);
@@ -79,7 +79,7 @@ export const Scheduler = observer((props: SchedulerProps) => {
         props.publishGateway,
         props.unpublishGateway,
         props.listGateway,
-        props.app
+        props.namespace
     ]);
 
     const controllers = useMemo(() => {
@@ -111,7 +111,7 @@ export const Scheduler = observer((props: SchedulerProps) => {
     }, []);
 
     return (
-        <SchedulerProvider controllers={controllers} presenter={presenter}>
+        <SchedulerProvider namespace={props.namespace} controllers={controllers} presenter={presenter}>
             <SchedulerOverlay onExited={props.onClose} title={props.title} />
         </SchedulerProvider>
     );

@@ -12,8 +12,8 @@ import type { SchedulerEntry, SchedulerErrorResponse } from "~/types.js";
 
 export const createGetScheduleActionQuery = () => {
     return gql`
-        query GetScheduleActionQuery($app: String!, $id: ID!) {
-            getScheduleAction(app: $app, id: $id) {
+        query GetScheduleActionQuery($namespace: String!, $id: ID!) {
+            getScheduleAction(namespace: $namespace, id: $id) {
                 data {
                     ${createSchedulerEntryFields()}
                 }
@@ -53,7 +53,7 @@ export class SchedulerGetGraphQLGateway implements IGetScheduleActionGateway {
         >({
             query: createGetScheduleActionQuery(),
             variables: {
-                app: params.app,
+                namespace: params.namespace,
                 id: params.id
             },
             fetchPolicy: "network-only"

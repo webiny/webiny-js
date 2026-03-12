@@ -2,14 +2,14 @@ import type { ScheduleType } from "~/types.js";
 
 export interface IScheduleDialogScheduleActionExecuteParams {
     id: string;
-    app: string;
+    namespace: string;
     scheduleOn: Date;
     type: ScheduleType;
 }
 
 export interface IScheduleDialogCancelActionExecuteParams {
     id: string;
-    app: string;
+    namespace: string;
 }
 
 export interface IScheduleDialogAction {

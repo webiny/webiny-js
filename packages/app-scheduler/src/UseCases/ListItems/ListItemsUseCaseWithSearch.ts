@@ -13,7 +13,7 @@ export class ListItemsUseCaseWithSearch implements IListItemsUseCase {
         makeAutoObservable(this);
     }
 
-    async execute(params?: Omit<IListScheduleActionsGatewayExecuteParams, "app">) {
+    async execute(params?: Omit<IListScheduleActionsGatewayExecuteParams, "namespace">) {
         const search = this.searchRepository.get();
         await this.useCase.execute({
             sort: params?.sort,

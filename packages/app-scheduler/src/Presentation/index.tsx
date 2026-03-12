@@ -26,7 +26,7 @@ interface SchedulerRenderProps {
 }
 
 export interface SchedulerProps {
-    app: string;
+    namespace: string;
     render: SchedulerRenderProps;
     client: ApolloClient<object>;
     onClose?: () => void;

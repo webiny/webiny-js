@@ -32,14 +32,14 @@ export class SchedulerItemsRepositoryWithLoading implements ISchedulerItemsRepos
         return this.loadingRepository.get();
     }
 
-    public async getItem(params: Omit<IGetScheduleActionGatewayExecuteParams, "app">) {
+    public async getItem(params: Omit<IGetScheduleActionGatewayExecuteParams, "namespace">) {
         await this.loadingRepository.runCallBack(
             this.schedulerItemsRepository.getItem(params),
             LoadingActions.get
         );
     }
 
-    public async listItems(params?: Omit<IListScheduleActionsGatewayExecuteParams, "app">) {
+    public async listItems(params?: Omit<IListScheduleActionsGatewayExecuteParams, "namespace">) {
         await this.loadingRepository.runCallBack(
             this.schedulerItemsRepository.listItems(params),
             LoadingActions.list

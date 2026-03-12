@@ -12,8 +12,8 @@ import type {
 
 const createScheduleUnpublishActionMutation = () => {
     return gql`
-        mutation ScheduleUnpublishAction($app: String!, $id: ID!, $scheduleFor: DateTime, $type: ScheduleRecordType!) {
-            createScheduleAction(app: $app, id: $id, scheduleFor: $scheduleFor, type: $type) {
+        mutation ScheduleUnpublishAction($namespace: String!, $id: ID!, $scheduleFor: DateTime, $type: ScheduleRecordType!) {
+            createScheduleAction(namespace: $namespace, id: $id, scheduleFor: $scheduleFor, type: $type) {
                 data {
                     ${createSchedulerEntryFields()}
                 }
@@ -29,7 +29,7 @@ const createScheduleUnpublishActionMutation = () => {
 };
 
 interface SchedulerUnpublishGraphQLMutationVariables {
-    app: string;
+    namespace: string;
     id: string;
     scheduleFor: Date;
     type: ScheduleType.unpublish;
@@ -60,7 +60,7 @@ export class SchedulerUnpublishGraphQLGateway implements IScheduleUnpublishActio
         >({
             mutation: createScheduleUnpublishActionMutation(),
             variables: {
-                app: params.app,
+                namespace: params.namespace,
                 id: params.id,
                 scheduleFor: params.scheduleOn,
                 type: ScheduleType.unpublish

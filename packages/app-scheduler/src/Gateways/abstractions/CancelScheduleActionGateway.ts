@@ -1,5 +1,5 @@
 export interface ICancelScheduleActionGatewayParams {
-    app: string;
+    namespace: string;
     id: string;
 }
 

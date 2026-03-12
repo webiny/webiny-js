@@ -17,7 +17,7 @@ export class ListItemsUseCaseWithSorting implements IListItemsUseCase {
         makeAutoObservable(this);
     }
 
-    public async execute(params?: Omit<IListScheduleActionsGatewayExecuteParams, "app">) {
+    public async execute(params?: Omit<IListScheduleActionsGatewayExecuteParams, "namespace">) {
         const sort = this.sortingRepository.get().map(sort => {
             return SortingMapper.fromDTOtoDb(sort);
         });

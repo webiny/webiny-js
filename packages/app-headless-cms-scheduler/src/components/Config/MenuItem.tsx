@@ -18,7 +18,7 @@ export const MenuItem = () => {
         target: {
             id: entry.id,
             title: entry.meta.title,
-            app: contentModel.modelId,
+            namespace: contentModel.modelId,
             status: entry.meta.status
         }
     });

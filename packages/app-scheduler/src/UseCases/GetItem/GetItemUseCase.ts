@@ -10,7 +10,7 @@ export class GetItemUseCase implements IGetItemUseCase {
         makeAutoObservable(this);
     }
 
-    async execute(params: Omit<IGetScheduleActionGatewayExecuteParams, "app">) {
+    async execute(params: Omit<IGetScheduleActionGatewayExecuteParams, "namespace">) {
         return await this.itemsRepository.getItem(params);
     }
 }

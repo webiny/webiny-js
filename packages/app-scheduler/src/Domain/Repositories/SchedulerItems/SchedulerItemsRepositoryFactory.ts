@@ -15,7 +15,7 @@ export interface ISchedulerItemsRepositoryFactoryGetParams {
     cancelGateway: ICancelScheduleActionGateway;
     publishGateway: ISchedulePublishActionGateway;
     unpublishGateway: IScheduleUnpublishActionGateway;
-    app: string;
+    namespace: string;
 }
 
 export class SchedulerItemsRepositoryFactory {

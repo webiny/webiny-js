@@ -30,34 +30,34 @@ export class ScheduleDialogAction implements IScheduleDialogAction {
     }
 
     public async schedule(params: IScheduleDialogScheduleActionExecuteParams): Promise<void> {
-        const { id, app, type, scheduleOn } = params;
+        const { id, namespace, type, scheduleOn } = params;
 
         switch (type) {
             case ScheduleType.publish:
                 await this.publishGateway.execute({
-                    app,
+                    namespace,
                     id,
                     scheduleOn
                 });
                 return;
             case ScheduleType.unpublish:
                 await this.unpublishGateway.execute({
-                    app,
+                    namespace,
                     id,
                     scheduleOn
                 });
                 return;
             default:
                 throw new Error(
-                    `Unsupported schedule type "${type}" for entry "${id}" and app "${app}".`
+                    `Unsupported schedule type "${type}" for entry "${id}" and namespace "${namespace}".`
                 );
         }
     }
 
     public async cancel(params: IScheduleDialogCancelActionExecuteParams): Promise<void> {
-        const { id, app } = params;
+        const { id, namespace } = params;
         await this.cancelGateway.execute({
-            app,
+            namespace,
             id
         });
     }

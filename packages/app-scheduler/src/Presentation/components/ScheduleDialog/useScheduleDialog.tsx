@@ -22,7 +22,6 @@ export interface IShowDialogParamsEntry {
     id: string;
     status: ShowDialogParamsEntryStatus;
     title: string;
-    app: string;
 }
 
 interface UseShowScheduleDialogResponse {
@@ -157,13 +156,14 @@ interface OnCancelCallable {
 
 export interface IUseScheduleDialogProps {
     client: ApolloClient<object>;
+    namespace: string;
     target: IShowDialogParamsEntry;
 }
 
 export const useScheduleDialog = (
     props: IUseScheduleDialogProps
 ): UseShowScheduleDialogResponse => {
-    const { client, target } = props;
+    const { client, target, namespace } = props;
     const dialog = useDialogs();
     const { showSnackbar } = useSnackbar();
 
@@ -185,7 +185,7 @@ export const useScheduleDialog = (
 
     const schedulerEntry = useGetScheduleAction({
         gateway: getGateway,
-        app: target.app,
+        namespace,
         id: target.id
     });
 
@@ -199,7 +199,7 @@ export const useScheduleDialog = (
         try {
             await action.schedule({
                 id: target.id,
-                app: target.app,
+                namespace,
                 scheduleOn,
                 type
             });
@@ -222,7 +222,7 @@ export const useScheduleDialog = (
         try {
             await action.cancel({
                 id: schedulerEntry.id,
-                app: schedulerEntry.app
+                namespace: schedulerEntry.namespace
             });
             showSnackbar(`Canceled scheduled ${schedulerEntry.type} on "${schedulerEntry.title}"!`);
         } catch (error) {
