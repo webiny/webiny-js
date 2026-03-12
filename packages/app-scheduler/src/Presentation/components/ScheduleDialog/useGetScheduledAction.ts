@@ -1,24 +1,24 @@
 import type {
-    IGetScheduleActionGateway,
-    IGetScheduleActionGatewayResponse
+    IGetScheduledActionGateway,
+    IGetScheduledActionGatewayResponse
 } from "~/Gateways/index.js";
 import { useEffect, useState } from "react";
 import { useSnackbar } from "@webiny/app-admin";
 
-export interface IGetScheduleActionParams {
+export interface IGetScheduledActionParams {
     namespace: string;
     id: string;
-    gateway: IGetScheduleActionGateway;
+    gateway: IGetScheduledActionGateway;
 }
 
-export const useGetScheduleAction = (
-    params: IGetScheduleActionParams
-): IGetScheduleActionGatewayResponse | null => {
+export const useGetScheduledAction = (
+    params: IGetScheduledActionParams
+): IGetScheduledActionGatewayResponse | null => {
     const { gateway, namespace, id } = params;
 
     const { showSnackbar } = useSnackbar();
 
-    const [response, setResponse] = useState<IGetScheduleActionGatewayResponse | null>(null);
+    const [response, setResponse] = useState<IGetScheduledActionGatewayResponse | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import type { ISchedulerItemsRepository } from "~/Domain/index.js";
 import type { IListItemsUseCase } from "./IListItemsUseCase.js";
-import type { IListScheduleActionsGatewayExecuteParams } from "~/Gateways/index.js";
+import type { IListScheduledActionsGatewayExecuteParams } from "~/Gateways/index.js";
 
 export class ListItemsUseCase implements IListItemsUseCase {
     private itemsRepository: ISchedulerItemsRepository;
@@ -10,7 +10,7 @@ export class ListItemsUseCase implements IListItemsUseCase {
         makeAutoObservable(this);
     }
 
-    async execute(params?: Omit<IListScheduleActionsGatewayExecuteParams, "namespace">) {
+    async execute(params?: Omit<IListScheduledActionsGatewayExecuteParams, "namespace">) {
         await this.itemsRepository.listItems(params);
     }
 }

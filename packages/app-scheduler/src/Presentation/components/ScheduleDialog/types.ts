@@ -1,6 +1,6 @@
 import type { ScheduleType } from "~/types.js";
 
-export interface IScheduleDialogScheduleActionExecuteParams {
+export interface IScheduleDialogScheduledActionExecuteParams {
     id: string;
     namespace: string;
     scheduleOn: Date;
@@ -13,6 +13,6 @@ export interface IScheduleDialogCancelActionExecuteParams {
 }
 
 export interface IScheduleDialogAction {
-    schedule(params: IScheduleDialogScheduleActionExecuteParams): Promise<void>;
+    schedule(params: IScheduleDialogScheduledActionExecuteParams): Promise<void>;
     cancel(params: IScheduleDialogCancelActionExecuteParams): Promise<void>;
 }

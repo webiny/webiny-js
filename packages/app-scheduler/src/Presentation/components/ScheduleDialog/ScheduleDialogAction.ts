@@ -1,23 +1,23 @@
 import { ScheduleType } from "~/types.js";
 import type {
-    ICancelScheduleActionGateway,
+    ICancelScheduledActionGateway,
     ISchedulePublishActionGateway,
     IScheduleUnpublishActionGateway
 } from "~/Gateways/index.js";
 import type {
     IScheduleDialogAction,
     IScheduleDialogCancelActionExecuteParams,
-    IScheduleDialogScheduleActionExecuteParams
+    IScheduleDialogScheduledActionExecuteParams
 } from "./types.js";
 
 export interface IScheduleDialogActionParams {
-    cancelGateway: ICancelScheduleActionGateway;
+    cancelGateway: ICancelScheduledActionGateway;
     publishGateway: ISchedulePublishActionGateway;
     unpublishGateway: IScheduleUnpublishActionGateway;
 }
 
 export class ScheduleDialogAction implements IScheduleDialogAction {
-    public readonly cancelGateway: ICancelScheduleActionGateway;
+    public readonly cancelGateway: ICancelScheduledActionGateway;
     public readonly publishGateway: ISchedulePublishActionGateway;
     public readonly unpublishGateway: IScheduleUnpublishActionGateway;
 
@@ -29,7 +29,7 @@ export class ScheduleDialogAction implements IScheduleDialogAction {
         this.unpublishGateway = unpublishGateway;
     }
 
-    public async schedule(params: IScheduleDialogScheduleActionExecuteParams): Promise<void> {
+    public async schedule(params: IScheduleDialogScheduledActionExecuteParams): Promise<void> {
         const { id, namespace, type, scheduleOn } = params;
 
         switch (type) {

@@ -1,13 +1,13 @@
 import type { Meta } from "@webiny/app-utils";
 import type { SchedulerItem } from "~/Domain/index.js";
 import type {
-    IGetScheduleActionGatewayExecuteParams,
-    IListScheduleActionsGatewayExecuteParams
+    IGetScheduledActionGatewayExecuteParams,
+    IListScheduledActionsGatewayExecuteParams
 } from "~/Gateways/index.js";
 
 export interface ISchedulerItemsRepository {
-    getItem(params: Omit<IGetScheduleActionGatewayExecuteParams, "namespace">): Promise<void>;
-    listItems: (params?: Omit<IListScheduleActionsGatewayExecuteParams, "namespace">) => Promise<void>;
+    getItem(params: Omit<IGetScheduledActionGatewayExecuteParams, "namespace">): Promise<void>;
+    listItems: (params?: Omit<IListScheduledActionsGatewayExecuteParams, "namespace">) => Promise<void>;
     listMoreItems: () => Promise<void>;
     scheduleCancelItem: (id: string) => Promise<void>;
     schedulePublishItem: (id: string, scheduleOn: Date) => Promise<void>;

@@ -1,8 +1,8 @@
 import type { IMetaRepository } from "@webiny/app-utils";
-import type { IListScheduleActionsGateway } from "~/Gateways/index.js";
+import type { IListScheduledActionsGateway } from "~/Gateways/index.js";
 import {
-    type ICancelScheduleActionGateway,
-    type IGetScheduleActionGateway,
+    type ICancelScheduledActionGateway,
+    type IGetScheduledActionGateway,
     type ISchedulePublishActionGateway,
     type IScheduleUnpublishActionGateway
 } from "~/Gateways/index.js";
@@ -10,9 +10,9 @@ import { SchedulerItemsRepository } from "./SchedulerItemsRepository.js";
 
 export interface ISchedulerItemsRepositoryFactoryGetParams {
     metaRepository: IMetaRepository;
-    getGateway: IGetScheduleActionGateway;
-    listGateway: IListScheduleActionsGateway;
-    cancelGateway: ICancelScheduleActionGateway;
+    getGateway: IGetScheduledActionGateway;
+    listGateway: IListScheduledActionsGateway;
+    cancelGateway: ICancelScheduledActionGateway;
     publishGateway: ISchedulePublishActionGateway;
     unpublishGateway: IScheduleUnpublishActionGateway;
     namespace: string;

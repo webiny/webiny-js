@@ -5,15 +5,15 @@ import { createZodError } from "@webiny/utils/createZodError.js";
 import { schedulerEntrySchema } from "./schema/schedulerEntry.js";
 import { createSchedulerEntryFields } from "./graphql/fields.js";
 import type {
-    IGetScheduleActionGateway,
-    IGetScheduleActionGatewayExecuteParams
-} from "./abstractions/GetScheduleActionGateway.js";
+    IGetScheduledActionGateway,
+    IGetScheduledActionGatewayExecuteParams
+} from "./abstractions/GetScheduledActionGateway.js";
 import type { SchedulerEntry, SchedulerErrorResponse } from "~/types.js";
 
-export const createGetScheduleActionQuery = () => {
+export const createGetScheduledActionQuery = () => {
     return gql`
-        query GetScheduleActionQuery($namespace: String!, $id: ID!) {
-            getScheduleAction(namespace: $namespace, id: $id) {
+        query GetScheduledActionQuery($namespace: String!, $id: ID!) {
+            getScheduledAction(namespace: $namespace, id: $id) {
                 data {
                     ${createSchedulerEntryFields()}
                 }
@@ -29,7 +29,7 @@ export const createGetScheduleActionQuery = () => {
 };
 
 interface SchedulerGetGraphQLQueryResponse {
-    getScheduleAction: {
+    getScheduledAction: {
         data: SchedulerEntry | null;
         error: SchedulerErrorResponse | null;
     };
@@ -39,19 +39,19 @@ const schema = zod.object({
     data: schedulerEntrySchema
 });
 
-export class SchedulerGetGraphQLGateway implements IGetScheduleActionGateway {
+export class SchedulerGetGraphQLGateway implements IGetScheduledActionGateway {
     private readonly client: ApolloClient<any>;
 
     public constructor(client: ApolloClient<any>) {
         this.client = client;
     }
 
-    public async execute(params: IGetScheduleActionGatewayExecuteParams) {
+    public async execute(params: IGetScheduledActionGatewayExecuteParams) {
         const { data: response, errors } = await this.client.query<
             SchedulerGetGraphQLQueryResponse,
-            IGetScheduleActionGatewayExecuteParams
+            IGetScheduledActionGatewayExecuteParams
         >({
-            query: createGetScheduleActionQuery(),
+            query: createGetScheduledActionQuery(),
             variables: {
                 namespace: params.namespace,
                 id: params.id
@@ -59,7 +59,7 @@ export class SchedulerGetGraphQLGateway implements IGetScheduleActionGateway {
             fetchPolicy: "network-only"
         });
 
-        const result = response.getScheduleAction;
+        const result = response.getScheduledAction;
         if (!result || errors?.length) {
             console.error({
                 errors

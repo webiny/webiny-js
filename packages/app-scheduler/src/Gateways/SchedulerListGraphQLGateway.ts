@@ -5,22 +5,22 @@ import { createZodError } from "@webiny/utils/createZodError.js";
 import { schedulerEntrySchema } from "./schema/schedulerEntry.js";
 import { createSchedulerEntryFields } from "./graphql/fields.js";
 import type {
-    IListScheduleActionsGateway,
-    IListScheduleActionsGatewayExecuteParams,
-    IListScheduleActionsGatewayExecuteResponse
-} from "./abstractions/ListScheduleActionsGateway.js";
+    IListScheduledActionsGateway,
+    IListScheduledActionsGatewayExecuteParams,
+    IListScheduledActionsGatewayExecuteResponse
+} from "./abstractions/ListScheduledActionsGateway.js";
 import type { SchedulerEntry, SchedulerErrorResponse, SchedulerMetaResponse } from "~/types.js";
 
-const createListScheduleActionsQuery = () => {
+const createListScheduledActionsQuery = () => {
     return gql`
-        query ListScheduleActions(
+        query ListScheduledActions(
             $namespace: String!
-            $where: ListScheduleActionsWhereInput
-            $sort: [ListScheduleActionsSorter!]
+            $where: ListScheduledActionsWhereInput
+            $sort: [ListScheduledActionsSorter!]
             $limit: Int
             $after: String
         ) {
-            listScheduleActions(
+            listScheduledActions(
                 namespace: $namespace
                 where: $where
                 sort: $sort
@@ -47,7 +47,7 @@ const createListScheduleActionsQuery = () => {
 };
 
 interface SchedulerListGraphQLQueryResponse {
-    listScheduleActions: {
+    listScheduledActions: {
         data: SchedulerEntry[] | null;
         meta: SchedulerMetaResponse | null;
         error: SchedulerErrorResponse | null;
@@ -63,7 +63,7 @@ const schema = zod.object({
     })
 });
 
-export class SchedulerListGraphQLGateway implements IListScheduleActionsGateway {
+export class SchedulerListGraphQLGateway implements IListScheduledActionsGateway {
     private readonly client: ApolloClient<any>;
 
     public constructor(client: ApolloClient<any>) {
@@ -71,13 +71,13 @@ export class SchedulerListGraphQLGateway implements IListScheduleActionsGateway 
     }
 
     public async execute(
-        params: IListScheduleActionsGatewayExecuteParams
-    ): Promise<IListScheduleActionsGatewayExecuteResponse> {
+        params: IListScheduledActionsGatewayExecuteParams
+    ): Promise<IListScheduledActionsGatewayExecuteResponse> {
         const { data: response, errors } = await this.client.query<
             SchedulerListGraphQLQueryResponse,
-            IListScheduleActionsGatewayExecuteParams
+            IListScheduledActionsGatewayExecuteParams
         >({
-            query: createListScheduleActionsQuery(),
+            query: createListScheduledActionsQuery(),
             variables: {
                 namespace: params.namespace,
                 where: params.where,
@@ -88,7 +88,7 @@ export class SchedulerListGraphQLGateway implements IListScheduleActionsGateway 
             fetchPolicy: "network-only"
         });
 
-        const result = response.listScheduleActions;
+        const result = response.listScheduledActions;
         if (!result || errors?.length) {
             console.error({
                 errors

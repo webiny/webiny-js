@@ -3,8 +3,8 @@ import type { ILoadingRepository } from "@webiny/app-utils";
 import type { ISchedulerItemsRepository } from "./ISchedulerItemsRepository.js";
 import { LoadingActions } from "~/types.js";
 import type {
-    IGetScheduleActionGatewayExecuteParams,
-    IListScheduleActionsGatewayExecuteParams
+    IGetScheduledActionGatewayExecuteParams,
+    IListScheduledActionsGatewayExecuteParams
 } from "~/Gateways/index.js";
 
 export class SchedulerItemsRepositoryWithLoading implements ISchedulerItemsRepository {
@@ -32,14 +32,14 @@ export class SchedulerItemsRepositoryWithLoading implements ISchedulerItemsRepos
         return this.loadingRepository.get();
     }
 
-    public async getItem(params: Omit<IGetScheduleActionGatewayExecuteParams, "namespace">) {
+    public async getItem(params: Omit<IGetScheduledActionGatewayExecuteParams, "namespace">) {
         await this.loadingRepository.runCallBack(
             this.schedulerItemsRepository.getItem(params),
             LoadingActions.get
         );
     }
 
-    public async listItems(params?: Omit<IListScheduleActionsGatewayExecuteParams, "namespace">) {
+    public async listItems(params?: Omit<IListScheduledActionsGatewayExecuteParams, "namespace">) {
         await this.loadingRepository.runCallBack(
             this.schedulerItemsRepository.listItems(params),
             LoadingActions.list

@@ -2,15 +2,15 @@ import { makeAutoObservable, runInAction } from "mobx";
 import uniqBy from "lodash/uniqBy.js";
 import type { SchedulerItem } from "~/Domain/index.js";
 import type {
-    ICancelScheduleActionGateway,
-    IListScheduleActionsGateway,
+    ICancelScheduledActionGateway,
+    IListScheduledActionsGateway,
     ISchedulePublishActionGateway,
     IScheduleUnpublishActionGateway
 } from "~/Gateways/index.js";
 import {
-    type IGetScheduleActionGatewayExecuteParams,
-    type IGetScheduleActionGateway,
-    type IListScheduleActionsGatewayExecuteParams
+    type IGetScheduledActionGatewayExecuteParams,
+    type IGetScheduledActionGateway,
+    type IListScheduledActionsGatewayExecuteParams
 } from "~/Gateways/index.js";
 import type { IMetaRepository } from "@webiny/app-utils";
 import { Meta } from "@webiny/app-utils";
@@ -18,9 +18,9 @@ import type { ISchedulerItemsRepository } from "./ISchedulerItemsRepository.js";
 
 export interface ISchedulerItemsRepositoryParams {
     metaRepository: IMetaRepository;
-    getGateway: IGetScheduleActionGateway;
-    listGateway: IListScheduleActionsGateway;
-    cancelGateway: ICancelScheduleActionGateway;
+    getGateway: IGetScheduledActionGateway;
+    listGateway: IListScheduledActionsGateway;
+    cancelGateway: ICancelScheduledActionGateway;
     unpublishGateway: IScheduleUnpublishActionGateway;
     publishGateway: ISchedulePublishActionGateway;
     namespace: string;
@@ -28,14 +28,14 @@ export interface ISchedulerItemsRepositoryParams {
 
 export class SchedulerItemsRepository implements ISchedulerItemsRepository {
     private readonly metaRepository: IMetaRepository;
-    private readonly getGateway: IGetScheduleActionGateway;
-    private readonly listGateway: IListScheduleActionsGateway;
-    private readonly cancelGateway: ICancelScheduleActionGateway;
+    private readonly getGateway: IGetScheduledActionGateway;
+    private readonly listGateway: IListScheduledActionsGateway;
+    private readonly cancelGateway: ICancelScheduledActionGateway;
     private readonly unpublishGateway: IScheduleUnpublishActionGateway;
     private readonly publishGateway: ISchedulePublishActionGateway;
     private readonly namespace: string;
     private items: SchedulerItem[] = [];
-    private params: IListScheduleActionsGatewayExecuteParams;
+    private params: IListScheduledActionsGatewayExecuteParams;
 
     public constructor(params: ISchedulerItemsRepositoryParams) {
         this.metaRepository = params.metaRepository;
@@ -63,7 +63,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         return {};
     }
 
-    public async getItem(params: Omit<IGetScheduleActionGatewayExecuteParams, "namespace">) {
+    public async getItem(params: Omit<IGetScheduledActionGatewayExecuteParams, "namespace">) {
         const item = await this.getGateway.execute({
             id: params.id,
             namespace: this.namespace
@@ -84,7 +84,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         });
     }
 
-    public async listItems(params?: Omit<IListScheduleActionsGatewayExecuteParams, "namespace">) {
+    public async listItems(params?: Omit<IListScheduledActionsGatewayExecuteParams, "namespace">) {
         this.params = {
             where: params?.where,
             limit: params?.limit,

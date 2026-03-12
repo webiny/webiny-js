@@ -13,7 +13,7 @@ import { ScheduleDialogAction } from "~/Presentation/index.js";
 import { SchedulerCancelGraphQLGateway } from "~/Gateways/SchedulerCancelGraphQLGateway.js";
 import { SchedulerPublishGraphQLGateway } from "~/Gateways/SchedulerPublishGraphQLGateway.js";
 import { SchedulerUnpublishGraphQLGateway } from "~/Gateways/SchedulerUnpublishGraphQLGateway.js";
-import { useGetScheduleAction } from "~/Presentation/components/ScheduleDialog/useGetScheduleAction.js";
+import { useGetScheduledAction } from "~/Presentation/components/ScheduleDialog/useGetScheduledAction.js";
 import { SchedulerGetGraphQLGateway } from "~/Gateways/SchedulerGetGraphQLGateway.js";
 
 export type ShowDialogParamsEntryStatus = CmsContentEntryStatusType;
@@ -183,7 +183,7 @@ export const useScheduleDialog = (
         return new SchedulerGetGraphQLGateway(client);
     }, [client]);
 
-    const schedulerEntry = useGetScheduleAction({
+    const schedulerEntry = useGetScheduledAction({
         gateway: getGateway,
         namespace,
         id: target.id

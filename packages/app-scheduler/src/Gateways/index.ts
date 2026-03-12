@@ -1,19 +1,19 @@
 export type {
-    ICancelScheduleActionGatewayParams,
-    ICancelScheduleActionGateway
-} from "./abstractions/CancelScheduleActionGateway.js";
+    ICancelScheduledActionGatewayParams,
+    ICancelScheduledActionGateway
+} from "./abstractions/CancelScheduledActionGateway.js";
 export type {
-    IGetScheduleActionGatewayExecuteParams,
-    IGetScheduleActionGateway,
-    IGetScheduleActionGatewayResponse
-} from "./abstractions/GetScheduleActionGateway.js";
+    IGetScheduledActionGatewayExecuteParams,
+    IGetScheduledActionGateway,
+    IGetScheduledActionGatewayResponse
+} from "./abstractions/GetScheduledActionGateway.js";
 export type {
-    IListScheduleActionsGatewayExecuteParams,
-    IListScheduleActionsExecuteParamsSort,
-    IListScheduleActionsExecuteParamsWhere,
-    IListScheduleActionsGateway,
-    IListScheduleActionsGatewayExecuteResponse
-} from "./abstractions/ListScheduleActionsGateway.js";
+    IListScheduledActionsGatewayExecuteParams,
+    IListScheduledActionsExecuteParamsSort,
+    IListScheduledActionsExecuteParamsWhere,
+    IListScheduledActionsGateway,
+    IListScheduledActionsGatewayExecuteResponse
+} from "./abstractions/ListScheduledActionsGateway.js";
 export type {
     ISchedulePublishActionGatewayExecuteParams,
     ISchedulePublishActionGateway,

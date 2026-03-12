@@ -17,9 +17,9 @@ import {
     SortingRepositoryWithDefaults
 } from "~/Domain/index.js";
 import type {
-    ICancelScheduleActionGateway,
-    IGetScheduleActionGateway,
-    IListScheduleActionsGateway,
+    ICancelScheduledActionGateway,
+    IGetScheduledActionGateway,
+    IListScheduledActionsGateway,
     ISchedulePublishActionGateway,
     IScheduleUnpublishActionGateway
 } from "~/Gateways/index.js";
@@ -27,9 +27,9 @@ import { SchedulerControllers } from "~/Presentation/Scheduler/SchedulerControll
 
 export interface SchedulerProps {
     namespace: string;
-    getGateway: IGetScheduleActionGateway;
-    listGateway: IListScheduleActionsGateway;
-    cancelGateway: ICancelScheduleActionGateway;
+    getGateway: IGetScheduledActionGateway;
+    listGateway: IListScheduledActionsGateway;
+    cancelGateway: ICancelScheduledActionGateway;
     publishGateway: ISchedulePublishActionGateway;
     unpublishGateway: IScheduleUnpublishActionGateway;
     onClose: () => void;

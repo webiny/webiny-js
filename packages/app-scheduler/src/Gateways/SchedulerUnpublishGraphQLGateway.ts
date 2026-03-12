@@ -13,7 +13,7 @@ import type {
 const createScheduleUnpublishActionMutation = () => {
     return gql`
         mutation ScheduleUnpublishAction($namespace: String!, $id: ID!, $scheduleFor: DateTime, $type: ScheduleRecordType!) {
-            createScheduleAction(namespace: $namespace, id: $id, scheduleFor: $scheduleFor, type: $type) {
+            createScheduledAction(namespace: $namespace, id: $id, scheduleFor: $scheduleFor, type: $type) {
                 data {
                     ${createSchedulerEntryFields()}
                 }
@@ -36,7 +36,7 @@ interface SchedulerUnpublishGraphQLMutationVariables {
 }
 
 interface SchedulerUnpublishGraphQLMutationResponse {
-    createScheduleAction: {
+    createScheduledAction: {
         data: SchedulerEntry | null;
         error: SchedulerErrorResponse | null;
     };
@@ -68,7 +68,7 @@ export class SchedulerUnpublishGraphQLGateway implements IScheduleUnpublishActio
             fetchPolicy: "no-cache"
         });
 
-        const result = response?.createScheduleAction;
+        const result = response?.createScheduledAction;
         if (!result || errors?.length) {
             console.error({
                 errors

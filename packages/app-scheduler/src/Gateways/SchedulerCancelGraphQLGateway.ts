@@ -2,14 +2,14 @@ import type { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import type { SchedulerErrorResponse } from "~/types.js";
 import type {
-    ICancelScheduleActionGateway,
-    ICancelScheduleActionGatewayParams
-} from "./abstractions/CancelScheduleActionGateway.js";
+    ICancelScheduledActionGateway,
+    ICancelScheduledActionGatewayParams
+} from "./abstractions/CancelScheduledActionGateway.js";
 
 const createScheduleCancelActionMutation = () => {
     return gql`
         mutation ScheduleCancelAction($namespace: String!, $id: ID!) {
-            cancelScheduleAction(namespace: $namespace, id: $id) {
+            cancelScheduledAction(namespace: $namespace, id: $id) {
                 data
                 error {
                     message
@@ -28,20 +28,20 @@ interface SchedulerCancelGraphQLMutationVariables {
 }
 
 interface SchedulerCancelGraphQLMutationResponse {
-    cancelScheduleAction: {
+    cancelScheduledAction: {
         data: boolean | null;
         error: SchedulerErrorResponse | null;
     };
 }
 
-export class SchedulerCancelGraphQLGateway implements ICancelScheduleActionGateway {
+export class SchedulerCancelGraphQLGateway implements ICancelScheduledActionGateway {
     private readonly client: ApolloClient<object>;
 
     public constructor(client: ApolloClient<object>) {
         this.client = client;
     }
 
-    public async execute(params: ICancelScheduleActionGatewayParams) {
+    public async execute(params: ICancelScheduledActionGatewayParams) {
         const { data: response, errors } = await this.client.mutate<
             SchedulerCancelGraphQLMutationResponse,
             SchedulerCancelGraphQLMutationVariables
@@ -54,7 +54,7 @@ export class SchedulerCancelGraphQLGateway implements ICancelScheduleActionGatew
             fetchPolicy: "no-cache"
         });
 
-        const result = response?.cancelScheduleAction;
+        const result = response?.cancelScheduledAction;
         if (!result || errors?.length) {
             console.error({
                 errors

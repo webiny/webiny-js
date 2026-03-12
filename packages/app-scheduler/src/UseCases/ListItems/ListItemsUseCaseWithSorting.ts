@@ -3,8 +3,8 @@ import type { ISortingRepository } from "@webiny/app-utils";
 import { SortingMapper } from "@webiny/app-utils";
 import type { IListItemsUseCase } from "./IListItemsUseCase.js";
 import type {
-    IListScheduleActionsGatewayExecuteParams,
-    IListScheduleActionsExecuteParamsSort
+    IListScheduledActionsGatewayExecuteParams,
+    IListScheduledActionsExecuteParamsSort
 } from "~/Gateways/index.js";
 
 export class ListItemsUseCaseWithSorting implements IListItemsUseCase {
@@ -17,7 +17,7 @@ export class ListItemsUseCaseWithSorting implements IListItemsUseCase {
         makeAutoObservable(this);
     }
 
-    public async execute(params?: Omit<IListScheduleActionsGatewayExecuteParams, "namespace">) {
+    public async execute(params?: Omit<IListScheduledActionsGatewayExecuteParams, "namespace">) {
         const sort = this.sortingRepository.get().map(sort => {
             return SortingMapper.fromDTOtoDb(sort);
         });
@@ -25,7 +25,7 @@ export class ListItemsUseCaseWithSorting implements IListItemsUseCase {
             where: params?.where,
             limit: params?.limit,
             after: params?.after,
-            sort: sort as IListScheduleActionsExecuteParamsSort[]
+            sort: sort as IListScheduledActionsExecuteParamsSort[]
         });
     }
 }
