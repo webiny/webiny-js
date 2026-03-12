@@ -12,6 +12,7 @@ export {
     destination,
     transport
 } from "pino";
+
 export type {
     DestinationStream,
     Logger,
@@ -24,7 +25,6 @@ export type {
     TransportMultiOptions,
     TransportBaseOptions,
     TimeFn,
-    ThreadStream,
     StreamEntry,
     SerializerFn,
     SerializedResponse,

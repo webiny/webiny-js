@@ -1,5 +1,5 @@
 import extract from "./extract.js";
-import glob from "glob";
+import { glob } from "glob";
 import fs from "fs";
 
 export interface ExtractorResults {

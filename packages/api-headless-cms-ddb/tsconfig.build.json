@@ -34,7 +34,6 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

@@ -1,4 +1,4 @@
-import dotProp from "dot-prop";
+import { getProperty } from "dot-prop";
 import WebinyError from "@webiny/error";
 import type { Plugin, PluginsContainer } from "@webiny/plugins";
 import { ValueFilterPlugin } from "~/plugins/definitions/ValueFilterPlugin.js";
@@ -192,7 +192,7 @@ const createFilterCallable = (params: Omit<Params, "items">): ((item: any) => bo
     return (item: any) => {
         for (const filter of filters) {
             const result = filter.paths.some(path => {
-                const value = transform(dotProp.get(item, path), filter.transformValue);
+                const value = transform(getProperty(item, path), filter.transformValue);
                 const compareValue = transform(filter.compareValue, filter.transformValue);
                 const matched = filter.filterPlugin.matches({
                     value,

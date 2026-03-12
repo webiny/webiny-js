@@ -17,7 +17,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 
 // Initialize FontAwesome library
-library.add(fas as any);
+library.add(fas);
 
 const IconPickerExample = () => {
     const [selectedIcon, setSelectedIcon] = useState("");
@@ -79,7 +79,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 
 // Initialize FontAwesome library
-library.add(fas as any);
+library.add(fas);
 
 const IconPickerExample = () => {
     const [selectedIcon, setSelectedIcon] = useState("");
@@ -136,7 +136,7 @@ import { IconPrefix } from "@fortawesome/fontawesome-common-types";
 
 // Register all Font Awesome icons
 // Initialize FontAwesome library
-library.add(fab as any, fas as any, far as any);
+library.add(fab, fas, far);
 
 // Define allowed prefixes
 const validPrefixes: IconPrefix[] = ["fas", "far", "fab"];

@@ -1,4 +1,4 @@
-import type { Client } from "@elastic/elasticsearch";
+import type { Client } from "@webiny/api-elasticsearch";
 
 export interface ListIndexesParams {
     elasticsearchClient: Client;

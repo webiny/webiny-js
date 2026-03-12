@@ -3,7 +3,7 @@ import getYarnWorkspaces from "get-yarn-workspaces";
 import chalk from "chalk";
 import fs from "fs-extra";
 import path from "path";
-import glob from "glob";
+import { glob } from "glob";
 
 const { yellow } = chalk;
 const { join, basename } = path;

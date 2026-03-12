@@ -19,7 +19,6 @@
       "@webiny/api-headless-cms-import-export": ["../api-headless-cms-import-export/src"],
       "@webiny/api-headless-cms-tasks/*": ["../api-headless-cms-tasks/src/*"],
       "@webiny/api-headless-cms-tasks": ["../api-headless-cms-tasks/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

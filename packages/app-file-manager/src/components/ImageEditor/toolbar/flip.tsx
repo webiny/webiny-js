@@ -7,8 +7,6 @@ import type { ImageEditorTool } from "./types.js";
 
 let cropper: Cropper;
 
-const flipped = { x: 1, y: 1 };
-
 const renderForm = () => {
     return (
         <div className={"flex justify-center gap-sm"}>
@@ -19,9 +17,7 @@ const renderForm = () => {
                     if (!cropper) {
                         return;
                     }
-
-                    flipped.x = flipped.x === 1 ? -1 : 1;
-                    cropper.scaleX(flipped.x);
+                    cropper.getCropperImage()?.$scale(-1, 1);
                 }}
             />
             <Button
@@ -31,9 +27,7 @@ const renderForm = () => {
                     if (!cropper) {
                         return;
                     }
-
-                    flipped.y = flipped.y === 1 ? -1 : 1;
-                    cropper.scaleY(flipped.y);
+                    cropper.getCropperImage()?.$scale(1, -1);
                 }}
             />
         </div>
@@ -62,39 +56,26 @@ const tool: ImageEditorTool = {
     cancel: () => cropper && cropper.destroy(),
     onActivate: ({ canvas }) => {
         cropper = new Cropper(canvas.current as HTMLCanvasElement, {
-            background: false,
-            modal: false,
-            guides: false,
-            dragMode: "none",
-            highlight: false,
-            autoCrop: false
+            template:
+                "<cropper-canvas><cropper-image scalable translatable></cropper-image></cropper-canvas>"
         });
     },
-    apply: ({ canvas }) => {
-        return new Promise((resolve: any) => {
-            if (!cropper) {
-                resolve();
-                return;
-            }
+    apply: async ({ canvas }) => {
+        if (!cropper) {
+            return;
+        }
 
-            const current = canvas.current;
-            const src = cropper.getCroppedCanvas().toDataURL();
-            if (current) {
-                const image = new window.Image();
-                const ctx = current.getContext("2d") as CanvasRenderingContext2D;
-                image.onload = () => {
-                    ctx.drawImage(image, 0, 0);
-                    current.width = image.width;
-                    current.height = image.height;
+        const current = canvas.current;
+        const flippedCanvas = await cropper.getCropperCanvas()?.$toCanvas();
 
-                    ctx.drawImage(image, 0, 0);
-                    resolve();
-                };
-                image.src = src;
-            }
+        if (current && flippedCanvas) {
+            const ctx = current.getContext("2d") as CanvasRenderingContext2D;
+            current.width = flippedCanvas.width;
+            current.height = flippedCanvas.height;
+            ctx.drawImage(flippedCanvas, 0, 0);
+        }
 
-            cropper.destroy();
-        });
+        cropper.destroy();
     }
 };
 

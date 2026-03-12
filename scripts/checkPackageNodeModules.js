@@ -1,4 +1,4 @@
-import glob from "glob";
+import { glob } from "glob";
 import { loadJsonFileSync } from "load-json-file";
 
 const excludedPackages = ["@webiny/di"];

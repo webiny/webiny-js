@@ -108,8 +108,7 @@ async function output(target, content) {
                         acc[`${dep.name}`] = [`${relPath}/src`];
                         return acc;
                     }, {})
-                },
-                baseUrl: "."
+                }
             }
         };
 
@@ -141,8 +140,7 @@ async function output(target, content) {
                         acc[`${dep.name}`] = [`${relPath}/src`];
                         return acc;
                     }, {})
-                },
-                baseUrl: "."
+                }
             }
         };
 

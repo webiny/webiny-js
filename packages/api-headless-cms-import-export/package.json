@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.7",
-    "@types/archiver": "^6.0.4",
+    "@types/archiver": "^7.0.0",
     "@types/unzipper": "^0.10.11",
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
@@ -45,7 +45,7 @@
     "adm-zip": "^0.5.16",
     "aws-sdk-client-mock": "^4.1.0",
     "graphql": "^16.13.1",
-    "typescript": "5.9.3",
+    "typescript": "^6.0.1-rc",
     "vitest": "^4.0.18"
   },
   "publishConfig": {

@@ -30,7 +30,7 @@ import type {
 import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
 import { extractEntriesFromIndex } from "~/helpers/index.js";
 import { configurations } from "~/configurations.js";
-import type { Client } from "@elastic/elasticsearch";
+import type { Client } from "@webiny/api-elasticsearch";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
 import { DataLoadersHandler } from "./dataLoaders.js";

@@ -1,5 +1,5 @@
 const fsExtra = require("fs-extra");
-const glob = require("glob");
+const { glob } = require("glob");
 const path = require("path");
 
 class WebinyPackage {

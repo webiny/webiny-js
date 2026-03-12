@@ -13,6 +13,8 @@ import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js
 import { BaseError, Result } from "@webiny/feature/api";
 import type { IdInterfaceGenerator, NumericInterfaceGenerator } from "@webiny/api";
 
+import "./features/TaskController/augmentation.js";
+
 export * from "./handler/types.js";
 export * from "./response/abstractions/index.js";
 export * from "./runner/abstractions/index.js";

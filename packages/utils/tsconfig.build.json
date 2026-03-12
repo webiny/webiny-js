@@ -16,7 +16,6 @@
       "@webiny/error": ["../error/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }
