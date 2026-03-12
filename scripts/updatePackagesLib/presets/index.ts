@@ -13,6 +13,7 @@ import { prettier } from "./prettier";
 import { vitest } from "./vitest";
 import { storybook } from "./storybook";
 import { emotion } from "./emotion.js";
+import { fontawesome } from "./fontawesome.js";
 
 export const presets = [
     react,
@@ -29,5 +30,6 @@ export const presets = [
     prettier,
     vitest,
     storybook,
-    emotion
+    emotion,
+    fontawesome
 ];
