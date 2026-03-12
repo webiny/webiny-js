@@ -1,11 +1,11 @@
 import React from "react";
 import { Components } from "@webiny/app-headless-cms";
 import { useApolloClient } from "@apollo/react-hooks";
-import { IsModelPublishable } from "@webiny/app-headless-cms/exports/admin/cms.js";
-import { useModel } from "@webiny/app-headless-cms/exports/admin/cms.js";
+import { IsModelPublishable, useModel } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { usePermissions } from "~/hooks/usePermissions.js";
 import { Scheduler as BaseScheduler } from "@webiny/app-scheduler";
 import { SchedulerButton } from "./SchedulerButton.js";
+import { createNamespace } from "~/utils/index.js";
 
 export const Sidebar = Components.Sidebar.Footer.createDecorator(Original => {
     return function ScheduleSidebarFooter({ children }) {
@@ -13,7 +13,7 @@ export const Sidebar = Components.Sidebar.Footer.createDecorator(Original => {
         const { model } = useModel();
         const { canPublish, canUnpublish } = usePermissions();
 
-        const namespace = `cms:${model.modelId}`;
+        const namespace = createNamespace(model);
 
         if (!canPublish && !canUnpublish) {
             return <Original>{children}</Original>;

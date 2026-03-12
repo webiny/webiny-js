@@ -31,7 +31,7 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
     async execute<T extends GenericRecord>(
         params: IListScheduledActionsParams
     ): Promise<Result<IListScheduledActionsResponse<T>, UseCaseAbstraction.Error>> {
-        const { where, sort: sortInput, limit, after } = params;
+        const { where, sort: sortInput, limit, after, namespace } = params;
 
         const sort = this.cmsSortMapper.map({
             input: sortInput,
@@ -40,7 +40,10 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
         // List entries from CMS
         const listResult = await this.listEntriesUseCase.execute<IScheduledAction<T>>(this.model, {
             where: this.cmsWhereMapper.map({
-                input: where,
+                input: {
+                    ...where,
+                    namespace,
+                },
                 fields: this.model.fields
             }),
             sort,

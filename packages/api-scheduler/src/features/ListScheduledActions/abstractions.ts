@@ -31,6 +31,7 @@ export interface IListScheduledActionsWhere {
 }
 
 export interface IListScheduledActionsParams {
+    namespace: string;
     where: IListScheduledActionsWhere;
     sort?: CmsEntryListSort;
     limit?: number;
