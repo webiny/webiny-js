@@ -143,7 +143,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
             path: "Query.scheduler",
             resolver: () => {
                 return async () => {
-                    return null;
+                    return {};
                 };
             }
         });
@@ -151,7 +151,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
             path: "Mutation.scheduler",
             resolver: () => {
                 return async () => {
-                    return null;
+                    return {};
                 };
             }
         });
