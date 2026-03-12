@@ -154,6 +154,5 @@ export const DelayedOnChange = <TValue = any>({
         }
     };
 
-    // @ts-expect-error
     return React.cloneElement(child, { ...props, onBlur, onKeyDown });
 };

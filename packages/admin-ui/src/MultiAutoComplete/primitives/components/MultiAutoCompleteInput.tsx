@@ -1,4 +1,4 @@
-import React from "react";
+import React, { type RefObject } from "react";
 import type { InputPrimitiveProps } from "~/Input/index.js";
 import { InputIcon, inputVariants } from "~/Input/index.js";
 import type { CommandOptionFormatted } from "~/Command/index.js";
@@ -118,7 +118,7 @@ const MultiAutoCompleteInput = ({
                     inputElement={
                         <input
                             type="text"
-                            ref={inputRef}
+                            ref={inputRef as RefObject<HTMLInputElement>}
                             className={cn(multiAutoCompleteInputVariants({ disabled }))}
                         />
                     }
