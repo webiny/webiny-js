@@ -464,7 +464,7 @@ Resources:
 
             # Had to use "*", as per AWS docs:
             # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonec2.html#amazonec2-actions-as-permissions
-            Resource: *
+            Resource: "*"
             Action:
               - ec2:DescribeAddressesAttribute
 
