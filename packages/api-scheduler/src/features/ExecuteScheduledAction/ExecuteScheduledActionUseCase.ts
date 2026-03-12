@@ -51,7 +51,7 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
     private async executeAction<T extends GenericRecord>(
         params: UseCaseAbstraction.Params
     ): Promise<Result<void, UseCaseAbstraction.Error>> {
-        const {id} = params;
+        const { id } = params;
         // Load scheduled action
         const getResult = await this.getScheduledActionUseCase.execute<T>(params);
 

@@ -43,7 +43,7 @@ interface SchedulerUnpublishGraphQLMutationResponse {
             data: SchedulerEntry | null;
             error: SchedulerErrorResponse | null;
         };
-    }
+    };
 }
 
 const schema = zod.object({

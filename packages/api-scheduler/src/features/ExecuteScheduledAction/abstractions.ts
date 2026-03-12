@@ -32,7 +32,9 @@ export interface IExecuteScheduledActionUseCaseParams {
 }
 
 export interface IExecuteScheduledActionUseCase {
-    execute(params: IExecuteScheduledActionUseCaseParams): Promise<Result<void, ExecuteScheduledActionError>>;
+    execute(
+        params: IExecuteScheduledActionUseCaseParams
+    ): Promise<Result<void, ExecuteScheduledActionError>>;
 }
 
 export const ExecuteScheduledActionUseCase = createAbstraction<IExecuteScheduledActionUseCase>(

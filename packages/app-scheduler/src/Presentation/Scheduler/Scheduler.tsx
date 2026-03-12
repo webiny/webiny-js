@@ -111,7 +111,11 @@ export const Scheduler = observer((props: SchedulerProps) => {
     }, []);
 
     return (
-        <SchedulerProvider namespace={props.namespace} controllers={controllers} presenter={presenter}>
+        <SchedulerProvider
+            namespace={props.namespace}
+            controllers={controllers}
+            presenter={presenter}
+        >
             <SchedulerOverlay onExited={props.onClose} title={props.title} />
         </SchedulerProvider>
     );

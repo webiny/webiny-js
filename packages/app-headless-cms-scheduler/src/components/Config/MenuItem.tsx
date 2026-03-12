@@ -15,10 +15,10 @@ export const MenuItem = () => {
 
     const { showDialog: showSchedulerDialog } = useScheduleDialog({
         client,
+        namespace: `cms:${contentModel.modelId}`,
         target: {
             id: entry.id,
             title: entry.meta.title,
-            namespace: contentModel.modelId,
             status: entry.meta.status
         }
     });

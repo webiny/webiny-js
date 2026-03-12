@@ -1,5 +1,6 @@
 import React from "react";
-import { Components, useApolloClient } from "@webiny/app-headless-cms";
+import { Components } from "@webiny/app-headless-cms";
+import { useApolloClient } from "@apollo/react-hooks";
 import { IsModelPublishable } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { useModel } from "@webiny/app-headless-cms/exports/admin/cms.js";
 import { usePermissions } from "~/hooks/usePermissions.js";
