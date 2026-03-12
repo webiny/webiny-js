@@ -172,7 +172,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
         });
 
         builder.addResolver<ScheduleActionUseCase.Params<any>>({
-            path: "Mutation.createScheduledAction",
+            path: "Mutation.schedulercreateScheduledAction",
             dependencies: [ScheduleActionUseCase],
             resolver: (useCase: ScheduleActionUseCase.Interface) => {
                 return async ({ args }) => {
@@ -188,7 +188,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
         });
 
         builder.addResolver<ScheduleActionUseCase.Params<any>>({
-            path: "Mutation.updateScheduledAction",
+            path: "Mutation.schedulerupdateScheduledAction",
             dependencies: [ScheduleActionUseCase],
             resolver: (useCase: ScheduleActionUseCase.Interface) => {
                 return async ({ args }) => {
@@ -204,7 +204,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
         });
 
         builder.addResolver<CancelScheduledActionUseCase.Params>({
-            path: "Mutation.cancelScheduledAction",
+            path: "Mutation.schedulercancelScheduledAction",
             dependencies: [CancelScheduledActionUseCase],
             resolver: (useCase: CancelScheduledActionUseCase.Interface) => {
                 return async ({ args }) => {
