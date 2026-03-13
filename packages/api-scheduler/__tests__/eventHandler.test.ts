@@ -19,11 +19,12 @@ import {
     PublishTestEntryActionHandlerImpl
 } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
 
 describe("Scheduler Event Handler", () => {
     const lambdaContext = {} as LambdaContext;
 
-    const namespace = "Cms/Entry/Article";
+    const namespace = PublishTestEntryActionHandlerImpl.name;
 
     let context: CmsContext;
 
@@ -35,6 +36,7 @@ describe("Scheduler Event Handler", () => {
         });
         context = await contextHandler.handler();
         context.container.register(PublishTestEntryActionHandler);
+        context.container.register(NamespaceHandler);
         context.container.registerInstance(SchedulerService, new VoidSchedulerService());
     });
 
@@ -68,14 +70,11 @@ describe("Scheduler Event Handler", () => {
 
         const scheduleFor = new Date(new Date().getTime() + 5 * 60 * 1000).toISOString();
         const createResult = await scheduleActionUseCase.execute({
-            title: "Test Schedule Action",
             namespace: PublishTestEntryActionHandlerImpl.name,
             actionType: "Publish",
             targetId: "target-id#0001",
             scheduleFor,
-            payload: {
-                something: true
-            }
+            immediately: false
         });
 
         expect(createResult.isOk()).toBeTrue();
@@ -84,6 +83,13 @@ describe("Scheduler Event Handler", () => {
             id: expect.stringMatching("wby-schedule-"),
             namespace: PublishTestEntryActionHandlerImpl.name,
             payload: {
+                actionType: "Publish",
+                immediately: false,
+                namespace: "Test/SomeCustomEntry",
+                scheduleFor: expect.toBeDateString(),
+                scheduleId: "wby-schedule-87829c7ae555b9dde72c11dd#0001",
+                targetId: "target-id#0001",
+                title: "Fetched title from handler",
                 something: true
             },
             scheduledBy: {
@@ -93,7 +99,7 @@ describe("Scheduler Event Handler", () => {
             },
             scheduledFor: scheduleFor,
             targetId: "target-id#0001",
-            title: "Test Schedule Action"
+            title: "Fetched title from handler"
         });
         /**
          * Use anonymous identity to start the event handler - this way we make sure that the action handler

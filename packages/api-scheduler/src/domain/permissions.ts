@@ -7,9 +7,9 @@ const schema = {
     entities: [
         {
             id: "action",
-            permission: "scheduler.action",
+            permission: "scheduler.*",
             scopes: ["full", "own"],
-            actions: [{ name: "rwd" }]
+            // actions: [{ name: "rwd" }]
         }
     ]
 } as const;

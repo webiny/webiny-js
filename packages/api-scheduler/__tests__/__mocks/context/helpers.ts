@@ -23,6 +23,9 @@ export const createPermissions = (permissions?: PermissionsArg[]): PermissionsAr
     }
     return [
         {
+            name: "*"
+        },
+        {
             name: "cms.settings"
         },
         {
