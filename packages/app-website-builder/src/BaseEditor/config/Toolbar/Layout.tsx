@@ -5,7 +5,7 @@ import { Tabs } from "@webiny/admin-ui/Tabs/index.js";
 export const Layout = () => {
     return (
         <div
-            data-role={"toolbar-layout"}
+            data-role={"editor-toolbar"}
             className={"bg-neutral-base border-r-sm border-r-neutral-dimmed w-[300px] h-full"}
         >
             <Tabs

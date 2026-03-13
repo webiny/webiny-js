@@ -7,6 +7,7 @@ export const Layout = makeDecoratable("TopBarLayout", () => {
     return (
         <HeaderBar
             data-role={"top-bar-layout"}
+            data-affects-preview={"height"}
             start={<TopBar.Elements group={"left"} />}
             middle={<TopBar.Elements group={"center"} />}
             end={

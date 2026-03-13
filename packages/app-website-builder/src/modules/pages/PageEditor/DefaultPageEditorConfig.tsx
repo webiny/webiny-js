@@ -16,7 +16,14 @@ export const DefaultPageEditorConfig = () => {
             <Ui.TopBar.Element name={"buttonBack"} group={"left"} element={<BackButton />} />
             <Ui.TopBar.Element name={"title"} group={"left"} element={<Title />} />
             <Ui.TopBar.Action name={"revisionsMenu"} element={<RevisionsMenu />} />
-            <Ui.TopBar.Action name={"buttonSettings"} element={<SettingsButton />} />
+            <Ui.TopBar.Action
+                name={"buttonSettings"}
+                element={
+                    <Ui.IsNotReadOnly>
+                        <SettingsButton />
+                    </Ui.IsNotReadOnly>
+                }
+            />
             <HasPermission entity={"page"} action={"publish"}>
                 <Ui.TopBar.Action name={"buttonPublish"} element={<PublishButton />} />
             </HasPermission>
