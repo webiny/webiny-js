@@ -117,6 +117,8 @@ interface SdkListEntriesParams {
     limit?: number;
     /** Pagination cursor from a previous response. */
     after?: string;
+    /** Full-text search term to filter entries across searchable fields. */
+    search?: string;
     /** Fields to include in the response. Use "values.fieldName" for entry values. */
     fields: string[];
     /** When true, returns unpublished/draft content. Defaults to false. */

@@ -18,6 +18,7 @@ class CmsQueryTypeDefs implements CoreGraphQLSchemaFactory.Interface {
                     sort: JSON
                     limit: Int
                     after: String
+                    search: String
                     fields: [String!]!
                     preview: Boolean
                 ): CmsListResponse!

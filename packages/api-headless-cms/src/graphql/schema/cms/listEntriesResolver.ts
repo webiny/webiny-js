@@ -15,13 +15,14 @@ export interface ListEntriesArgs {
     sort?: Record<string, unknown> | string[];
     limit?: number;
     after?: string;
+    search?: string;
     fields: string[];
     preview?: boolean;
 }
 
 export const createListEntriesResolver = () => {
     return async ({ args, context }: { args: ListEntriesArgs; context: CmsContext }) => {
-        const { modelId, where, sort, limit, after, fields, preview = false } = args;
+        const { modelId, where, sort, limit, after, search, fields, preview = false } = args;
 
         try {
             const model = await getModel(context, modelId);
@@ -47,12 +48,14 @@ export const createListEntriesResolver = () => {
                     $sort: [${model.singularApiName}ListSorter!]
                     $limit: Int
                     $after: String
+                    $search: String
                 ) {
                     list${model.pluralApiName}(
                         where: $where
                         sort: $sort
                         limit: $limit
                         after: $after
+                        search: $search
                     ) {
                         data {
                             ${fieldsSelection}
@@ -73,7 +76,7 @@ export const createListEntriesResolver = () => {
 
             const result = (await executeSchema({
                 query,
-                variables: { where: transformedWhere, sort: transformedSort, limit, after }
+                variables: { where: transformedWhere, sort: transformedSort, limit, after, search }
             })) as ExecutionResult;
 
             const operationName = `list${model.pluralApiName}`;
