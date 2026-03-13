@@ -17,7 +17,18 @@ import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import { isValidDate } from "~/domain/isValidDate.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { NamespaceHandlerExecutioner } from "~/features/NamespaceHandler/abstractions.js";
 
+interface ICreateScheduleParams<T extends GenericRecord> {
+    scheduleId: string;
+    title: string;
+    namespace: string;
+    actionType: ScheduledActionType;
+    targetId: string;
+    scheduleFor: string;
+    identity: Identity;
+    payload: T;
+}
 /**
  * Schedules an action for future execution
  *
@@ -38,16 +49,24 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         private getScheduledAction: GetScheduledActionUseCase.Interface,
         private createEntryUseCase: CreateEntryUseCase.Interface,
         private updateEntryUseCase: UpdateEntryUseCase.Interface,
-        private deleteEntryUseCase: DeleteEntryUseCase.Interface
+        private deleteEntryUseCase: DeleteEntryUseCase.Interface,
+        private namespaceHandlerExecutioner: NamespaceHandlerExecutioner.Interface
     ) {}
 
     async execute<T extends GenericRecord>(
-        params: UseCaseAbstraction.Params<T>
+        params: UseCaseAbstraction.Params
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
         const identity = this.identityContext.getIdentity();
 
-        if (!isValidDate(params.scheduleFor)) {
-            return Result.fail(new InvalidScheduleDateError(params.scheduleFor));
+        let scheduleFor = params.scheduleFor;
+
+        if (!params.immediately && !isValidDate(scheduleFor)) {
+            return Result.fail(new InvalidScheduleDateError(scheduleFor));
+        } else if (params.immediately) {
+            // If the action should be executed immediately, we set the scheduleFor to the current date.
+            // Calculate the soonest possible execution time.
+            // Add at least 90 seconds of buffer to ensure EventBridge can process the schedule.
+            scheduleFor = new Date(Date.now() + 90000).toISOString();
         }
 
         // Generate unique schedule ID
@@ -59,21 +78,48 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
             id: scheduleId
         });
 
+        const namespaceHandlerResult = await this.namespaceHandlerExecutioner.execute({
+            scheduleId,
+            immediately: params.immediately,
+            scheduleFor,
+            targetId: params.targetId,
+            actionType: params.actionType,
+            namespace: params.namespace
+        });
+
+        if (namespaceHandlerResult.isFail()) {
+            return Result.fail(namespaceHandlerResult.error);
+        }
+        const payload = namespaceHandlerResult.value;
+
+        if (params.immediately) {
+            return this.createSchedule({
+                scheduleId,
+                title: payload.title,
+                namespace: params.namespace,
+                actionType: params.actionType,
+                targetId: params.targetId,
+                scheduleFor: params.scheduleFor,
+                identity,
+                payload
+            });
+        }
+
         if (existingResult.isFail()) {
             const error = existingResult.error;
 
             // NotFound means the action was not yet scheduled
             if (error.code === "Scheduler/ScheduledAction/NotFound") {
-                return this.createSchedule(
+                return this.createSchedule({
                     scheduleId,
-                    params.title,
-                    params.namespace,
-                    params.actionType,
-                    params.targetId,
-                    params.scheduleFor,
+                    title: payload.title,
+                    namespace: params.namespace,
+                    actionType: params.actionType,
+                    targetId: params.targetId,
+                    scheduleFor,
                     identity,
-                    params.payload
-                );
+                    payload
+                });
             }
 
             if (error.code === "Scheduler/ScheduledAction/PersistenceError") {
@@ -84,23 +130,18 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         // Reschedule existing action
         const scheduledAction = existingResult.value;
 
-        return this.reschedule(scheduledAction, params.scheduleFor, identity, params.payload);
+        return this.reschedule(scheduledAction, params.scheduleFor, identity, payload);
     }
 
     /**
      * Creates a new schedule
      */
     private async createSchedule<T extends GenericRecord>(
-        id: string,
-        title: string,
-        namespace: string,
-        actionType: ScheduledActionType,
-        targetId: string,
-        scheduleFor: string,
-        identity: Identity,
-        payload: T
+        params: ICreateScheduleParams<T>
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
-        const { id: scheduleId } = parseIdentifier(id);
+        const { scheduleId: initialId, identity, payload, scheduleFor, actionType, targetId, title, namespace } =
+            params;
+        const { id: scheduleId } = parseIdentifier(initialId);
 
         const scheduledAction: IScheduledAction<T> = {
             id: scheduleId,
@@ -225,6 +266,7 @@ export const ScheduleActionUseCase = UseCaseAbstraction.createImplementation({
         GetScheduledActionUseCase,
         CreateEntryUseCase,
         UpdateEntryUseCase,
-        DeleteEntryUseCase
+        DeleteEntryUseCase,
+        NamespaceHandlerExecutioner
     ]
 });

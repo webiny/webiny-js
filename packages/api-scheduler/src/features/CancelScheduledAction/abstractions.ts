@@ -33,7 +33,7 @@ export interface ICancelScheduledActionUseCase {
 }
 
 export const CancelScheduledActionUseCase = createAbstraction<ICancelScheduledActionUseCase>(
-    "CancelScheduledActionUseCase"
+    "Scheduler/CancelScheduledActionUseCase"
 );
 
 export namespace CancelScheduledActionUseCase {

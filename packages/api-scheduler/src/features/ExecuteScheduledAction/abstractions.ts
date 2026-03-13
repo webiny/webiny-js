@@ -43,7 +43,7 @@ export interface IExecuteScheduledActionUseCase {
 }
 
 export const ExecuteScheduledActionUseCase = createAbstraction<IExecuteScheduledActionUseCase>(
-    "ExecuteScheduledActionUseCase"
+    "Scheduler/ExecuteScheduledActionUseCase"
 );
 
 export namespace ExecuteScheduledActionUseCase {

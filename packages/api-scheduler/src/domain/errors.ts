@@ -68,3 +68,22 @@ export class SchedulerServiceError extends BaseError<{ originalError: Error }> {
         });
     }
 }
+
+interface INamespaceHandlerNotFoundErrorData {
+    namespace: string;
+}
+/**
+ * Namespace handler not found error.
+ */
+export class NamespaceHandlerNotFoundError extends BaseError<INamespaceHandlerNotFoundErrorData> {
+    override readonly code = "Scheduler/NamespaceHandler/NotFound" as const;
+    
+    constructor(namespace: string) {
+        super({
+            message: `Namespace handler for "${namespace}" was not found.`,
+            data: {
+                namespace
+            }
+        });
+    }
+}

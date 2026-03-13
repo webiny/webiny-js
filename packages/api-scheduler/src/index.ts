@@ -15,4 +15,6 @@ export * from "./features/GetScheduledAction/index.js";
 export * from "./features/ListScheduledActions/index.js";
 export * from "./features/CancelScheduledAction/index.js";
 export * from "./features/ExecuteScheduledAction/index.js";
-export * from "./features/RunAction/index.js";
+
+
+export * from "./features/NamespaceHandler/index.js";

@@ -36,7 +36,7 @@ export interface IGetScheduledActionUseCase {
 }
 
 export const GetScheduledActionUseCase = createAbstraction<IGetScheduledActionUseCase>(
-    "GetScheduledActionUseCase"
+    "Scheduler/GetScheduledActionUseCase"
 );
 
 export namespace GetScheduledActionUseCase {

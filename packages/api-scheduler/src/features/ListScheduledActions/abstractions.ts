@@ -56,7 +56,7 @@ export interface IListScheduledActionsUseCase {
 }
 
 export const ListScheduledActionsUseCase = createAbstraction<IListScheduledActionsUseCase>(
-    "ListScheduledActionsUseCase"
+    "Scheduler/ListScheduledActionsUseCase"
 );
 
 export namespace ListScheduledActionsUseCase {
