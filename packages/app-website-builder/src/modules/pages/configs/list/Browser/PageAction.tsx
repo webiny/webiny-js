@@ -1,6 +1,7 @@
 import React from "react";
 import { AcoConfig, type RecordActionConfig } from "@webiny/app-aco";
 import { makeDecoratable } from "@webiny/react-composition";
+import { usePage } from "~/modules/pages/PagesList/hooks/usePage.js";
 
 const { Record } = AcoConfig;
 
@@ -14,5 +15,6 @@ const BasePageAction = makeDecoratable("PageAction", (props: PageActionProps) =>
 
 export const PageAction = Object.assign(BasePageAction, {
     OptionsMenuItem: Record.Action.OptionsMenuItem,
-    OptionsMenuLink: Record.Action.OptionsMenuLink
+    OptionsMenuLink: Record.Action.OptionsMenuLink,
+    usePage
 });
