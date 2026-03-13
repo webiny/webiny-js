@@ -1,0 +1,51 @@
+name: Pull Requests (Closed)
+
+on:
+  pull_request:
+    branches: [dev]
+    types: [closed]
+
+jobs:
+  destroy-project:
+    name: Destroy project deployed into a short-lived environment
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    env:
+      # This first step ensures we don't run the workflow if the repository is empty.
+      # Feel free to remove this step once your project is pushed to the repository.
+      NODE_OPTIONS: --max_old_space_size=4096
+      AWS_REGION: ${{ secrets.DEV_AWS_REGION }}
+      OPENSEARCH_DOMAIN_NAME: ${{ secrets.DEV_OPENSEARCH_DOMAIN_NAME }}
+      OPENSEARCH_INDEX_PREFIX: pr${{ github.event.pull_request.number }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.DEV_PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.DEV_PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.DEV_WEBINY_PULUMI_BACKEND_PULL_REQUESTS }}
+      WEBINY_PROJECT_ID: ${{ secrets.DEV_WEBINY_PROJECT_ID }}
+      WEBINY_PROJECT_API_KEY: ${{ secrets.DEV_WEBINY_PROJECT_API_KEY }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.DEV_AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.DEV_AWS_REGION }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - uses: actions/checkout@v2
+
+      # Install and cache dependencies.
+      - uses: actions/cache@v4
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      # Destroy short-lived environment.
+      - name: Destroy
+        run: yarn webiny destroy --env pr${{ github.event.pull_request.number }} --confirm-destroy-env pr${{ github.event.pull_request.number }} --debug

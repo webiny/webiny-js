@@ -1,0 +1,59 @@
+name: Dev Branch - Push
+
+on:
+  push:
+    branches: [dev]
+
+# Ensures only one deployment to "dev" environment can be in progress at the same time.
+concurrency: dev
+
+jobs:
+  build-test-deploy:
+    name: Build and test
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max_old_space_size=4096
+      AWS_REGION: ${{ secrets.DEV_AWS_REGION }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.DEV_PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.DEV_PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.DEV_WEBINY_PULUMI_BACKEND }}
+      WEBINY_PROJECT_ID: ${{ secrets.DEV_WEBINY_PROJECT_ID }}
+      WEBINY_PROJECT_API_KEY: ${{ secrets.DEV_WEBINY_PROJECT_API_KEY }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.DEV_AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.DEV_AWS_REGION }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - uses: actions/checkout@v4
+
+      # Install and cache dependencies.
+      - uses: actions/cache@v4
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      # Run static code analysis.
+      - name: Check code formatting
+        run: yarn format
+
+      - name: ESLint
+        run: yarn lint
+
+      - name: Deploy
+        run: yarn webiny deploy --env dev
+
+      # Add additional steps if needed. For example, if you have additional E2E
+      # tests done with Cypress (https://www.cypress.io/), you can run them here.
