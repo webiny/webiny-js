@@ -7,7 +7,7 @@ import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
 import { useApolloClient } from "@webiny/app-headless-cms";
 import { useScheduleDialog } from "@webiny/app-scheduler";
 import { usePermissions } from "~/hooks/usePermissions.js";
-import {createNamespace} from "~/utils/index.js";
+import { createNamespace } from "~/utils/index.js";
 
 export const MenuItem = () => {
     const { entry, loading, contentModel } = useContentEntryEditor();

@@ -6,6 +6,7 @@ import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import { EntryNotFoundError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
+import { SchedulerPermissions } from "~/domain/permissions.js";
 
 /**
  * Cancels a scheduled action
@@ -21,7 +22,8 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         private getScheduledActionUseCase: GetScheduledActionUseCase.Interface,
         private schedulerService: SchedulerService.Interface,
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,
-        private model: ScheduledActionModel.Interface
+        private model: ScheduledActionModel.Interface,
+        private permissions: SchedulerPermissions.Interface
     ) {}
 
     async execute(
@@ -88,6 +90,7 @@ export const CancelScheduledActionUseCase = UseCaseAbstraction.createImplementat
         GetScheduledActionUseCase,
         SchedulerService,
         DeleteEntryUseCase,
-        ScheduledActionModel
+        ScheduledActionModel,
+        SchedulerPermissions.Abstraction
     ]
 });

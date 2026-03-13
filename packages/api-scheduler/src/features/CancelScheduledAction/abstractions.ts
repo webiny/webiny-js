@@ -1,5 +1,6 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
 import {
+    NotAuthorizedError,
     ScheduledActionNotFoundError,
     ScheduledActionPersistenceError,
     SchedulerServiceError
@@ -17,6 +18,7 @@ export interface ICancelScheduledActionErrors {
     notFound: ScheduledActionNotFoundError;
     persistence: ScheduledActionPersistenceError;
     schedulerService: SchedulerServiceError;
+    unauthorized: NotAuthorizedError;
 }
 
 type CancelScheduledActionError = ICancelScheduledActionErrors[keyof ICancelScheduledActionErrors];

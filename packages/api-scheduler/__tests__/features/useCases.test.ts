@@ -13,6 +13,8 @@ import { PublishTestEntryActionHandlerImpl } from "~tests/__mocks/PublishTestEnt
 describe("Combined Use Cases", () => {
     let context: CmsContext;
 
+    const namespace = "Test/Something";
+
     beforeEach(async () => {
         const contextHandler = useHandler({
             getScheduleClient: () => {
@@ -55,7 +57,10 @@ describe("Combined Use Cases", () => {
 
         expect(createResult.isOk()).toBe(true);
 
-        const getResult = await getScheduledActionUseCase.execute(createResult.value.id);
+        const getResult = await getScheduledActionUseCase.execute({
+            namespace,
+            id: createResult.value.id
+        });
 
         expect(getResult.isOk()).toBeTrue();
         expect(getResult.value).toEqual({
@@ -91,10 +96,16 @@ describe("Combined Use Cases", () => {
             ...updateResult.value
         });
 
-        const cancelResult = await cancelScheduledActionUseCase.execute(updateResult.value.id);
+        const cancelResult = await cancelScheduledActionUseCase.execute({
+            id: updateResult.value.id,
+            namespace
+        });
         expect(cancelResult.isOk()).toBeTrue();
 
-        const getAfterCancelResult = await getScheduledActionUseCase.execute(createResult.value.id);
+        const getAfterCancelResult = await getScheduledActionUseCase.execute({
+            id: createResult.value.id,
+            namespace
+        });
         expect(getAfterCancelResult.isFail()).toBeTrue();
         expect(getAfterCancelResult.error.code).toBe("Scheduler/ScheduledAction/NotFound");
     });

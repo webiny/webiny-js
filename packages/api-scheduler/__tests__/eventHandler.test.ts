@@ -23,6 +23,8 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 describe("Scheduler Event Handler", () => {
     const lambdaContext = {} as LambdaContext;
 
+    const namespace = "Cms/Entry/Article";
+
     let context: CmsContext;
 
     beforeEach(async () => {
@@ -44,10 +46,11 @@ describe("Scheduler Event Handler", () => {
         const event: IScheduledActionEvent = {
             [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
                 id: ScheduledActionId.from({
-                    namespace: "Cms/Entry/Article",
+                    namespace,
                     actionType: "Publish",
                     targetId: "target-id#0001"
                 }),
+                namespace,
                 scheduleFor: new Date().toISOString()
             }
         };
@@ -105,6 +108,7 @@ describe("Scheduler Event Handler", () => {
             payload: {
                 [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
                     id,
+                    namespace,
                     scheduleFor: new Date(new Date().getTime() + 3 * 60 * 1000).toISOString()
                 }
             },

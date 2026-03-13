@@ -7,9 +7,10 @@ import {
 } from "./abstractions.js";
 import type { IScheduledAction } from "~/shared/abstractions.js";
 import { ScheduledActionModel } from "~/shared/abstractions.js";
-import { ScheduledActionPersistenceError } from "~/domain/errors.js";
+import { NotAuthorizedError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { SchedulerPermissions } from "~/domain/permissions.js";
 
 /**
  * Lists scheduled actions with optional filtering
@@ -25,13 +26,19 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
         private listEntriesUseCase: ListLatestEntriesUseCase.Interface,
         private model: ScheduledActionModel.Interface,
         private cmsWhereMapper: CmsWhereMapper.Interface,
-        private cmsSortMapper: CmsSortMapper.Interface
+        private cmsSortMapper: CmsSortMapper.Interface,
+        private permissions: SchedulerPermissions.Interface
     ) {}
 
     async execute<T extends GenericRecord>(
         params: IListScheduledActionsParams
     ): Promise<Result<IListScheduledActionsResponse<T>, UseCaseAbstraction.Error>> {
-        const { where, sort: sortInput, limit, after, namespace } = params;
+        const hasPermission = await this.permissions.canRead("action");
+        if (!hasPermission) {
+            return Result.fail(new NotAuthorizedError());
+        }
+
+        const { where, sort: sortInput, limit, after } = params;
 
         const sort = this.cmsSortMapper.map({
             input: sortInput,
@@ -40,10 +47,7 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
         // List entries from CMS
         const listResult = await this.listEntriesUseCase.execute<IScheduledAction<T>>(this.model, {
             where: this.cmsWhereMapper.map({
-                input: {
-                    ...where,
-                    namespace,
-                },
+                input: where,
                 fields: this.model.fields
             }),
             sort,
@@ -81,5 +85,11 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const ListScheduledActionsUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListScheduledActionsUseCaseImpl,
-    dependencies: [ListLatestEntriesUseCase, ScheduledActionModel, CmsWhereMapper, CmsSortMapper]
+    dependencies: [
+        ListLatestEntriesUseCase,
+        ScheduledActionModel,
+        CmsWhereMapper,
+        CmsSortMapper,
+        SchedulerPermissions.Abstraction
+    ]
 });

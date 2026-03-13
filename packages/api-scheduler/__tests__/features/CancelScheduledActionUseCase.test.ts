@@ -14,6 +14,8 @@ import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
 describe("CancelScheduledActionUseCase", () => {
     let context: CmsContext;
 
+    const namespace = "Test/Something";
+
     beforeEach(async () => {
         const contextHandler = useHandler({
             getScheduleClient: () => {
@@ -36,7 +38,10 @@ describe("CancelScheduledActionUseCase", () => {
             CancelScheduledActionUseCase
         );
 
-        const result = await cancelScheduledActionUseCase.execute("non-existing-id");
+        const result = await cancelScheduledActionUseCase.execute({
+            id: "non-existing-id",
+            namespace
+        });
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Scheduler/ScheduledAction/NotFound");
@@ -76,7 +81,10 @@ describe("CancelScheduledActionUseCase", () => {
 
         expect(createResult.isOk()).toBe(true);
 
-        const result = await cancelScheduledActionUseCase.execute(createResult.value.id);
+        const result = await cancelScheduledActionUseCase.execute({
+            id: createResult.value.id,
+            namespace
+        });
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Scheduler/ScheduledAction/PersistenceError");
@@ -103,7 +111,10 @@ describe("CancelScheduledActionUseCase", () => {
 
         expect(createResult.isOk()).toBe(true);
 
-        const result = await cancelScheduledActionUseCase.execute(createResult.value.id);
+        const result = await cancelScheduledActionUseCase.execute({
+            id: createResult.value.id,
+            namespace
+        });
 
         expect(result.isOk()).toBe(true);
         expect(result.value).toBeUndefined();

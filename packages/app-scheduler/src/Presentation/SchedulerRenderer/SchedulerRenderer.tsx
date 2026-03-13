@@ -9,7 +9,7 @@ export type SchedulerRendererProps = Omit<SchedulerProps, "render" | "sorting" |
 
 export const SchedulerRenderer = ({ title = "Scheduler", ...props }: SchedulerRendererProps) => {
     const { browser } = useSchedulerListConfig();
-    
+
     if (!browser.table.sorting?.length) {
         return null;
     }

@@ -2,10 +2,15 @@ import { Result } from "@webiny/feature/api";
 import { GetScheduledActionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { IScheduledAction } from "~/shared/abstractions.js";
 import { ScheduledActionModel } from "~/shared/abstractions.js";
-import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
+import {
+    NotAuthorizedError,
+    ScheduledActionNotFoundError,
+    ScheduledActionPersistenceError
+} from "~/domain/errors.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { SchedulerPermissions } from "~/domain/permissions.js";
 
 /**
  * Retrieves a scheduled action by its ID
@@ -18,12 +23,17 @@ import type { GenericRecord } from "@webiny/api/types.js";
 class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private getEntryByIdUseCase: GetEntryByIdUseCase.Interface,
-        private model: ScheduledActionModel.Interface
+        private model: ScheduledActionModel.Interface,
+        private permissions: SchedulerPermissions.Interface
     ) {}
 
     async execute<T extends GenericRecord>(
         params: UseCaseAbstraction.Params
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
+        const hasPermission = await this.permissions.canRead("action");
+        if (!hasPermission) {
+            return Result.fail(new NotAuthorizedError());
+        }
         const { id, namespace } = params;
         // Get entry from CMS
         const scheduleId = ScheduledActionIdWithVersion.from(id);
@@ -64,5 +74,5 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const GetScheduledActionUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetScheduledActionUseCaseImpl,
-    dependencies: [GetEntryByIdUseCase, ScheduledActionModel]
+    dependencies: [GetEntryByIdUseCase, ScheduledActionModel, SchedulerPermissions.Abstraction]
 });

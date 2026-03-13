@@ -1,6 +1,10 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
+import {
+    NotAuthorizedError,
+    ScheduledActionNotFoundError,
+    ScheduledActionPersistenceError
+} from "~/domain/errors.js";
 
 /**
  * ExecuteScheduledActionUseCase - Execute a scheduled action
@@ -21,6 +25,7 @@ export interface IExecuteScheduledActionErrors {
     persistence: ScheduledActionPersistenceError;
     handlerNotFound: HandlerNotFoundError;
     executionFailed: ExecutionFailedError;
+    unauthorized: NotAuthorizedError;
 }
 
 type ExecuteScheduledActionError =

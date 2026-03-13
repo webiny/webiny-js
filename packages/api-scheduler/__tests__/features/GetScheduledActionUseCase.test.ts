@@ -9,6 +9,8 @@ import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/index.j
 describe("GetScheduledActionUseCase", () => {
     let context: CmsContext;
 
+    const namespace = "Test/Something";
+
     beforeEach(async () => {
         const contextHandler = useHandler({
             getScheduleClient: () => {
@@ -28,7 +30,10 @@ describe("GetScheduledActionUseCase", () => {
     it("should fail to get a non-existing scheduled action", async () => {
         const getScheduledActionUseCase = context.container.resolve(GetScheduledActionUseCase);
 
-        const result = await getScheduledActionUseCase.execute("non-existing-id");
+        const result = await getScheduledActionUseCase.execute({
+            id: "non-existing-id",
+            namespace
+        });
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Scheduler/ScheduledAction/NotFound");

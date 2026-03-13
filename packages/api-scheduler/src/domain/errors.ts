@@ -1,6 +1,17 @@
 import { BaseError } from "@webiny/feature/api";
 
 /**
+ * Not authorized error when user lacks permissions to manage scheduled actions.
+ */
+export class NotAuthorizedError extends BaseError {
+    override readonly code = "Scheduler/NotAuthorized" as const;
+
+    constructor() {
+        super({ message: "Not authorized!" });
+    }
+}
+
+/**
  * Scheduled action not found error
  */
 export class ScheduledActionNotFoundError extends BaseError<{ scheduleId: string }> {

@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { IScheduledAction } from "~/shared/abstractions.js";
-import { ScheduledActionPersistenceError } from "~/domain/errors.js";
+import { ScheduledActionPersistenceError, NotAuthorizedError } from "~/domain/errors.js";
 import type { CmsEntryListSort, CmsEntryMeta } from "@webiny/api-headless-cms/types/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
@@ -31,7 +31,6 @@ export interface IListScheduledActionsWhere {
 }
 
 export interface IListScheduledActionsParams {
-    namespace: string;
     where: IListScheduledActionsWhere;
     sort?: CmsEntryListSort;
     limit?: number;
@@ -45,6 +44,7 @@ export interface IListScheduledActionsResponse<T extends GenericRecord> {
 
 export interface IListScheduledActionsErrors {
     persistence: ScheduledActionPersistenceError;
+    unauthorized: NotAuthorizedError;
 }
 
 type ListScheduledActionsError = IListScheduledActionsErrors[keyof IListScheduledActionsErrors];

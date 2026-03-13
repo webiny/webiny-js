@@ -17,7 +17,7 @@ import { SchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 describe("Scheduler", () => {
     const targetId = "target-id#0001";
     const namespace = "TestNamespace";
-    const actionType = "TestAction";
+    const actionType = "Publish";
 
     let context: CmsContext;
 
@@ -37,7 +37,10 @@ describe("Scheduler", () => {
 
         const executeScheduledAction = testContainer.resolve(ExecuteScheduledActionUseCase);
 
-        const result = await executeScheduledAction.execute("non-existent-id");
+        const result = await executeScheduledAction.execute({
+            id: "non-existent-id",
+            namespace
+        });
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Scheduler/ScheduledAction/NotFound");
@@ -64,7 +67,10 @@ describe("Scheduler", () => {
         const actionId = ScheduledActionId.from({ namespace, actionType, targetId });
 
         // Try to execute - should fail because no handler registered
-        const result = await executeScheduledAction.execute(actionId);
+        const result = await executeScheduledAction.execute({
+            id: actionId,
+            namespace
+        });
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Scheduler/Handler/NotFound");
@@ -104,14 +110,20 @@ describe("Scheduler", () => {
         const scheduleId = ScheduledActionId.from({ namespace, actionType, targetId });
 
         // Verify schedule entry exists before execution
-        const getBeforeResult = await getScheduledAction.execute(scheduleId);
+        const getBeforeResult = await getScheduledAction.execute({
+            id: scheduleId,
+            namespace
+        });
         expect(getBeforeResult.isFail()).toBe(false);
         expect(getBeforeResult.value.id).toBe(scheduleId);
         expect(getBeforeResult.value.namespace).toBe(namespace);
         expect(getBeforeResult.value.actionType).toBe(actionType);
 
         // Execute the scheduled action
-        const executeResult = await executeScheduledAction.execute(scheduleId);
+        const executeResult = await executeScheduledAction.execute({
+            id: scheduleId,
+            namespace
+        });
 
         expect(executeResult.isFail()).toBe(false);
 
@@ -124,12 +136,17 @@ describe("Scheduler", () => {
                 namespace,
                 actionType,
                 targetId,
-                payload: { some: "payload" }
+                payload: {
+                    some: "payload"
+                }
             })
         );
 
         // Verify schedule entry was deleted after successful execution
-        const getAfterResult = await getScheduledAction.execute(scheduleId);
+        const getAfterResult = await getScheduledAction.execute({
+            id: scheduleId,
+            namespace
+        });
         expect(getAfterResult.isFail()).toBe(true);
         expect(getAfterResult.error.code).toBe("Scheduler/ScheduledAction/NotFound");
     });
@@ -164,14 +181,20 @@ describe("Scheduler", () => {
         const scheduleId = ScheduledActionId.from({ namespace, actionType, targetId });
 
         // Execute the scheduled action - should fail
-        const result = await executeScheduledAction.execute(scheduleId);
+        const result = await executeScheduledAction.execute({
+            id: scheduleId,
+            namespace
+        });
 
         expect(result.isFail()).toBe(true);
         expect(result.error.code).toBe("Scheduler/Execution/Failed");
         expect(result.error.message).toContain("Handler execution failed");
 
         // Verify schedule entry still exists with error stored
-        const getErrorResult = await getScheduledAction.execute(scheduleId);
+        const getErrorResult = await getScheduledAction.execute({
+            id: scheduleId,
+            namespace
+        });
         expect(getErrorResult.isFail()).toBe(false);
         expect(getErrorResult.value.error).toContain("Handler execution failed");
     });
@@ -206,7 +229,10 @@ describe("Scheduler", () => {
         expect(firstResult.isFail()).toBe(false);
 
         // Verify first schedule
-        const getFirstResult = await getScheduledAction.execute(scheduleId);
+        const getFirstResult = await getScheduledAction.execute({
+            id: scheduleId,
+            namespace
+        });
         expect(getFirstResult.isFail()).toBe(false);
         expect(new Date(getFirstResult.value.scheduledFor).getTime()).toBe(firstDate.getTime());
         expect(getFirstResult.value.payload).toEqual({ version: 1 });
@@ -224,7 +250,10 @@ describe("Scheduler", () => {
         expect(secondResult.isFail()).toBe(false);
 
         // Verify schedule was updated, not duplicated
-        const getSecondResult = await getScheduledAction.execute(scheduleId);
+        const getSecondResult = await getScheduledAction.execute({
+            id: scheduleId,
+            namespace
+        });
         expect(getSecondResult.isFail()).toBe(false);
         expect(getSecondResult.value.id).toBe(scheduleId); // Same ID
         expect(new Date(getSecondResult.value.scheduledFor).getTime()).toBe(secondDate.getTime());
@@ -250,7 +279,7 @@ describe("Scheduler", () => {
 
         const scheduleResult2 = await scheduleAction.execute({
             namespace,
-            actionType: "ColonizeMars",
+            actionType: "Unpublish",
             targetId,
             title: "Title",
             scheduleFor: new Date(Date.now() + 1000000).toISOString(),
@@ -263,7 +292,10 @@ describe("Scheduler", () => {
         const scheduledActionsResult = await until(
             async () => {
                 const result = await listScheduledActions.execute({
-                    where: { namespace, targetId }
+                    where: {
+                        namespace,
+                        targetId
+                    }
                 });
                 return result.isOk() ? result.value : { items: [], meta: {} };
             },

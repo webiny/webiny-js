@@ -2,9 +2,16 @@ import { GraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSc
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/index.js";
 import { ErrorResponse, ListResponse, Response } from "@webiny/handler-graphql/responses.js";
-import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
+import {
+    type IListScheduledActionsParams,
+    ListScheduledActionsUseCase
+} from "~/features/ListScheduledActions/index.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
+
+interface IListScheduledActionsArgs extends IListScheduledActionsParams {
+    namespace: string;
+}
 
 export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
     public async execute(
@@ -73,11 +80,15 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
             }
 
             input ListScheduledActionsWhereInput {
-                targetId: ID
+                targetId: String
+                targetId_in: [String!]
+                title: String
                 title_contains: String
                 title_not_contains: String
                 type: ScheduleRecordType
-                scheduledBy: ID
+                type_in: [ScheduleRecordType!]
+                scheduledBy: String
+                scheduledBy_in: [String!]
                 scheduledFor: DateTime
                 scheduledFor_gte: DateTime
                 scheduledFor_lte: DateTime
@@ -172,12 +183,18 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
             }
         });
 
-        builder.addResolver<ListScheduledActionsUseCase.Params>({
+        builder.addResolver<IListScheduledActionsArgs>({
             path: "SchedulerQuery.listScheduledActions",
             dependencies: [ListScheduledActionsUseCase],
             resolver: (useCase: ListScheduledActionsUseCase.Interface) => {
                 return async ({ args }) => {
-                    const result = await useCase.execute(args);
+                    const result = await useCase.execute({
+                        ...args,
+                        where: {
+                            ...args.where,
+                            namespace: args.namespace
+                        }
+                    });
 
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
