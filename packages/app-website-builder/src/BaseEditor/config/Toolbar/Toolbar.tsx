@@ -11,7 +11,7 @@ const SCOPE = "toolbar";
 
 const BaseToolbar = makeDecoratable("ToolbarLayout", () => {
     return (
-        <div className={"w-[300px] flex-none"}>
+        <div className={"w-[300px] flex-none"} data-affects-preview={"width"}>
             <Layout />
         </div>
     );

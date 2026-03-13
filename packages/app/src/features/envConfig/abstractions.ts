@@ -20,6 +20,7 @@ type Env = {
 
 export interface IEnvConfig {
     get<K extends keyof Env>(key: K, defaultValue?: Env[K]): Env[K];
+    getAll(): Env;
 }
 
 export const EnvConfig = new Abstraction<IEnvConfig>("EnvConfig");

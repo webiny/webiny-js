@@ -32,7 +32,14 @@ export const DefaultEditorConfig = React.memo(() => {
             <EditorConfig>
                 <CommandHandlers />
                 <ElementInputRenderers />
-                <Ui.Content.Element name={"breadcrumbs"} element={<Breadcrumbs />} />
+                <Ui.Content.Element
+                    name={"breadcrumbs"}
+                    element={
+                        <Ui.IsNotReadOnly>
+                            <Breadcrumbs />
+                        </Ui.IsNotReadOnly>
+                    }
+                />
                 <Ui.Content.Element name={"preview"} element={<DocumentPreview />} />
                 <Ui.Toolbar.Element
                     name={"insertElements"}
