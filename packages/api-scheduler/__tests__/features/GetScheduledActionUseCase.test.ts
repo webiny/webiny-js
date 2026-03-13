@@ -5,11 +5,13 @@ import { createMockScheduleClient } from "~tests/__mocks/scheduleClient.js";
 import { SchedulerService } from "~/shared/abstractions.js";
 import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/index.js";
+import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { PublishTestEntryActionHandler } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 
 describe("GetScheduledActionUseCase", () => {
     let context: CmsContext;
 
-    const namespace = "Test/Something";
+    const namespace = PublishTestEntryActionHandler.name;
 
     beforeEach(async () => {
         const contextHandler = useHandler({
@@ -18,6 +20,8 @@ describe("GetScheduledActionUseCase", () => {
             }
         });
         context = await contextHandler.handler();
+        context.container.register(NamespaceHandler);
+        context.container.register(PublishTestEntryActionHandler);
         context.container.registerInstance(SchedulerService, new VoidSchedulerService());
     });
 

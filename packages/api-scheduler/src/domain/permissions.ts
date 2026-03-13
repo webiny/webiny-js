@@ -8,7 +8,7 @@ const schema = {
         {
             id: "action",
             permission: "scheduler.*",
-            scopes: ["full", "own"],
+            scopes: ["full", "own"]
             // actions: [{ name: "rwd" }]
         }
     ]

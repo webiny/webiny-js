@@ -8,13 +8,17 @@ import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/i
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { Result } from "@webiny/feature/api/index.js";
 import { EntryPersistenceError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
-import { PublishTestEntryActionHandlerImpl } from "~tests/__mocks/PublishTestEntryActionHandler.js";
+import {
+    PublishTestEntryActionHandler,
+    PublishTestEntryActionHandlerImpl
+} from "~tests/__mocks/PublishTestEntryActionHandler.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
+import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
 
 describe("CancelScheduledActionUseCase", () => {
     let context: CmsContext;
 
-    const namespace = "Test/Something";
+    const namespace = PublishTestEntryActionHandlerImpl.name;
 
     beforeEach(async () => {
         const contextHandler = useHandler({
@@ -23,6 +27,8 @@ describe("CancelScheduledActionUseCase", () => {
             }
         });
         context = await contextHandler.handler();
+        context.container.register(NamespaceHandler);
+        context.container.register(PublishTestEntryActionHandler);
         context.container.registerInstance(
             SchedulerService,
             new VoidSchedulerService({
@@ -69,14 +75,10 @@ describe("CancelScheduledActionUseCase", () => {
         scheduledFor.setHours(scheduledFor.getHours() + 1);
 
         const createResult = await scheduleActionUseCase.execute({
-            namespace: PublishTestEntryActionHandlerImpl.name,
+            namespace,
             actionType: "Publish",
             targetId: "target-id#0001",
-            scheduleFor: scheduledFor.toISOString(),
-            payload: {
-                some: "data"
-            },
-            title: "Publish Article - target-id#0001"
+            scheduleFor: scheduledFor.toISOString()
         });
 
         expect(createResult.isOk()).toBe(true);
@@ -99,14 +101,10 @@ describe("CancelScheduledActionUseCase", () => {
         scheduledFor.setHours(scheduledFor.getHours() + 1);
 
         const createResult = await scheduleActionUseCase.execute({
-            namespace: PublishTestEntryActionHandlerImpl.name,
+            namespace,
             actionType: "Publish",
             targetId: "target-id#0001",
-            scheduleFor: scheduledFor.toISOString(),
-            payload: {
-                some: "data"
-            },
-            title: "Publish Article - target-id#0001"
+            scheduleFor: scheduledFor.toISOString()
         });
 
         expect(createResult.isOk()).toBe(true);

@@ -16,7 +16,7 @@ export interface INamespaceHandlerParams {
     targetId: string;
     actionType: ScheduledActionType;
     namespace: string;
-    immediately: boolean;
+    immediately: boolean | undefined;
     scheduleFor: string | undefined;
 }
 

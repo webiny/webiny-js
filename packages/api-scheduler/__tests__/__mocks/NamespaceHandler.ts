@@ -13,7 +13,7 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface {
         return Result.ok({
             ...params,
             something: true,
-            title: "Fetched title from handler",
+            title: "Fetched title from handler"
         });
     }
 }

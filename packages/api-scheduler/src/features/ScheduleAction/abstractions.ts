@@ -30,7 +30,7 @@ export interface IScheduleActionParams {
     targetId: string;
     actionType: ScheduledActionType;
     scheduleFor: string;
-    immediately: boolean;
+    immediately?: boolean;
 }
 
 export interface IScheduleActionUseCase {

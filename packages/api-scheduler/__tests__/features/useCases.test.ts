@@ -8,12 +8,16 @@ import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/index.js";
 import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
-import { PublishTestEntryActionHandlerImpl } from "~tests/__mocks/PublishTestEntryActionHandler.js";
+import {
+    PublishTestEntryActionHandler,
+    PublishTestEntryActionHandlerImpl
+} from "~tests/__mocks/PublishTestEntryActionHandler.js";
+import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
 
 describe("Combined Use Cases", () => {
     let context: CmsContext;
 
-    const namespace = "Test/Something";
+    const namespace = PublishTestEntryActionHandlerImpl.name;
 
     beforeEach(async () => {
         const contextHandler = useHandler({
@@ -22,6 +26,8 @@ describe("Combined Use Cases", () => {
             }
         });
         context = await contextHandler.handler();
+        context.container.register(NamespaceHandler);
+        context.container.register(PublishTestEntryActionHandler);
         context.container.registerInstance(SchedulerService, new VoidSchedulerService());
     });
 
@@ -45,14 +51,10 @@ describe("Combined Use Cases", () => {
         updatedScheduledFor.setHours(updatedScheduledFor.getHours() + 2);
 
         const createResult = await scheduleActionUseCase.execute({
-            namespace: PublishTestEntryActionHandlerImpl.name,
+            namespace,
             actionType: "Publish",
             targetId: "target-id#0001",
-            scheduleFor: scheduledFor.toISOString(),
-            payload: {
-                some: "data"
-            },
-            title: "Publish Article - target-id#0001"
+            scheduleFor: scheduledFor.toISOString()
         });
 
         expect(createResult.isOk()).toBe(true);
@@ -71,16 +73,16 @@ describe("Combined Use Cases", () => {
             namespace: PublishTestEntryActionHandlerImpl.name,
             actionType: "Publish",
             targetId: "target-id#0001",
-            scheduleFor: updatedScheduledFor.toISOString(),
-            payload: {
-                some: "data"
-            },
-            title: "Publish Article - target-id#0001"
+            scheduleFor: updatedScheduledFor.toISOString()
         });
 
         expect(updateResult.isOk()).toBeTrue();
         expect(updateResult.value).toEqual({
             ...createResult.value,
+            payload: {
+                ...createResult.value.payload,
+                scheduleFor: updatedScheduledFor.toISOString()
+            },
             error: undefined,
             scheduledFor: updatedScheduledFor.toISOString()
         });

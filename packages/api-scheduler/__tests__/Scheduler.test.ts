@@ -5,18 +5,25 @@ import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
 import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/abstractions.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
-import { ScheduledActionHandler } from "~/shared/abstractions.js";
+import { ScheduledActionHandler, SchedulerService } from "~/shared/abstractions.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
-import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
+import {
+    type IListScheduledActionsResponse,
+    ListScheduledActionsUseCase
+} from "~/features/ListScheduledActions/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
 import { useHandler } from "./__mocks/context/useHandler.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { mockClient } from "aws-sdk-client-mock";
 import { SchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
+import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { PublishTestEntryActionHandlerImpl } from "~tests/__mocks/PublishTestEntryActionHandler.js";
+import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 describe("Scheduler", () => {
     const targetId = "target-id#0001";
-    const namespace = "TestNamespace";
+    const namespace = PublishTestEntryActionHandlerImpl.name;
     const actionType = "Publish";
 
     let context: CmsContext;
@@ -30,6 +37,9 @@ describe("Scheduler", () => {
             }
         });
         context = await contextHandler.handler();
+        // context.container.register(PublishTestEntryActionHandler);
+        context.container.register(NamespaceHandler);
+        context.container.registerInstance(SchedulerService, new VoidSchedulerService());
     });
 
     it("should fail to handle due to missing schedule entry", async () => {
@@ -57,9 +67,7 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            title: "Title",
-            scheduleFor: new Date(Date.now() + 1000000).toISOString(),
-            payload: { some: "payload" }
+            scheduleFor: new Date(Date.now() + 1000000).toISOString()
         });
 
         expect(scheduleResult.isFail()).toBe(false);
@@ -100,9 +108,7 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            title: "Title",
-            scheduleFor: new Date(Date.now() + 1000000).toISOString(),
-            payload: { some: "payload" }
+            scheduleFor: new Date(Date.now() + 1000000).toISOString()
         });
 
         expect(scheduleResult.isFail()).toBe(false);
@@ -132,13 +138,27 @@ describe("Scheduler", () => {
         expect(mockHandler.handle).toHaveBeenCalledTimes(1);
         expect(mockHandler.handle).toHaveBeenCalledWith(
             expect.objectContaining({
+                error: undefined,
                 id: scheduleId,
                 namespace,
                 actionType,
                 targetId,
                 payload: {
-                    some: "payload"
-                }
+                    actionType: "Publish",
+                    namespace: PublishTestEntryActionHandlerImpl.name,
+                    scheduleFor: expect.toBeDateString(),
+                    scheduleId: "wby-schedule-87829c7ae555b9dde72c11dd#0001",
+                    something: true,
+                    targetId: "target-id#0001",
+                    title: "Fetched title from handler"
+                },
+                scheduledBy: {
+                    id: "id-12345678",
+                    type: "admin",
+                    displayName: "John Doe"
+                },
+                scheduledFor: expect.toBeDateString(),
+                title: "Fetched title from handler"
             })
         );
 
@@ -171,9 +191,7 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            title: "Title",
-            scheduleFor: new Date(Date.now() + 1000000).toISOString(),
-            payload: { some: "payload" }
+            scheduleFor: new Date(Date.now() + 1000000).toISOString()
         });
 
         expect(scheduleResult.isFail()).toBe(false);
@@ -221,9 +239,7 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            title: "Title",
-            scheduleFor: firstDate.toISOString(),
-            payload: { version: 1 }
+            scheduleFor: firstDate.toISOString()
         });
 
         expect(firstResult.isFail()).toBe(false);
@@ -235,16 +251,22 @@ describe("Scheduler", () => {
         });
         expect(getFirstResult.isFail()).toBe(false);
         expect(new Date(getFirstResult.value.scheduledFor).getTime()).toBe(firstDate.getTime());
-        expect(getFirstResult.value.payload).toEqual({ version: 1 });
+        expect(getFirstResult.value.payload).toEqual({
+            actionType: "Publish",
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            scheduleFor: expect.toBeDateString(),
+            scheduleId: "wby-schedule-87829c7ae555b9dde72c11dd#0001",
+            something: true,
+            targetId: "target-id#0001",
+            title: "Fetched title from handler"
+        });
 
         // Reschedule (same namespace + actionType + targetId)
         const secondResult = await scheduleAction.execute({
             namespace,
             actionType,
             targetId,
-            title: "Title",
-            scheduleFor: secondDate.toISOString(),
-            payload: { version: 2 }
+            scheduleFor: secondDate.toISOString()
         });
 
         expect(secondResult.isFail()).toBe(false);
@@ -257,7 +279,15 @@ describe("Scheduler", () => {
         expect(getSecondResult.isFail()).toBe(false);
         expect(getSecondResult.value.id).toBe(scheduleId); // Same ID
         expect(new Date(getSecondResult.value.scheduledFor).getTime()).toBe(secondDate.getTime());
-        expect(getSecondResult.value.payload).toEqual({ version: 2 });
+        expect(getSecondResult.value.payload).toEqual({
+            actionType: "Publish",
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            scheduleFor: expect.toBeDateString(),
+            scheduleId: "wby-schedule-87829c7ae555b9dde72c11dd#0001",
+            something: true,
+            targetId: "target-id#0001",
+            title: "Fetched title from handler"
+        });
     });
 
     it("should list and cancel all scheduled actions", async () => {
@@ -272,24 +302,20 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            title: "Title",
-            scheduleFor: new Date(Date.now() + 1000000).toISOString(),
-            payload: { some: "payload" }
+            scheduleFor: new Date(Date.now() + 1000000).toISOString()
         });
 
         const scheduleResult2 = await scheduleAction.execute({
             namespace,
             actionType: "Unpublish",
             targetId,
-            title: "Title",
-            scheduleFor: new Date(Date.now() + 1000000).toISOString(),
-            payload: { some: "payload" }
+            scheduleFor: new Date(Date.now() + 1000000).toISOString()
         });
 
         expect(scheduleResult1.isOk()).toBe(true);
         expect(scheduleResult2.isOk()).toBe(true);
 
-        const scheduledActionsResult = await until(
+        const scheduledActionsResult: IListScheduledActionsResponse<GenericRecord> = await until(
             async () => {
                 const result = await listScheduledActions.execute({
                     where: {
@@ -309,7 +335,7 @@ describe("Scheduler", () => {
         expect(scheduledActions.length).toBe(2);
 
         for (const action of scheduledActions) {
-            await cancelAction.execute(action.id);
+            await cancelAction.execute(action);
         }
 
         // Assert all actions were canceled
