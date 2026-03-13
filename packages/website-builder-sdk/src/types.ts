@@ -106,6 +106,40 @@ export type ResponsiveStyles = {
     [key: string]: SerializableCSSStyleDeclaration;
 };
 
+export type ConstraintElementContext = {
+    element: DocumentElement;
+    manifest: ComponentManifest;
+    /** Resolved input bindings for this element (from document.bindings[elementId].inputs) */
+    inputs: Record<string, InputValueBinding>;
+};
+
+export type ConstraintContext = {
+    /** The component manifest being placed */
+    component: ComponentManifest;
+    /** The direct parent element at the drop target */
+    parent: ConstraintElementContext;
+    /** The target slot name (e.g., "children", "leftColumn", "rightColumn") */
+    slot: string;
+    /** All ancestor elements from parent to root, with their manifests and inputs */
+    ancestors: ConstraintElementContext[];
+    /** Document-level queries */
+    document: {
+        elements: ElementMap;
+        bindings: DocumentBindings;
+        /** Count instances of a component in the document */
+        countInstances: (componentName: string) => number;
+    };
+    /** Debug logger — safe to call inside serialized constraints */
+    log: (...args: any[]) => void;
+};
+
+export type ComponentConstraint = {
+    /** Return true to ALLOW placement, false to BLOCK */
+    check: (ctx: ConstraintContext) => boolean;
+    /** Message shown when constraint is violated */
+    message?: string;
+};
+
 export type ComponentManifest = {
     name: string;
     group?: string;
@@ -119,6 +153,7 @@ export type ComponentManifest = {
     hideStyleSettings?: string[];
     autoApplyStyles?: boolean;
     tags?: string[];
+    constraints?: ComponentConstraint[];
     defaults?: {
         inputs?: Record<string, any>;
         styles?: SerializableCSSStyleDeclaration;

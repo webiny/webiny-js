@@ -1,4 +1,5 @@
 import type { Component } from "~/types.js";
+import { functionConverter } from "~/FunctionConverter.js";
 
 type Registration = { name: string; component: Component };
 
@@ -8,6 +9,13 @@ export class ComponentRegistry {
 
     public register(component: Component) {
         const name = component.manifest.name;
+        // Serialize constraint functions for cross-boundary transport
+        if (component.manifest.constraints) {
+            for (const constraint of component.manifest.constraints) {
+                // @ts-expect-error Serialized form is a string, but type expects a function.
+                constraint.check = functionConverter.serialize(constraint.check);
+            }
+        }
         this.registry.set(name, component);
         // notify subscribers
         this.listeners.forEach(fn => fn({ name, component }));
