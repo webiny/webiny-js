@@ -40,7 +40,7 @@ export interface IScheduledActionHandler {
      * @param namespace - Resource scope (e.g., "Cms/Entry/Article")
      * @param actionType - Operation type (e.g., "Publish")
      */
-    canHandle(namespace: string, actionType: string): boolean;
+    canHandle(namespace: string, actionType: ScheduledActionType): boolean;
 
     /**
      * Executes the scheduled action

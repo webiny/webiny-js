@@ -3,7 +3,9 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { GetPublishedEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetPublishedEntriesByIds";
 import { UnpublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry";
-import type {IScheduledActionPayload} from "~/types.js";
+import type { IScheduledActionPayload } from "~/types.js";
+import { extractModelIdFromNamespace } from "~/utils/namespace.js";
+import type { ScheduledActionType } from "@webiny/api-scheduler/shared/abstractions.js";
 
 /**
  * Handler for unpublishing CMS entries
@@ -23,8 +25,12 @@ class UnpublishEntryActionHandlerImpl implements ScheduledActionHandler.Interfac
         private unpublishEntryUseCase: UnpublishEntryUseCase.Interface
     ) {}
 
-    canHandle(namespace: string, actionType: string): boolean {
-        return namespace.startsWith("Cms/Entry/") && actionType === "Unpublish";
+    canHandle(namespace: string, actionType: ScheduledActionType): boolean {
+        const modelId = extractModelIdFromNamespace(namespace);
+        if (!modelId) {
+            return false;
+        }
+        return actionType === "Unpublish";
     }
 
     async handle(action: IScheduledAction<IScheduledActionPayload>): Promise<void> {
@@ -45,11 +51,9 @@ class UnpublishEntryActionHandlerImpl implements ScheduledActionHandler.Interfac
         const model = modelResult.value;
 
         // Fetch the target entry
-        const targetEntryResult =
-            await this.getEntryByIdUseCase.execute<IScheduledAction<IScheduledActionPayload>>(
-                model,
-                action.targetId
-            );
+        const targetEntryResult = await this.getEntryByIdUseCase.execute<
+            IScheduledAction<IScheduledActionPayload>
+        >(model, action.targetId);
         if (targetEntryResult.isFail()) {
             console.error(
                 `Failed to get entry "${action.targetId}" for scheduled unpublish action:`,
@@ -61,10 +65,9 @@ class UnpublishEntryActionHandlerImpl implements ScheduledActionHandler.Interfac
         const targetEntry = targetEntryResult.value;
 
         // Get published entries
-        const publishedEntriesResult =
-            await this.getPublishedEntriesByIdsUseCase.execute<IScheduledAction<IScheduledActionPayload>>(model, [
-                targetEntry.id
-            ]);
+        const publishedEntriesResult = await this.getPublishedEntriesByIdsUseCase.execute<
+            IScheduledAction<IScheduledActionPayload>
+        >(model, [targetEntry.id]);
 
         if (publishedEntriesResult.isFail()) {
             console.error(
@@ -88,11 +91,9 @@ class UnpublishEntryActionHandlerImpl implements ScheduledActionHandler.Interfac
          * Scenario 2: Target entry is published (same revision) -> unpublish it
          */
         if (publishedTargetEntry.id === action.targetId) {
-            const unpublishResult =
-                await this.unpublishEntryUseCase.execute<IScheduledAction<IScheduledActionPayload>>(
-                    model,
-                    action.targetId
-                );
+            const unpublishResult = await this.unpublishEntryUseCase.execute<
+                IScheduledAction<IScheduledActionPayload>
+            >(model, action.targetId);
             if (unpublishResult.isFail()) {
                 console.error(
                     `Failed to unpublish entry "${action.targetId}":`,
@@ -107,11 +108,9 @@ class UnpublishEntryActionHandlerImpl implements ScheduledActionHandler.Interfac
          * Scenario 3: A different revision is published -> unpublish it anyway
          * TODO: Determine if we really want to unpublish an entry which does not match the target ID
          */
-        const unpublishResult =
-            await this.unpublishEntryUseCase.execute<IScheduledAction<IScheduledActionPayload>>(
-                model,
-                publishedTargetEntry.id
-            );
+        const unpublishResult = await this.unpublishEntryUseCase.execute<
+            IScheduledAction<IScheduledActionPayload>
+        >(model, publishedTargetEntry.id);
         if (unpublishResult.isFail()) {
             console.error(
                 `Failed to unpublish published revision "${publishedTargetEntry.id}":`,

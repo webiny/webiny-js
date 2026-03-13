@@ -1,5 +1,6 @@
 import { EntryAfterUnpublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/events";
 import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webiny/api-scheduler";
+import { createNamespace } from "~/utils/namespace.js";
 
 /**
  * Cancels scheduled action when an entry is manually unpublished
@@ -13,7 +14,7 @@ class CancelScheduledActionOnUnpublishHandlerImpl
 {
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
-        private cancelScheduledEntryAction: CancelScheduledActionUseCase.Interface
+        private cancelScheduledAction: CancelScheduledActionUseCase.Interface
     ) {}
 
     async handle(event: EntryAfterUnpublishEventHandler.Event): Promise<void> {
@@ -26,7 +27,7 @@ class CancelScheduledActionOnUnpublishHandlerImpl
 
         const actionsResult = await this.listScheduledActions.execute({
             where: {
-                namespace: `Cms/Entry/${model.modelId}`,
+                namespace: createNamespace(model),
                 actionType: "Unpublish",
                 targetId: entry.id
             }
@@ -35,7 +36,7 @@ class CancelScheduledActionOnUnpublishHandlerImpl
         const actions = actionsResult.value.items;
 
         for (const action of actions) {
-            const cancelRes = await this.cancelScheduledEntryAction.execute(action.id);
+            const cancelRes = await this.cancelScheduledAction.execute(action);
             if (cancelRes.isFail()) {
                 // Silently ignore errors - this is non-critical cleanup.
                 // Entry was unpublished successfully, cancelling scheduled actions is best-effort.

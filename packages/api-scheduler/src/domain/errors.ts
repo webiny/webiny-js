@@ -77,7 +77,7 @@ interface INamespaceHandlerNotFoundErrorData {
  */
 export class NamespaceHandlerNotFoundError extends BaseError<INamespaceHandlerNotFoundErrorData> {
     override readonly code = "Scheduler/NamespaceHandler/NotFound" as const;
-    
+
     constructor(namespace: string) {
         super({
             message: `Namespace handler for "${namespace}" was not found.`,

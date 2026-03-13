@@ -7,6 +7,8 @@ import { UnpublishEntryUseCase } from "@webiny/api-headless-cms/features/content
 import { RepublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/RepublishEntry";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { IScheduledActionPayload } from "~/types.js";
+import type { ScheduledActionType } from "@webiny/api-scheduler/shared/abstractions.js";
+import { extractModelIdFromNamespace } from "~/utils/namespace.js";
 
 /**
  * Handler for publishing CMS entries
@@ -29,8 +31,12 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
         private identityContext: IdentityContext.Interface
     ) {}
 
-    public canHandle(namespace: string, actionType: string): boolean {
-        return namespace.startsWith("Cms/Entry/") && actionType === "Publish";
+    public canHandle(namespace: string, actionType: ScheduledActionType): boolean {
+        const modelId = extractModelIdFromNamespace(namespace);
+        if (!modelId) {
+            return false;
+        }
+        return actionType === "Publish";
     }
 
     public async handle(action: IScheduledAction<IScheduledActionPayload>): Promise<void> {

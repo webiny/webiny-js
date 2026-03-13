@@ -4,7 +4,7 @@ import {
     InvalidScheduleDateError,
     ScheduledActionPersistenceError,
     SchedulerServiceError,
-    NamespaceHandlerNotFoundError,
+    NamespaceHandlerNotFoundError
 } from "~/domain/errors.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 

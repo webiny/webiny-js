@@ -38,8 +38,6 @@ interface ICreateScheduleParams<T extends GenericRecord> {
  * 3. If exists: UPDATE schedule entry + EventBridge schedule
  * 4. If new: CREATE schedule entry + EventBridge schedule
  * 5. Rollback schedule entry if EventBridge fails
- *
- * Note: Does NOT handle immediate execution - apps use direct use cases for that
  */
 class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -92,19 +90,6 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         }
         const payload = namespaceHandlerResult.value;
 
-        if (params.immediately) {
-            return this.createSchedule({
-                scheduleId,
-                title: payload.title,
-                namespace: params.namespace,
-                actionType: params.actionType,
-                targetId: params.targetId,
-                scheduleFor: params.scheduleFor,
-                identity,
-                payload
-            });
-        }
-
         if (existingResult.isFail()) {
             const error = existingResult.error;
 
@@ -139,8 +124,16 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
     private async createSchedule<T extends GenericRecord>(
         params: ICreateScheduleParams<T>
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
-        const { scheduleId: initialId, identity, payload, scheduleFor, actionType, targetId, title, namespace } =
-            params;
+        const {
+            scheduleId: initialId,
+            identity,
+            payload,
+            scheduleFor,
+            actionType,
+            targetId,
+            title,
+            namespace
+        } = params;
         const { id: scheduleId } = parseIdentifier(initialId);
 
         const scheduledAction: IScheduledAction<T> = {

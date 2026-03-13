@@ -4,7 +4,6 @@ import { GetScheduledActionFeature } from "./GetScheduledAction/feature.js";
 import { ListScheduledActionsFeature } from "./ListScheduledActions/feature.js";
 import { CancelScheduledActionFeature } from "./CancelScheduledAction/feature.js";
 import { ExecuteScheduledActionFeature } from "./ExecuteScheduledAction/feature.js";
-import { RunActionFeature } from "~/features/RunAction/feature.js";
 
 /**
  * Main Scheduler Feature
@@ -22,6 +21,5 @@ export const SchedulerFeature = createFeature({
         ListScheduledActionsFeature.register(container);
         CancelScheduledActionFeature.register(container);
         ExecuteScheduledActionFeature.register(container);
-        RunActionFeature.register(container);
     }
 });

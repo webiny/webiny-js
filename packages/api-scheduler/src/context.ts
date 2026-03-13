@@ -15,6 +15,7 @@ import { SchedulerFeature } from "./features/SchedulerFeature.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { SchedulerGraphQLFactory } from "~/graphql/index.js";
+import { SchedulerPermissions } from "~/domain/permissions.js";
 
 export interface ICreateHeadlessCmsSchedulerContextParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
@@ -46,6 +47,7 @@ export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContex
             );
         }
 
+        context.container.register(SchedulerPermissions.Implementation);
         context.container.register(SchedulePrivateModel);
         context.container.register(SchedulerGraphQLFactory);
 
