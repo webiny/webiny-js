@@ -2,15 +2,13 @@ import { GraphQLSchemaBuilder } from "@webiny/handler-graphql/features/GraphQLSc
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/index.js";
 import { ErrorResponse, ListResponse, Response } from "@webiny/handler-graphql/responses.js";
-import {
-    type IListScheduledActionsParams,
-    ListScheduledActionsUseCase
-} from "~/features/ListScheduledActions/index.js";
+import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
 import { ScheduledActionNotFoundError } from "~/domain/errors.js";
+import type { ScheduledActionType } from "~/shared/abstractions.js";
 
-interface IListScheduledActionsArgs extends IListScheduledActionsParams {
+interface IListScheduledActionsArgs extends ListScheduledActionsUseCase.Params {
     namespace: string;
 }
 
@@ -50,7 +48,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 scheduledBy: ScheduleIdentity!
                 publishOn: DateTime
                 unpublishOn: DateTime
-                type: ScheduleRecordType!
+                actionType: ScheduleRecordType!
                 title: String!
             }
 
@@ -86,8 +84,8 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 title: String
                 title_contains: String
                 title_not_contains: String
-                type: ScheduleRecordType
-                type_in: [ScheduleRecordType!]
+                actionType: ScheduleRecordType
+                actionType_in: [ScheduleRecordType!]
                 scheduledBy: String
                 scheduledBy_in: [String!]
                 scheduledFor: DateTime
@@ -128,7 +126,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                     targetId: ID!
                     immediately: Boolean
                     scheduleFor: DateTime
-                    type: ScheduleRecordType!
+                    actionType: ScheduleRecordType!
                 ): CreateScheduledActionResponse!
                 
                 updateScheduledAction(
@@ -136,7 +134,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                     targetId: ID!
                     immediately: Boolean
                     scheduleFor: DateTime
-                    type: ScheduleRecordType!
+                    actionType: ScheduleRecordType!
                 ): UpdateScheduledActionResponse!
                 
                 cancelScheduledAction(namespace: String!, id: ID!): CancelScheduledActionResponse!

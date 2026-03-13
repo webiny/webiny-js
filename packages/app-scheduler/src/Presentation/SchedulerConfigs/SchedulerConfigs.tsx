@@ -5,7 +5,7 @@ import {
     CellScheduledBy,
     CellScheduledOn,
     CellTitle,
-    CellType,
+    CellActionType,
     CellRevision
 } from "~/Presentation/components/Cells/index.js";
 import { CancelItemAction } from "~/Presentation/components/Actions/index.js";
@@ -37,9 +37,9 @@ export const SchedulerConfigs = () => {
                     hideable={false}
                 />
                 <Browser.Table.Column
-                    name={"type"}
+                    name={"actionType"}
                     header={"Action Type"}
-                    cell={<CellType />}
+                    cell={<CellActionType />}
                     hideable={false}
                 />
                 <Browser.Table.Column

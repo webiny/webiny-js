@@ -28,7 +28,7 @@ class CancelScheduledActionOnUnpublishHandlerImpl
         const actionsResult = await this.listScheduledActions.execute({
             where: {
                 namespace: createNamespace(model),
-                actionType: "Unpublish",
+                actionType: "unpublish",
                 targetId: entry.id
             }
         });

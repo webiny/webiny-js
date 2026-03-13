@@ -3,7 +3,7 @@ import { Alert, Grid, Input } from "@webiny/admin-ui";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import { Bind, type BindComponentRenderProp } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { ScheduleType } from "~/types.js";
+import { ScheduleActionType } from "~/types.js";
 import type { CmsContentEntryStatusType } from "@webiny/app-headless-cms-common/types/index.js";
 import type { Validator } from "@webiny/validation/types.js";
 import ValidationError from "@webiny/validation/validationError.js";
@@ -30,7 +30,7 @@ interface UseShowScheduleDialogResponse {
 
 interface FormComponentProps {
     scheduleOn: Date | undefined;
-    type: ScheduleType | undefined;
+    actionType: ScheduleActionType | undefined;
     onCancel: OnCancelCallable;
 }
 
@@ -44,11 +44,11 @@ const dateToLocaleStringFormatter = new Intl.DateTimeFormat(undefined, {
     hour12: false
 });
 
-const ReschedulingAlert = ({ scheduleOn, type }: FormComponentProps) => {
-    if (!scheduleOn || !type) {
+const ReschedulingAlert = ({ scheduleOn, actionType }: FormComponentProps) => {
+    if (!scheduleOn || !actionType) {
         return null;
     }
-    const actionName = type === ScheduleType.publish ? "publish" : "unpublish";
+    const actionName = actionType === ScheduleActionType.publish ? "publish" : "unpublish";
     return (
         <Alert type={"danger"}>
             <>
@@ -121,10 +121,16 @@ export const SchedulerDialogFormComponentDateTimeInput = makeDecoratable(
     }
 );
 
-const FormComponent = ({ scheduleOn, onCancel, type }: FormComponentProps) => {
+const FormComponent = ({ scheduleOn, onCancel, actionType }: FormComponentProps) => {
     return (
         <>
-            {<ReschedulingAlert type={type} scheduleOn={scheduleOn} onCancel={onCancel} />}
+            {
+                <ReschedulingAlert
+                    actionType={actionType}
+                    scheduleOn={scheduleOn}
+                    onCancel={onCancel}
+                />
+            }
             <Grid>
                 <Grid.Column span={12}>
                     <Bind
@@ -147,7 +153,7 @@ interface ScheduleFormData {
 
 interface IOnAcceptParams {
     scheduleOn: Date;
-    type: ScheduleType;
+    actionType: ScheduleActionType;
 }
 
 interface OnCancelCallable {
@@ -194,16 +200,16 @@ export const useScheduleDialog = (
     });
 
     const onAccept = useCallback(async (params: IOnAcceptParams) => {
-        const { scheduleOn, type } = params;
+        const { scheduleOn, actionType } = params;
 
         try {
             await action.schedule({
                 targetId: target.id,
                 namespace,
                 scheduleOn,
-                type
+                actionType
             });
-            showSnackbar(`Scheduled ${type} action for "${target.title}"!`);
+            showSnackbar(`Scheduled ${actionType} action for "${target.title}"!`);
         } catch (error) {
             showSnackbar(error.message);
             console.error(error);
@@ -224,7 +230,9 @@ export const useScheduleDialog = (
                 id: schedulerEntry.id,
                 namespace: schedulerEntry.namespace
             });
-            showSnackbar(`Canceled scheduled ${schedulerEntry.type} on "${schedulerEntry.title}"!`);
+            showSnackbar(
+                `Canceled scheduled ${schedulerEntry.actionType} on "${schedulerEntry.title}"!`
+            );
         } catch (error) {
             showSnackbar(error.message);
         }
@@ -243,7 +251,7 @@ export const useScheduleDialog = (
             title: `Schedule "${target.title}"`,
             content: (
                 <FormComponent
-                    type={schedulerEntry?.type}
+                    actionType={schedulerEntry?.actionType}
                     scheduleOn={scheduleOn}
                     onCancel={onCancel}
                 />
@@ -276,11 +284,13 @@ export const useScheduleDialog = (
                     return;
                 }
 
-                const type = isPublished ? ScheduleType.unpublish : ScheduleType.publish;
+                const actionType = isPublished
+                    ? ScheduleActionType.unpublish
+                    : ScheduleActionType.publish;
 
                 return onAccept({
                     scheduleOn,
-                    type
+                    actionType
                 });
             }
         });

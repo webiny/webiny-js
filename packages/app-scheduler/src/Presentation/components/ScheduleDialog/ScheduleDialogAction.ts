@@ -1,4 +1,4 @@
-import { ScheduleType } from "~/types.js";
+import { ScheduleActionType } from "~/types.js";
 import type {
     ICancelScheduledActionGateway,
     ISchedulePublishActionGateway,
@@ -30,17 +30,17 @@ export class ScheduleDialogAction implements IScheduleDialogAction {
     }
 
     public async schedule(params: IScheduleDialogScheduledActionExecuteParams): Promise<void> {
-        const { targetId, namespace, type, scheduleOn } = params;
+        const { targetId, namespace, actionType, scheduleOn } = params;
 
-        switch (type) {
-            case ScheduleType.publish:
+        switch (actionType) {
+            case ScheduleActionType.publish:
                 await this.publishGateway.execute({
                     namespace,
                     targetId,
                     scheduleOn
                 });
                 return;
-            case ScheduleType.unpublish:
+            case ScheduleActionType.unpublish:
                 await this.unpublishGateway.execute({
                     namespace,
                     targetId,
@@ -49,7 +49,7 @@ export class ScheduleDialogAction implements IScheduleDialogAction {
                 return;
             default:
                 throw new Error(
-                    `Unsupported schedule type "${type}" for target "${targetId}" and namespace "${namespace}".`
+                    `Unsupported schedule type "${actionType}" for target "${targetId}" and namespace "${namespace}".`
                 );
         }
     }

@@ -5,7 +5,7 @@ type SchedulerIdentity = Pick<CmsIdentity, "id" | "displayName" | "type">;
 
 export type { SchedulerIdentity };
 
-export enum ScheduleType {
+export enum ScheduleActionType {
     publish = "publish",
     unpublish = "unpublish"
 }
@@ -30,7 +30,7 @@ export interface SchedulerEntry {
     scheduledBy: SchedulerIdentity;
     publishOn?: Date;
     unpublishOn?: Date;
-    type: ScheduleType;
+    actionType: ScheduleActionType;
     title: string;
 }
 

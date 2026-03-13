@@ -57,7 +57,9 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         const identity = this.identityContext.getIdentity();
 
         let scheduleFor = params.scheduleFor;
-
+        /**
+         * Immeditely - publish in past
+         */
         if (!params.immediately && !isValidDate(scheduleFor)) {
             return Result.fail(new InvalidScheduleDateError(scheduleFor));
         } else if (params.immediately) {
@@ -95,6 +97,9 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         const payload = namespaceHandlerResult.value;
 
         if (existingResult.isFail()) {
+            console.log({
+                existingResult: "its a fail!"
+            });
             const error = existingResult.error;
 
             // NotFound means the action was not yet scheduled
@@ -115,6 +120,9 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
                 return Result.fail(error);
             }
         }
+        console.log({
+            existingResult: existingResult.value
+        });
 
         // Reschedule existing action
         const scheduledAction = existingResult.value;

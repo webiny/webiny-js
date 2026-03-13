@@ -11,6 +11,7 @@ import { NotAuthorizedError, ScheduledActionPersistenceError } from "~/domain/er
 import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { SchedulerPermissions } from "~/domain/permissions.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 
 /**
  * Lists scheduled actions with optional filtering
@@ -27,7 +28,8 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
         private model: ScheduledActionModel.Interface,
         private cmsWhereMapper: CmsWhereMapper.Interface,
         private cmsSortMapper: CmsSortMapper.Interface,
-        private permissions: SchedulerPermissions.Interface
+        private permissions: SchedulerPermissions.Interface,
+        private identityContext: IdentityContext.Interface
     ) {}
 
     async execute<T extends GenericRecord>(
@@ -38,7 +40,19 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new NotAuthorizedError());
         }
 
-        const { where, sort: sortInput, limit, after } = params;
+        const ownRecordsOnly = await this.permissions.onlyOwnRecords("action");
+
+        const { where: initialWhere, sort: sortInput, limit, after } = params;
+
+        const where = this.cmsWhereMapper.map({
+            input: initialWhere || {},
+            fields: this.model.fields
+        });
+
+        if (ownRecordsOnly) {
+            const identity = this.identityContext.getIdentity();
+            where!.createdBy = identity.id;
+        }
 
         const sort = this.cmsSortMapper.map({
             input: sortInput,
@@ -46,10 +60,7 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
         });
         // List entries from CMS
         const listResult = await this.listEntriesUseCase.execute<IScheduledAction<T>>(this.model, {
-            where: this.cmsWhereMapper.map({
-                input: where,
-                fields: this.model.fields
-            }),
+            where,
             sort,
             limit,
             after
@@ -90,6 +101,7 @@ export const ListScheduledActionsUseCase = UseCaseAbstraction.createImplementati
         ScheduledActionModel,
         CmsWhereMapper,
         CmsSortMapper,
-        SchedulerPermissions.Abstraction
+        SchedulerPermissions.Abstraction,
+        IdentityContext
     ]
 });

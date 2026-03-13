@@ -10,7 +10,7 @@ export const createSchedulerEntryFields = (): string => {
         }
         publishOn
         unpublishOn
-        type
+        actionType
         title
     `;
 };

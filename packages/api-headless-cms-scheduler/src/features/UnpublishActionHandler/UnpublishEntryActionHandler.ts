@@ -30,7 +30,7 @@ class UnpublishEntryActionHandlerImpl implements ScheduledActionHandler.Interfac
         if (!modelId) {
             return false;
         }
-        return actionType === "Unpublish";
+        return actionType === "unpublish";
     }
 
     async handle(action: IScheduledAction<IScheduledActionPayload>): Promise<void> {

@@ -4,7 +4,7 @@ import { schedulerEntrySchema } from "./schema/schedulerEntry.js";
 import { createZodError } from "@webiny/utils/createZodError.js";
 import gql from "graphql-tag";
 import { createSchedulerEntryFields } from "./graphql/fields.js";
-import { type SchedulerEntry, type SchedulerErrorResponse, ScheduleType } from "~/types.js";
+import { type SchedulerEntry, type SchedulerErrorResponse, ScheduleActionType } from "~/types.js";
 import type {
     IScheduleUnpublishActionGateway,
     IScheduleUnpublishActionGatewayExecuteParams
@@ -12,9 +12,9 @@ import type {
 
 const createScheduleUnpublishActionMutation = () => {
     return gql`
-        mutation ScheduleUnpublishAction($namespace: String!, $targetId: ID!, $scheduleFor: DateTime, $type: ScheduleRecordType!) {
+        mutation ScheduleUnpublishAction($namespace: String!, $targetId: ID!, $scheduleFor: DateTime, $actionType: ScheduleRecordType!) {
             scheduler {
-                createScheduledAction(namespace: $namespace, targetId: $targetId, scheduleFor: $scheduleFor, type: $type) {
+                createScheduledAction(namespace: $namespace, targetId: $targetId, scheduleFor: $scheduleFor, actionType: $actionType) {
                     data {
                         ${createSchedulerEntryFields()}
                     }
@@ -34,7 +34,7 @@ interface SchedulerUnpublishGraphQLMutationVariables {
     namespace: string;
     targetId: string;
     scheduleFor: Date;
-    type: ScheduleType.unpublish;
+    actionType: ScheduleActionType.unpublish;
 }
 
 interface SchedulerUnpublishGraphQLMutationResponse {
@@ -67,7 +67,7 @@ export class SchedulerUnpublishGraphQLGateway implements IScheduleUnpublishActio
                 namespace: params.namespace,
                 targetId: params.targetId,
                 scheduleFor: params.scheduleOn,
-                type: ScheduleType.unpublish
+                actionType: ScheduleActionType.unpublish
             },
             fetchPolicy: "no-cache"
         });

@@ -1,5 +1,5 @@
 import zod from "zod";
-import { ScheduleType } from "~/types.js";
+import { ScheduleActionType } from "~/types.js";
 
 export const schedulerEntrySchema = zod.object({
     id: zod.string(),
@@ -24,6 +24,6 @@ export const schedulerEntrySchema = zod.object({
         .transform(value => {
             return !!value ? new Date(value) : undefined;
         }),
-    type: zod.nativeEnum(ScheduleType),
+    actionType: zod.enum(ScheduleActionType),
     title: zod.string()
 });

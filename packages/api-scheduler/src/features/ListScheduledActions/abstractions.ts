@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { IScheduledAction } from "~/shared/abstractions.js";
+import type { IScheduledAction, ScheduledActionType } from "~/shared/abstractions.js";
 import { ScheduledActionPersistenceError, NotAuthorizedError } from "~/domain/errors.js";
 import type { CmsEntryListSort, CmsEntryMeta } from "@webiny/api-headless-cms/types/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
@@ -21,7 +21,7 @@ export type DateISOString =
 export interface IListScheduledActionsWhere {
     namespace?: string;
     namespace_startsWith?: string;
-    actionType?: string;
+    actionType?: ScheduledActionType;
     targetId?: string;
     targetId_startsWith?: string;
     scheduledBy?: string;

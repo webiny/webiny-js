@@ -36,13 +36,13 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
         if (!modelId) {
             return false;
         }
-        return actionType === "Publish";
+        return actionType === "publish";
     }
 
     public async handle(action: IScheduledAction<IScheduledActionPayload>): Promise<void> {
         const { payload } = action;
 
-        const modelId = payload.modelId as string;
+        const modelId = payload.modelId;
 
         // Fetch the model
         const modelResult = await this.getModelUseCase.execute(modelId);

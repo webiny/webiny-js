@@ -11,7 +11,7 @@ export interface Identity {
     displayName: string;
 }
 
-export type ScheduledActionType = "Publish" | "Unpublish" | "Send" | "Delete";
+export type ScheduledActionType = "publish" | "unpublish";
 /**
  * Scheduled Action Record - The data stored for a scheduled action
  */

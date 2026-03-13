@@ -4,7 +4,7 @@ import { useScheduler } from "./useScheduler.js";
 import type { SchedulerEntry } from "~/types.js";
 
 interface UseCancelScheduleItemParams {
-    item: Pick<SchedulerEntry, "id" | "title" | "type">;
+    item: Pick<SchedulerEntry, "id" | "title" | "actionType">;
 }
 
 export const useCancelSchedulerItem = ({ item }: UseCancelScheduleItemParams) => {
@@ -17,8 +17,9 @@ export const useCancelSchedulerItem = ({ item }: UseCancelScheduleItemParams) =>
             <p>
                 You are about to cancel scheduled action for this item!
                 <br />
-                Are you sure you want to cancel scheduled <strong>{item.type}</strong> for{" "}
-                <strong>{item.title}</strong>?
+                Are you sure you want to cancel scheduled <strong>
+                    {item.actionType}
+                </strong> for <strong>{item.title}</strong>?
             </p>
         )
     });

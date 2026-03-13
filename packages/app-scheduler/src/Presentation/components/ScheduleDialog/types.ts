@@ -1,10 +1,10 @@
-import type { ScheduleType } from "~/types.js";
+import type { ScheduleActionType } from "~/types.js";
 
 export interface IScheduleDialogScheduledActionExecuteParams {
     targetId: string;
     namespace: string;
     scheduleOn: Date;
-    type: ScheduleType;
+    actionType: ScheduleActionType;
 }
 
 export interface IScheduleDialogCancelActionExecuteParams {
