@@ -27,8 +27,8 @@ type ScheduleActionError = IScheduleActionErrors[keyof IScheduleActionErrors];
 
 export interface IScheduleActionParams {
     namespace: string;
-    actionType: ScheduledActionType;
     targetId: string;
+    actionType: ScheduledActionType;
     scheduleFor: string;
     immediately: boolean;
 }

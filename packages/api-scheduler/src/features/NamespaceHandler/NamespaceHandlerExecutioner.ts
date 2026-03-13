@@ -12,7 +12,7 @@ class NamespaceHandlerExecutionerImpl implements NamespaceHandlerExecutionerAbst
         params: NamespaceHandlerExecutionerAbstraction.Params
     ): NamespaceHandlerExecutionerAbstraction.Response {
         for (const handler of this.namespaceHandlers) {
-            if (handler.canHandle(params.namespace)) {
+            if (handler.canHandle(params.namespace) === false) {
                 continue;
             }
             return handler.execute(params);

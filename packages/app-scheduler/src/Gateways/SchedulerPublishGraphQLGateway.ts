@@ -13,9 +13,9 @@ import type {
 
 const createSchedulePublishActionMutation = () => {
     return gql`
-        mutation SchedulePublishAction($namespace: String!, $id: ID!, $scheduleFor: DateTime, $type: ScheduleRecordType!) {
+        mutation SchedulePublishAction($namespace: String!, $targetId: ID!, $scheduleFor: DateTime, $type: ScheduleRecordType!) {
             scheduler {
-                createScheduledAction(namespace: $namespace, id: $id, scheduleFor: $scheduleFor, type: $type) {
+                createScheduledAction(namespace: $namespace, targetId: $targetId, scheduleFor: $scheduleFor, type: $type) {
                     data {
                         ${createSchedulerEntryFields()}
                     }
@@ -33,7 +33,7 @@ const createSchedulePublishActionMutation = () => {
 
 interface SchedulerPublishGraphQLMutationVariables {
     namespace: string;
-    id: string;
+    targetId: string;
     scheduleFor: Date;
     type: ScheduleType.publish;
 }
@@ -68,7 +68,7 @@ export class SchedulerPublishGraphQLGateway implements ISchedulePublishActionGat
             mutation: createSchedulePublishActionMutation(),
             variables: {
                 namespace: params.namespace,
-                id: params.id,
+                targetId: params.targetId,
                 scheduleFor: params.scheduleOn,
                 type: ScheduleType.publish
             },

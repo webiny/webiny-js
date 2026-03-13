@@ -136,10 +136,10 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         });
     }
 
-    public async schedulePublishItem(id: string, scheduleOn: Date) {
+    public async schedulePublishItem(targetId: string, scheduleOn: Date) {
         const { item } = await this.publishGateway.execute({
             namespace: this.namespace,
-            id,
+            targetId,
             scheduleOn
         });
 
@@ -153,10 +153,10 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         });
     }
 
-    public async scheduleUnpublishItem(id: string, scheduleOn: Date) {
+    public async scheduleUnpublishItem(targetId: string, scheduleOn: Date) {
         const { item } = await this.unpublishGateway.execute({
             namespace: this.namespace,
-            id,
+            targetId,
             scheduleOn
         });
 

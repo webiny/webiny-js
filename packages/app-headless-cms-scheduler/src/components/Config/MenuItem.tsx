@@ -4,7 +4,7 @@ import {
     useContentEntryEditor
 } from "@webiny/app-headless-cms/exports/admin/cms/entry/editor.js";
 import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
-import { useApolloClient } from "@webiny/app-headless-cms";
+import { useApolloClient } from "@apollo/react-hooks";
 import { useScheduleDialog } from "@webiny/app-scheduler";
 import { usePermissions } from "~/hooks/usePermissions.js";
 import { createNamespace } from "~/utils/index.js";

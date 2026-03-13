@@ -1,7 +1,7 @@
 import type { ScheduleType } from "~/types.js";
 
 export interface IScheduleDialogScheduledActionExecuteParams {
-    id: string;
+    targetId: string;
     namespace: string;
     scheduleOn: Date;
     type: ScheduleType;

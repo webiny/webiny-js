@@ -68,7 +68,11 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Generate unique schedule ID
-        const actionId = ScheduledActionId.from(params);
+        const actionId = ScheduledActionId.from({
+            namespace: params.namespace,
+            targetId: params.targetId,
+            actionType: params.actionType
+        });
         const scheduleId = ScheduledActionIdWithVersion.from(actionId);
 
         const existingResult = await this.getScheduledAction.execute({

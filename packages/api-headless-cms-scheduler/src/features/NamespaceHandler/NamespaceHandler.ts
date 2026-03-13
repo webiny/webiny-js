@@ -23,6 +23,10 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface {
          * We know that modelId is ok because of the canHandle() method, which is always called before execute() and must return true for this handler to be executed.
          */
         const modelId = extractModelIdFromNamespace(params.namespace)!;
+        console.log({
+            extractedModelId: true,
+            modelId
+        });
 
         // Fetch the target model
         const modelResult = await this.getModelUseCase.execute(modelId);
@@ -33,6 +37,10 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface {
         const model = modelResult.value;
 
         // Fetch entry to get title
+        console.log({
+            namespaceHandlerParams: params,
+            modelId
+        });
         const entryResult = await this.getEntryByIdUseCase.execute(model, params.targetId);
         if (entryResult.isFail()) {
             return Result.fail(entryResult.error as any);
@@ -47,7 +55,8 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface {
             modelId,
             actionType: params.actionType,
             targetId: params.targetId,
-            scheduleId: params.scheduleId
+            scheduleId: params.scheduleId,
+            immediately: params.immediately || false
         });
     }
 }

@@ -8,6 +8,7 @@ import {
 } from "~/features/ListScheduledActions/index.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
+import { ScheduledActionNotFoundError } from "~/domain/errors.js";
 
 interface IListScheduledActionsArgs extends IListScheduledActionsParams {
     namespace: string;
@@ -124,7 +125,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
             extend type SchedulerMutation {
                 createScheduledAction(
                     namespace: String!
-                    id: ID!
+                    targetId: ID!
                     immediately: Boolean
                     scheduleFor: DateTime
                     type: ScheduleRecordType!
@@ -132,7 +133,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 
                 updateScheduledAction(
                     namespace: String!
-                    id: ID!
+                    targetId: ID!
                     immediately: Boolean
                     scheduleFor: DateTime
                     type: ScheduleRecordType!
@@ -175,6 +176,9 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                     const result = await useCase.execute(args);
 
                     if (result.isFail()) {
+                        if (result.error instanceof ScheduledActionNotFoundError) {
+                            return new Response(null);
+                        }
                         return new ErrorResponse(result.error);
                     }
 

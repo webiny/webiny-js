@@ -198,7 +198,7 @@ export const useScheduleDialog = (
 
         try {
             await action.schedule({
-                id: target.id,
+                targetId: target.id,
                 namespace,
                 scheduleOn,
                 type

@@ -12,8 +12,8 @@ export interface ISchedulerItemsRepository {
     ) => Promise<void>;
     listMoreItems: () => Promise<void>;
     scheduleCancelItem: (id: string) => Promise<void>;
-    schedulePublishItem: (id: string, scheduleOn: Date) => Promise<void>;
-    scheduleUnpublishItem: (id: string, scheduleOn: Date) => Promise<void>;
+    schedulePublishItem: (targetId: string, scheduleOn: Date) => Promise<void>;
+    scheduleUnpublishItem: (targetId: string, scheduleOn: Date) => Promise<void>;
     getItems: () => SchedulerItem[];
     getMeta: () => Meta;
     getLoading: () => Record<string, any>;
