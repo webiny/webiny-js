@@ -6,7 +6,6 @@ import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/ind
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
 import { ScheduledActionNotFoundError } from "~/domain/errors.js";
-import type { ScheduledActionType } from "~/shared/abstractions.js";
 
 interface IListScheduledActionsArgs extends ListScheduledActionsUseCase.Params {
     namespace: string;

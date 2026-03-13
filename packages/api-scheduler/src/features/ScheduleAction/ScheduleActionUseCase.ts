@@ -97,9 +97,6 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         const payload = namespaceHandlerResult.value;
 
         if (existingResult.isFail()) {
-            console.log({
-                existingResult: "its a fail!"
-            });
             const error = existingResult.error;
 
             // NotFound means the action was not yet scheduled
@@ -120,9 +117,6 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
                 return Result.fail(error);
             }
         }
-        console.log({
-            existingResult: existingResult.value
-        });
 
         // Reschedule existing action
         const scheduledAction = existingResult.value;

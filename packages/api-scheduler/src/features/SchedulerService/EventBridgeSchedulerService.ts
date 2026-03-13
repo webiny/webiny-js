@@ -53,18 +53,9 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         // Check if schedule already exists (for auto-update logic)
         const exists = await this.exists(id);
         if (exists) {
-            console.log({
-                scheduleExists: id
-            });
             return this.update(params);
         }
-
-        console.log({
-            creatingSchedule: {
-                id,
-                scheduleFor
-            }
-        });
+        
         await client.send(
             new CreateScheduleCommand({
                 Name: id,
@@ -99,12 +90,6 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
 
         const client = this.getClient();
 
-        console.log({
-            updatingSchedule: {
-                id,
-                scheduleFor
-            }
-        });
         await client.send(
             new UpdateScheduleCommand({
                 Name: id,
@@ -133,9 +118,6 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         try {
             await client.send(new DeleteScheduleCommand({ Name: id }));
         } catch (ex) {
-            console.log({
-                deleteError: ex
-            });
             if (ex.name === "ResourceNotFoundException") {
                 return;
             }
@@ -150,9 +132,6 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
             await client.send(new GetScheduleCommand({ Name: id }));
             return true;
         } catch (ex) {
-            console.log({
-                existsError: ex
-            });
             if (ex.name === "ResourceNotFoundException") {
                 return false;
             }
