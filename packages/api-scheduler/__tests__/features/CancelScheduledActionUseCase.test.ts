@@ -76,7 +76,7 @@ describe("CancelScheduledActionUseCase", () => {
 
         const createResult = await scheduleActionUseCase.execute({
             namespace,
-            actionType: "Publish",
+            actionType: "publish",
             targetId: "target-id#0001",
             scheduleFor: scheduledFor.toISOString()
         });
@@ -102,7 +102,7 @@ describe("CancelScheduledActionUseCase", () => {
 
         const createResult = await scheduleActionUseCase.execute({
             namespace,
-            actionType: "Publish",
+            actionType: "publish",
             targetId: "target-id#0001",
             scheduleFor: scheduledFor.toISOString()
         });

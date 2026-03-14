@@ -6,7 +6,7 @@ describe("ScheduledActionId", () => {
     it("should create a valid schedule action id", () => {
         const result = ScheduledActionId.from({
             namespace: "Cms/Entry/Article",
-            actionType: "Publish",
+            actionType: "publish",
             targetId: "target-id#0001"
         });
 

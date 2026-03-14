@@ -24,7 +24,7 @@ import type { GenericRecord } from "@webiny/api/types.js";
 describe("Scheduler", () => {
     const targetId = "target-id#0001";
     const namespace = PublishTestEntryActionHandlerImpl.name;
-    const actionType = "Publish";
+    const actionType = "publish";
 
     let context: CmsContext;
 
@@ -144,7 +144,7 @@ describe("Scheduler", () => {
                 actionType,
                 targetId,
                 payload: {
-                    actionType: "Publish",
+                    actionType: "publish",
                     namespace: PublishTestEntryActionHandlerImpl.name,
                     scheduleFor: expect.toBeDateString(),
                     scheduleId: "wby-schedule-87829c7ae555b9dde72c11dd#0001",
@@ -252,7 +252,7 @@ describe("Scheduler", () => {
         expect(getFirstResult.isFail()).toBe(false);
         expect(new Date(getFirstResult.value.scheduledFor).getTime()).toBe(firstDate.getTime());
         expect(getFirstResult.value.payload).toEqual({
-            actionType: "Publish",
+            actionType: "publish",
             namespace: PublishTestEntryActionHandlerImpl.name,
             scheduleFor: expect.toBeDateString(),
             scheduleId: "wby-schedule-87829c7ae555b9dde72c11dd#0001",
@@ -280,7 +280,7 @@ describe("Scheduler", () => {
         expect(getSecondResult.value.id).toBe(scheduleId); // Same ID
         expect(new Date(getSecondResult.value.scheduledFor).getTime()).toBe(secondDate.getTime());
         expect(getSecondResult.value.payload).toEqual({
-            actionType: "Publish",
+            actionType: "publish",
             namespace: PublishTestEntryActionHandlerImpl.name,
             scheduleFor: expect.toBeDateString(),
             scheduleId: "wby-schedule-87829c7ae555b9dde72c11dd#0001",
@@ -307,7 +307,7 @@ describe("Scheduler", () => {
 
         const scheduleResult2 = await scheduleAction.execute({
             namespace,
-            actionType: "Unpublish",
+            actionType: "unpublish",
             targetId,
             scheduleFor: new Date(Date.now() + 1000000).toISOString()
         });

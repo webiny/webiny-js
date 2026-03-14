@@ -1,4 +1,5 @@
 import type { IScheduledAction, ScheduledActionType } from "~/shared/abstractions.js";
+import {ListScheduledActionsUseCase} from "~/features/ListScheduledActions/index.js";
 
 export const ERROR = /* GraphQL */ `
     error {
@@ -80,6 +81,54 @@ export const CANCEL_SCHEDULED_ACTION = /* GraphQL */ `
             cancelScheduledAction(namespace: $namespace, id: $id) {
                 data
                 ${ERROR}
+            }
+        }
+    }
+`;
+
+
+export interface IListScheduledActionsQueryVariables {
+    namespace: string;
+    where?: ListScheduledActionsUseCase.Where;
+    sort?: ListScheduledActionsUseCase.Sort;
+    limit?: number;
+    after?: string;
+}
+
+export interface IListScheduledActionsQueryResponse {
+    scheduler: {
+        listScheduledActions: {
+            data: IScheduledAction[] | null;
+            meta: ListScheduledActionsUseCase.Meta | null;
+            error: IErrorResponse | null;
+        };
+    };
+}
+
+
+export const LIST_SCHEDULED_ACTION = /* GraphQL */ `
+    query ListScheduledActions(
+        $namespace: String!
+        $where: ListScheduledActionsWhereInput
+        $sort: [ListScheduledActionsSorter!]
+        $limit: Int
+        $after: String
+    ) {
+        scheduler {
+            listScheduledActions(
+                namespace: $namespace
+                where: $where
+                sort: $sort
+                limit: $limit
+                after: $after
+            ) {
+                ${DATA}
+                ${ERROR}
+                meta {
+                    totalCount
+                    hasMoreItems
+                    cursor
+                }
             }
         }
     }

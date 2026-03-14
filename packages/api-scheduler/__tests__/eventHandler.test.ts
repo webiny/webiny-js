@@ -49,7 +49,7 @@ describe("Scheduler Event Handler", () => {
             [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
                 id: ScheduledActionId.from({
                     namespace,
-                    actionType: "Publish",
+                    actionType: "publish",
                     targetId: "target-id#0001"
                 }),
                 namespace,
@@ -71,7 +71,7 @@ describe("Scheduler Event Handler", () => {
         const scheduleFor = new Date(new Date().getTime() + 5 * 60 * 1000).toISOString();
         const createResult = await scheduleActionUseCase.execute({
             namespace: PublishTestEntryActionHandlerImpl.name,
-            actionType: "Publish",
+            actionType: "publish",
             targetId: "target-id#0001",
             scheduleFor,
             immediately: false
@@ -79,11 +79,11 @@ describe("Scheduler Event Handler", () => {
 
         expect(createResult.isOk()).toBeTrue();
         expect(createResult.value).toEqual({
-            actionType: "Publish",
+            actionType: "publish",
             id: expect.stringMatching("wby-schedule-"),
             namespace: PublishTestEntryActionHandlerImpl.name,
             payload: {
-                actionType: "Publish",
+                actionType: "publish",
                 immediately: false,
                 namespace: "Test/SomeCustomEntry",
                 scheduleFor: expect.toBeDateString(),

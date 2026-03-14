@@ -8,12 +8,23 @@ import {
     type ICancelScheduledActionMutationResponse,
     type ICancelScheduledActionMutationVariables,
     type ICreateScheduledActionMutationVariables,
+    type IListScheduledActionsQueryResponse,
+    type IListScheduledActionsQueryVariables,
     type IScheduleActionMutationResponse,
+    LIST_SCHEDULED_ACTION,
     SCHEDULE_ACTION
 } from "./graphql.js";
+import {createScheduler} from "~/createScheduler.js";
+import type {SchedulerClientConfig} from "@webiny/aws-sdk/client-scheduler/index.js";
 
 export const useGraphQLHandler = <C extends CmsContext>(params: CreateHandlerCoreParams) => {
     const plugins = new PluginsContainer(params.plugins || []);
+    
+    plugins.register(
+        createScheduler({
+            getClient: params.getScheduleClient,
+        })
+    );
 
     const handler = baseUseGraphQLHandler({
         permissions: [
@@ -27,9 +38,7 @@ export const useGraphQLHandler = <C extends CmsContext>(params: CreateHandlerCor
     });
 
     return {
-        plugins,
-        identity: params.identity || defaultIdentity,
-        handler,
+        ...handler,
         createSchedule: handler.createMutation<
             ICreateScheduledActionMutationVariables,
             IScheduleActionMutationResponse
@@ -37,6 +46,10 @@ export const useGraphQLHandler = <C extends CmsContext>(params: CreateHandlerCor
         cancelScheduledAction: handler.createMutation<
             ICancelScheduledActionMutationVariables,
             ICancelScheduledActionMutationResponse
-        >(CANCEL_SCHEDULED_ACTION)
+        >(CANCEL_SCHEDULED_ACTION),
+        listScheduledActions: handler.createQuery<
+            IListScheduledActionsQueryVariables,
+            IListScheduledActionsQueryResponse
+        >(LIST_SCHEDULED_ACTION)
     };
 };

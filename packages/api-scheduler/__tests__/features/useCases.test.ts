@@ -52,7 +52,7 @@ describe("Combined Use Cases", () => {
 
         const createResult = await scheduleActionUseCase.execute({
             namespace,
-            actionType: "Publish",
+            actionType: "publish",
             targetId: "target-id#0001",
             scheduleFor: scheduledFor.toISOString()
         });
@@ -71,7 +71,7 @@ describe("Combined Use Cases", () => {
 
         const updateResult = await scheduleActionUseCase.execute({
             namespace: PublishTestEntryActionHandlerImpl.name,
-            actionType: "Publish",
+            actionType: "publish",
             targetId: "target-id#0001",
             scheduleFor: updatedScheduledFor.toISOString()
         });

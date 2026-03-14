@@ -30,6 +30,9 @@ export interface IListScheduledActionsWhere {
     scheduledFor_lte?: DateISOString;
 }
 
+export type IListScheduledActionsMeta = CmsEntryMeta;
+
+
 export interface IListScheduledActionsParams {
     where: IListScheduledActionsWhere;
     sort?: CmsEntryListSort;
@@ -63,4 +66,9 @@ export namespace ListScheduledActionsUseCase {
     export type Interface = IListScheduledActionsUseCase;
     export type Error = ListScheduledActionsError;
     export type Params = IListScheduledActionsParams;
+    export type Where = IListScheduledActionsWhere;
+    export type Sort = CmsEntryListSort;
+    export type Meta = IListScheduledActionsMeta;
+    export type Response<T extends GenericRecord> = IListScheduledActionsResponse<T>;
+    
 }
