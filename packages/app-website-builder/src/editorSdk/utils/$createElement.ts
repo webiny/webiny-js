@@ -23,7 +23,6 @@ export function $createElement(
     });
 
     if (!result.allowed) {
-        console.warn("Constraint violation:", result.violations);
         return result;
     }
 

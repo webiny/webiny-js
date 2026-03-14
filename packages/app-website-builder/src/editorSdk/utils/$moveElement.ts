@@ -1,4 +1,4 @@
-import type { ComponentManifest, Document } from "@webiny/website-builder-sdk";
+import type { ComponentManifest, ConstraintResult, Document } from "@webiny/website-builder-sdk";
 import { evaluateConstraints } from "@webiny/website-builder-sdk";
 import { $getElementById } from "./$getElementById.js";
 import { $removeElementReferenceFromParent } from "./$removeElementReferenceFromParent.js";
@@ -17,7 +17,7 @@ interface MoveParams {
     components: Record<string, ComponentManifest>;
 }
 
-export function $moveElement(document: Document, params: MoveParams) {
+export function $moveElement(document: Document, params: MoveParams): ConstraintResult | undefined {
     const { elementId, index, slot, parentId, components } = params;
 
     const elementToMove = $getElementById(document, elementId);
@@ -31,8 +31,7 @@ export function $moveElement(document: Document, params: MoveParams) {
     });
 
     if (!result.allowed) {
-        console.warn("Constraint violation:", result.violations);
-        return;
+        return result;
     }
 
     // Remove the reference to the element from its parent element.
@@ -57,4 +56,6 @@ export function $moveElement(document: Document, params: MoveParams) {
         slot,
         index
     });
+
+    return;
 }

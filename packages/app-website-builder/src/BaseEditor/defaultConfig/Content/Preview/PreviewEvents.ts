@@ -3,6 +3,7 @@ import {
     type BoxesData,
     type ComponentManifest,
     type EditorViewportInfo,
+    functionConverter,
     mouseTracker,
     type PreviewViewportData,
     type SerializedComponentGroup
@@ -143,6 +144,15 @@ export class PreviewEvents {
         });
 
         messenger.on("preview.component.register", (component: ComponentManifest) => {
+            // Deserialize constraint check functions once on arrival.
+            if (component.constraints) {
+                for (const constraint of component.constraints) {
+                    if (typeof constraint.check === "string") {
+                        constraint.check = functionConverter.deserialize(constraint.check);
+                    }
+                }
+            }
+
             this.editor.updateEditor(state => {
                 if (!state.components) {
                     state.components = {};

@@ -129,6 +129,12 @@ export type ConstraintContext = {
         /** Count instances of a component in the document */
         countInstances: (componentName: string) => number;
     };
+    /** True if the direct parent is the given component */
+    isChildOf: (componentName: string) => boolean;
+    /** True if any ancestor (including parent) is the given component */
+    isDescendantOf: (componentName: string) => boolean;
+    /** Number of items currently in the target slot */
+    slotChildCount: () => number;
     /** Debug logger — safe to call inside serialized constraints */
     log: (...args: any[]) => void;
 };
@@ -211,9 +217,7 @@ export type PublicRedirect = {
 
 export type EditorPage = EditorDocument & Pick<Page, "properties" | "status" | "location">;
 
-export type EditorDocument = Document & {
-    metadata: Record<string, any>;
-};
+export type EditorDocument = Document;
 
 export type Page = Document & {
     id: string;

@@ -31,6 +31,7 @@ export {
     type ContentSDKConfig,
     type ComponentManifest,
     type ComponentInput,
+    type ComponentConstraint,
     type WebsiteBuilderThemeInput,
     StyleSettings
 } from "@webiny/website-builder-sdk";

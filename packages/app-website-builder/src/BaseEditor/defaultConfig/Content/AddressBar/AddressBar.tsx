@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { BreakpointSelector } from "./BreakpointSelector.js";
-import { PreviewInNewTab } from "./AddressBar/PreviewInNewTab.js";
-import { OpenInNewTab } from "./AddressBar/OpenInNewTab.js";
-import { RefreshPreview } from "./AddressBar/RefreshPreview.js";
+import { PreviewInNewTab } from "./PreviewInNewTab.js";
+import { OpenInNewTab } from "./OpenInNewTab.js";
+import { RefreshPreview } from "./RefreshPreview.js";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
-import { PreviewDomain } from "./AddressBar/PreviewDomain.js";
-import { usePreviewDomain } from "./usePreviewDomain.js";
+import { PreviewDomain } from "./PreviewDomain.js";
+import { usePreviewDomain } from "../usePreviewDomain.js";
 
 export const AddressBar = () => {
     const path = useSelectFromDocument(document => document.properties.path);

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTenantContext } from "@webiny/app-admin";
 import type { PageDto } from "~/domain/Page/index.js";
-import { usePreviewDomain } from "~/BaseEditor/defaultConfig/Content/Preview/usePreviewDomain.js";
+import { usePreviewDomain } from "~/BaseEditor/defaultConfig/Content/usePreviewDomain.js";
 
 export const usePagePreviewLink = (pageDto: PageDto) => {
     const { tenant } = useTenantContext();

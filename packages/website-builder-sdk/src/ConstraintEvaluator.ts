@@ -1,4 +1,3 @@
-import { toJS } from "mobx";
 import type {
     ComponentManifest,
     ComponentConstraint,
@@ -8,7 +7,6 @@ import type {
     DocumentElement,
     InputValueBinding
 } from "~/types.js";
-import { functionConverter } from "~/FunctionConverter.js";
 
 export type ConstraintViolation = {
     constraint: ComponentConstraint;
@@ -17,7 +15,7 @@ export type ConstraintViolation = {
 
 export type ConstraintResult = {
     allowed: boolean;
-    violations: ConstraintViolation[];
+    violation?: ConstraintViolation;
 };
 
 export interface EvaluateConstraintsParams {
@@ -45,7 +43,7 @@ function buildElementContext(
 
     const inputs: Record<string, InputValueBinding> = document.bindings[element.id]?.inputs ?? {};
 
-    return { element, manifest: toJS(manifest), inputs };
+    return { element, manifest, inputs };
 }
 
 function buildAncestors(
@@ -72,18 +70,6 @@ function buildAncestors(
     return ancestors;
 }
 
-/**
- * Resolve the check function from a constraint. It may be a real function (in tests or
- * before serialization) or a serialized string (after cross-boundary transport).
- */
-function resolveCheck(constraint: ComponentConstraint): (ctx: ConstraintContext) => boolean {
-    if (typeof constraint.check === "function") {
-        return constraint.check;
-    }
-    // Serialized string — deserialize back to a function.
-    return functionConverter.deserialize(constraint.check as unknown as string);
-}
-
 function countInstances(document: Document, componentName: string): number {
     let count = 0;
     for (const id in document.elements) {
@@ -95,24 +81,21 @@ function countInstances(document: Document, componentName: string): number {
 }
 
 export function evaluateConstraints(params: EvaluateConstraintsParams): ConstraintResult {
-    console.log("evaluateConstraints", params);
     const { componentName, parentId, slot, document, components } = params;
-
-    const violations: ConstraintViolation[] = [];
 
     const componentManifest = components[componentName];
     if (!componentManifest) {
-        return { allowed: true, violations: [] };
+        return { allowed: true };
     }
 
     const parentElement = document.elements[parentId];
     if (!parentElement) {
-        return { allowed: true, violations: [] };
+        return { allowed: true };
     }
 
     const parentCtx = buildElementContext(parentElement, components, document);
     if (!parentCtx) {
-        return { allowed: true, violations: [] };
+        return { allowed: true };
     }
 
     const ancestors = buildAncestors(parentElement, components, document);
@@ -127,58 +110,47 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
             bindings: document.bindings,
             countInstances: (name: string) => countInstances(document, name)
         },
-        log: (...args: any[]) => console.log("[constraint]", ...args)
+        isChildOf: (name: string) => parentCtx.manifest.name === name,
+        isDescendantOf: (name: string) => ancestors.some(a => a.manifest.name === name),
+        slotChildCount: () => {
+            const items = parentCtx.inputs[slot]?.static;
+            return Array.isArray(items) ? items.length : 0;
+        },
+        log: (...args: any[]) => console.log(...args)
     };
 
-    console.log("ctx", ctx);
+    const evaluateConstraint = (
+        constraint: ComponentConstraint,
+        fallbackMessage: string
+    ): ConstraintViolation | undefined => {
+        try {
+            if (!constraint.check(ctx)) {
+                return {
+                    constraint,
+                    message: constraint.message ?? fallbackMessage
+                };
+            }
+        } catch (err) {
+            return {
+                constraint,
+                message:
+                    err instanceof Error && err.message
+                        ? err.message
+                        : (constraint.message ?? fallbackMessage)
+            };
+        }
+        return undefined;
+    };
 
     // Evaluate the placed component's own constraints.
     if (componentManifest.constraints) {
         for (const constraint of componentManifest.constraints) {
-            try {
-                const check = resolveCheck(constraint);
-                if (!check(ctx)) {
-                    violations.push({
-                        constraint,
-                        message: constraint.message ?? `Cannot place ${componentName} here`
-                    });
-                }
-            } catch {
-                violations.push({
-                    constraint,
-                    message: constraint.message ?? `Cannot place ${componentName} here`
-                });
+            const violation = evaluateConstraint(constraint, `Cannot place ${componentName} here`);
+            if (violation) {
+                return { allowed: false, violation };
             }
         }
     }
 
-    // Evaluate the parent component's constraints.
-    const parentManifest = parentCtx.manifest;
-    if (parentManifest.constraints) {
-        for (const constraint of parentManifest.constraints) {
-            try {
-                const check = resolveCheck(constraint);
-                if (!check(ctx)) {
-                    violations.push({
-                        constraint,
-                        message:
-                            constraint.message ??
-                            `${parentManifest.name} does not accept ${componentName}`
-                    });
-                }
-            } catch {
-                violations.push({
-                    constraint,
-                    message:
-                        constraint.message ??
-                        `${parentManifest.name} does not accept ${componentName}`
-                });
-            }
-        }
-    }
-
-    return {
-        allowed: violations.length === 0,
-        violations
-    };
+    return { allowed: true };
 }

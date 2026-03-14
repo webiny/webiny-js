@@ -53,7 +53,7 @@ describe("evaluateConstraints", () => {
         });
 
         expect(result.allowed).toBe(true);
-        expect(result.violations).toHaveLength(0);
+        expect(result.violation).toBeUndefined();
     });
 
     it("should block when component's parent constraint fails", () => {
@@ -80,8 +80,8 @@ describe("evaluateConstraints", () => {
         });
 
         expect(result.allowed).toBe(false);
-        expect(result.violations).toHaveLength(1);
-        expect(result.violations[0].message).toBe("TabPanel must be inside Tabs");
+        expect(result.violation).toBeDefined();
+        expect(result.violation!.message).toBe("TabPanel must be inside Tabs");
     });
 
     it("should allow when parent constraint passes", () => {
@@ -108,7 +108,7 @@ describe("evaluateConstraints", () => {
         });
 
         expect(result.allowed).toBe(true);
-        expect(result.violations).toHaveLength(0);
+        expect(result.violation).toBeUndefined();
     });
 
     it("should block when ancestor constraint fails", () => {
@@ -138,7 +138,7 @@ describe("evaluateConstraints", () => {
         });
 
         expect(result.allowed).toBe(false);
-        expect(result.violations[0].message).toBe("ProductPrice must be inside a ProductBox");
+        expect(result.violation!.message).toBe("ProductPrice must be inside a ProductBox");
     });
 
     it("should allow when grandparent matches ancestor constraint", () => {
@@ -210,7 +210,7 @@ describe("evaluateConstraints", () => {
         });
 
         expect(result.allowed).toBe(false);
-        expect(result.violations[0].message).toBe("Maximum 2 children allowed");
+        expect(result.violation!.message).toBe("Maximum 2 children allowed");
     });
 
     it("should block via countInstances when max instances reached", () => {
@@ -239,10 +239,10 @@ describe("evaluateConstraints", () => {
         });
 
         expect(result.allowed).toBe(false);
-        expect(result.violations[0].message).toBe("Only one Hero per page");
+        expect(result.violation!.message).toBe("Only one Hero per page");
     });
 
-    it("should evaluate parent's constraints to restrict accepted children", () => {
+    it("should not evaluate parent's constraints against the placed component", () => {
         const parent = makeElement("parent-1", "Tabs");
         const doc = makeDocument([parent]);
 
@@ -250,38 +250,26 @@ describe("evaluateConstraints", () => {
             Tabs: makeManifest("Tabs", {
                 constraints: [
                     {
-                        check: (ctx: ConstraintContext) => ctx.component.name === "TabPanel",
-                        message: "Tabs only accepts TabPanel children"
+                        check: () => false,
+                        message: "This should not run for children"
                     }
                 ]
             }),
-            TabPanel: makeManifest("TabPanel"),
             Button: makeManifest("Button")
         };
 
-        // TabPanel should be allowed
-        const allowResult = evaluateConstraints({
-            componentName: "TabPanel",
-            parentId: "parent-1",
-            slot: "children",
-            document: doc,
-            components
-        });
-        expect(allowResult.allowed).toBe(true);
-
-        // Button should be blocked
-        const blockResult = evaluateConstraints({
+        // Parent's constraints should not affect children being dropped into it
+        const result = evaluateConstraints({
             componentName: "Button",
             parentId: "parent-1",
             slot: "children",
             document: doc,
             components
         });
-        expect(blockResult.allowed).toBe(false);
-        expect(blockResult.violations[0].message).toBe("Tabs only accepts TabPanel children");
+        expect(result.allowed).toBe(true);
     });
 
-    it("should require all constraints to pass (AND logic)", () => {
+    it("should short-circuit on the first failed constraint", () => {
         const parent = makeElement("parent-1", "Container");
         const doc = makeDocument([parent]);
 
@@ -314,9 +302,7 @@ describe("evaluateConstraints", () => {
         });
 
         expect(result.allowed).toBe(false);
-        expect(result.violations).toHaveLength(2);
-        expect(result.violations[0].message).toBe("Always fails");
-        expect(result.violations[1].message).toBe("Also fails");
+        expect(result.violation!.message).toBe("Always fails");
     });
 
     it("should allow placement when component manifest is not found", () => {
@@ -434,10 +420,10 @@ describe("evaluateConstraints", () => {
             components
         });
 
-        expect(result.violations[0].message).toBe("Cannot place Widget here");
+        expect(result.violation!.message).toBe("Cannot place Widget here");
     });
 
-    it("should treat a throwing check as a violation", () => {
+    it("should use thrown error message as the violation message", () => {
         const parent = makeElement("parent-1", "Container");
         const doc = makeDocument([parent]);
 
@@ -446,10 +432,11 @@ describe("evaluateConstraints", () => {
             Widget: makeManifest("Widget", {
                 constraints: [
                     {
-                        check: () => {
-                            throw new Error("boom");
-                        },
-                        message: "Widget constraint error"
+                        check: (ctx: ConstraintContext) => {
+                            throw new Error(
+                                `Widget cannot be placed inside ${ctx.parent.manifest.name}`
+                            );
+                        }
                     }
                 ]
             })
@@ -464,6 +451,258 @@ describe("evaluateConstraints", () => {
         });
 
         expect(result.allowed).toBe(false);
-        expect(result.violations[0].message).toBe("Widget constraint error");
+        expect(result.violation!.message).toBe("Widget cannot be placed inside Container");
+    });
+
+    it("should fall back to static message when a non-Error is thrown", () => {
+        const parent = makeElement("parent-1", "Container");
+        const doc = makeDocument([parent]);
+
+        const components: Record<string, ComponentManifest> = {
+            Container: makeManifest("Container"),
+            Widget: makeManifest("Widget", {
+                constraints: [
+                    {
+                        check: () => {
+                            throw "not an error object";
+                        },
+                        message: "Static fallback"
+                    }
+                ]
+            })
+        };
+
+        const result = evaluateConstraints({
+            componentName: "Widget",
+            parentId: "parent-1",
+            slot: "children",
+            document: doc,
+            components
+        });
+
+        expect(result.allowed).toBe(false);
+        expect(result.violation!.message).toBe("Static fallback");
+    });
+
+    it("should fall back to default message when a non-Error is thrown and no static message", () => {
+        const parent = makeElement("parent-1", "Container");
+        const doc = makeDocument([parent]);
+
+        const components: Record<string, ComponentManifest> = {
+            Container: makeManifest("Container"),
+            Widget: makeManifest("Widget", {
+                constraints: [
+                    {
+                        check: () => {
+                            throw null;
+                        }
+                    }
+                ]
+            })
+        };
+
+        const result = evaluateConstraints({
+            componentName: "Widget",
+            parentId: "parent-1",
+            slot: "children",
+            document: doc,
+            components
+        });
+
+        expect(result.allowed).toBe(false);
+        expect(result.violation!.message).toBe("Cannot place Widget here");
+    });
+
+    describe("ctx.isChildOf", () => {
+        it("should return true when direct parent matches", () => {
+            const parent = makeElement("parent-1", "Tabs");
+            const doc = makeDocument([parent]);
+            const components: Record<string, ComponentManifest> = {
+                Tabs: makeManifest("Tabs"),
+                TabPanel: makeManifest("TabPanel", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => ctx.isChildOf("Tabs"),
+                            message: "TabPanel must be a direct child of Tabs"
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "TabPanel",
+                parentId: "parent-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(true);
+        });
+
+        it("should return false when direct parent does not match", () => {
+            const parent = makeElement("parent-1", "Container");
+            const doc = makeDocument([parent]);
+            const components: Record<string, ComponentManifest> = {
+                Container: makeManifest("Container"),
+                TabPanel: makeManifest("TabPanel", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => ctx.isChildOf("Tabs"),
+                            message: "TabPanel must be a direct child of Tabs"
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "TabPanel",
+                parentId: "parent-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(false);
+        });
+    });
+
+    describe("ctx.isDescendantOf", () => {
+        it("should return true when direct parent matches", () => {
+            const parent = makeElement("parent-1", "ProductBox");
+            const doc = makeDocument([parent]);
+            const components: Record<string, ComponentManifest> = {
+                ProductBox: makeManifest("ProductBox"),
+                ProductPrice: makeManifest("ProductPrice", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => ctx.isDescendantOf("ProductBox")
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "ProductPrice",
+                parentId: "parent-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(true);
+        });
+
+        it("should return true when grandparent matches", () => {
+            const root = makeElement("root", "ProductBox");
+            const inner = makeElement("inner", "Container", { id: "root", slot: "children" });
+            const doc = makeDocument([root, inner]);
+            const components: Record<string, ComponentManifest> = {
+                ProductBox: makeManifest("ProductBox"),
+                Container: makeManifest("Container"),
+                ProductPrice: makeManifest("ProductPrice", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => ctx.isDescendantOf("ProductBox")
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "ProductPrice",
+                parentId: "inner",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(true);
+        });
+
+        it("should return false when no ancestor matches", () => {
+            const root = makeElement("root", "Page");
+            const inner = makeElement("inner", "Section", { id: "root", slot: "children" });
+            const doc = makeDocument([root, inner]);
+            const components: Record<string, ComponentManifest> = {
+                Page: makeManifest("Page"),
+                Section: makeManifest("Section"),
+                ProductPrice: makeManifest("ProductPrice", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => ctx.isDescendantOf("ProductBox")
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "ProductPrice",
+                parentId: "inner",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(false);
+        });
+    });
+
+    describe("ctx.slotChildCount", () => {
+        it("should return the number of children in the target slot", () => {
+            const parent = makeElement("parent-1", "Grid");
+            const doc = makeDocument([parent], {
+                "parent-1": {
+                    inputs: {
+                        children: {
+                            id: "inp-1",
+                            type: "slot",
+                            static: ["child-1", "child-2", "child-3"]
+                        }
+                    }
+                }
+            });
+
+            const components: Record<string, ComponentManifest> = {
+                Grid: makeManifest("Grid"),
+                Cell: makeManifest("Cell", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => ctx.slotChildCount() < 3,
+                            message: "Max 3 children"
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "Cell",
+                parentId: "parent-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(false);
+        });
+
+        it("should return 0 when slot has no bindings", () => {
+            const parent = makeElement("parent-1", "Container");
+            const doc = makeDocument([parent]);
+
+            const components: Record<string, ComponentManifest> = {
+                Container: makeManifest("Container"),
+                Widget: makeManifest("Widget", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => ctx.slotChildCount() < 5
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "Widget",
+                parentId: "parent-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(true);
+        });
     });
 });

@@ -6,3 +6,18 @@ export { useDocumentEditor } from "~/DocumentEditor/index.js";
 export { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
 export { useComponent } from "~/BaseEditor/hooks/useComponent.js";
 export { PageEditorConfig } from "~/index.js";
+
+export { $selectElement } from "~/editorSdk/utils/index.js";
+export { $deselectElement } from "~/editorSdk/utils/index.js";
+export { $highlightElement } from "~/editorSdk/utils/index.js";
+export { $getElementById } from "~/editorSdk/utils/index.js";
+export { $getActiveElementId } from "~/editorSdk/utils/index.js";
+export { $getComponentManifestByElementId } from "~/editorSdk/utils/index.js";
+export { $deleteElement } from "~/editorSdk/utils/index.js";
+export { $createElement } from "~/editorSdk/utils/index.js";
+export { $moveElement } from "~/editorSdk/utils/index.js";
+export { $removeElementReferenceFromParent } from "~/editorSdk/utils/index.js";
+export { $addElementReferenceToParent } from "~/editorSdk/utils/index.js";
+export { $getElementsOfType } from "~/editorSdk/utils/index.js";
+export { $getFirstElementOfType } from "~/editorSdk/utils/index.js";
+export { $getElementInputValues } from "~/editorSdk/utils/index.js";

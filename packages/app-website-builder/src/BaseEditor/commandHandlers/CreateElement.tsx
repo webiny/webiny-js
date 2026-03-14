@@ -11,15 +11,9 @@ export const CreateElement = () => {
     useEffect(() => {
         return editor.registerCommandHandler(Commands.CreateElement, payload => {
             const result = $createElement(editor, payload);
-            if (result) {
-                const description = result.violations
-                    .map(violation => {
-                        return violation.message;
-                    })
-                    .join("\n");
-
+            if (result?.violation) {
                 toast.showWarningToast({
-                    title: description
+                    title: result.violation.message
                 });
             }
         });

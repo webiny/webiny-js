@@ -9,3 +9,6 @@ export * from "./$createElement.js";
 export * from "./$moveElement.js";
 export * from "./$removeElementReferenceFromParent.js";
 export * from "./$addElementReferenceToParent.js";
+export * from "./$getElementsOfType.js";
+export * from "./$getFirstElementOfType.js";
+export * from "./$getElementInputValues.js";
