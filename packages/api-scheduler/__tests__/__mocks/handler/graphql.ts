@@ -35,19 +35,19 @@ export interface ICreateScheduledActionMutationVariables {
     actionType: ScheduledActionType;
 }
 
-export interface ICreateScheduledActionMutationResponse {
+export interface IScheduleActionMutationResponse {
     scheduler: {
-        createScheduledAction: {
+        scheduleAction: {
             data: IScheduledAction | null;
             error: IErrorResponse | null;
         };
     };
 }
 
-export const CREATE_SCHEDULED_ACTION = /* GraphQL */ `
-    mutation CreateScheduledAction($namespace: String!, $id: ID!, $scheduleFor: DateTime!, actionType: ScheduleRecordType!) {
+export const SCHEDULE_ACTION = /* GraphQL */ `
+    mutation ScheduleAction($namespace: String!, $id: ID!, $scheduleFor: DateTime!, $actionType: ScheduleRecordType!) {
         scheduler {
-            createScheduledAction(
+            scheduleAction(
                 namespace: $namespace,
                 targetId: $id,
                 scheduleFor: $scheduleFor,
@@ -60,32 +60,25 @@ export const CREATE_SCHEDULED_ACTION = /* GraphQL */ `
     }
 `;
 
-export interface ICreateScheduledActionMutationVariables {
+export interface ICancelScheduledActionMutationVariables {
     namespace: string;
     id: string;
-    scheduleFor: Date;
-    actionType: ScheduledActionType;
 }
 
-export interface ICreateScheduledActionMutationResponse {
+export interface ICancelScheduledActionMutationResponse {
     scheduler: {
-        createScheduledAction: {
-            data: IScheduledAction | null;
+        cancelScheduledAction: {
+            data: boolean | null;
             error: IErrorResponse | null;
         };
     };
 }
 
-export const UPDATE_SCHEDULED_ACTION = /* GraphQL */ `
-    mutation UpdateScheduledAction($namespace: String!, $id: ID!, $scheduleFor: DateTime!, actionType: ScheduleRecordType!) {
+export const CANCEL_SCHEDULED_ACTION = /* GraphQL */ `
+    mutation CancelScheduledAction($namespace: String!, $id: ID!) {
         scheduler {
-            updateScheduledAction(
-                namespace: $namespace,
-                targetId: $id,
-                scheduleFor: $scheduleFor,
-                actionType: $actionType
-            ) {
-                ${DATA}
+            cancelScheduledAction(namespace: $namespace, id: $id) {
+                data
                 ${ERROR}
             }
         }

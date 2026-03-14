@@ -4,9 +4,12 @@ import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { useGraphQLHandler as baseUseGraphQLHandler } from "@webiny/testing";
 import { PluginsContainer } from "@webiny/plugins";
 import {
-    CREATE_SCHEDULED_ACTION,
-    type ICreateScheduledActionMutationResponse,
-    type ICreateScheduledActionMutationVariables
+    CANCEL_SCHEDULED_ACTION,
+    type ICancelScheduledActionMutationResponse,
+    type ICancelScheduledActionMutationVariables,
+    type ICreateScheduledActionMutationVariables,
+    type IScheduleActionMutationResponse,
+    SCHEDULE_ACTION
 } from "./graphql.js";
 
 export const useGraphQLHandler = <C extends CmsContext>(params: CreateHandlerCoreParams) => {
@@ -29,7 +32,11 @@ export const useGraphQLHandler = <C extends CmsContext>(params: CreateHandlerCor
         handler,
         createSchedule: handler.createMutation<
             ICreateScheduledActionMutationVariables,
-            ICreateScheduledActionMutationResponse
-        >(CREATE_SCHEDULED_ACTION)
+            IScheduleActionMutationResponse
+        >(SCHEDULE_ACTION),
+        cancelScheduledAction: handler.createMutation<
+            ICancelScheduledActionMutationVariables,
+            ICancelScheduledActionMutationResponse
+        >(CANCEL_SCHEDULED_ACTION)
     };
 };
