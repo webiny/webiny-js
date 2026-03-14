@@ -194,7 +194,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
         });
 
         builder.addResolver<ScheduleActionUseCase.Params>({
-            path: "SchedulerMutation.scheduledAction",
+            path: "SchedulerMutation.scheduleAction",
             dependencies: [ScheduleActionUseCase],
             resolver: (useCase: ScheduleActionUseCase.Interface) => {
                 return async ({ args }) => {

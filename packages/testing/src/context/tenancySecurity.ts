@@ -7,7 +7,7 @@ import { IdentityData } from "@webiny/api-core/features/IdentityContext";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import {createTenancyContext} from "@webiny/api-core/legacy/tenancy/createTenancyContext.js";
+import { createTenancyContext } from "@webiny/api-core/legacy/tenancy/createTenancyContext.js";
 
 interface Config {
     setupGraphQL?: boolean;

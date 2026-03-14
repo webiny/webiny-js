@@ -32,7 +32,6 @@ export interface IListScheduledActionsWhere {
 
 export type IListScheduledActionsMeta = CmsEntryMeta;
 
-
 export interface IListScheduledActionsParams {
     where: IListScheduledActionsWhere;
     sort?: CmsEntryListSort;
@@ -70,5 +69,4 @@ export namespace ListScheduledActionsUseCase {
     export type Sort = CmsEntryListSort;
     export type Meta = IListScheduledActionsMeta;
     export type Response<T extends GenericRecord> = IListScheduledActionsResponse<T>;
-    
 }

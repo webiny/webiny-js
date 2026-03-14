@@ -1,5 +1,16 @@
-import type { IScheduledAction, ScheduledActionType } from "~/shared/abstractions.js";
-import {ListScheduledActionsUseCase} from "~/features/ListScheduledActions/index.js";
+import type { Identity, ScheduledActionType } from "~/shared/abstractions.js";
+import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
+
+export interface IScheduledAction {
+    id: string;
+    targetId: string;
+    namespace: string;
+    scheduledBy: Identity;
+    publishOn: Date | null;
+    unpublishOn: Date | null;
+    actionType: ScheduledActionType;
+    title: string;
+}
 
 export const ERROR = /* GraphQL */ `
     error {
@@ -13,12 +24,17 @@ export const ERROR = /* GraphQL */ `
 export const DATA = /* GraphQL */ `
     data {
         id
-        title
-        namespace
-        actionType
         targetId
-        scheduleFor
-        payload
+        namespace
+        scheduledBy {
+            id
+            displayName
+            type
+        }
+        publishOn
+        unpublishOn
+        actionType
+        title
     }
 `;
 
@@ -86,7 +102,6 @@ export const CANCEL_SCHEDULED_ACTION = /* GraphQL */ `
     }
 `;
 
-
 export interface IListScheduledActionsQueryVariables {
     namespace: string;
     where?: ListScheduledActionsUseCase.Where;
@@ -104,7 +119,6 @@ export interface IListScheduledActionsQueryResponse {
         };
     };
 }
-
 
 export const LIST_SCHEDULED_ACTION = /* GraphQL */ `
     query ListScheduledActions(

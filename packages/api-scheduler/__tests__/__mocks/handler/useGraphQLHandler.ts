@@ -1,6 +1,4 @@
 import type { CreateHandlerCoreParams } from "./plugins";
-import { defaultIdentity } from "./tenancySecurity";
-import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { useGraphQLHandler as baseUseGraphQLHandler } from "@webiny/testing";
 import { PluginsContainer } from "@webiny/plugins";
 import {
@@ -14,15 +12,14 @@ import {
     LIST_SCHEDULED_ACTION,
     SCHEDULE_ACTION
 } from "./graphql.js";
-import {createScheduler} from "~/createScheduler.js";
-import type {SchedulerClientConfig} from "@webiny/aws-sdk/client-scheduler/index.js";
+import { createScheduler } from "~/createScheduler.js";
 
-export const useGraphQLHandler = <C extends CmsContext>(params: CreateHandlerCoreParams) => {
+export const useGraphQLHandler = (params: CreateHandlerCoreParams) => {
     const plugins = new PluginsContainer(params.plugins || []);
-    
+
     plugins.register(
         createScheduler({
-            getClient: params.getScheduleClient,
+            getClient: params.getScheduleClient
         })
     );
 
