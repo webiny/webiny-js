@@ -62,7 +62,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 meta: ScheduleListMeta
             }
 
-            type CreateScheduledActionResponse {
+            type ScheduleActionResponse {
                 data: ScheduleRecord
                 error: ScheduleError
             }
@@ -115,13 +115,13 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
             }
 
             extend type SchedulerMutation {
-                createScheduledAction(
+                scheduleAction(
                     namespace: String!
                     targetId: ID!
                     immediately: Boolean
                     scheduleFor: DateTime
                     actionType: ScheduleRecordType!
-                ): CreateScheduledActionResponse!
+                ): ScheduleActionResponse!
                 
                 cancelScheduledAction(namespace: String!, id: ID!): CancelScheduledActionResponse!
             }
@@ -194,7 +194,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
         });
 
         builder.addResolver<ScheduleActionUseCase.Params>({
-            path: "SchedulerMutation.createScheduledAction",
+            path: "SchedulerMutation.scheduledAction",
             dependencies: [ScheduleActionUseCase],
             resolver: (useCase: ScheduleActionUseCase.Interface) => {
                 return async ({ args }) => {

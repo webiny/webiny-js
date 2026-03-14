@@ -15,7 +15,7 @@ const createSchedulePublishActionMutation = () => {
     return gql`
         mutation CreateSchedulePublishAction($namespace: String!, $targetId: ID!, $scheduleFor: DateTime, $actionType: ScheduleRecordType!) {
             scheduler {
-                createScheduledAction(namespace: $namespace, targetId: $targetId, scheduleFor: $scheduleFor, actionType: $actionType) {
+                scheduleAction(namespace: $namespace, targetId: $targetId, scheduleFor: $scheduleFor, actionType: $actionType) {
                     data {
                         ${createSchedulerEntryFields()}
                     }
@@ -40,7 +40,7 @@ interface SchedulerPublishGraphQLMutationVariables {
 
 interface SchedulerPublishGraphQLMutationResponse {
     scheduler: {
-        createScheduledAction: {
+        scheduleAction: {
             data: SchedulerEntry | null;
             error: SchedulerErrorResponse | null;
         };
@@ -75,12 +75,12 @@ export class SchedulerPublishGraphQLGateway implements ISchedulePublishActionGat
             fetchPolicy: "no-cache"
         });
 
-        const result = response?.scheduler?.createScheduledAction;
+        const result = response?.scheduler?.scheduleAction;
         if (!result || errors?.length) {
             console.error({
                 errors
             });
-            throw new Error("Network error while creating a schedule.");
+            throw new Error("Network error while scheduling an action.");
         }
 
         if (!result.data) {
