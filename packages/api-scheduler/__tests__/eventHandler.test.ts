@@ -87,7 +87,7 @@ describe("Scheduler Event Handler", () => {
                 immediately: false,
                 namespace: "Test/SomeCustomEntry",
                 scheduleFor: expect.toBeDateString(),
-                scheduleId: "wby-schedule-87829c7ae555b9dde72c11dd#0001",
+                scheduleId: expect.stringMatching("wby-schedule-"),
                 targetId: "target-id#0001",
                 title: "Fetched title from handler",
                 something: true

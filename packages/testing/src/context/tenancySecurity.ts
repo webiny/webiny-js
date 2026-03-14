@@ -7,7 +7,6 @@ import { IdentityData } from "@webiny/api-core/features/IdentityContext";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { createTenancyContext } from "@webiny/api-core/legacy/tenancy/createTenancyContext.js";
 
 interface Config {
     setupGraphQL?: boolean;
@@ -27,7 +26,6 @@ export const UNKNOWN_TEAM_ID = "unknown-team";
 
 export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plugin[] => {
     return [
-        createTenancyContext(),
         createSecurityRolePlugin({
             id: FULL_ACCESS_ROLE_ID,
             name: "Full Access",

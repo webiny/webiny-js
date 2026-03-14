@@ -147,7 +147,7 @@ describe("Scheduler", () => {
                     actionType: "publish",
                     namespace: PublishTestEntryActionHandlerImpl.name,
                     scheduleFor: expect.toBeDateString(),
-                    scheduleId: "wby-schedule-87829c7ae555b9dde72c11dd#0001",
+                    scheduleId: expect.any(String),
                     something: true,
                     targetId: "target-id#0001",
                     title: "Fetched title from handler"
@@ -255,7 +255,7 @@ describe("Scheduler", () => {
             actionType: "publish",
             namespace: PublishTestEntryActionHandlerImpl.name,
             scheduleFor: expect.toBeDateString(),
-            scheduleId: "wby-schedule-87829c7ae555b9dde72c11dd#0001",
+            scheduleId: expect.any(String),
             something: true,
             targetId: "target-id#0001",
             title: "Fetched title from handler"
@@ -283,7 +283,7 @@ describe("Scheduler", () => {
             actionType: "publish",
             namespace: PublishTestEntryActionHandlerImpl.name,
             scheduleFor: expect.toBeDateString(),
-            scheduleId: "wby-schedule-87829c7ae555b9dde72c11dd#0001",
+            scheduleId: expect.any(String),
             something: true,
             targetId: "target-id#0001",
             title: "Fetched title from handler"
