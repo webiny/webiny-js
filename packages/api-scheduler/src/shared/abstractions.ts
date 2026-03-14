@@ -15,7 +15,7 @@ export type ScheduledActionType = "publish" | "unpublish";
 /**
  * Scheduled Action Record - The data stored for a scheduled action
  */
-export interface IScheduledAction<T extends GenericRecord> {
+export interface IScheduledAction<T extends GenericRecord = GenericRecord> {
     id: string;
     namespace: string; // Resource scope: "Cms/Entry/Article", "Mailer/Email"
     actionType: ScheduledActionType;

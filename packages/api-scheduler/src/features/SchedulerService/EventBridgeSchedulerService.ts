@@ -55,7 +55,7 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         if (exists) {
             return this.update(params);
         }
-        
+
         await client.send(
             new CreateScheduleCommand({
                 Name: id,

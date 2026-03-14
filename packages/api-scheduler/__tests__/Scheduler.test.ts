@@ -12,7 +12,7 @@ import {
     ListScheduledActionsUseCase
 } from "~/features/ListScheduledActions/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
-import { useHandler } from "./__mocks/context/useHandler.js";
+import { useHandler } from "./__mocks/handler/useHandler.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { mockClient } from "aws-sdk-client-mock";
 import { SchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";

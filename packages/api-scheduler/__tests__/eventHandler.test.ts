@@ -8,7 +8,7 @@ import { registry } from "@webiny/handler-aws/registry.js";
 import type { LambdaContext } from "@webiny/handler-aws/types.js";
 import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
-import { useHandler } from "./__mocks/context/useHandler.js";
+import { useHandler } from "./__mocks/handler/useHandler.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
 import { SchedulerService } from "~/shared/abstractions.js";

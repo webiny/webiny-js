@@ -13,7 +13,7 @@ import type {
 
 const createSchedulePublishActionMutation = () => {
     return gql`
-        mutation SchedulePublishAction($namespace: String!, $targetId: ID!, $scheduleFor: DateTime, $actionType: ScheduleRecordType!) {
+        mutation CreateSchedulePublishAction($namespace: String!, $targetId: ID!, $scheduleFor: DateTime, $actionType: ScheduleRecordType!) {
             scheduler {
                 createScheduledAction(namespace: $namespace, targetId: $targetId, scheduleFor: $scheduleFor, actionType: $actionType) {
                     data {

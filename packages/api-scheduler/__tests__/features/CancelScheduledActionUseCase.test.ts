@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import { useHandler } from "~tests/__mocks/context/useHandler.js";
+import { useHandler } from "~tests/__mocks/handler/useHandler.js";
 import { createMockScheduleClient } from "~tests/__mocks/scheduleClient.js";
 import { SchedulerService } from "~/shared/abstractions.js";
 import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";

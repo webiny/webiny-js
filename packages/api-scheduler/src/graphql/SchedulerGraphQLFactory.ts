@@ -67,11 +67,6 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 error: ScheduleError
             }
 
-            type UpdateScheduledActionResponse {
-                data: ScheduleRecord
-                error: ScheduleError
-            }
-
             type CancelScheduledActionResponse {
                 data: Boolean
                 error: ScheduleError
@@ -127,14 +122,6 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                     scheduleFor: DateTime
                     actionType: ScheduleRecordType!
                 ): CreateScheduledActionResponse!
-                
-                updateScheduledAction(
-                    namespace: String!
-                    targetId: ID!
-                    immediately: Boolean
-                    scheduleFor: DateTime
-                    actionType: ScheduleRecordType!
-                ): UpdateScheduledActionResponse!
                 
                 cancelScheduledAction(namespace: String!, id: ID!): CancelScheduledActionResponse!
             }
@@ -208,22 +195,6 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver<ScheduleActionUseCase.Params>({
             path: "SchedulerMutation.createScheduledAction",
-            dependencies: [ScheduleActionUseCase],
-            resolver: (useCase: ScheduleActionUseCase.Interface) => {
-                return async ({ args }) => {
-                    const result = await useCase.execute(args);
-
-                    if (result.isFail()) {
-                        return new ErrorResponse(result.error);
-                    }
-
-                    return new Response(result.value);
-                };
-            }
-        });
-
-        builder.addResolver<ScheduleActionUseCase.Params>({
-            path: "SchedulerMutation.updateScheduledAction",
             dependencies: [ScheduleActionUseCase],
             resolver: (useCase: ScheduleActionUseCase.Interface) => {
                 return async ({ args }) => {
