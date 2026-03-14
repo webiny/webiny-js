@@ -31,4 +31,37 @@ describe("Scheduler GraphQL", () => {
             }
         });
     });
+
+    it("should fail to get scheduled action - non existing scheduled action", async () => {
+        const [responseNamespace] = await handler.getScheduledAction({
+            namespace: "DoesNotExist",
+            id: "non-existing-id"
+        });
+
+        expect(responseNamespace).toEqual({
+            data: {
+                scheduler: {
+                    getScheduledAction: {
+                        data: null,
+                        error: null
+                    }
+                }
+            }
+        });
+        const [response] = await handler.getScheduledAction({
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            id: "non-existing-id"
+        });
+
+        expect(response).toEqual({
+            data: {
+                scheduler: {
+                    getScheduledAction: {
+                        data: null,
+                        error: null
+                    }
+                }
+            }
+        });
+    });
 });

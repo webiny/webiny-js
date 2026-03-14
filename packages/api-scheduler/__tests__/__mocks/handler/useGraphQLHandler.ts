@@ -3,9 +3,12 @@ import { useGraphQLHandler as baseUseGraphQLHandler } from "@webiny/testing";
 import { PluginsContainer } from "@webiny/plugins";
 import {
     CANCEL_SCHEDULED_ACTION,
+    GET_SCHEDULED_ACTION,
     type ICancelScheduledActionMutationResponse,
     type ICancelScheduledActionMutationVariables,
     type ICreateScheduledActionMutationVariables,
+    IGetScheduledActionQueryResponse,
+    IGetScheduledActionQueryVariables,
     type IListScheduledActionsQueryResponse,
     type IListScheduledActionsQueryVariables,
     type IScheduleActionMutationResponse,
@@ -44,6 +47,10 @@ export const useGraphQLHandler = (params: CreateHandlerCoreParams) => {
             ICancelScheduledActionMutationVariables,
             ICancelScheduledActionMutationResponse
         >(CANCEL_SCHEDULED_ACTION),
+        getScheduledAction: handler.createQuery<
+            IGetScheduledActionQueryVariables,
+            IGetScheduledActionQueryResponse
+        >(GET_SCHEDULED_ACTION),
         listScheduledActions: handler.createQuery<
             IListScheduledActionsQueryVariables,
             IListScheduledActionsQueryResponse

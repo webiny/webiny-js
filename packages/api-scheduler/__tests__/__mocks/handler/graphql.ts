@@ -102,6 +102,31 @@ export const CANCEL_SCHEDULED_ACTION = /* GraphQL */ `
     }
 `;
 
+export interface IGetScheduledActionQueryVariables {
+    namespace: string;
+    id: string;
+}
+
+export interface IGetScheduledActionQueryResponse {
+    scheduler: {
+        getScheduledAction: {
+            data: IScheduledAction | null;
+            error: IErrorResponse | null;
+        };
+    };
+}
+
+export const GET_SCHEDULED_ACTION = /* GraphQL */ `
+    query GetScheduledAction($namespace: String!, $id: ID!) {
+        scheduler {
+            getScheduledAction(namespace: $namespace, id: $id) {
+                ${DATA}
+                ${ERROR}
+            }
+        }
+    }
+`;
+
 export interface IListScheduledActionsQueryVariables {
     namespace: string;
     where?: ListScheduledActionsUseCase.Where;
