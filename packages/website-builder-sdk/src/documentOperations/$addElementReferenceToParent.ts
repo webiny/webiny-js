@@ -5,7 +5,7 @@ interface Params {
     elementId: string;
     parentId: string;
     slot: string;
-    index: number;
+    index?: number;
 }
 
 export function $addElementReferenceToParent(
@@ -15,7 +15,7 @@ export function $addElementReferenceToParent(
     const bindings = document.bindings[parentId] ?? {};
     const inputs = bindings.inputs ?? {};
 
-    if (index < 0) {
+    if (index !== undefined && index < 0) {
         // Single value slot
         inputs[slot] = {
             ...inputs[slot],
@@ -24,15 +24,20 @@ export function $addElementReferenceToParent(
         };
     } else {
         const slotElements = inputs[slot] as InputValueBinding;
+        const existing = slotElements?.static ?? [];
+
+        let staticValue;
+        if (index === undefined) {
+            staticValue = [...existing, elementId];
+        } else {
+            staticValue = [...existing.slice(0, index), elementId, ...existing.slice(index)];
+        }
+
         inputs[slot] = {
             ...inputs[slot],
             type: "slot",
             list: true,
-            static: [
-                ...(slotElements?.static ?? []).slice(0, index),
-                elementId,
-                ...(slotElements?.static ?? []).slice(index)
-            ]
+            static: staticValue
         };
     }
 

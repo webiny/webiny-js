@@ -26,6 +26,8 @@ export function $createElement(
         return result;
     }
 
+    console.log("input", payload);
+
     const elementFactory = new ElementFactory(componentsManifest);
     const { operations } = elementFactory.createElementFromComponent({
         componentName,
@@ -34,6 +36,8 @@ export function $createElement(
         index,
         bindings: bindings ?? componentsManifest[componentName].defaults ?? {}
     });
+
+    console.log("operations", operations);
 
     editor.updateDocument(document => {
         operations.forEach(operation => operation.apply(document));

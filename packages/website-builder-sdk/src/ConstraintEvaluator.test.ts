@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { evaluateConstraints } from "./ConstraintEvaluator.js";
+import { evaluateConstraints, evaluateDeleteConstraint } from "./ConstraintEvaluator.js";
 import type { ComponentManifest, Document, DocumentElement, ConstraintContext } from "~/types.js";
 
 function makeElement(
@@ -1254,5 +1254,211 @@ describe("evaluateConstraints", () => {
             // Component's own constraints should short-circuit first
             expect(result.violation!.message).toBe("component constraint");
         });
+    });
+});
+
+describe("evaluateDeleteConstraint", () => {
+    it("should allow when canDelete is undefined", () => {
+        const el = makeElement("el-1", "Widget", { id: "root", slot: "children" });
+        const root = makeElement("root", "Page");
+        const doc = makeDocument([root, el]);
+        const components: Record<string, ComponentManifest> = {
+            Page: makeManifest("Page"),
+            Widget: makeManifest("Widget")
+        };
+
+        const result = evaluateDeleteConstraint({
+            elementId: "el-1",
+            document: doc,
+            components
+        });
+        expect(result.allowed).toBe(true);
+    });
+
+    it("should allow when canDelete is true", () => {
+        const el = makeElement("el-1", "Widget", { id: "root", slot: "children" });
+        const root = makeElement("root", "Page");
+        const doc = makeDocument([root, el]);
+        const components: Record<string, ComponentManifest> = {
+            Page: makeManifest("Page"),
+            Widget: makeManifest("Widget", { canDelete: true })
+        };
+
+        const result = evaluateDeleteConstraint({
+            elementId: "el-1",
+            document: doc,
+            components
+        });
+        expect(result.allowed).toBe(true);
+    });
+
+    it("should block when canDelete is false", () => {
+        const el = makeElement("el-1", "GridColumn", { id: "root", slot: "children" });
+        const root = makeElement("root", "Grid");
+        const doc = makeDocument([root, el]);
+        const components: Record<string, ComponentManifest> = {
+            Grid: makeManifest("Grid"),
+            GridColumn: makeManifest("GridColumn", { canDelete: false })
+        };
+
+        const result = evaluateDeleteConstraint({
+            elementId: "el-1",
+            document: doc,
+            components
+        });
+        expect(result.allowed).toBe(false);
+        expect(result.violation!.message).toBe("GridColumn cannot be deleted");
+    });
+
+    it("should allow when canDelete check returns true", () => {
+        const funnel = makeElement("funnel", "Funnel");
+        const step1 = makeElement("step-1", "Step", { id: "funnel", slot: "steps/0/step" });
+        const step2 = makeElement("step-2", "Step", { id: "funnel", slot: "steps/1/step" });
+        const step3 = makeElement("step-3", "Step", { id: "funnel", slot: "steps/2/step" });
+        const doc = makeDocument([funnel, step1, step2, step3], {
+            funnel: {
+                inputs: {
+                    "steps/0/step": { id: "s0", type: "slot", static: "step-1" },
+                    "steps/1/step": { id: "s1", type: "slot", static: "step-2" },
+                    "steps/2/step": { id: "s2", type: "slot", static: "step-3" }
+                }
+            }
+        });
+        const components: Record<string, ComponentManifest> = {
+            Funnel: makeManifest("Funnel"),
+            Step: makeManifest("Step", {
+                canDelete: {
+                    check: (ctx: ConstraintContext) => ctx.countInstances("Step") > 2
+                }
+            })
+        };
+
+        const result = evaluateDeleteConstraint({
+            elementId: "step-2",
+            document: doc,
+            components
+        });
+        expect(result.allowed).toBe(true);
+    });
+
+    it("should block when canDelete check returns false", () => {
+        const funnel = makeElement("funnel", "Funnel");
+        const step1 = makeElement("step-1", "Step", { id: "funnel", slot: "steps/0/step" });
+        const step2 = makeElement("step-2", "Step", { id: "funnel", slot: "steps/1/step" });
+        const doc = makeDocument([funnel, step1, step2], {
+            funnel: {
+                inputs: {
+                    "steps/0/step": { id: "s0", type: "slot", static: "step-1" },
+                    "steps/1/step": { id: "s1", type: "slot", static: "step-2" }
+                }
+            }
+        });
+        const components: Record<string, ComponentManifest> = {
+            Funnel: makeManifest("Funnel"),
+            Step: makeManifest("Step", {
+                canDelete: {
+                    check: (ctx: ConstraintContext) => ctx.countInstances("Step") > 2,
+                    message: "Need at least 2 steps"
+                }
+            })
+        };
+
+        const result = evaluateDeleteConstraint({
+            elementId: "step-1",
+            document: doc,
+            components
+        });
+        expect(result.allowed).toBe(false);
+        expect(result.violation!.message).toBe("Need at least 2 steps");
+    });
+
+    it("should use thrown error message as violation message", () => {
+        const root = makeElement("root", "Page");
+        const el = makeElement("el-1", "Widget", { id: "root", slot: "children" });
+        const doc = makeDocument([root, el]);
+        const components: Record<string, ComponentManifest> = {
+            Page: makeManifest("Page"),
+            Widget: makeManifest("Widget", {
+                canDelete: {
+                    check: () => {
+                        throw new Error("Cannot delete this widget right now");
+                    }
+                }
+            })
+        };
+
+        const result = evaluateDeleteConstraint({
+            elementId: "el-1",
+            document: doc,
+            components
+        });
+        expect(result.allowed).toBe(false);
+        expect(result.violation!.message).toBe("Cannot delete this widget right now");
+    });
+
+    it("should provide correct context to the check function", () => {
+        const root = makeElement("root", "Funnel");
+        const step = makeElement("step-1", "Step", { id: "root", slot: "steps/0/step" });
+        const doc = makeDocument([root, step], {
+            root: {
+                inputs: {
+                    "steps/0/step": { id: "s0", type: "slot", static: "step-1" },
+                    "steps/1/step": { id: "s1", type: "slot", static: "step-2" }
+                }
+            }
+        });
+
+        let capturedCtx: ConstraintContext | undefined;
+        const components: Record<string, ComponentManifest> = {
+            Funnel: makeManifest("Funnel"),
+            Step: makeManifest("Step", {
+                tags: ["funnel-step"],
+                canDelete: {
+                    check: (ctx: ConstraintContext) => {
+                        capturedCtx = ctx;
+                        return true;
+                    }
+                }
+            })
+        };
+
+        evaluateDeleteConstraint({
+            elementId: "step-1",
+            document: doc,
+            components
+        });
+
+        expect(capturedCtx).toBeDefined();
+        expect(capturedCtx!.component.name).toBe("Step");
+        expect(capturedCtx!.component.tags).toEqual(["funnel-step"]);
+        expect(capturedCtx!.parent.name).toBe("Funnel");
+        expect(capturedCtx!.slot).toBe("steps/0/step");
+        expect(capturedCtx!.isChildOf("Funnel")).toBe(true);
+        expect(capturedCtx!.hasTag("funnel-step")).toBe(true);
+    });
+
+    it("should allow when element is not found", () => {
+        const doc = makeDocument([]);
+        const components: Record<string, ComponentManifest> = {};
+
+        const result = evaluateDeleteConstraint({
+            elementId: "nonexistent",
+            document: doc,
+            components
+        });
+        expect(result.allowed).toBe(true);
+    });
+
+    it("should allow when manifest is not found", () => {
+        const el = makeElement("el-1", "Unknown");
+        const doc = makeDocument([el]);
+        const components: Record<string, ComponentManifest> = {};
+
+        const result = evaluateDeleteConstraint({
+            elementId: "el-1",
+            document: doc,
+            components
+        });
+        expect(result.allowed).toBe(true);
     });
 });

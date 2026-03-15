@@ -1,5 +1,9 @@
 import type { ComponentManifest, Document } from "@webiny/website-builder-sdk";
-import { BindingsResolver, ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
+import {
+    BindingsResolver,
+    ComponentManifestToAstConverter,
+    type InputAstNode
+} from "@webiny/website-builder-sdk";
 
 interface ResolvedElementInputs {
     [key: string]: any;
@@ -37,29 +41,67 @@ function resolveElement(
         return inputs;
     }
 
-    return resolveSlots(document, components, inputs, depth);
+    return resolveSlotsByAst(document, components, inputs, inputAst, depth);
 }
 
-function resolveSlots(
+/**
+ * Walk the resolved inputs using the AST to identify slot values,
+ * and resolve slot element IDs into their resolved inputs.
+ */
+function resolveSlotsByAst(
+    document: Document,
+    components: Record<string, ComponentManifest>,
+    inputs: Record<string, any>,
+    ast: InputAstNode[],
+    depth: number
+): Record<string, any> {
+    const result: Record<string, any> = { ...inputs };
+
+    for (const node of ast) {
+        const value = inputs[node.name];
+        if (value === undefined) {
+            continue;
+        }
+
+        if (node.type === "slot") {
+            result[node.name] = resolveSlotValue(document, components, value, depth);
+        } else if (node.children.length > 0) {
+            // Object or object-list — recurse into children using their AST.
+            if (node.list && Array.isArray(value)) {
+                result[node.name] = value.map(item =>
+                    resolveSlotsByAst(document, components, item, node.children, depth)
+                );
+            } else if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+                result[node.name] = resolveSlotsByAst(
+                    document,
+                    components,
+                    value,
+                    node.children,
+                    depth
+                );
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Resolve a slot value: a single element ID string, or an array of element ID strings.
+ */
+function resolveSlotValue(
     document: Document,
     components: Record<string, ComponentManifest>,
     value: any,
     depth: number
 ): any {
     if (typeof value === "string" && document.elements[value]) {
-        return resolveElement(document, components, value, depth - 1);
+        const resolved = resolveElement(document, components, value, depth - 1);
+        return { elementId: value, ...resolved };
     }
 
     if (Array.isArray(value)) {
-        return value.map(item => resolveSlots(document, components, item, depth));
-    }
-
-    if (value !== null && typeof value === "object") {
-        const result: Record<string, any> = {};
-        for (const [key, val] of Object.entries(value)) {
-            result[key] = resolveSlots(document, components, val, depth);
-        }
-        return result;
+        return value.map(item => resolveSlotValue(document, components, item, depth));
     }
 
     return value;

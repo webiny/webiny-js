@@ -160,6 +160,15 @@ export class PreviewEvents {
                     }
                 }
             }
+            if (
+                component.canDelete &&
+                typeof component.canDelete === "object" &&
+                typeof component.canDelete.check === "string"
+            ) {
+                component.canDelete.check = functionConverter.deserialize(
+                    component.canDelete.check
+                );
+            }
 
             this.editor.updateEditor(state => {
                 if (!state.components) {

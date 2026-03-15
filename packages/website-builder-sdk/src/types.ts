@@ -127,11 +127,8 @@ export type ConstraintElementContext = {
 };
 
 export type ConstraintContext = {
-    /** The component being placed */
-    component: {
-        name: string;
-        tags: string[];
-    };
+    /** The component/element this constraint is about */
+    component: ConstraintElementContext;
     /** The direct parent element at the drop target */
     parent: ConstraintElementContext;
     /** The target slot name (e.g., "children", "leftColumn", "rightColumn") */
@@ -166,7 +163,7 @@ export type ComponentManifest = {
     image?: string;
     inputs: ComponentInput[];
     canDrag?: boolean;
-    canDelete?: boolean;
+    canDelete?: boolean | ComponentConstraint;
     acceptsChildren?: boolean;
     hideFromToolbar?: boolean;
     hideStyleSettings?: string[];

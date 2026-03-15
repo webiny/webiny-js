@@ -22,6 +22,16 @@ export class ComponentRegistry {
                 constraint.check = functionConverter.serialize(constraint.check);
             }
         }
+        if (
+            component.manifest.canDelete &&
+            typeof component.manifest.canDelete === "object" &&
+            typeof component.manifest.canDelete.check === "function"
+        ) {
+            // @ts-expect-error Serialized form is a string, but type expects a function.
+            component.manifest.canDelete.check = functionConverter.serialize(
+                component.manifest.canDelete.check
+            );
+        }
         this.registry.set(name, component);
         // notify subscribers
         this.listeners.forEach(fn => fn({ name, component }));

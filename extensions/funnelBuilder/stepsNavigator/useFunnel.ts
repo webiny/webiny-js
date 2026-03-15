@@ -7,7 +7,7 @@ import {
 
 type Inputs = {
     activeStep: number;
-    steps: Array<{ step: { label: string; children: string[] } }>;
+    steps: Array<{ elementId: string; label: string; children: string[] }>;
 };
 
 export const useFunnel = () => {

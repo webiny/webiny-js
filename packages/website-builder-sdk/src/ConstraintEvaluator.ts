@@ -201,7 +201,13 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
     const ctx: ConstraintContext = {
         component: {
             name: componentManifest.name,
-            tags: componentManifest.tags ?? []
+            tags: componentManifest.tags ?? [],
+            // During placement, the element doesn't exist yet — position is unknown.
+            getParent: () => parentCtx,
+            childIndex: () => -1,
+            childCount: () => -1,
+            isLastChild: () => false,
+            isFirstChild: () => false
         },
         parent: parentCtx,
         slot,
@@ -266,6 +272,113 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
                 }
             }
         }
+    }
+
+    return { allowed: true };
+}
+
+export interface EvaluateDeleteConstraintParams {
+    /** The element being deleted */
+    elementId: string;
+    /** The document */
+    document: Document;
+    /** All registered component manifests */
+    components: Record<string, ComponentManifest>;
+}
+
+export function evaluateDeleteConstraint(params: EvaluateDeleteConstraintParams): ConstraintResult {
+    const { elementId, document, components } = params;
+
+    const element = document.elements[elementId];
+    if (!element) {
+        return { allowed: true };
+    }
+
+    const manifest = components[element.component.name];
+    if (!manifest) {
+        return { allowed: true };
+    }
+
+    const { canDelete } = manifest;
+
+    // undefined or true → allowed
+    if (canDelete === undefined || canDelete === true) {
+        return { allowed: true };
+    }
+
+    // false → blocked
+    if (canDelete === false) {
+        return {
+            allowed: false,
+            violation: {
+                constraint: { check: () => false },
+                message: `${manifest.name} cannot be deleted`
+            }
+        };
+    }
+
+    // ComponentConstraint → evaluate dynamically
+    const parentElement = element.parent?.id ? document.elements[element.parent.id] : undefined;
+    const parentCtx = parentElement
+        ? buildElementContext(parentElement, components, document)
+        : undefined;
+
+    const ancestors = parentElement ? buildAncestors(parentElement, components, document) : [];
+
+    const parentInputs = parentElement ? (document.bindings[parentElement.id]?.inputs ?? {}) : {};
+
+    const slot = element.parent?.slot ?? "";
+
+    const elementCtx = buildElementContext(element, components, document)!;
+
+    const ctx: ConstraintContext = {
+        component: elementCtx,
+        parent: parentCtx ?? {
+            name: "",
+            tags: [],
+            getParent: () => undefined,
+            childIndex: () => -1,
+            childCount: () => -1,
+            isLastChild: () => false,
+            isFirstChild: () => false
+        },
+        slot,
+        isChildOf: (name: string) => parentElement?.component.name === name,
+        isDescendantOf: (name: string) => ancestors.some(a => a.manifest.name === name),
+        getAncestor: (name: string) => {
+            const found = ancestors.find(a => a.manifest.name === name);
+            return found ? buildElementContext(found.element, components, document) : undefined;
+        },
+        hasTag: (tag: string) => manifest.tags?.includes(tag) ?? false,
+        slotChildCount: () => {
+            const items = parentInputs[slot]?.static;
+            return Array.isArray(items) ? items.length : 0;
+        },
+        countInstances: (name: string) => countInstances(document, name),
+        log: (...args: any[]) => console.log(...args)
+    };
+
+    try {
+        if (!canDelete.check(ctx)) {
+            return {
+                allowed: false,
+                violation: {
+                    constraint: canDelete,
+                    message: canDelete.message ?? `${manifest.name} cannot be deleted`
+                }
+            };
+        }
+    } catch (err) {
+        return {
+            allowed: false,
+            violation: {
+                constraint: canDelete,
+                message:
+                    err instanceof Error && err.message
+                        ? err.message
+                        : (canDelete.message ?? `${manifest.name} cannot be deleted`)
+            }
+        };
     }
 
     return { allowed: true };
