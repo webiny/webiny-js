@@ -1,8 +1,8 @@
-// @ts-nocheck
 import React from "react";
 import { Button, Icon } from "webiny/admin/ui";
 import { ReactComponent as DeleteIcon } from "webiny/admin/icons/close.svg";
 import {
+    $createElement,
     $updateElementInputs,
     Commands,
     createElement,
@@ -19,15 +19,12 @@ const iconPosition = {
 };
 
 export const StepsNavigator = () => {
-    return null;
     const editor = useDocumentEditor();
     const funnel = useFunnel();
 
     if (!funnel) {
         return null;
     }
-
-    console.log("funnel", funnel.inputs);
 
     const activeStep = funnel.inputs.activeStep;
 
@@ -45,17 +42,42 @@ export const StepsNavigator = () => {
         const steps = funnel.inputs.steps ?? [];
         const insertIndex = Math.max(steps.length - 1, 0);
 
-        $updateElementInputs(editor, funnel.id, inputs => {
-            const steps = inputs.steps ?? [];
-            steps.splice(insertIndex, 0, {
-                step: createElement({
-                    component: "FunnelBuilder/Step",
-                    inputs: { label: `Step ${steps.length}` }
-                })
+        editor.updateDocument(() => {
+            $updateElementInputs(editor, funnel.id, inputs => {
+                const steps = inputs.steps ?? [];
+                steps.splice(
+                    insertIndex,
+                    0,
+                    createElement({
+                        component: "FunnelBuilder/Step",
+                        inputs: { label: `Step ${steps.length}` }
+                    })
+                );
+                inputs.steps = steps;
+                inputs.activeStep = insertIndex;
             });
-            inputs.steps = steps;
-            inputs.activeStep = insertIndex;
+
+            editor.updateEditor(state => {
+                state["activeStep"] = insertIndex;
+            })
         });
+
+        // editor.updateDocument(() => {
+        //     $createElement(editor, {
+        //         componentName: "FunnelBuilder/Step",
+        //         parentId: funnel.id,
+        //         slot: "steps",
+        //         index: insertIndex,
+        //         bindings: {
+        //             inputs: {
+        //                 label: `Step ${steps.length}`
+        //             }
+        //         }
+        //     });
+        //     $updateElementInputs(editor, funnel.id, inputs => {
+        //         inputs.activeStep = insertIndex;
+        //     });
+        // })
     };
 
     return (

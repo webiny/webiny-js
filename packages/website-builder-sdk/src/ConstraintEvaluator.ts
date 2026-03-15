@@ -57,17 +57,30 @@ function findChildPosition(
         return undefined;
     }
 
-    const pattern = buildSlotPattern(element.parent.slot);
-    if (!pattern) {
-        return undefined;
-    }
-
     const inputs = document.bindings[element.parent.id]?.inputs;
     if (!inputs) {
         return undefined;
     }
 
-    // Collect all sibling slot keys matching the pattern, sorted by index.
+    // Try direct list slot format: binding key = slot name, static = array of IDs.
+    // Only when the slot path itself is NOT an indexed sub-key (e.g., "steps", not "steps/0/step").
+    const slotName = element.parent.slot;
+    if (!/\/\d+\//.test(slotName)) {
+        const directBinding = inputs[slotName];
+        if (directBinding && Array.isArray(directBinding.static)) {
+            const index = directBinding.static.indexOf(element.id);
+            if (index !== -1) {
+                return { index, count: directBinding.static.length };
+            }
+        }
+    }
+
+    // Fall back to indexed sub-key format: steps/0/step, steps/1/step, etc.
+    const pattern = buildSlotPattern(slotName);
+    if (!pattern) {
+        return undefined;
+    }
+
     const siblingKeys: { key: string; idx: number }[] = [];
     for (const key in inputs) {
         if (pattern.test(key)) {
@@ -79,7 +92,6 @@ function findChildPosition(
     }
     siblingKeys.sort((a, b) => a.idx - b.idx);
 
-    // Find which slot actually contains this element's ID.
     const position = siblingKeys.findIndex(({ key }) => {
         const val = inputs[key]?.static;
         if (Array.isArray(val)) {
@@ -252,7 +264,10 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
     // Evaluate the placed component's own constraints.
     if (componentManifest.constraints) {
         for (const constraint of componentManifest.constraints) {
-            const violation = evaluateConstraint(constraint, `Cannot place ${componentName} here`);
+            const violation = evaluateConstraint(
+                constraint,
+                `Cannot place ${componentManifest.label} here.`
+            );
             if (violation) {
                 return { allowed: false, violation };
             }
@@ -265,7 +280,7 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
             for (const constraint of ancestor.manifest.descendantConstraints) {
                 const violation = evaluateConstraint(
                     constraint,
-                    `Cannot place ${componentName} inside ${ancestor.manifest.name}`
+                    `Cannot place ${componentName} inside ${ancestor.manifest.label}.`
                 );
                 if (violation) {
                     return { allowed: false, violation };
@@ -312,7 +327,7 @@ export function evaluateDeleteConstraint(params: EvaluateDeleteConstraintParams)
             allowed: false,
             violation: {
                 constraint: { check: () => false },
-                message: `${manifest.name} cannot be deleted`
+                message: `${manifest.label} cannot be deleted.`
             }
         };
     }
@@ -364,7 +379,7 @@ export function evaluateDeleteConstraint(params: EvaluateDeleteConstraintParams)
                 allowed: false,
                 violation: {
                     constraint: canDelete,
-                    message: canDelete.message ?? `${manifest.name} cannot be deleted`
+                    message: canDelete.message ?? `${manifest.label} cannot be deleted.`
                 }
             };
         }
@@ -376,7 +391,7 @@ export function evaluateDeleteConstraint(params: EvaluateDeleteConstraintParams)
                 message:
                     err instanceof Error && err.message
                         ? err.message
-                        : (canDelete.message ?? `${manifest.name} cannot be deleted`)
+                        : (canDelete.message ?? `${manifest.label} cannot be deleted.`)
             }
         };
     }

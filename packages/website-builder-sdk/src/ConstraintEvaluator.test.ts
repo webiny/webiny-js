@@ -1108,6 +1108,85 @@ describe("evaluateConstraints", () => {
             expect(capturedIndex).toBe(3);
             expect(capturedIsLast).toBe(true);
         });
+
+        it("should resolve position from direct list slot binding (static is an array of IDs)", () => {
+            const root = makeElement("root", "FunnelBuilder");
+            const step0 = makeElement("step-0", "Step", { id: "root", slot: "steps" });
+            const step1 = makeElement("step-1", "Step", { id: "root", slot: "steps" });
+            const step2 = makeElement("step-2", "Step", { id: "root", slot: "steps" });
+            const doc = makeDocument([root, step0, step1, step2], {
+                root: {
+                    inputs: {
+                        steps: {
+                            id: "s",
+                            type: "slot",
+                            list: true,
+                            static: ["step-0", "step-1", "step-2"]
+                        }
+                    }
+                }
+            });
+
+            let captured: Record<string, any> = {};
+            const comps: Record<string, ComponentManifest> = {
+                FunnelBuilder: makeManifest("FunnelBuilder"),
+                Step: makeManifest("Step"),
+                Widget: makeManifest("Widget", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => {
+                                captured = {
+                                    index: ctx.parent.childIndex(),
+                                    count: ctx.parent.childCount(),
+                                    isFirst: ctx.parent.isFirstChild(),
+                                    isLast: ctx.parent.isLastChild()
+                                };
+                                return true;
+                            }
+                        }
+                    ]
+                })
+            };
+
+            // Place into first step
+            evaluateConstraints({
+                componentName: "Widget",
+                parentId: "step-0",
+                slot: "children",
+                document: doc,
+                components: comps
+            });
+            expect(captured.index).toBe(0);
+            expect(captured.count).toBe(3);
+            expect(captured.isFirst).toBe(true);
+            expect(captured.isLast).toBe(false);
+
+            // Place into middle step
+            evaluateConstraints({
+                componentName: "Widget",
+                parentId: "step-1",
+                slot: "children",
+                document: doc,
+                components: comps
+            });
+            expect(captured.index).toBe(1);
+            expect(captured.count).toBe(3);
+            expect(captured.isFirst).toBe(false);
+            expect(captured.isLast).toBe(false);
+
+            // Place into last step
+            evaluateConstraints({
+                componentName: "Widget",
+                parentId: "step-2",
+                slot: "children",
+                document: doc,
+                components: comps
+            });
+            expect(captured.index).toBe(2);
+            expect(captured.count).toBe(3);
+            expect(captured.isFirst).toBe(false);
+            expect(captured.isLast).toBe(true);
+        });
     });
 
     describe("descendantConstraints", () => {

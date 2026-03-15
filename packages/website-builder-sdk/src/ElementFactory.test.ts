@@ -158,10 +158,10 @@ describe("ElementFactory", () => {
         expect(ops[3].element.component.name).toBe("FunnelBuilder/Step");
         expect(ops[3].element.parent).toEqual({ id: funnelId, slot: "steps" });
 
-        // 4: AddToParent — Step 1 (index 0 — both steps get index 0, this is the bug)
+        // 4: AddToParent — Step 1 (undefined = append)
         expect(ops[4].type).toBe("AddToParent");
         expect(ops[4].element.id).toBe(step1Id);
-        expect(ops[4].index).toBe(0);
+        expect(ops[4].index).toBeUndefined();
 
         // 5: Step 1 label binding
         expect(ops[5].bindingPath).toBe("label");
@@ -175,30 +175,30 @@ describe("ElementFactory", () => {
         expect(ops[7].bindingPath).toBe("display");
         expect(ops[8].bindingPath).toBe("flexDirection");
 
-        // 9: SetGlobalInputBinding — steps slot (after Step 1)
-        // Contains only step1Id
+        // 9: SetGlobalInputBinding — steps slot metadata (no static, AddToParent handles it)
         expect(ops[9].type).toBe("SetGlobalInputBinding");
         expect(ops[9].elementId).toBe(funnelId);
         expect(ops[9].bindingPath).toBe("steps");
-        expect(ops[9].binding.static).toEqual([step1Id]);
+        expect(ops[9].binding.static).toBeUndefined();
+        expect(ops[9].binding.type).toBe("slot");
+        expect(ops[9].binding.list).toBe(true);
 
         // 10: AddElement — Step 2
         const step2Id = ops[10].element.id;
         expect(ops[10].element.component.name).toBe("FunnelBuilder/Step");
 
-        // 11: AddToParent — Step 2 (also index 0 — BUG)
-        expect(ops[11].index).toBe(0);
+        // 11: AddToParent — Step 2 (undefined = append)
+        expect(ops[11].index).toBeUndefined();
 
         // 12-15: Step 2 bindings + styles
         expect(ops[12].binding.static).toBe("Final Step");
         expect(ops[13].binding.static).toEqual([]);
 
-        // 16: SetGlobalInputBinding — steps slot (after Step 2)
-        // BUG: Only contains step2Id, overwrites step1Id
+        // 16: SetGlobalInputBinding — steps slot metadata (no static)
         expect(ops[16].type).toBe("SetGlobalInputBinding");
         expect(ops[16].elementId).toBe(funnelId);
         expect(ops[16].bindingPath).toBe("steps");
-        expect(ops[16].binding.static).toEqual([step2Id]);
+        expect(ops[16].binding.static).toBeUndefined();
 
         // 17-18: Funnel style bindings
         expect(ops[17].bindingPath).toBe("display");
@@ -207,7 +207,7 @@ describe("ElementFactory", () => {
         expect(ops).toHaveLength(19);
     });
 
-    it("should produce correct document after applying all operations — exposes overwrite bug", () => {
+    it("should produce correct document after applying all operations", () => {
         const factory = new ElementFactory(components);
         const result = factory.createElementFromComponent({
             componentName: "FunnelBuilder/Funnel",
@@ -267,11 +267,18 @@ describe("ElementFactory", () => {
         expect(labels).toContain("Step 1");
         expect(labels).toContain("Final Step");
 
-        // BUG: The steps binding only contains the last step ID.
-        // The second SetGlobalInputBinding overwrites the static array.
+        // The steps binding contains both step IDs in order.
         const stepsBinding = document.bindings[funnelId]?.inputs?.steps;
         expect(stepsBinding?.list).toBe(true);
         expect(stepsBinding?.type).toBe("slot");
-        expect(stepsBinding?.static).toHaveLength(1); // Should be 2!
+        expect(stepsBinding?.static).toHaveLength(2);
+
+        const step1 = stepElements.find(
+            el => document.bindings[el.id]?.inputs?.label?.static === "Step 1"
+        )!;
+        const step2 = stepElements.find(
+            el => document.bindings[el.id]?.inputs?.label?.static === "Final Step"
+        )!;
+        expect(stepsBinding?.static).toEqual([step1.id, step2.id]);
     });
 });
