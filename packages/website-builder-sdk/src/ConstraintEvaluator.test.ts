@@ -64,7 +64,7 @@ describe("evaluateConstraints", () => {
             TabPanel: makeManifest("TabPanel", {
                 constraints: [
                     {
-                        check: (ctx: ConstraintContext) => ctx.parent.manifest.name === "Tabs",
+                        check: (ctx: ConstraintContext) => ctx.parent.name === "Tabs",
                         message: "TabPanel must be inside Tabs"
                     }
                 ]
@@ -92,7 +92,7 @@ describe("evaluateConstraints", () => {
             TabPanel: makeManifest("TabPanel", {
                 constraints: [
                     {
-                        check: (ctx: ConstraintContext) => ctx.parent.manifest.name === "Tabs",
+                        check: (ctx: ConstraintContext) => ctx.parent.name === "Tabs",
                         message: "TabPanel must be inside Tabs"
                     }
                 ]
@@ -121,8 +121,7 @@ describe("evaluateConstraints", () => {
             ProductPrice: makeManifest("ProductPrice", {
                 constraints: [
                     {
-                        check: (ctx: ConstraintContext) =>
-                            ctx.ancestors.some(a => a.manifest.name === "ProductBox"),
+                        check: (ctx: ConstraintContext) => ctx.isDescendantOf("ProductBox"),
                         message: "ProductPrice must be inside a ProductBox"
                     }
                 ]
@@ -151,8 +150,7 @@ describe("evaluateConstraints", () => {
             ProductPrice: makeManifest("ProductPrice", {
                 constraints: [
                     {
-                        check: (ctx: ConstraintContext) =>
-                            ctx.ancestors.some(a => a.manifest.name === "ProductBox"),
+                        check: (ctx: ConstraintContext) => ctx.isDescendantOf("ProductBox"),
                         message: "ProductPrice must be inside a ProductBox"
                     }
                 ]
@@ -170,7 +168,7 @@ describe("evaluateConstraints", () => {
         expect(result.allowed).toBe(true);
     });
 
-    it("should block via slot children limit constraint using inputs", () => {
+    it("should block via slot children limit constraint using slotChildCount", () => {
         const parent = makeElement("parent-1", "Grid");
         const child1 = makeElement("child-1", "Cell", { id: "parent-1", slot: "children" });
         const child2 = makeElement("child-2", "Cell", { id: "parent-1", slot: "children" });
@@ -191,10 +189,7 @@ describe("evaluateConstraints", () => {
             Cell: makeManifest("Cell", {
                 constraints: [
                     {
-                        check: (ctx: ConstraintContext) => {
-                            const items = ctx.parent.inputs[ctx.slot]?.static ?? [];
-                            return Array.isArray(items) ? items.length < 2 : true;
-                        },
+                        check: (ctx: ConstraintContext) => ctx.slotChildCount() < 2,
                         message: "Maximum 2 children allowed"
                     }
                 ]
@@ -223,7 +218,7 @@ describe("evaluateConstraints", () => {
             Hero: makeManifest("Hero", {
                 constraints: [
                     {
-                        check: (ctx: ConstraintContext) => ctx.document.countInstances("Hero") < 1,
+                        check: (ctx: ConstraintContext) => ctx.countInstances("Hero") < 1,
                         message: "Only one Hero per page"
                     }
                 ]
@@ -370,10 +365,7 @@ describe("evaluateConstraints", () => {
             Widget: makeManifest("Widget", {
                 constraints: [
                     {
-                        check: (ctx: ConstraintContext) => {
-                            const items = ctx.parent.inputs[ctx.slot]?.static ?? [];
-                            return Array.isArray(items) ? items.length < 1 : true;
-                        },
+                        check: (ctx: ConstraintContext) => ctx.slotChildCount() < 1,
                         message: "Slot is full"
                     }
                 ]
@@ -433,9 +425,7 @@ describe("evaluateConstraints", () => {
                 constraints: [
                     {
                         check: (ctx: ConstraintContext) => {
-                            throw new Error(
-                                `Widget cannot be placed inside ${ctx.parent.manifest.name}`
-                            );
+                            throw new Error(`Widget cannot be placed inside ${ctx.parent.name}`);
                         }
                     }
                 ]
@@ -703,6 +693,566 @@ describe("evaluateConstraints", () => {
                 components
             });
             expect(result.allowed).toBe(true);
+        });
+    });
+
+    describe("ctx.hasTag", () => {
+        it("should return true when the placed component has the tag", () => {
+            const parent = makeElement("parent-1", "Container");
+            const doc = makeDocument([parent]);
+            const components: Record<string, ComponentManifest> = {
+                Container: makeManifest("Container"),
+                FunnelField: makeManifest("FunnelField", {
+                    tags: ["funnel-field", "input"],
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => !ctx.hasTag("funnel-field"),
+                            message: "Funnel fields not allowed here"
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "FunnelField",
+                parentId: "parent-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(false);
+        });
+
+        it("should return false when the placed component does not have the tag", () => {
+            const parent = makeElement("parent-1", "Container");
+            const doc = makeDocument([parent]);
+            const components: Record<string, ComponentManifest> = {
+                Container: makeManifest("Container"),
+                Button: makeManifest("Button", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => !ctx.hasTag("funnel-field")
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "Button",
+                parentId: "parent-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(true);
+        });
+    });
+
+    describe("ctx.getAncestor", () => {
+        it("should return the matching ancestor element context", () => {
+            const root = makeElement("root", "ProductBox");
+            const inner = makeElement("inner", "Container", { id: "root", slot: "children" });
+            const doc = makeDocument([root, inner]);
+            const components: Record<string, ComponentManifest> = {
+                ProductBox: makeManifest("ProductBox", { tags: ["product"] }),
+                Container: makeManifest("Container"),
+                ProductPrice: makeManifest("ProductPrice", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => {
+                                const ancestor = ctx.getAncestor("ProductBox");
+                                return ancestor !== undefined && ancestor.name === "ProductBox";
+                            }
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "ProductPrice",
+                parentId: "inner",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(true);
+        });
+
+        it("should return undefined when no ancestor matches", () => {
+            const root = makeElement("root", "Page");
+            const doc = makeDocument([root]);
+            const components: Record<string, ComponentManifest> = {
+                Page: makeManifest("Page"),
+                Widget: makeManifest("Widget", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => {
+                                return ctx.getAncestor("ProductBox") !== undefined;
+                            }
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "Widget",
+                parentId: "root",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(false);
+        });
+    });
+
+    describe("ctx.countInstances", () => {
+        it("should count instances of a component in the document", () => {
+            const root = makeElement("root", "Page");
+            const hero1 = makeElement("hero-1", "Hero", { id: "root", slot: "children" });
+            const hero2 = makeElement("hero-2", "Hero", { id: "root", slot: "children" });
+            const doc = makeDocument([root, hero1, hero2]);
+
+            const components: Record<string, ComponentManifest> = {
+                Page: makeManifest("Page"),
+                Hero: makeManifest("Hero", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => ctx.countInstances("Hero") < 2,
+                            message: "Max 2 Heroes"
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "Hero",
+                parentId: "root",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(false);
+        });
+    });
+
+    describe("ctx.component", () => {
+        it("should expose the placed component's name and tags", () => {
+            const parent = makeElement("parent-1", "Container");
+            const doc = makeDocument([parent]);
+
+            let capturedComponent: { name: string; tags: string[] } | undefined;
+            const components: Record<string, ComponentManifest> = {
+                Container: makeManifest("Container"),
+                Widget: makeManifest("Widget", {
+                    tags: ["interactive", "form"],
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => {
+                                capturedComponent = ctx.component;
+                                return true;
+                            }
+                        }
+                    ]
+                })
+            };
+
+            evaluateConstraints({
+                componentName: "Widget",
+                parentId: "parent-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+
+            expect(capturedComponent).toBeDefined();
+            expect(capturedComponent!.name).toBe("Widget");
+            expect(capturedComponent!.tags).toEqual(["interactive", "form"]);
+        });
+    });
+
+    describe("parent.getParent", () => {
+        it("should return the grandparent element context", () => {
+            const root = makeElement("root", "Page");
+            const section = makeElement("section", "Section", { id: "root", slot: "children" });
+            const doc = makeDocument([root, section]);
+
+            let grandparentName: string | undefined;
+            const components: Record<string, ComponentManifest> = {
+                Page: makeManifest("Page"),
+                Section: makeManifest("Section"),
+                Widget: makeManifest("Widget", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => {
+                                const grandparent = ctx.parent.getParent();
+                                grandparentName = grandparent?.name;
+                                return true;
+                            }
+                        }
+                    ]
+                })
+            };
+
+            evaluateConstraints({
+                componentName: "Widget",
+                parentId: "section",
+                slot: "children",
+                document: doc,
+                components
+            });
+
+            expect(grandparentName).toBe("Page");
+        });
+
+        it("should return undefined for root element", () => {
+            const root = makeElement("root", "Page");
+            const doc = makeDocument([root]);
+
+            let parentResult: unknown = "not-called";
+            const components: Record<string, ComponentManifest> = {
+                Page: makeManifest("Page"),
+                Widget: makeManifest("Widget", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => {
+                                parentResult = ctx.parent.getParent();
+                                return true;
+                            }
+                        }
+                    ]
+                })
+            };
+
+            evaluateConstraints({
+                componentName: "Widget",
+                parentId: "root",
+                slot: "children",
+                document: doc,
+                components
+            });
+
+            expect(parentResult).toBeUndefined();
+        });
+    });
+
+    describe("parent.childIndex / childCount / isFirstChild / isLastChild", () => {
+        it("should return -1 for elements not in a list slot", () => {
+            const root = makeElement("root", "Page");
+            const doc = makeDocument([root]);
+
+            let capturedIndex: number | undefined;
+            let capturedCount: number | undefined;
+            const components: Record<string, ComponentManifest> = {
+                Page: makeManifest("Page"),
+                Widget: makeManifest("Widget", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => {
+                                capturedIndex = ctx.parent.childIndex();
+                                capturedCount = ctx.parent.childCount();
+                                return true;
+                            }
+                        }
+                    ]
+                })
+            };
+
+            evaluateConstraints({
+                componentName: "Widget",
+                parentId: "root",
+                slot: "children",
+                document: doc,
+                components
+            });
+
+            expect(capturedIndex).toBe(-1);
+            expect(capturedCount).toBe(-1);
+        });
+
+        it("should parse child index from list slot path", () => {
+            const root = makeElement("root", "FunnelBuilder");
+            const step = makeElement("step-1", "Step", { id: "root", slot: "steps/2/step" });
+            const doc = makeDocument([root, step], {
+                root: {
+                    inputs: {
+                        "steps/0/step": { id: "s0", type: "slot", static: ["step-0"] },
+                        "steps/1/step": { id: "s1", type: "slot", static: ["step-other"] },
+                        "steps/2/step": { id: "s2", type: "slot", static: ["step-1"] }
+                    }
+                }
+            });
+
+            let capturedIndex: number | undefined;
+            let capturedCount: number | undefined;
+            let capturedIsLast: boolean | undefined;
+            let capturedIsFirst: boolean | undefined;
+            const components: Record<string, ComponentManifest> = {
+                FunnelBuilder: makeManifest("FunnelBuilder"),
+                Step: makeManifest("Step"),
+                Widget: makeManifest("Widget", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => {
+                                capturedIndex = ctx.parent.childIndex();
+                                capturedCount = ctx.parent.childCount();
+                                capturedIsLast = ctx.parent.isLastChild();
+                                capturedIsFirst = ctx.parent.isFirstChild();
+                                return true;
+                            }
+                        }
+                    ]
+                })
+            };
+
+            evaluateConstraints({
+                componentName: "Widget",
+                parentId: "step-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+
+            expect(capturedIndex).toBe(2);
+            expect(capturedCount).toBe(3);
+            expect(capturedIsLast).toBe(true);
+            expect(capturedIsFirst).toBe(false);
+        });
+
+        it("should identify the first child correctly", () => {
+            const root = makeElement("root", "FunnelBuilder");
+            const step = makeElement("step-0", "Step", { id: "root", slot: "steps/0/step" });
+            const doc = makeDocument([root, step], {
+                root: {
+                    inputs: {
+                        "steps/0/step": { id: "s0", type: "slot", static: ["step-0"] },
+                        "steps/1/step": { id: "s1", type: "slot", static: ["step-1"] }
+                    }
+                }
+            });
+
+            let capturedIsFirst: boolean | undefined;
+            let capturedIsLast: boolean | undefined;
+            const components: Record<string, ComponentManifest> = {
+                FunnelBuilder: makeManifest("FunnelBuilder"),
+                Step: makeManifest("Step"),
+                Widget: makeManifest("Widget", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => {
+                                capturedIsFirst = ctx.parent.isFirstChild();
+                                capturedIsLast = ctx.parent.isLastChild();
+                                return true;
+                            }
+                        }
+                    ]
+                })
+            };
+
+            evaluateConstraints({
+                componentName: "Widget",
+                parentId: "step-0",
+                slot: "children",
+                document: doc,
+                components
+            });
+
+            expect(capturedIsFirst).toBe(true);
+            expect(capturedIsLast).toBe(false);
+        });
+
+        it("should resolve position from bindings even when element.parent.slot is stale", () => {
+            const root = makeElement("root", "FunnelBuilder");
+            // Element says slot "steps/1/step" but bindings put it at steps/3/step
+            const step = makeElement("step-final", "Step", {
+                id: "root",
+                slot: "steps/1/step"
+            });
+            const doc = makeDocument([root, step], {
+                root: {
+                    inputs: {
+                        "steps/0/step": { id: "s0", type: "slot", static: "step-0" },
+                        "steps/1/step": { id: "s1", type: "slot", static: "step-1" },
+                        "steps/2/step": { id: "s2", type: "slot", static: "step-2" },
+                        "steps/3/step": { id: "s3", type: "slot", static: "step-final" }
+                    }
+                }
+            });
+
+            let capturedIndex: number | undefined;
+            let capturedIsLast: boolean | undefined;
+            const components: Record<string, ComponentManifest> = {
+                FunnelBuilder: makeManifest("FunnelBuilder"),
+                Step: makeManifest("Step"),
+                Widget: makeManifest("Widget", {
+                    constraints: [
+                        {
+                            check: (ctx: ConstraintContext) => {
+                                capturedIndex = ctx.parent.childIndex();
+                                capturedIsLast = ctx.parent.isLastChild();
+                                return true;
+                            }
+                        }
+                    ]
+                })
+            };
+
+            evaluateConstraints({
+                componentName: "Widget",
+                parentId: "step-final",
+                slot: "children",
+                document: doc,
+                components
+            });
+
+            // Should find actual position (index 3, last) not stale slot (index 1)
+            expect(capturedIndex).toBe(3);
+            expect(capturedIsLast).toBe(true);
+        });
+    });
+
+    describe("descendantConstraints", () => {
+        it("should block a direct child via parent's descendantConstraints", () => {
+            const parent = makeElement("parent-1", "Step");
+            const doc = makeDocument([parent]);
+            const components: Record<string, ComponentManifest> = {
+                Step: makeManifest("Step", {
+                    descendantConstraints: [
+                        {
+                            check: (ctx: ConstraintContext) => !ctx.hasTag("funnel-field"),
+                            message: "No funnel fields allowed"
+                        }
+                    ]
+                }),
+                TextField: makeManifest("TextField", { tags: ["funnel-field"] })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "TextField",
+                parentId: "parent-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(false);
+            expect(result.violation!.message).toBe("No funnel fields allowed");
+        });
+
+        it("should block a nested descendant via ancestor's descendantConstraints", () => {
+            const step = makeElement("step-1", "Step");
+            const container = makeElement("container-1", "Container", {
+                id: "step-1",
+                slot: "children"
+            });
+            const doc = makeDocument([step, container]);
+            const components: Record<string, ComponentManifest> = {
+                Step: makeManifest("Step", {
+                    descendantConstraints: [
+                        {
+                            check: (ctx: ConstraintContext) => !ctx.hasTag("funnel-field"),
+                            message: "No funnel fields in this step"
+                        }
+                    ]
+                }),
+                Container: makeManifest("Container"),
+                TextField: makeManifest("TextField", { tags: ["funnel-field"] })
+            };
+
+            // TextField dropped into Container, which is inside Step
+            const result = evaluateConstraints({
+                componentName: "TextField",
+                parentId: "container-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(false);
+            expect(result.violation!.message).toBe("No funnel fields in this step");
+        });
+
+        it("should allow when descendantConstraints pass", () => {
+            const step = makeElement("step-1", "Step");
+            const doc = makeDocument([step]);
+            const components: Record<string, ComponentManifest> = {
+                Step: makeManifest("Step", {
+                    descendantConstraints: [
+                        {
+                            check: (ctx: ConstraintContext) => !ctx.hasTag("funnel-field")
+                        }
+                    ]
+                }),
+                Button: makeManifest("Button")
+            };
+
+            const result = evaluateConstraints({
+                componentName: "Button",
+                parentId: "step-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(true);
+        });
+
+        it("should not run parent's descendantConstraints for unrelated ancestors", () => {
+            const page = makeElement("page", "Page");
+            const step = makeElement("step-1", "Step", { id: "page", slot: "children" });
+            const doc = makeDocument([page, step]);
+            const components: Record<string, ComponentManifest> = {
+                Page: makeManifest("Page", {
+                    descendantConstraints: [
+                        {
+                            check: () => false,
+                            message: "Page blocks everything"
+                        }
+                    ]
+                }),
+                Step: makeManifest("Step"),
+                Button: makeManifest("Button")
+            };
+
+            // Button into Step — Page's descendantConstraints should still fire
+            const result = evaluateConstraints({
+                componentName: "Button",
+                parentId: "step-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+            expect(result.allowed).toBe(false);
+            expect(result.violation!.message).toBe("Page blocks everything");
+        });
+
+        it("should evaluate component constraints before descendantConstraints", () => {
+            const parent = makeElement("parent-1", "Step");
+            const doc = makeDocument([parent]);
+            const components: Record<string, ComponentManifest> = {
+                Step: makeManifest("Step", {
+                    descendantConstraints: [
+                        {
+                            check: () => false,
+                            message: "descendant constraint"
+                        }
+                    ]
+                }),
+                Widget: makeManifest("Widget", {
+                    constraints: [
+                        {
+                            check: () => false,
+                            message: "component constraint"
+                        }
+                    ]
+                })
+            };
+
+            const result = evaluateConstraints({
+                componentName: "Widget",
+                parentId: "parent-1",
+                slot: "children",
+                document: doc,
+                components
+            });
+            // Component's own constraints should short-circuit first
+            expect(result.violation!.message).toBe("component constraint");
         });
     });
 });

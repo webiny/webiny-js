@@ -4,8 +4,7 @@ import type {
     ConstraintContext,
     ConstraintElementContext,
     Document,
-    DocumentElement,
-    InputValueBinding
+    DocumentElement
 } from "~/types.js";
 
 export type ConstraintViolation = {
@@ -31,6 +30,71 @@ export interface EvaluateConstraintsParams {
     components: Record<string, ComponentManifest>;
 }
 
+/**
+ * Build a regex pattern from a slot path, replacing the numeric index with \d+.
+ * E.g., "steps/2/step" → /^steps\/\d+\/step$/
+ * Returns undefined if the slot has no index segment.
+ */
+function buildSlotPattern(slot: string): RegExp | undefined {
+    const match = slot.match(/\/(\d+)\//);
+    if (!match) {
+        return undefined;
+    }
+    return new RegExp("^" + slot.replace(/\/\d+\//, "/\\d+/") + "$");
+}
+
+/**
+ * Find the actual index and sibling count for an element in its parent's bindings.
+ * Instead of trusting element.parent.slot (which may be stale after reordering),
+ * we scan the parent's binding keys to find which slot holds this element's ID.
+ * Returns { index, count } or undefined if not in a list slot.
+ */
+function findChildPosition(
+    element: DocumentElement,
+    document: Document
+): { index: number; count: number } | undefined {
+    if (!element.parent?.id || !element.parent.slot) {
+        return undefined;
+    }
+
+    const pattern = buildSlotPattern(element.parent.slot);
+    if (!pattern) {
+        return undefined;
+    }
+
+    const inputs = document.bindings[element.parent.id]?.inputs;
+    if (!inputs) {
+        return undefined;
+    }
+
+    // Collect all sibling slot keys matching the pattern, sorted by index.
+    const siblingKeys: { key: string; idx: number }[] = [];
+    for (const key in inputs) {
+        if (pattern.test(key)) {
+            const m = key.match(/\/(\d+)\//);
+            if (m) {
+                siblingKeys.push({ key, idx: parseInt(m[1], 10) });
+            }
+        }
+    }
+    siblingKeys.sort((a, b) => a.idx - b.idx);
+
+    // Find which slot actually contains this element's ID.
+    const position = siblingKeys.findIndex(({ key }) => {
+        const val = inputs[key]?.static;
+        if (Array.isArray(val)) {
+            return val.includes(element.id);
+        }
+        return val === element.id;
+    });
+
+    if (position === -1) {
+        return undefined;
+    }
+
+    return { index: position, count: siblingKeys.length };
+}
+
 function buildElementContext(
     element: DocumentElement,
     components: Record<string, ComponentManifest>,
@@ -41,23 +105,55 @@ function buildElementContext(
         return undefined;
     }
 
-    const inputs: Record<string, InputValueBinding> = document.bindings[element.id]?.inputs ?? {};
+    return {
+        name: element.component.name,
+        tags: manifest.tags ?? [],
+        getParent() {
+            if (!element.parent?.id) {
+                return undefined;
+            }
+            const parentEl = document.elements[element.parent.id];
+            if (!parentEl) {
+                return undefined;
+            }
+            return buildElementContext(parentEl, components, document);
+        },
+        childIndex() {
+            const pos = findChildPosition(element, document);
+            return pos ? pos.index : -1;
+        },
+        childCount() {
+            const pos = findChildPosition(element, document);
+            return pos ? pos.count : -1;
+        },
+        isLastChild() {
+            const pos = findChildPosition(element, document);
+            return pos !== undefined && pos.index === pos.count - 1;
+        },
+        isFirstChild() {
+            const pos = findChildPosition(element, document);
+            return pos !== undefined && pos.index === 0;
+        }
+    };
+}
 
-    return { element, manifest, inputs };
+interface InternalAncestor {
+    element: DocumentElement;
+    manifest: ComponentManifest;
 }
 
 function buildAncestors(
     parentElement: DocumentElement,
     components: Record<string, ComponentManifest>,
     document: Document
-): ConstraintElementContext[] {
-    const ancestors: ConstraintElementContext[] = [];
+): InternalAncestor[] {
+    const ancestors: InternalAncestor[] = [];
     let current: DocumentElement | undefined = parentElement;
 
     while (current) {
-        const ctx = buildElementContext(current, components, document);
-        if (ctx) {
-            ancestors.push(ctx);
+        const manifest = components[current.component.name];
+        if (manifest) {
+            ancestors.push({ element: current, manifest });
         }
 
         if (current.parent?.id) {
@@ -100,22 +196,27 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
 
     const ancestors = buildAncestors(parentElement, components, document);
 
+    const parentInputs = document.bindings[parentElement.id]?.inputs ?? {};
+
     const ctx: ConstraintContext = {
-        component: componentManifest,
+        component: {
+            name: componentManifest.name,
+            tags: componentManifest.tags ?? []
+        },
         parent: parentCtx,
         slot,
-        ancestors,
-        document: {
-            elements: document.elements,
-            bindings: document.bindings,
-            countInstances: (name: string) => countInstances(document, name)
-        },
-        isChildOf: (name: string) => parentCtx.manifest.name === name,
+        isChildOf: (name: string) => parentElement.component.name === name,
         isDescendantOf: (name: string) => ancestors.some(a => a.manifest.name === name),
+        getAncestor: (name: string) => {
+            const found = ancestors.find(a => a.manifest.name === name);
+            return found ? buildElementContext(found.element, components, document) : undefined;
+        },
+        hasTag: (tag: string) => componentManifest.tags?.includes(tag) ?? false,
         slotChildCount: () => {
-            const items = parentCtx.inputs[slot]?.static;
+            const items = parentInputs[slot]?.static;
             return Array.isArray(items) ? items.length : 0;
         },
+        countInstances: (name: string) => countInstances(document, name),
         log: (...args: any[]) => console.log(...args)
     };
 
@@ -148,6 +249,21 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
             const violation = evaluateConstraint(constraint, `Cannot place ${componentName} here`);
             if (violation) {
                 return { allowed: false, violation };
+            }
+        }
+    }
+
+    // Evaluate descendantConstraints from all ancestors (including direct parent).
+    for (const ancestor of ancestors) {
+        if (ancestor.manifest.descendantConstraints) {
+            for (const constraint of ancestor.manifest.descendantConstraints) {
+                const violation = evaluateConstraint(
+                    constraint,
+                    `Cannot place ${componentName} inside ${ancestor.manifest.name}`
+                );
+                if (violation) {
+                    return { allowed: false, violation };
+                }
             }
         }
     }

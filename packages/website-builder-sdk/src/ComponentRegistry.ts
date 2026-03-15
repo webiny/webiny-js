@@ -16,6 +16,12 @@ export class ComponentRegistry {
                 constraint.check = functionConverter.serialize(constraint.check);
             }
         }
+        if (component.manifest.descendantConstraints) {
+            for (const constraint of component.manifest.descendantConstraints) {
+                // @ts-expect-error Serialized form is a string, but type expects a function.
+                constraint.check = functionConverter.serialize(constraint.check);
+            }
+        }
         this.registry.set(name, component);
         // notify subscribers
         this.listeners.forEach(fn => fn({ name, component }));

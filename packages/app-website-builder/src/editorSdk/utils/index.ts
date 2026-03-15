@@ -12,3 +12,4 @@ export * from "./$addElementReferenceToParent.js";
 export * from "./$getElementsOfType.js";
 export * from "./$getFirstElementOfType.js";
 export * from "./$getElementInputValues.js";
+export * from "./$updateElementInputs.js";

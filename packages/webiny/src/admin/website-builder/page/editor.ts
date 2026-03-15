@@ -20,3 +20,5 @@ export { $addElementReferenceToParent } from "@webiny/app-website-builder/editor
 export { $getElementsOfType } from "@webiny/app-website-builder/editorSdk/utils/index.js";
 export { $getFirstElementOfType } from "@webiny/app-website-builder/editorSdk/utils/index.js";
 export { $getElementInputValues } from "@webiny/app-website-builder/editorSdk/utils/index.js";
+export { $updateElementInputs } from "@webiny/app-website-builder/editorSdk/utils/index.js";
+export { createElement } from "@webiny/website-builder-sdk";

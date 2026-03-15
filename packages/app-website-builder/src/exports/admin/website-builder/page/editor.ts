@@ -21,3 +21,5 @@ export { $addElementReferenceToParent } from "~/editorSdk/utils/index.js";
 export { $getElementsOfType } from "~/editorSdk/utils/index.js";
 export { $getFirstElementOfType } from "~/editorSdk/utils/index.js";
 export { $getElementInputValues } from "~/editorSdk/utils/index.js";
+export { $updateElementInputs } from "~/editorSdk/utils/index.js";
+export { createElement } from "@webiny/website-builder-sdk";

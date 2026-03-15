@@ -2,6 +2,7 @@ import type * as CSS from "csstype";
 import type { BindingsApi } from "~/BindingsApi.js";
 import type { ShorthandCssProperties } from "./types/ShorthandCssProperties.js";
 import type { InputFactory } from "~/createInput.js";
+import type { Breakpoint } from "~/types/WebsiteBuilderTheme.js";
 export type { WebsiteBuilderTheme, Breakpoint } from "./types/WebsiteBuilderTheme.js";
 
 type CSSProperties = CSS.Properties<string | number>;
@@ -107,34 +108,46 @@ export type ResponsiveStyles = {
 };
 
 export type ConstraintElementContext = {
-    element: DocumentElement;
-    manifest: ComponentManifest;
-    /** Resolved input bindings for this element (from document.bindings[elementId].inputs) */
-    inputs: Record<string, InputValueBinding>;
+    /** Component name (e.g., "FunnelBuilder/Step") */
+    name: string;
+    /** Component tags */
+    tags: string[];
+
+    /** Get the parent element context. undefined for root. */
+    getParent(): ConstraintElementContext | undefined;
+
+    /** Index of this element among siblings in the same parent slot. -1 if not in a list slot. */
+    childIndex(): number;
+    /** Total siblings in the same parent slot. -1 if not in a list slot. */
+    childCount(): number;
+    /** True if this element is the last among siblings in its parent slot. */
+    isLastChild(): boolean;
+    /** True if this element is the first among siblings in its parent slot. */
+    isFirstChild(): boolean;
 };
 
 export type ConstraintContext = {
-    /** The component manifest being placed */
-    component: ComponentManifest;
+    /** The component being placed */
+    component: {
+        name: string;
+        tags: string[];
+    };
     /** The direct parent element at the drop target */
     parent: ConstraintElementContext;
     /** The target slot name (e.g., "children", "leftColumn", "rightColumn") */
     slot: string;
-    /** All ancestor elements from parent to root, with their manifests and inputs */
-    ancestors: ConstraintElementContext[];
-    /** Document-level queries */
-    document: {
-        elements: ElementMap;
-        bindings: DocumentBindings;
-        /** Count instances of a component in the document */
-        countInstances: (componentName: string) => number;
-    };
     /** True if the direct parent is the given component */
     isChildOf: (componentName: string) => boolean;
     /** True if any ancestor (including parent) is the given component */
     isDescendantOf: (componentName: string) => boolean;
+    /** Find the nearest ancestor matching a component name */
+    getAncestor: (componentName: string) => ConstraintElementContext | undefined;
+    /** True if the component being placed has the given tag */
+    hasTag: (tag: string) => boolean;
     /** Number of items currently in the target slot */
     slotChildCount: () => number;
+    /** Count instances of a component type in the entire document */
+    countInstances: (componentName: string) => number;
     /** Debug logger — safe to call inside serialized constraints */
     log: (...args: any[]) => void;
 };
@@ -160,6 +173,7 @@ export type ComponentManifest = {
     autoApplyStyles?: boolean;
     tags?: string[];
     constraints?: ComponentConstraint[];
+    descendantConstraints?: ComponentConstraint[];
     defaults?: {
         inputs?: Record<string, any>;
         styles?: SerializableCSSStyleDeclaration;
@@ -284,6 +298,9 @@ export type BoxData = ElementBoxData | ElementSlotBoxData;
 export type EditorViewportInfo = PreviewViewportInfo & {
     top: number;
     left: number;
+    // Current breakpoint name
+    breakpoint: string;
+    breakpoints: Breakpoint[];
 };
 
 export type PreviewViewportInfo = {

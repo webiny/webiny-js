@@ -131,6 +131,7 @@ export class PreviewEvents {
 
             this.editor.updateEditor(state => {
                 state.viewport = {
+                    ...state.viewport,
                     ...viewport,
                     top: iframeBox.top,
                     left: iframeBox.left
@@ -147,6 +148,13 @@ export class PreviewEvents {
             // Deserialize constraint check functions once on arrival.
             if (component.constraints) {
                 for (const constraint of component.constraints) {
+                    if (typeof constraint.check === "string") {
+                        constraint.check = functionConverter.deserialize(constraint.check);
+                    }
+                }
+            }
+            if (component.descendantConstraints) {
+                for (const constraint of component.descendantConstraints) {
                     if (typeof constraint.check === "string") {
                         constraint.check = functionConverter.deserialize(constraint.check);
                     }

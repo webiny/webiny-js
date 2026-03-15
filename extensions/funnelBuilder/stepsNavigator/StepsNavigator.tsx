@@ -1,85 +1,88 @@
 import React from "react";
-import { Button } from "webiny/admin/ui";
+import { Button, Icon } from "webiny/admin/ui";
+import { ReactComponent as DeleteIcon } from "webiny/admin/icons/close.svg";
 import {
-    $getElementInputValues,
-    $getFirstElementOfType,
-    Commands,
-    useDocumentEditor,
-    useSelectFromDocument,
-    useSelectFromEditor
+    $updateElementInputs,
+    createElement,
+    useDocumentEditor
 } from "webiny/admin/website-builder/page/editor";
+import { useFunnel } from "./useFunnel.js";
 
-type Inputs = {
-    steps: Array<{ step: { label: string; children: string[] } }>;
-};
+const iconClasses =
+    "absolute z-10 rounded-full bg-neutral-dimmed border-solid border-sm border-neutral-muted cursor-pointer fill-neutral-strong";
 
 export const StepsNavigator = () => {
     const editor = useDocumentEditor();
-    const components = useSelectFromEditor(editor => editor.components);
+    const funnel = useFunnel();
 
-    const elementId = useSelectFromDocument(state => {
-        const funnel = $getFirstElementOfType(state, "FunnelBuilder/Funnel");
-        return funnel ? funnel.id : null;
-    });
+    if (!funnel) {
+        return null;
+    }
 
-    const inputs = useSelectFromDocument(
-        doc => $getElementInputValues(doc, components, elementId, 1) as Inputs,
-        [elementId, components]
-    );
+    const activateStep = (index: number) => {
+        $updateElementInputs(editor, funnel.id, inputs => {
+            inputs.activeStep = index;
+        });
+    };
+
+    const deleteStep = (index: number) => {
+        $updateElementInputs(editor, funnel.id, inputs => {
+            const steps = inputs.steps ?? [];
+            steps.splice(index, 1);
+            inputs.steps = steps;
+            inputs.activeStep = Math.max(0, index - 1);
+        });
+    };
 
     const addStep = () => {
-        if (!elementId) {
-            return;
-        }
+        const steps = funnel.inputs.steps ?? [];
+        const insertIndex = Math.max(steps.length - 1, 0);
 
-        const totalSteps = inputs.steps?.length ?? 0;
-        const insertIndex = Math.max(totalSteps - 1, 0);
-
-        // Shift the last step to make room for the new one.
-        if (totalSteps > 0) {
-            const lastIndex = totalSteps - 1;
-            const funnelBindings = editor.getDocumentState().read().bindings[elementId]?.inputs;
-            const lastSlotKey = `steps/${lastIndex}/step`;
-            const lastElementId = funnelBindings?.[lastSlotKey]?.static as string | undefined;
-
-            if (lastElementId) {
-                const newSlotKey = `steps/${totalSteps}/step`;
-
-                editor.updateDocument(document => {
-                    // Move the binding from old key to new key.
-                    const parentInputs = document.bindings[elementId].inputs!;
-                    parentInputs[newSlotKey] = { ...parentInputs[lastSlotKey] };
-                    delete parentInputs[lastSlotKey];
-
-                    // Update the element's parent slot reference.
-                    document.elements[lastElementId].parent = {
-                        id: elementId,
-                        slot: newSlotKey
-                    };
-                });
-            }
-        }
-
-        // Create the new step at the insert position.
-        editor.executeCommand(Commands.CreateElement, {
-            componentName: "FunnelBuilder/Step",
-            parentId: elementId,
-            slot: `steps/${insertIndex}/step`,
-            index: -1,
-            bindings: {
-                inputs: {
-                    label: `Step ${insertIndex + 1}`
-                }
-            }
+        $updateElementInputs(editor, funnel.id, inputs => {
+            const steps = inputs.steps ?? [];
+            steps.splice(insertIndex, 0, {
+                step: createElement({
+                    component: "FunnelBuilder/Step",
+                    inputs: { label: `Step ${steps.length}` }
+                })
+            });
+            inputs.steps = steps;
+            inputs.activeStep = insertIndex;
         });
     };
 
     return (
         <div className={"flex flex-row p-sm bg-neutral-light justify-between"}>
-            <div className={"flex gap-xs"}>
-                {(inputs.steps ?? []).map((step, index) => (
-                    <Button key={index} variant={"secondary"} text={step.step.label} />
-                ))}
+            <div className={"flex gap-md"}>
+                {(funnel.inputs.steps ?? []).map((step, index) => {
+                    const isFirstStep = index === 0;
+                    const isLastStep = index === funnel.inputs.steps.length - 1;
+                    const canDelete = !isFirstStep && !isLastStep;
+                    return (
+                        <div className={"relative"} key={index}>
+                            <Button
+                                variant={
+                                    funnel.inputs.activeStep === index ? "primary" : "secondary"
+                                }
+                                text={step.step.label}
+                                className={"border-solid border-sm border-neutral-muted"}
+                                onClick={() => activateStep(index)}
+                            />
+                            {canDelete ? (
+                                <Icon
+                                    icon={<DeleteIcon />}
+                                    label={"Delete step"}
+                                    style={{
+                                        top: -8,
+                                        right: -8
+                                    }}
+                                    onClick={() => deleteStep(index)}
+                                    className={iconClasses}
+                                />
+                            ) : null}
+                        </div>
+                    );
+                })}
             </div>
             <Button variant={"primary"} text={"Add step"} onClick={addStep} />
         </div>

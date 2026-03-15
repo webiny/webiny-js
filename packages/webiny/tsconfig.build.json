@@ -21,7 +21,8 @@
     { "path": "../project-aws/tsconfig.build.json" },
     { "path": "../tasks/tsconfig.build.json" },
     { "path": "../tenant-manager/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
+    { "path": "../validation/tsconfig.build.json" },
+    { "path": "../website-builder-sdk/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -189,7 +190,9 @@
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
       "@webiny/tenant-manager": ["../tenant-manager/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     },
     "baseUrl": "."
   }
