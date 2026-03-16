@@ -7,8 +7,17 @@ import type {
     DocumentElement
 } from "~/types.js";
 
+class ConstraintBlockError extends Error {
+    constructor(message: string) {
+        super(message);
+    }
+}
+
+function block(message: string): never {
+    throw new ConstraintBlockError(message);
+}
+
 export type ConstraintViolation = {
-    constraint: ComponentConstraint;
     message: string;
 };
 
@@ -235,27 +244,22 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
             return Array.isArray(items) ? items.length : 0;
         },
         countInstances: (name: string) => countInstances(document, name),
-        log: (...args: any[]) => console.log(...args)
+        log: (...args: any[]) => console.log(...args),
+        block
     };
 
-    const evaluateConstraint = (
+    const runConstraint = (
         constraint: ComponentConstraint,
         fallbackMessage: string
     ): ConstraintViolation | undefined => {
         try {
-            if (!constraint.check(ctx)) {
-                return {
-                    constraint,
-                    message: constraint.message ?? fallbackMessage
-                };
-            }
+            constraint(ctx);
         } catch (err) {
+            if (err instanceof ConstraintBlockError) {
+                return { message: err.message };
+            }
             return {
-                constraint,
-                message:
-                    err instanceof Error && err.message
-                        ? err.message
-                        : (constraint.message ?? fallbackMessage)
+                message: err instanceof Error && err.message ? err.message : fallbackMessage
             };
         }
         return undefined;
@@ -264,7 +268,7 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
     // Evaluate the placed component's own constraints.
     if (componentManifest.constraints) {
         for (const constraint of componentManifest.constraints) {
-            const violation = evaluateConstraint(
+            const violation = runConstraint(
                 constraint,
                 `Cannot place ${componentManifest.label} here.`
             );
@@ -278,7 +282,7 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
     for (const ancestor of ancestors) {
         if (ancestor.manifest.descendantConstraints) {
             for (const constraint of ancestor.manifest.descendantConstraints) {
-                const violation = evaluateConstraint(
+                const violation = runConstraint(
                     constraint,
                     `Cannot place ${componentName} inside ${ancestor.manifest.label}.`
                 );
@@ -326,7 +330,6 @@ export function evaluateDeleteConstraint(params: EvaluateDeleteConstraintParams)
         return {
             allowed: false,
             violation: {
-                constraint: { check: () => false },
                 message: `${manifest.label} cannot be deleted.`
             }
         };
@@ -370,28 +373,21 @@ export function evaluateDeleteConstraint(params: EvaluateDeleteConstraintParams)
             return Array.isArray(items) ? items.length : 0;
         },
         countInstances: (name: string) => countInstances(document, name),
-        log: (...args: any[]) => console.log(...args)
+        log: (...args: any[]) => console.log(...args),
+        block
     };
 
+    const fallbackMessage = `${manifest.label} cannot be deleted.`;
     try {
-        if (!canDelete.check(ctx)) {
-            return {
-                allowed: false,
-                violation: {
-                    constraint: canDelete,
-                    message: canDelete.message ?? `${manifest.label} cannot be deleted.`
-                }
-            };
-        }
+        canDelete(ctx);
     } catch (err) {
+        if (err instanceof ConstraintBlockError) {
+            return { allowed: false, violation: { message: err.message } };
+        }
         return {
             allowed: false,
             violation: {
-                constraint: canDelete,
-                message:
-                    err instanceof Error && err.message
-                        ? err.message
-                        : (canDelete.message ?? `${manifest.label} cannot be deleted.`)
+                message: err instanceof Error && err.message ? err.message : fallbackMessage
             }
         };
     }

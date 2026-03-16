@@ -155,27 +155,17 @@ export class PreviewEvents {
             // Deserialize constraint check functions once on arrival.
             try {
                 if (component.constraints) {
-                    for (const constraint of component.constraints) {
-                        if (typeof constraint.check === "string") {
-                            constraint.check = functionConverter.deserialize(constraint.check);
-                        }
-                    }
+                    component.constraints = (component.constraints as any[]).map(c =>
+                        typeof c === "string" ? functionConverter.deserialize(c) : c
+                    );
                 }
                 if (component.descendantConstraints) {
-                    for (const constraint of component.descendantConstraints) {
-                        if (typeof constraint.check === "string") {
-                            constraint.check = functionConverter.deserialize(constraint.check);
-                        }
-                    }
+                    component.descendantConstraints = (
+                        component.descendantConstraints as any[]
+                    ).map(c => (typeof c === "string" ? functionConverter.deserialize(c) : c));
                 }
-                if (
-                    component.canDelete &&
-                    typeof component.canDelete === "object" &&
-                    typeof component.canDelete.check === "string"
-                ) {
-                    component.canDelete.check = functionConverter.deserialize(
-                        component.canDelete.check
-                    );
+                if (component.canDelete && typeof component.canDelete === "string") {
+                    component.canDelete = functionConverter.deserialize(component.canDelete);
                 }
                 if (component.onChange) {
                     component.onChange = deserializeHandlers(component.onChange as any) as any;

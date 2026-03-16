@@ -11,27 +11,23 @@ export class ComponentRegistry {
         const name = component.manifest.name;
         // Normalize optional fields so downstream code never sees undefined.
         component.manifest.tags = component.manifest.tags ?? [];
-        // Serialize constraint functions for cross-boundary transport
+        // Serialize constraint and handler functions for cross-boundary transport
         if (component.manifest.constraints) {
-            for (const constraint of component.manifest.constraints) {
-                // @ts-expect-error Serialized form is a string, but type expects a function.
-                constraint.check = functionConverter.serialize(constraint.check);
-            }
+            // @ts-expect-error Serialized form is string[], but type expects function[].
+            component.manifest.constraints = component.manifest.constraints.map(fn =>
+                functionConverter.serialize(fn)
+            );
         }
         if (component.manifest.descendantConstraints) {
-            for (const constraint of component.manifest.descendantConstraints) {
-                // @ts-expect-error Serialized form is a string, but type expects a function.
-                constraint.check = functionConverter.serialize(constraint.check);
-            }
+            // @ts-expect-error Serialized form is string[], but type expects function[].
+            component.manifest.descendantConstraints = component.manifest.descendantConstraints.map(
+                fn => functionConverter.serialize(fn)
+            );
         }
-        if (
-            component.manifest.canDelete &&
-            typeof component.manifest.canDelete === "object" &&
-            typeof component.manifest.canDelete.check === "function"
-        ) {
+        if (component.manifest.canDelete && typeof component.manifest.canDelete === "function") {
             // @ts-expect-error Serialized form is a string, but type expects a function.
-            component.manifest.canDelete.check = functionConverter.serialize(
-                component.manifest.canDelete.check
+            component.manifest.canDelete = functionConverter.serialize(
+                component.manifest.canDelete
             );
         }
         if (component.manifest.onChange) {

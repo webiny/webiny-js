@@ -147,16 +147,17 @@ export type ConstraintContext = {
     countInstances: (componentName: string) => number;
     /** Debug logger — safe to call inside serialized constraints */
     log: (...args: any[]) => void;
+    /** Block placement with an error message shown to the user */
+    block: (message: string) => never;
 };
 
-export type ComponentConstraint = {
-    /** Return true to ALLOW placement, false to BLOCK */
-    check: (ctx: ConstraintContext) => boolean;
-    /** Message shown when constraint is violated */
-    message?: string;
-};
+/**
+ * A constraint function. Call `ctx.block("message")` to block placement.
+ * Returning without blocking means the constraint passes.
+ */
+export type ComponentConstraint = (ctx: ConstraintContext) => void;
 
-// Flow-control symbols for handler arrays
+// Flow-control symbols
 declare const STOP: unique symbol;
 declare const CONTINUE: unique symbol;
 export type Stop = typeof STOP;

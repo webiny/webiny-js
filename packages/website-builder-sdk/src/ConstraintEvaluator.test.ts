@@ -63,9 +63,10 @@ describe("evaluateConstraints", () => {
             Container: makeManifest("Container"),
             TabPanel: makeManifest("TabPanel", {
                 constraints: [
-                    {
-                        check: (ctx: ConstraintContext) => ctx.parent.name === "Tabs",
-                        message: "TabPanel must be inside Tabs"
+                    (ctx: ConstraintContext) => {
+                        if (ctx.parent.name !== "Tabs") {
+                            return ctx.block("TabPanel must be inside Tabs");
+                        }
                     }
                 ]
             })
@@ -91,9 +92,10 @@ describe("evaluateConstraints", () => {
             Tabs: makeManifest("Tabs"),
             TabPanel: makeManifest("TabPanel", {
                 constraints: [
-                    {
-                        check: (ctx: ConstraintContext) => ctx.parent.name === "Tabs",
-                        message: "TabPanel must be inside Tabs"
+                    (ctx: ConstraintContext) => {
+                        if (ctx.parent.name !== "Tabs") {
+                            return ctx.block("TabPanel must be inside Tabs");
+                        }
                     }
                 ]
             })
@@ -120,9 +122,10 @@ describe("evaluateConstraints", () => {
             Section: makeManifest("Section"),
             ProductPrice: makeManifest("ProductPrice", {
                 constraints: [
-                    {
-                        check: (ctx: ConstraintContext) => ctx.isDescendantOf("ProductBox"),
-                        message: "ProductPrice must be inside a ProductBox"
+                    (ctx: ConstraintContext) => {
+                        if (!ctx.isDescendantOf("ProductBox")) {
+                            return ctx.block("ProductPrice must be inside a ProductBox");
+                        }
                     }
                 ]
             })
@@ -149,9 +152,10 @@ describe("evaluateConstraints", () => {
             Container: makeManifest("Container"),
             ProductPrice: makeManifest("ProductPrice", {
                 constraints: [
-                    {
-                        check: (ctx: ConstraintContext) => ctx.isDescendantOf("ProductBox"),
-                        message: "ProductPrice must be inside a ProductBox"
+                    (ctx: ConstraintContext) => {
+                        if (!ctx.isDescendantOf("ProductBox")) {
+                            return ctx.block("ProductPrice must be inside a ProductBox");
+                        }
                     }
                 ]
             })
@@ -188,9 +192,10 @@ describe("evaluateConstraints", () => {
             Grid: makeManifest("Grid"),
             Cell: makeManifest("Cell", {
                 constraints: [
-                    {
-                        check: (ctx: ConstraintContext) => ctx.slotChildCount() < 2,
-                        message: "Maximum 2 children allowed"
+                    (ctx: ConstraintContext) => {
+                        if (!(ctx.slotChildCount() < 2)) {
+                            return ctx.block("Maximum 2 children allowed");
+                        }
                     }
                 ]
             })
@@ -217,9 +222,10 @@ describe("evaluateConstraints", () => {
             Page: makeManifest("Page"),
             Hero: makeManifest("Hero", {
                 constraints: [
-                    {
-                        check: (ctx: ConstraintContext) => ctx.countInstances("Hero") < 1,
-                        message: "Only one Hero per page"
+                    (ctx: ConstraintContext) => {
+                        if (!(ctx.countInstances("Hero") < 1)) {
+                            return ctx.block("Only one Hero per page");
+                        }
                     }
                 ]
             })
@@ -244,10 +250,7 @@ describe("evaluateConstraints", () => {
         const components: Record<string, ComponentManifest> = {
             Tabs: makeManifest("Tabs", {
                 constraints: [
-                    {
-                        check: () => false,
-                        message: "This should not run for children"
-                    }
+                    (ctx: ConstraintContext) => ctx.block("This should not run for children")
                 ]
             }),
             Button: makeManifest("Button")
@@ -272,18 +275,9 @@ describe("evaluateConstraints", () => {
             Container: makeManifest("Container"),
             Widget: makeManifest("Widget", {
                 constraints: [
-                    {
-                        check: () => true,
-                        message: "Always passes"
-                    },
-                    {
-                        check: () => false,
-                        message: "Always fails"
-                    },
-                    {
-                        check: () => false,
-                        message: "Also fails"
-                    }
+                    () => {},
+                    (ctx: ConstraintContext) => ctx.block("Always fails"),
+                    (ctx: ConstraintContext) => ctx.block("Also fails")
                 ]
             })
         };
@@ -364,9 +358,10 @@ describe("evaluateConstraints", () => {
             TwoColumn: makeManifest("TwoColumn"),
             Widget: makeManifest("Widget", {
                 constraints: [
-                    {
-                        check: (ctx: ConstraintContext) => ctx.slotChildCount() < 1,
-                        message: "Slot is full"
+                    (ctx: ConstraintContext) => {
+                        if (!(ctx.slotChildCount() < 1)) {
+                            return ctx.block("Slot is full");
+                        }
                     }
                 ]
             })
@@ -400,7 +395,7 @@ describe("evaluateConstraints", () => {
         const components: Record<string, ComponentManifest> = {
             Container: makeManifest("Container"),
             Widget: makeManifest("Widget", {
-                constraints: [{ check: () => false }]
+                constraints: [(ctx: ConstraintContext) => ctx.block("Blocked")]
             })
         };
 
@@ -412,7 +407,7 @@ describe("evaluateConstraints", () => {
             components
         });
 
-        expect(result.violation!.message).toBe("Cannot place Widget here.");
+        expect(result.violation!.message).toBe("Blocked");
     });
 
     it("should use thrown error message as the violation message", () => {
@@ -423,10 +418,8 @@ describe("evaluateConstraints", () => {
             Container: makeManifest("Container"),
             Widget: makeManifest("Widget", {
                 constraints: [
-                    {
-                        check: (ctx: ConstraintContext) => {
-                            throw new Error(`Widget cannot be placed inside ${ctx.parent.name}`);
-                        }
+                    (ctx: ConstraintContext) => {
+                        throw new Error(`Widget cannot be placed inside ${ctx.parent.name}`);
                     }
                 ]
             })
@@ -452,11 +445,8 @@ describe("evaluateConstraints", () => {
             Container: makeManifest("Container"),
             Widget: makeManifest("Widget", {
                 constraints: [
-                    {
-                        check: () => {
-                            throw "not an error object";
-                        },
-                        message: "Static fallback"
+                    () => {
+                        throw "not an error object";
                     }
                 ]
             })
@@ -471,7 +461,7 @@ describe("evaluateConstraints", () => {
         });
 
         expect(result.allowed).toBe(false);
-        expect(result.violation!.message).toBe("Static fallback");
+        expect(result.violation!.message).toBe("Cannot place Widget here.");
     });
 
     it("should fall back to default message when a non-Error is thrown and no static message", () => {
@@ -482,10 +472,8 @@ describe("evaluateConstraints", () => {
             Container: makeManifest("Container"),
             Widget: makeManifest("Widget", {
                 constraints: [
-                    {
-                        check: () => {
-                            throw null;
-                        }
+                    () => {
+                        throw null;
                     }
                 ]
             })
@@ -511,9 +499,10 @@ describe("evaluateConstraints", () => {
                 Tabs: makeManifest("Tabs"),
                 TabPanel: makeManifest("TabPanel", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => ctx.isChildOf("Tabs"),
-                            message: "TabPanel must be a direct child of Tabs"
+                        (ctx: ConstraintContext) => {
+                            if (!ctx.isChildOf("Tabs")) {
+                                return ctx.block("TabPanel must be a direct child of Tabs");
+                            }
                         }
                     ]
                 })
@@ -536,9 +525,10 @@ describe("evaluateConstraints", () => {
                 Container: makeManifest("Container"),
                 TabPanel: makeManifest("TabPanel", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => ctx.isChildOf("Tabs"),
-                            message: "TabPanel must be a direct child of Tabs"
+                        (ctx: ConstraintContext) => {
+                            if (!ctx.isChildOf("Tabs")) {
+                                return ctx.block("TabPanel must be a direct child of Tabs");
+                            }
                         }
                     ]
                 })
@@ -563,8 +553,10 @@ describe("evaluateConstraints", () => {
                 ProductBox: makeManifest("ProductBox"),
                 ProductPrice: makeManifest("ProductPrice", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => ctx.isDescendantOf("ProductBox")
+                        (ctx: ConstraintContext) => {
+                            if (!ctx.isDescendantOf("ProductBox")) {
+                                return ctx.block("Blocked");
+                            }
                         }
                     ]
                 })
@@ -589,8 +581,10 @@ describe("evaluateConstraints", () => {
                 Container: makeManifest("Container"),
                 ProductPrice: makeManifest("ProductPrice", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => ctx.isDescendantOf("ProductBox")
+                        (ctx: ConstraintContext) => {
+                            if (!ctx.isDescendantOf("ProductBox")) {
+                                return ctx.block("Blocked");
+                            }
                         }
                     ]
                 })
@@ -615,8 +609,10 @@ describe("evaluateConstraints", () => {
                 Section: makeManifest("Section"),
                 ProductPrice: makeManifest("ProductPrice", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => ctx.isDescendantOf("ProductBox")
+                        (ctx: ConstraintContext) => {
+                            if (!ctx.isDescendantOf("ProductBox")) {
+                                return ctx.block("Blocked");
+                            }
                         }
                     ]
                 })
@@ -652,9 +648,10 @@ describe("evaluateConstraints", () => {
                 Grid: makeManifest("Grid"),
                 Cell: makeManifest("Cell", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => ctx.slotChildCount() < 3,
-                            message: "Max 3 children"
+                        (ctx: ConstraintContext) => {
+                            if (!(ctx.slotChildCount() < 3)) {
+                                return ctx.block("Max 3 children");
+                            }
                         }
                     ]
                 })
@@ -678,8 +675,10 @@ describe("evaluateConstraints", () => {
                 Container: makeManifest("Container"),
                 Widget: makeManifest("Widget", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => ctx.slotChildCount() < 5
+                        (ctx: ConstraintContext) => {
+                            if (!(ctx.slotChildCount() < 5)) {
+                                return ctx.block("Blocked");
+                            }
                         }
                     ]
                 })
@@ -705,9 +704,10 @@ describe("evaluateConstraints", () => {
                 FunnelField: makeManifest("FunnelField", {
                     tags: ["funnel-field", "input"],
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => !ctx.hasTag("funnel-field"),
-                            message: "Funnel fields not allowed here"
+                        (ctx: ConstraintContext) => {
+                            if (ctx.hasTag("funnel-field")) {
+                                return ctx.block("Funnel fields not allowed here");
+                            }
                         }
                     ]
                 })
@@ -730,8 +730,10 @@ describe("evaluateConstraints", () => {
                 Container: makeManifest("Container"),
                 Button: makeManifest("Button", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => !ctx.hasTag("funnel-field")
+                        (ctx: ConstraintContext) => {
+                            if (ctx.hasTag("funnel-field")) {
+                                return ctx.block("Blocked");
+                            }
                         }
                     ]
                 })
@@ -758,10 +760,10 @@ describe("evaluateConstraints", () => {
                 Container: makeManifest("Container"),
                 ProductPrice: makeManifest("ProductPrice", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => {
-                                const ancestor = ctx.getAncestor("ProductBox");
-                                return ancestor !== undefined && ancestor.name === "ProductBox";
+                        (ctx: ConstraintContext) => {
+                            const ancestor = ctx.getAncestor("ProductBox");
+                            if (!(ancestor !== undefined && ancestor.name === "ProductBox")) {
+                                return ctx.block("Blocked");
                             }
                         }
                     ]
@@ -785,9 +787,9 @@ describe("evaluateConstraints", () => {
                 Page: makeManifest("Page"),
                 Widget: makeManifest("Widget", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => {
-                                return ctx.getAncestor("ProductBox") !== undefined;
+                        (ctx: ConstraintContext) => {
+                            if (ctx.getAncestor("ProductBox") === undefined) {
+                                return ctx.block("Blocked");
                             }
                         }
                     ]
@@ -816,9 +818,10 @@ describe("evaluateConstraints", () => {
                 Page: makeManifest("Page"),
                 Hero: makeManifest("Hero", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => ctx.countInstances("Hero") < 2,
-                            message: "Max 2 Heroes"
+                        (ctx: ConstraintContext) => {
+                            if (!(ctx.countInstances("Hero") < 2)) {
+                                return ctx.block("Max 2 Heroes");
+                            }
                         }
                     ]
                 })
@@ -846,11 +849,8 @@ describe("evaluateConstraints", () => {
                 Widget: makeManifest("Widget", {
                     tags: ["interactive", "form"],
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => {
-                                capturedComponent = ctx.component;
-                                return true;
-                            }
+                        (ctx: ConstraintContext) => {
+                            capturedComponent = ctx.component;
                         }
                     ]
                 })
@@ -882,12 +882,9 @@ describe("evaluateConstraints", () => {
                 Section: makeManifest("Section"),
                 Widget: makeManifest("Widget", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => {
-                                const grandparent = ctx.parent.getParent();
-                                grandparentName = grandparent?.name;
-                                return true;
-                            }
+                        (ctx: ConstraintContext) => {
+                            const grandparent = ctx.parent.getParent();
+                            grandparentName = grandparent?.name;
                         }
                     ]
                 })
@@ -913,11 +910,8 @@ describe("evaluateConstraints", () => {
                 Page: makeManifest("Page"),
                 Widget: makeManifest("Widget", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => {
-                                parentResult = ctx.parent.getParent();
-                                return true;
-                            }
+                        (ctx: ConstraintContext) => {
+                            parentResult = ctx.parent.getParent();
                         }
                     ]
                 })
@@ -946,12 +940,9 @@ describe("evaluateConstraints", () => {
                 Page: makeManifest("Page"),
                 Widget: makeManifest("Widget", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => {
-                                capturedIndex = ctx.parent.childIndex();
-                                capturedCount = ctx.parent.childCount();
-                                return true;
-                            }
+                        (ctx: ConstraintContext) => {
+                            capturedIndex = ctx.parent.childIndex();
+                            capturedCount = ctx.parent.childCount();
                         }
                     ]
                 })
@@ -991,14 +982,11 @@ describe("evaluateConstraints", () => {
                 Step: makeManifest("Step"),
                 Widget: makeManifest("Widget", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => {
-                                capturedIndex = ctx.parent.childIndex();
-                                capturedCount = ctx.parent.childCount();
-                                capturedIsLast = ctx.parent.isLastChild();
-                                capturedIsFirst = ctx.parent.isFirstChild();
-                                return true;
-                            }
+                        (ctx: ConstraintContext) => {
+                            capturedIndex = ctx.parent.childIndex();
+                            capturedCount = ctx.parent.childCount();
+                            capturedIsLast = ctx.parent.isLastChild();
+                            capturedIsFirst = ctx.parent.isFirstChild();
                         }
                     ]
                 })
@@ -1037,12 +1025,9 @@ describe("evaluateConstraints", () => {
                 Step: makeManifest("Step"),
                 Widget: makeManifest("Widget", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => {
-                                capturedIsFirst = ctx.parent.isFirstChild();
-                                capturedIsLast = ctx.parent.isLastChild();
-                                return true;
-                            }
+                        (ctx: ConstraintContext) => {
+                            capturedIsFirst = ctx.parent.isFirstChild();
+                            capturedIsLast = ctx.parent.isLastChild();
                         }
                     ]
                 })
@@ -1085,12 +1070,9 @@ describe("evaluateConstraints", () => {
                 Step: makeManifest("Step"),
                 Widget: makeManifest("Widget", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => {
-                                capturedIndex = ctx.parent.childIndex();
-                                capturedIsLast = ctx.parent.isLastChild();
-                                return true;
-                            }
+                        (ctx: ConstraintContext) => {
+                            capturedIndex = ctx.parent.childIndex();
+                            capturedIsLast = ctx.parent.isLastChild();
                         }
                     ]
                 })
@@ -1133,16 +1115,13 @@ describe("evaluateConstraints", () => {
                 Step: makeManifest("Step"),
                 Widget: makeManifest("Widget", {
                     constraints: [
-                        {
-                            check: (ctx: ConstraintContext) => {
-                                captured = {
-                                    index: ctx.parent.childIndex(),
-                                    count: ctx.parent.childCount(),
-                                    isFirst: ctx.parent.isFirstChild(),
-                                    isLast: ctx.parent.isLastChild()
-                                };
-                                return true;
-                            }
+                        (ctx: ConstraintContext) => {
+                            captured = {
+                                index: ctx.parent.childIndex(),
+                                count: ctx.parent.childCount(),
+                                isFirst: ctx.parent.isFirstChild(),
+                                isLast: ctx.parent.isLastChild()
+                            };
                         }
                     ]
                 })
@@ -1196,9 +1175,10 @@ describe("evaluateConstraints", () => {
             const components: Record<string, ComponentManifest> = {
                 Step: makeManifest("Step", {
                     descendantConstraints: [
-                        {
-                            check: (ctx: ConstraintContext) => !ctx.hasTag("funnel-field"),
-                            message: "No funnel fields allowed"
+                        (ctx: ConstraintContext) => {
+                            if (ctx.hasTag("funnel-field")) {
+                                return ctx.block("No funnel fields allowed");
+                            }
                         }
                     ]
                 }),
@@ -1226,9 +1206,10 @@ describe("evaluateConstraints", () => {
             const components: Record<string, ComponentManifest> = {
                 Step: makeManifest("Step", {
                     descendantConstraints: [
-                        {
-                            check: (ctx: ConstraintContext) => !ctx.hasTag("funnel-field"),
-                            message: "No funnel fields in this step"
+                        (ctx: ConstraintContext) => {
+                            if (ctx.hasTag("funnel-field")) {
+                                return ctx.block("No funnel fields in this step");
+                            }
                         }
                     ]
                 }),
@@ -1254,8 +1235,10 @@ describe("evaluateConstraints", () => {
             const components: Record<string, ComponentManifest> = {
                 Step: makeManifest("Step", {
                     descendantConstraints: [
-                        {
-                            check: (ctx: ConstraintContext) => !ctx.hasTag("funnel-field")
+                        (ctx: ConstraintContext) => {
+                            if (ctx.hasTag("funnel-field")) {
+                                return ctx.block("Blocked");
+                            }
                         }
                     ]
                 }),
@@ -1279,10 +1262,7 @@ describe("evaluateConstraints", () => {
             const components: Record<string, ComponentManifest> = {
                 Page: makeManifest("Page", {
                     descendantConstraints: [
-                        {
-                            check: () => false,
-                            message: "Page blocks everything"
-                        }
+                        (ctx: ConstraintContext) => ctx.block("Page blocks everything")
                     ]
                 }),
                 Step: makeManifest("Step"),
@@ -1307,19 +1287,11 @@ describe("evaluateConstraints", () => {
             const components: Record<string, ComponentManifest> = {
                 Step: makeManifest("Step", {
                     descendantConstraints: [
-                        {
-                            check: () => false,
-                            message: "descendant constraint"
-                        }
+                        (ctx: ConstraintContext) => ctx.block("descendant constraint")
                     ]
                 }),
                 Widget: makeManifest("Widget", {
-                    constraints: [
-                        {
-                            check: () => false,
-                            message: "component constraint"
-                        }
-                    ]
+                    constraints: [(ctx: ConstraintContext) => ctx.block("component constraint")]
                 })
             };
 
@@ -1386,7 +1358,7 @@ describe("evaluateDeleteConstraint", () => {
             components
         });
         expect(result.allowed).toBe(false);
-        expect(result.violation!.message).toBe("GridColumn cannot be deleted");
+        expect(result.violation!.message).toBe("GridColumn cannot be deleted.");
     });
 
     it("should allow when canDelete check returns true", () => {
@@ -1406,8 +1378,10 @@ describe("evaluateDeleteConstraint", () => {
         const components: Record<string, ComponentManifest> = {
             Funnel: makeManifest("Funnel"),
             Step: makeManifest("Step", {
-                canDelete: {
-                    check: (ctx: ConstraintContext) => ctx.countInstances("Step") > 2
+                canDelete: (ctx: ConstraintContext) => {
+                    if (!(ctx.countInstances("Step") > 2)) {
+                        return ctx.block("Blocked");
+                    }
                 }
             })
         };
@@ -1435,9 +1409,10 @@ describe("evaluateDeleteConstraint", () => {
         const components: Record<string, ComponentManifest> = {
             Funnel: makeManifest("Funnel"),
             Step: makeManifest("Step", {
-                canDelete: {
-                    check: (ctx: ConstraintContext) => ctx.countInstances("Step") > 2,
-                    message: "Need at least 2 steps"
+                canDelete: (ctx: ConstraintContext) => {
+                    if (!(ctx.countInstances("Step") > 2)) {
+                        return ctx.block("Need at least 2 steps");
+                    }
                 }
             })
         };
@@ -1458,10 +1433,8 @@ describe("evaluateDeleteConstraint", () => {
         const components: Record<string, ComponentManifest> = {
             Page: makeManifest("Page"),
             Widget: makeManifest("Widget", {
-                canDelete: {
-                    check: () => {
-                        throw new Error("Cannot delete this widget right now");
-                    }
+                canDelete: () => {
+                    throw new Error("Cannot delete this widget right now");
                 }
             })
         };
@@ -1492,11 +1465,8 @@ describe("evaluateDeleteConstraint", () => {
             Funnel: makeManifest("Funnel"),
             Step: makeManifest("Step", {
                 tags: ["funnel-step"],
-                canDelete: {
-                    check: (ctx: ConstraintContext) => {
-                        capturedCtx = ctx;
-                        return true;
-                    }
+                canDelete: (ctx: ConstraintContext) => {
+                    capturedCtx = ctx;
                 }
             })
         };
