@@ -84,9 +84,7 @@ describe("Scheduler Event Handler", () => {
             namespace: PublishTestEntryActionHandlerImpl.name,
             payload: {
                 actionType: "publish",
-                immediately: false,
                 namespace: "Test/SomeCustomEntry",
-                scheduleFor: expect.toBeDateString(),
                 scheduleId: expect.stringMatching("wby-schedule-"),
                 targetId: "target-id#0001",
                 title: "Fetched title from handler",

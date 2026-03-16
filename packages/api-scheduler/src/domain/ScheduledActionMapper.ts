@@ -15,7 +15,8 @@ export class ScheduledActionMapper {
             scheduledFor: new Date(action.values.scheduledFor),
             actionType: action.values.actionType,
             title: action.values.title,
-            payload: action.values.payload
+            payload: action.values.payload,
+            error: action.values.error
         };
     }
 

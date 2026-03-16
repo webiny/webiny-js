@@ -25,7 +25,7 @@ export interface IScheduledActionEntryValues<T> {
     scheduledFor: string;
     title: string;
     payload: T; // Action-specific data
-    error?: string; // Error if execution failed
+    error: string | undefined; // Error if execution failed
 }
 
 export interface IScheduledActionEntry<T extends GenericRecord = GenericRecord>

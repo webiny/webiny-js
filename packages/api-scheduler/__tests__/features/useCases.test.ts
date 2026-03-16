@@ -73,8 +73,7 @@ describe("Combined Use Cases", () => {
             payload: {
                 actionType: "publish",
                 namespace: PublishTestEntryActionHandlerImpl.name,
-                scheduleFor: createResult.value.payload.scheduleFor.toISOString(),
-                scheduleId: "wby-schedule-d1e63974ddddd9789ef78193#0001",
+                scheduleId: createResult.value.id,
                 something: true,
                 targetId: "target-id#0001",
                 title: "Fetched title from handler"
@@ -103,8 +102,7 @@ describe("Combined Use Cases", () => {
         expect(updateResult.value).toEqual({
             ...createResult.value,
             payload: {
-                ...createResult.value.payload,
-                scheduleFor: updatedScheduledFor
+                ...createResult.value.payload
             },
             error: undefined,
             scheduledFor: updatedScheduledFor

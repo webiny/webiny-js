@@ -88,7 +88,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         });
 
         const namespaceHandlerResult = await this.namespaceHandlerExecutioner.execute<T>({
-            scheduleId,
+            scheduleId: actionId,
             immediately: params.immediately,
             scheduleFor,
             targetId: params.targetId,
@@ -159,7 +159,8 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
                 displayName: identity.displayName
             },
             scheduledFor: scheduleFor,
-            payload
+            payload,
+            error: undefined
         };
 
         // Create CMS entry
@@ -174,7 +175,8 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
                     title,
                     actionType,
                     targetId,
-                    payload
+                    payload,
+                    error: undefined
                 }
             }
         );

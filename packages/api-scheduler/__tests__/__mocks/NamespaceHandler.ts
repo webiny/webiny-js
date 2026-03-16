@@ -7,7 +7,9 @@ interface TestingNamespaceHandlerResult {
     title: string;
 }
 
-class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<TestingNamespaceHandlerResult> {
+class NamespaceHandlerImpl
+    implements NamespaceHandlerAbstraction.Interface<TestingNamespaceHandlerResult>
+{
     public canHandle(namespace: string): boolean {
         return namespace === PublishTestEntryActionHandlerImpl.name;
     }

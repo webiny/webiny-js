@@ -39,7 +39,9 @@ export const NamespaceHandler = createAbstraction<INamespaceHandler>("Scheduler/
 
 export namespace NamespaceHandler {
     export type Interface<T extends GenericRecord> = INamespaceHandler<T>;
-    export type Response<T extends GenericRecord> = Promise<Result<INamespaceHandlerResult<T>, NamespaceHandlerError>>;
+    export type Response<T extends GenericRecord> = Promise<
+        Result<INamespaceHandlerResult<T>, NamespaceHandlerError>
+    >;
     export type Params = INamespaceHandlerParams;
 }
 

@@ -138,7 +138,6 @@ describe("Scheduler", () => {
         expect(mockHandler.handle).toHaveBeenCalledTimes(1);
         expect(mockHandler.handle).toHaveBeenCalledWith(
             expect.objectContaining({
-                error: undefined,
                 id: scheduleId,
                 namespace,
                 actionType,
@@ -146,7 +145,6 @@ describe("Scheduler", () => {
                 payload: {
                     actionType: "publish",
                     namespace: PublishTestEntryActionHandlerImpl.name,
-                    scheduleFor: expect.toBeDateString(),
                     scheduleId: expect.any(String),
                     something: true,
                     targetId: "target-id#0001",
@@ -157,7 +155,7 @@ describe("Scheduler", () => {
                     type: "admin",
                     displayName: "John Doe"
                 },
-                scheduledFor: expect.toBeDateString(),
+                scheduledFor: expect.any(Date),
                 title: "Fetched title from handler"
             })
         );
@@ -254,7 +252,6 @@ describe("Scheduler", () => {
         expect(getFirstResult.value.payload).toEqual({
             actionType: "publish",
             namespace: PublishTestEntryActionHandlerImpl.name,
-            scheduleFor: expect.toBeDateString(),
             scheduleId: expect.any(String),
             something: true,
             targetId: "target-id#0001",
@@ -282,7 +279,6 @@ describe("Scheduler", () => {
         expect(getSecondResult.value.payload).toEqual({
             actionType: "publish",
             namespace: PublishTestEntryActionHandlerImpl.name,
-            scheduleFor: expect.toBeDateString(),
             scheduleId: expect.any(String),
             something: true,
             targetId: "target-id#0001",
