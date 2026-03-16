@@ -13,6 +13,7 @@ import { SchedulerPermissions } from "~/domain/permissions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
+import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 
 /**
  * Retrieves a scheduled action by its ID
@@ -38,7 +39,7 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
             return Result.fail(new NotAuthorizedError());
         }
         const { id, namespace } = params;
-        
+
         const entryResult = await this.getRecord<T>(params);
 
         if (entryResult.isFail()) {
@@ -91,7 +92,7 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
         });
         const publishResult = await this.getEntryByIdUseCase.execute<
             IScheduledActionEntryValues<T>
-        >(this.model, schedulePublishId);
+        >(this.model, ScheduledActionIdWithVersion.from(schedulePublishId));
         if (publishResult.isOk()) {
             return publishResult;
         }
@@ -102,7 +103,7 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
         });
         return this.getEntryByIdUseCase.execute<IScheduledActionEntryValues<T>>(
             this.model,
-            scheduleUnpublishId
+            ScheduledActionIdWithVersion.from(scheduleUnpublishId)
         );
     }
 }

@@ -168,9 +168,9 @@ describe("Scheduler GraphQL", () => {
         /**
          * Get scheduled action by ID
          */
-        const [getResponse] = await handler.getTargetScheduledAction({
+        const [getResponse] = await handler.getScheduledAction({
             namespace: PublishTestEntryActionHandlerImpl.name,
-            id: targetId,
+            id: publishResponse.data.scheduler.scheduleAction.data!.id
         });
 
         expect(getResponse).toEqual({
@@ -201,7 +201,7 @@ describe("Scheduler GraphQL", () => {
          */
         const [getTargetResponse] = await handler.getTargetScheduledAction({
             namespace: PublishTestEntryActionHandlerImpl.name,
-            id: publishResponse.data.scheduler.scheduleAction.data!.id
+            id: targetId
         });
         
         expect(getTargetResponse).toEqual({
