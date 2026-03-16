@@ -36,13 +36,13 @@ class ListEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
         const where = { ...initialWhere };
 
         console.log({
-            beforeAccessControl: initialWhere,
-        })
+            beforeAccessControl: initialWhere
+        });
         // Possibly only get records which are owned by current user
         if (await this.accessControl.canAccessOnlyOwnedEntries({ model })) {
             where.createdBy = this.identityContext.getIdentity().id;
         }
-        
+
         // Delegate to repository
         const result = await this.repository.execute<T>(model, {
             ...rest,
@@ -50,7 +50,7 @@ class ListEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
         });
         console.log({
             afterRepository: result
-        })
+        });
 
         if (result.isFail()) {
             return Result.fail(result.error);

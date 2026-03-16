@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { ScheduleActionFeature } from "./ScheduleAction/feature.js";
 import { GetScheduledActionFeature } from "./GetScheduledAction/feature.js";
+import { GetTargetScheduledActionFeature } from "./GetTargetScheduledAction/feature.js";
 import { ListScheduledActionsFeature } from "./ListScheduledActions/feature.js";
 import { CancelScheduledActionFeature } from "./CancelScheduledAction/feature.js";
 import { ExecuteScheduledActionFeature } from "./ExecuteScheduledAction/feature.js";
@@ -18,6 +19,7 @@ export const SchedulerFeature = createFeature({
         // Register all features
         ScheduleActionFeature.register(container);
         GetScheduledActionFeature.register(container);
+        GetTargetScheduledActionFeature.register(container);
         ListScheduledActionsFeature.register(container);
         CancelScheduledActionFeature.register(container);
         ExecuteScheduledActionFeature.register(container);

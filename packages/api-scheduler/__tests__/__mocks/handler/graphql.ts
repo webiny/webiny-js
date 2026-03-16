@@ -131,6 +131,28 @@ export const GET_SCHEDULED_ACTION = /* GraphQL */ `
     }
 `;
 
+export interface IGetTargetScheduledActionQueryResponse {
+    data: {
+        scheduler: {
+            getTargetScheduledAction: {
+                data: IScheduledAction | null;
+                error: IErrorResponse | null;
+            };
+        };
+    };
+}
+
+export const GET_TARGET_SCHEDULED_ACTION  = /* GraphQL */ `
+    query GetTargetScheduledAction($namespace: String!, $id: ID!) {
+        scheduler {
+            getTargetScheduledAction(namespace: $namespace, id: $id) {
+                ${DATA}
+                ${ERROR}
+            }
+        }
+    }
+`;
+
 export interface IListScheduledActionsQueryVariables {
     namespace: string;
     where?: ListScheduledActionsUseCase.Where;

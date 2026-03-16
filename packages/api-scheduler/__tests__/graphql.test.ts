@@ -11,6 +11,8 @@ import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
 import { ContextPlugin } from "@webiny/api";
 
 describe("Scheduler GraphQL", () => {
+    const targetId = "target-id#0001";
+
     const handler = useGraphQLHandler({
         getScheduleClient: () => {
             return createMockScheduleClient();
@@ -97,7 +99,7 @@ describe("Scheduler GraphQL", () => {
         const scheduleFor = new Date(new Date().getTime() + 5 * 60 * 1000);
 
         const [publishResponse] = await handler.scheduleAction({
-            id: "target-id#0001",
+            id: targetId,
             namespace: PublishTestEntryActionHandlerImpl.name,
             actionType: "publish",
             scheduleFor
@@ -117,7 +119,7 @@ describe("Scheduler GraphQL", () => {
                                 id: "id-12345678",
                                 type: "admin"
                             },
-                            targetId: "target-id#0001",
+                            targetId,
                             title: "Fetched title from handler",
                             unpublishOn: null
                         },
@@ -148,7 +150,7 @@ describe("Scheduler GraphQL", () => {
                                     id: "id-12345678",
                                     type: "admin"
                                 },
-                                targetId: "target-id#0001",
+                                targetId,
                                 title: "Fetched title from handler",
                                 unpublishOn: null
                             }
@@ -163,10 +165,12 @@ describe("Scheduler GraphQL", () => {
                 }
             }
         });
-
-        const [getResponse] = await handler.getScheduledAction({
+        /**
+         * Get scheduled action by ID
+         */
+        const [getResponse] = await handler.getTargetScheduledAction({
             namespace: PublishTestEntryActionHandlerImpl.name,
-            id: publishResponse.data.scheduler.scheduleAction.data!.id
+            id: targetId,
         });
 
         expect(getResponse).toEqual({
@@ -183,7 +187,38 @@ describe("Scheduler GraphQL", () => {
                                 id: "id-12345678",
                                 type: "admin"
                             },
-                            targetId: "target-id#0001",
+                            targetId,
+                            title: "Fetched title from handler",
+                            unpublishOn: null
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+        /**
+         * Get scheduled action by target ID
+         */
+        const [getTargetResponse] = await handler.getTargetScheduledAction({
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            id: publishResponse.data.scheduler.scheduleAction.data!.id
+        });
+        
+        expect(getTargetResponse).toEqual({
+            data: {
+                scheduler: {
+                    getTargetScheduledAction: {
+                        data: {
+                            actionType: "publish",
+                            id: expect.any(String),
+                            namespace,
+                            publishOn: scheduleFor.toISOString(),
+                            scheduledBy: {
+                                displayName: "John Doe",
+                                id: "id-12345678",
+                                type: "admin"
+                            },
+                            targetId,
                             title: "Fetched title from handler",
                             unpublishOn: null
                         },
@@ -196,7 +231,7 @@ describe("Scheduler GraphQL", () => {
         const updatedScheduleFor = new Date(new Date().getTime() + 10 * 60 * 1000);
 
         const [updateResponse] = await handler.scheduleAction({
-            id: "target-id#0001",
+            id: targetId,
             namespace: PublishTestEntryActionHandlerImpl.name,
             actionType: "publish",
             scheduleFor: updatedScheduleFor
@@ -216,7 +251,7 @@ describe("Scheduler GraphQL", () => {
                                 id: "id-12345678",
                                 type: "admin"
                             },
-                            targetId: "target-id#0001",
+                            targetId,
                             title: "Fetched title from handler",
                             unpublishOn: null
                         },
@@ -245,7 +280,7 @@ describe("Scheduler GraphQL", () => {
                                 id: "id-12345678",
                                 type: "admin"
                             },
-                            targetId: "target-id#0001",
+                            targetId,
                             title: "Fetched title from handler",
                             unpublishOn: null
                         },

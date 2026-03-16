@@ -92,7 +92,7 @@ export class DataLoadersHandler implements IDataLoadersHandler {
         loader = factory({
             entity: this.entity,
             tenant: model.tenant,
-            modelId: model.modelId,
+            modelId: model.modelId
         });
         this.cache.setDataLoader(cacheParams, loader);
         return loader;

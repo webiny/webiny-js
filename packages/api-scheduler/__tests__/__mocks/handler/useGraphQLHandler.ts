@@ -4,11 +4,13 @@ import { PluginsContainer } from "@webiny/plugins";
 import {
     CANCEL_SCHEDULED_ACTION,
     GET_SCHEDULED_ACTION,
+    GET_TARGET_SCHEDULED_ACTION,
     type ICancelScheduledActionMutationResponse,
     type ICancelScheduledActionMutationVariables,
     type ICreateScheduledActionMutationVariables,
     IGetScheduledActionQueryResponse,
     IGetScheduledActionQueryVariables,
+    type IGetTargetScheduledActionQueryResponse,
     type IListScheduledActionsQueryResponse,
     type IListScheduledActionsQueryVariables,
     type IScheduleActionMutationResponse,
@@ -51,6 +53,10 @@ export const useGraphQLHandler = (params: CreateHandlerCoreParams) => {
             IGetScheduledActionQueryVariables,
             IGetScheduledActionQueryResponse
         >(GET_SCHEDULED_ACTION),
+        getTargetScheduledAction: handler.createQuery<
+            IGetScheduledActionQueryVariables,
+            IGetTargetScheduledActionQueryResponse
+        >(GET_TARGET_SCHEDULED_ACTION),
         listScheduledActions: handler.createQuery<
             IListScheduledActionsQueryVariables,
             IListScheduledActionsQueryResponse

@@ -52,7 +52,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
             let result: CmsEntryStorageOperationsListResponse<CmsStorageEntry<T>> | undefined;
             try {
                 result = await this.storageOperations.entries.list<T>(model, listParams);
-            } catch(ex) {
+            } catch (ex) {
                 console.log({
                     failedStorageOps: {
                         error: ex,
@@ -72,7 +72,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
             );
             console.log({
                 afterTransform: items
-            })
+            });
 
             const meta: CmsEntryMeta = {
                 hasMoreItems: result.hasMoreItems,
