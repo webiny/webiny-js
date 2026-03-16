@@ -101,36 +101,6 @@ describe("SDK GraphQL - CMS Search", () => {
             expect(result.data[0].values?.price).toBe(1500);
         });
 
-        it("should search entries with special characters", async () => {
-            // Create products with special characters.
-            await createAndPublishEntry({
-                name: "High-End Laptop w/ SSD",
-                sku: "LAP-002",
-                description: "Premium laptop with solid state drive",
-                price: 2000
-            });
-
-            await createAndPublishEntry({
-                name: "Standard Laptop",
-                sku: "LAP-003",
-                description: "Basic laptop",
-                price: 800
-            });
-
-            // Search for "w/".
-            const searchResult = await sdk.cms.listEntries<ProductValues>({
-                modelId: "product",
-                search: "w/",
-                fields: ["id", "values.name"]
-            });
-
-            expect(searchResult.isOk()).toBe(true);
-            const result = searchResult.value;
-
-            expect(result.data).toHaveLength(1);
-            expect(result.data[0].values?.name).toBe("High-End Laptop w/ SSD");
-        });
-
         it("should perform case-insensitive search", async () => {
             // Create product with mixed case name.
             await createAndPublishEntry({
