@@ -32,6 +32,8 @@ export { ExtensionSrcResolver } from "./utils/ExtensionSrcResolver.js";
 
 export { GracefulError } from "./GracefulError.js";
 
+export { toImportSpecifier } from "./utils/toImportSpecifier.js";
+
 export { Wcp } from "./components/Wcp.js";
 export {
     WcpProjectLicenseProvider,

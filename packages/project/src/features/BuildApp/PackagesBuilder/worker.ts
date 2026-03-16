@@ -1,5 +1,5 @@
 import "tsx/esm";
-import { requireConfigWithExecute } from "./utils/requireConfig.js";
+import { requireConfigWithExecute } from "~/utils/index.js";
 import { serializeError } from "serialize-error";
 
 const sendError = (err: Error) => {

@@ -1,5 +1,4 @@
 import path from "path";
-import { pathToFileURL } from "node:url";
 import { Container } from "@webiny/di";
 import {
     argvParserService,
@@ -57,7 +56,7 @@ import {
     GetProjectSdkService,
     UiService
 } from "~/abstractions/index.js";
-import { GracefulError } from "@webiny/project";
+import { GracefulError, toImportSpecifier } from "@webiny/project";
 import {
     commandsWithGracefulErrorHandling,
     deployCommandWithTelemetry
@@ -146,10 +145,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
 
             const exportName = path.basename(filePath).replace(path.extname(filePath), "");
 
-            const importSpecifier = path.isAbsolute(importPath)
-                ? pathToFileURL(importPath).href
-                : importPath;
-            const importedModule = await import(importSpecifier);
+            const importedModule = await import(toImportSpecifier(importPath));
 
             // Support both default and named exports.
             // Check for 'default' property existence rather than truthiness.

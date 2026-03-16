@@ -1,9 +1,4 @@
-import { pathToFileURL } from "node:url";
-import path from "node:path";
-
-const toImportSpecifier = (inputPath: string): string => {
-    return path.isAbsolute(inputPath) ? pathToFileURL(inputPath).href : inputPath;
-};
+import { toImportSpecifier } from "./toImportSpecifier.js";
 
 export interface IRequireConfigOptions {
     env: string;
@@ -38,11 +33,14 @@ export const requireConfigWithExecute = async <
     configPath: string,
     params: IRequireConfigParams
 ): Promise<T> => {
-    const required = await import(toImportSpecifier(configPath)).then(m => m.default ?? m);
+    const module = await import(toImportSpecifier(configPath));
 
-    if (typeof required === "function") {
-        return required(params);
+    // TODO: https://github.com/orgs/webiny/projects/32/views/2?pane=issue&itemId=125453089
+    const config = module.default.default ?? module.default ?? module;
+
+    if (typeof config === "function") {
+        return config(params);
     }
 
-    return required;
+    return config;
 };

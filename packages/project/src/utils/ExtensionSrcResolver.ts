@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
-import { pathToFileURL } from "node:url";
 import { getTsconfig } from "get-tsconfig";
+import { toImportSpecifier } from "./toImportSpecifier.js";
 import { type IProjectModel } from "~/abstractions/models/index.js";
 
 export class ExtensionSrcResolver {
@@ -18,10 +18,7 @@ export class ExtensionSrcResolver {
         const importPath = this.resolvePath(filePath, project);
         const exportName = path.basename(filePath).replace(path.extname(filePath), "");
 
-        const importSpecifier = path.isAbsolute(importPath)
-            ? pathToFileURL(importPath).href
-            : importPath;
-        const importedModule = await import(importSpecifier);
+        const importedModule = await import(toImportSpecifier(importPath));
 
         // Support both default and named exports.
         // Check for 'default' property existence rather than truthiness.
