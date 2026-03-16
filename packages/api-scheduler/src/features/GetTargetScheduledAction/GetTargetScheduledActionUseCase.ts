@@ -43,9 +43,6 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
         const entryResult = await this.getRecord<T>(params);
 
         if (entryResult.isFail()) {
-            console.log({
-                isFail: entryResult.error
-            });
             if (entryResult.error.code === "Cms/Entry/NotFound") {
                 return Result.fail(new ScheduledActionNotFoundError(id));
             }
@@ -65,20 +62,9 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
          * Always check if the namespace is correct because entry is loaded directly, not via filtering.
          */
         if (entry.values.namespace !== namespace) {
-            console.log({
-                entry,
-                entryNamespace: entry.values.namespace,
-                expectedNamespace: namespace,
-                notSameNamespace: true
-            });
             return Result.fail(new ScheduledActionNotFoundError(id));
         }
         const action = ScheduledActionMapper.toAction<T>(entry);
-        console.log({
-            allIsOk: true,
-            action
-        });
-
         return Result.ok(action);
     }
     /**
