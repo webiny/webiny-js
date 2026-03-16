@@ -5,7 +5,7 @@ import type { IDataLoaderParams } from "./types.js";
 import { createBatchScheduleFn } from "./createBatchScheduleFn.js";
 
 export const createGetPublishedRevisionByEntryId = (params: IDataLoaderParams) => {
-    const { entity, tenant } = params;
+    const { entity, tenant, modelId } = params;
 
     const publishedKey = createPublishedSortKey();
     return new DataLoader<string, CmsStorageEntry[]>(
@@ -35,6 +35,9 @@ export const createGetPublishedRevisionByEntryId = (params: IDataLoaderParams) =
 
             return ids.map(entryId => {
                 return items.filter(item => {
+                    if (item.modelId !== modelId) {
+                        return false;
+                    }
                     return entryId === item.entryId;
                 });
             });

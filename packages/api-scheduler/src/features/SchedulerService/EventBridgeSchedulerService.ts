@@ -155,10 +155,11 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
     private createScheduledActionEventPayload(
         params: ISchedulerServiceCreateParams | ISchedulerServiceUpdateParams
     ): IScheduledActionEventPayload {
-        const { id, scheduleFor } = params;
+        const { id, scheduleFor, namespace } = params;
 
         return {
             id,
+            namespace,
             scheduleFor: scheduleFor.toISOString()
         };
     }

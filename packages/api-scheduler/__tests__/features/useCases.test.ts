@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import { useHandler } from "~tests/__mocks/context/useHandler.js";
+import { useHandler } from "~tests/__mocks/handler/useHandler.js";
 import { createMockScheduleClient } from "~tests/__mocks/scheduleClient.js";
 import { SchedulerService } from "~/shared/abstractions.js";
 import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
@@ -8,10 +8,16 @@ import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/index.js";
 import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
-import { PublishTestEntryActionHandlerImpl } from "~tests/__mocks/PublishTestEntryActionHandler.js";
+import {
+    PublishTestEntryActionHandler,
+    PublishTestEntryActionHandlerImpl
+} from "~tests/__mocks/PublishTestEntryActionHandler.js";
+import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
 
 describe("Combined Use Cases", () => {
     let context: CmsContext;
+
+    const namespace = PublishTestEntryActionHandlerImpl.name;
 
     beforeEach(async () => {
         const contextHandler = useHandler({
@@ -20,6 +26,8 @@ describe("Combined Use Cases", () => {
             }
         });
         context = await contextHandler.handler();
+        context.container.register(NamespaceHandler);
+        context.container.register(PublishTestEntryActionHandler);
         context.container.registerInstance(SchedulerService, new VoidSchedulerService());
     });
 
@@ -43,41 +51,61 @@ describe("Combined Use Cases", () => {
         updatedScheduledFor.setHours(updatedScheduledFor.getHours() + 2);
 
         const createResult = await scheduleActionUseCase.execute({
-            namespace: PublishTestEntryActionHandlerImpl.name,
-            actionType: "Publish",
+            namespace,
+            actionType: "publish",
             targetId: "target-id#0001",
-            scheduleFor: scheduledFor.toISOString(),
-            payload: {
-                some: "data"
-            },
-            title: "Publish Article - target-id#0001"
+            scheduleFor: scheduledFor
         });
 
         expect(createResult.isOk()).toBe(true);
 
-        const getResult = await getScheduledActionUseCase.execute(createResult.value.id);
+        const getResult = await getScheduledActionUseCase.execute({
+            namespace,
+            id: createResult.value.id
+        });
 
         expect(getResult.isOk()).toBeTrue();
+        const expected: typeof getResult.value = {
+            actionType: "publish",
+            error: undefined,
+            id: createResult.value.id,
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            payload: {
+                actionType: "publish",
+                namespace: PublishTestEntryActionHandlerImpl.name,
+                scheduleId: createResult.value.id,
+                something: true,
+                targetId: "target-id#0001",
+                title: "Fetched title from handler"
+            },
+            scheduledBy: {
+                displayName: "John Doe",
+                id: "id-12345678",
+                type: "admin"
+            },
+            scheduledFor: createResult.value.scheduledFor,
+            targetId: "target-id#0001",
+            title: "Fetched title from handler"
+        };
         expect(getResult.value).toEqual({
-            ...createResult.value
+            ...expected
         });
 
         const updateResult = await scheduleActionUseCase.execute({
             namespace: PublishTestEntryActionHandlerImpl.name,
-            actionType: "Publish",
+            actionType: "publish",
             targetId: "target-id#0001",
-            scheduleFor: updatedScheduledFor.toISOString(),
-            payload: {
-                some: "data"
-            },
-            title: "Publish Article - target-id#0001"
+            scheduleFor: updatedScheduledFor
         });
 
         expect(updateResult.isOk()).toBeTrue();
         expect(updateResult.value).toEqual({
             ...createResult.value,
+            payload: {
+                ...createResult.value.payload
+            },
             error: undefined,
-            scheduledFor: updatedScheduledFor.toISOString()
+            scheduledFor: updatedScheduledFor
         });
 
         const listResult = await listScheduledActionsUseCase.execute({
@@ -91,10 +119,16 @@ describe("Combined Use Cases", () => {
             ...updateResult.value
         });
 
-        const cancelResult = await cancelScheduledActionUseCase.execute(updateResult.value.id);
+        const cancelResult = await cancelScheduledActionUseCase.execute({
+            id: updateResult.value.id,
+            namespace
+        });
         expect(cancelResult.isOk()).toBeTrue();
 
-        const getAfterCancelResult = await getScheduledActionUseCase.execute(createResult.value.id);
+        const getAfterCancelResult = await getScheduledActionUseCase.execute({
+            id: createResult.value.id,
+            namespace
+        });
         expect(getAfterCancelResult.isFail()).toBeTrue();
         expect(getAfterCancelResult.error.code).toBe("Scheduler/ScheduledAction/NotFound");
     });
