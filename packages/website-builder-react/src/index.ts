@@ -36,4 +36,10 @@ export {
     StyleSettings
 } from "@webiny/website-builder-sdk";
 
-export type { ComponentProps, ComponentPropsWithChildren, InferManifest } from "./types.js";
+export type {
+    ComponentProps,
+    ComponentPropsWithChildren,
+    InferManifest,
+    InferComponentChange,
+    InferDescendantChange
+} from "./types.js";

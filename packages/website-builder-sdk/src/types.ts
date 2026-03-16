@@ -156,6 +156,13 @@ export type ComponentConstraint = {
     message?: string;
 };
 
+// Flow-control symbols for handler arrays
+declare const STOP: unique symbol;
+declare const CONTINUE: unique symbol;
+export type Stop = typeof STOP;
+export type Continue = typeof CONTINUE;
+export type HandlerResult = void | Stop | Continue;
+
 export type OnChangeAction = "create" | "update" | "delete";
 
 export type OnChangeElementContext = {
@@ -172,7 +179,7 @@ export type ManifestAncestorContext = {
     getElement: (id: string) => OnChangeElementContext | undefined;
 };
 
-export type ManifestOnChangeContext<TInputs = Record<string, any>> = {
+export type ComponentChangeContext<TInputs = Record<string, any>> = {
     action: OnChangeAction;
     id: string;
     component: ComponentManifest;
@@ -183,6 +190,8 @@ export type ManifestOnChangeContext<TInputs = Record<string, any>> = {
     createElement: (params: any) => any;
     breakpoint: string;
     log: (...args: any[]) => void;
+    stop: () => Stop;
+    continue: () => Continue;
 };
 
 export type DescendantChangeContext<TInputs = Record<string, any>> = {
@@ -197,7 +206,17 @@ export type DescendantChangeContext<TInputs = Record<string, any>> = {
     getElement: (id: string) => OnChangeElementContext | undefined;
     breakpoint: string;
     log: (...args: any[]) => void;
+    stop: () => Stop;
+    continue: () => Continue;
 };
+
+export type ComponentChangeHandler<TInputs = Record<string, any>> = (
+    ctx: ComponentChangeContext<TInputs>
+) => HandlerResult;
+
+export type DescendantChangeHandler<TInputs = Record<string, any>> = (
+    ctx: DescendantChangeContext<TInputs>
+) => HandlerResult;
 
 export type ComponentManifest = {
     name: string;
@@ -214,8 +233,8 @@ export type ComponentManifest = {
     tags: string[];
     constraints?: ComponentConstraint[];
     descendantConstraints?: ComponentConstraint[];
-    onChange?: (ctx: ManifestOnChangeContext) => void;
-    onDescendantChange?: (ctx: DescendantChangeContext) => void;
+    onChange?: ComponentChangeHandler | ComponentChangeHandler[];
+    onDescendantChange?: DescendantChangeHandler | DescendantChangeHandler[];
     defaults?: {
         inputs?: Record<string, any>;
         styles?: SerializableCSSStyleDeclaration;
@@ -542,8 +561,10 @@ export type ComponentManifestInput<TInputs> =
           acceptsChildren: true;
           tags?: string[];
           inputs?: ManifestInputsArray<TInputs, true> | ManifestInputsObject<TInputs, true>;
-          onChange?: (ctx: ManifestOnChangeContext<TInputs>) => void;
-          onDescendantChange?: (ctx: DescendantChangeContext<TInputs>) => void;
+          onChange?: ComponentChangeHandler<TInputs> | ComponentChangeHandler<TInputs>[];
+          onDescendantChange?:
+              | DescendantChangeHandler<TInputs>
+              | DescendantChangeHandler<TInputs>[];
       })
     | (Omit<
           ComponentManifest,
@@ -552,6 +573,8 @@ export type ComponentManifestInput<TInputs> =
           acceptsChildren?: false;
           tags?: string[];
           inputs: ManifestInputsArray<TInputs, false> | ManifestInputsObject<TInputs, false>;
-          onChange?: (ctx: ManifestOnChangeContext<TInputs>) => void;
-          onDescendantChange?: (ctx: DescendantChangeContext<TInputs>) => void;
+          onChange?: ComponentChangeHandler<TInputs> | ComponentChangeHandler<TInputs>[];
+          onDescendantChange?:
+              | DescendantChangeHandler<TInputs>
+              | DescendantChangeHandler<TInputs>[];
       });

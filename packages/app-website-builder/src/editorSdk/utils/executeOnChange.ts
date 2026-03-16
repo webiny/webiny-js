@@ -4,7 +4,9 @@ import type {
     OnChangeAction,
     ComponentManifest,
     Document,
-    OnChangeElementContext
+    OnChangeElementContext,
+    Stop,
+    Continue
 } from "@webiny/website-builder-sdk";
 import {
     buildAncestors,
@@ -13,6 +15,26 @@ import {
     ElementFactory,
     InputsBindingsProcessor
 } from "@webiny/website-builder-sdk";
+
+const STOP_SYMBOL: Stop = Symbol.for("wb.handler.stop") as unknown as Stop;
+const CONTINUE_SYMBOL: Continue = Symbol.for("wb.handler.continue") as unknown as Continue;
+const stop = (): Stop => STOP_SYMBOL;
+const cont = (): Continue => CONTINUE_SYMBOL;
+
+function runHandlers<TCtx>(
+    handlers: ((ctx: TCtx) => any) | ((ctx: TCtx) => any)[],
+    ctx: TCtx
+): void {
+    if (Array.isArray(handlers)) {
+        for (const handler of handlers) {
+            if (handler(ctx) === STOP_SYMBOL) {
+                return;
+            }
+        }
+    } else {
+        handlers(ctx);
+    }
+}
 
 export interface AncestorUpdate {
     elementId: string;
@@ -79,7 +101,7 @@ export function executeOnChange(params: ExecuteOnChangeParams): AncestorUpdate[]
     if (manifest?.onChange) {
         const ancestors = buildAncestors(element, components, document);
         const getElement = createGetElement(document, components, breakpointNames, elementFactory);
-        manifest.onChange({
+        runHandlers(manifest.onChange, {
             action,
             id: elementId,
             component: manifest,
@@ -103,7 +125,9 @@ export function executeOnChange(params: ExecuteOnChangeParams): AncestorUpdate[]
             getElement,
             createElement: p => createElement(p),
             breakpoint: baseBreakpoint,
-            log: (...args: any[]) => console.log(...args)
+            log: (...args: any[]) => console.log(...args),
+            stop,
+            continue: cont
         });
     }
 
@@ -173,7 +197,7 @@ function fireDescendantChange(params: {
                 breakpointNames,
                 elementFactory
             );
-            parentManifest.onDescendantChange({
+            runHandlers(parentManifest.onDescendantChange, {
                 action,
                 descendant: {
                     component: components[element.component.name],
@@ -191,7 +215,9 @@ function fireDescendantChange(params: {
                 },
                 getElement,
                 breakpoint: baseBreakpoint,
-                log: (...args: any[]) => console.log(...args)
+                log: (...args: any[]) => console.log(...args),
+                stop,
+                continue: cont
             });
         }
 

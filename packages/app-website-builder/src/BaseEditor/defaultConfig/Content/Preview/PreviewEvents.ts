@@ -21,6 +21,13 @@ type FragmentConfig =
       }
     | { type: "component"; component: string; inputs: Record<string, any> };
 
+function deserializeHandlers(value: string | string[]): Function | Function[] {
+    if (Array.isArray(value)) {
+        return value.map(s => functionConverter.deserialize(s));
+    }
+    return functionConverter.deserialize(value);
+}
+
 export class PreviewEvents {
     private editor: Editor;
     private editorEventsRegistered = false;
@@ -170,16 +177,13 @@ export class PreviewEvents {
                         component.canDelete.check
                     );
                 }
-                if (component.onChange && typeof component.onChange === "string") {
-                    component.onChange = functionConverter.deserialize(component.onChange);
+                if (component.onChange) {
+                    component.onChange = deserializeHandlers(component.onChange as any) as any;
                 }
-                if (
-                    component.onDescendantChange &&
-                    typeof component.onDescendantChange === "string"
-                ) {
-                    component.onDescendantChange = functionConverter.deserialize(
-                        component.onDescendantChange
-                    );
+                if (component.onDescendantChange) {
+                    component.onDescendantChange = deserializeHandlers(
+                        component.onDescendantChange as any
+                    ) as any;
                 }
             } catch (e) {
                 console.log(

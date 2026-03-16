@@ -1,7 +1,9 @@
 import type {
     CssProperties,
     DocumentElement,
-    ComponentManifestInput
+    ComponentManifestInput,
+    ComponentChangeHandler,
+    DescendantChangeHandler
 } from "@webiny/website-builder-sdk";
 
 export type ComponentProps<TInputs = unknown> = {
@@ -38,5 +40,29 @@ export type ExtractInputNames<T extends (props: any) => any> = keyof ExtractInpu
  * ```
  */
 export type InferManifest<T extends (props: any) => any> = ComponentManifestInput<
+    ExtractInputs<Parameters<T>[0]>
+>;
+
+/**
+ * Extract a single typed onChange handler from a component.
+ *
+ * @example
+ * ```ts
+ * const handler: InferComponentChange<typeof Funnel> = ctx => { ... };
+ * ```
+ */
+export type InferComponentChange<T extends (props: any) => any> = ComponentChangeHandler<
+    ExtractInputs<Parameters<T>[0]>
+>;
+
+/**
+ * Extract a single typed onDescendantChange handler from a component.
+ *
+ * @example
+ * ```ts
+ * const handler: InferDescendantChange<typeof Funnel> = ctx => { ... };
+ * ```
+ */
+export type InferDescendantChange<T extends (props: any) => any> = DescendantChangeHandler<
     ExtractInputs<Parameters<T>[0]>
 >;

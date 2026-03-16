@@ -34,16 +34,13 @@ export class ComponentRegistry {
                 component.manifest.canDelete.check
             );
         }
-        if (component.manifest.onChange && typeof component.manifest.onChange === "function") {
-            // @ts-expect-error Serialized form is a string, but type expects a function.
-            component.manifest.onChange = functionConverter.serialize(component.manifest.onChange);
+        if (component.manifest.onChange) {
+            // @ts-expect-error Serialized form is a string (or string[]), but type expects a function.
+            component.manifest.onChange = serializeHandlers(component.manifest.onChange);
         }
-        if (
-            component.manifest.onDescendantChange &&
-            typeof component.manifest.onDescendantChange === "function"
-        ) {
-            // @ts-expect-error Serialized form is a string, but type expects a function.
-            component.manifest.onDescendantChange = functionConverter.serialize(
+        if (component.manifest.onDescendantChange) {
+            // @ts-expect-error Serialized form is a string (or string[]), but type expects a function.
+            component.manifest.onDescendantChange = serializeHandlers(
                 component.manifest.onDescendantChange
             );
         }
@@ -61,6 +58,15 @@ export class ComponentRegistry {
         this.listeners.add(fn);
         return () => this.listeners.delete(fn);
     }
+}
+
+function serializeHandlers(
+    handler: ((...args: any[]) => any) | ((...args: any[]) => any)[]
+): string | string[] {
+    if (Array.isArray(handler)) {
+        return handler.map(h => functionConverter.serialize(h));
+    }
+    return functionConverter.serialize(handler);
 }
 
 export const componentRegistry = new ComponentRegistry();
