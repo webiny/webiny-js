@@ -8,7 +8,7 @@ import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/i
 import { ScheduledActionNotFoundError } from "~/domain/errors.js";
 import type { Identity, ScheduledActionType } from "~/shared/abstractions.js";
 import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
-import {GetTargetScheduledActionUseCase} from "~/features/GetTargetScheduledAction/index.js";
+import { GetTargetScheduledActionUseCase } from "~/features/GetTargetScheduledAction/index.js";
 
 interface IListScheduledActionsArgs extends ListScheduledActionsUseCase.Params {
     namespace: string;
@@ -190,21 +190,21 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                 };
             }
         });
-        
+
         builder.addResolver<GetTargetScheduledActionUseCase.Params>({
             path: "SchedulerQuery.getTargetScheduledAction",
             dependencies: [GetTargetScheduledActionUseCase],
             resolver: (useCase: GetTargetScheduledActionUseCase.Interface) => {
                 return async ({ args }) => {
                     const result = await useCase.execute(args);
-                    
+
                     if (result.isFail()) {
                         if (result.error instanceof ScheduledActionNotFoundError) {
                             return new Response(null);
                         }
                         return new ErrorResponse(result.error);
                     }
-                    
+
                     return new Response<IScheduleRecordOutput>(
                         ScheduledActionMapper.toGraphQL(result.value)
                     );

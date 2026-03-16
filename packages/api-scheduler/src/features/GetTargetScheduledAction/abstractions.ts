@@ -13,7 +13,8 @@ export interface IGetTargetScheduledActionErrors {
     unauthorized: NotAuthorizedError;
 }
 
-type GetTargetScheduledActionError = IGetTargetScheduledActionErrors[keyof IGetTargetScheduledActionErrors];
+type GetTargetScheduledActionError =
+    IGetTargetScheduledActionErrors[keyof IGetTargetScheduledActionErrors];
 
 export interface IGetTargetScheduledActionUseCaseParams {
     namespace: string;

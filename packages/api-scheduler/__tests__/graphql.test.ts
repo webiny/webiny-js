@@ -203,7 +203,7 @@ describe("Scheduler GraphQL", () => {
             namespace: PublishTestEntryActionHandlerImpl.name,
             id: targetId
         });
-        
+
         expect(getTargetResponse).toEqual({
             data: {
                 scheduler: {
