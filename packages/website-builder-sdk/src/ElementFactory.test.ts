@@ -7,6 +7,7 @@ const components: Record<string, ComponentManifest> = {
     "Webiny/Root": {
         name: "Webiny/Root",
         label: "Main Content",
+        tags: [],
         inputs: [
             {
                 type: "slot",
@@ -20,6 +21,7 @@ const components: Record<string, ComponentManifest> = {
     "FunnelBuilder/Funnel": {
         name: "FunnelBuilder/Funnel",
         label: "Funnel",
+        tags: [],
         inputs: [
             {
                 type: "object",
@@ -55,6 +57,7 @@ const components: Record<string, ComponentManifest> = {
     "FunnelBuilder/Step": {
         name: "FunnelBuilder/Step",
         label: "Funnel Step",
+        tags: [],
         inputs: [
             {
                 type: "text",

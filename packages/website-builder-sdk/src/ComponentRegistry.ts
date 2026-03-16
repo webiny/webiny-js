@@ -9,6 +9,8 @@ export class ComponentRegistry {
 
     public register(component: Component) {
         const name = component.manifest.name;
+        // Normalize optional fields so downstream code never sees undefined.
+        component.manifest.tags = component.manifest.tags ?? [];
         // Serialize constraint functions for cross-boundary transport
         if (component.manifest.constraints) {
             for (const constraint of component.manifest.constraints) {
@@ -30,6 +32,19 @@ export class ComponentRegistry {
             // @ts-expect-error Serialized form is a string, but type expects a function.
             component.manifest.canDelete.check = functionConverter.serialize(
                 component.manifest.canDelete.check
+            );
+        }
+        if (component.manifest.onChange && typeof component.manifest.onChange === "function") {
+            // @ts-expect-error Serialized form is a string, but type expects a function.
+            component.manifest.onChange = functionConverter.serialize(component.manifest.onChange);
+        }
+        if (
+            component.manifest.onDescendantChange &&
+            typeof component.manifest.onDescendantChange === "function"
+        ) {
+            // @ts-expect-error Serialized form is a string, but type expects a function.
+            component.manifest.onDescendantChange = functionConverter.serialize(
+                component.manifest.onDescendantChange
             );
         }
         this.registry.set(name, component);

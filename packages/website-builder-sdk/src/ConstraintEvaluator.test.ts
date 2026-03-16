@@ -16,7 +16,7 @@ function makeElement(
 }
 
 function makeManifest(name: string, overrides?: Partial<ComponentManifest>): ComponentManifest {
-    return { name, inputs: [], ...overrides };
+    return { name, label: name, inputs: [], tags: [], ...overrides };
 }
 
 function makeDocument(elements: DocumentElement[], bindings: Document["bindings"] = {}): Document {
@@ -412,7 +412,7 @@ describe("evaluateConstraints", () => {
             components
         });
 
-        expect(result.violation!.message).toBe("Cannot place Widget here");
+        expect(result.violation!.message).toBe("Cannot place Widget here.");
     });
 
     it("should use thrown error message as the violation message", () => {
@@ -500,7 +500,7 @@ describe("evaluateConstraints", () => {
         });
 
         expect(result.allowed).toBe(false);
-        expect(result.violation!.message).toBe("Cannot place Widget here");
+        expect(result.violation!.message).toBe("Cannot place Widget here.");
     });
 
     describe("ctx.isChildOf", () => {

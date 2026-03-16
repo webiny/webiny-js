@@ -107,7 +107,7 @@ function findChildPosition(
     return { index: position, count: siblingKeys.length };
 }
 
-function buildElementContext(
+export function buildElementContext(
     element: DocumentElement,
     components: Record<string, ComponentManifest>,
     document: Document
@@ -149,12 +149,12 @@ function buildElementContext(
     };
 }
 
-interface InternalAncestor {
+export interface InternalAncestor {
     element: DocumentElement;
     manifest: ComponentManifest;
 }
 
-function buildAncestors(
+export function buildAncestors(
     parentElement: DocumentElement,
     components: Record<string, ComponentManifest>,
     document: Document

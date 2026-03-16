@@ -146,27 +146,45 @@ export class PreviewEvents {
 
         messenger.on("preview.component.register", (component: ComponentManifest) => {
             // Deserialize constraint check functions once on arrival.
-            if (component.constraints) {
-                for (const constraint of component.constraints) {
-                    if (typeof constraint.check === "string") {
-                        constraint.check = functionConverter.deserialize(constraint.check);
+            try {
+                if (component.constraints) {
+                    for (const constraint of component.constraints) {
+                        if (typeof constraint.check === "string") {
+                            constraint.check = functionConverter.deserialize(constraint.check);
+                        }
                     }
                 }
-            }
-            if (component.descendantConstraints) {
-                for (const constraint of component.descendantConstraints) {
-                    if (typeof constraint.check === "string") {
-                        constraint.check = functionConverter.deserialize(constraint.check);
+                if (component.descendantConstraints) {
+                    for (const constraint of component.descendantConstraints) {
+                        if (typeof constraint.check === "string") {
+                            constraint.check = functionConverter.deserialize(constraint.check);
+                        }
                     }
                 }
-            }
-            if (
-                component.canDelete &&
-                typeof component.canDelete === "object" &&
-                typeof component.canDelete.check === "string"
-            ) {
-                component.canDelete.check = functionConverter.deserialize(
-                    component.canDelete.check
+                if (
+                    component.canDelete &&
+                    typeof component.canDelete === "object" &&
+                    typeof component.canDelete.check === "string"
+                ) {
+                    component.canDelete.check = functionConverter.deserialize(
+                        component.canDelete.check
+                    );
+                }
+                if (component.onChange && typeof component.onChange === "string") {
+                    component.onChange = functionConverter.deserialize(component.onChange);
+                }
+                if (
+                    component.onDescendantChange &&
+                    typeof component.onDescendantChange === "string"
+                ) {
+                    component.onDescendantChange = functionConverter.deserialize(
+                        component.onDescendantChange
+                    );
+                }
+            } catch (e) {
+                console.log(
+                    `Couldn't deserialize ${component.name} component callbacks:`,
+                    e.message
                 );
             }
 

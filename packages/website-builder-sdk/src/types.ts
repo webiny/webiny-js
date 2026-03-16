@@ -156,6 +156,49 @@ export type ComponentConstraint = {
     message?: string;
 };
 
+export type OnChangeAction = "create" | "update" | "delete";
+
+export type OnChangeElementContext = {
+    id: string;
+    component: ComponentManifest;
+    inputs: Record<string, any>;
+};
+
+export type ManifestAncestorContext = {
+    id: string;
+    component: ComponentManifest;
+    inputs: Record<string, any>;
+    updateInputs: (cb: (inputs: Record<string, any>) => void) => void;
+    getElement: (id: string) => OnChangeElementContext | undefined;
+};
+
+export type ManifestOnChangeContext<TInputs = Record<string, any>> = {
+    action: OnChangeAction;
+    id: string;
+    component: ComponentManifest;
+    inputs: TInputs;
+    styles: Record<string, any>;
+    getAncestor: (componentName: string) => ManifestAncestorContext | undefined;
+    getElement: (id: string) => OnChangeElementContext | undefined;
+    createElement: (params: any) => any;
+    breakpoint: string;
+    log: (...args: any[]) => void;
+};
+
+export type DescendantChangeContext<TInputs = Record<string, any>> = {
+    action: OnChangeAction;
+    descendant: {
+        component: ComponentManifest;
+        id: string;
+        inputs: Record<string, any>;
+    };
+    inputs: TInputs;
+    updateInputs: (cb: (inputs: TInputs) => void) => void;
+    getElement: (id: string) => OnChangeElementContext | undefined;
+    breakpoint: string;
+    log: (...args: any[]) => void;
+};
+
 export type ComponentManifest = {
     name: string;
     group?: string;
@@ -168,9 +211,11 @@ export type ComponentManifest = {
     hideFromToolbar?: boolean;
     hideStyleSettings?: string[];
     autoApplyStyles?: boolean;
-    tags?: string[];
+    tags: string[];
     constraints?: ComponentConstraint[];
     descendantConstraints?: ComponentConstraint[];
+    onChange?: (ctx: ManifestOnChangeContext) => void;
+    onDescendantChange?: (ctx: DescendantChangeContext) => void;
     defaults?: {
         inputs?: Record<string, any>;
         styles?: SerializableCSSStyleDeclaration;
@@ -490,11 +535,23 @@ export type ManifestInputsObject<
     : { [K in keyof TInputs]: InputFactory<K & string> };
 
 export type ComponentManifestInput<TInputs> =
-    | (Omit<ComponentManifest, "inputs" | "acceptsChildren"> & {
+    | (Omit<
+          ComponentManifest,
+          "inputs" | "acceptsChildren" | "tags" | "onChange" | "onDescendantChange"
+      > & {
           acceptsChildren: true;
+          tags?: string[];
           inputs?: ManifestInputsArray<TInputs, true> | ManifestInputsObject<TInputs, true>;
+          onChange?: (ctx: ManifestOnChangeContext<TInputs>) => void;
+          onDescendantChange?: (ctx: DescendantChangeContext<TInputs>) => void;
       })
-    | (Omit<ComponentManifest, "inputs" | "acceptsChildren"> & {
+    | (Omit<
+          ComponentManifest,
+          "inputs" | "acceptsChildren" | "tags" | "onChange" | "onDescendantChange"
+      > & {
           acceptsChildren?: false;
+          tags?: string[];
           inputs: ManifestInputsArray<TInputs, false> | ManifestInputsObject<TInputs, false>;
+          onChange?: (ctx: ManifestOnChangeContext<TInputs>) => void;
+          onDescendantChange?: (ctx: DescendantChangeContext<TInputs>) => void;
       });

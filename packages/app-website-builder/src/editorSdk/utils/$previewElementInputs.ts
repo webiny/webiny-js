@@ -6,14 +6,13 @@ import {
     ElementFactory,
     InputsBindingsProcessor
 } from "@webiny/website-builder-sdk";
-import { executeOnChange, applyAncestorUpdates } from "./executeOnChange.js";
+import { Commands } from "~/BaseEditor/index.js";
 
 /**
- * Programmatically update an element's inputs using a callback-based API.
- * The updater receives a deep object representation of the element's inputs
- * which can be mutated in place.
+ * Programmatically update an element's inputs in the preview iframe only (via JSON patch).
+ * Does NOT write to the editor document state.
  */
-export function $updateElementInputs(
+export function $previewElementInputs(
     editor: Editor,
     elementId: string,
     updater: (inputs: Record<string, any>) => void
@@ -53,21 +52,8 @@ export function $updateElementInputs(
 
     updater(deepInputs);
 
-    // Run manifest.onChange + onDescendantChange on ancestors
-    const ancestorUpdates = executeOnChange({
-        editor,
-        elementId,
-        deepInputs,
-        action: "update",
-        breakpointNames,
-        baseBreakpoint,
-        elementFactory
-    });
-
     const inputsUpdater = inputsProcessor.createUpdate(deepInputs, baseBreakpoint);
+    const patch = inputsUpdater.createJsonPatch(rawBindings);
 
-    editor.updateDocument(doc => {
-        inputsUpdater.applyToDocument(doc);
-        applyAncestorUpdates(doc, ancestorUpdates, breakpointNames, baseBreakpoint, elementFactory);
-    });
+    editor.executeCommand(Commands.PreviewPatchElement, { elementId, patch });
 }

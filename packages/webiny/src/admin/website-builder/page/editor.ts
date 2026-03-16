@@ -21,4 +21,5 @@ export { $getElementsOfType } from "@webiny/app-website-builder/editorSdk/utils/
 export { $getFirstElementOfType } from "@webiny/app-website-builder/editorSdk/utils/index.js";
 export { $getElementInputValues } from "@webiny/app-website-builder/editorSdk/utils/index.js";
 export { $updateElementInputs } from "@webiny/app-website-builder/editorSdk/utils/index.js";
+export { $previewElementInputs } from "@webiny/app-website-builder/editorSdk/utils/index.js";
 export { createElement } from "@webiny/website-builder-sdk";
