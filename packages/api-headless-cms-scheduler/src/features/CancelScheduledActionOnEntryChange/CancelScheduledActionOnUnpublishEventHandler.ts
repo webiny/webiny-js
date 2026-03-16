@@ -1,5 +1,8 @@
 import { EntryAfterUnpublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/events";
-import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webiny/api-scheduler/exports/api/schedule.js";
+import {
+    CancelScheduledActionUseCase,
+    ListScheduledActionsUseCase
+} from "@webiny/api-scheduler/exports/api/schedule.js";
 import { createNamespace } from "~/utils/namespace.js";
 
 /**
