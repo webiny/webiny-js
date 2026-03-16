@@ -46,33 +46,19 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
                 fields: this.searchableFieldsProvider({ fields: model.fields })
             };
 
-            console.log({
-                beforeStorageOps: listParams
-            });
             let result: CmsEntryStorageOperationsListResponse<CmsStorageEntry<T>> | undefined;
             try {
                 result = await this.storageOperations.entries.list<T>(model, listParams);
             } catch (ex) {
-                console.log({
-                    failedStorageOps: {
-                        error: ex,
-                        params: listParams
-                    }
-                });
                 return Result.fail(ex);
             }
-            console.log({
-                afterStorageOps: result
-            });
+
             // Transform storage entries to domain entries
             const items = await Promise.all(
                 result.items.map(async entry => {
                     return this.entryFromStorageTransform(model, entry);
                 })
             );
-            console.log({
-                afterTransform: items
-            });
 
             const meta: CmsEntryMeta = {
                 hasMoreItems: result.hasMoreItems,

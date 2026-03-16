@@ -3,8 +3,9 @@ import { extractModelIdFromNamespace } from "~/utils/namespace.js";
 import { Result } from "@webiny/feature/exports/api.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
+import type {GenericRecord} from "@webiny/api/types.js";
 
-class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface {
+class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<GenericRecord> {
     public constructor(
         private getModelUseCase: GetModelUseCase.Interface,
         private getEntryByIdUseCase: GetEntryByIdUseCase.Interface
@@ -18,7 +19,7 @@ class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface {
 
     public async execute(
         params: NamespaceHandlerAbstraction.Params
-    ): NamespaceHandlerAbstraction.Response {
+    ): NamespaceHandlerAbstraction.Response<GenericRecord> {
         /**
          * We know that modelId is ok because of the canHandle() method, which is always called before execute() and must return true for this handler to be executed.
          */

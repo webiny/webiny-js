@@ -2,7 +2,11 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "./__mocks/context/useHandler.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
-import { createHeadlessCmsScheduler } from "~/index.js";
+import {
+    createHeadlessCmsScheduler,
+    SchedulePublishEntryUseCase,
+    ScheduleUnpublishEntryUseCase
+} from "~/index.js";
 import { createMockTargetModelPlugins, MOCK_TARGET_MODEL_ID } from "./__mocks/targetModel.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
@@ -33,7 +37,8 @@ describe("Action Handlers", () => {
         const getModel = container.resolve(GetModelUseCase);
         const createEntry = container.resolve(CreateEntryUseCase);
         const getEntryById = container.resolve(GetEntryByIdUseCase);
-        const scheduleAction = container.resolve(ScheduleActionUseCase);
+        const schedulePublish = container.resolve(SchedulePublishEntryUseCase);
+        const scheduleUnpublish = container.resolve(ScheduleUnpublishEntryUseCase);
         const listScheduledActions = container.resolve(ListScheduledActionsUseCase);
         const executeScheduledAction = container.resolve(ExecuteScheduledActionUseCase);
 
@@ -47,14 +52,10 @@ describe("Action Handlers", () => {
         expect(entryResult.value.status).toBe("draft");
 
         // Schedule entry for publishing
-        const publishActionResult = await scheduleAction.execute({
-            namespace: createNamespace({
-                modelId: MOCK_TARGET_MODEL_ID
-            }),
-            immediately: false,
-            targetId: entryResult.value.id,
-            actionType: "Publish",
-            scheduleFor: new Date(Date.now() + 100000).toISOString()
+        const publishActionResult = await schedulePublish.execute({
+            id: entryResult.value.id,
+            model: modelResult.value,
+            scheduleFor: new Date(Date.now() + 100000),
         });
 
         // Assert scheduled actions
@@ -69,7 +70,10 @@ describe("Action Handlers", () => {
 
         // Execute actions
         const scheduledAction = publishActionResult.value;
-        await executeScheduledAction.execute(scheduledAction);
+        await executeScheduledAction.execute({
+            id: scheduledAction.scheduledAction.id,
+            namespace: scheduledAction.scheduledAction.namespace,
+        });
 
         // Assert entry published
         const publishedEntryResult = await getEntryById.execute(
@@ -80,18 +84,17 @@ describe("Action Handlers", () => {
         expect(publishedEntryResult.value.status).toBe("published");
 
         // Schedule entry for unpublishing
-        const unpublishActionResult = await scheduleAction.execute({
-            namespace: createNamespace({
-                modelId: MOCK_TARGET_MODEL_ID
-            }),
-            immediately: false,
-            targetId: entryResult.value.id,
-            actionType: "Unpublish",
-            scheduleFor: new Date(Date.now() + 1000000).toISOString()
+        const unpublishActionResult = await scheduleUnpublish.execute({
+            id: entryResult.value.id,
+            model: modelResult.value,
+            scheduleFor: new Date(Date.now() + 1000000),
         });
 
         // Execute action handler
-        await executeScheduledAction.execute(unpublishActionResult.value);
+        await executeScheduledAction.execute({
+            id: unpublishActionResult.value.scheduledAction.id,
+            namespace: unpublishActionResult.value.scheduledAction.namespace,
+        });
 
         const unpublishedEntryResult = await getEntryById.execute(
             modelResult.value,
