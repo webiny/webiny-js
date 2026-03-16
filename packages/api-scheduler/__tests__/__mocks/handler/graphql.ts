@@ -142,7 +142,7 @@ export interface IGetTargetScheduledActionQueryResponse {
     };
 }
 
-export const GET_TARGET_SCHEDULED_ACTION  = /* GraphQL */ `
+export const GET_TARGET_SCHEDULED_ACTION = /* GraphQL */ `
     query GetTargetScheduledAction($namespace: String!, $id: ID!) {
         scheduler {
             getTargetScheduledAction(namespace: $namespace, id: $id) {
