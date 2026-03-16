@@ -1,6 +1,7 @@
 import {
-    type IScheduledAction,
-    ScheduledActionHandler
+    ScheduledActionHandler,
+    ScheduledActionType,
+    type IScheduledAction
 } from "@webiny/api-scheduler/exports/api/schedule.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
@@ -10,7 +11,6 @@ import { UnpublishEntryUseCase } from "@webiny/api-headless-cms/features/content
 import { RepublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/RepublishEntry";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { IScheduledActionPayload } from "~/types.js";
-import type { ScheduledActionType } from "@webiny/api-scheduler/shared/abstractions.js";
 import { extractModelIdFromNamespace } from "~/utils/namespace.js";
 
 /**
