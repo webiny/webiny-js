@@ -12,7 +12,6 @@
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
     "@webiny/admin-ui": "0.0.0",
-    "@webiny/app-aco": "0.0.0",
     "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-headless-cms-common": "0.0.0",
     "@webiny/app-scheduler": "0.0.0",

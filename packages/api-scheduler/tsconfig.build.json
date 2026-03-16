@@ -14,8 +14,8 @@
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
-    { "path": "../wcp/tsconfig.build.json" },
-    { "path": "../testing/tsconfig.build.json" }
+    { "path": "../testing/tsconfig.build.json" },
+    { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -168,10 +168,10 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"],
       "@webiny/testing/*": ["../testing/src/*"],
-      "@webiny/testing": ["../testing/src"]
+      "@webiny/testing": ["../testing/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }

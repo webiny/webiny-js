@@ -13474,12 +13474,10 @@ __metadata:
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     aws-sdk-client-mock: "npm:^4.1.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^4.0.18"
-    zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
 
@@ -14116,7 +14114,6 @@ __metadata:
     "@emotion/babel-plugin": "npm:^11.13.5"
     "@types/react": "npm:^18.3.28"
     "@webiny/admin-ui": "npm:0.0.0"
-    "@webiny/app-aco": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/app-headless-cms-common": "npm:0.0.0"
     "@webiny/app-scheduler": "npm:0.0.0"

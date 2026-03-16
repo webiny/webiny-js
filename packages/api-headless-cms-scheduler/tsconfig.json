@@ -7,7 +7,6 @@
     { "path": "../api-scheduler" },
     { "path": "../feature" },
     { "path": "../handler-graphql" },
-    { "path": "../utils" },
     { "path": "../api-core" },
     { "path": "../aws-sdk" },
     { "path": "../handler" },
@@ -49,8 +48,6 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/api-core/features/EventPublisher": [
         "../api-core/src/features/eventPublisher/index.js"
       ],

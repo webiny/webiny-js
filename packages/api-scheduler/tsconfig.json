@@ -14,8 +14,8 @@
     { "path": "../db-dynamodb" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
-    { "path": "../wcp" },
-    { "path": "../testing" }
+    { "path": "../testing" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -168,10 +168,10 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"],
       "@webiny/testing/*": ["../testing/src/*"],
-      "@webiny/testing": ["../testing/src"]
+      "@webiny/testing": ["../testing/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }
