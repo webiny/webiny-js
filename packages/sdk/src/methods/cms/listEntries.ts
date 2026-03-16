@@ -9,6 +9,7 @@ export interface ListEntriesParams {
     sort?: Record<string, "asc" | "desc">;
     limit?: number;
     after?: string;
+    search?: string;
     fields: string[];
     preview?: boolean;
 }
@@ -34,6 +35,7 @@ export interface ListEntriesResult<TValues extends CmsEntryValues = CmsEntryValu
  * @param params.sort - Optional sort configuration
  * @param params.limit - Maximum number of entries to return (default: 10)
  * @param params.after - Cursor for pagination
+ * @param params.search - Optional full-text search term to filter entries across searchable fields (text, longText fields with fullTextSearch enabled)
  * @param params.fields - Specific fields to return. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @param params.preview - When true, uses preview API to access unpublished/draft content. When false (default), uses read API for published content only.
  * @returns Result containing list of entries with pagination metadata or an error
@@ -43,7 +45,7 @@ export async function listEntries<TValues extends CmsEntryValues = CmsEntryValue
     fetchFn: typeof fetch,
     params: ListEntriesParams
 ): Promise<Result<ListEntriesResult<TValues>, HttpError | GraphQLError | NetworkError>> {
-    const { modelId, where, sort, limit = 10, after, fields, preview } = params;
+    const { modelId, where, sort, limit = 10, after, search, fields, preview } = params;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 
@@ -54,6 +56,7 @@ export async function listEntries<TValues extends CmsEntryValues = CmsEntryValue
             $sort: JSON
             $limit: Int
             $after: String
+            $search: String
             $fields: [String!]!
             $preview: Boolean
         ) {
@@ -64,6 +67,7 @@ export async function listEntries<TValues extends CmsEntryValues = CmsEntryValue
                     sort: $sort
                     limit: $limit
                     after: $after
+                    search: $search
                     fields: $fields
                     preview: $preview
                 ) {
@@ -88,6 +92,7 @@ export async function listEntries<TValues extends CmsEntryValues = CmsEntryValue
         sort,
         limit,
         after,
+        search,
         fields,
         preview
     });
