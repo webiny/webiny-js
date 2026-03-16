@@ -17,10 +17,10 @@ export interface INamespaceHandlerParams {
     actionType: ScheduledActionType;
     namespace: string;
     immediately: boolean | undefined;
-    scheduleFor: string | undefined;
+    scheduleFor: Date;
 }
 
-export type INamespaceHandlerResult = GenericRecord & {
+export type INamespaceHandlerResult<T extends GenericRecord = GenericRecord> = T & {
     title: string;
     targetId: string;
     actionType: ScheduledActionType;
@@ -28,18 +28,18 @@ export type INamespaceHandlerResult = GenericRecord & {
     scheduleId: string;
 };
 
-export interface INamespaceHandler {
+export interface INamespaceHandler<T extends GenericRecord = GenericRecord> {
     canHandle(namespace: string): boolean;
     execute(
         params: INamespaceHandlerParams
-    ): Promise<Result<INamespaceHandlerResult, NamespaceHandlerError>>;
+    ): Promise<Result<INamespaceHandlerResult<T>, NamespaceHandlerError>>;
 }
 
 export const NamespaceHandler = createAbstraction<INamespaceHandler>("Scheduler/NamespaceHandler");
 
 export namespace NamespaceHandler {
-    export type Interface = INamespaceHandler;
-    export type Response = Promise<Result<INamespaceHandlerResult, NamespaceHandlerError>>;
+    export type Interface<T extends GenericRecord> = INamespaceHandler<T>;
+    export type Response<T extends GenericRecord> = Promise<Result<INamespaceHandlerResult<T>, NamespaceHandlerError>>;
     export type Params = INamespaceHandlerParams;
 }
 
@@ -48,9 +48,9 @@ export namespace NamespaceHandler {
  */
 
 export interface INamespaceHandlerExecutioner {
-    execute(
+    execute<T extends GenericRecord = GenericRecord>(
         params: INamespaceHandlerParams
-    ): Promise<Result<INamespaceHandlerResult, NamespaceHandlerError>>;
+    ): Promise<Result<INamespaceHandlerResult<T>, NamespaceHandlerError>>;
 }
 
 export const NamespaceHandlerExecutioner = createAbstraction<INamespaceHandlerExecutioner>(

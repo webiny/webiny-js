@@ -6,9 +6,22 @@ import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/ind
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
 import { ScheduledActionNotFoundError } from "~/domain/errors.js";
+import type { Identity, ScheduledActionType } from "~/shared/abstractions.js";
+import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 
 interface IListScheduledActionsArgs extends ListScheduledActionsUseCase.Params {
     namespace: string;
+}
+
+interface IScheduleRecordOutput {
+    id: string;
+    targetId: string;
+    namespace: string;
+    scheduledBy: Identity;
+    publishOn: Date | null;
+    unpublishOn: Date | null;
+    actionType: ScheduledActionType;
+    title: string;
 }
 
 export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
@@ -166,7 +179,9 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                         return new ErrorResponse(result.error);
                     }
 
-                    return new Response(result.value);
+                    return new Response<IScheduleRecordOutput>(
+                        ScheduledActionMapper.toGraphQL(result.value)
+                    );
                 };
             }
         });
@@ -188,7 +203,12 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                         return new ErrorResponse(result.error);
                     }
 
-                    return new ListResponse(result.value.items, result.value.meta);
+                    return new ListResponse<IScheduleRecordOutput>(
+                        result.value.items.map(item => {
+                            return ScheduledActionMapper.toGraphQL(item);
+                        }),
+                        result.value.meta
+                    );
                 };
             }
         });
@@ -204,7 +224,9 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                         return new ErrorResponse(result.error);
                     }
 
-                    return new Response(result.value);
+                    return new Response<IScheduleRecordOutput>(
+                        ScheduledActionMapper.toGraphQL(result.value)
+                    );
                 };
             }
         });
@@ -220,7 +242,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                         return new ErrorResponse(result.error);
                     }
 
-                    return new Response(result.value);
+                    return new Response<void>(result.value);
                 };
             }
         });

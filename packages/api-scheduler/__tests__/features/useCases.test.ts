@@ -54,7 +54,7 @@ describe("Combined Use Cases", () => {
             namespace,
             actionType: "publish",
             targetId: "target-id#0001",
-            scheduleFor: scheduledFor.toISOString()
+            scheduleFor: scheduledFor
         });
 
         expect(createResult.isOk()).toBe(true);
@@ -65,15 +65,38 @@ describe("Combined Use Cases", () => {
         });
 
         expect(getResult.isOk()).toBeTrue();
+        const expected: typeof getResult.value = {
+            actionType: "publish",
+            error: undefined,
+            id: createResult.value.id,
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            payload: {
+                actionType: "publish",
+                namespace: PublishTestEntryActionHandlerImpl.name,
+                scheduleFor: createResult.value.payload.scheduleFor.toISOString(),
+                scheduleId: "wby-schedule-d1e63974ddddd9789ef78193#0001",
+                something: true,
+                targetId: "target-id#0001",
+                title: "Fetched title from handler"
+            },
+            scheduledBy: {
+                displayName: "John Doe",
+                id: "id-12345678",
+                type: "admin"
+            },
+            scheduledFor: createResult.value.scheduledFor,
+            targetId: "target-id#0001",
+            title: "Fetched title from handler"
+        };
         expect(getResult.value).toEqual({
-            ...createResult.value
+            ...expected
         });
 
         const updateResult = await scheduleActionUseCase.execute({
             namespace: PublishTestEntryActionHandlerImpl.name,
             actionType: "publish",
             targetId: "target-id#0001",
-            scheduleFor: updatedScheduledFor.toISOString()
+            scheduleFor: updatedScheduledFor
         });
 
         expect(updateResult.isOk()).toBeTrue();
@@ -81,10 +104,10 @@ describe("Combined Use Cases", () => {
             ...createResult.value,
             payload: {
                 ...createResult.value.payload,
-                scheduleFor: updatedScheduledFor.toISOString()
+                scheduleFor: updatedScheduledFor
             },
             error: undefined,
-            scheduledFor: updatedScheduledFor.toISOString()
+            scheduledFor: updatedScheduledFor
         });
 
         const listResult = await listScheduledActionsUseCase.execute({

@@ -4,9 +4,12 @@ import {
 } from "./abstractions.js";
 import { Result } from "@webiny/feature/exports/api.js";
 import { NamespaceHandlerNotFoundError } from "~/domain/errors.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 class NamespaceHandlerExecutionerImpl implements NamespaceHandlerExecutionerAbstraction.Interface {
-    public constructor(private readonly namespaceHandlers: NamespaceHandler.Interface[]) {}
+    public constructor(
+        private readonly namespaceHandlers: NamespaceHandler.Interface<GenericRecord>[]
+    ) {}
 
     public async execute(
         params: NamespaceHandlerExecutionerAbstraction.Params

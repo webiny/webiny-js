@@ -5,13 +5,14 @@ import {
     IListScheduledActionsResponse,
     ListScheduledActionsUseCase as UseCaseAbstraction
 } from "./abstractions.js";
-import type { IScheduledAction } from "~/shared/abstractions.js";
+import type { IScheduledActionEntryValues } from "~/shared/abstractions.js";
 import { ScheduledActionModel } from "~/shared/abstractions.js";
 import { NotAuthorizedError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { SchedulerPermissions } from "~/domain/permissions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 
 /**
  * Lists scheduled actions with optional filtering
@@ -59,12 +60,15 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
             fields: this.model.fields
         });
         // List entries from CMS
-        const listResult = await this.listEntriesUseCase.execute<IScheduledAction<T>>(this.model, {
-            where,
-            sort,
-            limit,
-            after
-        });
+        const listResult = await this.listEntriesUseCase.execute<IScheduledActionEntryValues<T>>(
+            this.model,
+            {
+                where,
+                sort,
+                limit,
+                after
+            }
+        );
 
         if (listResult.isFail()) {
             return Result.fail(new ScheduledActionPersistenceError(listResult.error));
@@ -72,23 +76,8 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const { entries, meta } = listResult.value;
 
-        // Transform entries to IScheduledAction format
-        const scheduledActions: IScheduledAction<T>[] = entries.map(entry => {
-            return {
-                id: entry.entryId,
-                title: entry.values.title,
-                namespace: entry.values.namespace,
-                actionType: entry.values.actionType,
-                targetId: entry.values.targetId,
-                scheduledBy: entry.values.scheduledBy,
-                scheduledFor: entry.values.scheduledFor,
-                payload: entry.values.payload,
-                error: entry.values.error
-            };
-        });
-
         return Result.ok({
-            items: scheduledActions,
+            items: ScheduledActionMapper.toActions<T>(entries),
             meta
         });
     }

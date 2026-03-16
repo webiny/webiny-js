@@ -78,7 +78,7 @@ describe("CancelScheduledActionUseCase", () => {
             namespace,
             actionType: "publish",
             targetId: "target-id#0001",
-            scheduleFor: scheduledFor.toISOString()
+            scheduleFor: scheduledFor
         });
 
         expect(createResult.isOk()).toBe(true);
@@ -104,7 +104,7 @@ describe("CancelScheduledActionUseCase", () => {
             namespace,
             actionType: "publish",
             targetId: "target-id#0001",
-            scheduleFor: scheduledFor.toISOString()
+            scheduleFor: scheduledFor
         });
 
         expect(createResult.isOk()).toBe(true);

@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { GetScheduledActionUseCase as UseCaseAbstraction } from "./abstractions.js";
-import type { IScheduledAction } from "~/shared/abstractions.js";
+import type { IScheduledAction, IScheduledActionEntryValues } from "~/shared/abstractions.js";
 import { ScheduledActionModel } from "~/shared/abstractions.js";
 import {
     NotAuthorizedError,
@@ -12,6 +12,7 @@ import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVers
 import type { GenericRecord } from "@webiny/api/types.js";
 import { SchedulerPermissions } from "~/domain/permissions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 
 /**
  * Retrieves a scheduled action by its ID
@@ -39,7 +40,7 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         const { id, namespace } = params;
         // Get entry from CMS
         const scheduleId = ScheduledActionIdWithVersion.from(id);
-        const entryResult = await this.getEntryByIdUseCase.execute<IScheduledAction<T>>(
+        const entryResult = await this.getEntryByIdUseCase.execute<IScheduledActionEntryValues<T>>(
             this.model,
             scheduleId
         );
@@ -67,17 +68,7 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new ScheduledActionNotFoundError(scheduleId));
         }
 
-        return Result.ok({
-            id: entry.entryId,
-            namespace: entry.values.namespace,
-            actionType: entry.values.actionType,
-            targetId: entry.values.targetId,
-            scheduledBy: entry.values.scheduledBy,
-            scheduledFor: entry.values.scheduledFor,
-            payload: entry.values.payload,
-            title: entry.values.title,
-            error: entry.values.error
-        });
+        return Result.ok(ScheduledActionMapper.toAction<T>(entry));
     }
 }
 

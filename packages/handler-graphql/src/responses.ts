@@ -1,3 +1,9 @@
+export interface IMeta {
+    hasMoreItems: boolean;
+    totalCount: number;
+    cursor?: string | null;
+}
+
 export interface ErrorResponseParams {
     message: string;
     code?: string;
@@ -91,7 +97,7 @@ export class Response<T = any> {
     }
 }
 
-export class ListResponse<T, M> {
+export class ListResponse<T, M = IMeta> {
     public readonly data: Array<T>;
     public readonly meta: M;
     public readonly error: null;

@@ -2,16 +2,24 @@ import { NamespaceHandler as NamespaceHandlerAbstraction } from "~/features/Name
 import { PublishTestEntryActionHandlerImpl } from "./PublishTestEntryActionHandler";
 import { Result } from "@webiny/feature/api/index.js";
 
-class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface {
+interface TestingNamespaceHandlerResult {
+    something: boolean;
+    title: string;
+}
+
+class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<TestingNamespaceHandlerResult> {
     public canHandle(namespace: string): boolean {
         return namespace === PublishTestEntryActionHandlerImpl.name;
     }
 
     public async execute(
         params: NamespaceHandlerAbstraction.Params
-    ): NamespaceHandlerAbstraction.Response {
+    ): NamespaceHandlerAbstraction.Response<TestingNamespaceHandlerResult> {
         return Result.ok({
-            ...params,
+            targetId: params.targetId,
+            actionType: params.actionType,
+            namespace: params.namespace,
+            scheduleId: params.scheduleId,
             something: true,
             title: "Fetched title from handler"
         });

@@ -29,7 +29,7 @@ export interface IScheduleActionParams {
     namespace: string;
     targetId: string;
     actionType: ScheduledActionType;
-    scheduleFor: string;
+    scheduleFor: Date;
     immediately?: boolean;
 }
 

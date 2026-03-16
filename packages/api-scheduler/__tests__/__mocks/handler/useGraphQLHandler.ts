@@ -39,7 +39,7 @@ export const useGraphQLHandler = (params: CreateHandlerCoreParams) => {
 
     return {
         ...handler,
-        createSchedule: handler.createMutation<
+        scheduleAction: handler.createMutation<
             ICreateScheduledActionMutationVariables,
             IScheduleActionMutationResponse
         >(SCHEDULE_ACTION),

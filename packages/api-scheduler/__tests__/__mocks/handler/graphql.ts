@@ -53,10 +53,12 @@ export interface ICreateScheduledActionMutationVariables {
 }
 
 export interface IScheduleActionMutationResponse {
-    scheduler: {
-        scheduleAction: {
-            data: IScheduledAction | null;
-            error: IErrorResponse | null;
+    data: {
+        scheduler: {
+            scheduleAction: {
+                data: IScheduledAction | null;
+                error: IErrorResponse | null;
+            };
         };
     };
 }
@@ -108,10 +110,12 @@ export interface IGetScheduledActionQueryVariables {
 }
 
 export interface IGetScheduledActionQueryResponse {
-    scheduler: {
-        getScheduledAction: {
-            data: IScheduledAction | null;
-            error: IErrorResponse | null;
+    data: {
+        scheduler: {
+            getScheduledAction: {
+                data: IScheduledAction | null;
+                error: IErrorResponse | null;
+            };
         };
     };
 }
@@ -136,11 +140,13 @@ export interface IListScheduledActionsQueryVariables {
 }
 
 export interface IListScheduledActionsQueryResponse {
-    scheduler: {
-        listScheduledActions: {
-            data: IScheduledAction[] | null;
-            meta: ListScheduledActionsUseCase.Meta | null;
-            error: IErrorResponse | null;
+    data: {
+        scheduler: {
+            listScheduledActions: {
+                data: IScheduledAction[] | null;
+                meta: ListScheduledActionsUseCase.Meta | null;
+                error: IErrorResponse | null;
+            };
         };
     };
 }

@@ -67,7 +67,7 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            scheduleFor: new Date(Date.now() + 1000000).toISOString()
+            scheduleFor: new Date(Date.now() + 1000000)
         });
 
         expect(scheduleResult.isFail()).toBe(false);
@@ -108,7 +108,7 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            scheduleFor: new Date(Date.now() + 1000000).toISOString()
+            scheduleFor: new Date(Date.now() + 1000000)
         });
 
         expect(scheduleResult.isFail()).toBe(false);
@@ -191,7 +191,7 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            scheduleFor: new Date(Date.now() + 1000000).toISOString()
+            scheduleFor: new Date(Date.now() + 1000000)
         });
 
         expect(scheduleResult.isFail()).toBe(false);
@@ -239,7 +239,7 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            scheduleFor: firstDate.toISOString()
+            scheduleFor: firstDate
         });
 
         expect(firstResult.isFail()).toBe(false);
@@ -266,7 +266,7 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            scheduleFor: secondDate.toISOString()
+            scheduleFor: secondDate
         });
 
         expect(secondResult.isFail()).toBe(false);
@@ -302,14 +302,14 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            scheduleFor: new Date(Date.now() + 1000000).toISOString()
+            scheduleFor: new Date(Date.now() + 1000000)
         });
 
         const scheduleResult2 = await scheduleAction.execute({
             namespace,
             actionType: "unpublish",
             targetId,
-            scheduleFor: new Date(Date.now() + 1000000).toISOString()
+            scheduleFor: new Date(Date.now() + 1000000)
         });
 
         expect(scheduleResult1.isOk()).toBe(true);

@@ -68,7 +68,7 @@ describe("Scheduler Event Handler", () => {
         const eventHandler = createScheduledActionEventHandler();
         const scheduleActionUseCase = context.container.resolve(ScheduleActionUseCase);
 
-        const scheduleFor = new Date(new Date().getTime() + 5 * 60 * 1000).toISOString();
+        const scheduleFor = new Date(new Date().getTime() + 5 * 60 * 1000);
         const createResult = await scheduleActionUseCase.execute({
             namespace: PublishTestEntryActionHandlerImpl.name,
             actionType: "publish",

@@ -1,6 +1,7 @@
 import type { CmsModel } from "@webiny/api-headless-cms/types/model.js";
 import { createAbstraction } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
+import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 
 /**
  * Identity type - represents who scheduled an action
@@ -15,16 +16,25 @@ export type ScheduledActionType = "publish" | "unpublish";
 /**
  * Scheduled Action Record - The data stored for a scheduled action
  */
-export interface IScheduledAction<T extends GenericRecord = GenericRecord> {
-    id: string;
+
+export interface IScheduledActionEntryValues<T> {
     namespace: string; // Resource scope: "Cms/Entry/Article", "Mailer/Email"
     actionType: ScheduledActionType;
     targetId: string; // Resource identifier (entry ID, email ID, etc.)
     scheduledBy: Identity;
     scheduledFor: string;
-    title?: string;
+    title: string;
     payload: T; // Action-specific data
     error?: string; // Error if execution failed
+}
+
+export interface IScheduledActionEntry<T extends GenericRecord = GenericRecord>
+    extends CmsEntry<IScheduledActionEntryValues<T>> {}
+
+export interface IScheduledAction<T extends GenericRecord = GenericRecord>
+    extends Omit<IScheduledActionEntryValues<T>, "scheduledFor"> {
+    id: string;
+    scheduledFor: Date;
 }
 
 /**
