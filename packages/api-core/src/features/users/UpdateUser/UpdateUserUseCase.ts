@@ -34,7 +34,7 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         // 2. Validate input
         const validation = updateUserValidation.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new UserValidationError(validation.error.errors[0].message));
+            return Result.fail(new UserValidationError(validation.error.issues[0].message));
         }
 
         // If the input contains email, check if it is free to use.

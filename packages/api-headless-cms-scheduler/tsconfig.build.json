@@ -7,7 +7,6 @@
     { "path": "../api-scheduler/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
@@ -49,8 +48,6 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"],
       "@webiny/api-core/features/EventPublisher": [
         "../api-core/src/features/eventPublisher/index.js"
       ],

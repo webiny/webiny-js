@@ -37,7 +37,7 @@ class SendMailUseCaseImpl implements SendMailUseCase.Interface {
     async execute(data: TransportSendData) {
         const validation = schema.safeParse(data);
         if (!validation.success) {
-            return Result.fail(new MailValidationError(validation.error.errors));
+            return Result.fail(new MailValidationError(validation.error.issues));
         }
 
         // Publish before send event

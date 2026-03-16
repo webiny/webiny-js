@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { IScheduledAction } from "~/shared/abstractions.js";
-import { ScheduledActionPersistenceError } from "~/domain/errors.js";
+import type { IScheduledAction, ScheduledActionType } from "~/shared/abstractions.js";
+import { ScheduledActionPersistenceError, NotAuthorizedError } from "~/domain/errors.js";
 import type { CmsEntryListSort, CmsEntryMeta } from "@webiny/api-headless-cms/types/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
@@ -21,7 +21,7 @@ export type DateISOString =
 export interface IListScheduledActionsWhere {
     namespace?: string;
     namespace_startsWith?: string;
-    actionType?: string;
+    actionType?: ScheduledActionType;
     targetId?: string;
     targetId_startsWith?: string;
     scheduledBy?: string;
@@ -29,6 +29,8 @@ export interface IListScheduledActionsWhere {
     scheduledFor_gte?: DateISOString;
     scheduledFor_lte?: DateISOString;
 }
+
+export type IListScheduledActionsMeta = CmsEntryMeta;
 
 export interface IListScheduledActionsParams {
     where: IListScheduledActionsWhere;
@@ -44,6 +46,7 @@ export interface IListScheduledActionsResponse<T extends GenericRecord> {
 
 export interface IListScheduledActionsErrors {
     persistence: ScheduledActionPersistenceError;
+    unauthorized: NotAuthorizedError;
 }
 
 type ListScheduledActionsError = IListScheduledActionsErrors[keyof IListScheduledActionsErrors];
@@ -55,10 +58,15 @@ export interface IListScheduledActionsUseCase {
 }
 
 export const ListScheduledActionsUseCase = createAbstraction<IListScheduledActionsUseCase>(
-    "ListScheduledActionsUseCase"
+    "Scheduler/ListScheduledActionsUseCase"
 );
 
 export namespace ListScheduledActionsUseCase {
     export type Interface = IListScheduledActionsUseCase;
     export type Error = ListScheduledActionsError;
+    export type Params = IListScheduledActionsParams;
+    export type Where = IListScheduledActionsWhere;
+    export type Sort = CmsEntryListSort;
+    export type Meta = IListScheduledActionsMeta;
+    export type Response<T extends GenericRecord> = IListScheduledActionsResponse<T>;
 }

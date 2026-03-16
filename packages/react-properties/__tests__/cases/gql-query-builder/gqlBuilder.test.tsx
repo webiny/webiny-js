@@ -60,7 +60,7 @@ const ModifyListPagesQuery = () => {
     );
 };
 
-const renderElement = async (element: JSX.Element): Promise<{ operations: Operation[] }> => {
+const renderElement = async (element: React.JSX.Element): Promise<{ operations: Operation[] }> => {
     const onChange = vi.fn();
 
     const view = <Properties onChange={onChange}>{element}</Properties>;

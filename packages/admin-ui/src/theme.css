@@ -346,6 +346,12 @@
   @apply pr-xxl pl-xxl mx-auto w-full;
 }
 
+@utility fill-grid {
+  background-image: radial-gradient(var(--color-neutral-strong) 1px, transparent 0px);
+  background-size: 15px 15px;
+  @apply bg-neutral-light;
+}
+
 @layer base {
   a {
     @apply text-accent-primary hover:underline focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed rounded-xs;

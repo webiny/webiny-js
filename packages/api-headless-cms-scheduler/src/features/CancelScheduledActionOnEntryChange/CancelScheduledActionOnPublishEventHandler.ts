@@ -1,5 +1,6 @@
 import { EntryAfterPublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/events";
 import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webiny/api-scheduler";
+import { createNamespace } from "~/utils/namespace.js";
 
 /**
  * Cancels scheduled "publish" when an entry is manually published
@@ -13,7 +14,7 @@ class CancelScheduledActionOnPublishEventHandlerImpl
 {
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
-        private cancelScheduledEntryAction: CancelScheduledActionUseCase.Interface
+        private cancelScheduledAction: CancelScheduledActionUseCase.Interface
     ) {}
 
     async handle(event: EntryAfterPublishEventHandler.Event): Promise<void> {
@@ -26,8 +27,8 @@ class CancelScheduledActionOnPublishEventHandlerImpl
 
         const actionsResult = await this.listScheduledActions.execute({
             where: {
-                namespace: `Cms/Entry/${model.modelId}`,
-                actionType: "Publish",
+                namespace: createNamespace(model),
+                actionType: "publish",
                 targetId: entry.id
             }
         });
@@ -35,7 +36,7 @@ class CancelScheduledActionOnPublishEventHandlerImpl
         const actions = actionsResult.value.items;
 
         for (const action of actions) {
-            const cancelRes = await this.cancelScheduledEntryAction.execute(action.id);
+            const cancelRes = await this.cancelScheduledAction.execute(action);
             if (cancelRes.isFail()) {
                 // Silently ignore errors - this is non-critical cleanup.
                 // Even if a schedule runs on an already published action, nothing bad will happen.

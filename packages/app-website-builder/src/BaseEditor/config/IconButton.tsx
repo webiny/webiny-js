@@ -3,7 +3,7 @@ import { IconButton as BaseIconButton } from "@webiny/ui/Button/index.js";
 import { Tooltip } from "@webiny/ui/Tooltip/index.js";
 
 export interface IconButtonProps {
-    icon: JSX.Element;
+    icon: React.JSX.Element;
     label: string;
     disabled?: boolean;
     onClick?: () => void;

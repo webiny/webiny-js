@@ -5,8 +5,10 @@ import type {
     CmsEntryListParams,
     CmsEntryMeta,
     CmsEntryStorageOperationsListParams,
+    CmsEntryStorageOperationsListResponse,
     CmsEntryValues,
-    CmsModel
+    CmsModel,
+    CmsStorageEntry
 } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryFromStorageTransform, SearchableFieldsProvider } from "~/legacy/abstractions.js";
@@ -44,7 +46,12 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
                 fields: this.searchableFieldsProvider({ fields: model.fields })
             };
 
-            const result = await this.storageOperations.entries.list<T>(model, listParams);
+            let result: CmsEntryStorageOperationsListResponse<CmsStorageEntry<T>> | undefined;
+            try {
+                result = await this.storageOperations.entries.list<T>(model, listParams);
+            } catch (ex) {
+                return Result.fail(ex);
+            }
 
             // Transform storage entries to domain entries
             const items = await Promise.all(

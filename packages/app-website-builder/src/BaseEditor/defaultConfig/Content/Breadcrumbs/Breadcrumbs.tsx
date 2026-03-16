@@ -51,7 +51,12 @@ export const Breadcrumbs = () => {
     }, []);
 
     return (
-        <ul className={breadcrumbs} data-role={"content-breadcrumbs"} data-hover-manager={"ignore"}>
+        <ul
+            className={breadcrumbs}
+            data-role={"content-breadcrumbs"}
+            data-hover-manager={"ignore"}
+            data-affects-preview={"height"}
+        >
             {items.map(({ id, label }, index) => (
                 <li
                     key={id}

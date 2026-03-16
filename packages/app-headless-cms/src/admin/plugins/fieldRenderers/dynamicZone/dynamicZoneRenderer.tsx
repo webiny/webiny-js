@@ -30,7 +30,7 @@ export type DynamicZoneContainerProps = {
     title?: string;
     description?: string;
     className?: string;
-    actions?: JSX.Element;
+    actions?: React.JSX.Element;
 };
 
 export const DynamicZoneContainer = makeDecoratable(

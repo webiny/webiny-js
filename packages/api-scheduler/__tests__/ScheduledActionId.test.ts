@@ -6,10 +6,10 @@ describe("ScheduledActionId", () => {
     it("should create a valid schedule action id", () => {
         const result = ScheduledActionId.from({
             namespace: "Cms/Entry/Article",
-            actionType: "Publish",
+            actionType: "publish",
             targetId: "target-id#0001"
         });
 
-        expect(result).toEqual(`${SCHEDULE_ID_PREFIX}af6fe9a3643c86f694da7bb5`);
+        expect(result).toEqual(`${SCHEDULE_ID_PREFIX}e1df7120d362fc84419a2b57`);
     });
 });

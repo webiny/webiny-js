@@ -19,10 +19,10 @@
     "glob": "^7.2.3",
     "lodash": "^4.17.23",
     "short-hash": "^1.0.0",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "peerDependencies": {
-    "react": "18.2.0"
+    "react": "^18.3.1"
   },
   "devDependencies": {
     "@babel/register": "^7.28.6",

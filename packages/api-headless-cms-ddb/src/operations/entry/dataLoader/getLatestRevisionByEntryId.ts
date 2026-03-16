@@ -7,7 +7,7 @@ import type { IDataLoaderParams } from "./types.js";
 import { parseIdentifier } from "@webiny/utils";
 
 export const createGetLatestRevisionByEntryId = (params: IDataLoaderParams) => {
-    const { entity, tenant } = params;
+    const { entity, tenant, modelId } = params;
 
     const latestKey = createLatestSortKey();
 
@@ -41,6 +41,9 @@ export const createGetLatestRevisionByEntryId = (params: IDataLoaderParams) => {
             return ids.map(id => {
                 const { id: entryId } = parseIdentifier(id);
                 return items.filter(item => {
+                    if (item.modelId !== modelId) {
+                        return false;
+                    }
                     return entryId === item.entryId;
                 });
             });

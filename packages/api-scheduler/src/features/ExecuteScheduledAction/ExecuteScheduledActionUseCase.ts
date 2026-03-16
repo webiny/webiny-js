@@ -41,18 +41,19 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
     ) {}
 
     public async execute<T extends GenericRecord>(
-        id: string
+        params: UseCaseAbstraction.Params
     ): Promise<Result<void, UseCaseAbstraction.Error>> {
-        // return this.identityContext.withoutAuthorization(async () => {
-        return this.executeAction<T>(id);
-        // });
+        return this.identityContext.withoutAuthorization(async () => {
+            return this.executeAction<T>(params);
+        });
     }
 
     private async executeAction<T extends GenericRecord>(
-        id: string
+        params: UseCaseAbstraction.Params
     ): Promise<Result<void, UseCaseAbstraction.Error>> {
+        const { id } = params;
         // Load scheduled action
-        const getResult = await this.getScheduledActionUseCase.execute<T>(id);
+        const getResult = await this.getScheduledActionUseCase.execute<T>(params);
 
         if (getResult.isFail()) {
             const error = getResult.error;

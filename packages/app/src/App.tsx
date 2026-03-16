@@ -21,7 +21,7 @@ import { RouteContent } from "~/presentation/router/components/RouteContent.js";
 import { useRouter } from "~/router.js";
 
 interface State {
-    plugins: JSX.Element[];
+    plugins: React.JSX.Element[];
     providers: Decorator<GenericComponent<ProviderProps>>[];
 }
 
@@ -78,7 +78,7 @@ export const AppBase = React.memo(
             });
         }, []);
 
-        const addPlugin = useCallback((element: JSX.Element) => {
+        const addPlugin = useCallback((element: React.JSX.Element) => {
             setState(state => {
                 return {
                     ...state,

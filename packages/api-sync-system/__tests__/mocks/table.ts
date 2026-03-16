@@ -18,12 +18,3 @@ export const createElasticsearchMockTable = (params?: ITable): ITable => {
         ...params
     };
 };
-
-export const createLogMockTable = (params?: ITable): ITable => {
-    return {
-        name: process.env.DB_TABLE_LOG as string,
-        type: DynamoDBTableType.LOG,
-        arn: "arnLog",
-        ...params
-    };
-};

@@ -2,10 +2,15 @@ import { Result } from "@webiny/feature/api";
 import { CancelScheduledActionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
 import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
-import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
+import {
+    NotAuthorizedError,
+    ScheduledActionNotFoundError,
+    ScheduledActionPersistenceError
+} from "~/domain/errors.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import { EntryNotFoundError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
+import { SchedulerPermissions } from "~/domain/permissions.js";
 
 /**
  * Cancels a scheduled action
@@ -21,12 +26,20 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         private getScheduledActionUseCase: GetScheduledActionUseCase.Interface,
         private schedulerService: SchedulerService.Interface,
         private deleteEntryUseCase: DeleteEntryUseCase.Interface,
-        private model: ScheduledActionModel.Interface
+        private model: ScheduledActionModel.Interface,
+        private permissions: SchedulerPermissions.Interface
     ) {}
 
-    async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
+    async execute(
+        params: UseCaseAbstraction.Params
+    ): Promise<Result<void, UseCaseAbstraction.Error>> {
+        const hasPermission = await this.permissions.canRead("action");
+        if (!hasPermission) {
+            return Result.fail(new NotAuthorizedError());
+        }
+        const { id } = params;
         // Check if scheduled action exists
-        const getResult = await this.getScheduledActionUseCase.execute(id);
+        const getResult = await this.getScheduledActionUseCase.execute(params);
 
         if (getResult.isFail()) {
             const error = getResult.error;
@@ -85,6 +98,7 @@ export const CancelScheduledActionUseCase = UseCaseAbstraction.createImplementat
         GetScheduledActionUseCase,
         SchedulerService,
         DeleteEntryUseCase,
-        ScheduledActionModel
+        ScheduledActionModel,
+        SchedulerPermissions.Abstraction
     ]
 });

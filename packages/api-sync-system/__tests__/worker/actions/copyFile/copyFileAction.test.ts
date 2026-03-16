@@ -35,36 +35,32 @@ describe("copyFileAction", () => {
             data: {
                 invalidFields: {
                     action: {
-                        code: "invalid_type",
+                        code: "invalid_value",
                         data: {
-                            fatal: undefined,
                             path: ["action"]
                         },
-                        message: "Required"
+                        message: `Invalid input: expected "copyFile"`
                     },
                     key: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["key"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected string, received undefined"
                     },
                     source: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["source"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected object, received undefined"
                     },
                     target: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["target"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected object, received undefined"
                     }
                 }
             },

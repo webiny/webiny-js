@@ -40,7 +40,6 @@ export const createTestConfig = async ({
 
     process.env.DB_TABLE = "DynamoDB";
     process.env.DB_TABLE_OPENSEARCH = "OpensearchStream";
-    process.env.DB_TABLE_LOG = "DynamoDBLog";
     process.env.DB_TABLE_AUDIT_LOGS = "DynamoDBAuditLogs";
     process.env.WEBINY_VERSION = version;
     process.env.TESTING = "true";

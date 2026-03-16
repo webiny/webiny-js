@@ -1,7 +1,7 @@
 import type { SyntheticEvent } from "react";
 import React, { useCallback, useState, useEffect, useMemo } from "react";
 import styled from "@emotion/styled";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import type { ColorState, RGBColor } from "react-color";
 import { ChromePicker } from "react-color";
 import type { OnChangeHandler } from "react-color/lib/components/common/ColorWrap.js";

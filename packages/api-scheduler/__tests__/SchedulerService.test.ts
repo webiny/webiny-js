@@ -20,6 +20,7 @@ describe("SchedulerService", () => {
         lambdaArn,
         roleArn
     };
+    const namespace = "test:something";
 
     it("creates a schedule successfully", async () => {
         const client = mockClient(SchedulerClient);
@@ -33,6 +34,7 @@ describe("SchedulerService", () => {
 
         const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
+            namespace,
             scheduleFor: new Date(Date.now() + 1000000)
         };
 
@@ -47,6 +49,7 @@ describe("SchedulerService", () => {
 
         const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
+            namespace,
             scheduleFor: new Date(Date.now() - 100000)
         };
 
@@ -78,6 +81,7 @@ describe("SchedulerService", () => {
 
         const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
+            namespace,
             scheduleFor: new Date(Date.now() + 1000000)
         };
 
@@ -92,6 +96,7 @@ describe("SchedulerService", () => {
 
         const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
+            namespace,
             scheduleFor: new Date(Date.now())
         };
 

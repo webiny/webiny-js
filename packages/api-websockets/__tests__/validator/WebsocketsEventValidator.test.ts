@@ -120,10 +120,9 @@ describe("WebsocketsEventValidator", () => {
                     body: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["body"]
                         },
-                        message: "Expected string, received null"
+                        message: "Invalid input: expected string, received null"
                     }
                 }
             });
@@ -154,7 +153,6 @@ describe("WebsocketsEventValidator", () => {
                     body: {
                         code: "custom",
                         data: {
-                            fatal: true,
                             path: ["body"]
                         },
                         message: expect.stringContaining("Invalid JSON: Unexpected token")
@@ -187,7 +185,6 @@ describe("WebsocketsEventValidator", () => {
                     body: {
                         code: "custom",
                         data: {
-                            fatal: true,
                             path: ["body"]
                         },
                         message: "There must be a body defined when having a message event."
@@ -227,10 +224,9 @@ describe("WebsocketsEventValidator", () => {
                     data: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["data"]
                         },
-                        message: "Expected object, received string"
+                        message: "Invalid input: expected object, received string"
                     }
                 }
             });

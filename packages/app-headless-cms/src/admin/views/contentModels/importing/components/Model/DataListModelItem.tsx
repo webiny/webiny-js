@@ -10,7 +10,7 @@ const ContainerBase = styled("div")(() => {
         width: "100%",
         padding: "0px 5px 15px 5px",
         margin: "0",
-        boxSizing: "border-box",
+        boxSizing: "border-box" as const,
         "&:last-child": {
             paddingBottom: "2px"
         }

@@ -10,7 +10,7 @@ import type { BaseModel, IModelData } from "~/models/base/BaseModel.js";
  */
 export interface IFieldBuilderRegistry {
     text(): TextFieldBuilder<z.ZodString>;
-    object<TShape extends z.ZodRawShape>(
+    object<TShape extends Record<string, z.ZodTypeAny>>(
         fields: (registry: IFieldBuilderRegistry) => {
             [K in keyof TShape]: FieldBuilder<TShape[K]>;
         }

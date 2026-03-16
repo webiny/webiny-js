@@ -34,7 +34,7 @@ class UpdateApiKeyUseCaseImpl implements UpdateApiKeyUseCaseAbstraction.Interfac
 
         const validation = updateApiKeyInputSchema.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new ApiKeyValidationError(validation.error.errors[0].message));
+            return Result.fail(new ApiKeyValidationError(validation.error.issues[0].message));
         }
 
         const existingResult = await this.repository.get(id);

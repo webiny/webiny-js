@@ -4,7 +4,7 @@ import type { ColumnConfig } from "~/config/table/Column.js";
 export interface ColumnDTO {
     cell: string | ReactElement;
     className: string;
-    header: string | number | JSX.Element;
+    header: string | number | React.JSX.Element;
     hideable: boolean;
     name: string;
     path?: string;
@@ -17,7 +17,7 @@ export interface ColumnDTO {
 export class Column {
     public cell: string | ReactElement;
     public className: string;
-    public header: string | number | JSX.Element;
+    public header: string | number | React.JSX.Element;
     public hideable: boolean;
     public name: string;
     public path?: string;
@@ -32,7 +32,7 @@ export class Column {
 
     protected constructor(data: {
         name: string;
-        header: string | number | JSX.Element;
+        header: string | number | React.JSX.Element;
         cell: string | ReactElement;
         size?: number;
         className?: string;

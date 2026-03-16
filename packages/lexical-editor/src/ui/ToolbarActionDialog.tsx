@@ -60,7 +60,7 @@ export const ToolbarActionDialog = ({
     buttonIconClassName,
     buttonLabel,
     children
-}: ToolbarActionDialogProps): JSX.Element => {
+}: ToolbarActionDialogProps): React.JSX.Element => {
     const menuWindowRef = useRef<HTMLDivElement>(null);
     const [showDropDown, setShowDropDown] = useState(false);
 

@@ -16,7 +16,7 @@ export const createEventValidation = () => {
                 SenderId: zod.string(),
                 ApproximateFirstReceiveTimestamp: zod.string()
             }),
-            messageAttributes: zod.object({}).passthrough().optional(),
+            messageAttributes: zod.looseObject({}).optional(),
             md5OfBody: zod.string(),
             eventSource: zod.string(),
             eventSourceARN: zod.string(),

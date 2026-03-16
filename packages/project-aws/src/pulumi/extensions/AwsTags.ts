@@ -7,6 +7,6 @@ export const AwsTags = defineExtension({
     description: "Apply tags to AWS resources during deployment.",
     multiple: true,
     paramsSchema: z.object({
-        tags: z.record(z.string())
+        tags: z.record(z.string(), z.string())
     })
 });

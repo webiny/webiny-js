@@ -14,6 +14,7 @@
     { "path": "../db-dynamodb" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
+    { "path": "../testing" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -167,6 +168,8 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/testing/*": ["../testing/src/*"],
+      "@webiny/testing": ["../testing/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     },

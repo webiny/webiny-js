@@ -6,6 +6,7 @@ import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 
 const PageAutoSaveAction = () => {
     const editor = useDocumentEditor();
+
     const { updatePage } = useUpdatePage();
 
     const savePage = debounce(page => {
@@ -14,6 +15,11 @@ const PageAutoSaveAction = () => {
 
     useEffect(() => {
         return editor.onDocumentStateChange(async event => {
+            const isReadOnly = editor.getEditorState().read().isReadOnly;
+            if (isReadOnly) {
+                return;
+            }
+
             editor.updateEditor(state => {
                 state.autoSaving = true;
             });

@@ -102,26 +102,23 @@ describe("tasks - trigger crud", () => {
                     file: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["file"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected string, received undefined"
                     },
                     page: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["page"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected number, received undefined"
                     },
                     take: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["take"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected boolean, received undefined"
                     }
                 }
             });

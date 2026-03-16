@@ -3,7 +3,8 @@ import type { IScheduledAction, ScheduledActionType } from "~/shared/abstraction
 import {
     InvalidScheduleDateError,
     ScheduledActionPersistenceError,
-    SchedulerServiceError
+    SchedulerServiceError,
+    NamespaceHandlerNotFoundError
 } from "~/domain/errors.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
@@ -16,33 +17,34 @@ import type { GenericRecord } from "@webiny/api/types.js";
  */
 
 export interface IScheduleActionErrors {
+    namespaceHandlerNotFound: NamespaceHandlerNotFoundError;
     persistence: ScheduledActionPersistenceError;
     invalidDate: InvalidScheduleDateError;
     schedulerService: SchedulerServiceError;
 }
 
-type ScheduleActionError = IScheduleActionErrors[keyof IScheduleActionErrors];
+export type ScheduleActionError = IScheduleActionErrors[keyof IScheduleActionErrors];
 
-interface IScheduleActionParams<T extends GenericRecord> {
+export interface IScheduleActionParams {
     namespace: string;
-    actionType: ScheduledActionType;
     targetId: string;
-    scheduleFor: string;
-    title: string;
-    payload: T;
+    actionType: ScheduledActionType;
+    scheduleFor: Date;
+    immediately?: boolean;
 }
 
 export interface IScheduleActionUseCase {
     execute<T extends GenericRecord>(
-        params: IScheduleActionParams<T>
+        params: IScheduleActionParams
     ): Promise<Result<IScheduledAction<T>, ScheduleActionError>>;
 }
 
-export const ScheduleActionUseCase =
-    createAbstraction<IScheduleActionUseCase>("ScheduleActionUseCase");
+export const ScheduleActionUseCase = createAbstraction<IScheduleActionUseCase>(
+    "Scheduler/ScheduleActionUseCase"
+);
 
 export namespace ScheduleActionUseCase {
     export type Interface = IScheduleActionUseCase;
-    export type Params<T extends GenericRecord> = IScheduleActionParams<T>;
+    export type Params = IScheduleActionParams;
     export type Error = ScheduleActionError;
 }

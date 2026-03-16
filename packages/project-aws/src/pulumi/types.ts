@@ -25,10 +25,6 @@ export interface IDefaultStackOutput extends IStackOutput {
     primaryDynamodbTableName: string;
     primaryDynamodbTableHashKey: string;
     primaryDynamodbTableRangeKey: string;
-    logDynamodbTableArn: string;
-    logDynamodbTableName: string;
-    logDynamodbTableHashKey: string;
-    logDynamodbTableRangeKey: string;
     eventBusName: string;
     eventBusArn: string;
     vpcPublicSubnetIds: string[] | undefined;

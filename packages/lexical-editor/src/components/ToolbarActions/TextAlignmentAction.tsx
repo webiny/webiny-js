@@ -13,7 +13,7 @@ import { useRichTextEditor } from "~/hooks/index.js";
  */
 export const BaseTextAlignmentDropDown = makeDecoratable(
     "BaseTextAlignmentDropDown",
-    (): JSX.Element | null => {
+    (): React.JSX.Element | null => {
         useEffect(() => {
             console.log("Default BaseTextAlignmentDropDown, please add your own component");
         }, []);
@@ -22,12 +22,12 @@ export const BaseTextAlignmentDropDown = makeDecoratable(
 );
 
 interface TextAlignmentActionDropdownProps {
-    element: JSX.Element;
+    element: React.JSX.Element;
 }
 
 const TextAlignmentActionDropDown = ({
     element
-}: TextAlignmentActionDropdownProps): JSX.Element => {
+}: TextAlignmentActionDropdownProps): React.JSX.Element => {
     return <Compose component={BaseTextAlignmentDropDown} with={() => () => element} />;
 };
 

@@ -36,7 +36,7 @@ describe("websockets runner", () => {
                     invalidFields: {
                         requestContext: {
                             code: "invalid_type",
-                            message: "Required",
+                            message: "Invalid input: expected object, received undefined",
                             data: {
                                 path: ["requestContext"]
                             }
@@ -58,42 +58,43 @@ describe("websockets runner", () => {
                     invalidFields: {
                         "requestContext.connectionId": {
                             code: "invalid_type",
-                            message: "Required",
+                            message: "Invalid input: expected string, received undefined",
                             data: {
                                 path: ["requestContext", "connectionId"]
                             }
                         },
                         "requestContext.connectedAt": {
                             code: "invalid_type",
-                            message: "Required",
+                            message: "Invalid input: expected number, received undefined",
                             data: {
                                 path: ["requestContext", "connectedAt"]
                             }
                         },
                         "requestContext.domainName": {
                             code: "invalid_type",
-                            message: "Required",
+                            message: "Invalid input: expected string, received undefined",
                             data: {
                                 path: ["requestContext", "domainName"]
                             }
                         },
                         "requestContext.eventType": {
-                            code: "invalid_type",
-                            message: "Required",
+                            code: "invalid_value",
+                            message:
+                                'Invalid option: expected one of "CONNECT"|"MESSAGE"|"DISCONNECT"',
                             data: {
                                 path: ["requestContext", "eventType"]
                             }
                         },
                         "requestContext.routeKey": {
                             code: "invalid_type",
-                            message: "Required",
+                            message: "Invalid input: expected string, received undefined",
                             data: {
                                 path: ["requestContext", "routeKey"]
                             }
                         },
                         "requestContext.stage": {
                             code: "invalid_type",
-                            message: "Required",
+                            message: "Invalid input: expected string, received undefined",
                             data: {
                                 path: ["requestContext", "stage"]
                             }

@@ -14,17 +14,9 @@ export class FieldDefinitionsBuilder<TFields extends z.ZodRawShape = {}> {
         name: K,
         configure: (field: IFieldBuilderRegistry) => FieldBuilder<TZod>
     ): FieldDefinitionsBuilder<TFields & Record<K, TZod>> {
-        const fieldBuilder = configure(this.registry);
-        const config = fieldBuilder.toConfig();
-        config.fieldId = name;
-
-        this.fields.set(name, {
-            fieldId: name,
-            config,
-            zodSchema: fieldBuilder.getZodSchema()
-        });
-
-        return this as any;
+        this.registerField(name, configure(this.registry));
+        // @ts-expect-error
+        return this;
     }
 
     // Internal method to build from object
@@ -32,24 +24,23 @@ export class FieldDefinitionsBuilder<TFields extends z.ZodRawShape = {}> {
         shape: TShape
     ): FieldDefinitionsBuilder<{ [K in keyof TShape]: ReturnType<TShape[K]["getZodSchema"]> }> {
         for (const [fieldId, fieldBuilder] of Object.entries(shape)) {
-            const config = fieldBuilder.toConfig();
-            config.fieldId = fieldId;
-
-            this.fields.set(fieldId, {
-                fieldId,
-                config,
-                zodSchema: fieldBuilder.getZodSchema()
-            });
+            this.registerField(fieldId, fieldBuilder);
         }
+        // @ts-expect-error
+        return this;
+    }
 
-        return this as any;
+    private registerField(fieldId: string, fieldBuilder: FieldBuilder<any>): void {
+        const config = fieldBuilder.toConfig();
+        config.fieldId = fieldId;
+        this.fields.set(fieldId, { fieldId, config, zodSchema: fieldBuilder.getZodSchema() });
     }
 
     __toZodSchema(): z.ZodObject<TFields> {
         const schemaShape = {} as TFields;
 
         for (const [fieldId, { zodSchema }] of this.fields) {
-            schemaShape[fieldId as keyof TFields] = zodSchema as TFields[keyof TFields];
+            schemaShape[fieldId as keyof TFields] = zodSchema as unknown as TFields[keyof TFields];
         }
 
         return z.object(schemaShape);

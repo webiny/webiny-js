@@ -25,14 +25,30 @@ export const SyncSystemDynamoDb = createAppModule({
                 globalSecondaryIndexes: [
                     {
                         name: "GSI1",
-                        hashKey: "GSI1_PK",
-                        rangeKey: "GSI1_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI1_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI1_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "ALL"
                     },
                     {
                         name: "GSI2",
-                        hashKey: "GSI2_PK",
-                        rangeKey: "GSI2_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI2_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI2_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "ALL"
                     }
                 ],

@@ -1,4 +1,3 @@
-
 const withExpiresAtAttributeDefinition = table => {
   return {
     ...table,
@@ -43,7 +42,6 @@ const withTenantGlobalSecondaryIndex = table => {
     ]
   };
 };
-
 
 const createGlobalSecondaryIndexesAttributeDefinitions = amount => {
   const attributes = [];
@@ -118,27 +116,6 @@ const createDynaliteTables = (options = {}) => {
             ],
             ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 },
             GlobalSecondaryIndexes: []
-          })
-        )
-      ),
-      withExpiresAtAttributeDefinition(
-        withTenantAttributeDefinition(
-          withTenantGlobalSecondaryIndex({
-            TableName: process.env.DB_TABLE_LOG,
-            KeySchema: [
-              { AttributeName: "PK", KeyType: "HASH" },
-              { AttributeName: "SK", KeyType: "RANGE" }
-            ],
-            AttributeDefinitions: [
-              { AttributeName: "PK", AttributeType: "S" },
-              { AttributeName: "SK", AttributeType: "S" },
-              ...createGlobalSecondaryIndexesAttributeDefinitions(5)
-            ],
-            ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 },
-            GlobalSecondaryIndexes: createGlobalSecondaryIndexes({
-              amount: 5
-            }),
-            data: options.data || []
           })
         )
       ),

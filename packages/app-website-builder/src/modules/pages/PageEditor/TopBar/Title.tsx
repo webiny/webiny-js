@@ -2,10 +2,12 @@ import React, { useCallback, useState } from "react";
 import { Input, Text } from "@webiny/admin-ui";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
+import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 
 export function Title() {
     const [localValue, setLocalValue] = useState<string | undefined>();
     const [isEditing, setIsEditing] = useState<boolean>(false);
+    const isEditorReadOnly = useSelectFromEditor(state => state.isReadOnly);
 
     const editor = useDocumentEditor();
 
@@ -27,6 +29,16 @@ export function Title() {
         setIsEditing(false);
         setLocalValue(undefined);
     }, []);
+
+    if (isEditorReadOnly) {
+        return (
+            <div className={"flex flex-col min-w-0"}>
+                <Text className={"text-accent-primary font-bold mx-sm truncate"} size={"lg"}>
+                    {title}
+                </Text>
+            </div>
+        );
+    }
 
     return (
         <div className={"flex flex-col min-w-0"}>
