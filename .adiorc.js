@@ -39,6 +39,7 @@ export default {
             "node:fs",
             "node:timers",
             "node:path",
+            "node:url",
             "node:stream",
             "os",
             "path",
