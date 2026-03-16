@@ -34,6 +34,9 @@ const createEntrySystemFields = (model: CmsModel) => {
             meta  {
                 ${CONTENT_META_FIELDS}
             }
+            live {
+                version
+            }
         `;
     }
 
@@ -113,9 +116,6 @@ const createEntrySystemFields = (model: CmsModel) => {
             displayName
         }
         ${optionalFields}
-        live {
-            version
-        }
     `;
 };
 
