@@ -34,7 +34,7 @@ class ListEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const { where: initialWhere, ...rest } = params || {};
         const where = { ...initialWhere };
-        
+
         // Possibly only get records which are owned by current user
         if (await this.accessControl.canAccessOnlyOwnedEntries({ model })) {
             where.createdBy = this.identityContext.getIdentity().id;
@@ -45,7 +45,7 @@ class ListEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
             ...rest,
             where
         });
-        
+
         if (result.isFail()) {
             return Result.fail(result.error);
         }

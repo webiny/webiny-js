@@ -11,12 +11,8 @@ import { createMockTargetModelPlugins, MOCK_TARGET_MODEL_ID } from "./__mocks/ta
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
-import {
-    ExecuteScheduledActionUseCase,
-    ListScheduledActionsUseCase,
-    ScheduleActionUseCase
-} from "@webiny/api-scheduler";
-import { CMS_NAMESPACE, createNamespace } from "~/utils/namespace.js";
+import { ExecuteScheduledActionUseCase, ListScheduledActionsUseCase } from "@webiny/api-scheduler";
+import { CMS_NAMESPACE } from "~/utils/namespace.js";
 
 describe("Action Handlers", () => {
     let context: CmsContext;
@@ -55,7 +51,7 @@ describe("Action Handlers", () => {
         const publishActionResult = await schedulePublish.execute({
             id: entryResult.value.id,
             model: modelResult.value,
-            scheduleFor: new Date(Date.now() + 100000),
+            scheduleFor: new Date(Date.now() + 100000)
         });
 
         // Assert scheduled actions
@@ -72,7 +68,7 @@ describe("Action Handlers", () => {
         const scheduledAction = publishActionResult.value;
         await executeScheduledAction.execute({
             id: scheduledAction.scheduledAction.id,
-            namespace: scheduledAction.scheduledAction.namespace,
+            namespace: scheduledAction.scheduledAction.namespace
         });
 
         // Assert entry published
@@ -87,13 +83,13 @@ describe("Action Handlers", () => {
         const unpublishActionResult = await scheduleUnpublish.execute({
             id: entryResult.value.id,
             model: modelResult.value,
-            scheduleFor: new Date(Date.now() + 1000000),
+            scheduleFor: new Date(Date.now() + 1000000)
         });
 
         // Execute action handler
         await executeScheduledAction.execute({
             id: unpublishActionResult.value.scheduledAction.id,
-            namespace: unpublishActionResult.value.scheduledAction.namespace,
+            namespace: unpublishActionResult.value.scheduledAction.namespace
         });
 
         const unpublishedEntryResult = await getEntryById.execute(

@@ -3,7 +3,7 @@ import { extractModelIdFromNamespace } from "~/utils/namespace.js";
 import { Result } from "@webiny/feature/exports/api.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
-import type {GenericRecord} from "@webiny/api/types.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 class NamespaceHandlerImpl implements NamespaceHandlerAbstraction.Interface<GenericRecord> {
     public constructor(
