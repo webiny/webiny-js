@@ -60,6 +60,7 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
             fields: this.model.fields
         });
         // List entries from CMS
+        console.log("before list entries", { where, sort, limit, after });
         const listResult = await this.listEntriesUseCase.execute<IScheduledActionEntryValues<T>>(
             this.model,
             {
@@ -69,6 +70,7 @@ class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
                 after
             }
         );
+        console.log("after list entries", { listResult });
 
         if (listResult.isFail()) {
             return Result.fail(new ScheduledActionPersistenceError(listResult.error));

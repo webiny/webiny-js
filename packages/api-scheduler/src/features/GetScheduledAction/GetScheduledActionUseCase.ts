@@ -40,12 +40,21 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         const { id, namespace } = params;
         // Get entry from CMS
         const scheduleId = ScheduledActionIdWithVersion.from(id);
+        console.log({
+            targetId: id,
+            namespace,
+            searchingFor: scheduleId,
+            model: this.model.modelId,
+        })
         const entryResult = await this.getEntryByIdUseCase.execute<IScheduledActionEntryValues<T>>(
             this.model,
             scheduleId
         );
-
+        
         if (entryResult.isFail()) {
+            console.log({
+                isFail: entryResult.error,
+            })
             if (entryResult.error.code === "Cms/Entry/NotFound") {
                 return Result.fail(new ScheduledActionNotFoundError(scheduleId));
             }
@@ -65,10 +74,21 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
          * Always check if the namespace is correct because entry is loaded directly, not via filtering.
          */
         if (entry.values.namespace !== namespace) {
+            console.log({
+                entry,
+                entryNamespace: entry.values.namespace,
+                expectedNamespace: namespace,
+                notSameNamespace: true,
+            })
             return Result.fail(new ScheduledActionNotFoundError(scheduleId));
         }
+        const action = ScheduledActionMapper.toAction<T>(entry);
+        console.log({
+            allIsOk: true,
+            action,
+        })
 
-        return Result.ok(ScheduledActionMapper.toAction<T>(entry));
+        return Result.ok(action);
     }
 }
 

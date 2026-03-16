@@ -7,7 +7,7 @@ import { parseIdentifier } from "@webiny/utils";
 import { createBatchScheduleFn } from "./createBatchScheduleFn.js";
 
 export const createGetPublishedRevisionByEntryId = (params: IDataLoaderParams) => {
-    const { entity, tenant } = params;
+    const { entity, tenant, modelId } = params;
 
     const publishedKey = createPublishedSortKey();
     return new DataLoader<string, CmsStorageEntry[]>(
@@ -39,6 +39,9 @@ export const createGetPublishedRevisionByEntryId = (params: IDataLoaderParams) =
             return ids.map(id => {
                 const { id: entryId } = parseIdentifier(id);
                 return items.filter(item => {
+                    if (item.modelId !== modelId) {
+                        return false;
+                    }
                     return entryId === item.entryId;
                 });
             });

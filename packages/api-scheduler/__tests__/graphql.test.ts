@@ -128,7 +128,9 @@ describe("Scheduler GraphQL", () => {
         });
 
         const [listResponse] = await handler.listScheduledActions({
-            namespace: PublishTestEntryActionHandlerImpl.name
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            sort: ["scheduledFor_DESC"],
+            where: {}
         });
 
         expect(listResponse).toEqual({

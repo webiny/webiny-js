@@ -82,6 +82,7 @@ export class DataLoadersHandler implements IDataLoadersHandler {
         const { model } = params;
         const cacheParams: CacheKeyParams = {
             tenant: model.tenant,
+            modelId: model.modelId,
             name
         };
         let loader = this.cache.getDataLoader(cacheParams);
@@ -91,7 +92,8 @@ export class DataLoadersHandler implements IDataLoadersHandler {
         const factory = getDataLoaderFactory(name);
         loader = factory({
             entity: this.entity,
-            tenant: model.tenant
+            tenant: model.tenant,
+            modelId: model.modelId,
         });
         this.cache.setDataLoader(cacheParams, loader);
         return loader;
