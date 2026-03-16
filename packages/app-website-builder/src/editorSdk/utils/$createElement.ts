@@ -28,7 +28,11 @@ export function $createElement(
     }
 
     const elementFactory = new ElementFactory(componentsManifest);
-    const { element: newElement, operations } = elementFactory.createElementFromComponent({
+
+    // Snapshot element IDs before creation so we can find all new elements.
+    const elementsBefore = new Set(Object.keys(editor.getDocumentState().read().elements));
+
+    const { operations } = elementFactory.createElementFromComponent({
         componentName,
         parentId,
         slot,
@@ -40,31 +44,37 @@ export function $createElement(
         operations.forEach(operation => operation.apply(document));
     });
 
-    // Fire onChange on the new element + onDescendantChange on all ancestors.
-    // The new element now exists in the document, so the ancestor walk works.
+    // Fire onChange + onDescendantChange for every newly created element,
+    // not just the root. ElementFactory recursively creates child elements
+    // from slot defaults, and those children need callbacks too.
     const editorState = editor.getEditorState().read();
     const breakpointNames = editorState.viewport.breakpoints.map(bp => bp.name);
     const baseBreakpoint = breakpointNames[0];
 
-    const ancestorUpdates = executeOnChange({
-        editor,
-        elementId: newElement.id,
-        action: "create",
-        breakpointNames,
-        baseBreakpoint,
-        elementFactory
-    });
+    const document = editor.getDocumentState().read();
+    const newElementIds = Object.keys(document.elements).filter(id => !elementsBefore.has(id));
 
-    if (ancestorUpdates.length > 0) {
-        editor.updateDocument(doc => {
-            applyAncestorUpdates(
-                doc,
-                ancestorUpdates,
-                breakpointNames,
-                baseBreakpoint,
-                elementFactory
-            );
+    for (const elementId of newElementIds) {
+        const ancestorUpdates = executeOnChange({
+            editor,
+            elementId,
+            action: "create",
+            breakpointNames,
+            baseBreakpoint,
+            elementFactory
         });
+
+        if (ancestorUpdates.length > 0) {
+            editor.updateDocument(doc => {
+                applyAncestorUpdates(
+                    doc,
+                    ancestorUpdates,
+                    breakpointNames,
+                    baseBreakpoint,
+                    elementFactory
+                );
+            });
+        }
     }
 
     return;

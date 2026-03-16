@@ -25,8 +25,6 @@ export const StepsNavigator = () => {
         return null;
     }
 
-    console.log("funnel", funnel);
-
     const { activeStep } = funnel.inputs;
 
     const activateStep = (index: number) => {
