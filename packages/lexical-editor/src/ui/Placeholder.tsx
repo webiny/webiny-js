@@ -19,7 +19,7 @@ export function Placeholder({
     children: ReactNode;
     className?: string;
     styles?: React.CSSProperties;
-}): JSX.Element {
+}): React.JSX.Element {
     return (
         <div style={{ ...styles }} className={className || "Placeholder__root"}>
             {children}

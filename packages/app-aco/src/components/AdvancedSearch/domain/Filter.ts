@@ -30,10 +30,7 @@ const filterGroupFilterValidationSchema = zod.object({
     condition: zod.string().nonempty("Condition is required."),
     value: zod.union([
         zod.boolean(),
-        zod.number({
-            required_error: "Value is required.",
-            invalid_type_error: "Value must be a number."
-        }),
+        zod.number({ error: "Value is required." }),
         zod.string().trim().nonempty("Value is required."),
         zod
             .array(zod.union([zod.boolean(), zod.number(), zod.string()]))

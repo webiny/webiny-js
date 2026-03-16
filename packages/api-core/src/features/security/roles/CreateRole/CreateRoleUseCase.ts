@@ -28,7 +28,7 @@ class CreateRoleUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const validation = createRoleValidation.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new RoleValidationError(validation.error.errors[0].message));
+            return Result.fail(new RoleValidationError(validation.error.issues[0].message));
         }
 
         const tenant = this.tenantContext.getTenant();

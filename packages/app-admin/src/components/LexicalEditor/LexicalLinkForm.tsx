@@ -68,7 +68,9 @@ const UrlInput = () => {
     return (
         <Input
             {...urlBind}
-            inputRef={ref => (inputRef.current = ref)}
+            inputRef={ref => {
+                inputRef.current = ref;
+            }}
             variant={"secondary"}
             placeholder={"Enter link"}
             autoFocus={true}

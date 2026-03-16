@@ -1,11 +1,18 @@
 import { Result } from "@webiny/feature/api";
 import { GetScheduledActionUseCase as UseCaseAbstraction } from "./abstractions.js";
-import type { IScheduledAction } from "~/shared/abstractions.js";
+import type { IScheduledAction, IScheduledActionEntryValues } from "~/shared/abstractions.js";
 import { ScheduledActionModel } from "~/shared/abstractions.js";
-import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
+import {
+    NotAuthorizedError,
+    ScheduledActionNotFoundError,
+    ScheduledActionPersistenceError
+} from "~/domain/errors.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { SchedulerPermissions } from "~/domain/permissions.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
+import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 
 /**
  * Retrieves a scheduled action by its ID
@@ -18,15 +25,22 @@ import type { GenericRecord } from "@webiny/api/types.js";
 class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private getEntryByIdUseCase: GetEntryByIdUseCase.Interface,
-        private model: ScheduledActionModel.Interface
+        private model: ScheduledActionModel.Interface,
+        private permissions: SchedulerPermissions.Interface,
+        private identityContext: IdentityContext.Interface
     ) {}
 
     async execute<T extends GenericRecord>(
-        id: string
+        params: UseCaseAbstraction.Params
     ): Promise<Result<IScheduledAction<T>, UseCaseAbstraction.Error>> {
+        const hasPermission = await this.permissions.canRead("action");
+        if (!hasPermission) {
+            return Result.fail(new NotAuthorizedError());
+        }
+        const { id, namespace } = params;
         // Get entry from CMS
         const scheduleId = ScheduledActionIdWithVersion.from(id);
-        const entryResult = await this.getEntryByIdUseCase.execute<IScheduledAction<T>>(
+        const entryResult = await this.getEntryByIdUseCase.execute<IScheduledActionEntryValues<T>>(
             this.model,
             scheduleId
         );
@@ -39,23 +53,32 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new ScheduledActionPersistenceError(entryResult.error));
         }
 
-        const entry = entryResult.value;
+        const ownRecordsOnly = await this.permissions.onlyOwnRecords("action");
+        if (ownRecordsOnly) {
+            if (entryResult.value.createdBy.id !== this.identityContext.getIdentity().id) {
+                return Result.fail(new NotAuthorizedError());
+            }
+        }
 
-        return Result.ok({
-            id: entry.entryId,
-            namespace: entry.values.namespace,
-            actionType: entry.values.actionType,
-            targetId: entry.values.targetId,
-            scheduledBy: entry.values.scheduledBy,
-            scheduledFor: entry.values.scheduledFor,
-            payload: entry.values.payload,
-            title: entry.values.title,
-            error: entry.values.error
-        });
+        const entry = entryResult.value;
+        /**
+         * Always check if the namespace is correct because entry is loaded directly, not via filtering.
+         */
+        if (entry.values.namespace !== namespace) {
+            return Result.fail(new ScheduledActionNotFoundError(scheduleId));
+        }
+        const action = ScheduledActionMapper.toAction<T>(entry);
+
+        return Result.ok(action);
     }
 }
 
 export const GetScheduledActionUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetScheduledActionUseCaseImpl,
-    dependencies: [GetEntryByIdUseCase, ScheduledActionModel]
+    dependencies: [
+        GetEntryByIdUseCase,
+        ScheduledActionModel,
+        SchedulerPermissions.Abstraction,
+        IdentityContext
+    ]
 });

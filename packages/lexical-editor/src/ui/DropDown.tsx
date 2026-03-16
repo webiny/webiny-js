@@ -152,7 +152,7 @@ export function DropDown({
     children: ReactNode;
     stopCloseOnClickSelf?: boolean;
     showScroll?: boolean;
-}): JSX.Element {
+}): React.JSX.Element {
     const dropDownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     // Used to prevent flickering of the dropdown while calculating the dropdown position.

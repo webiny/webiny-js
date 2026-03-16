@@ -1,6 +1,17 @@
 import { BaseError } from "@webiny/feature/api";
 
 /**
+ * Not authorized error when user lacks permissions to manage scheduled actions.
+ */
+export class NotAuthorizedError extends BaseError {
+    override readonly code = "Scheduler/NotAuthorized" as const;
+
+    constructor() {
+        super({ message: "Not authorized!" });
+    }
+}
+
+/**
  * Scheduled action not found error
  */
 export class ScheduledActionNotFoundError extends BaseError<{ scheduleId: string }> {
@@ -36,10 +47,12 @@ export class ScheduledActionPersistenceError extends BaseError<{ originalError: 
 export class InvalidScheduleDateError extends BaseError<{ scheduleFor: string }> {
     override readonly code = "Scheduler/ScheduledAction/InvalidDate" as const;
 
-    constructor(scheduleFor: string) {
+    constructor(scheduleFor: Date) {
         super({
             message: "Cannot schedule in the past",
-            data: { scheduleFor }
+            data: {
+                scheduleFor: scheduleFor.toISOString()
+            }
         });
     }
 }
@@ -54,6 +67,25 @@ export class SchedulerServiceError extends BaseError<{ originalError: Error }> {
         super({
             message: `Scheduler service error: ${error.message}`,
             data: { originalError: error }
+        });
+    }
+}
+
+interface INamespaceHandlerNotFoundErrorData {
+    namespace: string;
+}
+/**
+ * Namespace handler not found error.
+ */
+export class NamespaceHandlerNotFoundError extends BaseError<INamespaceHandlerNotFoundErrorData> {
+    override readonly code = "Scheduler/NamespaceHandler/NotFound" as const;
+
+    constructor(namespace: string) {
+        super({
+            message: `Namespace handler for "${namespace}" was not found.`,
+            data: {
+                namespace
+            }
         });
     }
 }

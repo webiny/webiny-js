@@ -6,7 +6,7 @@ import { MenuItem as UiMenuItem } from "@webiny/ui/Menu/index.js";
 export interface MenuItemProps {
     label: string;
     onClick: () => void;
-    icon: JSX.Element;
+    icon: React.JSX.Element;
     "data-testid"?: string;
     disabled?: boolean;
 }

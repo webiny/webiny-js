@@ -11,7 +11,7 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
         return new TextFieldBuilder();
     }
 
-    object<TShape extends z.ZodRawShape>(
+    object<TShape extends Record<string, z.ZodTypeAny>>(
         fields: (registry: IFieldBuilderRegistry) => {
             [K in keyof TShape]: FieldBuilder<TShape[K]>;
         }

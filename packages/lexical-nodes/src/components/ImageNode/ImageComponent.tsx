@@ -60,7 +60,7 @@ function LazyImage({
     maxWidth: number;
     src: string;
     width: "inherit" | number;
-}): JSX.Element {
+}): React.JSX.Element {
     useSuspenseImage(src);
     return (
         <img
@@ -99,7 +99,7 @@ export default function ImageComponent({
     height,
     maxWidth,
     resizable
-}: ImageComponentProps): JSX.Element {
+}: ImageComponentProps): React.JSX.Element {
     const imageRef = useRef<null | HTMLImageElement>(null);
     const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey);
     const [isResizing, setIsResizing] = useState<boolean>(false);

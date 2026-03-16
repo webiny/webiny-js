@@ -26,11 +26,11 @@ interface DataTableColumn<T> {
     /*
      * Column header component.
      */
-    header?: string | number | JSX.Element;
+    header?: string | number | React.JSX.Element;
     /*
      * Cell renderer, receives the full row and returns the value to render inside the cell.
      */
-    cell?: (row: T) => string | number | JSX.Element | null;
+    cell?: (row: T) => string | number | React.JSX.Element | null;
     /*
      * Column size.
      */

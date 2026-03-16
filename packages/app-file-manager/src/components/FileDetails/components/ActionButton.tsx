@@ -3,7 +3,7 @@ import { Button } from "@webiny/admin-ui";
 
 export interface ActionButtonProps {
     label: string;
-    icon: JSX.Element;
+    icon: React.JSX.Element;
     onAction: () => void;
     "data-testid"?: string;
     disabled?: boolean;

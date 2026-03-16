@@ -56,21 +56,21 @@ describe("validate event", () => {
             invalidFields: {
                 "0.body.detail.items": {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected array, received undefined",
                     data: {
                         path: [0, "body", "detail", "items"]
                     }
                 },
                 "0.body.detail.source": {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected object, received undefined",
                     data: {
                         path: [0, "body", "detail", "source"]
                     }
                 },
                 "0.body.detail.id": {
                     code: "invalid_type",
-                    message: "Required",
+                    message: "Invalid input: expected string, received undefined",
                     data: {
                         path: [0, "body", "detail", "id"]
                     }

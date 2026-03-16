@@ -1,6 +1,6 @@
-import { createAbstraction } from "@webiny/feature/api";
-import { Result } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import {
+    NotAuthorizedError,
     ScheduledActionNotFoundError,
     ScheduledActionPersistenceError,
     SchedulerServiceError
@@ -18,19 +18,26 @@ export interface ICancelScheduledActionErrors {
     notFound: ScheduledActionNotFoundError;
     persistence: ScheduledActionPersistenceError;
     schedulerService: SchedulerServiceError;
+    unauthorized: NotAuthorizedError;
 }
 
 type CancelScheduledActionError = ICancelScheduledActionErrors[keyof ICancelScheduledActionErrors];
-
+export interface ICancelScheduledActionUseCaseParams {
+    namespace: string;
+    id: string;
+}
 export interface ICancelScheduledActionUseCase {
-    execute(scheduleId: string): Promise<Result<void, CancelScheduledActionError>>;
+    execute(
+        params: ICancelScheduledActionUseCaseParams
+    ): Promise<Result<void, CancelScheduledActionError>>;
 }
 
 export const CancelScheduledActionUseCase = createAbstraction<ICancelScheduledActionUseCase>(
-    "CancelScheduledActionUseCase"
+    "Scheduler/CancelScheduledActionUseCase"
 );
 
 export namespace CancelScheduledActionUseCase {
     export type Interface = ICancelScheduledActionUseCase;
     export type Error = CancelScheduledActionError;
+    export type Params = ICancelScheduledActionUseCaseParams;
 }

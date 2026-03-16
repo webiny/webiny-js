@@ -32,14 +32,14 @@
     "lodash": "^4.17.23",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^3.4.3",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-hotkeyz": "^1.0.4",
     "slugify": "^1.6.6",
-    "zod": "^3.25.76"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/react": "18.2.79",
+    "@types/react": "^18.3.28",
     "@webiny/build-tools": "0.0.0",
     "@webiny/di": "^0.2.3",
     "@webiny/wcp": "0.0.0",

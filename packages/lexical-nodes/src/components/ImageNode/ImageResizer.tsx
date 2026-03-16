@@ -34,7 +34,7 @@ export function ImageResizer({
     maxWidth?: number;
     onResizeEnd: (width: "inherit" | number, height: "inherit" | number) => void;
     onResizeStart: () => void;
-}): JSX.Element {
+}): React.JSX.Element {
     const controlWrapperRef = useRef<HTMLDivElement>(null);
     const userSelect = useRef({
         priority: "",

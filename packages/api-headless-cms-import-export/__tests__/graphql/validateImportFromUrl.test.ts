@@ -131,26 +131,25 @@ describe("validate import from url - graphql", () => {
                         data: {
                             invalidFields: {
                                 "files.0.get": {
-                                    code: "invalid_string",
+                                    code: "invalid_format",
                                     data: {
                                         path: ["files", 0, "get"]
                                     },
-                                    message: "Invalid url"
+                                    message: "Invalid URL"
                                 },
                                 "files.0.head": {
-                                    code: "invalid_string",
+                                    code: "invalid_format",
                                     data: {
                                         path: ["files", 0, "head"]
                                     },
-                                    message: "Invalid url"
+                                    message: "Invalid URL"
                                 },
                                 "files.0.type": {
-                                    code: "invalid_enum_value",
+                                    code: "invalid_value",
                                     data: {
                                         path: ["files", 0, "type"]
                                     },
-                                    message:
-                                        "Invalid enum value. Expected 'entries' | 'assets', received 'invalid-type'"
+                                    message: 'Invalid option: expected one of "entries"|"assets"'
                                 }
                             }
                         },

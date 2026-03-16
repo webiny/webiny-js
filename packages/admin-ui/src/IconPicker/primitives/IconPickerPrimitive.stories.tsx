@@ -26,7 +26,6 @@ const meta: Meta<typeof IconPickerPrimitive> = {
     }
 };
 
-// @ts-expect-error
 library.add(fas);
 
 export default meta;

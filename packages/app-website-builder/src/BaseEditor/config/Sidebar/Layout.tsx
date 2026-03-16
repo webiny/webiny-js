@@ -5,7 +5,11 @@ import { Sidebar } from "./Sidebar.js";
 
 export const Layout = makeDecoratable("SidebarLayout", () => {
     return (
-        <div className={"bg-neutral-base border-l-sm border-l-neutral-dimmed"}>
+        <div
+            data-role="editor-sidebar"
+            data-affects-preview={"width"}
+            className={"bg-neutral-base border-l-sm border-l-neutral-dimmed"}
+        >
             <Tabs
                 size="md"
                 spacing={"md"}

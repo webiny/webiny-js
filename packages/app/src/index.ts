@@ -28,6 +28,7 @@ export { Route } from "./features/router/Route.js";
 export { RouteLink, type RouteLinkProps } from "./presentation/router/components/RouteLink.js";
 export { SimpleLink, type SimpleLinkProps } from "./presentation/router/components/SimpleLink.js";
 
+export { useEnvConfig } from "./presentation/envConfig/useEnvConfig.js";
 export { useRouter, useRoute } from "./presentation/router/index.js";
 export {
     useLocalStorage,

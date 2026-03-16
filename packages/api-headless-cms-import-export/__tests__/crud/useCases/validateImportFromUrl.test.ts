@@ -81,20 +81,20 @@ describe("validateImportFromUrl", () => {
             expect(ex.data).toEqual({
                 invalidFields: {
                     "files.0.get": {
-                        code: "invalid_string",
+                        code: "invalid_format",
                         data: {
                             fatal: undefined,
                             path: ["files", 0, "get"]
                         },
-                        message: "Invalid url"
+                        message: "Invalid URL"
                     },
                     "files.0.head": {
-                        code: "invalid_string",
+                        code: "invalid_format",
                         data: {
                             fatal: undefined,
                             path: ["files", 0, "head"]
                         },
-                        message: "Invalid url"
+                        message: "Invalid URL"
                     }
                 }
             });

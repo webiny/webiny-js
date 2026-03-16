@@ -47,7 +47,7 @@ const createFunctions = () => {
 };
 
 describe("middleware", () => {
-    it.skip("should execute a single function", async () => {
+    it("should execute a single function", async () => {
         const { firstFunction } = createFunctions();
 
         const exec = middleware([firstFunction]);
@@ -71,7 +71,7 @@ describe("middleware", () => {
         expect(firstFunction.calls).toBe(3);
     });
 
-    it.skip("should execute all functions", async () => {
+    it("should execute all functions", async () => {
         const { firstFunction, secondFunction, thirdFunction } = createFunctions();
 
         const exec = middleware([firstFunction, secondFunction, thirdFunction]);

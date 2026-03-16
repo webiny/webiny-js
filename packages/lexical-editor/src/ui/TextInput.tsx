@@ -24,7 +24,7 @@ export default function TextInput({
     onChange,
     placeholder = "",
     "data-test-id": dataTestId
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
     return (
         <div className="Input__wrapper">
             <label className="Input__label">{label}</label>

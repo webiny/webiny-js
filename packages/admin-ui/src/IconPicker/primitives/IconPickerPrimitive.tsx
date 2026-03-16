@@ -54,7 +54,8 @@ interface IconPickerPrimitiveProps extends VariantProps<typeof iconPickerVariant
 
 const IconPickerPrimitive = (props: IconPickerPrimitiveProps) => {
     const { vm, setListOpenState, searchIcon, setSelectedIcon } = useIconPicker(props);
-    const inputRef = useRef<HTMLInputElement>(null);
+    // TODO figure out a better way to type this ref, without using `as unknown as`
+    const inputRef = useRef<HTMLInputElement>(null as unknown as HTMLInputElement);
 
     useEffect(() => {
         setTimeout(() => {

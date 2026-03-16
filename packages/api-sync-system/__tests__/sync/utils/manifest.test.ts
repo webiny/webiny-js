@@ -47,26 +47,23 @@ describe("manifest", () => {
                 "sync.eventBusArn": {
                     code: "invalid_type",
                     data: {
-                        fatal: undefined,
                         path: ["sync", "eventBusArn"]
                     },
-                    message: "Required"
+                    message: "Invalid input: expected string, received undefined"
                 },
                 "sync.eventBusName": {
                     code: "invalid_type",
                     data: {
-                        fatal: undefined,
                         path: ["sync", "eventBusName"]
                     },
-                    message: "Required"
+                    message: "Invalid input: expected string, received undefined"
                 },
                 "sync.region": {
                     code: "invalid_type",
                     data: {
-                        fatal: undefined,
                         path: ["sync", "region"]
                     },
-                    message: "Required"
+                    message: "Invalid input: expected string, received undefined"
                 }
             }
         });

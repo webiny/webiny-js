@@ -35,7 +35,7 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         // 2. Validate input
         const validation = createUserValidation.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new UserValidationError(validation.error.errors[0].message));
+            return Result.fail(new UserValidationError(validation.error.issues[0].message));
         }
 
         const data = validation.data;

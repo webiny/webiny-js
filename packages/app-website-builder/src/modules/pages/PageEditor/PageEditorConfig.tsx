@@ -1,6 +1,6 @@
 import React from "react";
 import { CompositionScope } from "@webiny/app-admin";
-import { EditorConfig } from "~/BaseEditor/index.js";
+import { EditorConfig, EditorConfigComponents } from "~/BaseEditor/index.js";
 import { EDITOR_NAME } from "~/modules/pages/constants.js";
 
 interface PageEditorConfigProps {
@@ -15,4 +15,4 @@ const BasePageEditorConfig = ({ children }: PageEditorConfigProps) => {
     );
 };
 
-export const PageEditorConfig = Object.assign(BasePageEditorConfig, EditorConfig);
+export const PageEditorConfig = Object.assign(BasePageEditorConfig, EditorConfigComponents);

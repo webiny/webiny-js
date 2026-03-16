@@ -30,7 +30,7 @@
     "graphql": "^16.13.1",
     "graphql-scalars": "^1.25.0",
     "graphql-tag": "^2.12.6",
-    "zod": "^3.25.76"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

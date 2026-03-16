@@ -4,7 +4,7 @@ import { usePermission } from "~/admin/hooks/usePermission.js";
 interface HasContentEntryPermissionsProps {
     group: Pick<CmsGroup, "id" | "contentModels">;
     contentModel?: Pick<CmsModel, "modelId">;
-    children: JSX.Element;
+    children: React.JSX.Element;
 }
 
 export const HasContentEntryPermissions = ({

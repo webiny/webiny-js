@@ -43,8 +43,8 @@ export interface SingleValueItemContainerProps {
     title: React.ReactNode;
     description: string;
     disabled?: boolean;
-    icon: JSX.Element;
-    actions?: JSX.Element;
+    icon: React.JSX.Element;
+    actions?: React.JSX.Element;
     template: CmsDynamicZoneTemplate;
     children: React.ReactNode;
 }

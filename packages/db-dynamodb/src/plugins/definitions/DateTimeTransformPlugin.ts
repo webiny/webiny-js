@@ -3,7 +3,6 @@ import type {
     ValueTransformPluginParamsTransformParams
 } from "./ValueTransformPlugin.js";
 import { ValueTransformPlugin } from "./ValueTransformPlugin.js";
-import WebinyError from "@webiny/error";
 import { parseISO } from "date-fns";
 
 const transformDateTime = (params: ValueTransformPluginParamsTransformParams): number | null => {
@@ -21,10 +20,13 @@ const transformDateTime = (params: ValueTransformPluginParamsTransformParams): n
          */
         return value.getTime();
     }
-
-    throw new WebinyError("Could not parse given dateTime value.", "PARSE_DATE_ERROR", {
+    /**
+     * No point in throwing an error here, as this would cause the entire transformation to fail. Instead, we just log a warning and return null.
+     */
+    console.warn("Could not parse given dateTime value.", "PARSE_DATE_ERROR", {
         value
     });
+    return null;
 };
 
 export class DateTimeTransformPlugin extends ValueTransformPlugin {

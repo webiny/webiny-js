@@ -50,13 +50,12 @@ describe("data synchronization - elasticsearch", () => {
             expect(ex.data).toEqual({
                 invalidFields: {
                     flow: {
-                        code: "invalid_enum_value",
+                        code: "invalid_value",
                         data: {
                             fatal: undefined,
                             path: ["flow"]
                         },
-                        message:
-                            "Invalid enum value. Expected 'elasticsearchToDynamoDb', received 'unknownFlow'"
+                        message: `Invalid input: expected "elasticsearchToDynamoDb"`
                     }
                 }
             });

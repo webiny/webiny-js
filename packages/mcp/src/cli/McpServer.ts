@@ -227,7 +227,6 @@ class McpServerCommand implements CliCommandFactory.Interface<IMcpServerParams> 
                     })
                 );
 
-                // @ts-expect-error Incompatible Zod version
                 server.registerTool(
                     "get_webiny_skill",
                     {

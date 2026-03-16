@@ -1,6 +1,10 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
+import {
+    NotAuthorizedError,
+    ScheduledActionNotFoundError,
+    ScheduledActionPersistenceError
+} from "~/domain/errors.js";
 
 /**
  * ExecuteScheduledActionUseCase - Execute a scheduled action
@@ -21,22 +25,31 @@ export interface IExecuteScheduledActionErrors {
     persistence: ScheduledActionPersistenceError;
     handlerNotFound: HandlerNotFoundError;
     executionFailed: ExecutionFailedError;
+    unauthorized: NotAuthorizedError;
 }
 
 type ExecuteScheduledActionError =
     IExecuteScheduledActionErrors[keyof IExecuteScheduledActionErrors];
 
+export interface IExecuteScheduledActionUseCaseParams {
+    namespace: string;
+    id: string;
+}
+
 export interface IExecuteScheduledActionUseCase {
-    execute(scheduleId: string): Promise<Result<void, ExecuteScheduledActionError>>;
+    execute(
+        params: IExecuteScheduledActionUseCaseParams
+    ): Promise<Result<void, ExecuteScheduledActionError>>;
 }
 
 export const ExecuteScheduledActionUseCase = createAbstraction<IExecuteScheduledActionUseCase>(
-    "ExecuteScheduledActionUseCase"
+    "Scheduler/ExecuteScheduledActionUseCase"
 );
 
 export namespace ExecuteScheduledActionUseCase {
     export type Interface = IExecuteScheduledActionUseCase;
     export type Error = ExecuteScheduledActionError;
+    export type Params = IExecuteScheduledActionUseCaseParams;
 }
 
 /**

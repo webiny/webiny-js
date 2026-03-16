@@ -5,6 +5,7 @@ import { defaultIdentity } from "./tenancySecurity";
 import type { LambdaContext } from "@webiny/handler-aws/types";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import { createHeadlessCmsScheduleContext } from "~/context.js";
 
 interface CmsHandlerEvent {
     path: string;
@@ -20,7 +21,8 @@ export const useHandler = <C extends CmsContext>(params: CreateHandlerCoreParams
     const plugins = [...core.plugins].concat([
         createRawEventHandler<CmsHandlerEvent, C, C>(async ({ context }) => {
             return context;
-        })
+        }),
+        createHeadlessCmsScheduleContext()
     ]);
 
     const handler = createRawHandler<CmsHandlerEvent, C>({

@@ -37,21 +37,21 @@ describe("create zod error", () => {
                 invalidFields: {
                     name: {
                         code: "invalid_type",
-                        message: "Required",
+                        message: "Invalid input: expected string, received undefined",
                         data: {
                             path: ["name"]
                         }
                     },
                     description: {
                         code: "too_small",
-                        message: "String must contain at least 1 character(s)",
+                        message: "Too small: expected string to have >=1 characters",
                         data: {
                             path: ["description"]
                         }
                     },
                     price: {
                         code: "too_big",
-                        message: "Number must be less than or equal to 100",
+                        message: "Too big: expected number to be <=100",
                         data: {
                             path: ["price"]
                         }

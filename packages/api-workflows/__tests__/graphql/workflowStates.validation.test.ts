@@ -248,7 +248,7 @@ describe("workflow states graphql validation", () => {
                                         data: {
                                             path: ["limit"]
                                         },
-                                        message: "Number must be less than or equal to 10000"
+                                        message: "Too big: expected number to be <=10000"
                                     },
                                     sort: {
                                         code: "too_big",

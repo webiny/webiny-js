@@ -30,7 +30,7 @@ class CreateApiKeyUseCaseImpl implements CreateApiKeyUseCaseAbstraction.Interfac
 
         const validation = createApiKeyInputSchema.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new ApiKeyValidationError(validation.error.errors[0].message));
+            return Result.fail(new ApiKeyValidationError(validation.error.issues[0].message));
         }
 
         const token = generateToken();
