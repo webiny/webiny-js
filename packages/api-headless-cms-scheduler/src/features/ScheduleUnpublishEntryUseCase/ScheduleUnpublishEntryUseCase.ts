@@ -2,12 +2,30 @@ import { ScheduleUnpublishEntryUseCase as UseCaseAbstraction } from "./abstracti
 import { ScheduleActionUseCase } from "@webiny/api-scheduler";
 import { createNamespace } from "~/utils/namespace.js";
 import { Result } from "@webiny/feature/exports/api.js";
+import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { EntryNotAuthorizedError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
 
 class ScheduleUnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
-    public constructor(private scheduleAction: ScheduleActionUseCase.Interface) {}
+    public constructor(
+        private scheduleAction: ScheduleActionUseCase.Interface,
+        private accessControl: AccessControl.Interface,
+        private getModelUseCase: GetModelUseCase.Interface
+    ) {}
 
     public async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Result {
-        const { model, scheduleFor, id } = params;
+        const { model: initialModel, scheduleFor, id } = params;
+
+        const modelResult = await this.getModelUseCase.execute(initialModel.modelId);
+        if (modelResult.isFail()) {
+            return Result.fail(modelResult.error as any);
+        }
+        const model = modelResult.value;
+
+        const canAccess = await this.accessControl.canAccessEntry({ model, pw: "u" });
+        if (!canAccess) {
+            return Result.fail(EntryNotAuthorizedError.fromModel(model) as any);
+        }
 
         const scheduleResult = await this.scheduleAction.execute({
             namespace: createNamespace(model),
@@ -26,5 +44,5 @@ class ScheduleUnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface 
 
 export const ScheduleUnpublishEntryUseCase = UseCaseAbstraction.createImplementation({
     implementation: ScheduleUnpublishEntryUseCaseImpl,
-    dependencies: [ScheduleActionUseCase]
+    dependencies: [ScheduleActionUseCase, AccessControl, GetModelUseCase]
 });
