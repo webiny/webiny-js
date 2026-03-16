@@ -1,4 +1,4 @@
-import { type IScheduledAction, ScheduledActionHandler } from "@webiny/api-scheduler";
+import { type IScheduledAction, ScheduledActionHandler } from "@webiny/api-scheduler/exports/api/schedule.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { GetPublishedEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetPublishedEntriesByIds";

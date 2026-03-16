@@ -1,5 +1,5 @@
 import { SchedulePublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { ScheduleActionUseCase } from "@webiny/api-scheduler";
+import { ScheduleActionUseCase } from "@webiny/api-scheduler/exports/api/schedule.js";
 import { createNamespace } from "~/utils/namespace.js";
 import { Result } from "@webiny/feature/exports/api.js";
 import { EntryNotAuthorizedError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
