@@ -12,9 +12,9 @@ import type { SchedulerEntry, SchedulerErrorResponse } from "~/types.js";
 
 export const createGetScheduledActionQuery = () => {
     return gql`
-        query GetScheduledActionQuery($namespace: String!, $id: ID!) {
+        query GetTargetScheduledActionQuery($namespace: String!, $id: ID!) {
             scheduler {
-                getScheduledAction(namespace: $namespace, id: $id) {
+                getTargetScheduledAction(namespace: $namespace, id: $id) {
                     data {
                         ${createSchedulerEntryFields()}
                     }
@@ -32,7 +32,7 @@ export const createGetScheduledActionQuery = () => {
 
 interface SchedulerGetGraphQLQueryResponse {
     scheduler: {
-        getScheduledAction: {
+        getTargetScheduledAction: {
             data: SchedulerEntry | null;
             error: SchedulerErrorResponse | null;
         };
@@ -63,7 +63,7 @@ export class SchedulerGetGraphQLGateway implements IGetScheduledActionGateway {
             fetchPolicy: "network-only"
         });
 
-        const result = response?.scheduler?.getScheduledAction;
+        const result = response?.scheduler?.getTargetScheduledAction;
         if (!result || errors?.length) {
             console.error({
                 errors
