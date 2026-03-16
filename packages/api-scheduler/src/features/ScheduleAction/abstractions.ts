@@ -23,7 +23,7 @@ export interface IScheduleActionErrors {
     schedulerService: SchedulerServiceError;
 }
 
-type ScheduleActionError = IScheduleActionErrors[keyof IScheduleActionErrors];
+export type ScheduleActionError = IScheduleActionErrors[keyof IScheduleActionErrors];
 
 export interface IScheduleActionParams {
     namespace: string;
