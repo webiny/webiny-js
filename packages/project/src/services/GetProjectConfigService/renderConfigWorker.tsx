@@ -5,6 +5,8 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { JSDOM } from "jsdom";
 import { serializeError } from "serialize-error";
+import { pathToFileURL } from "node:url";
+import path from "node:path";
 import type { RenderConfigParamsDto, RenderConfigWorkerMessageDto } from "./renderConfig.js";
 import { ProjectModel } from "~/models/ProjectModel.js";
 import { EnvProvider } from "./EnvContext.js";
@@ -52,7 +54,10 @@ process.on("unhandledRejection", reason => {
 const { project: projectModelDto } = JSON.parse(process.argv[2]) as RenderConfigParamsDto;
 const project = ProjectModel.fromDto(projectModelDto);
 
-const { Extensions } = await import(project.paths.webinyConfigBaseFile.toString());
+const webinyConfigPath = project.paths.webinyConfigBaseFile.toString();
+const { Extensions } = await import(
+    path.isAbsolute(webinyConfigPath) ? pathToFileURL(webinyConfigPath).href : webinyConfigPath
+);
 
 const onChange = debounce((value: any) => {
     sendSuccess(toObject(value));

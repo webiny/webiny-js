@@ -1,4 +1,5 @@
 import path from "path";
+import { pathToFileURL } from "node:url";
 import { Container } from "@webiny/di";
 import {
     argvParserService,
@@ -145,7 +146,10 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
 
             const exportName = path.basename(filePath).replace(path.extname(filePath), "");
 
-            const importedModule = await import(importPath);
+            const importSpecifier = path.isAbsolute(importPath)
+                ? pathToFileURL(importPath).href
+                : importPath;
+            const importedModule = await import(importSpecifier);
 
             // Support both default and named exports.
             // Check for 'default' property existence rather than truthiness.

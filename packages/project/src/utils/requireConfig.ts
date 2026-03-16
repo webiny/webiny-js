@@ -1,3 +1,10 @@
+import { pathToFileURL } from "node:url";
+import path from "node:path";
+
+const toImportSpecifier = (inputPath: string): string => {
+    return path.isAbsolute(inputPath) ? pathToFileURL(inputPath).href : inputPath;
+};
+
 export interface IRequireConfigOptions {
     env: string;
     variant: string | undefined;
@@ -22,7 +29,7 @@ export interface IRequireConfigParams {
 export const requireConfig = async <T extends IRequireConfigResult = IRequireConfigResult>(
     input: string
 ): Promise<T> => {
-    return await import(input).then(m => m.default ?? m);
+    return await import(toImportSpecifier(input)).then(m => m.default ?? m);
 };
 
 export const requireConfigWithExecute = async <
@@ -31,7 +38,7 @@ export const requireConfigWithExecute = async <
     configPath: string,
     params: IRequireConfigParams
 ): Promise<T> => {
-    const required = await import(configPath).then(m => m.default ?? m);
+    const required = await import(toImportSpecifier(configPath)).then(m => m.default ?? m);
 
     if (typeof required === "function") {
         return required(params);
