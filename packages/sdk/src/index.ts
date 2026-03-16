@@ -1,5 +1,6 @@
 export * from "./Webiny.js";
 export * from "./CmsSdk.js";
+export * from "./TenantManagerSdk.js";
 export * from "./types.js";
 export { Result } from "./Result.js";
 export { HttpError, GraphQLError, NetworkError } from "./errors.js";
@@ -30,3 +31,15 @@ export type { DeleteEntryRevisionParams } from "./methods/cms/deleteEntryRevisio
 export type { PublishEntryRevisionParams } from "./methods/cms/publishEntryRevision.js";
 
 export type { UnpublishEntryRevisionParams } from "./methods/cms/unpublishEntryRevision.js";
+
+// Export TenantManager types.
+export type { CreateTenantInput } from "./methods/tenantManager/tenantManagerTypes.js";
+
+// Export types from tenantManager methods.
+export type { CreateTenantParams } from "./methods/tenantManager/createTenant.js";
+
+export type { InstallTenantParams } from "./methods/tenantManager/installTenant.js";
+
+export type { DisableTenantParams } from "./methods/tenantManager/disableTenant.js";
+
+export type { EnableTenantParams } from "./methods/tenantManager/enableTenant.js";
