@@ -18,28 +18,28 @@ const serializePropsToJsx = (props: Record<string, any>): string => {
     const attributes: string[] = [];
 
     for (const [key, value] of Object.entries(props)) {
-        // Skip undefined values
+        // Skip undefined values.
         if (value === undefined) {
             continue;
         }
 
-        // Determine the serialization based on value type
+        // Determine the serialization based on value type.
         let serializedValue: string;
 
         if (typeof value === "string") {
-            // Strings: use JSON.stringify to handle escaping, then wrap in curly braces
+            // Strings: use JSON.stringify to handle escaping, then wrap in curly braces.
             serializedValue = `{${JSON.stringify(value)}}`;
         } else if (typeof value === "number" || typeof value === "boolean") {
-            // Numbers and booleans: wrap in curly braces without quotes
+            // Numbers and booleans: wrap in curly braces without quotes.
             serializedValue = `{${value}}`;
         } else if (value === null) {
-            // Null values
+            // Null values.
             serializedValue = `{null}`;
         } else if (Array.isArray(value) || typeof value === "object") {
-            // Arrays and objects: use JSON.stringify, then wrap in curly braces
+            // Arrays and objects: use JSON.stringify, then wrap in curly braces.
             serializedValue = `{${JSON.stringify(value)}}`;
         } else {
-            // Fallback for any other types
+            // Fallback for any other types.
             serializedValue = `{${JSON.stringify(value)}}`;
         }
 
@@ -47,6 +47,62 @@ const serializePropsToJsx = (props: Record<string, any>): string => {
     }
 
     return attributes.join(" ");
+};
+
+/**
+ * Adds a component to the Extensions function in the webiny.config.tsx content.
+ */
+const addComponentToExtensions = (
+    content: string,
+    componentName: string,
+    props?: Record<string, any>
+): string => {
+    // Serialize props to JSX attributes.
+    const propsString = props ? serializePropsToJsx(props) : "";
+
+    // Generate component tag with or without props.
+    const componentTag = propsString
+        ? `<${componentName} ${propsString} />`
+        : `<${componentName} />`;
+
+    // Check if component already exists.
+    if (content.includes(componentTag)) {
+        return content;
+    }
+
+    // Find the Extensions function's return statement and add component before the final </>.
+    // Strategy: Find "export const Extensions" block, then find the last </> and insert before it.
+    const extensionsFuncRegex = /export const Extensions = \(\) => \{[\s\S]*?\};/;
+    const extensionsFuncMatch = content.match(extensionsFuncRegex);
+
+    if (!extensionsFuncMatch) {
+        return content;
+    }
+
+    const funcContent = extensionsFuncMatch[0];
+    // Find all </> in the function - the last one closes the return statement.
+    const closingTags = [...funcContent.matchAll(/<\/>/g)];
+
+    if (closingTags.length === 0) {
+        return content;
+    }
+
+    const lastClosingTag = closingTags[closingTags.length - 1];
+    const lastClosingTagIndex = lastClosingTag.index!;
+
+    // Find the indentation of the line containing the last </>.
+    const beforeClosing = funcContent.substring(0, lastClosingTagIndex);
+    const lines = beforeClosing.split("\n");
+    const lastLine = lines[lines.length - 1];
+    const indent = lastLine.match(/^(\s*)/)?.[1] || "        ";
+
+    // Insert the component before the last </>.
+    const newFuncContent =
+        funcContent.substring(0, lastClosingTagIndex) +
+        `${indent}${componentTag}\n${indent}` +
+        funcContent.substring(lastClosingTagIndex);
+
+    return content.replace(extensionsFuncRegex, newFuncContent);
 };
 
 /**
@@ -108,59 +164,19 @@ export const updateWebinyConfig = async (params: UpdateWebinyConfigParams): Prom
         }
     }
 
-    // Helper function to add a component to the Extensions function.
-    const addComponentToExtensions = (componentName: string, props?: Record<string, any>) => {
-        // Serialize props to JSX attributes.
-        const propsString = props ? serializePropsToJsx(props) : "";
-
-        // Generate component tag with or without props.
-        const componentTag = propsString
-            ? `<${componentName} ${propsString} />`
-            : `<${componentName} />`;
-
-        // Check if component already exists.
-        if (!content.includes(componentTag)) {
-            // Find the Extensions function's return statement and add component before the final </>.
-            // Strategy: Find "export const Extensions" block, then find the last </> and insert before it.
-            const extensionsFuncRegex = /export const Extensions = \(\) => \{[\s\S]*?\};/;
-            const extensionsFuncMatch = content.match(extensionsFuncRegex);
-
-            if (extensionsFuncMatch) {
-                const funcContent = extensionsFuncMatch[0];
-                // Find all </> in the function - the last one closes the return statement.
-                const closingTags = [...funcContent.matchAll(/<\/>/g)];
-
-                if (closingTags.length > 0) {
-                    const lastClosingTag = closingTags[closingTags.length - 1];
-                    const lastClosingTagIndex = lastClosingTag.index!;
-
-                    // Find the indentation of the line containing the last </>.
-                    const beforeClosing = funcContent.substring(0, lastClosingTagIndex);
-                    const lines = beforeClosing.split("\n");
-                    const lastLine = lines[lines.length - 1];
-                    const indent = lastLine.match(/^(\s*)/)?.[1] || "        ";
-
-                    // Insert the component before the last </>.
-                    const newFuncContent =
-                        funcContent.substring(0, lastClosingTagIndex) +
-                        `${indent}${componentTag}\n${indent}` +
-                        funcContent.substring(lastClosingTagIndex);
-
-                    content = content.replace(extensionsFuncRegex, newFuncContent);
-                }
-            }
-        }
-    };
-
     // Add component to the Extensions function.
     if (webinyConfigTsx.component) {
-        addComponentToExtensions(webinyConfigTsx.component.name, webinyConfigTsx.component.props);
+        content = addComponentToExtensions(
+            content,
+            webinyConfigTsx.component.name,
+            webinyConfigTsx.component.props
+        );
     }
 
     // Add multiple components to the Extensions function.
     if (webinyConfigTsx.components && webinyConfigTsx.components.length > 0) {
         for (const component of webinyConfigTsx.components) {
-            addComponentToExtensions(component.name, component.props);
+            content = addComponentToExtensions(content, component.name, component.props);
         }
     }
 
