@@ -10,6 +10,10 @@ export const MOCK_TARGET_MODEL_ID = "targetModel";
 
 export const createMockTargetModel = (): CmsModel => {
     return {
+        icon: {
+            name: "fa/fas",
+            type: "font-awesome"
+        },
         modelId: MOCK_TARGET_MODEL_ID,
         name: "Target Model",
         description: "This is a mock target model for testing purposes.",
@@ -19,10 +23,12 @@ export const createMockTargetModel = (): CmsModel => {
                 fieldId: "title",
                 storageId: "text@title",
                 type: "text",
-                label: "Title"
+                label: "Title",
+                validation: [],
+                listValidation: []
             }
         ],
-        group,
+        group: group.id,
         singularApiName: "targetModel",
         pluralApiName: "targetModels",
         layout: [["title"]],
@@ -39,7 +45,10 @@ export const createMockTargetModelPlugins = () => {
             ...group,
             slug: "default",
             description: null,
-            icon: "fa/fas"
+            icon: {
+                name: "fa/fas",
+                type: "font-awesome"
+            }
         }),
         createModelPlugin({
             ...createMockTargetModel(),

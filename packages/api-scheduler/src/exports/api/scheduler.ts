@@ -9,6 +9,6 @@ export {
     ScheduledActionModel,
     ScheduledActionHandler,
     ScheduledActionType,
-    IScheduledAction,
-    IScheduledActionEntry
+    type IScheduledAction,
+    type IScheduledActionEntry
 } from "~/shared/abstractions.js";

@@ -2,17 +2,20 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "./__mocks/context/useHandler.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
-import {
-    createHeadlessCmsScheduler,
-    SchedulePublishEntryUseCase,
-    ScheduleUnpublishEntryUseCase
-} from "~/index.js";
+import { createHeadlessCmsScheduler } from "~/index.js";
 import { createMockTargetModelPlugins, MOCK_TARGET_MODEL_ID } from "./__mocks/targetModel.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
-import { ExecuteScheduledActionUseCase, ListScheduledActionsUseCase } from "@webiny/api-scheduler";
+import {
+    ExecuteScheduledActionUseCase,
+    ListScheduledActionsUseCase
+} from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { CMS_NAMESPACE } from "~/utils/namespace.js";
+import {
+    SchedulePublishEntryUseCase,
+    ScheduleUnpublishEntryUseCase
+} from "~/exports/api/cms/scheduler.js";
 
 describe("Action Handlers", () => {
     let context: CmsContext;

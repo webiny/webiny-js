@@ -14,14 +14,6 @@
   "author": "Webiny Ltd",
   "description": "A generic action scheduler.",
   "license": "MIT",
-  "exports": {
-    "./features/ScheduleAction": "./features/ScheduleAction/index.js",
-    "./features/GetScheduledAction": "./features/GetScheduledAction/index.js",
-    "./features/ListScheduledActions": "./features/ListScheduledActions/index.js",
-    "./features/CancelScheduledAction": "./features/CancelScheduledAction/index.js",
-    "./features/ExecuteScheduledAction": "./features/ExecuteScheduledAction/index.js",
-    ".": "./index.js"
-  },
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
