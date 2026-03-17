@@ -45,6 +45,7 @@ describe("Component Manifest", () => {
 
         const snapshot = {
             name: "Button",
+            tags: [],
             inputs: [
                 {
                     type: "text",
@@ -80,6 +81,7 @@ describe("Component Manifest", () => {
         expect(manifest).toEqual({
             name: "Button",
             acceptsChildren: true,
+            tags: [],
             inputs: [
                 {
                     type: "slot",
@@ -125,6 +127,7 @@ describe("Component Manifest", () => {
         const snapshot = {
             name: "Button",
             acceptsChildren: true,
+            tags: [],
             inputs: [
                 {
                     type: "text",

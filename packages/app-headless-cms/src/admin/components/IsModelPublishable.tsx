@@ -1,14 +1,12 @@
-import React, { useMemo } from "react";
-import { useModel } from "~/exports/admin/cms.js";
+import React from "react";
+import { useIsModelPublishable } from "~/admin/hooks/useIsModelPublishable.js";
 
 export interface IsPublishableProps {
     children: React.ReactNode;
 }
 
 export const IsModelPublishable = (props: IsPublishableProps) => {
-    const { model } = useModel();
-
-    const isPublishable = useMemo(() => !model.tags.includes("$publishing:false"), [model]);
+    const isPublishable = useIsModelPublishable();
 
     return isPublishable ? <>{props.children}</> : null;
 };

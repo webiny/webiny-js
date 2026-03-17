@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { Grid } from "@webiny/admin-ui";
+import { makeDecoratable } from "@webiny/app-admin";
 import type { DocumentElement } from "@webiny/website-builder-sdk";
 import { useComponent } from "~/BaseEditor/hooks/useComponent.js";
 import { InputRenderer } from "./InputRenderer.js";
@@ -11,7 +12,7 @@ interface ElementInputsProps {
     element: DocumentElement;
 }
 
-export const ElementInputs = ({ element }: ElementInputsProps) => {
+export const ElementInputs = makeDecoratable("ElementInputs", ({ element }: ElementInputsProps) => {
     const component = useComponent(element.component.name);
 
     const bindings = useSelectFromDocument(
@@ -51,7 +52,7 @@ export const ElementInputs = ({ element }: ElementInputsProps) => {
             <InputRenderer key={element.id} ast={inputsAst} bindings={bindings.inputs} />
         </Grid>
     );
-};
+});
 
 // interface ElementInputProps {
 //     element: DocumentElement;

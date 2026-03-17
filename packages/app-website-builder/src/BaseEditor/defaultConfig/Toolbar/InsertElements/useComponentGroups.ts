@@ -5,7 +5,7 @@ import type {
     SerializedComponentGroup
 } from "@webiny/website-builder-sdk";
 import { functionConverter } from "@webiny/website-builder-sdk";
-import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
+import { useDocumentEditor } from "~/DocumentEditor/index.js";
 
 type WithItems<T> = T & { items: ComponentManifest[] };
 
@@ -24,9 +24,10 @@ const getComponentFilter = (
 };
 
 export const useComponentGroups = () => {
-    const document = useSelectFromDocument(document => document);
+    const editor = useDocumentEditor();
 
     return useSelectFromEditor<WithItems<SerializedComponentGroup>[]>(state => {
+        const document = editor.getDocumentState().read();
         const groups = Object.values(state.componentGroups);
         const components = Object.values(state.components).filter(item => !item.hideFromToolbar);
 

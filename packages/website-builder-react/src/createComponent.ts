@@ -1,6 +1,7 @@
 import type {
     Component,
     ComponentInput,
+    ComponentManifest,
     ComponentManifestInput,
     InputFactory
 } from "@webiny/website-builder-sdk";
@@ -33,5 +34,8 @@ export function createComponent<
         }
     }
 
-    return { component, manifest: { ...manifest, inputs } };
+    return {
+        component,
+        manifest: { ...manifest, tags: manifest.tags ?? [], inputs } as ComponentManifest
+    };
 }

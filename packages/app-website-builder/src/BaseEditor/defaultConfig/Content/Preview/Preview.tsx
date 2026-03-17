@@ -3,7 +3,6 @@ import type { Messenger } from "@webiny/website-builder-sdk";
 import { ViewportManager } from "@webiny/website-builder-sdk";
 import { mouseTracker } from "@webiny/website-builder-sdk";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
-import { AddressBar } from "./AddressBar.js";
 import { Iframe } from "./Iframe.js";
 import { DropZoneManager } from "./DropZoneManager.js";
 import { DropZoneManagerProvider } from "./DropZoneManagerProvider.js";
@@ -88,9 +87,8 @@ export const Preview = () => {
 
     return (
         <>
+            <ApplyTheme />
             <DropZoneManagerProvider dropzoneManager={dropzoneManager}>
-                <ApplyTheme />
-                <AddressBar />
                 <AwaitIframeUrl>
                     {({ url }) => (
                         <Iframe

@@ -5,13 +5,16 @@ import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import type { ValueBinding, CreateElementParams } from "@webiny/website-builder-sdk";
 import { Commands } from "~/BaseEditor/index.js";
 import type { InputAstNode } from "@webiny/website-builder-sdk";
-import { functionConverter } from "@webiny/website-builder-sdk";
+import {
+    functionConverter,
+    InputsBindingsProcessor,
+    StylesBindingsProcessor,
+    createElement
+} from "@webiny/website-builder-sdk";
+import { executeOnChange, applyAncestorUpdates } from "~/editorSdk/utils/executeOnChange.js";
 import { useBreakpoint } from "~/BaseEditor/hooks/useBreakpoint.js";
 import { useBindingsForElement } from "./useBindingsForElement.js";
 import { useElementInputsAst } from "~/BaseEditor/hooks/useElementInputsAst.js";
-import { InputsBindingsProcessor } from "@webiny/website-builder-sdk";
-import { StylesBindingsProcessor } from "@webiny/website-builder-sdk";
-import { createElement } from "@webiny/website-builder-sdk";
 import {
     BreakpointElementMetadata,
     ElementMetadata,
@@ -153,6 +156,18 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
                 });
             }
 
+            // Run manifest.onChange + onDescendantChange on ancestors
+            const ancestorUpdates = executeOnChange({
+                editor,
+                elementId,
+                deepInputs: devFriendlyInputs,
+                action: "update",
+                breakpointNames,
+                baseBreakpoint: breakpoint.name,
+                elementFactory,
+                deepStyles: devFriendlyStyles
+            });
+
             editor.updateDocument(document => {
                 const inputs = inputsProcessor.createUpdate(devFriendlyInputs, breakpoint.name);
                 const styles = stylesProcessor.createUpdate(devFriendlyStyles, breakpoint.name);
@@ -161,6 +176,14 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
                 styles.applyToDocument(document);
 
                 inputMetadata.applyToDocument(document);
+
+                applyAncestorUpdates(
+                    document,
+                    ancestorUpdates,
+                    breakpointNames,
+                    breakpoint.name,
+                    elementFactory
+                );
             });
 
             // Clear local value

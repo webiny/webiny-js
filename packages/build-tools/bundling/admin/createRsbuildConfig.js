@@ -38,6 +38,13 @@ export const createRsbuildConfig = ({ cwd }) => {
                         base: getTailwindBasePath(paths.projectRootFolder)
                     })
                 );
+            },
+            rspack: {
+                watchOptions: {
+                    // Wait for dependency builds to finish before triggering a recompilation.
+                    aggregateTimeout: 500,
+                    ignored: ["**/node_modules/**", "**/.git/**"]
+                }
             }
         },
         server: { port: 3001 },

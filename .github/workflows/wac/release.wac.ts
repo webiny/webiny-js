@@ -141,7 +141,7 @@ export const release = createWorkflow({
                         {
                             name: 'Version and publish "latest" tag to NPM',
                             "working-directory": BRANCH_NAME,
-                            run: `yarn release --type=latest --sourceTag=${DIST_TAG}`
+                            run: `yarn release --type=latest --sourceTag=${DIST_TAG} --createGithubRelease=true`
                         }
                     ],
                     { "working-directory": BRANCH_NAME }
