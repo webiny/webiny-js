@@ -1,7 +1,8 @@
 import { isBrowser } from "../../../utils/platform.js";
 
 export function isBuffer(file: any): file is Buffer {
-    return Buffer.isBuffer(file);
+    // Check if Buffer exists (Node.js) before using it.
+    return typeof Buffer !== "undefined" && Buffer.isBuffer(file);
 }
 
 export function isBlob(file: any): file is Blob {
