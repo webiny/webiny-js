@@ -61,7 +61,10 @@ export const StepsNavigator = () => {
     };
 
     return (
-        <div className={"flex flex-row p-sm bg-neutral-light justify-between"}>
+        <div
+            className={"flex flex-row p-sm bg-neutral-light justify-between"}
+            data-affects-preview={"height"}
+        >
             <div className={"flex gap-md"}>
                 {(funnel.inputs.steps ?? []).map((step, index) => {
                     const isFirstStep = index === 0;

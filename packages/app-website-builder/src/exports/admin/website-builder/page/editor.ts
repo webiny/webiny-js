@@ -5,7 +5,9 @@ export { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.
 export { useDocumentEditor } from "~/DocumentEditor/index.js";
 export { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
 export { useComponent } from "~/BaseEditor/hooks/useComponent.js";
+export { useElementInputValues } from "~/BaseEditor/hooks/useElementInputValues.js";
 export { PageEditorConfig } from "~/index.js";
+export { ElementInputs } from "~/BaseEditor/defaultConfig/Sidebar/ElementSettings/ElementInputs.js";
 
 export { $selectElement } from "~/editorSdk/utils/index.js";
 export { $deselectElement } from "~/editorSdk/utils/index.js";

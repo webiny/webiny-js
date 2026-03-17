@@ -1,10 +1,10 @@
 import React from "react";
 import { PageEditorConfig } from "webiny/admin/website-builder/page/editor";
-import { StepsNavigator } from "./StepsNavigator.js";
+import { StepsNavigator as Component } from "./StepsNavigator.js";
 
 const { Ui } = PageEditorConfig;
 
-export default () => {
+export const StepsNavigator = () => {
     return (
         <PageEditorConfig>
             <Ui.Content.Element
@@ -12,7 +12,7 @@ export default () => {
                 before={"iframe"}
                 element={
                     <Ui.IsNotReadOnly>
-                        <StepsNavigator />
+                        <Component />
                     </Ui.IsNotReadOnly>
                 }
             />

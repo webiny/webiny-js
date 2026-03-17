@@ -5,7 +5,7 @@ import {
     type InputAstNode
 } from "@webiny/website-builder-sdk";
 
-interface ResolvedElementInputs {
+export interface ResolvedElementInputs {
     [key: string]: any;
 }
 
