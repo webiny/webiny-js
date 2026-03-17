@@ -17,6 +17,17 @@ npx create-webiny-project@local-npm my-test-project
           --template-options '{"region":"eu-central-1","vpc":false}'
 ```
 
+##### Windows - PowerShell
+
+In Windows PowerShell, you need to escape the double quotes in the JSON strings, and also add `--%` after `npx` command,
+which will disable PowerShell's argument parsing, and will pass the arguments as they are to the `create-webiny-project` package.
+````shell
+npx --% create-webiny-project@6.1.0-local-npm.1 testing-windows
+            --tag=6.1.0-local-npm.1
+            --assign-to-yarnrc="{\"npmRegistryServer\":\"http://localhost:4873\",\"unsafeHttpWhitelist\":[\"localhost\"]}"
+            --template-options="{\"region\":\"eu-central-1\",\"vpc\":false}"
+````
+
 This usage is more ideal for CI/CD environments, where interactivity is not available.
 
 But do note that this is probably more useful to us, Webiny developers, than for actual Webiny projects. This is simply

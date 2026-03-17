@@ -1,5 +1,9 @@
 import { EntryAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/events";
-import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webiny/api-scheduler";
+import {
+    CancelScheduledActionUseCase,
+    ListScheduledActionsUseCase
+} from "@webiny/api-scheduler/exports/api/scheduler.js";
+import { createNamespace } from "~/utils/namespace.js";
 
 /**
  * Cancels scheduled actions when an entry revision is deleted
@@ -11,7 +15,7 @@ import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webi
 class CancelScheduledActionOnDeleteHandlerImpl implements EntryAfterDeleteEventHandler.Interface {
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
-        private cancelScheduledEntryAction: CancelScheduledActionUseCase.Interface
+        private cancelScheduledAction: CancelScheduledActionUseCase.Interface
     ) {}
 
     async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
@@ -24,7 +28,7 @@ class CancelScheduledActionOnDeleteHandlerImpl implements EntryAfterDeleteEventH
 
         const actionsResult = await this.listScheduledActions.execute({
             where: {
-                namespace: `Cms/Entry/${model.modelId}`,
+                namespace: createNamespace(model),
                 targetId: entry.id
             }
         });
@@ -32,7 +36,7 @@ class CancelScheduledActionOnDeleteHandlerImpl implements EntryAfterDeleteEventH
         const actions = actionsResult.value.items;
 
         for (const action of actions) {
-            const cancelRes = await this.cancelScheduledEntryAction.execute(action.id);
+            const cancelRes = await this.cancelScheduledAction.execute(action);
             if (cancelRes.isFail()) {
                 // Silently ignore errors - this is non-critical cleanup.
                 // Entry was deleted successfully, cancelling scheduled actions is best-effort.

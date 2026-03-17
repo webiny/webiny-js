@@ -1,4 +1,8 @@
-import { IScheduledAction, ScheduledActionHandler } from "~/shared/abstractions.js";
+import {
+    IScheduledAction,
+    ScheduledActionHandler,
+    type ScheduledActionType
+} from "~/shared/abstractions.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 /**
@@ -11,7 +15,7 @@ import type { GenericRecord } from "@webiny/api/types.js";
 class ScheduledActionHandlerCompositeImpl implements ScheduledActionHandler.Interface {
     public constructor(private handlers: ScheduledActionHandler.Interface[]) {}
 
-    public canHandle(namespace: string, actionType: string): boolean {
+    public canHandle(namespace: string, actionType: ScheduledActionType): boolean {
         return this.handlers.some(handler => handler.canHandle(namespace, actionType));
     }
 

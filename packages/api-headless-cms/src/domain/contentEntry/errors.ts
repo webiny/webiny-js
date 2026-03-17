@@ -51,11 +51,11 @@ export class EntryNotAuthorizedError extends BaseError {
         });
     }
 
-    static fromModel(model: CmsModel): EntryNotAuthorizedError {
+    static fromModel(model: Pick<CmsModel, "modelId">): EntryNotAuthorizedError {
         return new EntryNotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
     }
 
-    static fromEntry(entry: CmsEntry): EntryNotAuthorizedError {
+    static fromEntry(entry: Pick<CmsEntry, "entryId">): EntryNotAuthorizedError {
         return new EntryNotAuthorizedError(`Not allowed to access entry "${entry.entryId}".`);
     }
 }

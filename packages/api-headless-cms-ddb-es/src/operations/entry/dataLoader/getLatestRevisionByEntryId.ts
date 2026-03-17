@@ -5,7 +5,7 @@ import { createLatestSortKey, createPartitionKey } from "~/operations/entry/keys
 import type { IDataLoaderParams } from "./types.js";
 
 export const createGetLatestRevisionByEntryId = (params: IDataLoaderParams) => {
-    const { entity, tenant } = params;
+    const { entity, tenant, modelId } = params;
 
     const latestKey = createLatestSortKey();
 
@@ -36,6 +36,9 @@ export const createGetLatestRevisionByEntryId = (params: IDataLoaderParams) => {
 
             return ids.map(entryId => {
                 return items.filter(item => {
+                    if (item.modelId !== modelId) {
+                        return false;
+                    }
                     return entryId === item.entryId;
                 });
             });

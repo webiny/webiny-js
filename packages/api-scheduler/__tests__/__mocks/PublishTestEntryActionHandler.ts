@@ -3,7 +3,7 @@ import { ScheduledActionHandler } from "~/shared/abstractions.js";
 /**
  * Handler for publishing CMS entries
  *
- * Handles the "Publish" action for CMS entries with namespace pattern: Cms/Entry/{modelId}
+ * Handles the "publish" action for CMS entries with namespace pattern: Cms/Entry/{modelId}
  *
  * Publishing logic:
  * 1. If entry is not published -> publish it
@@ -16,7 +16,7 @@ export class PublishTestEntryActionHandlerImpl implements ScheduledActionHandler
     public canHandle(namespace: string, actionType: string): boolean {
         if (namespace !== PublishTestEntryActionHandlerImpl.name) {
             return false;
-        } else if (actionType !== "Publish") {
+        } else if (actionType !== "publish") {
             return false;
         }
         return true;

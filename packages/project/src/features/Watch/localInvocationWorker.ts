@@ -1,9 +1,15 @@
 import { parentPort, workerData } from "worker_threads";
+import { pathToFileURL } from "node:url";
+import path from "node:path";
 
 const { handler: handlerParams } = workerData;
 
 try {
-    const { handler } = await import(handlerParams.path);
+    const handlerPath = handlerParams.path;
+    const importSpecifier = path.isAbsolute(handlerPath)
+        ? pathToFileURL(handlerPath).href
+        : handlerPath;
+    const { handler } = await import(importSpecifier);
 
     const result = await handler(...handlerParams.args);
     parentPort!.postMessage(JSON.stringify({ success: true, result, error: null }));

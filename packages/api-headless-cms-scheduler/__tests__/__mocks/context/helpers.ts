@@ -23,29 +23,7 @@ export const createPermissions = (permissions?: PermissionsArg[]): PermissionsAr
     }
     return [
         {
-            name: "cms.settings"
-        },
-        {
-            name: "cms.contentModel",
-            rwd: "rwd"
-        },
-        {
-            name: "cms.contentModelGroup",
-            rwd: "rwd"
-        },
-        {
-            name: "cms.contentEntry",
-            rwd: "rwd",
-            pw: "rcpu"
-        },
-        {
-            name: "cms.endpoint.read"
-        },
-        {
-            name: "cms.endpoint.manage"
-        },
-        {
-            name: "cms.endpoint.preview"
+            name: "*"
         }
     ];
 };

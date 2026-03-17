@@ -158,10 +158,8 @@ export type ConstraintContext = {
 export type ComponentConstraint = (ctx: ConstraintContext) => void;
 
 // Flow-control symbols
-declare const STOP: unique symbol;
-declare const CONTINUE: unique symbol;
-export type Stop = typeof STOP;
-export type Continue = typeof CONTINUE;
+export type Stop = symbol;
+export type Continue = symbol;
 export type HandlerResult = void | Stop | Continue;
 
 export type OnChangeAction = "create" | "update" | "delete";

@@ -1,11 +1,6 @@
-import type { PluginCollection } from "@webiny/plugins/types.js";
 import { createHeadlessCmsScheduleContext } from "~/context.js";
-import { createSchedulerGraphQL } from "~/graphql/index.js";
+import { ContextPlugin } from "@webiny/api";
 
-/**
- * This will register both API and Handler plugins for the Headless CMS Scheduler.
- * API plugin will provide the GraphQL API and code for managing the scheduled CMS actions.
- */
-export const createHeadlessCmsScheduler = (): PluginCollection => {
-    return [createHeadlessCmsScheduleContext(), createSchedulerGraphQL()];
+export const createHeadlessCmsScheduler = (): ContextPlugin[] => {
+    return [createHeadlessCmsScheduleContext()];
 };

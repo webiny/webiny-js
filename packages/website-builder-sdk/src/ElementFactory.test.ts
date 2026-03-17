@@ -187,7 +187,6 @@ describe("ElementFactory", () => {
         expect(ops[9].binding.list).toBe(true);
 
         // 10: AddElement — Step 2
-        const step2Id = ops[10].element.id;
         expect(ops[10].element.component.name).toBe("FunnelBuilder/Step");
 
         // 11: AddToParent — Step 2 (undefined = append)

@@ -5,7 +5,7 @@ import type { IDataLoaderParams } from "./types.js";
 import { createBatchScheduleFn } from "./createBatchScheduleFn.js";
 
 export const createGetAllEntryRevisions = (params: IDataLoaderParams) => {
-    const { entity, tenant } = params;
+    const { entity, tenant, modelId } = params;
     return new DataLoader<string, CmsStorageEntry[]>(
         async ids => {
             const results: Record<string, CmsStorageEntry[]> = {};
@@ -27,7 +27,9 @@ export const createGetAllEntryRevisions = (params: IDataLoaderParams) => {
             }
 
             return ids.map(entryId => {
-                return results[entryId] || [];
+                return (results[entryId] || []).filter(item => {
+                    return item.modelId === modelId;
+                });
             });
         },
         {
