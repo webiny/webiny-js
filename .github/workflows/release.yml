@@ -171,5 +171,7 @@ jobs:
         working-directory: ${{ github.event.inputs.branch }}
       - name: Version and publish "latest" tag to NPM
         working-directory: ${{ github.event.inputs.branch }}
-        run: yarn release --type=latest --sourceTag=${{ github.event.inputs.tag }}
+        run: >-
+          yarn release --type=latest --sourceTag=${{ github.event.inputs.tag }}
+          --createGithubRelease=true
     runs-on: ubuntu-latest
