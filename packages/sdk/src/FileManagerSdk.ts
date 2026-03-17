@@ -48,7 +48,7 @@ export class FileManagerSdk {
     }
 
     async listFiles(
-        params?: ListFilesParams
+        params: ListFilesParams
     ): Promise<Result<ListFilesResult, HttpError | GraphQLError | NetworkError>> {
         return listFilesFn(this.config, this.fetchFn, params);
     }

@@ -3,6 +3,7 @@ import { Result } from "../../Result.js";
 import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { FmFile, FmIdentity, FmLocationInput, UploadProgress } from "./fileManagerTypes.js";
 import { getFileSize } from "./utils/fileTypeDetection.js";
+import { buildFieldsSelection } from "./buildFieldsSelection.js";
 
 export interface CreateFileData {
     id?: string;
@@ -25,6 +26,7 @@ export interface CreateFileData {
 export interface CreateFileParams {
     file?: Buffer | Blob | File;
     data: CreateFileData;
+    fields: string[];
     onProgress?: (progress: UploadProgress) => void;
     multiPartThreshold?: number;
     signal?: AbortSignal;
@@ -50,11 +52,11 @@ export async function createFile(
     fetchFn: typeof fetch,
     params: CreateFileParams
 ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
-    const { file, data, onProgress, multiPartThreshold = 100, signal } = params;
+    const { file, data, fields, onProgress, multiPartThreshold = 100, signal } = params;
 
     // If no file provided, just create metadata record (existing behavior).
     if (!file) {
-        return createFileRecord(config, fetchFn, data);
+        return createFileRecord(config, fetchFn, data, fields);
     }
 
     // File upload flow.
@@ -70,10 +72,18 @@ export async function createFile(
         // Decide upload strategy based on file size.
         if (fileSize < thresholdBytes) {
             // Simple upload.
-            return await uploadSmallFile(config, fetchFn, file, data, onProgress, signal);
+            return await uploadSmallFile(config, fetchFn, file, data, fields, onProgress, signal);
         } else {
             // Multi-part upload.
-            return await uploadLargeFileWrapper(config, fetchFn, file, data, onProgress, signal);
+            return await uploadLargeFileWrapper(
+                config,
+                fetchFn,
+                file,
+                data,
+                fields,
+                onProgress,
+                signal
+            );
         }
     } catch (error) {
         return Result.fail(error as any);
@@ -88,6 +98,7 @@ async function uploadSmallFile(
     fetchFn: typeof fetch,
     file: Buffer | Blob | File,
     data: CreateFileData,
+    fields: string[],
     onProgress?: (progress: UploadProgress) => void,
     signal?: AbortSignal
 ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
@@ -117,7 +128,7 @@ async function uploadSmallFile(
         size: presignedResult.value.file.size
     };
 
-    return createFileRecord(config, fetchFn, fileMetadata);
+    return createFileRecord(config, fetchFn, fileMetadata, fields);
 }
 
 /**
@@ -128,6 +139,7 @@ async function uploadLargeFileWrapper(
     fetchFn: typeof fetch,
     file: Buffer | Blob | File,
     data: CreateFileData,
+    fields: string[],
     onProgress?: (progress: UploadProgress) => void,
     signal?: AbortSignal
 ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
@@ -155,7 +167,7 @@ async function uploadLargeFileWrapper(
             size: uploadedFile.size
         };
 
-        return createFileRecord(config, fetchFn, fileMetadata);
+        return createFileRecord(config, fetchFn, fileMetadata, fields);
     } catch (error) {
         return Result.fail(error as any);
     }
@@ -167,43 +179,19 @@ async function uploadLargeFileWrapper(
 async function createFileRecord(
     config: WebinyConfig,
     fetchFn: typeof fetch,
-    data: CreateFileData
+    data: CreateFileData,
+    fields: string[]
 ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
     const { executeGraphQL } = await import("../executeGraphQL.js");
+
+    const fieldsSelection = buildFieldsSelection(fields);
 
     const query = `
         mutation CreateFile($data: FmFileCreateInput!) {
             fileManager {
                 createFile(data: $data) {
                     data {
-                        id
-                        createdOn
-                        modifiedOn
-                        savedOn
-                        createdBy {
-                            id
-                            displayName
-                            type
-                        }
-                        modifiedBy {
-                            id
-                            displayName
-                            type
-                        }
-                        savedBy {
-                            id
-                            displayName
-                            type
-                        }
-                        location {
-                            folderId
-                        }
-                        src
-                        name
-                        key
-                        type
-                        size
-                        tags
+${fieldsSelection}
                     }
                     error {
                         message

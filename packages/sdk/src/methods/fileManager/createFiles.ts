@@ -8,6 +8,7 @@ export interface CreateFilesParams {
     files: Array<{
         file?: Buffer | Blob | File;
         data: CreateFileData;
+        fields: string[];
         onProgress?: (progress: UploadProgress) => void;
     }>;
     multiPartThreshold?: number;
@@ -73,6 +74,7 @@ export async function createFiles(
                     const result = await createFile(config, fetchFn, {
                         file: fileItem.file,
                         data: fileItem.data,
+                        fields: fileItem.fields,
                         onProgress: fileItem.onProgress,
                         multiPartThreshold,
                         signal

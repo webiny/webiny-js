@@ -2,6 +2,7 @@ import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
 import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { FmFile, FmIdentity, FmLocationInput } from "./fileManagerTypes.js";
+import { buildFieldsSelection } from "./buildFieldsSelection.js";
 
 export interface UpdateFileData {
     createdOn?: Date | string;
@@ -22,6 +23,7 @@ export interface UpdateFileData {
 export interface UpdateFileParams {
     id: string;
     data: UpdateFileData;
+    fields: string[];
 }
 
 /**
@@ -39,43 +41,18 @@ export async function updateFile(
     fetchFn: typeof fetch,
     params: UpdateFileParams
 ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
-    const { id, data } = params;
+    const { id, data, fields } = params;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
+
+    const fieldsSelection = buildFieldsSelection(fields);
 
     const query = `
         mutation UpdateFile($id: ID!, $data: FmFileUpdateInput!) {
             fileManager {
                 updateFile(id: $id, data: $data) {
                     data {
-                        id
-                        createdOn
-                        modifiedOn
-                        savedOn
-                        createdBy {
-                            id
-                            displayName
-                            type
-                        }
-                        modifiedBy {
-                            id
-                            displayName
-                            type
-                        }
-                        savedBy {
-                            id
-                            displayName
-                            type
-                        }
-                        location {
-                            folderId
-                        }
-                        src
-                        name
-                        key
-                        type
-                        size
-                        tags
+${fieldsSelection}
                     }
                     error {
                         message

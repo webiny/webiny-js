@@ -8,6 +8,22 @@ export interface FmLocation {
     folderId: string;
 }
 
+export interface FmFile_Metadata {
+    image?: {
+        width?: number;
+        height?: number;
+        format?: string;
+        orientation?: number;
+    };
+    exif?: Record<string, any>;
+    iptc?: Record<string, any>;
+    [key: string]: any;
+}
+
+export type FmFile_AccessControl = {
+    type: "public" | "private-authenticated";
+};
+
 export interface FmFile {
     id: string;
     createdOn: Date | string;
@@ -22,7 +38,9 @@ export interface FmFile {
     key?: string;
     type?: string;
     size?: number;
+    metadata?: FmFile_Metadata;
     tags?: string[];
+    accessControl?: FmFile_AccessControl;
     [key: string]: any;
 }
 

@@ -7,6 +7,7 @@ import type {
     FmFileListSorter,
     FmListMeta
 } from "./fileManagerTypes.js";
+import { buildFieldsSelection } from "./buildFieldsSelection.js";
 
 export interface ListFilesParams {
     search?: string;
@@ -14,6 +15,7 @@ export interface ListFilesParams {
     limit?: number;
     after?: string;
     sort?: FmFileListSorter[];
+    fields: string[];
 }
 
 export interface ListFilesResult {
@@ -37,45 +39,20 @@ export interface ListFilesResult {
 export async function listFiles(
     config: WebinyConfig,
     fetchFn: typeof fetch,
-    params: ListFilesParams = {}
+    params: ListFilesParams
 ): Promise<Result<ListFilesResult, HttpError | GraphQLError | NetworkError>> {
-    const { search, where, limit, after, sort } = params;
+    const { search, where, limit, after, sort, fields } = params;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
+
+    const fieldsSelection = buildFieldsSelection(fields);
 
     const query = `
         query ListFiles($search: String, $where: FmFileListWhereInput, $limit: Int, $after: String, $sort: [FmFileListSorter!]) {
             fileManager {
                 listFiles(search: $search, where: $where, limit: $limit, after: $after, sort: $sort) {
                     data {
-                        id
-                        createdOn
-                        modifiedOn
-                        savedOn
-                        createdBy {
-                            id
-                            displayName
-                            type
-                        }
-                        modifiedBy {
-                            id
-                            displayName
-                            type
-                        }
-                        savedBy {
-                            id
-                            displayName
-                            type
-                        }
-                        location {
-                            folderId
-                        }
-                        src
-                        name
-                        key
-                        type
-                        size
-                        tags
+${fieldsSelection}
                     }
                     meta {
                         cursor

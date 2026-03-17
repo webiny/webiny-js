@@ -2,9 +2,11 @@ import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
 import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { FmFile } from "./fileManagerTypes.js";
+import { buildFieldsSelection } from "./buildFieldsSelection.js";
 
 export interface GetFileParams {
     id: string;
+    fields: string[];
 }
 
 /**
@@ -21,43 +23,18 @@ export async function getFile(
     fetchFn: typeof fetch,
     params: GetFileParams
 ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
-    const { id } = params;
+    const { id, fields } = params;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
+
+    const fieldsSelection = buildFieldsSelection(fields);
 
     const query = `
         query GetFile($id: ID!) {
             fileManager {
                 getFile(id: $id) {
                     data {
-                        id
-                        createdOn
-                        modifiedOn
-                        savedOn
-                        createdBy {
-                            id
-                            displayName
-                            type
-                        }
-                        modifiedBy {
-                            id
-                            displayName
-                            type
-                        }
-                        savedBy {
-                            id
-                            displayName
-                            type
-                        }
-                        location {
-                            folderId
-                        }
-                        src
-                        name
-                        key
-                        type
-                        size
-                        tags
+${fieldsSelection}
                     }
                     error {
                         message

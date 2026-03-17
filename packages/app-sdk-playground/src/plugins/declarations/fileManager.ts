@@ -10,6 +10,22 @@ interface SdkFmLocation {
     folderId: string;
 }
 
+interface SdkFmFile_Metadata {
+    image?: {
+        width?: number;
+        height?: number;
+        format?: string;
+        orientation?: number;
+    };
+    exif?: Record<string, any>;
+    iptc?: Record<string, any>;
+    [key: string]: any;
+}
+
+type SdkFmFile_AccessControl = {
+    type: "public" | "private-authenticated";
+};
+
 interface SdkFmFile {
     id: string;
     createdOn: string;
@@ -24,7 +40,9 @@ interface SdkFmFile {
     key?: string;
     type?: string;
     size?: number;
+    metadata?: SdkFmFile_Metadata;
     tags?: string[];
+    accessControl?: SdkFmFile_AccessControl;
     [key: string]: any;
 }
 
@@ -44,6 +62,8 @@ type SdkBatchUploadStrategy = "fail-fast" | "continue";
 interface SdkGetFileParams {
     /** ID of the file to get. */
     id: string;
+    /** Fields to select (dot notation supported, e.g., "location.folderId", "createdBy.displayName"). */
+    fields: string[];
 }
 
 interface SdkListFilesParams {
@@ -68,6 +88,8 @@ interface SdkListFilesParams {
     after?: string;
     /** Sort order. */
     sort?: ("savedOn_ASC" | "savedOn_DESC" | "createdOn_ASC" | "createdOn_DESC" | "name_ASC" | "name_DESC" | "size_ASC" | "size_DESC")[];
+    /** Fields to select (dot notation supported, e.g., "location.folderId", "createdBy.displayName"). */
+    fields: string[];
 }
 
 interface SdkListFilesResult {
@@ -94,6 +116,8 @@ interface SdkCreateFileParams {
         location?: { folderId: string };
         [key: string]: any;
     };
+    /** Fields to select (dot notation supported, e.g., "location.folderId", "createdBy.displayName"). */
+    fields: string[];
     /** Optional: Progress callback. */
     onProgress?: (progress: SdkUploadProgress) => void;
     /** Optional: Threshold in MB for multi-part upload (default: 100). */
@@ -117,6 +141,8 @@ interface SdkCreateFilesParams {
             location?: { folderId: string };
             [key: string]: any;
         };
+        /** Fields to select (dot notation supported, e.g., "location.folderId", "createdBy.displayName"). */
+        fields: string[];
         onProgress?: (progress: SdkUploadProgress) => void;
     }>;
     /** Optional: Threshold in MB for multi-part upload (default: 100). */
@@ -147,6 +173,8 @@ interface SdkUpdateFileParams {
         location?: { folderId: string };
         [key: string]: any;
     };
+    /** Fields to select (dot notation supported, e.g., "location.folderId", "createdBy.displayName"). */
+    fields: string[];
 }
 
 interface SdkDeleteFileParams {
@@ -168,7 +196,7 @@ interface SdkFileManager {
     getFile(params: SdkGetFileParams): Promise<SdkResult<SdkFmFile, SdkError>>;
 
     /** List files with optional filtering, sorting, and pagination. */
-    listFiles(params?: SdkListFilesParams): Promise<SdkResult<SdkListFilesResult, SdkError>>;
+    listFiles(params: SdkListFilesParams): Promise<SdkResult<SdkListFilesResult, SdkError>>;
 
     /** 
      * Create a new file. If 'file' is provided, uploads to S3 first.

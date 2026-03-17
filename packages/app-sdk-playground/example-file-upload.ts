@@ -41,6 +41,17 @@ async function run() {
             tags: ["test", "playground", "inline"],
             location: { folderId: "root" }
         },
+        fields: [
+            "id",
+            "name",
+            "src",
+            "key",
+            "size",
+            "type",
+            "tags",
+            "createdOn",
+            "location.folderId"
+        ],
         onProgress: progress => {
             console.log(
                 `  📊 Progress: ${progress.percentage}% (${progress.sent}/${progress.total} bytes)`
@@ -56,7 +67,8 @@ async function run() {
         console.log("\n📋 Listing files...");
         const listResult = await sdk.fileManager.listFiles({
             limit: 5,
-            sort: ["createdOn_DESC"]
+            sort: ["createdOn_DESC"],
+            fields: ["id", "name", "size", "type", "createdOn"]
         });
 
         if (listResult.isOk()) {
