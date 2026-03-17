@@ -1,5 +1,6 @@
 import fs from "fs";
 import path, { join } from "path";
+import { fileURLToPath } from "url";
 
 export default {
     commands: {
@@ -14,7 +15,7 @@ export default {
             // We're doing this because simply re-exporting icons from `@material-ui/icons` package
             // was not possible.
             const pkgUrl = await import.meta.resolve("@material-design-icons/svg/package.json");
-            const pkgDirPath = path.dirname(new URL(pkgUrl).pathname);
+            const pkgDirPath = path.dirname(fileURLToPath(pkgUrl));
 
             const outlinedIconsDirPath = path.resolve(pkgDirPath, "outlined");
 
