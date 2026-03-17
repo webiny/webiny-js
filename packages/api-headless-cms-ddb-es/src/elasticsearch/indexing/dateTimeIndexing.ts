@@ -13,12 +13,7 @@ const convertNumberToTime = (value?: number): string | null => {
     if (value === undefined || value === null) {
         return null;
     }
-    // TODO remove when v5 goes out
-    // this is a fix for pre beta.5
-    if (String(value).match(/^([0-9]{2}):([0-9]{2})/) !== null) {
-        return String(value);
-    }
-    //
+
     const hours = Math.floor(value / 60 / 60);
 
     const minutes = Math.floor((value - hours * 60 * 60) / 60);

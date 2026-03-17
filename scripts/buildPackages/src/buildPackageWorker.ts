@@ -1,6 +1,7 @@
 import "tsx/esm";
 import path from "path";
 import { serializeError } from "serialize-error";
+import { pathToFileURL } from "url";
 
 const sendError = (err: Error) => {
     const response = {
@@ -30,10 +31,14 @@ process.on("unhandledRejection", reason => {
 });
 
 const buildOverrides = JSON.parse(process.argv[2]);
-const webinyConfigPath = path.join(process.cwd(), "webiny.config.js");
+const webinyConfigPath = pathToFileURL(path.join(process.cwd(), "webiny.config.js")).href;
 
-const { default: webinyConfigTs } = await import(webinyConfigPath);
+try {
+    const { default: webinyConfigTs } = await import(webinyConfigPath);
 
-await webinyConfigTs.commands.build({ overrides: buildOverrides });
+    await webinyConfigTs.commands.build({ overrides: buildOverrides });
 
-sendSuccess();
+    sendSuccess();
+} catch (ex) {
+    sendError(ex);
+}

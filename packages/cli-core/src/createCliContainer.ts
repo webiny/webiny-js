@@ -56,7 +56,7 @@ import {
     GetProjectSdkService,
     UiService
 } from "~/abstractions/index.js";
-import { GracefulError } from "@webiny/project";
+import { GracefulError, toImportSpecifier } from "@webiny/project";
 import {
     commandsWithGracefulErrorHandling,
     deployCommandWithTelemetry
@@ -145,7 +145,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
 
             const exportName = path.basename(filePath).replace(path.extname(filePath), "");
 
-            const importedModule = await import(importPath);
+            const importedModule = await import(toImportSpecifier(importPath));
 
             // Support both default and named exports.
             // Check for 'default' property existence rather than truthiness.
