@@ -39,6 +39,10 @@ export interface ExtensionWebinyConfigTsx {
      * Component to render in the Extensions component.
      */
     component?: ExtensionComponent;
+    /**
+     * Multiple components to render in the Extensions component.
+     */
+    components?: ExtensionComponent[];
 }
 
 export interface ExtensionImport {
