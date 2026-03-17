@@ -7,6 +7,7 @@ import { JSDOM } from "jsdom";
 import { serializeError } from "serialize-error";
 import type { RenderConfigParamsDto, RenderConfigWorkerMessageDto } from "./renderConfig.js";
 import { ProjectModel } from "~/models/ProjectModel.js";
+import { toImportSpecifier } from "~/utils/index.js";
 import { EnvProvider } from "./EnvContext.js";
 import { WcpProjectLicenseProvider } from "./WcpProjectLicenseContext.js";
 
@@ -52,7 +53,9 @@ process.on("unhandledRejection", reason => {
 const { project: projectModelDto } = JSON.parse(process.argv[2]) as RenderConfigParamsDto;
 const project = ProjectModel.fromDto(projectModelDto);
 
-const { Extensions } = await import(project.paths.webinyConfigBaseFile.toString());
+const { Extensions } = await import(
+    toImportSpecifier(project.paths.webinyConfigBaseFile.toString())
+);
 
 const onChange = debounce((value: any) => {
     sendSuccess(toObject(value));

@@ -1,5 +1,8 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
-import type { IScheduledAction, ScheduleActionError } from "@webiny/api-scheduler";
+import type {
+    IScheduledAction,
+    ScheduleActionError
+} from "@webiny/api-scheduler/exports/api/scheduler.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 export interface ISchedulePublishEntryUseCaseParams {

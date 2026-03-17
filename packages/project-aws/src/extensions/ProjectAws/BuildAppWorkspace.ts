@@ -56,7 +56,9 @@ class BuildAppWorkspaceImpl implements BuildAppWorkspaceService.Interface {
             let globalCss = "";
 
             if (fs.existsSync(globalCssPath)) {
-                const relativePath = path.relative(path.dirname(indexTsx), globalCssPath);
+                const relativePath = path
+                    .relative(path.dirname(indexTsx), globalCssPath)
+                    .replace(/\\/g, "/");
                 globalCss = `import "${relativePath}";`;
             } else {
                 console.log("globalCssPath does not exist");
