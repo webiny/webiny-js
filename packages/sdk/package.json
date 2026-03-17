@@ -12,10 +12,6 @@
   },
   "author": "Webiny",
   "license": "MIT",
-  "dependencies": {
-    "p-map": "^5.5.0",
-    "p-retry": "^5.1.2"
-  },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "typescript": "5.9.3",
