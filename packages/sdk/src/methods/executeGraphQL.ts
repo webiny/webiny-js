@@ -17,11 +17,10 @@ export async function executeGraphQL(
 
         const headers: Record<string, string> = {
             "Content-Type": "application/json",
-            "X-Tenant": config.tenant ?? "root",
+            "x-tenant": config.tenant ?? "root",
             ...config.headers
         };
 
-        console.log("headers", headers);
         // Only add Authorization header if token is provided and not already set in custom headers.
         if (config.token && !headers.Authorization) {
             headers.Authorization = `Bearer ${config.token}`;
