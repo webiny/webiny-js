@@ -7,13 +7,13 @@ export { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/List
 export { CancelScheduledActionUseCase } from "@webiny/api-scheduler/features/CancelScheduledAction/index.js";
 export { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/index.js";
 export { NamespaceHandler } from "@webiny/api-scheduler/features/NamespaceHandler/index.js";
+export type {
+    IScheduledAction,
+    IScheduledActionEntry
+} from "@webiny/api-scheduler/shared/abstractions.js";
 export {
     SchedulerService,
     ScheduledActionModel,
     ScheduledActionHandler,
     ScheduledActionType
-} from "@webiny/api-scheduler/shared/abstractions.js";
-export {
-    type IScheduledAction,
-    IScheduledActionEntry
 } from "@webiny/api-scheduler/shared/abstractions.js";

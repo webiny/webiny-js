@@ -4,11 +4,10 @@ export { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/ind
 export { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
 export { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction/index.js";
 export { NamespaceHandler } from "~/features/NamespaceHandler/index.js";
+export type { IScheduledAction, IScheduledActionEntry } from "~/shared/abstractions.js";
 export {
     SchedulerService,
     ScheduledActionModel,
     ScheduledActionHandler,
-    ScheduledActionType,
-    type IScheduledAction,
-    type IScheduledActionEntry
+    ScheduledActionType
 } from "~/shared/abstractions.js";
