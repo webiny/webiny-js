@@ -6,6 +6,9 @@ export { useDocumentEditor } from "~/DocumentEditor/index.js";
 export { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
 export { useComponent } from "~/BaseEditor/hooks/useComponent.js";
 export { useElementInputs } from "~/BaseEditor/hooks/useElementInputs.js";
+export { useCreateElement } from "~/BaseEditor/hooks/useCreateElement.js";
+export { useDeleteElement } from "~/BaseEditor/hooks/useDeleteElement.js";
+export { useUpdateElement } from "~/BaseEditor/hooks/useUpdateElement.js";
 export { PageEditorConfig } from "~/index.js";
 export { ElementInputs } from "~/BaseEditor/defaultConfig/Sidebar/ElementSettings/ElementInputs.js";
 

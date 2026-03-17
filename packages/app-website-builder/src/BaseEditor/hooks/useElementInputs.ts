@@ -1,9 +1,8 @@
 import { useCallback } from "react";
 import { useSelectFromDocument } from "./useSelectFromDocument.js";
 import { useSelectFromEditor } from "./useSelectFromEditor.js";
-import { useDocumentEditor } from "~/DocumentEditor/index.js";
+import { useUpdateElement } from "./useUpdateElement.js";
 import { $getElementInputValues } from "~/editorSdk/utils/$getElementInputValues.js";
-import { $updateElementInputs } from "~/editorSdk/utils/$updateElementInputs.js";
 
 /**
  * Returns the resolved input values for the given element, plus an updater callback.
@@ -16,22 +15,22 @@ export function useElementInputs<T extends Record<string, any> = Record<string, 
     depth = 0
 ) {
     const components = useSelectFromEditor(state => state.components);
-    const document = useSelectFromDocument(doc => doc);
-    const editor = useDocumentEditor();
+    const { updateElement } = useUpdateElement();
 
-    const inputs = $getElementInputValues(document, components, elementId, depth) as T;
+    // Compute inputs inside the selector so MobX tracks the specific observable
+    // reads (elements, bindings, state) and triggers rerenders on changes.
+    const inputs = useSelectFromDocument(
+        doc => $getElementInputValues(doc, components, elementId, depth) as T,
+        [components, elementId, depth]
+    );
 
     const updateInputs = useCallback(
         (updater: (inputs: T) => void) => {
             if (elementId) {
-                $updateElementInputs(
-                    editor,
-                    elementId,
-                    updater as (inputs: Record<string, any>) => void
-                );
+                updateElement<T>(elementId, updater);
             }
         },
-        [editor, elementId]
+        [updateElement, elementId]
     );
 
     return { inputs, updateInputs };

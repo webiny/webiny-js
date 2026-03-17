@@ -2,11 +2,11 @@ import React from "react";
 import { Button, Icon } from "webiny/admin/ui";
 import { ReactComponent as DeleteIcon } from "webiny/admin/icons/close.svg";
 import {
-    $createElement,
-    Commands,
-    useDocumentEditor
+    useCreateElement,
+    useDeleteElement,
+    useUpdateElement
 } from "webiny/admin/website-builder/page/editor";
-import { useFunnel } from "./useFunnel.js";
+import { type FunnelInputs, useFunnel } from "./useFunnel.js";
 
 const iconClasses =
     "absolute z-10 rounded-full bg-neutral-dimmed border-solid border-sm border-neutral-muted cursor-pointer fill-neutral-strong";
@@ -17,14 +17,16 @@ const iconPosition = {
 };
 
 export const StepsNavigator = () => {
-    const editor = useDocumentEditor();
     const funnel = useFunnel();
+    const { createElement } = useCreateElement();
+    const { updateElement } = useUpdateElement();
+    const { deleteElement } = useDeleteElement();
 
     if (!funnel) {
         return null;
     }
 
-    const { activeStep } = funnel.inputs;
+    const { activeStep, steps = [] } = funnel.inputs;
 
     const activateStep = (index: number) => {
         funnel.updateInputs(inputs => {
@@ -33,29 +35,27 @@ export const StepsNavigator = () => {
     };
 
     const deleteStep = (stepElementId: string) => {
-        editor.executeCommand(Commands.DeleteElement, { id: stepElementId });
+        deleteElement(stepElementId);
     };
 
     const addStep = () => {
         const steps = funnel.inputs.steps ?? [];
         const insertIndex = Math.max(steps.length - 1, 0);
 
-        editor.updateDocument(() => {
-            $createElement(editor, {
-                componentName: "FunnelBuilder/Step",
-                parentId: funnel.id,
-                slot: "steps",
-                index: insertIndex,
-                bindings: {
-                    inputs: {
-                        label: `Step ${steps.length}`
-                    }
+        createElement({
+            componentName: "FunnelBuilder/Step",
+            parentId: funnel.id,
+            slot: "steps",
+            index: insertIndex,
+            bindings: {
+                inputs: {
+                    label: `Step ${steps.length}`
                 }
-            });
+            }
+        });
 
-            funnel.updateInputs(inputs => {
-                inputs.activeStep = insertIndex;
-            });
+        updateElement<FunnelInputs>(funnel.id, inputs => {
+            inputs.activeStep = insertIndex;
         });
     };
 
@@ -65,9 +65,9 @@ export const StepsNavigator = () => {
             data-affects-preview={"height"}
         >
             <div className={"flex gap-md"}>
-                {(funnel.inputs.steps ?? []).map((step, index) => {
+                {steps.map((step, index) => {
                     const isFirstStep = index === 0;
-                    const isLastStep = index === funnel.inputs.steps.length - 1;
+                    const isLastStep = index === steps.length - 1;
                     const canDelete = !isFirstStep && !isLastStep;
                     const activeVariant = activeStep === index ? "primary" : "secondary";
 

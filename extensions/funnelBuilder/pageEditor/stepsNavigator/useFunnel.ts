@@ -4,8 +4,9 @@ import {
     useElementInputs
 } from "webiny/admin/website-builder/page/editor";
 
-type Inputs = {
+export type FunnelInputs = {
     activeStep: number;
+    registry: Record<string, any>;
     steps: Array<{ elementId: string; label: string; children: string[] }>;
 };
 
@@ -15,7 +16,7 @@ export const useFunnel = () => {
         return funnel ? funnel.id : null;
     });
 
-    const { inputs, updateInputs } = useElementInputs<Inputs>(elementId, 1);
+    const { inputs, updateInputs } = useElementInputs<FunnelInputs>(elementId, 1);
 
     if (!elementId) {
         return null;
