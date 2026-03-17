@@ -1,5 +1,8 @@
 import { EntryAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/events";
-import { CancelScheduledActionUseCase, ListScheduledActionsUseCase } from "@webiny/api-scheduler";
+import {
+    CancelScheduledActionUseCase,
+    ListScheduledActionsUseCase
+} from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { createNamespace } from "~/utils/namespace.js";
 
 /**

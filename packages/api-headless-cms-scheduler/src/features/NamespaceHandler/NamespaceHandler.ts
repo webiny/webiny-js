@@ -1,4 +1,4 @@
-import { NamespaceHandler as NamespaceHandlerAbstraction } from "@webiny/api-scheduler";
+import { NamespaceHandler as NamespaceHandlerAbstraction } from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { extractModelIdFromNamespace } from "~/utils/namespace.js";
 import { Result } from "@webiny/feature/exports/api.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
