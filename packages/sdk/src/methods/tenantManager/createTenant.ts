@@ -4,7 +4,7 @@ import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { CreateTenantInput } from "./tenantManagerTypes.js";
 
 export interface CreateTenantParams {
-    input: CreateTenantInput;
+    data: CreateTenantInput;
 }
 
 /**
@@ -13,7 +13,7 @@ export interface CreateTenantParams {
  * @param config - SDK configuration
  * @param fetchFn - Fetch function to use for HTTP requests
  * @param params - Parameters for creating the tenant
- * @param params.input - The tenant data to create
+ * @param params.data - The tenant data to create
  * @returns Result containing true on success or an error
  */
 export async function createTenant(
@@ -21,7 +21,7 @@ export async function createTenant(
     fetchFn: typeof fetch,
     params: CreateTenantParams
 ): Promise<Result<boolean, HttpError | GraphQLError | NetworkError>> {
-    const { input } = params;
+    const { data } = params;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 
@@ -39,7 +39,7 @@ export async function createTenant(
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, { input });
+    const result = await executeGraphQL(config, fetchFn, query, { input: data });
 
     if (result.isFail()) {
         return Result.fail(result.error);

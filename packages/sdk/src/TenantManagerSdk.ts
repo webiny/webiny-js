@@ -1,5 +1,4 @@
 import type { WebinyConfig } from "./types.js";
-import type { CreateTenantInput } from "./methods/tenantManager/tenantManagerTypes.js";
 import type { CreateTenantParams } from "./methods/tenantManager/createTenant.js";
 import type { InstallTenantParams } from "./methods/tenantManager/installTenant.js";
 import type { DisableTenantParams } from "./methods/tenantManager/disableTenant.js";
