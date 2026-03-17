@@ -5,7 +5,7 @@ export { useSelectFromDocument } from "@webiny/app-website-builder/BaseEditor/ho
 export { useDocumentEditor } from "@webiny/app-website-builder/DocumentEditor/index.js";
 export { useActiveElement } from "@webiny/app-website-builder/BaseEditor/hooks/useActiveElement.js";
 export { useComponent } from "@webiny/app-website-builder/BaseEditor/hooks/useComponent.js";
-export { useElementInputValues } from "@webiny/app-website-builder/BaseEditor/hooks/useElementInputValues.js";
+export { useElementInputs } from "@webiny/app-website-builder/BaseEditor/hooks/useElementInputs.js";
 export { PageEditorConfig } from "@webiny/app-website-builder";
 export { ElementInputs } from "@webiny/app-website-builder/BaseEditor/defaultConfig/Sidebar/ElementSettings/ElementInputs.js";
 export { $selectElement } from "@webiny/app-website-builder/editorSdk/utils/index.js";

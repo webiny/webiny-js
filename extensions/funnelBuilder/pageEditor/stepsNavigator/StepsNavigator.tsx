@@ -3,7 +3,6 @@ import { Button, Icon } from "webiny/admin/ui";
 import { ReactComponent as DeleteIcon } from "webiny/admin/icons/close.svg";
 import {
     $createElement,
-    $updateElementInputs,
     Commands,
     useDocumentEditor
 } from "webiny/admin/website-builder/page/editor";
@@ -28,7 +27,7 @@ export const StepsNavigator = () => {
     const { activeStep } = funnel.inputs;
 
     const activateStep = (index: number) => {
-        $updateElementInputs(editor, funnel.id, inputs => {
+        funnel.updateInputs(inputs => {
             inputs.activeStep = index;
         });
     };
@@ -54,7 +53,7 @@ export const StepsNavigator = () => {
                 }
             });
 
-            $updateElementInputs(editor, funnel.id, inputs => {
+            funnel.updateInputs(inputs => {
                 inputs.activeStep = insertIndex;
             });
         });

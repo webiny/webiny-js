@@ -1,8 +1,7 @@
 import {
-    useSelectFromEditor,
     useSelectFromDocument,
     $getFirstElementOfType,
-    $getElementInputValues
+    useElementInputs
 } from "webiny/admin/website-builder/page/editor";
 
 type Inputs = {
@@ -11,21 +10,16 @@ type Inputs = {
 };
 
 export const useFunnel = () => {
-    const components = useSelectFromEditor(editor => editor.components);
-
     const elementId = useSelectFromDocument(state => {
         const funnel = $getFirstElementOfType(state, "FunnelBuilder/Funnel");
         return funnel ? funnel.id : null;
     });
 
-    const inputs = useSelectFromDocument(
-        doc => $getElementInputValues(doc, components, elementId, 1) as Inputs,
-        [elementId, components]
-    );
+    const { inputs, updateInputs } = useElementInputs<Inputs>(elementId, 1);
 
     if (!elementId) {
         return null;
     }
 
-    return { id: elementId, inputs };
+    return { id: elementId, inputs, updateInputs };
 };

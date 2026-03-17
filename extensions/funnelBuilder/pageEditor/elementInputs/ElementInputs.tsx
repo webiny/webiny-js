@@ -1,16 +1,31 @@
 import React from "react";
-import { Button } from "webiny/admin/ui";
-import { useElementInputValues, ElementInputs, useComponent } from "webiny/admin/website-builder/page/editor";
-import {
-    useInputValue
-} from "@/packages/app-website-builder/src/BaseEditor/defaultConfig/Sidebar/ElementSettings/useInputValue.js";
+import { Button, useDialogs } from "webiny/admin/ui";
+import { ElementInputs } from "webiny/admin/website-builder/page/editor";
+import { useElementInputs } from "webiny/admin/website-builder/page/editor";
+import { useComponent } from "webiny/admin/website-builder/page/editor";
 
 export const ElementInputsDecorator = ElementInputs.createDecorator(Original => {
     return function FunnelElementSettings(props) {
         const { element } = props;
-        const inputValues = useElementInputValues(element.id);
-
+        const { inputs, updateInputs } = useElementInputs(element.id);
         const component = useComponent(element.component.name);
+        const dialogs = useDialogs();
+
+        const handleClick = () => {
+            dialogs.showDialog({
+                formData: inputs.registry,
+                title: `Edit ${component.label} Settings`,
+                content: <pre>{JSON.stringify(inputs, null, 2)}</pre>,
+                acceptLabel: "Save Field Settings",
+                cancelLabel: "Cancel",
+                onAccept: (data: any) => {
+                    console.log(data);
+                    updateInputs(inputs => {
+                        Object.assign(inputs.registry, data);
+                    });
+                }
+            });
+        };
 
         if (props.element.component.name.startsWith("FunnelBuilder/")) {
             return (
@@ -19,9 +34,9 @@ export const ElementInputsDecorator = ElementInputs.createDecorator(Original => 
                         variant={"primary"}
                         text={`Edit ${component.label} Settings`}
                         className={"w-full"}
+                        onClick={handleClick}
                     />
                     <pre>{JSON.stringify(element, null, 2)}</pre>
-                    <pre>{JSON.stringify(inputValues, null, 2)}</pre>
                 </>
             );
         }
