@@ -6,7 +6,7 @@ export interface IInitAgentParams {
     instructions: boolean;
 }
 
-const SUPPORTED = ["claude", "cursor", "windsurf", "copilot", "cline"];
+const SUPPORTED = ["claude", "cursor", "windsurf", "copilot", "cline", "opencode"];
 
 class ConfigureMcp implements CliCommandFactory.Interface<IInitAgentParams> {
     constructor(private ui: Ui.Interface) {}
@@ -23,7 +23,7 @@ class ConfigureMcp implements CliCommandFactory.Interface<IInitAgentParams> {
             params: [
                 {
                     name: "agent",
-                    description: "Agent name (claude, cursor, windsurf, copilot, cline)",
+                    description: "Agent name (claude, cursor, windsurf, copilot, cline, opencode)",
                     type: "string",
                     default: "claude"
                 }
@@ -48,7 +48,7 @@ class ConfigureMcp implements CliCommandFactory.Interface<IInitAgentParams> {
                 if (!SUPPORTED.includes(target)) {
                     this.ui.error(`Unknown agent "${target}".`);
                     this.ui.text(`Supported: ${SUPPORTED.join(", ")}`);
-                    this.ui.text("For other agents run: npx webiny configure-mcp --instructions");
+                    this.ui.text("For other agents, run: npx webiny configure-mcp --instructions");
                     process.exit(1);
                 }
 
