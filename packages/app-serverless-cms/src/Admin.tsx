@@ -26,6 +26,7 @@ import { CmsWorkflows } from "@webiny/app-headless-cms-workflows";
 import { WebsiteBuilderWorkflows } from "@webiny/app-website-builder-workflows";
 import { Container } from "@webiny/di";
 import type { PluginCollection } from "@webiny/plugins/types.js";
+import { WbScheduler } from "@webiny/app-website-builder-scheduler";
 
 export interface AdminProps
     extends Omit<BaseAdminProps, "createApolloClient" | "createLegacyPlugins"> {
@@ -62,6 +63,7 @@ const App = (props: AdminProps) => {
             <WorkflowComponents.App.WorkflowsAdminApp />
             <CmsWorkflows />
             <WebsiteBuilderWorkflows />
+            <WbScheduler />
             {props.children}
         </BaseAdmin>
     );

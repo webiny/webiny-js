@@ -1,0 +1,38 @@
+import React from "react";
+import { useApolloClient } from "@apollo/react-hooks";
+import { Scheduler as BaseScheduler } from "@webiny/app-scheduler";
+import { PageListConfig } from "@webiny/app-website-builder/exports/admin/website-builder/page/list.js";
+import { usePermissions } from "~/hooks/usePermissions.js";
+import { SchedulerButton } from "./SchedulerButton.js";
+import { WB_PAGE_NAMESPACE } from "~/utils/namespace.js";
+
+const { Browser } = PageListConfig;
+
+const SchedulerFooterElement = () => {
+    const client = useApolloClient();
+    const { canPublishPage, canUnpublishPage } = usePermissions();
+
+    if (!canPublishPage && !canUnpublishPage) {
+        return null;
+    }
+
+    return (
+        <BaseScheduler
+            namespace={WB_PAGE_NAMESPACE}
+            client={client}
+            canPublish={canPublishPage}
+            canUnpublish={canUnpublishPage}
+            render={({ showScheduler }) => {
+                return <SchedulerButton onClick={showScheduler} />;
+            }}
+        />
+    );
+};
+
+export const PagesSidebarConfig = () => {
+    return (
+        <PageListConfig>
+            <Browser.Sidebar.Footer name={"scheduler"} element={<SchedulerFooterElement />} />
+        </PageListConfig>
+    );
+};

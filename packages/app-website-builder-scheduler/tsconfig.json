@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../admin-ui" },
+    { "path": "../app-scheduler" },
+    { "path": "../app-website-builder" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/admin-ui/*": ["../admin-ui/src/*"],
+      "@webiny/admin-ui": ["../admin-ui/src"],
+      "@webiny/app-scheduler/*": ["../app-scheduler/src/*"],
+      "@webiny/app-scheduler": ["../app-scheduler/src"],
+      "@webiny/app-website-builder/*": ["../app-website-builder/src/*"],
+      "@webiny/app-website-builder": ["../app-website-builder/src"]
+    },
+    "baseUrl": "."
+  }
+}
