@@ -12,7 +12,7 @@ import { useGoToRevision } from "~/admin/components/ContentEntryForm/useGoToRevi
 
 export interface ContentEntryFormProps
     extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
-    entry: Partial<CmsContentEntry>;
+    entry: Partial<Omit<CmsContentEntry, "values">> & Pick<CmsContentEntry, "values">;
     /**
      * This callback is executed when an entry, or a revision, are created.
      * @param entry

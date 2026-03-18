@@ -25,7 +25,7 @@
     "load-json-file": "^7.0.1",
     "pino": "^9.14.0",
     "pino-pretty": "^9.4.1",
-    "vitest": "^4.0.18",
+    "vitest": "^4.1.0",
     "yargs": "^18.0.0"
   },
   "peerDependencies": {

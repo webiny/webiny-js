@@ -15,8 +15,8 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.21.0",
-    "@pulumi/pulumi": "^3.225.1",
+    "@pulumi/aws": "^7.23.0",
+    "@pulumi/pulumi": "^3.226.0",
     "@pulumi/random": "^4.19.1",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-layers": "0.0.0",
