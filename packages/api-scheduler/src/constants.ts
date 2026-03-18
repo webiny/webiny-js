@@ -7,3 +7,8 @@ export const SCHEDULE_ID_PREFIX = "wby-schedule-";
 export const SCHEDULE_MIN_FUTURE_SECONDS = 65;
 
 export const SCHEDULED_ACTION_EVENT_IDENTIFIER = "WebinyScheduledAction";
+
+export const SCHEDULED_ACTION_PUBLISH = "publish" as const;
+export const SCHEDULED_ACTION_UNPUBLISH = "unpublish" as const;
+
+export const SCHEDULED_ACTIONS = [SCHEDULED_ACTION_PUBLISH, SCHEDULED_ACTION_UNPUBLISH] as const;

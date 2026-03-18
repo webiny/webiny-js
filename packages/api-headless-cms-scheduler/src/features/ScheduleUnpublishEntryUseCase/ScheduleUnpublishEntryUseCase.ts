@@ -1,5 +1,8 @@
 import { ScheduleUnpublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { ScheduleActionUseCase } from "@webiny/api-scheduler/exports/api/scheduler.js";
+import {
+    ScheduleActionUseCase,
+    ScheduledActionTypeUnpublish
+} from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { createNamespace } from "~/utils/namespace.js";
 import { Result } from "@webiny/feature/exports/api.js";
 import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
@@ -29,7 +32,7 @@ class ScheduleUnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface 
 
         const scheduleResult = await this.scheduleAction.execute({
             namespace: createNamespace(model),
-            actionType: "unpublish",
+            actionType: ScheduledActionTypeUnpublish,
             scheduleFor,
             targetId: id
         });

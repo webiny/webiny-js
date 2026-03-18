@@ -1,6 +1,7 @@
 import type { IScheduledAction, IScheduledActionEntry } from "~/shared/abstractions.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { parseIdentifier } from "@webiny/utils";
+import { SCHEDULED_ACTION_PUBLISH, SCHEDULED_ACTION_UNPUBLISH } from "~/constants.js";
 
 export class ScheduledActionMapper {
     static toAction<T extends GenericRecord = GenericRecord>(
@@ -32,8 +33,9 @@ export class ScheduledActionMapper {
             targetId: action.targetId,
             namespace: action.namespace,
             scheduledBy: action.scheduledBy,
-            publishOn: action.actionType === "publish" ? action.scheduledFor : null,
-            unpublishOn: action.actionType === "unpublish" ? action.scheduledFor : null,
+            publishOn: action.actionType === SCHEDULED_ACTION_PUBLISH ? action.scheduledFor : null,
+            unpublishOn:
+                action.actionType === SCHEDULED_ACTION_UNPUBLISH ? action.scheduledFor : null,
             actionType: action.actionType,
             title: action.title
         };

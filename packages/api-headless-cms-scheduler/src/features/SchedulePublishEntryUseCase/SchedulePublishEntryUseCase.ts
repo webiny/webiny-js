@@ -1,5 +1,8 @@
 import { SchedulePublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { ScheduleActionUseCase } from "@webiny/api-scheduler/exports/api/scheduler.js";
+import {
+    ScheduleActionUseCase,
+    ScheduledActionTypePublish
+} from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { createNamespace } from "~/utils/namespace.js";
 import { Result } from "@webiny/feature/exports/api.js";
 import { EntryNotAuthorizedError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
@@ -29,7 +32,7 @@ class SchedulePublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const scheduleResult = await this.scheduleAction.execute({
             namespace: createNamespace(model),
-            actionType: "publish",
+            actionType: ScheduledActionTypePublish,
             scheduleFor,
             targetId: id
         });

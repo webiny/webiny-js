@@ -140,12 +140,12 @@ export default class I18N {
             inputFormat = "YYYY-MM-DDTHH:mm:ss.SSSZ";
         }
 
-        let parsedValue: number | Date;
+        let parsedValue: Date;
 
         if (typeof value === "string") {
             parsedValue = fecha.parse(value, inputFormat) as Date;
         } else {
-            parsedValue = value;
+            parsedValue = value instanceof Date ? value : new Date(value);
         }
 
         return fecha.format(parsedValue, outputFormat);
@@ -167,12 +167,12 @@ export default class I18N {
             inputFormat = "YYYY-MM-DDTHH:mm:ss.SSSZ";
         }
 
-        let parsedValue: number | Date;
+        let parsedValue: Date;
 
         if (typeof value === "string") {
             parsedValue = fecha.parse(value, inputFormat) as Date;
         } else {
-            parsedValue = value;
+            parsedValue = value instanceof Date ? value : new Date(value);
         }
 
         return fecha.format(parsedValue, outputFormat);
@@ -190,12 +190,12 @@ export default class I18N {
             inputFormat = "YYYY-MM-DDTHH:mm:ss.SSSZ";
         }
 
-        let parsedValue: number | Date;
+        let parsedValue: Date;
 
         if (typeof value === "string") {
             parsedValue = fecha.parse(value, inputFormat) as Date;
         } else {
-            parsedValue = value;
+            parsedValue = value instanceof Date ? value : new Date(value);
         }
 
         return fecha.format(parsedValue, outputFormat);
