@@ -27,6 +27,7 @@ import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
 import { createWorkflows } from "@webiny/api-workflows";
 import { createHeadlessCmsWorkflows } from "@webiny/api-headless-cms-workflows";
 import { createWebsiteBuilderWorkflows } from "@webiny/api-website-builder-workflows";
+import { createWebsiteBuilderScheduler } from "@webiny/api-website-builder-scheduler";
 
 import { extensions } from "./extensions";
 
@@ -74,6 +75,7 @@ export const handler = createHandler({
             }
         }),
         createHeadlessCmsScheduler(),
+        createWebsiteBuilderScheduler(),
         extensions()
     ],
     debug
