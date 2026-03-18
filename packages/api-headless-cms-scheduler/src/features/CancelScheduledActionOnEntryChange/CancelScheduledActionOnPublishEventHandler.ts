@@ -1,7 +1,8 @@
 import { EntryAfterPublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/events";
 import {
     CancelScheduledActionUseCase,
-    ListScheduledActionsUseCase
+    ListScheduledActionsUseCase,
+    ScheduledActionTypePublish
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { createNamespace } from "~/utils/namespace.js";
 
@@ -31,7 +32,7 @@ class CancelScheduledActionOnPublishEventHandlerImpl
         const actionsResult = await this.listScheduledActions.execute({
             where: {
                 namespace: createNamespace(model),
-                actionType: "publish",
+                actionType: ScheduledActionTypePublish,
                 targetId: entry.id
             }
         });

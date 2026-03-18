@@ -1,7 +1,8 @@
 import {
     ScheduledActionHandler,
     ScheduledActionType,
-    type IScheduledAction
+    type IScheduledAction,
+    ScheduledActionTypePublish
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
@@ -39,7 +40,7 @@ class PublishEntryActionHandlerImpl implements ScheduledActionHandler.Interface 
         if (!modelId) {
             return false;
         }
-        return actionType === "publish";
+        return actionType === ScheduledActionTypePublish;
     }
 
     public async handle(action: IScheduledAction<IScheduledActionPayload>): Promise<void> {
