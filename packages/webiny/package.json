@@ -16,6 +16,7 @@
     "@webiny/api-headless-cms-scheduler": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",
     "@webiny/api-website-builder": "0.0.0",
+    "@webiny/api-website-builder-scheduler": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-aco": "0.0.0",
     "@webiny/app-admin": "0.0.0",

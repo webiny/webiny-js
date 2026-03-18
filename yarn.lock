@@ -13639,7 +13639,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-website-builder-scheduler@workspace:packages/api-website-builder-scheduler":
+"@webiny/api-website-builder-scheduler@npm:0.0.0, @webiny/api-website-builder-scheduler@workspace:packages/api-website-builder-scheduler":
   version: 0.0.0-use.local
   resolution: "@webiny/api-website-builder-scheduler@workspace:packages/api-website-builder-scheduler"
   dependencies:
@@ -34578,6 +34578,7 @@ __metadata:
     "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
+    "@webiny/api-website-builder-scheduler": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
