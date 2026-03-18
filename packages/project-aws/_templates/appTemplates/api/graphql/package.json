@@ -27,6 +27,7 @@
     "@webiny/api-record-locking": "latest",
     "@webiny/api-scheduler": "latest",
     "@webiny/api-website-builder": "latest",
+    "@webiny/api-website-builder-scheduler": "latest",
     "@webiny/api-website-builder-workflows": "latest",
     "@webiny/api-websockets": "latest",
     "@webiny/api-workflows": "latest",
