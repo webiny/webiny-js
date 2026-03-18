@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { makeDecoratable } from "@webiny/app-admin";
 import type { CmsContentEntry, CmsEditorContentModel } from "~/types.js";
 import { ModelProvider } from "~/admin/components/ModelProvider/index.js";
@@ -11,16 +11,25 @@ export interface ContentEntryFormPreviewProps {
     contentModel: CmsEditorContentModel;
 }
 
+const baseEntry: Pick<CmsContentEntry, "values"> = {
+    values: {}
+};
+
 export const ContentEntryFormPreview = makeDecoratable(
     "ContentEntryFormPreview",
     (props: ContentEntryFormPreviewProps) => {
         const { contentModel } = props;
 
         const formRenderer = useFormRenderer(contentModel);
+        
+        const initialEntry = useMemo(() => {
+            return baseEntry;
+        }, []);
+        
 
         return (
             <ContentEntryFormProvider
-                entry={{}}
+                entry={initialEntry}
                 model={contentModel}
                 persistEntry={async entry => {
                     return {

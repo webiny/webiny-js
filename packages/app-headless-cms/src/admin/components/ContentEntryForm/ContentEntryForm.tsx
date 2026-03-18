@@ -10,9 +10,8 @@ import { CustomLayout } from "./CustomLayout.js";
 import { DefaultLayout } from "./DefaultLayout.js";
 import { useGoToRevision } from "~/admin/components/ContentEntryForm/useGoToRevision.js";
 
-export interface ContentEntryFormProps
-    extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
-    entry: Partial<CmsContentEntry>;
+export interface ContentEntryFormProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
+    entry: Partial<Omit<CmsContentEntry, "values">> & Pick<CmsContentEntry, "values">;
     /**
      * This callback is executed when an entry, or a revision, are created.
      * @param entry
