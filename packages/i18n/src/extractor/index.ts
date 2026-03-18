@@ -1,6 +1,6 @@
 import extract from "./extract.js";
-import glob from "glob";
-import fs from "fs";
+import fastGlob from "fast-glob";
+import fs from "node:fs";
 
 export interface ExtractorResults {
     [key: string]: string;
@@ -26,7 +26,7 @@ class Extractor {
         if (!this.glob) {
             return results;
         }
-        const paths = glob.sync(this.glob);
+        const paths = fastGlob.sync(this.glob);
         paths.forEach(path => {
             const contents = fs.readFileSync(path, "utf8");
             const parsed = extract(contents);

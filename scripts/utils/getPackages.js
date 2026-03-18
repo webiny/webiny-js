@@ -2,8 +2,8 @@ import readJson from "read-json-sync";
 import getYarnWorkspaces from "get-yarn-workspaces";
 import chalk from "chalk";
 import fs from "fs-extra";
-import path from "path";
-import glob from "glob";
+import path from "node:path";
+import fastGlob from "fast-glob";
 
 const { yellow } = chalk;
 const { join, basename } = path;
@@ -74,7 +74,7 @@ export const getPackages = (args = {}) => {
             const testsFolderPath = path + "/__tests__";
             let hasTests = false;
             if (fs.existsSync(testsFolderPath)) {
-                const files = glob.sync(`${testsFolderPath}/**/**.test.ts`);
+                const files = fastGlob.sync(`${testsFolderPath}/**/**.test.ts`);
                 hasTests = Array.isArray(files) && files.length;
             }
 
