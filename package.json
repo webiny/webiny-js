@@ -69,7 +69,7 @@
     "@typescript-eslint/parser": "^8.57.0",
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/eslint-plugin": "^1.6.10",
-    "adio": "^2.0.1",
+    "adio": "^2.1.0",
     "axios": "^1.13.6",
     "babel-loader": "^10.1.1",
     "babel-plugin-dynamic-import-node": "^2.3.3",

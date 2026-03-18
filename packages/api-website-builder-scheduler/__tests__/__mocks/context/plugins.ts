@@ -18,6 +18,8 @@ import { createApiCore } from "@webiny/api-core";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 import { createScheduler } from "@webiny/api-scheduler";
+import { createWebsiteBuilder } from "@webiny/api-website-builder";
+import { createMockBackgroundTasks } from "../mockBackgroundTasks.js";
 
 export interface CreateHandlerCoreParams {
     getScheduleClient: (config?: SchedulerClientConfig) => Pick<SchedulerClient, "send">;
@@ -64,6 +66,8 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                 storageOperations: cmsStorage.storageOperations
             }),
             createHeadlessCmsGraphQL(),
+            ...createMockBackgroundTasks(),
+            createWebsiteBuilder(),
             plugins,
             graphQLHandlerPlugins(),
             createScheduler({

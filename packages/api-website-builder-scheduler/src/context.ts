@@ -1,21 +1,29 @@
 import { ContextPlugin } from "@webiny/api";
-import { CancelScheduledActionOnEntryChangeFeature } from "~/features/CancelScheduledActionOnEntryChange/feature.js";
+import { CancelScheduledActionOnChangeFeature } from "~/features/CancelScheduledActionOnChange/feature.js";
 import { PageNamespaceHandler } from "~/features/NamespaceHandler/PageNamespaceHandler.js";
 import { RedirectNamespaceHandler } from "~/features/NamespaceHandler/RedirectNamespaceHandler.js";
-import { PublishEntryActionHandler } from "~/features/PublishActionHandler/PublishEntryActionHandler.js";
-import { UnpublishEntryActionHandler } from "~/features/UnpublishActionHandler/UnpublishEntryActionHandler.js";
-import { SchedulePublishEntryUseCase } from "~/features/SchedulePublishEntryUseCase/SchedulePublishEntryUseCase.js";
-import { ScheduleUnpublishEntryUseCase } from "~/features/ScheduleUnpublishEntryUseCase/ScheduleUnpublishEntryUseCase.js";
+import { PublishPageActionHandler } from "~/features/PublishActionHandler/PublishPageActionHandler.js";
+import { PublishRedirectActionHandler } from "~/features/PublishActionHandler/PublishRedirectActionHandler.js";
+import { UnpublishPageActionHandler } from "~/features/UnpublishActionHandler/UnpublishPageActionHandler.js";
+import { UnpublishRedirectActionHandler } from "~/features/UnpublishActionHandler/UnpublishRedirectActionHandler.js";
+import { SchedulePublishPageUseCase } from "~/features/SchedulePublishPageUseCase/SchedulePublishPageUseCase.js";
+import { ScheduleUnpublishPageUseCase } from "~/features/ScheduleUnpublishPageUseCase/ScheduleUnpublishPageUseCase.js";
+import { SchedulePublishRedirectUseCase } from "~/features/SchedulePublishRedirectUseCase/SchedulePublishRedirectUseCase.js";
+import { ScheduleUnpublishRedirectUseCase } from "~/features/ScheduleUnpublishRedirectUseCase/ScheduleUnpublishRedirectUseCase.js";
 
 export const createWebsiteBuilderScheduleContext = () => {
     return new ContextPlugin(async context => {
         context.container.register(PageNamespaceHandler);
         context.container.register(RedirectNamespaceHandler);
-        context.container.register(PublishEntryActionHandler);
-        context.container.register(UnpublishEntryActionHandler);
-        context.container.register(SchedulePublishEntryUseCase);
-        context.container.register(ScheduleUnpublishEntryUseCase);
+        context.container.register(PublishPageActionHandler);
+        context.container.register(PublishRedirectActionHandler);
+        context.container.register(UnpublishPageActionHandler);
+        context.container.register(UnpublishRedirectActionHandler);
+        context.container.register(SchedulePublishPageUseCase);
+        context.container.register(ScheduleUnpublishPageUseCase);
+        context.container.register(SchedulePublishRedirectUseCase);
+        context.container.register(ScheduleUnpublishRedirectUseCase);
 
-        CancelScheduledActionOnEntryChangeFeature.register(context.container);
+        CancelScheduledActionOnChangeFeature.register(context.container);
     });
 };

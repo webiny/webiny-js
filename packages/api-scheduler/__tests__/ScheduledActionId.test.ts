@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { SCHEDULE_ID_PREFIX } from "~/constants.js";
+import { SCHEDULE_ID_PREFIX, SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 
 describe("ScheduledActionId", () => {
     it("should create a valid schedule action id", () => {
         const result = ScheduledActionId.from({
             namespace: "Cms/Entry/Article",
-            actionType: "publish",
+            actionType: SCHEDULED_ACTION_PUBLISH,
             targetId: "target-id#0001"
         });
 

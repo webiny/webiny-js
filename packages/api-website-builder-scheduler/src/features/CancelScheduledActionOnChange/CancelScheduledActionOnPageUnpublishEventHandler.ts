@@ -1,38 +1,34 @@
-import { EntryAfterUnpublishEventHandler } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/events";
+import { PageAfterUnpublishEventHandler } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
 import {
     CancelScheduledActionUseCase,
     ListScheduledActionsUseCase
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { createNamespace } from "~/utils/namespace.js";
+import { SCHEDULED_ACTION_TYPE_PAGE } from "~/constants.js";
 
 /**
- * Cancels scheduled action when an entry is manually unpublished
+ * Cancels scheduled "unpublish" when a page is manually unpublished.
  *
- * When a user manually unpublishes an entry revision, any scheduled unpublish
- * action for that revision should be canceled since the manual action
+ * When a user manually unpublishes a page, any scheduled unpublish
+ * action for that page should be canceled since the manual action
  * takes precedence.
  */
 class CancelScheduledActionOnUnpublishHandlerImpl
-    implements EntryAfterUnpublishEventHandler.Interface
+    implements PageAfterUnpublishEventHandler.Interface
 {
     constructor(
         private listScheduledActions: ListScheduledActionsUseCase.Interface,
         private cancelScheduledAction: CancelScheduledActionUseCase.Interface
     ) {}
 
-    async handle(event: EntryAfterUnpublishEventHandler.Event): Promise<void> {
-        const { entry, model } = event.payload;
-
-        // Skip private models
-        if (model.isPrivate) {
-            return;
-        }
+    async handle(event: PageAfterUnpublishEventHandler.Event): Promise<void> {
+        const { page } = event.payload;
 
         const actionsResult = await this.listScheduledActions.execute({
             where: {
-                namespace: createNamespace(model),
+                namespace: createNamespace(SCHEDULED_ACTION_TYPE_PAGE),
                 actionType: "unpublish",
-                targetId: entry.id
+                targetId: page.id
             }
         });
 
@@ -42,14 +38,14 @@ class CancelScheduledActionOnUnpublishHandlerImpl
             const cancelRes = await this.cancelScheduledAction.execute(action);
             if (cancelRes.isFail()) {
                 // Silently ignore errors - this is non-critical cleanup.
-                // Entry was unpublished successfully, cancelling scheduled actions is best-effort.
+                // Page was unpublished successfully, cancelling scheduled actions is best-effort.
             }
         }
     }
 }
 
-export const CancelScheduledActionOnUnpublishEventHandler =
-    EntryAfterUnpublishEventHandler.createImplementation({
+export const CancelScheduledActionOnPageUnpublishEventHandler =
+    PageAfterUnpublishEventHandler.createImplementation({
         implementation: CancelScheduledActionOnUnpublishHandlerImpl,
         dependencies: [ListScheduledActionsUseCase, CancelScheduledActionUseCase]
     });

@@ -2622,7 +2622,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.20.7, @babel/parser@npm:^7.28.6, @babel/parser@npm:^7.29.0, @babel/parser@npm:^7.6.4":
+"@babel/parser@npm:^7.1.0, @babel/parser@npm:^7.20.7, @babel/parser@npm:^7.28.6, @babel/parser@npm:^7.29.0":
   version: 7.29.0
   resolution: "@babel/parser@npm:7.29.0"
   dependencies:
@@ -2630,6 +2630,17 @@ __metadata:
   bin:
     parser: ./bin/babel-parser.js
   checksum: 10/b1576dca41074997a33ee740d87b330ae2e647f4b7da9e8d2abd3772b18385d303b0cee962b9b88425e0f30d58358dbb8d63792c1a2d005c823d335f6a029747
+  languageName: node
+  linkType: hard
+
+"@babel/parser@npm:^7.29.2":
+  version: 7.29.2
+  resolution: "@babel/parser@npm:7.29.2"
+  dependencies:
+    "@babel/types": "npm:^7.29.0"
+  bin:
+    parser: ./bin/babel-parser.js
+  checksum: 10/45d050bf75aa5194b3255f156173e8553d615ff5a2434674cc4a10cdc7c261931befb8618c996a1c449b87f0ef32a3407879af2ac967d95dc7b4fdbae7037efa
   languageName: node
   linkType: hard
 
@@ -13686,6 +13697,7 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
@@ -13696,6 +13708,7 @@ __metadata:
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/tasks": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     aws-sdk-client-mock: "npm:^4.1.0"
     typescript: "npm:5.9.3"
@@ -16055,19 +16068,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"adio@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "adio@npm:2.0.1"
+"adio@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "adio@npm:2.1.0"
   dependencies:
-    "@babel/parser": "npm:^7.6.4"
-    cosmiconfig: "npm:^9.0.0"
+    "@babel/parser": "npm:^7.29.2"
+    "@babel/traverse": "npm:^7.29.0"
+    chalk: "npm:^5.6.2"
+    cosmiconfig: "npm:^9.0.1"
+    glob: "npm:^13.0.6"
     lodash.get: "npm:^4.4.2"
     relative-require-regex: "npm:^1.0.1"
     require-package-name: "npm:^2.0.1"
-    yargs: "npm:^17.7.2"
+    yargs: "npm:^18.0.0"
   bin:
     adio: src/bin/adio.js
-  checksum: 10/3b1ab86e3bf3a4996a71ccb2719e8bf16ccb557291ca5e62b58e7706674b07ca474a097e0062f85473df520a80a88811aa0f231a42cc101ac0c71d0e31a721d3
+  checksum: 10/e23015926693fe422d450965b268718c5b59ec5b734eec3dd7d8aab8cb2470be5ad53cd9471c42a5f39c5f829f647dfc9da0d23a5925f53111ab035a1c138914
   languageName: node
   linkType: hard
 
@@ -17939,6 +17955,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chalk@npm:^5.6.2":
+  version: 5.6.2
+  resolution: "chalk@npm:5.6.2"
+  checksum: 10/1b2f48f6fba1370670d5610f9cd54c391d6ede28f4b7062dd38244ea5768777af72e5be6b74fb6c6d54cb84c4a2dff3f3afa9b7cb5948f7f022cfd3d087989e0
+  languageName: node
+  linkType: hard
+
 "chardet@npm:^2.1.1":
   version: 2.1.1
   resolution: "chardet@npm:2.1.1"
@@ -18910,7 +18933,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cosmiconfig@npm:^9.0.0":
+"cosmiconfig@npm:^9.0.0, cosmiconfig@npm:^9.0.1":
   version: 9.0.1
   resolution: "cosmiconfig@npm:9.0.1"
   dependencies:
@@ -22769,7 +22792,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^13.0.0, glob@npm:^13.0.3":
+"glob@npm:^13.0.0, glob@npm:^13.0.3, glob@npm:^13.0.6":
   version: 13.0.6
   resolution: "glob@npm:13.0.6"
   dependencies:
@@ -30821,7 +30844,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:^4.0.18"
     "@vitest/eslint-plugin": "npm:^1.6.10"
     "@webiny/di": "npm:^0.2.3"
-    adio: "npm:^2.0.1"
+    adio: "npm:^2.1.0"
     axios: "npm:^1.13.6"
     babel-loader: "npm:^10.1.1"
     babel-plugin-dynamic-import-node: "npm:^2.3.3"

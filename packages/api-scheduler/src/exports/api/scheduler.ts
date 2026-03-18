@@ -15,3 +15,8 @@ export {
     ScheduledActionModel,
     ScheduledActionHandler
 } from "~/shared/abstractions.js";
+
+export {
+    SCHEDULED_ACTION_PUBLISH as ScheduledActionTypePublish,
+    SCHEDULED_ACTION_UNPUBLISH as ScheduledActionTypeUnpublish
+} from "~/constants.js";

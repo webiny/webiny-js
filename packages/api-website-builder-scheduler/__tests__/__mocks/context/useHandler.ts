@@ -4,10 +4,10 @@ import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { defaultIdentity } from "./tenancySecurity";
 import type { LambdaContext } from "@webiny/handler-aws/types";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
-import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import { createHeadlessCmsScheduleContext } from "~/context.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { createWebsiteBuilderScheduleContext } from "~/context.js";
 
-interface CmsHandlerEvent {
+interface WbHandlerEvent {
     path: string;
     headers: {
         ["x-tenant"]: string;
@@ -15,17 +15,17 @@ interface CmsHandlerEvent {
     };
 }
 
-export const useHandler = <C extends CmsContext>(params: CreateHandlerCoreParams) => {
+export const useHandler = <C extends ApiCoreContext>(params: CreateHandlerCoreParams) => {
     const core = createHandlerCore(params);
 
     const plugins = [...core.plugins].concat([
-        createRawEventHandler<CmsHandlerEvent, C, C>(async ({ context }) => {
+        createRawEventHandler<WbHandlerEvent, C, C>(async ({ context }) => {
             return context;
         }),
-        createHeadlessCmsScheduleContext()
+        createWebsiteBuilderScheduleContext()
     ]);
 
-    const handler = createRawHandler<CmsHandlerEvent, C>({
+    const handler = createRawHandler<WbHandlerEvent, C>({
         plugins,
         debug: process.env.DEBUG === "true"
     });
@@ -37,11 +37,10 @@ export const useHandler = <C extends CmsContext>(params: CreateHandlerCoreParams
         identity: params.identity || defaultIdentity,
         tenant: core.tenant,
         elasticsearch: elasticsearchClient,
-        handler: (input?: CmsHandlerEvent) => {
-            const payload: CmsHandlerEvent = {
-                path: "/cms/manage",
+        handler: (input?: WbHandlerEvent) => {
+            const payload: WbHandlerEvent = {
+                path: "/graphql",
                 headers: {
-                    "x-webiny-cms-endpoint": "manage",
                     "x-tenant": "root"
                 },
                 ...input
