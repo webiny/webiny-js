@@ -21,11 +21,10 @@ export const ContentEntryFormPreview = makeDecoratable(
         const { contentModel } = props;
 
         const formRenderer = useFormRenderer(contentModel);
-        
+
         const initialEntry = useMemo(() => {
             return baseEntry;
         }, []);
-        
 
         return (
             <ContentEntryFormProvider

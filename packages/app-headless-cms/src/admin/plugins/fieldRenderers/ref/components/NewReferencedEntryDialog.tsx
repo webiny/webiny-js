@@ -54,7 +54,7 @@ const EntryForm = ({ onCreate, setSaveEntry }: EntryFormProps) => {
             loadFolderHierarchy(currentFolderId);
         }
     }, []);
-    
+
     const initialEntry = useMemo(() => {
         return baseEntry;
     }, []);
