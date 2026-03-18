@@ -32,7 +32,7 @@ const SchedulerFooterElement = () => {
 export const PagesSidebarConfig = () => {
     return (
         <PageListConfig>
-            <Browser.Sidebar.Footer name={"scheduler"} element={<SchedulerFooterElement />} />
+            <Browser.Sidebar.Footer name={"page-schedule"} element={<SchedulerFooterElement />} />
         </PageListConfig>
     );
 };

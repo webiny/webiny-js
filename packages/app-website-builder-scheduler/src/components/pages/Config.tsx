@@ -7,7 +7,7 @@ const { Browser } = PageListConfig;
 export const PagesConfig = () => {
     return (
         <PageListConfig>
-            <Browser.Page.Action name={"schedule"} element={<PageMenuItem />} />
+            <Browser.Page.Action name={"page-schedule"} element={<PageMenuItem />} />
         </PageListConfig>
     );
 };

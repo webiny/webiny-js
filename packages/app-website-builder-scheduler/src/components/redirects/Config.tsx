@@ -7,7 +7,7 @@ const { Browser } = RedirectListConfig;
 export const RedirectsConfig = () => {
     return (
         <RedirectListConfig>
-            <Browser.Redirect.Action name={"schedule"} element={<RedirectMenuItem />} />
+            <Browser.Redirect.Action name={"redirect-schedule"} element={<RedirectMenuItem />} />
         </RedirectListConfig>
     );
 };
