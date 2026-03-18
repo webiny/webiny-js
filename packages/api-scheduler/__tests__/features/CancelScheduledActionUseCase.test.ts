@@ -14,6 +14,7 @@ import {
 } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/index.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
 
 describe("CancelScheduledActionUseCase", () => {
     let context: CmsContext;
@@ -76,7 +77,7 @@ describe("CancelScheduledActionUseCase", () => {
 
         const createResult = await scheduleActionUseCase.execute({
             namespace,
-            actionType: "publish",
+            actionType: SCHEDULED_ACTION_PUBLISH,
             targetId: "target-id#0001",
             scheduleFor: scheduledFor
         });
@@ -102,7 +103,7 @@ describe("CancelScheduledActionUseCase", () => {
 
         const createResult = await scheduleActionUseCase.execute({
             namespace,
-            actionType: "publish",
+            actionType: SCHEDULED_ACTION_PUBLISH,
             targetId: "target-id#0001",
             scheduleFor: scheduledFor
         });

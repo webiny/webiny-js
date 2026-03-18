@@ -2,6 +2,7 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/model.js";
 import { createAbstraction } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
+import type { SCHEDULED_ACTION_PUBLISH, SCHEDULED_ACTION_UNPUBLISH } from "~/constants.js";
 
 /**
  * Identity type - represents who scheduled an action
@@ -12,7 +13,9 @@ export interface Identity {
     displayName: string;
 }
 
-export type ScheduledActionType = "publish" | "unpublish";
+export type ScheduledActionType =
+    | typeof SCHEDULED_ACTION_PUBLISH
+    | typeof SCHEDULED_ACTION_UNPUBLISH;
 /**
  * Scheduled Action Record - The data stored for a scheduled action
  */

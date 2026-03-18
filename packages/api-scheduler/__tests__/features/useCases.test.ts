@@ -13,6 +13,7 @@ import {
     PublishTestEntryActionHandlerImpl
 } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
+import { SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
 
 describe("Combined Use Cases", () => {
     let context: CmsContext;
@@ -52,7 +53,7 @@ describe("Combined Use Cases", () => {
 
         const createResult = await scheduleActionUseCase.execute({
             namespace,
-            actionType: "publish",
+            actionType: SCHEDULED_ACTION_PUBLISH,
             targetId: "target-id#0001",
             scheduleFor: scheduledFor
         });
@@ -66,12 +67,12 @@ describe("Combined Use Cases", () => {
 
         expect(getResult.isOk()).toBeTrue();
         const expected: typeof getResult.value = {
-            actionType: "publish",
+            actionType: SCHEDULED_ACTION_PUBLISH,
             error: undefined,
             id: createResult.value.id,
             namespace: PublishTestEntryActionHandlerImpl.name,
             payload: {
-                actionType: "publish",
+                actionType: SCHEDULED_ACTION_PUBLISH,
                 namespace: PublishTestEntryActionHandlerImpl.name,
                 scheduleId: createResult.value.id,
                 something: true,
@@ -93,7 +94,7 @@ describe("Combined Use Cases", () => {
 
         const updateResult = await scheduleActionUseCase.execute({
             namespace: PublishTestEntryActionHandlerImpl.name,
-            actionType: "publish",
+            actionType: SCHEDULED_ACTION_PUBLISH,
             targetId: "target-id#0001",
             scheduleFor: updatedScheduledFor
         });

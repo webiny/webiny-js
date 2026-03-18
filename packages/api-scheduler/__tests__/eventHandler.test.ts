@@ -6,7 +6,7 @@ import {
 } from "~/createEventHandler.js";
 import { registry } from "@webiny/handler-aws/registry.js";
 import type { LambdaContext } from "@webiny/handler-aws/types.js";
-import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
+import { SCHEDULED_ACTION_EVENT_IDENTIFIER, SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 import { useHandler } from "./__mocks/handler/useHandler.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
@@ -49,7 +49,7 @@ describe("Scheduler Event Handler", () => {
             [SCHEDULED_ACTION_EVENT_IDENTIFIER]: {
                 id: ScheduledActionId.from({
                     namespace,
-                    actionType: "publish",
+                    actionType: SCHEDULED_ACTION_PUBLISH,
                     targetId: "target-id#0001"
                 }),
                 namespace,
@@ -71,7 +71,7 @@ describe("Scheduler Event Handler", () => {
         const scheduleFor = new Date(new Date().getTime() + 5 * 60 * 1000);
         const createResult = await scheduleActionUseCase.execute({
             namespace: PublishTestEntryActionHandlerImpl.name,
-            actionType: "publish",
+            actionType: SCHEDULED_ACTION_PUBLISH,
             targetId: "target-id#0001",
             scheduleFor,
             immediately: false
@@ -79,11 +79,11 @@ describe("Scheduler Event Handler", () => {
 
         expect(createResult.isOk()).toBeTrue();
         expect(createResult.value).toEqual({
-            actionType: "publish",
+            actionType: SCHEDULED_ACTION_PUBLISH,
             id: expect.stringMatching("wby-schedule-"),
             namespace: PublishTestEntryActionHandlerImpl.name,
             payload: {
-                actionType: "publish",
+                actionType: SCHEDULED_ACTION_PUBLISH,
                 namespace: "Test/SomeCustomEntry",
                 scheduleId: expect.stringMatching("wby-schedule-"),
                 targetId: "target-id#0001",

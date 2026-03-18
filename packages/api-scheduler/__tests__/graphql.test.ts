@@ -9,6 +9,7 @@ import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { useHandler } from "~tests/__mocks/handler/useHandler.js";
 import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
 import { ContextPlugin } from "@webiny/api";
+import { SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
 
 describe("Scheduler GraphQL", () => {
     const targetId = "target-id#0001";
@@ -101,7 +102,7 @@ describe("Scheduler GraphQL", () => {
         const [publishResponse] = await handler.scheduleAction({
             id: targetId,
             namespace: PublishTestEntryActionHandlerImpl.name,
-            actionType: "publish",
+            actionType: SCHEDULED_ACTION_PUBLISH,
             scheduleFor
         });
 
@@ -110,7 +111,7 @@ describe("Scheduler GraphQL", () => {
                 scheduler: {
                     scheduleAction: {
                         data: {
-                            actionType: "publish",
+                            actionType: SCHEDULED_ACTION_PUBLISH,
                             id: expect.any(String),
                             namespace,
                             publishOn: scheduleFor.toISOString(),
@@ -141,7 +142,7 @@ describe("Scheduler GraphQL", () => {
                     listScheduledActions: {
                         data: [
                             {
-                                actionType: "publish",
+                                actionType: SCHEDULED_ACTION_PUBLISH,
                                 id: expect.any(String),
                                 namespace,
                                 publishOn: scheduleFor.toISOString(),
@@ -178,7 +179,7 @@ describe("Scheduler GraphQL", () => {
                 scheduler: {
                     getScheduledAction: {
                         data: {
-                            actionType: "publish",
+                            actionType: SCHEDULED_ACTION_PUBLISH,
                             id: expect.any(String),
                             namespace,
                             publishOn: scheduleFor.toISOString(),
@@ -209,7 +210,7 @@ describe("Scheduler GraphQL", () => {
                 scheduler: {
                     getTargetScheduledAction: {
                         data: {
-                            actionType: "publish",
+                            actionType: SCHEDULED_ACTION_PUBLISH,
                             id: expect.any(String),
                             namespace,
                             publishOn: scheduleFor.toISOString(),
@@ -233,7 +234,7 @@ describe("Scheduler GraphQL", () => {
         const [updateResponse] = await handler.scheduleAction({
             id: targetId,
             namespace: PublishTestEntryActionHandlerImpl.name,
-            actionType: "publish",
+            actionType: SCHEDULED_ACTION_PUBLISH,
             scheduleFor: updatedScheduleFor
         });
 
@@ -242,7 +243,7 @@ describe("Scheduler GraphQL", () => {
                 scheduler: {
                     scheduleAction: {
                         data: {
-                            actionType: "publish",
+                            actionType: SCHEDULED_ACTION_PUBLISH,
                             id: expect.any(String),
                             namespace,
                             publishOn: updatedScheduleFor.toISOString(),
@@ -271,7 +272,7 @@ describe("Scheduler GraphQL", () => {
                 scheduler: {
                     getScheduledAction: {
                         data: {
-                            actionType: "publish",
+                            actionType: SCHEDULED_ACTION_PUBLISH,
                             id: expect.any(String),
                             namespace,
                             publishOn: updatedScheduleFor.toISOString(),

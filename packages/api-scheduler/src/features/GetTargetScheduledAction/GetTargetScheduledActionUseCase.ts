@@ -14,6 +14,7 @@ import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
+import { SCHEDULED_ACTION_PUBLISH, SCHEDULED_ACTION_UNPUBLISH } from "~/constants.js";
 
 /**
  * Retrieves a scheduled action by its ID
@@ -74,7 +75,7 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
         const schedulePublishId = ScheduledActionId.from({
             namespace: params.namespace,
             targetId: params.id,
-            actionType: "publish"
+            actionType: SCHEDULED_ACTION_PUBLISH
         });
         const publishResult = await this.getEntryByIdUseCase.execute<
             IScheduledActionEntryValues<T>
@@ -85,7 +86,7 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
         const scheduleUnpublishId = ScheduledActionId.from({
             namespace: params.namespace,
             targetId: params.id,
-            actionType: "unpublish"
+            actionType: SCHEDULED_ACTION_UNPUBLISH
         });
         return this.getEntryByIdUseCase.execute<IScheduledActionEntryValues<T>>(
             this.model,
