@@ -14,9 +14,15 @@ interface WebinyDevtoolsConfig {
     updatedAt: number;
 }
 
+interface WebinyDevtoolsSection {
+    data: unknown;
+    updatedAt: number;
+}
+
 interface WebinyDevtoolsHook {
     revision: number;
     configs: Record<string, WebinyDevtoolsConfig>;
+    sections: Record<string, WebinyDevtoolsSection>;
 }
 
 declare global {
@@ -26,9 +32,9 @@ declare global {
     }
 }
 
-function getHook(): WebinyDevtoolsHook {
+export function getHook(): WebinyDevtoolsHook {
     if (!window.__WEBINY_DEVTOOLS_HOOK__) {
-        window.__WEBINY_DEVTOOLS_HOOK__ = { revision: 0, configs: {} };
+        window.__WEBINY_DEVTOOLS_HOOK__ = { revision: 0, configs: {}, sections: {} };
     }
     return window.__WEBINY_DEVTOOLS_HOOK__;
 }

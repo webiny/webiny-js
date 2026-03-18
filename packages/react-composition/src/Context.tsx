@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 import React, { createContext, useContext, useRef, useSyncExternalStore } from "react";
 import { useCompositionScope } from "~/CompositionScope.js";
 import { CompositionStore } from "~/domain/CompositionStore.js";
+
 import type {
     ComposeWith,
     Decoratable,
@@ -84,7 +85,9 @@ export function useComponent<T>(baseFunction: T) {
         return baseFunction;
     }
 
-    return (store.getComponent(baseFunction as any, scope.scope) || baseFunction) as T;
+    const result = store.getComponent(baseFunction as any, scope.scope) || baseFunction;
+
+    return result as T;
 }
 
 const noopSubscribe = () => () => {};

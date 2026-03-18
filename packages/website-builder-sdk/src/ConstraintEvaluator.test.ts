@@ -30,6 +30,7 @@ function makeDocument(elements: DocumentElement[], bindings: Document["bindings"
         version: 1,
         properties: {},
         metadata: {},
+        extensions: {},
         bindings,
         elements: elementMap
     };
