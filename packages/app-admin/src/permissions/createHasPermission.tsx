@@ -26,21 +26,29 @@ export function createHasPermission<const S extends PermissionSchemaConfig>(
 
         const checkAction = (entityId: string, singleAction: string | undefined): boolean => {
             if (!singleAction) {
-                return permissions.canAccess(entityId as any);
+                return permissions.canAccess(entityId);
             }
-            const method = BUILT_IN_ACTIONS[singleAction];
-            if (method) {
-                return (permissions as any)[method](entityId);
+            const method = BUILT_IN_ACTIONS[singleAction] as keyof typeof permissions;
+            if (method && typeof permissions[method] === "function") {
+                return permissions[method](entityId);
             }
-            return permissions.canAction(singleAction as any, entityId as any);
+            /**
+             * // TODO cant be typed properly because of the dynamic nature of custom actions.
+             */
+            // @ts-expect-error
+            return permissions.canAction(singleAction, entityId);
         };
 
         const check = (entityId: string): boolean => {
             if (Array.isArray(action)) {
                 if (requireAllActions) {
-                    return action.every(act => checkAction(entityId, act));
+                    return action.every(act => {
+                        return checkAction(entityId, act);
+                    });
                 }
-                return action.some(act => checkAction(entityId, act));
+                return action.some(act => {
+                    return checkAction(entityId, act);
+                });
             }
             return checkAction(entityId, action);
         };
