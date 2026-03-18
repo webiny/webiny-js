@@ -68,136 +68,150 @@ afterEach(() => {
 describe("createHasPermission", () => {
     describe("single action", () => {
         it("renders children when the user has the required action", () => {
-            withPermissions([{ name: "test.page", pw: "p" }], (
+            withPermissions(
+                [{ name: "test.page", pw: "p" }],
                 <HasPermission entity={"page"} action={"publish"}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.getByText(CHILD_TEXT)).toBeTruthy();
         });
 
         it("renders nothing when the user lacks the required action", () => {
-            withPermissions([{ name: "test.page", pw: "u" }], (
+            withPermissions(
+                [{ name: "test.page", pw: "u" }],
                 <HasPermission entity={"page"} action={"publish"}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.queryByText(CHILD_TEXT)).toBeNull();
         });
 
         it("renders nothing when the user has no permissions at all", () => {
-            withPermissions([], (
+            withPermissions(
+                [],
                 <HasPermission entity={"page"} action={"publish"}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.queryByText(CHILD_TEXT)).toBeNull();
         });
     });
 
     describe("array of actions (OR — default)", () => {
         it("renders children when the user has all actions in the array", () => {
-            withPermissions([{ name: "test.page", pw: "pu" }], (
+            withPermissions(
+                [{ name: "test.page", pw: "pu" }],
                 <HasPermission entity={"page"} action={["publish", "unpublish"]}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.getByText(CHILD_TEXT)).toBeTruthy();
         });
 
         it("renders children when the user has only one of the actions", () => {
-            withPermissions([{ name: "test.page", pw: "p" }], (
+            withPermissions(
+                [{ name: "test.page", pw: "p" }],
                 <HasPermission entity={"page"} action={["publish", "unpublish"]}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.getByText(CHILD_TEXT)).toBeTruthy();
         });
 
         it("renders children when only the last action in the array is allowed", () => {
-            withPermissions([{ name: "test.page", rwd: "rw" }], (
+            withPermissions(
+                [{ name: "test.page", rwd: "rw" }],
                 <HasPermission entity={"page"} action={["publish", "unpublish", "edit"]}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.getByText(CHILD_TEXT)).toBeTruthy();
         });
 
         it("renders nothing when the user has none of the actions", () => {
-            withPermissions([{ name: "test.page", rwd: "r" }], (
+            withPermissions(
+                [{ name: "test.page", rwd: "r" }],
                 <HasPermission entity={"page"} action={["publish", "unpublish"]}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.queryByText(CHILD_TEXT)).toBeNull();
         });
     });
 
     describe("requireAllActions flag", () => {
         it("renders children when the user has all actions in the array", () => {
-            withPermissions([{ name: "test.page", pw: "pu" }], (
+            withPermissions(
+                [{ name: "test.page", pw: "pu" }],
                 <HasPermission entity={"page"} action={["publish", "unpublish"]} requireAllActions>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.getByText(CHILD_TEXT)).toBeTruthy();
         });
 
         it("renders nothing when the user has only one of the required actions", () => {
-            withPermissions([{ name: "test.page", pw: "p" }], (
+            withPermissions(
+                [{ name: "test.page", pw: "p" }],
                 <HasPermission entity={"page"} action={["publish", "unpublish"]} requireAllActions>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.queryByText(CHILD_TEXT)).toBeNull();
         });
 
         it("renders nothing when the user has none of the required actions", () => {
-            withPermissions([{ name: "test.page", rwd: "r" }], (
+            withPermissions(
+                [{ name: "test.page", rwd: "r" }],
                 <HasPermission entity={"page"} action={["publish", "unpublish"]} requireAllActions>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.queryByText(CHILD_TEXT)).toBeNull();
         });
 
         it("is ignored when action is a single string", () => {
-            withPermissions([{ name: "test.page", pw: "p" }], (
+            withPermissions(
+                [{ name: "test.page", pw: "p" }],
                 <HasPermission entity={"page"} action={"publish"} requireAllActions>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.getByText(CHILD_TEXT)).toBeTruthy();
         });
     });
 
     describe("no action (entity access only)", () => {
         it("renders children when the user has any permission for the entity", () => {
-            withPermissions([{ name: "test.page", rwd: "r" }], (
+            withPermissions(
+                [{ name: "test.page", rwd: "r" }],
                 <HasPermission entity={"page"}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.getByText(CHILD_TEXT)).toBeTruthy();
         });
 
         it("renders nothing when the user has no permission for the entity", () => {
-            withPermissions([], (
+            withPermissions(
+                [],
                 <HasPermission entity={"page"}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.queryByText(CHILD_TEXT)).toBeNull();
         });
     });
 
     describe("full access", () => {
         it("renders children regardless of the action when the user has full access", () => {
-            withPermissions([{ name: "test.*" }], (
+            withPermissions(
+                [{ name: "test.*" }],
                 <HasPermission entity={"page"} action={["publish", "unpublish"]} requireAllActions>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
-            ));
+            );
             expect(screen.getByText(CHILD_TEXT)).toBeTruthy();
         });
     });
