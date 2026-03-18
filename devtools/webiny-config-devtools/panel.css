@@ -119,6 +119,16 @@ html, body {
     font-size: 11px;
 }
 
+.sidebar-group-header {
+    padding: 6px 10px 4px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-toolbar);
+}
+
 .sidebar-item {
     padding: 5px 10px;
     cursor: pointer;

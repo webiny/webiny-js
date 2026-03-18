@@ -20,6 +20,8 @@ export class PropertyStore {
     private queue: Operation[] = [];
     private listeners = new Set<Listener>();
     private priorities = new Map<string, number>();
+    /** Properties that were explicitly positioned via before/after. */
+    private positioned = new Set<string>();
 
     /**
      * Synchronous lookup map — written immediately on addProperty (before debounce),
@@ -120,11 +122,13 @@ export class PropertyStore {
             }
         }
 
-        // Re-sort order by priority. This handles the case where a partial
-        // remove+re-add (e.g., primary properties remounting while secondary
-        // stay mounted) would otherwise leave secondary properties stranded
-        // at the wrong position in the order array.
+        // Stable-sort the order array by priority, but only for properties
+        // that were NOT explicitly positioned via before/after. Explicitly
+        // positioned properties keep their placement.
         this.order.sort((a, b) => {
+            if (this.positioned.has(a) || this.positioned.has(b)) {
+                return 0;
+            }
             return (this.priorities.get(a) ?? 0) - (this.priorities.get(b) ?? 0);
         });
 
@@ -136,6 +140,10 @@ export class PropertyStore {
 
     private executeAdd(property: Property, options: AddPropertyOptions): void {
         this.priorities.set(property.id, options.priority ?? 0);
+
+        if (options.after || options.before) {
+            this.positioned.add(property.id);
+        }
 
         const exists = this.map.has(property.id);
 
@@ -168,6 +176,7 @@ export class PropertyStore {
         }
         this.map.delete(id);
         this.priorities.delete(id);
+        this.positioned.delete(id);
         this.order = this.order.filter(oid => oid !== id);
         // Note: we intentionally do NOT call removeDescendants here.
         // React's component lifecycle ensures that when a parent Property

@@ -9,6 +9,7 @@ export const FubPageSettings = () => {
             <PageSettings.Group
                 name={"custom"}
                 title={"Custom"}
+                icon={<div />}
                 description={"My super custom group"}
             >
                 <PageSettings.Element name={"title"} element={<div>element</div>} />

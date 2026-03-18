@@ -5,8 +5,9 @@
     // ── State ──────────────────────────────────────────────────────
     let lastRevision = -1;
     let configs = {};
-    let selectedConfig = null;
-    let activeTab = "browse"; // "browse" | "config" | "properties"
+    let sections = {};
+    let selectedItem = null;   // { type: "config"|"section", name: string }
+    let activeTab = "browse";  // "browse" | "config" | "properties"
     let selectedKey = null;
 
     // ── DOM refs ───────────────────────────────────────────────────
@@ -29,29 +30,34 @@
         );
     }
 
+    var SERIALIZER = [
+        "(function() {",
+        "  var h = window.__WEBINY_DEVTOOLS_HOOK__;",
+        "  if (!h) return null;",
+        "  var replacer = function(k, v) {",
+        "    if (typeof v === 'function') return '[Function: ' + (v.name || 'anonymous') + ']';",
+        "    if (v !== null && typeof v === 'object' && v.$$typeof) return '[ReactElement: ' + (typeof v.type === 'string' ? v.type : v.type?.displayName || v.type?.name || 'Unknown') + ']';",
+        "    if (typeof v === 'undefined') return '[undefined]';",
+        "    return v;",
+        "  };",
+        "  return {",
+        "    configs: JSON.parse(JSON.stringify(h.configs || {}, replacer)),",
+        "    sections: JSON.parse(JSON.stringify(h.sections || {}, replacer))",
+        "  };",
+        "})()"
+    ].join("\n");
+
     function fetchFullData() {
-        chrome.devtools.inspectedWindow.eval(
-            [
-                "(function() {",
-                "  var h = window.__WEBINY_DEVTOOLS_HOOK__;",
-                "  if (!h) return null;",
-                "  return JSON.parse(JSON.stringify(h.configs, function(k, v) {",
-                "    if (typeof v === 'function') return '[Function: ' + (v.name || 'anonymous') + ']';",
-                "    if (v !== null && typeof v === 'object' && v.$$typeof) return '[ReactElement: ' + (typeof v.type === 'string' ? v.type : v.type?.displayName || v.type?.name || 'Unknown') + ']';",
-                "    if (typeof v === 'undefined') return '[undefined]';",
-                "    return v;",
-                "  }));",
-                "})()"
-            ].join("\n"),
-            function (result, err) {
-                if (err || !result) {
-                    configs = {};
-                } else {
-                    configs = result;
-                }
-                render();
+        chrome.devtools.inspectedWindow.eval(SERIALIZER, function (result, err) {
+            if (err || !result) {
+                configs = {};
+                sections = {};
+            } else {
+                configs = result.configs || {};
+                sections = result.sections || {};
             }
-        );
+            render();
+        });
     }
 
     // ── Rendering ──────────────────────────────────────────────────
@@ -61,45 +67,100 @@
     }
 
     function renderSidebar() {
-        var names = Object.keys(configs).sort();
-        configCount.textContent = names.length + " config" + (names.length !== 1 ? "s" : "");
+        var configNames = Object.keys(configs).sort();
+        var sectionNames = Object.keys(sections).sort();
+        var total = configNames.length + sectionNames.length;
 
-        if (names.length === 0) {
+        configCount.textContent = total + " item" + (total !== 1 ? "s" : "");
+
+        if (total === 0) {
             sidebar.innerHTML =
-                '<div class="sidebar-empty">No configs detected.<br>Make sure the app is running in development mode.</div>';
+                '<div class="sidebar-empty">No configs or sections detected.<br>Make sure the app is running in development mode.</div>';
             return;
         }
 
-        // If selected config no longer exists, deselect
-        if (selectedConfig && !configs[selectedConfig]) {
-            selectedConfig = null;
+        // If selected item no longer exists, deselect
+        if (selectedItem) {
+            if (selectedItem.type === "config" && !configs[selectedItem.name]) {
+                selectedItem = null;
+            } else if (selectedItem.type === "section" && !sections[selectedItem.name]) {
+                selectedItem = null;
+            }
         }
 
         sidebar.innerHTML = "";
-        names.forEach(function (name) {
-            var item = document.createElement("div");
-            item.className = "sidebar-item" + (name === selectedConfig ? " selected" : "");
-            item.title = name;
 
-            var propCount = configs[name]?.properties?.length || 0;
-            item.innerHTML = esc(name) + '<span class="badge">' + propCount + "</span>";
+        // Configs group
+        if (configNames.length > 0) {
+            var configHeader = document.createElement("div");
+            configHeader.className = "sidebar-group-header";
+            configHeader.textContent = "CONFIGS (" + configNames.length + ")";
+            sidebar.appendChild(configHeader);
 
-            item.addEventListener("click", function () {
-                selectedConfig = name;
-                selectedKey = null;
-                render();
+            configNames.forEach(function (name) {
+                var isSelected = selectedItem && selectedItem.type === "config" && selectedItem.name === name;
+                var item = document.createElement("div");
+                item.className = "sidebar-item" + (isSelected ? " selected" : "");
+                item.title = name;
+
+                var propCount = configs[name]?.properties?.length || 0;
+                item.innerHTML = esc(name) + '<span class="badge">' + propCount + "</span>";
+
+                item.addEventListener("click", function () {
+                    selectedItem = { type: "config", name: name };
+                    selectedKey = null;
+                    activeTab = "browse";
+                    render();
+                });
+                sidebar.appendChild(item);
             });
-            sidebar.appendChild(item);
-        });
+        }
+
+        // Sections group
+        if (sectionNames.length > 0) {
+            var sectionHeader = document.createElement("div");
+            sectionHeader.className = "sidebar-group-header";
+            sectionHeader.textContent = "SECTIONS (" + sectionNames.length + ")";
+            sidebar.appendChild(sectionHeader);
+
+            sectionNames.forEach(function (name) {
+                var isSelected = selectedItem && selectedItem.type === "section" && selectedItem.name === name;
+                var item = document.createElement("div");
+                item.className = "sidebar-item" + (isSelected ? " selected" : "");
+                item.title = name;
+                item.innerHTML = esc(name);
+
+                item.addEventListener("click", function () {
+                    selectedItem = { type: "section", name: name };
+                    selectedKey = null;
+                    activeTab = "browse";
+                    render();
+                });
+                sidebar.appendChild(item);
+            });
+        }
+
     }
 
     function renderDetail() {
-        if (!selectedConfig || !configs[selectedConfig]) {
-            detail.innerHTML = '<div class="detail-empty">Select a config from the sidebar.</div>';
+        if (!selectedItem) {
+            detail.innerHTML = '<div class="detail-empty">Select an item from the sidebar.</div>';
             return;
         }
 
-        var data = configs[selectedConfig];
+        if (selectedItem.type === "config") {
+            renderConfigDetail();
+        } else {
+            renderSectionDetail();
+        }
+    }
+
+    function renderConfigDetail() {
+        var data = configs[selectedItem.name];
+        if (!data) {
+            detail.innerHTML = '<div class="detail-empty">Config no longer available.</div>';
+            return;
+        }
 
         detail.innerHTML = "";
 
@@ -200,6 +261,99 @@
         detail.appendChild(propsContent);
     }
 
+    function renderSectionDetail() {
+        var data = sections[selectedItem.name];
+        if (!data) {
+            detail.innerHTML = '<div class="detail-empty">Section no longer available.</div>';
+            return;
+        }
+
+        detail.innerHTML = "";
+
+        // Section header
+        var header = document.createElement("div");
+        header.className = "tabs";
+        var label = document.createElement("div");
+        label.className = "tab active";
+        label.textContent = selectedItem.name;
+        header.appendChild(label);
+        detail.appendChild(header);
+
+        // JSON tree with toolbar
+        var content = document.createElement("div");
+        content.className = "tab-content";
+        var sectionData = data.data;
+
+        // If data is an object, show Browse-style split view
+        if (sectionData && typeof sectionData === "object" && !Array.isArray(sectionData)) {
+            var rootKeys = Object.keys(sectionData);
+
+            if (selectedKey && rootKeys.indexOf(selectedKey) === -1) {
+                selectedKey = null;
+            }
+
+            content.className = "tab-content tab-content-browse";
+
+            var keyList = document.createElement("div");
+            keyList.className = "browse-keys";
+
+            rootKeys.forEach(function (key) {
+                var keyItem = document.createElement("div");
+                keyItem.className = "browse-key-item" + (key === selectedKey ? " selected" : "");
+                var val = sectionData[key];
+                var subtitle = "";
+                if (Array.isArray(val)) {
+                    subtitle = "Array (" + val.length + ")";
+                } else if (val && typeof val === "object") {
+                    subtitle = "Object (" + Object.keys(val).length + " keys)";
+                } else {
+                    subtitle = formatValue(val);
+                }
+                keyItem.innerHTML = '<div class="browse-key-name">' + esc(key) + '</div>' +
+                    '<div class="browse-key-type">' + esc(subtitle) + '</div>';
+                keyItem.addEventListener("click", function () {
+                    selectedKey = key;
+                    renderDetail();
+                });
+                keyList.appendChild(keyItem);
+            });
+
+            var valuePane = document.createElement("div");
+            valuePane.className = "browse-value";
+
+            if (selectedKey && sectionData[selectedKey] !== undefined) {
+                var nodes = [];
+                var valueTree = document.createElement("div");
+                valueTree.className = "json-tree";
+                buildJsonTree(sectionData[selectedKey], valueTree, 0, nodes);
+                if (nodes.length > 0) {
+                    buildTreeToolbar(valuePane, nodes);
+                }
+                valuePane.appendChild(valueTree);
+            } else {
+                var emptyMsg = document.createElement("div");
+                emptyMsg.className = "browse-value-empty";
+                emptyMsg.textContent = rootKeys.length > 0 ? "Select a key to inspect." : "Empty section data.";
+                valuePane.appendChild(emptyMsg);
+            }
+
+            content.appendChild(keyList);
+            content.appendChild(valuePane);
+        } else {
+            // Primitive or array — just show JSON tree
+            var nodes = [];
+            var tree = document.createElement("div");
+            tree.className = "json-tree";
+            buildJsonTree(sectionData, tree, 0, nodes);
+            if (nodes.length > 0) {
+                buildTreeToolbar(content, nodes);
+            }
+            content.appendChild(tree);
+        }
+
+        detail.appendChild(content);
+    }
+
     function createTab(label, tabId) {
         var tab = document.createElement("div");
         tab.className = "tab" + (activeTab === tabId ? " active" : "");
@@ -220,8 +374,6 @@
         expandBtn.className = "tree-toolbar-btn";
         expandBtn.textContent = "Expand All";
         expandBtn.addEventListener("click", function () {
-            // Expanding a node lazily creates children which push new entries
-            // onto nodeList. Use an index loop so we pick up new nodes.
             for (var i = 0; i < nodeList.length; i++) {
                 nodeList[i].setExpanded(true);
             }
