@@ -43,7 +43,7 @@ export const StepsNavigator = () => {
         const insertIndex = Math.max(steps.length - 1, 0);
 
         createElement({
-            componentName: "FunnelBuilder/Step",
+            componentName: "Fub/Step",
             parentId: funnel.id,
             slot: "steps",
             index: insertIndex,

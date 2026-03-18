@@ -12,7 +12,7 @@ export type FunnelInputs = {
 
 export const useFunnel = () => {
     const elementId = useSelectFromDocument(state => {
-        const funnel = $getFirstElementOfType(state, "FunnelBuilder/Funnel");
+        const funnel = $getFirstElementOfType(state, "Fub/Container");
         return funnel ? funnel.id : null;
     });
 
