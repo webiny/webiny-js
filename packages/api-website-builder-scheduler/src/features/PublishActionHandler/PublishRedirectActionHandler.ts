@@ -1,7 +1,8 @@
 import {
     ScheduledActionHandler,
     ScheduledActionType,
-    type IScheduledAction
+    type IScheduledAction,
+    ScheduledActionTypePublish
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { UpdateRedirectUseCase } from "@webiny/api-website-builder/exports/api/website-builder/redirect.js";
 import type { IScheduledActionPayload } from "~/types.js";
@@ -18,7 +19,7 @@ class PublishRedirectActionHandlerImpl implements ScheduledActionHandler.Interfa
     public canHandle(namespace: string, actionType: ScheduledActionType): boolean {
         return (
             extractModelIdFromNamespace(namespace) === SCHEDULED_ACTION_TYPE_REDIRECT &&
-            actionType === "publish"
+            actionType === ScheduledActionTypePublish
         );
     }
 

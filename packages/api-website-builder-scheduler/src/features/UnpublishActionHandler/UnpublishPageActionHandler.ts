@@ -1,6 +1,7 @@
 import {
     type IScheduledAction,
-    ScheduledActionHandler
+    ScheduledActionHandler,
+    ScheduledActionTypeUnpublish
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { UnpublishPageUseCase } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
 import type { IScheduledActionPayload } from "~/types.js";
@@ -17,7 +18,7 @@ class UnpublishPageActionHandlerImpl implements ScheduledActionHandler.Interface
     canHandle(namespace: string, actionType: ScheduledActionType): boolean {
         return (
             extractModelIdFromNamespace(namespace) === SCHEDULED_ACTION_TYPE_PAGE &&
-            actionType === "unpublish"
+            actionType === ScheduledActionTypeUnpublish
         );
     }
 

@@ -1,7 +1,8 @@
 import {
     ScheduledActionHandler,
     ScheduledActionType,
-    type IScheduledAction
+    type IScheduledAction,
+    ScheduledActionTypePublish
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { PublishPageUseCase } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
 import type { IScheduledActionPayload } from "~/types.js";
@@ -17,7 +18,7 @@ class PublishPageActionHandlerImpl implements ScheduledActionHandler.Interface {
     public canHandle(namespace: string, actionType: ScheduledActionType): boolean {
         return (
             extractModelIdFromNamespace(namespace) === SCHEDULED_ACTION_TYPE_PAGE &&
-            actionType === "publish"
+            actionType === ScheduledActionTypePublish
         );
     }
 

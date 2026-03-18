@@ -1,5 +1,8 @@
 import { ScheduleUnpublishPageUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { ScheduleActionUseCase } from "@webiny/api-scheduler/exports/api/scheduler.js";
+import {
+    ScheduleActionUseCase,
+    ScheduledActionTypeUnpublish
+} from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { createNamespace } from "~/utils/namespace.js";
 import { Result } from "@webiny/feature/exports/api.js";
 import { SCHEDULED_ACTION_TYPE_PAGE } from "~/constants.js";
@@ -10,7 +13,7 @@ class ScheduleUnpublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
     public async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Result {
         const scheduleResult = await this.scheduleAction.execute({
             namespace: createNamespace(SCHEDULED_ACTION_TYPE_PAGE),
-            actionType: "unpublish",
+            actionType: ScheduledActionTypeUnpublish,
             scheduleFor: params.scheduleFor,
             targetId: params.id
         });

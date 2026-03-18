@@ -1,7 +1,8 @@
 import { PageAfterPublishEventHandler } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
 import {
     CancelScheduledActionUseCase,
-    ListScheduledActionsUseCase
+    ListScheduledActionsUseCase,
+    ScheduledActionTypePublish
 } from "@webiny/api-scheduler/exports/api/scheduler.js";
 import { createNamespace } from "~/utils/namespace.js";
 import { SCHEDULED_ACTION_TYPE_PAGE } from "~/constants.js";
@@ -27,7 +28,7 @@ class CancelScheduledActionOnPublishEventHandlerImpl
         const actionsResult = await this.listScheduledActions.execute({
             where: {
                 namespace: createNamespace(SCHEDULED_ACTION_TYPE_PAGE),
-                actionType: "publish",
+                actionType: ScheduledActionTypePublish,
                 targetId: page.id
             }
         });
