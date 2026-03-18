@@ -233,7 +233,8 @@ interface SingleEntityProps<S extends PermissionSchemaConfig> {
     entity: AllEntityIds<S>;
     any?: never;
     all?: never;
-    action?: HasPermissionAction<S>;
+    action?: HasPermissionAction<S> | HasPermissionAction<S>[];
+    requireAllActions?: boolean;
     children: React.ReactNode;
 }
 
@@ -241,7 +242,8 @@ interface AnyEntitiesProps<S extends PermissionSchemaConfig> {
     entity?: never;
     any: AllEntityIds<S>[];
     all?: never;
-    action?: HasPermissionAction<S>;
+    action?: HasPermissionAction<S> | HasPermissionAction<S>[];
+    requireAllActions?: boolean;
     children: React.ReactNode;
 }
 
@@ -249,7 +251,8 @@ interface AllEntitiesProps<S extends PermissionSchemaConfig> {
     entity?: never;
     any?: never;
     all: AllEntityIds<S>[];
-    action?: HasPermissionAction<S>;
+    action?: HasPermissionAction<S> | HasPermissionAction<S>[];
+    requireAllActions?: boolean;
     children: React.ReactNode;
 }
 
