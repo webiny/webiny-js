@@ -38,7 +38,7 @@ const getPackageName = packageJsonFile => {
 };
 
 const checkPackageNodeModules = () => {
-    const packages = glob.sync(target);
+    const packages = fastGlob.sync(target);
     for (let pkg of packages) {
         pkg = pkg.replace("/package.json", "");
         const name = stripWebinyPath(pkg);
