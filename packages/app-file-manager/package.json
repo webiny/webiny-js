@@ -36,7 +36,7 @@
     "bytes": "^3.1.2",
     "cropperjs": "^1.6.2",
     "dataurl-to-blob": "^0.0.1",
-    "dayjs": "^1.11.19",
+    "dayjs": "^1.11.20",
     "dot-prop-immutable": "^2.1.1",
     "graphql": "^16.13.1",
     "graphql-tag": "^2.12.6",

@@ -26,7 +26,7 @@
   "devDependencies": {
     "@types/postcss-import": "^14.0.3",
     "@webiny/build-tools": "0.0.0",
-    "next": "^15.5.12",
+    "next": "^15.5.13",
     "typescript": "5.9.3",
     "vitest": "^4.1.0",
     "webpack": "^5.105.4"

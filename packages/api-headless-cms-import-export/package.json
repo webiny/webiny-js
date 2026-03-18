@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@smithy/node-http-handler": "^4.4.14",
+    "@smithy/node-http-handler": "^4.5.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
@@ -32,7 +32,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/adm-zip": "^0.5.7",
+    "@types/adm-zip": "^0.5.8",
     "@types/archiver": "^6.0.4",
     "@types/unzipper": "^0.10.11",
     "@webiny/api": "0.0.0",

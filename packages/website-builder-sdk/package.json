@@ -22,7 +22,7 @@
     "lodash": "^4.17.23",
     "matcher": "^5.0.0",
     "mobx": "^6.15.0",
-    "nanoid": "^5.1.6",
+    "nanoid": "^5.1.7",
     "nanoid-dictionary": "^5.0.0",
     "pino": "^9.14.0",
     "pino-pretty": "^9.4.1"
