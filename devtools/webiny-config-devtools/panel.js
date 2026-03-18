@@ -6,7 +6,8 @@
     let lastRevision = -1;
     let configs = {};
     let selectedConfig = null;
-    let activeTab = "config"; // "config" | "properties"
+    let activeTab = "browse"; // "browse" | "config" | "properties"
+    let selectedKey = null;
 
     // ── DOM refs ───────────────────────────────────────────────────
     const sidebar = document.getElementById("sidebar");
@@ -85,6 +86,7 @@
 
             item.addEventListener("click", function () {
                 selectedConfig = name;
+                selectedKey = null;
                 render();
             });
             sidebar.appendChild(item);
@@ -105,18 +107,89 @@
         var tabs = document.createElement("div");
         tabs.className = "tabs";
 
+        var tabBrowse = createTab("Browse", "browse");
         var tabConfig = createTab("Config Object", "config");
         var tabProps = createTab("Raw Properties (" + (data.properties?.length || 0) + ")", "properties");
+        tabs.appendChild(tabBrowse);
         tabs.appendChild(tabConfig);
         tabs.appendChild(tabProps);
         detail.appendChild(tabs);
 
+        // Browse tab — split: key list on the left, value detail on the right
+        var browseContent = document.createElement("div");
+        browseContent.className = "tab-content tab-content-browse" + (activeTab !== "browse" ? " hidden" : "");
+        var configObj = data.config;
+        if (configObj && typeof configObj === "object" && !Array.isArray(configObj)) {
+            var rootKeys = Object.keys(configObj);
+
+            // Reset selectedKey if it no longer exists
+            if (selectedKey && rootKeys.indexOf(selectedKey) === -1) {
+                selectedKey = null;
+            }
+
+            var browseKeyList = document.createElement("div");
+            browseKeyList.className = "browse-keys";
+
+            rootKeys.forEach(function (key) {
+                var keyItem = document.createElement("div");
+                keyItem.className = "browse-key-item" + (key === selectedKey ? " selected" : "");
+                var val = configObj[key];
+                var subtitle = "";
+                if (Array.isArray(val)) {
+                    subtitle = "Array (" + val.length + ")";
+                } else if (val && typeof val === "object") {
+                    subtitle = "Object (" + Object.keys(val).length + " keys)";
+                } else {
+                    subtitle = formatValue(val);
+                }
+                keyItem.innerHTML = '<div class="browse-key-name">' + esc(key) + '</div>' +
+                    '<div class="browse-key-type">' + esc(subtitle) + '</div>';
+                keyItem.addEventListener("click", function () {
+                    selectedKey = key;
+                    renderDetail();
+                });
+                browseKeyList.appendChild(keyItem);
+            });
+
+            var browseValue = document.createElement("div");
+            browseValue.className = "browse-value";
+
+            if (selectedKey && configObj[selectedKey] !== undefined) {
+                var browseNodes = [];
+                var valueTree = document.createElement("div");
+                valueTree.className = "json-tree";
+                buildJsonTree(configObj[selectedKey], valueTree, 0, browseNodes);
+                if (browseNodes.length > 0) {
+                    buildTreeToolbar(browseValue, browseNodes);
+                }
+                browseValue.appendChild(valueTree);
+            } else {
+                var emptyMsg = document.createElement("div");
+                emptyMsg.className = "browse-value-empty";
+                emptyMsg.textContent = rootKeys.length > 0 ? "Select a key to inspect." : "Empty config object.";
+                browseValue.appendChild(emptyMsg);
+            }
+
+            browseContent.appendChild(browseKeyList);
+            browseContent.appendChild(browseValue);
+        } else {
+            var fallback = document.createElement("div");
+            fallback.className = "json-tree";
+            buildJsonTree(configObj, fallback, 0, null);
+            browseContent.appendChild(fallback);
+        }
+        detail.appendChild(browseContent);
+
         // Config object tab
         var configContent = document.createElement("div");
         configContent.className = "tab-content" + (activeTab !== "config" ? " hidden" : "");
+        var configNodes = [];
         var tree = document.createElement("div");
         tree.className = "json-tree";
-        buildJsonTree(data.config, tree, 0);
+        buildJsonTree(data.config, tree, 0, configNodes);
+        if (configNodes.length > 0) {
+            buildTreeToolbar(configContent, configNodes);
+        }
         configContent.appendChild(tree);
         detail.appendChild(configContent);
 
@@ -139,19 +212,46 @@
     }
 
     // ── JSON tree builder ──────────────────────────────────────────
-    function buildJsonTree(value, container, depth) {
+
+    function buildTreeToolbar(targetContainer, nodeList) {
+        var bar = document.createElement("div");
+        bar.className = "tree-toolbar";
+        var expandBtn = document.createElement("button");
+        expandBtn.className = "tree-toolbar-btn";
+        expandBtn.textContent = "Expand All";
+        expandBtn.addEventListener("click", function () {
+            // Expanding a node lazily creates children which push new entries
+            // onto nodeList. Use an index loop so we pick up new nodes.
+            for (var i = 0; i < nodeList.length; i++) {
+                nodeList[i].setExpanded(true);
+            }
+        });
+        var collapseBtn = document.createElement("button");
+        collapseBtn.className = "tree-toolbar-btn";
+        collapseBtn.textContent = "Collapse";
+        collapseBtn.addEventListener("click", function () {
+            for (var i = 0; i < nodeList.length; i++) {
+                nodeList[i].setExpanded(nodeList[i].depth < 2);
+            }
+        });
+        bar.appendChild(expandBtn);
+        bar.appendChild(collapseBtn);
+        targetContainer.appendChild(bar);
+    }
+
+    function buildJsonTree(value, container, depth, nodeList) {
         if (value === null) {
             container.appendChild(span("null", "json-null"));
             return;
         }
 
         if (Array.isArray(value)) {
-            buildCollapsible(value, container, depth, true);
+            buildCollapsible(value, container, depth, true, nodeList);
             return;
         }
 
         if (typeof value === "object") {
-            buildCollapsible(value, container, depth, false);
+            buildCollapsible(value, container, depth, false, nodeList);
             return;
         }
 
@@ -177,7 +277,7 @@
         container.appendChild(span(String(value), "json-null"));
     }
 
-    function buildCollapsible(obj, container, depth, isArray) {
+    function buildCollapsible(obj, container, depth, isArray, nodeList) {
         var keys = isArray ? obj : Object.keys(obj);
         var count = isArray ? obj.length : Object.keys(obj).length;
         var openBracket = isArray ? "[" : "{";
@@ -222,6 +322,10 @@
             }
         }
 
+        if (nodeList) {
+            nodeList.push({ setExpanded: setExpanded, depth: depth });
+        }
+
         function populateChildren() {
             var entries = isArray
                 ? obj.map(function (v, i) { return [i, v]; })
@@ -231,7 +335,7 @@
                 var line = document.createElement("div");
                 line.appendChild(span(isArray ? String(entry[0]) : '"' + esc(String(entry[0])) + '"', "json-key"));
                 line.appendChild(span(": ", "json-bracket"));
-                buildJsonTree(entry[1], line, depth + 1);
+                buildJsonTree(entry[1], line, depth + 1, nodeList);
                 if (idx < entries.length - 1) {
                     line.appendChild(span(",", "json-bracket"));
                 }

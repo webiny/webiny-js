@@ -201,6 +201,92 @@ html, body {
     display: none;
 }
 
+/* Browse tab */
+.tab-content-browse {
+    display: flex;
+    padding: 0;
+}
+
+.tab-content-browse.hidden {
+    display: none;
+}
+
+.browse-keys {
+    width: 200px;
+    min-width: 140px;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    background: var(--bg-sidebar);
+    flex-shrink: 0;
+}
+
+.browse-key-item {
+    padding: 6px 10px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+}
+
+.browse-key-item:hover {
+    background: var(--bg-hover);
+}
+
+.browse-key-item.selected {
+    background: var(--bg-selected);
+}
+
+.browse-key-name {
+    font-weight: 600;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.browse-key-type {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.browse-value {
+    flex: 1;
+    overflow: auto;
+    padding: 8px 12px;
+}
+
+.browse-value-empty {
+    color: var(--text-muted);
+    padding: 16px;
+    text-align: center;
+}
+
+/* Tree toolbar (Expand All / Collapse) */
+.tree-toolbar {
+    display: flex;
+    gap: 6px;
+    padding: 4px 0 6px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 6px;
+}
+
+.tree-toolbar-btn {
+    padding: 2px 8px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--text-muted);
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.tree-toolbar-btn:hover {
+    color: var(--text);
+    background: var(--bg-hover);
+}
+
 /* JSON tree */
 .json-tree {
     font-family: "SF Mono", Monaco, Menlo, Consolas, monospace;
