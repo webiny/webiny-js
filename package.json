@@ -99,7 +99,7 @@
     "graphql": "^16.13.1",
     "husky": "^4.3.8",
     "inquirer": "^12.11.1",
-    "jest-extended": "^6.0.0",
+    "jest-extended": "^7.0.0",
     "lerna": "8.1.2",
     "lexical": "^0.40.0",
     "lint-staged": "^16.4.0",
