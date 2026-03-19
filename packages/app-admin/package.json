@@ -18,7 +18,7 @@
     "@emotion/styled": "11.14.1",
     "@iconify/json": "^2.2.452",
     "@monaco-editor/react": "^4.7.0",
-    "@svgr/webpack": "^6.5.1",
+    "@svgr/webpack": "^8.1.0",
     "@types/react": "^18.3.28",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
