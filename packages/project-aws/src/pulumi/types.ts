@@ -5,7 +5,6 @@ export interface IDefaultStackOutput extends IStackOutput {
     deploymentId: string;
     region: string;
     dynamoDbTable: string;
-    migrationLambdaArn: string;
     iotAuthorizerName: string;
     apiDomain: string;
     apiUrl: string;

@@ -41,9 +41,6 @@ export const ProjectAws = () => {
 
             <AdminAfterDeploy src={p("ProjectAws/UploadAdminAppToS3.js")} />
 
-            {/* We'll bring this back once needed. */}
-            {/* <ApiAfterDeploy src={p("ProjectAws/ExecuteDataMigrations.js")} /> */}
-
             <ApiAfterDeploy src={p("ProjectAws/AutoInstall/AutoInstallAfterApiDeploy.js")} />
             <ExtensionDefinitions src={p("definitions.js")} />
             <ExtensionDefinitions src={p("ProjectAws/definitions.js")} />

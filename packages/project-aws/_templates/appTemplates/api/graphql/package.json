@@ -33,12 +33,10 @@
     "@webiny/api-workflows": "latest",
     "@webiny/aws-sdk": "latest",
     "@webiny/build-tools": "latest",
-    "@webiny/data-migration": "latest",
     "@webiny/db-dynamodb": "latest",
     "@webiny/handler-aws": "latest",
     "@webiny/handler-client": "latest",
     "@webiny/handler-db": "latest",
-    "@webiny/handler-graphql": "latest",
-    "@webiny/migrations": "latest"
+    "@webiny/handler-graphql": "latest"
   }
 }
