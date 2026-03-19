@@ -21,7 +21,7 @@ export const runInteractivePrompt = async () => {
 
     return inquirer.prompt([
         {
-            type: "list",
+            type: "select",
             name: "region",
             default: "us-east-1",
             message: "Please choose the AWS region in which your project will be deployed:",
@@ -29,7 +29,7 @@ export const runInteractivePrompt = async () => {
             choices: availableAwsRegions
         },
         {
-            type: "list",
+            type: "select",
             name: "storageOps",
             default: "ddb",
             message: `Please choose the database setup you wish to use with your project:`,
