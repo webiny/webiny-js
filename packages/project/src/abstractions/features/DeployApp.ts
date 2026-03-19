@@ -8,7 +8,6 @@ interface IDeployAppParams {
     app: AppName;
     preview?: boolean;
     pulumiArgs?: Record<string, string | boolean | string[] | undefined>;
-    dataMigrationLogStreaming?: boolean;
     allowLocalStateFiles?: boolean;
     output?: (pulumiProcess: IPulumiProcess) => Promise<void>;
 }

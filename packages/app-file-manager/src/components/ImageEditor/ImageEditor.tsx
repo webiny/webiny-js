@@ -2,10 +2,6 @@ import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { flip, filter, crop, rotate } from "./toolbar/index.js";
 import type { ImageEditorTool, ToolbarTool } from "./toolbar/types.js";
-/**
- * Package load-script does not have types.
- */
-// @ts-expect-error
 import loadScript from "load-script";
 
 const toolbar = {

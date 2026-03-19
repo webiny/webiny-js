@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 
-export const testPattern = `/**/*.{test,test-d}.[jt]s?(x)`;
+export const testPattern = `/{__tests__,src}/**/*.{test,test-d}.[jt]s?(x)`;
 
 const getPackageMetaFromPackageJson = (pkgJson: any) => {
     return {

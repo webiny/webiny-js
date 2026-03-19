@@ -20,11 +20,12 @@ import { NamespaceHandler } from "~tests/__mocks/NamespaceHandler.js";
 import { PublishTestEntryActionHandlerImpl } from "~tests/__mocks/PublishTestEntryActionHandler.js";
 import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { SCHEDULED_ACTION_PUBLISH, SCHEDULED_ACTION_UNPUBLISH } from "~/constants.js";
 
 describe("Scheduler", () => {
     const targetId = "target-id#0001";
     const namespace = PublishTestEntryActionHandlerImpl.name;
-    const actionType = "publish";
+    const actionType = SCHEDULED_ACTION_PUBLISH;
 
     let context: CmsContext;
 
@@ -143,7 +144,7 @@ describe("Scheduler", () => {
                 actionType,
                 targetId,
                 payload: {
-                    actionType: "publish",
+                    actionType: SCHEDULED_ACTION_PUBLISH,
                     namespace: PublishTestEntryActionHandlerImpl.name,
                     scheduleId: expect.any(String),
                     something: true,
@@ -250,7 +251,7 @@ describe("Scheduler", () => {
         expect(getFirstResult.isFail()).toBe(false);
         expect(new Date(getFirstResult.value.scheduledFor).getTime()).toBe(firstDate.getTime());
         expect(getFirstResult.value.payload).toEqual({
-            actionType: "publish",
+            actionType: SCHEDULED_ACTION_PUBLISH,
             namespace: PublishTestEntryActionHandlerImpl.name,
             scheduleId: expect.any(String),
             something: true,
@@ -277,7 +278,7 @@ describe("Scheduler", () => {
         expect(getSecondResult.value.id).toBe(scheduleId); // Same ID
         expect(new Date(getSecondResult.value.scheduledFor).getTime()).toBe(secondDate.getTime());
         expect(getSecondResult.value.payload).toEqual({
-            actionType: "publish",
+            actionType: SCHEDULED_ACTION_PUBLISH,
             namespace: PublishTestEntryActionHandlerImpl.name,
             scheduleId: expect.any(String),
             something: true,
@@ -303,7 +304,7 @@ describe("Scheduler", () => {
 
         const scheduleResult2 = await scheduleAction.execute({
             namespace,
-            actionType: "unpublish",
+            actionType: SCHEDULED_ACTION_UNPUBLISH,
             targetId,
             scheduleFor: new Date(Date.now() + 1000000)
         });

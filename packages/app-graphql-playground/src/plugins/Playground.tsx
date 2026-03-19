@@ -1,10 +1,6 @@
 import React, { Fragment, useEffect, useRef, useCallback, useState } from "react";
 import { ApolloLink } from "apollo-link";
 import { setContext } from "apollo-link-context";
-/**
- * Package load-script does not have types.
- */
-// @ts-expect-error
 import loadScript from "load-script";
 import { Global } from "@emotion/react";
 import { plugins } from "@webiny/plugins";
@@ -39,7 +35,7 @@ const initScripts = () => {
             return resolve();
         }
 
-        loadScript(PATCHED_GQL_PLAYGROUND_URL, (err: Error) => {
+        loadScript(PATCHED_GQL_PLAYGROUND_URL, err => {
             if (err) {
                 return loadScript(ORIGINAL_GQL_PLAYGROUND_URL, resolve);
             }

@@ -56,7 +56,9 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
                     scrollX: 0,
                     scrollY: 0,
                     scrollWidth: 0,
-                    scrollHeight: 0
+                    scrollHeight: 0,
+                    breakpoint: "desktop",
+                    breakpoints: []
                 },
                 components: {},
                 componentGroups: {}

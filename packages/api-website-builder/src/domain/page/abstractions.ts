@@ -6,8 +6,13 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import type { WbIdentity, WbLocation } from "~/domain/shared/abstractions.js";
 
+export interface CmsEntryWbPageProperties {
+    title: string;
+    [key: string]: any;
+}
+
 export interface CmsEntryWbPage {
-    properties: Record<string, any>;
+    properties: CmsEntryWbPageProperties;
     metadata: Record<string, any>;
     bindings: Record<string, any>;
     elements: Record<string, any>;

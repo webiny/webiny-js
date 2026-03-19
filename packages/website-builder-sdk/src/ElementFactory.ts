@@ -26,7 +26,7 @@ export interface ElementFactoryCreateElementParams {
     componentName: string;
     parentId: string;
     slot: string;
-    index: number;
+    index?: number;
     bindings?: {
         inputs?: Record<string, any>;
         styles?: Record<string, any>;
@@ -68,7 +68,7 @@ interface GenerateOperationsFromBindingsParams {
 
 type ElementFactoryOperations = {
     addElement: (element: DocumentElement) => IDocumentOperation;
-    addToParent: (element: DocumentElement, index: number) => IDocumentOperation;
+    addToParent: (element: DocumentElement, index?: number) => IDocumentOperation;
     setInputBinding: (
         elementId: string,
         bindingPath: string,
@@ -85,7 +85,7 @@ const defaultOperations: ElementFactoryOperations = {
     addElement: (element: DocumentElement) => {
         return new DocumentOperations.AddElement(element);
     },
-    addToParent: (element: DocumentElement, index: number) => {
+    addToParent: (element: DocumentElement, index?: number) => {
         return new DocumentOperations.AddToParent(element, index);
     },
     setInputBinding: (elementId, bindingPath, binding) => {
@@ -208,7 +208,8 @@ export class ElementFactory {
                 const factory = new ElementFactory(this.components);
                 const newElement = factory.createElementFromComponent({
                     componentName: value.params.component,
-                    index: isList ? this.extractIndex(path) : 0,
+                    // undefined index = append to end of the slot array
+                    index: isList ? undefined : 0,
                     slot: path,
                     parentId: elementId,
                     bindings: value.params
@@ -216,16 +217,30 @@ export class ElementFactory {
 
                 const newElementId = newElement.element.id;
 
-                ops.push(
-                    ...newElement.operations,
-                    operations.setInputBinding(elementId, path, {
-                        id: generateElementId(),
-                        static: node.list ? [newElementId] : newElementId,
-                        type: node.type,
-                        translatable: node.input.translatable,
-                        list: node.list
-                    })
-                );
+                ops.push(...newElement.operations);
+
+                if (isList) {
+                    // For list slots, AddToParent already manages the static array.
+                    // We only set metadata here.
+                    ops.push(
+                        operations.setInputBinding(elementId, path, {
+                            id: generateElementId(),
+                            type: node.type,
+                            translatable: node.input.translatable,
+                            list: node.list
+                        })
+                    );
+                } else {
+                    ops.push(
+                        operations.setInputBinding(elementId, path, {
+                            id: generateElementId(),
+                            static: newElementId,
+                            type: node.type,
+                            translatable: node.input.translatable,
+                            list: node.list
+                        })
+                    );
+                }
             } else if (isObject && isList) {
                 return;
             } else {
@@ -262,11 +277,6 @@ export class ElementFactory {
         }
 
         return manifest;
-    }
-
-    private extractIndex(path: string): number {
-        const match = path.match(/\/(\d+)\//);
-        return match ? parseInt(match[1], 10) : 0;
     }
 
     private createElement(componentName: string, parentId: string, slot: string) {

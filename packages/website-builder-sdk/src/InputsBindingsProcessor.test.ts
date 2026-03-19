@@ -113,6 +113,7 @@ describe("InputsBindingsProcessor", () => {
             "Webiny/GridColumn": {
                 name: "Webiny/GridColumn",
                 label: "Column",
+                tags: [],
                 acceptsChildren: true,
                 inputs: [
                     {

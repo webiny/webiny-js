@@ -1,5 +1,6 @@
 import React from "react";
 import { AcoConfig, type RecordActionConfig } from "@webiny/app-aco";
+import { useRedirect } from "~/modules/redirects/RedirectsList/hooks/useRedirect.js";
 
 const { Record } = AcoConfig;
 
@@ -13,5 +14,6 @@ const BaseRedirectAction = (props: RedirectActionProps) => {
 
 export const RedirectAction = Object.assign(BaseRedirectAction, {
     OptionsMenuItem: Record.Action.OptionsMenuItem,
-    OptionsMenuLink: Record.Action.OptionsMenuLink
+    OptionsMenuLink: Record.Action.OptionsMenuLink,
+    useRedirect
 });

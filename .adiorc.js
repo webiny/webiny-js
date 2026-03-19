@@ -21,33 +21,7 @@ export default {
         }
     },
     ignore: {
-        src: [
-            "~tests",
-            "~",
-            "async_hooks",
-            "aws-sdk",
-            "buffer",
-            "child_process",
-            "crypto",
-            "events",
-            "follow-redirects",
-            "fs",
-            "http",
-            "https",
-            "module",
-            "inspector",
-            "node:fs",
-            "node:timers",
-            "node:path",
-            "node:stream",
-            "os",
-            "path",
-            "readline",
-            "stream",
-            "util",
-            "url",
-            "worker_threads"
-        ],
+        src: ["~tests", "~"],
         dependencies: [
             "@babel/runtime",
             // Packages below are defined as peerDependencies in many 3rd party packages

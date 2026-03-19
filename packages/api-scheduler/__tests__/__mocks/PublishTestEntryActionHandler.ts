@@ -1,4 +1,5 @@
 import { ScheduledActionHandler } from "~/shared/abstractions.js";
+import { SCHEDULED_ACTION_PUBLISH } from "~/constants.js";
 
 /**
  * Handler for publishing CMS entries
@@ -16,7 +17,7 @@ export class PublishTestEntryActionHandlerImpl implements ScheduledActionHandler
     public canHandle(namespace: string, actionType: string): boolean {
         if (namespace !== PublishTestEntryActionHandlerImpl.name) {
             return false;
-        } else if (actionType !== "publish") {
+        } else if (actionType !== SCHEDULED_ACTION_PUBLISH) {
             return false;
         }
         return true;

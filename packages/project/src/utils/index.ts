@@ -8,5 +8,6 @@ export * from "./isValidRegionName.js";
 export * from "./isValidVariantName.js";
 export * from "./measureDuration.js";
 export * from "./requireConfig.js";
+export * from "./toImportSpecifier.js";
 export * from "./projectSdkContext.js";
 export * from "./registerExtension.js";

@@ -19,7 +19,7 @@ describe("FileKey", () => {
             type: "image/jpeg"
         });
 
-        expect(fileKey.toString()).toEqual("image-14.jpeg");
+        expect(fileKey.toString()).toEqual("image-14.jpg");
     });
 
     it("should generate a file key containing id", () => {

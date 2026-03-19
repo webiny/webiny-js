@@ -459,7 +459,7 @@ export interface CmsContentEntry<TValues extends GenericRecord = GenericRecord> 
         status: CmsContentEntryStatusType;
         version: number;
     };
-    values?: TValues;
+    values: TValues;
 }
 
 export interface CmsContentEntryRevision {

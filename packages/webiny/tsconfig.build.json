@@ -8,6 +8,7 @@
     { "path": "../api-headless-cms-scheduler/tsconfig.build.json" },
     { "path": "../api-scheduler/tsconfig.build.json" },
     { "path": "../api-website-builder/tsconfig.build.json" },
+    { "path": "../api-website-builder-scheduler/tsconfig.build.json" },
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-aco/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
@@ -23,7 +24,8 @@
     { "path": "../project-aws/tsconfig.build.json" },
     { "path": "../tasks/tsconfig.build.json" },
     { "path": "../tenant-manager/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
+    { "path": "../validation/tsconfig.build.json" },
+    { "path": "../website-builder-sdk/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -162,6 +164,8 @@
       "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],
       "@webiny/api-website-builder": ["../api-website-builder/src"],
+      "@webiny/api-website-builder-scheduler/*": ["../api-website-builder-scheduler/src/*"],
+      "@webiny/api-website-builder-scheduler": ["../api-website-builder-scheduler/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-aco/*": ["../app-aco/src/*"],
@@ -195,7 +199,9 @@
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
       "@webiny/tenant-manager": ["../tenant-manager/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     },
     "baseUrl": "."
   }

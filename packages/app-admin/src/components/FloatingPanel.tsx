@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import Draggable, { type DraggableEventHandler } from "react-draggable";
 import type { ResizableProps } from "react-resizable";
 import { Resizable } from "react-resizable";
 import styled from "@emotion/styled";
@@ -39,10 +38,9 @@ export interface FloatingPanelProps {
     children: FloatingPanelRenderProp;
 }
 
-export const FloatingPanel = ({ dragHandle, shortcut, children }: FloatingPanelProps) => {
+export const FloatingPanel = ({ shortcut, children }: FloatingPanelProps) => {
     const [isVisible, setIsVisible] = useState(false);
     const [size, setSize] = useState({ width: 700, height: 600 });
-    const [position, setPosition] = useState({ x: 100, y: 100 });
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
     useEffect(() => {
@@ -54,10 +52,6 @@ export const FloatingPanel = ({ dragHandle, shortcut, children }: FloatingPanelP
         return () => removeKeyHandler(shortcut);
     }, [setIsVisible]);
 
-    const onDragStop: DraggableEventHandler = (_, data) => {
-        setPosition({ x: data.x, y: data.y });
-    };
-
     const onResize: ResizableProps["onResize"] = (_, { size }) => {
         setSize({ width: size.width, height: size.height });
     };
@@ -65,25 +59,23 @@ export const FloatingPanel = ({ dragHandle, shortcut, children }: FloatingPanelP
     return createPortal(
         <>
             <PanelRoot>
-                <Draggable handle={dragHandle} onStop={onDragStop} position={position}>
-                    <Resizable
-                        width={size.width}
-                        height={size.height}
-                        onResize={onResize}
-                        handle={<ResizeHandle />}
+                <Resizable
+                    width={size.width}
+                    height={size.height}
+                    onResize={onResize}
+                    handle={<ResizeHandle />}
+                >
+                    <div
+                        className={"bg-neutral-base relative border-sm border-accent-default"}
+                        style={{
+                            display: isVisible ? "block" : "none",
+                            width: size.width + "px",
+                            height: size.height + "px"
+                        }}
                     >
-                        <div
-                            className={"bg-neutral-base relative border-sm border-accent-default"}
-                            style={{
-                                display: isVisible ? "block" : "none",
-                                width: size.width + "px",
-                                height: size.height + "px"
-                            }}
-                        >
-                            <div className={"floating-panel"}>{children(size)}</div>
-                        </div>
-                    </Resizable>
-                </Draggable>
+                        <div className={"floating-panel"}>{children(size)}</div>
+                    </div>
+                </Resizable>
             </PanelRoot>
         </>,
         document.body

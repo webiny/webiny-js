@@ -14,6 +14,7 @@ import {
 import { ExtensionDefinitions as ExtensionDefinitionsExtension } from "~/extensions/ExtensionDefinitions.js";
 import { ExtensionInstanceModel } from "~/defineExtension/index.js";
 import { ProjectConfigModel } from "~/models/ProjectConfigModel.js";
+import { toImportSpecifier } from "~/utils/index.js";
 import { renderConfig } from "./renderConfig.js";
 
 export class DefaultGetProjectConfigService implements GetProjectConfigService.Interface {
@@ -93,7 +94,7 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
                 importPath = filePath;
             }
 
-            return import(importPath);
+            return import(toImportSpecifier(importPath));
         };
 
         const tagsFilters = params?.tags || {};

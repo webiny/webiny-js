@@ -3,6 +3,7 @@ import {
     type BoxesData,
     type ComponentManifest,
     type EditorViewportInfo,
+    functionConverter,
     mouseTracker,
     type PreviewViewportData,
     type SerializedComponentGroup
@@ -19,6 +20,14 @@ type FragmentConfig =
           element: React.ReactNode;
       }
     | { type: "component"; component: string; inputs: Record<string, any> };
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+function deserializeHandlers(value: string | string[]): Function | Function[] {
+    if (Array.isArray(value)) {
+        return value.map(s => functionConverter.deserialize(s));
+    }
+    return functionConverter.deserialize(value);
+}
 
 export class PreviewEvents {
     private editor: Editor;
@@ -130,6 +139,7 @@ export class PreviewEvents {
 
             this.editor.updateEditor(state => {
                 state.viewport = {
+                    ...state.viewport,
                     ...viewport,
                     top: iframeBox.top,
                     left: iframeBox.left
@@ -143,6 +153,36 @@ export class PreviewEvents {
         });
 
         messenger.on("preview.component.register", (component: ComponentManifest) => {
+            // Deserialize constraint check functions once on arrival.
+            try {
+                if (component.constraints) {
+                    component.constraints = (component.constraints as any[]).map(c =>
+                        typeof c === "string" ? functionConverter.deserialize(c) : c
+                    );
+                }
+                if (component.descendantConstraints) {
+                    component.descendantConstraints = (
+                        component.descendantConstraints as any[]
+                    ).map(c => (typeof c === "string" ? functionConverter.deserialize(c) : c));
+                }
+                if (component.canDelete && typeof component.canDelete === "string") {
+                    component.canDelete = functionConverter.deserialize(component.canDelete);
+                }
+                if (component.onChange) {
+                    component.onChange = deserializeHandlers(component.onChange as any) as any;
+                }
+                if (component.onDescendantChange) {
+                    component.onDescendantChange = deserializeHandlers(
+                        component.onDescendantChange as any
+                    ) as any;
+                }
+            } catch (e) {
+                console.log(
+                    `Couldn't deserialize ${component.name} component callbacks:`,
+                    e.message
+                );
+            }
+
             this.editor.updateEditor(state => {
                 if (!state.components) {
                     state.components = {};

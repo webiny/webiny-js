@@ -32,7 +32,7 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
 
     async execute(
         params: UseCaseAbstraction.Params
-    ): Promise<Result<void, UseCaseAbstraction.Error>> {
+    ): Promise<Result<boolean, UseCaseAbstraction.Error>> {
         const hasPermission = await this.permissions.canRead("action");
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());
@@ -71,7 +71,7 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Delete CMS entry
-        const deleteResult = await this.deleteEntryUseCase.execute(this.model, scheduleId, {
+        const deleteResult = await this.deleteEntryUseCase.execute(this.model, getResult.value.id, {
             force: true,
             permanently: true
         });
@@ -81,14 +81,14 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
              * Some process could have already deleted the entry, in which case we can safely ignore this error.
              */
             if (deleteResult.error instanceof EntryNotFoundError) {
-                return Result.ok();
+                return Result.ok(true);
             }
             return Result.fail(
                 new ScheduledActionPersistenceError(new Error(deleteResult.error.message))
             );
         }
 
-        return Result.ok();
+        return Result.ok(true);
     }
 }
 

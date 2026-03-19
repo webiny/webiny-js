@@ -19,7 +19,7 @@ interface SaveEntryOptions {
 }
 
 export interface ContentEntryFormContext {
-    entry: Partial<CmsContentEntry>;
+    entry: Partial<Omit<CmsContentEntry, "values">> & Pick<CmsContentEntry, "values">;
     saveEntry: (options?: SaveEntryOptions) => Promise<CmsContentEntry | null>;
     invalidFields: FormInvalidFields;
 }
@@ -40,7 +40,7 @@ export interface PersistEntry {
 }
 
 interface ContentEntryFormProviderProps {
-    entry: Partial<CmsContentEntry>;
+    entry: Partial<Omit<CmsContentEntry, "values">> & Pick<CmsContentEntry, "values">;
     model: CmsModel;
     persistEntry: PersistEntry;
     confirmNavigationIfDirty: boolean;

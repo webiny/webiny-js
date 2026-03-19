@@ -8,6 +8,7 @@
     { "path": "../api-headless-cms-scheduler" },
     { "path": "../api-scheduler" },
     { "path": "../api-website-builder" },
+    { "path": "../api-website-builder-scheduler" },
     { "path": "../app" },
     { "path": "../app-aco" },
     { "path": "../app-admin" },
@@ -23,7 +24,8 @@
     { "path": "../project-aws" },
     { "path": "../tasks" },
     { "path": "../tenant-manager" },
-    { "path": "../validation" }
+    { "path": "../validation" },
+    { "path": "../website-builder-sdk" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -162,6 +164,8 @@
       "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],
       "@webiny/api-website-builder": ["../api-website-builder/src"],
+      "@webiny/api-website-builder-scheduler/*": ["../api-website-builder-scheduler/src/*"],
+      "@webiny/api-website-builder-scheduler": ["../api-website-builder-scheduler/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-aco/*": ["../app-aco/src/*"],
@@ -195,7 +199,9 @@
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
       "@webiny/tenant-manager": ["../tenant-manager/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
+      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"]
     },
     "baseUrl": "."
   }

@@ -1,3 +1,5 @@
+import { toImportSpecifier } from "./toImportSpecifier.js";
+
 export interface IRequireConfigOptions {
     env: string;
     variant: string | undefined;
@@ -22,7 +24,7 @@ export interface IRequireConfigParams {
 export const requireConfig = async <T extends IRequireConfigResult = IRequireConfigResult>(
     input: string
 ): Promise<T> => {
-    return await import(input).then(m => m.default ?? m);
+    return await import(toImportSpecifier(input)).then(m => m.default ?? m);
 };
 
 export const requireConfigWithExecute = async <
@@ -31,11 +33,14 @@ export const requireConfigWithExecute = async <
     configPath: string,
     params: IRequireConfigParams
 ): Promise<T> => {
-    const required = await import(configPath).then(m => m.default ?? m);
+    const module = await import(toImportSpecifier(configPath));
 
-    if (typeof required === "function") {
-        return required(params);
+    // TODO: https://github.com/orgs/webiny/projects/32/views/2?pane=issue&itemId=125453089
+    const config = module.default.default ?? module.default ?? module;
+
+    if (typeof config === "function") {
+        return config(params);
     }
 
-    return required;
+    return config;
 };

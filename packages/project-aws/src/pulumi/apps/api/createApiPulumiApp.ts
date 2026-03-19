@@ -6,7 +6,6 @@ import {
     ApiFileManager,
     ApiGateway,
     ApiGraphql,
-    ApiMigration,
     ApiWebsocket,
     CoreOutput,
     VpcConfig
@@ -226,7 +225,6 @@ export const createApiPulumiApp = () => {
 
             const cloudfront = app.addModule(ApiCloudfront);
             const backgroundTask = app.addModule(ApiBackgroundTask);
-            const migration = app.addModule(ApiMigration);
             const scheduler = app.addModule(ApiScheduler);
 
             // const domains = app.getParam(projectAppParams.domains);
@@ -242,7 +240,6 @@ export const createApiPulumiApp = () => {
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
                 dynamoDbTable: core.primaryDynamodbTableName,
                 auditLogsDynamoDbTable: core.auditLogsDynamodbTableName,
-                migrationLambdaArn: migration.function.output.arn,
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 graphqlLambdaRole: graphql.role.output.arn,
                 graphqlLambdaRoleName: graphql.role.output.name,
@@ -291,7 +288,6 @@ export const createApiPulumiApp = () => {
                 apiGateway,
                 websocket,
                 cloudfront,
-                migration,
                 backgroundTask,
                 scheduler
             };

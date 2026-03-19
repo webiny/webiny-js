@@ -118,7 +118,7 @@ export const SingleValueDynamicZone = ({
                         <ModelFieldProvider field={field}>
                             <Accordion background={"base"} variant={"container"}>
                                 <SingleValueItemContainer
-                                    disabled={!disabled}
+                                    disabled={disabled}
                                     template={template}
                                     value={bind.value}
                                     contentModel={contentModel}

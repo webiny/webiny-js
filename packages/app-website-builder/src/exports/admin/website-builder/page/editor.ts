@@ -5,4 +5,27 @@ export { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.
 export { useDocumentEditor } from "~/DocumentEditor/index.js";
 export { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
 export { useComponent } from "~/BaseEditor/hooks/useComponent.js";
+export { useElementInputs } from "~/BaseEditor/hooks/useElementInputs.js";
+export { useCreateElement } from "~/BaseEditor/hooks/useCreateElement.js";
+export { useDeleteElement } from "~/BaseEditor/hooks/useDeleteElement.js";
+export { useUpdateElement } from "~/BaseEditor/hooks/useUpdateElement.js";
 export { PageEditorConfig } from "~/index.js";
+export { ElementInputs } from "~/BaseEditor/defaultConfig/Sidebar/ElementSettings/ElementInputs.js";
+
+export { $selectElement } from "~/editorSdk/utils/index.js";
+export { $deselectElement } from "~/editorSdk/utils/index.js";
+export { $highlightElement } from "~/editorSdk/utils/index.js";
+export { $getElementById } from "~/editorSdk/utils/index.js";
+export { $getActiveElementId } from "~/editorSdk/utils/index.js";
+export { $getComponentManifestByElementId } from "~/editorSdk/utils/index.js";
+export { $deleteElement } from "~/editorSdk/utils/index.js";
+export { $createElement } from "~/editorSdk/utils/index.js";
+export { $moveElement } from "~/editorSdk/utils/index.js";
+export { $removeElementReferenceFromParent } from "~/editorSdk/utils/index.js";
+export { $addElementReferenceToParent } from "~/editorSdk/utils/index.js";
+export { $getElementsOfType } from "~/editorSdk/utils/index.js";
+export { $getFirstElementOfType } from "~/editorSdk/utils/index.js";
+export { $getElementInputValues } from "~/editorSdk/utils/index.js";
+export { $updateElementInputs } from "~/editorSdk/utils/index.js";
+export { $previewElementInputs } from "~/editorSdk/utils/index.js";
+export { createElement } from "@webiny/website-builder-sdk";
