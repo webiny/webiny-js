@@ -30,7 +30,7 @@
   "dependencies": {
     "@types/aws-lambda": "8.10.161",
     "cheerio": "^1.2.0",
-    "srcset": "^4.0.0"
+    "srcset": "^5.0.3"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0"

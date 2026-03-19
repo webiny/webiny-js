@@ -47,7 +47,7 @@
     "rimraf": "^6.1.3",
     "sass": "^1.98.0",
     "sass-loader": "^16.0.7",
-    "style-loader": "3.3.4",
+    "style-loader": "4.0.0",
     "ts-morph": "^27.0.2",
     "tsx": "^4.21.0",
     "typescript": "5.9.3",
