@@ -6,7 +6,7 @@ export const ensureAuthentication = (context: ApiCoreContext) => {
     const identityContext = context.container.resolve(IdentityContext);
     const identity = identityContext.getIdentity();
 
-    if (identity.isAdmin()) {
+    if (!identity.isAnonymous()) {
         return;
     }
     throw new NotAuthorizedError();
