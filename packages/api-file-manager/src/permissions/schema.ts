@@ -1,5 +1,5 @@
-import { createPermissions } from "@webiny/api-core/features/security/permissions/index.js";
 import type { Permissions } from "@webiny/api-core/features/security/permissions/index.js";
+import { createPermissions } from "@webiny/api-core/features/security/permissions/index.js";
 
 const schema = {
     prefix: "fm",
