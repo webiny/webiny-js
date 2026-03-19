@@ -11,7 +11,7 @@ import { fieldValidators } from "../fieldValidators";
 interface ValidatorsTabProps {
     field: FunnelFieldDefinitionModel;
 }
-
+1;
 interface ValidatorsUseBind {
     value: FieldValidatorDto[];
     onChange: (value: FieldValidatorDto[]) => void;

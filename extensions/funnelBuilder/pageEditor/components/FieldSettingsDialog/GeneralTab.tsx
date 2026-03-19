@@ -10,6 +10,7 @@ import {
 import { required } from "../../../utils/validators";
 import { FunnelFieldDefinitionModel } from "../../../models/FunnelFieldDefinitionModel";
 import type { FunnelContainerInputs } from "../../types";
+import { fieldSettings } from "../fields";
 
 interface GeneralTabProps {
     field: FunnelFieldDefinitionModel;
@@ -70,20 +71,13 @@ export const GeneralTab = ({ open }: GeneralTabProps) => {
         throw Error('Field ID may contain only letters, numbers and "-" and "_" characters.');
     }, []);
 
-    // const fieldSettingsPlugin = plugins.byType("pb-editor-funnel-field-settings").find(plugin => {
-    //     return plugin.fieldType === field.type;
-    // }) as Plugin<any>;
+    const fieldSettingsDef = fieldSettings.find(def => def.fieldType === field.type);
 
     let additionalSettings: React.ReactNode = null;
-    // if (fieldSettingsPlugin) {
-    // const RendererComponent = fieldSettingsPlugin.renderer;
-    // additionalSettings = (
-    //     <RendererComponent
-    //         afterChangeLabel={afterChangeLabel}
-    //         uniqueFieldIdValidator={uniqueFieldIdValidator}
-    //     />
-    // );
-    // }
+    if (fieldSettingsDef) {
+        const SettingsRendererComponent = fieldSettingsDef.settingsRenderer;
+        additionalSettings = <SettingsRendererComponent />;
+    }
 
     return (
         <>
