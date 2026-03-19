@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { useDrop } from "react-dnd";
 import styled from "@emotion/styled";
