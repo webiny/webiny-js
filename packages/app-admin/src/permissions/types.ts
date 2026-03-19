@@ -1,4 +1,5 @@
 import type React from "react";
+import type { NonEmptyArray } from "@webiny/app/types.js";
 
 /**
  * A single permission object from the API.
@@ -220,21 +221,35 @@ export type HasPermissionAction<S extends PermissionSchemaConfig> =
     | CustomActionNames<S>;
 
 /**
+ * Action constraint for `HasPermission`.
+ *
+ * Exactly one of `action`, `someActions`, or `allActions` may be provided:
+ * - `action` — single action; grants access if it passes.
+ * - `someActions` — array; grants access if ANY action passes (OR).
+ * - `allActions` — array; grants access only if ALL actions pass (AND).
+ */
+type ActionConstraint<S extends PermissionSchemaConfig> =
+    | { action?: HasPermissionAction<S>; someActions?: never; allActions?: never }
+    | { action?: never; someActions: NonEmptyArray<HasPermissionAction<S>>[]; allActions?: never }
+    | { action?: never; someActions?: never; allActions: NonEmptyArray<HasPermissionAction<S>>[] };
+
+/**
  * Props for a schema-bound `HasPermission` component created via `createHasPermission`.
  *
  * Exactly one of `entity`, `any`, or `all` must be provided.
+ * Optionally combine with `action`, `someActions`, or `allActions`.
  */
-export type HasPermissionProps<S extends PermissionSchemaConfig> =
+export type HasPermissionProps<S extends PermissionSchemaConfig> = (
     | SingleEntityProps<S>
     | AnyEntitiesProps<S>
-    | AllEntitiesProps<S>;
+    | AllEntitiesProps<S>
+) &
+    ActionConstraint<S>;
 
 interface SingleEntityProps<S extends PermissionSchemaConfig> {
     entity: AllEntityIds<S>;
     any?: never;
     all?: never;
-    action?: HasPermissionAction<S> | HasPermissionAction<S>[];
-    requireAllActions?: boolean;
     children: React.ReactNode;
 }
 
@@ -242,8 +257,6 @@ interface AnyEntitiesProps<S extends PermissionSchemaConfig> {
     entity?: never;
     any: AllEntityIds<S>[];
     all?: never;
-    action?: HasPermissionAction<S> | HasPermissionAction<S>[];
-    requireAllActions?: boolean;
     children: React.ReactNode;
 }
 
@@ -251,8 +264,6 @@ interface AllEntitiesProps<S extends PermissionSchemaConfig> {
     entity?: never;
     any?: never;
     all: AllEntityIds<S>[];
-    action?: HasPermissionAction<S> | HasPermissionAction<S>[];
-    requireAllActions?: boolean;
     children: React.ReactNode;
 }
 

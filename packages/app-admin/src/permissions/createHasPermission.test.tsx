@@ -98,11 +98,11 @@ describe("createHasPermission", () => {
         });
     });
 
-    describe("array of actions (OR — default)", () => {
+    describe("someActions (OR semantics)", () => {
         it("renders children when the user has all actions in the array", () => {
             withPermissions(
                 [{ name: "test.page", pw: "pu" }],
-                <HasPermission entity={"page"} action={["publish", "unpublish"]}>
+                <HasPermission entity={"page"} someActions={["publish", "unpublish"]}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
             );
@@ -112,7 +112,7 @@ describe("createHasPermission", () => {
         it("renders children when the user has only one of the actions", () => {
             withPermissions(
                 [{ name: "test.page", pw: "p" }],
-                <HasPermission entity={"page"} action={["publish", "unpublish"]}>
+                <HasPermission entity={"page"} someActions={["publish", "unpublish"]}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
             );
@@ -122,7 +122,7 @@ describe("createHasPermission", () => {
         it("renders children when only the last action in the array is allowed", () => {
             withPermissions(
                 [{ name: "test.page", rwd: "rw" }],
-                <HasPermission entity={"page"} action={["publish", "unpublish", "edit"]}>
+                <HasPermission entity={"page"} someActions={["publish", "unpublish", "edit"]}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
             );
@@ -132,7 +132,7 @@ describe("createHasPermission", () => {
         it("renders nothing when the user has none of the actions", () => {
             withPermissions(
                 [{ name: "test.page", rwd: "r" }],
-                <HasPermission entity={"page"} action={["publish", "unpublish"]}>
+                <HasPermission entity={"page"} someActions={["publish", "unpublish"]}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
             );
@@ -140,11 +140,11 @@ describe("createHasPermission", () => {
         });
     });
 
-    describe("requireAllActions flag", () => {
+    describe("allActions (AND semantics)", () => {
         it("renders children when the user has all actions in the array", () => {
             withPermissions(
                 [{ name: "test.page", pw: "pu" }],
-                <HasPermission entity={"page"} action={["publish", "unpublish"]} requireAllActions>
+                <HasPermission entity={"page"} allActions={["publish", "unpublish"]}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
             );
@@ -154,7 +154,7 @@ describe("createHasPermission", () => {
         it("renders nothing when the user has only one of the required actions", () => {
             withPermissions(
                 [{ name: "test.page", pw: "p" }],
-                <HasPermission entity={"page"} action={["publish", "unpublish"]} requireAllActions>
+                <HasPermission entity={"page"} allActions={["publish", "unpublish"]}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
             );
@@ -164,21 +164,11 @@ describe("createHasPermission", () => {
         it("renders nothing when the user has none of the required actions", () => {
             withPermissions(
                 [{ name: "test.page", rwd: "r" }],
-                <HasPermission entity={"page"} action={["publish", "unpublish"]} requireAllActions>
+                <HasPermission entity={"page"} allActions={["publish", "unpublish"]}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
             );
             expect(screen.queryByText(CHILD_TEXT)).toBeNull();
-        });
-
-        it("is ignored when action is a single string", () => {
-            withPermissions(
-                [{ name: "test.page", pw: "p" }],
-                <HasPermission entity={"page"} action={"publish"} requireAllActions>
-                    <span>{CHILD_TEXT}</span>
-                </HasPermission>
-            );
-            expect(screen.getByText(CHILD_TEXT)).toBeTruthy();
         });
     });
 
@@ -208,7 +198,7 @@ describe("createHasPermission", () => {
         it("renders children regardless of the action when the user has full access", () => {
             withPermissions(
                 [{ name: "test.*" }],
-                <HasPermission entity={"page"} action={["publish", "unpublish"]} requireAllActions>
+                <HasPermission entity={"page"} allActions={["publish", "unpublish"]}>
                     <span>{CHILD_TEXT}</span>
                 </HasPermission>
             );

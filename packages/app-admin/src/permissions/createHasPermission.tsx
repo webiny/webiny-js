@@ -19,10 +19,11 @@ export function createHasPermission<const S extends PermissionSchemaConfig>(
     return function HasPermission({ children, ...props }) {
         const permissions = usePermissions();
 
-        const action = props.action as string | string[] | undefined;
+        const action = props.action as string | undefined;
+        const someActions = props.someActions as string[] | undefined;
+        const allActions = props.allActions as string[] | undefined;
         const entities: string[] = props.entity ? [props.entity] : (props.any ?? props.all ?? []);
         const requireAll = !!props.all;
-        const requireAllActions = !!props.requireAllActions;
 
         const checkAction = (entityId: string, singleAction: string | undefined): boolean => {
             if (!singleAction) {
@@ -40,15 +41,11 @@ export function createHasPermission<const S extends PermissionSchemaConfig>(
         };
 
         const check = (entityId: string): boolean => {
-            if (Array.isArray(action)) {
-                if (requireAllActions) {
-                    return action.every(act => {
-                        return checkAction(entityId, act);
-                    });
-                }
-                return action.some(act => {
-                    return checkAction(entityId, act);
-                });
+            if (allActions) {
+                return allActions.every(act => checkAction(entityId, act));
+            }
+            if (someActions) {
+                return someActions.some(act => checkAction(entityId, act));
             }
             return checkAction(entityId, action);
         };
