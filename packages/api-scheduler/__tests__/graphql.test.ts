@@ -291,8 +291,8 @@ describe("Scheduler GraphQL", () => {
             }
         });
     });
-
-    it("should scheduled and cancel an action", async () => {
+    
+    it("should schedule and cancel an action", async () => {
         const scheduleFor = new Date(new Date().getTime() + 5 * 60 * 1000);
 
         const [publishResponse] = await handler.scheduleAction({
