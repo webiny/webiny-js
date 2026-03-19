@@ -3993,21 +3993,21 @@ __metadata:
   linkType: hard
 
 "@emnapi/core@npm:^1.5.0, @emnapi/core@npm:^1.7.1, @emnapi/core@npm:^1.8.1":
-  version: 1.9.0
-  resolution: "@emnapi/core@npm:1.9.0"
+  version: 1.9.1
+  resolution: "@emnapi/core@npm:1.9.1"
   dependencies:
     "@emnapi/wasi-threads": "npm:1.2.0"
     tslib: "npm:^2.4.0"
-  checksum: 10/52d8dc5ba0d6814c5061686b8286d84cc5349c8fc09de3a9c4175bc2369c2890b335f7b03e55bc19ce3033158962cd817522fcb3bdeb1feb9ba7a060d61b69ab
+  checksum: 10/c44cfe471702b43306b84d0f4f2f1506dac0065dbd73dc5a41bd99a2c39802ca7e2d7ebfbfae8997468d1ff0420603596bf35b19eabd5951bad1eb630d2d4574
   languageName: node
   linkType: hard
 
 "@emnapi/runtime@npm:^1.5.0, @emnapi/runtime@npm:^1.7.0, @emnapi/runtime@npm:^1.7.1, @emnapi/runtime@npm:^1.8.1":
-  version: 1.9.0
-  resolution: "@emnapi/runtime@npm:1.9.0"
+  version: 1.9.1
+  resolution: "@emnapi/runtime@npm:1.9.1"
   dependencies:
     tslib: "npm:^2.4.0"
-  checksum: 10/d04a7e67676c2560d5394a01d63532af943760cf19cc8f375390a345aeab2b19e9ee35485b06b5c211df18f947fb14ac50658fca5c4067946f1e50af3490b3b5
+  checksum: 10/337767fa44ec1f6277494342664be8773f16aad4086e9e49423a9f06c5eee7495e2e1b0b50dcd764c5a5cc4c15c9d80c13fba2da6763a97c06a48115cd7ccd14
   languageName: node
   linkType: hard
 
@@ -9762,9 +9762,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@smithy/config-resolver@npm:^4.4.11":
-  version: 4.4.11
-  resolution: "@smithy/config-resolver@npm:4.4.11"
+"@smithy/config-resolver@npm:^4.4.11, @smithy/config-resolver@npm:^4.4.12":
+  version: 4.4.12
+  resolution: "@smithy/config-resolver@npm:4.4.12"
   dependencies:
     "@smithy/node-config-provider": "npm:^4.3.12"
     "@smithy/types": "npm:^4.13.1"
@@ -9772,7 +9772,7 @@ __metadata:
     "@smithy/util-endpoints": "npm:^3.3.3"
     "@smithy/util-middleware": "npm:^4.2.12"
     tslib: "npm:^2.6.2"
-  checksum: 10/71e0f12ad1bb2ae2f76b3491ccbecf2716dedfb650d4654cab59a406b9dfa2ca69e36fb9f86f53a4c4339b1585dbe6167168e8fc6df76909fe14864e0ad7861c
+  checksum: 10/a3d234fced8082276ba44f26a5f0037ed68af2daf55066f528981347d85f526897d14ad92f572717a23179d0ff36a8090bcdc7f29c547d5c291584d47937e43e
   languageName: node
   linkType: hard
 
@@ -10222,17 +10222,17 @@ __metadata:
   linkType: hard
 
 "@smithy/util-defaults-mode-node@npm:^4.2.45":
-  version: 4.2.45
-  resolution: "@smithy/util-defaults-mode-node@npm:4.2.45"
+  version: 4.2.46
+  resolution: "@smithy/util-defaults-mode-node@npm:4.2.46"
   dependencies:
-    "@smithy/config-resolver": "npm:^4.4.11"
+    "@smithy/config-resolver": "npm:^4.4.12"
     "@smithy/credential-provider-imds": "npm:^4.2.12"
     "@smithy/node-config-provider": "npm:^4.3.12"
     "@smithy/property-provider": "npm:^4.2.12"
     "@smithy/smithy-client": "npm:^4.12.6"
     "@smithy/types": "npm:^4.13.1"
     tslib: "npm:^2.6.2"
-  checksum: 10/52836694e1e6073b9fc28c25d1fd6fe80cdc934994c02684202373064f7756f6991c3718e4f01884f0f16b2cf5b3ebf493cb89d7a3306e0868704d9636964eae
+  checksum: 10/88bbf8e4d16729a8921f6dc7db36f72d787b73b4e019c0a9ca4990905b5c13ecc58f0d4c7e8c7850c50920905b49c348caa3fb9ee9e450a0c3bb62ec4a6ac108
   languageName: node
   linkType: hard
 
@@ -17058,11 +17058,11 @@ __metadata:
   linkType: hard
 
 "baseline-browser-mapping@npm:^2.9.0":
-  version: 2.10.8
-  resolution: "baseline-browser-mapping@npm:2.10.8"
+  version: 2.10.9
+  resolution: "baseline-browser-mapping@npm:2.10.9"
   bin:
     baseline-browser-mapping: dist/cli.cjs
-  checksum: 10/820972372c87c65c2e665134d70aa44d5722492fb907aa79170fec84086a75de4675f6a7b717cf0a31b4c4f71cd0289b056b71e32007de97a37973a501d31dcb
+  checksum: 10/40ab7b9294b9b865d51e9c62c630c1416b15326bc7cb98040a3f4619676e1c024b6fc7c20c4169b7f4593769918461fab7bb3a3ce862c7833be72a9dc4161ade
   languageName: node
   linkType: hard
 
@@ -19055,12 +19055,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cypress-mailosaur@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "cypress-mailosaur@npm:4.0.0"
+"cypress-mailosaur@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "cypress-mailosaur@npm:5.0.0"
   peerDependencies:
     cypress: ">= 15.0.0"
-  checksum: 10/5adeaaec956415d3432a28a93f679bcebfce491faa4f86dba51b7a367a5a17dd82f762ea60cec07c3ae6ba75ae9c2afe9c1d6f207d424aaed4cf06c4b7408cfa
+  checksum: 10/f94e9e7b725f990ba9489ca8267fa17850e74a67951b6bac47e279869acd6e4e5af581847a166ed5ccb8f613d9296842aae3d08b8caa10907767f5fb47a35b9e
   languageName: node
   linkType: hard
 
@@ -19076,7 +19076,7 @@ __metadata:
     amazon-cognito-identity-js: "npm:^6.3.16"
     cypress: "npm:^15.12.0"
     cypress-image-snapshot: "npm:^4.0.1"
-    cypress-mailosaur: "npm:^4.0.0"
+    cypress-mailosaur: "npm:^5.0.0"
     cypress-wait-until: "npm:^3.0.2"
     del: "npm:^8.0.1"
     graphql-request: "npm:^7.4.0"

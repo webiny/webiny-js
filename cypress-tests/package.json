@@ -14,7 +14,7 @@
     "amazon-cognito-identity-js": "^6.3.16",
     "cypress": "^15.12.0",
     "cypress-image-snapshot": "^4.0.1",
-    "cypress-mailosaur": "^4.0.0",
+    "cypress-mailosaur": "^5.0.0",
     "cypress-wait-until": "^3.0.2",
     "del": "^8.0.1",
     "graphql-request": "^7.4.0",
