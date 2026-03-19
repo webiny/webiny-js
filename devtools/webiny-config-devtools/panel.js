@@ -230,7 +230,7 @@
                 valueTree.className = "json-tree";
                 buildJsonTree(configObj[selectedKey], valueTree, 0, browseNodes);
                 if (browseNodes.length > 0) {
-                    buildTreeToolbar(browseValue, browseNodes);
+                    buildTreeToolbar(browseValue, browseNodes, valueTree, configObj[selectedKey]);
                 }
                 browseValue.appendChild(valueTree);
             } else {
@@ -259,7 +259,7 @@
         tree.className = "json-tree";
         buildJsonTree(data.config, tree, 0, configNodes);
         if (configNodes.length > 0) {
-            buildTreeToolbar(configContent, configNodes);
+            buildTreeToolbar(configContent, configNodes, tree, data.config);
         }
         configContent.appendChild(tree);
         detail.appendChild(configContent);
@@ -342,7 +342,7 @@
                 valueTree.className = "json-tree";
                 buildJsonTree(sectionData[selectedKey], valueTree, 0, nodes);
                 if (nodes.length > 0) {
-                    buildTreeToolbar(valuePane, nodes);
+                    buildTreeToolbar(valuePane, nodes, valueTree, sectionData[selectedKey]);
                 }
                 valuePane.appendChild(valueTree);
             } else {
@@ -362,7 +362,7 @@
             tree.className = "json-tree";
             buildJsonTree(sectionData, tree, 0, nodes);
             if (nodes.length > 0) {
-                buildTreeToolbar(content, nodes);
+                buildTreeToolbar(content, nodes, tree, sectionData);
             }
             content.appendChild(tree);
         }
@@ -383,7 +383,62 @@
 
     // ── JSON tree builder ──────────────────────────────────────────
 
-    function buildTreeToolbar(targetContainer, nodeList) {
+    // Search: recursively check if a value (or any descendant) contains the query
+    function valueContains(value, query) {
+        if (value === null || value === undefined) return false;
+        if (typeof value === "string") return value.toLowerCase().indexOf(query) !== -1;
+        if (typeof value === "number" || typeof value === "boolean") {
+            return String(value).toLowerCase().indexOf(query) !== -1;
+        }
+        if (Array.isArray(value)) {
+            for (var i = 0; i < value.length; i++) {
+                if (valueContains(value[i], query)) return true;
+            }
+            return false;
+        }
+        if (typeof value === "object") {
+            var keys = Object.keys(value);
+            for (var j = 0; j < keys.length; j++) {
+                if (keys[j].toLowerCase().indexOf(query) !== -1) return true;
+                if (valueContains(value[keys[j]], query)) return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    // Filter: return a new value keeping only matching branches
+    function filterValue(value, query) {
+        if (value === null || value === undefined) return undefined;
+        if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+            return valueContains(value, query) ? value : undefined;
+        }
+        if (Array.isArray(value)) {
+            var filtered = [];
+            for (var i = 0; i < value.length; i++) {
+                if (valueContains(value[i], query)) {
+                    filtered.push(value[i]);
+                }
+            }
+            return filtered.length > 0 ? filtered : undefined;
+        }
+        if (typeof value === "object") {
+            var result = {};
+            var hasMatch = false;
+            var keys = Object.keys(value);
+            for (var j = 0; j < keys.length; j++) {
+                var k = keys[j];
+                if (k.toLowerCase().indexOf(query) !== -1 || valueContains(value[k], query)) {
+                    result[k] = value[k];
+                    hasMatch = true;
+                }
+            }
+            return hasMatch ? result : undefined;
+        }
+        return undefined;
+    }
+
+    function buildTreeToolbar(targetContainer, nodeList, treeContainer, originalData) {
         var bar = document.createElement("div");
         bar.className = "tree-toolbar";
         var expandBtn = document.createElement("button");
@@ -402,8 +457,47 @@
                 nodeList[i].setExpanded(nodeList[i].depth < 2);
             }
         });
+
+        var searchInput = document.createElement("input");
+        searchInput.type = "text";
+        searchInput.className = "tree-search-input";
+        searchInput.placeholder = "Filter...";
+
+        var searchInfo = document.createElement("span");
+        searchInfo.className = "tree-search-info";
+
+        var debounceTimer = null;
+        searchInput.addEventListener("input", function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function () {
+                var query = searchInput.value.trim().toLowerCase();
+                // Clear and rebuild tree
+                nodeList.length = 0;
+                treeContainer.innerHTML = "";
+
+                if (!query) {
+                    searchInfo.textContent = "";
+                    buildJsonTree(originalData, treeContainer, 0, nodeList);
+                } else {
+                    var filtered = filterValue(originalData, query);
+                    if (filtered !== undefined) {
+                        buildJsonTree(filtered, treeContainer, 0, nodeList);
+                        // Expand all when searching
+                        for (var i = 0; i < nodeList.length; i++) {
+                            nodeList[i].setExpanded(true);
+                        }
+                        searchInfo.textContent = "";
+                    } else {
+                        searchInfo.textContent = "No matches";
+                    }
+                }
+            }, 200);
+        });
+
         bar.appendChild(expandBtn);
         bar.appendChild(collapseBtn);
+        bar.appendChild(searchInput);
+        bar.appendChild(searchInfo);
         targetContainer.appendChild(bar);
     }
 

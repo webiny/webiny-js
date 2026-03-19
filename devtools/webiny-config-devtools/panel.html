@@ -1,23 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="panel.css" />
-</head>
-<body>
+  </head>
+  <body>
     <div class="toolbar">
-        <span class="toolbar-title">Webiny Configs</span>
-        <span class="toolbar-count" id="configCount">0 configs</span>
-        <button class="toolbar-btn" id="refreshBtn" title="Refresh">Refresh</button>
+      <span class="toolbar-title">Webiny</span>
+      <span class="toolbar-count" id="configCount">0 configs</span>
+      <button class="toolbar-btn" id="refreshBtn" title="Refresh">Refresh</button>
     </div>
     <div class="main">
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-empty">No configs detected.<br />Make sure the app is running in development mode.</div>
+      <div class="sidebar" id="sidebar">
+        <div class="sidebar-empty">
+          No configs detected.<br />Make sure the app is running in development mode.
         </div>
-        <div class="detail" id="detail">
-            <div class="detail-empty">Select a config from the sidebar.</div>
-        </div>
+      </div>
+      <div class="detail" id="detail">
+        <div class="detail-empty">Select a config from the sidebar.</div>
+      </div>
     </div>
     <script src="panel.js"></script>
-</body>
+  </body>
 </html>
