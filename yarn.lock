@@ -13196,7 +13196,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     exifreader: "npm:^4.37.0"
-    mime: "npm:^3.0.0"
+    mime: "npm:^4.1.0"
     object-hash: "npm:^3.0.0"
     p-map: "npm:^7.0.4"
     p-reduce: "npm:^3.0.0"
@@ -13995,7 +13995,7 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     load-script: "npm:^2.0.0"
     lodash: "npm:^4.17.23"
-    mime: "npm:^3.0.0"
+    mime: "npm:^4.1.0"
     minimatch: "npm:^10.2.4"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^3.4.3"
@@ -15363,7 +15363,7 @@ __metadata:
     find-up: "npm:^5.0.0"
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.17.23"
-    mime: "npm:^3.0.0"
+    mime: "npm:^4.1.0"
     react: "npm:^18.3.1"
     replace-in-path: "npm:^1.1.0"
     typescript: "npm:5.9.3"
@@ -26450,7 +26450,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime@npm:3.0.0, mime@npm:^3.0.0":
+"mime@npm:3.0.0":
   version: 3.0.0
   resolution: "mime@npm:3.0.0"
   bin:
@@ -26465,6 +26465,15 @@ __metadata:
   bin:
     mime: cli.js
   checksum: 10/7da117808b5cd0203bb1b5e33445c330fe213f4d8ee2402a84d62adbde9716ca4fb90dd6d9ab4e77a4128c6c5c24a9c4c9f6a4d720b095b1b342132d02dba58d
+  languageName: node
+  linkType: hard
+
+"mime@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "mime@npm:4.1.0"
+  bin:
+    mime: bin/cli.js
+  checksum: 10/154c06eeaf803c4a87f44b3dbd3fafc50afed7154f9ea2d2dde4ae464be33a7c6943de6981d636abd5da3523d2bd66ee1ad2adb2e4c2e7a2fe5e0075bcde62d5
   languageName: node
   linkType: hard
 

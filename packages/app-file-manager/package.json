@@ -42,7 +42,7 @@
     "graphql-tag": "^2.12.6",
     "load-script": "^2.0.0",
     "lodash": "^4.17.23",
-    "mime": "^3.0.0",
+    "mime": "^4.1.0",
     "minimatch": "^10.2.4",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^3.4.3",
