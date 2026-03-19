@@ -1,5 +1,5 @@
-import { validation } from "@webiny/validation";
 import { AbstractValidator, FieldValidatorParamsDto } from "./AbstractValidator";
+import { lte } from "../../utils/validators";
 import { FunnelFieldValueModel } from "../FunnelFieldValueModel";
 
 interface LteValidatorExtraParams {
@@ -35,7 +35,6 @@ export class LteValidator extends AbstractValidator<LteValidatorExtraParams> {
             return true;
         }
 
-        const validators = `lte:${this.params.extra.threshold}`;
-        return validation.validateSync(value.value, validators, { throw: false }) === true;
+        return lte(Number(value.value), this.params.extra.threshold);
     }
 }

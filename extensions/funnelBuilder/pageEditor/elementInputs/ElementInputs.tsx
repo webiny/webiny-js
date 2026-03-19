@@ -7,17 +7,12 @@ import type { DocumentElement } from "@webiny/website-builder-sdk";
 import { FieldSettingsDialog } from "../components/FieldSettingsDialog";
 import { FunnelFieldDefinitionModel } from "../../models/FunnelFieldDefinitionModel";
 import type { FunnelFieldDefinitionModelDto } from "../../models/FunnelFieldDefinitionModel";
-import type { FunnelModelDto } from "../../models/FunnelModel";
-
-/* Inputs shape for the Fub/Container element. */
-interface FunnelContainerInputs {
-    registry: FunnelModelDto;
-    steps: React.ReactNode[];
-    activeStep: number;
-}
+import type { FunnelContainerInputs } from "../types";
 
 /* Inputs shape for any Fub/Field* element. */
-type FunnelFieldInputs = FunnelFieldDefinitionModelDto;
+interface FunnelFieldInputs {
+    fieldData: FunnelFieldDefinitionModelDto;
+}
 
 /* Narrows a DocumentElement to the Fub/Container component. */
 function isFunnelContainerElement(
@@ -43,16 +38,15 @@ export const ElementInputsDecorator = ElementInputs.createDecorator(Original => 
         const { inputs, updateInputs } = useElementInputs(element.id);
         const component = useComponent(element.component.name);
 
+        if (!element.component.name.startsWith("Fub/")) {
+        }
+
         const {
             open: showFieldSettingsDialog,
             close: hideFieldSettingsDialog,
             isOpen: isFieldSettingsDialogOpen,
             data: selectedField
         } = useDisclosure<FunnelFieldDefinitionModel>();
-
-        if (!element.component.name.startsWith("Fub/")) {
-            return <Original {...props} />;
-        }
 
         if (isFunnelContainerElement(element)) {
             /* Container element: inputs are typed as FunnelContainerInputs.
@@ -62,39 +56,39 @@ export const ElementInputsDecorator = ElementInputs.createDecorator(Original => 
             return <Original {...props} />;
         }
 
-        if (!isFunnelFieldElement(element)) {
-            return <Original {...props} />;
+        if (isFunnelFieldElement(element)) {
+            /* Field element: inputs are typed as FunnelFieldInputs. */
+            const handleClick = () => {
+                const { fieldData } = inputs as unknown as FunnelFieldInputs;
+                const field = FunnelFieldDefinitionModel.fromDto(fieldData);
+                showFieldSettingsDialog(field);
+            };
+
+            const handleSubmit = (data: FunnelFieldDefinitionModelDto) => {
+                updateInputs(current => {
+                    (current as unknown as FunnelFieldInputs).fieldData = data;
+                });
+                hideFieldSettingsDialog();
+            };
+
+            return (
+                <>
+                    <Button
+                        variant={"primary"}
+                        text={`Edit ${component.label} Settings`}
+                        className={"w-full"}
+                        onClick={handleClick}
+                    />
+                    <FieldSettingsDialog
+                        open={isFieldSettingsDialogOpen}
+                        field={selectedField!}
+                        onClose={hideFieldSettingsDialog}
+                        onSubmit={handleSubmit}
+                    />
+                </>
+            );
         }
 
-        /* Field element: inputs are typed as FunnelFieldInputs. */
-        const handleClick = () => {
-            const fieldDto = inputs as unknown as FunnelFieldInputs;
-            const field = FunnelFieldDefinitionModel.fromDto(fieldDto);
-            showFieldSettingsDialog(field);
-        };
-
-        const handleSubmit = (data: FunnelFieldDefinitionModelDto) => {
-            updateInputs(current => {
-                Object.assign(current, data);
-            });
-            hideFieldSettingsDialog();
-        };
-
-        return (
-            <>
-                <Button
-                    variant={"primary"}
-                    text={`Edit ${component.label} Settings`}
-                    className={"w-full"}
-                    onClick={handleClick}
-                />
-                <FieldSettingsDialog
-                    open={isFieldSettingsDialogOpen}
-                    field={selectedField!}
-                    onClose={hideFieldSettingsDialog}
-                    onSubmit={handleSubmit}
-                />
-            </>
-        );
+        return <Original {...props} />;
     };
 });

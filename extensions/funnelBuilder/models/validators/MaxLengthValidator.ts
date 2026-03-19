@@ -1,5 +1,5 @@
-import { validation } from "@webiny/validation";
 import { AbstractValidator, FieldValidatorParamsDto } from "./AbstractValidator";
+import { maxLength } from "../../utils/validators";
 import { FunnelFieldValueModel } from "../FunnelFieldValueModel";
 
 interface MaxLengthValidatorExtraParams {
@@ -35,7 +35,6 @@ export class MaxLengthValidator extends AbstractValidator<MaxLengthValidatorExtr
             return true;
         }
 
-        const validators = `maxLength:${this.params.extra.threshold}`;
-        return validation.validateSync(value.value, validators, { throw: false }) === true;
+        return maxLength(String(value.value), this.params.extra.threshold);
     }
 }

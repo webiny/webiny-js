@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
-import { Dialog, Tabs } from "@webiny/admin-ui";
+import { Dialog, Tabs } from "webiny/admin/ui";
 import { Form, FormOnSubmit } from "webiny/admin/form";
 import { GeneralTab } from "./FieldSettingsDialog/GeneralTab";
-import { ValidatorsTab } from "./FieldSettingsDialog/ValidatorsTab";
+// import { ValidatorsTab } from "./FieldSettingsDialog/ValidatorsTab";
 import {
     FunnelFieldDefinitionModel,
     FunnelFieldDefinitionModelDto
@@ -47,14 +47,14 @@ export const FieldSettingsDialog = ({ field, open, onClose, onSubmit }: EditFiel
                                             value={"general"}
                                             trigger={"General"}
                                             content={<GeneralTab field={field} open={open} />}
-                                        />,
-                                        <Tabs.Tab
-                                            key={"validators"}
-                                            value={"validators"}
-                                            trigger={"Validators"}
-                                            content={<ValidatorsTab field={field} />}
-                                            visible={field.supportedValidatorTypes.length > 0}
                                         />
+                                        // <Tabs.Tab
+                                        //     key={"validators"}
+                                        //     value={"validators"}
+                                        //     trigger={"Validators"}
+                                        //     content={<ValidatorsTab field={field} />}
+                                        //     visible={field.supportedValidatorTypes.length > 0}
+                                        // />
                                     ]}
                                 />
                             </div>

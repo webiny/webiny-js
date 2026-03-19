@@ -1,5 +1,5 @@
-import { validation } from "@webiny/validation";
 import { AbstractValidator, FieldValidatorParamsDto } from "./AbstractValidator";
+import { gte } from "../../utils/validators";
 import { FunnelFieldValueModel } from "../FunnelFieldValueModel";
 
 interface GteValidatorExtraParams {
@@ -35,7 +35,6 @@ export class GteValidator extends AbstractValidator<GteValidatorExtraParams> {
             return true;
         }
 
-        const validators = `gte:${this.params.extra.threshold}`;
-        return validation.validateSync(value.value, validators, { throw: false }) === true;
+        return gte(Number(value.value), this.params.extra.threshold);
     }
 }

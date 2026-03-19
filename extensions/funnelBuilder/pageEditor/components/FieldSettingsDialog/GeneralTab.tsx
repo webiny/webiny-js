@@ -2,8 +2,14 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { Grid, Input } from "webiny/admin/ui";
 import camelCase from "lodash/camelCase";
 import { Bind, useForm } from "webiny/admin/form";
+import {
+    $getFirstElementOfType,
+    useElementInputs,
+    useSelectFromDocument
+} from "webiny/admin/website-builder/page/editor";
 import { required } from "../../../utils/validators";
 import { FunnelFieldDefinitionModel } from "../../../models/FunnelFieldDefinitionModel";
+import type { FunnelContainerInputs } from "../../types";
 
 interface GeneralTabProps {
     field: FunnelFieldDefinitionModel;
@@ -13,7 +19,13 @@ interface GeneralTabProps {
 export const GeneralTab = ({ open }: GeneralTabProps) => {
     const { setValue, data: field } = useForm();
 
-    const { funnelVm } = useContainer();
+    const containerElementId = useSelectFromDocument(state => {
+        const el = $getFirstElementOfType(state, "Fub/Container");
+        return el ? el.id : null;
+    });
+
+    const { inputs: containerInputs } = useElementInputs<FunnelContainerInputs>(containerElementId);
+
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     const afterChangeLabel = useCallback((value: string): void => {
@@ -34,7 +46,9 @@ export const GeneralTab = ({ open }: GeneralTabProps) => {
     }, [open]);
 
     const uniqueFieldIdValidator = useCallback(() => {
-        const existingField = funnelVm.getFieldByFieldId(field.fieldId);
+        const existingField = containerInputs.containerData?.fields?.find(
+            f => f.fieldId === field.fieldId
+        );
         if (!existingField) {
             return true;
         }
@@ -43,7 +57,7 @@ export const GeneralTab = ({ open }: GeneralTabProps) => {
             return true;
         }
         throw new Error("A field with this field ID already exists.");
-    }, [field.fieldId]);
+    }, [field.fieldId, containerInputs]);
 
     const fieldIdValidator = useCallback((fieldId: string) => {
         if (!fieldId) {

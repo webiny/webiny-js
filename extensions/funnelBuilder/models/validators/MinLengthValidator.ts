@@ -1,5 +1,5 @@
-import { validation } from "@webiny/validation";
 import { AbstractValidator, FieldValidatorParamsDto } from "./AbstractValidator";
+import { minLength } from "../../utils/validators";
 import { FunnelFieldValueModel } from "../FunnelFieldValueModel";
 
 interface MinLengthValidatorExtraParams {
@@ -35,7 +35,6 @@ export class MinLengthValidator extends AbstractValidator<MinLengthValidatorExtr
             return true;
         }
 
-        const validators = `minLength:${this.params.extra.threshold}`;
-        return validation.validateSync(value.value, validators, { throw: false }) === true;
+        return minLength(String(value.value), this.params.extra.threshold);
     }
 }

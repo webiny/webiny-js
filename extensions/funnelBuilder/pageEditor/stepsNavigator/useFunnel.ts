@@ -6,7 +6,7 @@ import {
 
 export type FunnelInputs = {
     activeStep: number;
-    registry: Record<string, any>;
+    containerData: Record<string, any>;
     steps: Array<{ elementId: string; label: string; children: string[] }>;
 };
 
