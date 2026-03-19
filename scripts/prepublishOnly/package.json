@@ -7,7 +7,7 @@
   "bin": "./src/index.js",
   "main": "./src/index.js",
   "dependencies": {
-    "chalk": "^4.1.2",
+    "chalk": "^5.6.2",
     "find-up": "^5.0.0",
     "fs-extra": "^11.3.4",
     "get-yarn-workspaces": "1.0.2",

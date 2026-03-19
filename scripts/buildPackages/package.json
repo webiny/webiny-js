@@ -7,7 +7,7 @@
   "bin": "./src/index.js",
   "main": "./src/index.js",
   "dependencies": {
-    "chalk": "^4.1.2",
+    "chalk": "^5.6.2",
     "execa": "^5.1.1",
     "folder-hash": "^4.1.2",
     "fs-extra": "^11.3.4",

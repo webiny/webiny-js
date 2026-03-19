@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/di": "^0.2.3",
-    "chalk": "^4.1.2",
+    "chalk": "^5.6.2",
     "find-up": "^5.0.0",
     "pino": "^10.3.1",
     "ts-morph": "^27.0.2",

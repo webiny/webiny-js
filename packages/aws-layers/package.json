@@ -15,7 +15,7 @@
   ],
   "description": "A utility to streamline usage of Webiny layers",
   "dependencies": {
-    "chalk": "^4.1.2"
+    "chalk": "^5.6.2"
   },
   "license": "MIT",
   "publishConfig": {

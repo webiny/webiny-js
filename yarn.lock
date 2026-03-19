@@ -4186,6 +4186,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@epic-web/invariant@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@epic-web/invariant@npm:1.0.0"
+  checksum: 10/28b36a7447f60b84f9d6a23571480042170ef4239a577577ad8447f64a2e4f1a4e57e6fe1b592e61534c5ab53ff67776130e6c88a68cbd997eb6e9c9759a5934
+  languageName: node
+  linkType: hard
+
 "@esbuild/aix-ppc64@npm:0.25.12":
   version: 0.25.12
   resolution: "@esbuild/aix-ppc64@npm:0.25.12"
@@ -12816,7 +12823,7 @@ __metadata:
   dependencies:
     "@types/folder-hash": "npm:^4.0.4"
     "@types/yargs": "npm:^17.0.35"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     execa: "npm:^5.1.1"
     folder-hash: "npm:^4.1.2"
     fs-extra: "npm:^11.3.4"
@@ -12853,7 +12860,7 @@ __metadata:
   resolution: "@webiny-scripts/cli@workspace:scripts/cli"
   dependencies:
     "@webiny/di": "npm:^0.2.3"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     find-up: "npm:^5.0.0"
     pino: "npm:^10.3.1"
     rimraf: "npm:^6.1.3"
@@ -12868,7 +12875,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly"
   dependencies:
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     find-up: "npm:^5.0.0"
     fs-extra: "npm:^11.3.4"
     get-yarn-workspaces: "npm:1.0.2"
@@ -12907,7 +12914,7 @@ __metadata:
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     bytes: "npm:^3.1.2"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
     cmdk: "npm:^1.1.1"
@@ -14227,7 +14234,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     apollo-client: "npm:^2.6.10"
     apollo-link: "npm:^1.2.14"
-    crypto-hash: "npm:^3.1.0"
+    crypto-hash: "npm:^4.0.1"
     graphql-tag: "npm:^2.12.6"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
@@ -14647,7 +14654,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/aws-layers@workspace:packages/aws-layers"
   dependencies:
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
   languageName: unknown
   linkType: soft
 
@@ -14704,8 +14711,8 @@ __metadata:
     "@swc/plugin-emotion": "npm:^11.5.0"
     "@tailwindcss/postcss": "npm:^4.2.2"
     "@types/webpack-env": "npm:^1.18.8"
-    chalk: "npm:^4.1.2"
-    chokidar: "npm:^4.0.3"
+    chalk: "npm:^5.6.2"
+    chokidar: "npm:^5.0.0"
     css-loader: "npm:^7.1.4"
     eslint: "npm:^10.0.3"
     fast-glob: "npm:^3.3.3"
@@ -14742,7 +14749,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     ci-info: "npm:^4.4.0"
     execa: "npm:^5.1.1"
     fast-glob: "npm:^3.3.3"
@@ -14844,7 +14851,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     center-align: "npm:^1.0.1"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     jest-dynalite: "npm:^3.6.1"
     minimatch: "npm:^10.2.4"
     pino-pretty: "npm:^13.1.3"
@@ -15334,7 +15341,7 @@ __metadata:
     "@webiny/project-aws": "npm:*"
     "@webiny/tenant-manager": "npm:*"
     core-js: "npm:3.49.0"
-    cross-fetch: "npm:^3.2.0"
+    cross-fetch: "npm:^4.1.0"
     react: "npm:^18.3.1"
     regenerator-runtime: "npm:^0.14.1"
   languageName: unknown
@@ -15359,7 +15366,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     find-up: "npm:^5.0.0"
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.17.23"
@@ -15417,8 +15424,8 @@ __metadata:
     "@webiny/telemetry": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    chalk: "npm:^4.1.2"
-    chokidar: "npm:^4.0.3"
+    chalk: "npm:^5.6.2"
+    chokidar: "npm:^5.0.0"
     ci-info: "npm:^4.4.0"
     debounce: "npm:^1.2.1"
     deepmerge: "npm:^4.3.1"
@@ -15561,7 +15568,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/system-requirements@workspace:packages/system-requirements"
   dependencies:
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     cli-table3: "npm:^0.6.5"
     execa: "npm:^5.1.1"
     semver: "npm:^7.7.4"
@@ -17974,12 +17981,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chokidar@npm:^4.0.0, chokidar@npm:^4.0.3":
+"chokidar@npm:^4.0.0":
   version: 4.0.3
   resolution: "chokidar@npm:4.0.3"
   dependencies:
     readdirp: "npm:^4.0.1"
   checksum: 10/bf2a575ea5596000e88f5db95461a9d59ad2047e939d5a4aac59dd472d126be8f1c1ff3c7654b477cf532d18f42a97279ef80ee847972fd2a25410bf00b80b59
+  languageName: node
+  linkType: hard
+
+"chokidar@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "chokidar@npm:5.0.0"
+  dependencies:
+    readdirp: "npm:^5.0.0"
+  checksum: 10/a1c2a4ee6ee81ba6409712c295a47be055fb9de1186dfbab33c1e82f28619de962ba02fc5f9d433daaedc96c35747460d8b2079ac2907de2c95e3f7cce913113
   languageName: node
   linkType: hard
 
@@ -18940,7 +18956,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/system-requirements": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
-    chalk: "npm:^4.1.2"
+    chalk: "npm:^5.6.2"
     execa: "npm:^5.1.1"
     find-up: "npm:^5.0.0"
     fs-extra: "npm:^11.3.4"
@@ -18969,24 +18985,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-env@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "cross-env@npm:5.2.1"
+"cross-env@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "cross-env@npm:10.1.0"
   dependencies:
-    cross-spawn: "npm:^6.0.5"
+    "@epic-web/invariant": "npm:^1.0.0"
+    cross-spawn: "npm:^7.0.6"
   bin:
     cross-env: dist/bin/cross-env.js
     cross-env-shell: dist/bin/cross-env-shell.js
-  checksum: 10/5a81dc207e61b90f3ec9053e7651e07ed6dc880df6098bbf739c7fdcd00f09dce057416bca36fccef6c9491fdad35f740fec9f7a401180d15648f3952998cc7e
+  checksum: 10/0e5d8bdefbbcd000460b69755e0eeb22953510abac8375e4f8b638ff7c45406141acfd57b8a4c1d1cf0b5ea42f33451b302062fb9b34408753b4d465e901b845
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.1.5, cross-fetch@npm:^3.2.0":
+"cross-fetch@npm:^3.1.5":
   version: 3.2.0
   resolution: "cross-fetch@npm:3.2.0"
   dependencies:
     node-fetch: "npm:^2.7.0"
   checksum: 10/e4ab1d390a5b6ca8bb0605f028af2ffc1127d2e407b954654949f506d04873c4863ece264662c074865d7874060e35f938cec74fe7b5736d46d545e2685f6aec
+  languageName: node
+  linkType: hard
+
+"cross-fetch@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "cross-fetch@npm:4.1.0"
+  dependencies:
+    node-fetch: "npm:^2.7.0"
+  checksum: 10/07624940607b64777d27ec9c668ddb6649e8c59ee0a5a10e63a51ce857e2bbb1294a45854a31c10eccb91b65909a5b199fcb0217339b44156f85900a7384f489
   languageName: node
   linkType: hard
 
@@ -18999,7 +19025,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn@npm:^6.0.0, cross-spawn@npm:^6.0.5, cross-spawn@npm:^6.0.6":
+"cross-spawn@npm:^6.0.0":
   version: 6.0.6
   resolution: "cross-spawn@npm:6.0.6"
   dependencies:
@@ -19023,10 +19049,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-hash@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "crypto-hash@npm:3.1.0"
-  checksum: 10/c71518a20470b78a584f0cb568ba87241802627812da0e3c20236070a90dbb1272b8c9db0476d45996c2f4c793ccfccdeb399e31a3cd3310eb4b6e2363a91306
+"crypto-hash@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "crypto-hash@npm:4.0.1"
+  checksum: 10/b81439e7c6969384044dac15dd0e55ee005ca87d5a4f6e1dae852ed64f5011822da2aa2b2fbf4564d8d68303569805f97024a57865e53a6501c87c31f9b33718
   languageName: node
   linkType: hard
 
@@ -30186,6 +30212,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"readdirp@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "readdirp@npm:5.0.0"
+  checksum: 10/a17a591b51d8b912083660df159e8bd17305dc1a9ef27c869c818bd95ff59e3a6496f97e91e724ef433e789d559d24e39496ea1698822eb5719606dc9c1a923d
+  languageName: node
+  linkType: hard
+
 "readdirp@npm:~3.6.0":
   version: 3.6.0
   resolution: "readdirp@npm:3.6.0"
@@ -30781,9 +30814,9 @@ __metadata:
     babel-plugin-dynamic-import-node: "npm:^2.3.3"
     babel-plugin-macros: "npm:^3.1.0"
     babel-plugin-module-resolver: "npm:^5.0.3"
-    chalk: "npm:^4.1.2"
-    cross-env: "npm:^5.2.1"
-    cross-spawn: "npm:^6.0.6"
+    chalk: "npm:^5.6.2"
+    cross-env: "npm:^10.1.0"
+    cross-spawn: "npm:^7.0.6"
     deepmerge: "npm:^4.3.1"
     env-ci: "npm:2.6.0"
     eslint: "npm:^10.0.3"
