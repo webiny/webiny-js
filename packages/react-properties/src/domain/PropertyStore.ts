@@ -19,6 +19,9 @@ export class PropertyStore {
     private order: string[] = [];
     private queue: Operation[] = [];
     private listeners = new Set<Listener>();
+    private priorities = new Map<string, number>();
+    /** Properties that were explicitly positioned via before/after. */
+    private positioned = new Set<string>();
 
     /**
      * Synchronous lookup map — written immediately on addProperty (before debounce),
@@ -119,6 +122,16 @@ export class PropertyStore {
             }
         }
 
+        // Stable-sort the order array by priority, but only for properties
+        // that were NOT explicitly positioned via before/after. Explicitly
+        // positioned properties keep their placement.
+        this.order.sort((a, b) => {
+            if (this.positioned.has(a) || this.positioned.has(b)) {
+                return 0;
+            }
+            return (this.priorities.get(a) ?? 0) - (this.priorities.get(b) ?? 0);
+        });
+
         const properties = this.allProperties;
         for (const listener of this.listeners) {
             listener(properties);
@@ -126,9 +139,16 @@ export class PropertyStore {
     }
 
     private executeAdd(property: Property, options: AddPropertyOptions): void {
+        if (options.after || options.before) {
+            this.positioned.add(property.id);
+        }
+
         const exists = this.map.has(property.id);
 
         if (exists) {
+            // Merge into existing property. Keep the original priority so
+            // that a secondary config overriding a primary property doesn't
+            // cause the re-sort to move it after all primary properties.
             const existing = this.map.get(property.id)!;
             this.map.set(property.id, { ...existing, ...property });
 
@@ -141,6 +161,8 @@ export class PropertyStore {
         }
 
         this.map.set(property.id, property);
+        // Set priority only for new properties — not merges (handled above).
+        this.priorities.set(property.id, options.priority ?? 0);
 
         if (options.after) {
             this.insertAfter(property.id, options.after);
@@ -156,8 +178,16 @@ export class PropertyStore {
             return;
         }
         this.map.delete(id);
+        this.priorities.delete(id);
+        this.positioned.delete(id);
         this.order = this.order.filter(oid => oid !== id);
-        this.removeDescendants(id);
+        // Note: we intentionally do NOT call removeDescendants here.
+        // React's component lifecycle ensures that when a parent Property
+        // unmounts, all child Properties unmount too — each triggering its
+        // own removeProperty call. Calling removeDescendants would wipe
+        // children that belong to OTHER still-mounted configs sharing the
+        // same parent ID (e.g., id="pageSettings" used by both primary
+        // and secondary configs).
     }
 
     private executeReplace(oldId: string, newProperty: Property): void {

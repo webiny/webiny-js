@@ -3,8 +3,7 @@ import type { FilesRenderChildren } from "react-butterfiles";
 import Files from "react-butterfiles";
 import debounce from "lodash/debounce.js";
 import type { positionValues } from "react-custom-scrollbars";
-// @ts-expect-error
-import { useHotkeys } from "react-hotkeyz";
+import { useHotkeys } from "@webiny/app-admin";
 import { observer } from "mobx-react-lite";
 import { type DataTableSorting, Scrollbar } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";

@@ -1,3 +1,4 @@
+import React from "react";
 import { createConfigurableComponent } from "@webiny/react-properties";
 import type { ElementConfig } from "./Element.js";
 import { Element } from "./Element.js";
@@ -16,9 +17,28 @@ import { ElementInput } from "./ElementInput.js";
 import { IsNotReadOnly } from "~/BaseEditor/config/IsNotReadOnly.js";
 import { IsReadOnly } from "~/BaseEditor/config/IsReadOnly.js";
 
+export interface PageSettingsElementConfig {
+    name: string;
+    element: JSX.Element;
+}
+
+export interface PageSettingsGroupConfig {
+    name: string;
+    title?: string;
+    description?: string;
+    icon?: React.ReactNode;
+    elements: PageSettingsElementConfig[];
+}
+
+export interface EditorPageSettings {
+    groups: PageSettingsGroupConfig[];
+    viewMode: "dialog" | "drawer";
+}
+
 interface EditorConfig {
     elements: ElementConfig[];
     inputRenderers: ElementInputConfig[];
+    pageSettings: EditorPageSettings;
 }
 
 const base = createConfigurableComponent<EditorConfig>("DocumentEditor");
@@ -70,5 +90,12 @@ export const EditorWithConfig = Object.assign(base.WithConfig, { displayName: "E
 export function useEditorConfig() {
     const config = base.useConfig();
 
-    return { elements: config.elements || [], inputRenderers: config.inputRenderers || [] };
+    return {
+        elements: config.elements || [],
+        inputRenderers: config.inputRenderers || [],
+        pageSettings: {
+            groups: config.pageSettings.groups ?? [],
+            viewMode: config.pageSettings.viewMode ?? "dialog"
+        }
+    };
 }

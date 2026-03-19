@@ -1,9 +1,5 @@
 import React, { useCallback, useState } from "react";
-/**
- * Package react-hotkeyz does not have types.
- */
-// @ts-expect-error
-import { useHotkeys } from "react-hotkeyz";
+import { useHotkeys } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { useModelEditor } from "~/admin/hooks/index.js";
 import { Heading, Input, Tooltip } from "@webiny/admin-ui";
@@ -31,7 +27,7 @@ export const Name = () => {
     };
 
     const saveName = useCallback(
-        (event: React.SyntheticEvent) => {
+        (event: KeyboardEvent | React.SyntheticEvent) => {
             event.preventDefault();
             setData(data => {
                 data.name = localName;
@@ -53,7 +49,7 @@ export const Name = () => {
         zIndex: 101,
         disabled: !editingEnabled,
         keys: {
-            esc: (event: React.SyntheticEvent) => {
+            esc: (event: KeyboardEvent) => {
                 event.preventDefault();
                 cancelChanges();
             },

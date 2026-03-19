@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Webiny Config DevTools",
+  "version": "1.0.0",
+  "description": "Inspect mounted Webiny Config components and their state",
+  "devtools_page": "devtools.html",
+  "icons": {
+    "16": "icons/webiny.png",
+    "48": "icons/webiny.png",
+    "128": "icons/webiny.png"
+  }
+}

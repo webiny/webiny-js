@@ -9,3 +9,4 @@ export * from "./useModKey.js";
 export * from "./useIsMounted.js";
 export * from "./useStateIfMounted.js";
 export * from "./useToggler.js";
+export * from "./useHotkeys.js";

@@ -1,3 +1,4 @@
+export { PageEditorConfig } from "~/modules/pages/PageEditor/PageEditorConfig.js";
 export { createCommand } from "~/editorSdk/createCommand.js";
 export { Commands } from "~/BaseEditor/index.js";
 export { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
@@ -9,7 +10,6 @@ export { useElementInputs } from "~/BaseEditor/hooks/useElementInputs.js";
 export { useCreateElement } from "~/BaseEditor/hooks/useCreateElement.js";
 export { useDeleteElement } from "~/BaseEditor/hooks/useDeleteElement.js";
 export { useUpdateElement } from "~/BaseEditor/hooks/useUpdateElement.js";
-export { PageEditorConfig } from "~/index.js";
 export { ElementInputs } from "~/BaseEditor/defaultConfig/Sidebar/ElementSettings/ElementInputs.js";
 
 export { $selectElement } from "~/editorSdk/utils/index.js";

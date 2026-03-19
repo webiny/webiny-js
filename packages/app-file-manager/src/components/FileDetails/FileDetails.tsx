@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import noop from "lodash/noop.js";
-// @ts-expect-error This package has no types.
-import { useHotkeys } from "react-hotkeyz";
+import { useHotkeys } from "@webiny/app-admin";
 import { Drawer, Grid, OverlayLoader, Tabs } from "@webiny/admin-ui";
 import type { FileItem } from "~/types.js";
 import type { FormAPI, FormOnSubmit } from "@webiny/form";
