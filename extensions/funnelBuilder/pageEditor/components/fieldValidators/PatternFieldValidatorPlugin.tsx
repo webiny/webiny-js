@@ -37,7 +37,11 @@ const ValidatorSettings = ({ setMessage }: FieldValidatorSettingsProps) => {
                         setMessage(selectedPreset.defaultErrorMessage);
                     }}
                 >
-                    <Select label={"Preset"} options={selectOptions} />
+                    <Select
+                        label={"Preset"}
+                        options={selectOptions}
+                        description={"Preset or custom regex"}
+                    />
                 </Bind>
             </Grid.Column>
             <Grid.Column span={7}>

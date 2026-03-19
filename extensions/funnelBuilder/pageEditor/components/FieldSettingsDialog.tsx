@@ -29,9 +29,13 @@ export const FieldSettingsDialog = ({ field, open, onClose, onSubmit }: EditFiel
                 <Form<FunnelFieldDefinitionModelDto> data={initialFormData} onSubmit={onSubmit}>
                     {({ submit }) => (
                         <Dialog
+                            style={{ width: 875 }}
+                            size={"lg"}
+                            bodyPadding={false}
                             open={open}
                             onClose={onClose}
                             title={"Field Settings"}
+                            description={"Configure the field settings and validation rules."}
                             actions={
                                 <>
                                     <Dialog.CancelAction onClick={onClose} text={"Cancel"} />
@@ -41,6 +45,8 @@ export const FieldSettingsDialog = ({ field, open, onClose, onSubmit }: EditFiel
                         >
                             <div className={"w-[875px] min-h-[400px] max-h-[600px] overflow-auto"}>
                                 <Tabs
+                                    separator={true}
+                                    spacing={"lg"}
                                     tabs={[
                                         <Tabs.Tab
                                             key={"general"}

@@ -4,7 +4,7 @@ import { Bind } from "webiny/admin/form";
 
 export const TextFieldSettings = () => {
     return (
-        <Grid>
+        <Grid gap={"compact"}>
             <Grid.Column span={12}>
                 <Bind name={"extra.placeholderText"}>
                     <Input label={"Placeholder text"} description={"Placeholder text (optional)"} />

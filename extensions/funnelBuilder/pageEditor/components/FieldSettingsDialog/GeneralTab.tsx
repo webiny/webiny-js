@@ -81,7 +81,7 @@ export const GeneralTab = ({ open }: GeneralTabProps) => {
 
     return (
         <>
-            <Grid>
+            <Grid gap={"compact"} className={"mb-md"}>
                 <Grid.Column span={6}>
                     <Bind name={"label"} validators={required} afterChange={afterChangeLabel}>
                         <Input label={"Label"} inputRef={inputRef} />
