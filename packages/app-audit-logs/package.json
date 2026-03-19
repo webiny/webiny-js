@@ -22,7 +22,7 @@
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-properties": "0.0.0",
     "@webiny/ui": "0.0.0",
-    "date-fns": "^2.30.0",
+    "date-fns": "^4.1.0",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.23",
     "zod": "^4.3.6"

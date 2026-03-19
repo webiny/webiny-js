@@ -51,7 +51,7 @@
     "markdown-to-jsx": "^9.7.11",
     "matcher": "^6.0.0",
     "mobx": "^6.15.0",
-    "mobx-react-lite": "^3.4.3",
+    "mobx-react-lite": "^4.1.1",
     "pluralize": "^8.0.0",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
