@@ -498,6 +498,107 @@ describe("Config Priority Ordering", () => {
         ]);
     });
 
+    it("should preserve position when secondary config overrides a primary property by ID", async () => {
+        /**
+         * When a secondary config re-registers a property with the same ID
+         * as a primary property (e.g., overriding a column's cell renderer),
+         * the property must keep its original position — not move to the end.
+         */
+        const onChange = vi.fn();
+
+        interface TableConfig {
+            columns: Array<{ name: string; header: string }>;
+        }
+
+        const tableBase = createConfigurableComponent<TableConfig>("TestTable");
+        const TableConfig = tableBase.Config;
+        const TableWithConfig = tableBase.WithConfig;
+
+        const Column = ({
+            name,
+            header,
+            priority
+        }: {
+            name: string;
+            header: string;
+            priority?: "primary" | "secondary";
+        }) => (
+            <TableConfig priority={priority}>
+                <Property id={`col:${name}`} name={"columns"} array>
+                    <Property id={`col:${name}:name`} name={"name"} value={name} />
+                    <Property id={`col:${name}:header`} name={"header"} value={header} />
+                </Property>
+            </TableConfig>
+        );
+
+        const view = (
+            <CompositionProvider>
+                {/* Primary: registers columns in order */}
+                <Column name={"name"} header={"Name"} priority={"primary"} />
+                <Column name={"created"} header={"Created"} priority={"primary"} />
+                <Column name={"actions"} header={"Actions"} priority={"primary"} />
+
+                {/* Secondary: overrides "name" column with a custom header */}
+                <Column name={"name"} header={"Custom Name"} priority={"secondary"} />
+
+                <TableWithConfig onProperties={onChange}>
+                    <div />
+                </TableWithConfig>
+            </CompositionProvider>
+        );
+
+        render(view);
+        await flush();
+
+        const data = toObject<TableConfig>(getLastCall(onChange));
+
+        // "name" column must stay at position 0 (where primary registered it),
+        // not move to the end because secondary overrode it.
+        expect(data.columns.map(c => c.name)).toEqual(["name", "created", "actions"]);
+
+        // The override should have taken effect.
+        expect(data.columns[0].header).toBe("Custom Name");
+    });
+
+    it("should preserve position when secondary config with before/after overrides primary", async () => {
+        /**
+         * A secondary config adds a new property with before="existingId".
+         * The property should be positioned before the target, not moved
+         * by the priority re-sort.
+         */
+        const onChange = vi.fn();
+
+        const view = (
+            <CompositionProvider>
+                <ToolbarConfig priority={"primary"}>
+                    <ToolbarAction name={"bold"} />
+                    <ToolbarAction name={"italic"} />
+                    <ToolbarAction name={"underline"} />
+                </ToolbarConfig>
+                <ToolbarConfig priority={"secondary"}>
+                    {/* Insert emoji BEFORE italic */}
+                    <ToolbarAction name={"emoji"} after={"bold"} />
+                </ToolbarConfig>
+                <ToolbarWithConfig onProperties={onChange}>
+                    <div />
+                </ToolbarWithConfig>
+            </CompositionProvider>
+        );
+
+        render(view);
+        await flush();
+
+        const data = toObject<ToolbarConfig>(getLastCall(onChange));
+
+        // emoji should be right after bold, not pushed to the end by priority re-sort.
+        expect(data.actions.map(a => a.name)).toEqual([
+            "bold",
+            "emoji",
+            "italic",
+            "underline"
+        ]);
+    });
+
     it("should preserve declaration order across multiple Config calls at the same priority", async () => {
         /**
          * This test guards the children ordering inside createHOC.

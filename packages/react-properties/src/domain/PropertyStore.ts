@@ -139,8 +139,6 @@ export class PropertyStore {
     }
 
     private executeAdd(property: Property, options: AddPropertyOptions): void {
-        this.priorities.set(property.id, options.priority ?? 0);
-
         if (options.after || options.before) {
             this.positioned.add(property.id);
         }
@@ -148,6 +146,9 @@ export class PropertyStore {
         const exists = this.map.has(property.id);
 
         if (exists) {
+            // Merge into existing property. Keep the original priority so
+            // that a secondary config overriding a primary property doesn't
+            // cause the re-sort to move it after all primary properties.
             const existing = this.map.get(property.id)!;
             this.map.set(property.id, { ...existing, ...property });
 
@@ -160,6 +161,8 @@ export class PropertyStore {
         }
 
         this.map.set(property.id, property);
+        // Set priority only for new properties — not merges (handled above).
+        this.priorities.set(property.id, options.priority ?? 0);
 
         if (options.after) {
             this.insertAfter(property.id, options.after);
