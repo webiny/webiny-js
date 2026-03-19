@@ -27,7 +27,7 @@
     "@rspack/core": "^1.7.9",
     "@svgr/webpack": "^6.5.1",
     "@swc/plugin-emotion": "^11.5.0",
-    "@tailwindcss/postcss": "^4.2.1",
+    "@tailwindcss/postcss": "^4.2.2",
     "@types/webpack-env": "^1.18.8",
     "chalk": "^4.1.2",
     "chokidar": "^4.0.3",

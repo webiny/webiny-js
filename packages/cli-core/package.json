@@ -28,7 +28,7 @@
     "pino": "^9.14.0",
     "pino-pretty": "^9.4.1",
     "semver": "^7.7.4",
-    "type-fest": "^5.4.4",
+    "type-fest": "^5.5.0",
     "write-json-file": "^7.0.0",
     "yargs": "^18.0.0",
     "zod": "^4.3.6"

@@ -15,7 +15,7 @@
     "find-up": "^5.0.0",
     "pino": "^9.14.0",
     "ts-morph": "^27.0.2",
-    "type-fest": "^5.4.4",
+    "type-fest": "^5.5.0",
     "yargs": "^18.0.0"
   },
   "devDependencies": {
