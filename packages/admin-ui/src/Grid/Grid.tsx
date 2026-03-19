@@ -78,6 +78,7 @@ interface GridProps
     extends React.HTMLAttributes<HTMLDivElement>,
         VariantProps<typeof gridVariants> {
     children:
+        | null
         | React.ReactElement<ColumnProps, typeof Column>
         | Array<React.ReactElement<ColumnProps, typeof Column>>;
 }

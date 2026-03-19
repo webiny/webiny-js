@@ -32,6 +32,7 @@ export interface PageSettingsGroupConfig {
 
 export interface EditorPageSettings {
     groups: PageSettingsGroupConfig[];
+    viewMode: "dialog" | "drawer";
 }
 
 interface EditorConfig {
@@ -92,6 +93,9 @@ export function useEditorConfig() {
     return {
         elements: config.elements || [],
         inputRenderers: config.inputRenderers || [],
-        pageSettings: config.pageSettings || { groups: [] }
+        pageSettings: {
+            groups: config.pageSettings.groups ?? [],
+            viewMode: config.pageSettings.viewMode ?? "dialog"
+        }
     };
 }

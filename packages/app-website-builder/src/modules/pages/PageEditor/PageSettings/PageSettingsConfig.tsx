@@ -26,14 +26,24 @@ const { PageSettings } = InternalPageEditorConfig;
 export const PageSettingsConfig = () => {
     return (
         <>
-            <PageSettings.Group name={"general"} title={"General"} icon={<SettingsIcon />}>
+            <PageSettings.Group
+                name={"general"}
+                title={"General"}
+                description={"Configure the page's core details like title, path, snippet, and image."}
+                icon={<SettingsIcon />}
+            >
                 <PageSettings.Element name={"title"} element={<GeneralTitle />} />
                 <PageSettings.Element name={"path"} element={<GeneralPath />} />
                 <PageSettings.Element name={"snippet"} element={<GeneralSnippet />} />
                 <PageSettings.Element name={"image"} element={<GeneralImage />} />
                 <PageSettings.Element name={"tags"} element={<GeneralTags />} />
             </PageSettings.Group>
-            <PageSettings.Group name={"seo"} title={"SEO"} icon={<SeoIcon />}>
+            <PageSettings.Group
+                name={"seo"}
+                title={"SEO"}
+                description={"Optimize how this page appears in search engine results."}
+                icon={<SeoIcon />}
+            >
                 <PageSettings.Element name={"title"} element={<SeoTitle />} />
                 <PageSettings.Element name={"description"} element={<SeoDescription />} />
                 <PageSettings.Element name={"metaTags"} element={<SeoMetaTags />} />
@@ -41,13 +51,23 @@ export const PageSettingsConfig = () => {
                 <PageSettings.Element name={"noIndex"} element={<SeoNoIndex />} />
                 <PageSettings.Element name={"noFollow"} element={<SeoNoFollow />} />
             </PageSettings.Group>
-            <PageSettings.Group name={"social"} title={"Social"} icon={<SocialIcon />}>
+            <PageSettings.Group
+                name={"social"}
+                title={"Social"}
+                description={"Control how this page is previewed when shared on social media."}
+                icon={<SocialIcon />}
+            >
                 <PageSettings.Element name={"title"} element={<SocialTitle />} />
                 <PageSettings.Element name={"description"} element={<SocialDescription />} />
                 <PageSettings.Element name={"image"} element={<SocialImage />} />
                 <PageSettings.Element name={"metaTags"} element={<SocialMetaTags />} />
             </PageSettings.Group>
-            <PageSettings.Group name={"schema"} title={"Schema"} icon={<SchemaIcon />}>
+            <PageSettings.Group
+                name={"schema"}
+                title={"Schema"}
+                description={"Add structured data markup to enhance search result appearance."}
+                icon={<SchemaIcon />}
+            >
                 <PageSettings.Element name={"editor"} element={<SchemaEditor />} />
             </PageSettings.Group>
         </>

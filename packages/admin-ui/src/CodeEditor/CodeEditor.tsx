@@ -18,7 +18,7 @@ const DecoratableCodeEditor = ({
     note,
     hint,
     required,
-    disabled,
+    disabled = false,
     validation,
     ...props
 }: CodeEditorProps) => {

@@ -15,6 +15,22 @@ type DynamicProps<T> = T & {
     [key: string]: any;
 };
 
+export const Dialog = () => {
+    return (
+        <Property id="pageSettings" name={"pageSettings"}>
+            <Property id="pageSettings.viewMode"  name={"viewMode"} value={"dialog"} />
+        </Property>
+    );
+};
+
+export const Drawer = () => {
+    return (
+        <Property id="pageSettings" name={"pageSettings"}>
+            <Property id="pageSettings.viewMode" name={"viewMode"} value={"drawer"} />
+        </Property>
+    );
+};
+
 export const Group = ({ children, replace, remove = false, ...rest }: GroupProps) => {
     const props: DynamicProps<typeof rest> = rest;
     const id = `group:${props.name}`;
@@ -78,5 +94,9 @@ export const Element: React.FC<ElementProps> = ({
 
 export const PageSettings = {
     Group,
-    Element
+    Element,
+    ViewMode: {
+        Dialog,
+        Drawer
+    }
 };

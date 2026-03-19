@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { Button, Drawer } from "@webiny/admin-ui";
+import { useHotkeys } from "@webiny/app-admin";
 import type { FormAPI } from "@webiny/form";
-// @ts-expect-error
-import { useHotkeys } from "react-hotkeyz";
 import { QueryBuilder } from "./QueryBuilder/index.js";
 
 import type { FieldDTOWithElement, FilterDTO } from "~/components/AdvancedSearch/domain/index.js";
