@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import { useDialogs } from "@webiny/app-admin";
 import { SettingsDialogBody } from "./SettingsDialogBody.js";
 import type { PageSettingsOverlayProps } from "~/modules/pages/PageEditor/TopBar/SettingsButton.js";
-import { useEditorConfig } from "~/BaseEditor/index.js";
+import { usePageEditorConfig } from "~/modules/pages/PageEditor/usePageEditorConfig.js";
 
 export const PageSettingsDialog = ({ open, data, onClose, onSave }: PageSettingsOverlayProps) => {
     const dialogs = useDialogs();
-    const { pageSettings } = useEditorConfig();
+    const { pageSettings } = usePageEditorConfig();
 
     const showDialog = () => {
         dialogs.showDialog({

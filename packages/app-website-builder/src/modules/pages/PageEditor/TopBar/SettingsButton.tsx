@@ -6,7 +6,7 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import type { GenericFormData } from "@webiny/form";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
-import { useEditorConfig } from "~/BaseEditor/index.js";
+import { usePageEditorConfig } from "~/modules/pages/PageEditor/usePageEditorConfig.js";
 import { PageSettingsDrawer } from "./Settings/PageSettingsDrawer.js";
 import { PageSettingsDialog } from "./Settings/PageSettingsDialog.js";
 
@@ -19,7 +19,7 @@ export interface PageSettingsOverlayProps {
 
 export const SettingsButton = () => {
     const editor = useDocumentEditor();
-    const { pageSettings } = useEditorConfig();
+    const { pageSettings } = usePageEditorConfig();
     const [isOverlayOpen, setOverlayOpen] = useState(false);
 
     const openOverlay = useCallback(() => {

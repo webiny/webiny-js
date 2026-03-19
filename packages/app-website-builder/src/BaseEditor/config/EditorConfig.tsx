@@ -1,4 +1,3 @@
-import React from "react";
 import { createConfigurableComponent } from "@webiny/react-properties";
 import type { ElementConfig } from "./Element.js";
 import { Element } from "./Element.js";
@@ -16,29 +15,11 @@ import type { ElementInputConfig } from "./ElementInput.js";
 import { ElementInput } from "./ElementInput.js";
 import { IsNotReadOnly } from "~/BaseEditor/config/IsNotReadOnly.js";
 import { IsReadOnly } from "~/BaseEditor/config/IsReadOnly.js";
-
-export interface PageSettingsElementConfig {
-    name: string;
-    element: JSX.Element;
-}
-
-export interface PageSettingsGroupConfig {
-    name: string;
-    title?: string;
-    description?: string;
-    icon?: React.ReactNode;
-    elements: PageSettingsElementConfig[];
-}
-
-export interface EditorPageSettings {
-    groups: PageSettingsGroupConfig[];
-    viewMode: "dialog" | "drawer";
-}
+import { ElementOverlay } from "./ElementOverlay.js";
 
 interface EditorConfig {
     elements: ElementConfig[];
     inputRenderers: ElementInputConfig[];
-    pageSettings: EditorPageSettings;
 }
 
 const base = createConfigurableComponent<EditorConfig>("DocumentEditor");
@@ -78,6 +59,10 @@ export const EditorConfigComponents = {
      */
     ElementActions,
     /**
+     * Customize ElementOverlay
+     */
+    ElementOverlay,
+    /**
      * Access full editor config. WARNING: very low-level, we don't recommend using this directly!
      */
     useEditorConfig
@@ -87,15 +72,12 @@ export const EditorConfig = Object.assign(base.Config, EditorConfigComponents);
 
 export const EditorWithConfig = Object.assign(base.WithConfig, { displayName: "EditorWithConfig" });
 
-export function useEditorConfig() {
-    const config = base.useConfig();
+export function useEditorConfig<TConfig = EditorConfig>() {
+    const { elements, inputRenderers, ...rest } = base.useConfig<TConfig & EditorConfig>();
 
     return {
-        elements: config.elements || [],
-        inputRenderers: config.inputRenderers || [],
-        pageSettings: {
-            groups: config.pageSettings.groups ?? [],
-            viewMode: config.pageSettings.viewMode ?? "dialog"
-        }
+        elements: elements || [],
+        inputRenderers: inputRenderers || [],
+        ...rest
     };
 }
