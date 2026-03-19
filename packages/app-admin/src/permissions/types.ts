@@ -230,8 +230,8 @@ export type HasPermissionAction<S extends PermissionSchemaConfig> =
  */
 type ActionConstraint<S extends PermissionSchemaConfig> =
     | { action?: HasPermissionAction<S>; someActions?: never; allActions?: never }
-    | { action?: never; someActions: NonEmptyArray<HasPermissionAction<S>>[]; allActions?: never }
-    | { action?: never; someActions?: never; allActions: NonEmptyArray<HasPermissionAction<S>>[] };
+    | { action?: never; someActions: NonEmptyArray<HasPermissionAction<S>>; allActions?: never }
+    | { action?: never; someActions?: never; allActions: NonEmptyArray<HasPermissionAction<S>> };
 
 /**
  * Props for a schema-bound `HasPermission` component created via `createHasPermission`.
