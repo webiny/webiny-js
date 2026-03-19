@@ -291,4 +291,100 @@ describe("Scheduler GraphQL", () => {
             }
         });
     });
+
+    it("should scheduled and cancel an action", async () => {
+        const scheduleFor = new Date(new Date().getTime() + 5 * 60 * 1000);
+
+        const [publishResponse] = await handler.scheduleAction({
+            id: targetId,
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            actionType: SCHEDULED_ACTION_PUBLISH,
+            scheduleFor
+        });
+
+        expect(publishResponse).toEqual({
+            data: {
+                scheduler: {
+                    scheduleAction: {
+                        data: {
+                            actionType: SCHEDULED_ACTION_PUBLISH,
+                            id: expect.any(String),
+                            namespace,
+                            publishOn: scheduleFor.toISOString(),
+                            scheduledBy: {
+                                displayName: "John Doe",
+                                id: "id-12345678",
+                                type: "admin"
+                            },
+                            targetId,
+                            title: "Fetched title from handler",
+                            unpublishOn: null
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [getResponse] = await handler.getScheduledAction({
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            id: publishResponse.data.scheduler.scheduleAction.data!.id
+        });
+
+        expect(getResponse).toEqual({
+            data: {
+                scheduler: {
+                    getScheduledAction: {
+                        data: {
+                            actionType: SCHEDULED_ACTION_PUBLISH,
+                            id: expect.any(String),
+                            namespace,
+                            publishOn: scheduleFor.toISOString(),
+                            scheduledBy: {
+                                displayName: "John Doe",
+                                id: "id-12345678",
+                                type: "admin"
+                            },
+                            targetId,
+                            title: "Fetched title from handler",
+                            unpublishOn: null
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [cancelResponse] = await handler.cancelScheduledAction({
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            id: publishResponse.data.scheduler.scheduleAction.data!.id
+        });
+
+        expect(cancelResponse).toEqual({
+            data: {
+                scheduler: {
+                    cancelScheduledAction: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [getCancelledResponse] = await handler.getScheduledAction({
+            namespace: PublishTestEntryActionHandlerImpl.name,
+            id: publishResponse.data.scheduler.scheduleAction.data!.id
+        });
+
+        expect(getCancelledResponse).toEqual({
+            data: {
+                scheduler: {
+                    getScheduledAction: {
+                        data: null,
+                        error: null
+                    }
+                }
+            }
+        });
+    });
 });
