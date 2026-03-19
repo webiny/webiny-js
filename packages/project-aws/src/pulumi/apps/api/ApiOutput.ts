@@ -27,7 +27,6 @@ export const ApiOutput = createAppModule({
                 region: output["region"],
                 websocketApiId: output["websocketApiId"],
                 websocketApiUrl: output["websocketApiUrl"],
-                migrationLambdaArn: output["migrationLambdaArn"],
                 graphqlLambdaName: output["graphqlLambdaName"],
                 backgroundTaskLambdaArn: output["backgroundTaskLambdaArn"],
                 backgroundTaskStepFunctionArn: output["backgroundTaskStepFunctionArn"],

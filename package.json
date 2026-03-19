@@ -4,7 +4,6 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "migrations",
       "nextjs",
       "cypress-tests",
       "extensions/theme",
@@ -98,7 +97,7 @@
     "github-actions-wac": "^2.0.0",
     "graphql": "^16.13.1",
     "husky": "^4.3.8",
-    "inquirer": "^12.11.1",
+    "inquirer": "^13.3.2",
     "jest-extended": "^7.0.0",
     "lerna": "8.1.2",
     "lexical": "^0.40.0",
