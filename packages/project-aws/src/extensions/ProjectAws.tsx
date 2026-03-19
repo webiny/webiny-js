@@ -41,9 +41,6 @@ export const ProjectAws = () => {
 
             <AdminAfterDeploy src={p("ProjectAws/UploadAdminAppToS3.js")} />
 
-            {/* We'll bring this back once needed. */}
-            {/* <ApiAfterDeploy src={p("ProjectAws/ExecuteDataMigrations.js")} /> */}
-
             <ApiAfterDeploy src={p("ProjectAws/AutoInstall/AutoInstallAfterApiDeploy.js")} />
             <ExtensionDefinitions src={p("definitions.js")} />
             <ExtensionDefinitions src={p("ProjectAws/definitions.js")} />
@@ -51,6 +48,9 @@ export const ProjectAws = () => {
             {/* Admin env vars */}
             <AdminBeforeBuild src={p("ProjectAws/SetAdminEnvVars/SetAdminEnvVarsBeforeBuild.js")} />
             <AdminBeforeWatch src={p("ProjectAws/SetAdminEnvVars/SetAdminEnvVarsBeforeWatch.js")} />
+
+            {/* AWS credentials check */}
+            <BeforeDeploy src={p("ProjectAws/EnsureAwsCredentialsBeforeDeploy.js")} />
 
             {/* Blue-green */}
             <CliCommand src={p("ProjectAws/BlueGreenDeployments/SetPrimaryVariantCliCommand.js")} />

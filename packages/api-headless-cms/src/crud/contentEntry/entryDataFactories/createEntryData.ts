@@ -272,7 +272,12 @@ export const createEntryData = async <TValues extends CmsEntryValues = CmsEntryV
         system: getSystem({
             input: rawInput
         }),
-        live: null
+        live:
+            status === STATUS_PUBLISHED
+                ? {
+                      version
+                  }
+                : null
     };
 
     if (status !== STATUS_DRAFT) {

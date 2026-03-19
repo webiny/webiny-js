@@ -268,7 +268,7 @@ export class SchedulerGraphQL implements CoreGraphQLSchemaFactory.Interface {
                         return new ErrorResponse(result.error);
                     }
 
-                    return new Response<void>(result.value);
+                    return new Response<boolean>(result.value);
                 };
             }
         });

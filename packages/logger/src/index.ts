@@ -24,7 +24,6 @@ export type {
     TransportMultiOptions,
     TransportBaseOptions,
     TimeFn,
-    ThreadStream,
     StreamEntry,
     SerializerFn,
     SerializedResponse,
