@@ -20,7 +20,7 @@
     "fast-json-stable-stringify": "^2.1.0",
     "is-hotkey": "^0.2.0",
     "lodash": "^4.17.23",
-    "matcher": "^5.0.0",
+    "matcher": "^6.0.0",
     "mobx": "^6.15.0",
     "nanoid": "^5.1.7",
     "nanoid-dictionary": "^5.0.0",

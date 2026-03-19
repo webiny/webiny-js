@@ -40,7 +40,7 @@
     "dot-prop-immutable": "^2.1.1",
     "graphql": "^16.13.1",
     "graphql-tag": "^2.12.6",
-    "load-script": "^1.0.0",
+    "load-script": "^2.0.0",
     "lodash": "^4.17.23",
     "mime": "^3.0.0",
     "minimatch": "^10.2.4",
