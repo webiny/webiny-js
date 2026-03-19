@@ -1,6 +1,6 @@
 import React from "react";
 import { Form, FormOnSubmit } from "webiny/admin/form";
-import { Dialog } from "@webiny/admin-ui";
+import { Dialog } from "webiny/admin/ui";
 import { FunnelModelDto } from "../../models/FunnelModel";
 import { ConditionRulesForm } from "./ConditionRulesDialog/ConditionRulesForm";
 
@@ -23,9 +23,12 @@ export const ConditionRulesDialog = ({
                 <Form<FunnelModelDto> data={data} onSubmit={onSubmit}>
                     {({ submit }) => (
                         <Dialog
+                            style={{ width: 875 }}
+                            size={"lg"}
                             open={open}
                             onClose={onClose}
                             title={"Conditional Rules"}
+                            description={"Set up conditional rules"}
                             actions={
                                 <>
                                     <Dialog.CancelAction onClick={onClose} text={"Cancel"} />
@@ -33,9 +36,7 @@ export const ConditionRulesDialog = ({
                                 </>
                             }
                         >
-                            <div className={"w-[875px] min-h-[600px] max-h-[800px] overflow-auto"}>
-                                <ConditionRulesForm />
-                            </div>
+                            <ConditionRulesForm />
                         </Dialog>
                     )}
                 </Form>

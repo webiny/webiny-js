@@ -1,18 +1,16 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Button, IconButton, Select, Text } from "webiny/admin/ui";
 import styled from "@emotion/styled";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { ReactComponent as PlusIcon } from "@material-design-icons/svg/outlined/add.svg";
-import { plugins } from "@webiny/plugins";
 import { Form } from "webiny/admin/form";
 import { useConditionRulesForm } from "../../useConditionRulesForm";
-import { FunnelConditionRuleModelDto } from "../../../../../shared/models/FunnelConditionRuleModel";
-import { listConditionActions } from "../../../../../shared/models/conditionActions/conditionActionFactory";
-import { ConditionOperatorParams } from "../../../../../shared/models/FunnelConditionOperatorModel";
-import { ConditionActionParamsComponent } from "../../../plugins/PbEditorFunnelConditionActionPlugin";
-import { PbEditorFunnelConditionActionPluginProps } from "../../../plugins/PbEditorFunnelConditionActionPlugin";
+import { FunnelConditionRuleModelDto } from "../../../../../models/FunnelConditionRuleModel";
+import { listConditionActions } from "../../../../../models/conditionActions/conditionActionFactory";
+import { ConditionOperatorParams } from "../../../../../models/FunnelConditionOperatorModel";
 
 const Fieldset = styled.div`
+    width: 200px;
     display: flex;
     align-items: center;
     column-gap: 10px;
@@ -44,12 +42,6 @@ export interface RuleActionsProps {
 export const RuleActions = ({ rule }: RuleActionsProps) => {
     const { funnel, addAction, removeAction, updateAction } = useConditionRulesForm();
 
-    const conditionActionPlugins = useMemo(() => {
-        return plugins.byType(
-            "pb-editor-funnel-condition-action"
-        ) as unknown as PbEditorFunnelConditionActionPluginProps[];
-    }, []);
-
     const availableConditionActions = listConditionActions();
 
     return (
@@ -76,64 +68,31 @@ export const RuleActions = ({ rule }: RuleActionsProps) => {
                     </Text>
                 </NoActionsMessage>
             ) : (
-                rule.actions.map(action => {
-                    const conditionActionPlugin = conditionActionPlugins.find(
-                        p => p.actionClass.type === action.type
-                    );
-
-                    let ConditionActionParamsComponent: ConditionActionParamsComponent | undefined;
-                    if (conditionActionPlugin) {
-                        ConditionActionParamsComponent = conditionActionPlugin.settingsRenderer;
-                    }
-
-                    return (
-                        <Fieldset key={action.id}>
-                            <Select
-                                className={"w-[200px]"}
-                                value={action.type}
-                                onChange={type => {
-                                    updateAction(rule.id, {
-                                        id: action.id,
-                                        type,
-                                        params: { extra: {} }
-                                    });
-                                }}
-                                options={availableConditionActions.map(action => ({
-                                    value: action.type,
-                                    label: action.optionLabel
-                                }))}
-                            />
-
-                            {ConditionActionParamsComponent && (
-                                <Form<ConditionOperatorParams>
-                                    data={action.params}
-                                    onChange={params => {
-                                        return updateAction(rule.id, {
-                                            ...action,
-                                            params
-                                        });
-                                    }}
-                                >
-                                    {() => {
-                                        return (
-                                            <>
-                                                {ConditionActionParamsComponent ? (
-                                                    <ConditionActionParamsComponent
-                                                        funnel={funnel}
-                                                    />
-                                                ) : null}
-                                            </>
-                                        );
-                                    }}
-                                </Form>
-                            )}
-                            <IconButton
-                                icon={<DeleteIcon />}
-                                onClick={() => removeAction(rule.id, action.id!)}
-                            />
-                        </Fieldset>
-                    );
-                })
+                rule.actions.map(action => (
+                    <Fieldset key={action.id}>
+                        <Select
+                            size={"md"}
+                            // className={"w-[200px]"}
+                            value={action.type}
+                            onChange={type => {
+                                updateAction(rule.id, {
+                                    id: action.id,
+                                    type,
+                                    params: { extra: {} }
+                                });
+                            }}
+                            options={availableConditionActions.map(action => ({
+                                value: action.type,
+                                label: action.optionLabel
+                            }))}
+                        />
+                        <IconButton
+                            variant={"ghost"}
+                            icon={<DeleteIcon />}
+                            onClick={() => removeAction(rule.id, action.id!)}
+                        />
+                    </Fieldset>
+                ))
             )}
         </div>
     );

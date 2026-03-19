@@ -1,14 +1,14 @@
 import { useBind, useForm } from "webiny/admin/form";
 import { getRandomId } from "../../../utils/getRandomId";
-import { FunnelModelDto } from "../../../shared/models/FunnelModel";
-import { FunnelConditionRuleModelDto } from "../../../shared/models/FunnelConditionRuleModel";
-import { FunnelConditionModelDto } from "../../../shared/models/FunnelConditionModel";
-import { FunnelConditionActionModelDto } from "../../../shared/models/FunnelConditionActionModel";
-import { DisableFieldConditionAction } from "../../../shared/models/conditionActions/DisableFieldConditionAction";
+import { FunnelModelDto } from "../../../models/FunnelModel";
+import { FunnelConditionRuleModelDto } from "../../../models/FunnelConditionRuleModel";
+import { FunnelConditionModelDto } from "../../../models/FunnelConditionModel";
+import { FunnelConditionActionModelDto } from "../../../models/FunnelConditionActionModel";
+import { DisableFieldConditionAction } from "../../../models/conditionActions/DisableFieldConditionAction";
 import {
     FunnelConditionGroupModelDto,
     LogicalOperator
-} from "../../../shared/models/FunnelConditionGroupModel";
+} from "../../../models/FunnelConditionGroupModel";
 
 type ConditionRulesDto = FunnelConditionRuleModelDto[];
 

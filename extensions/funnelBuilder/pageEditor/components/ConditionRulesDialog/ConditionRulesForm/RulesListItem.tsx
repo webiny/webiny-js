@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Accordion, IconButton } from "webiny/admin/ui";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { useConditionRulesForm } from "../useConditionRulesForm";
-import { FunnelConditionRuleModelDto } from "../../../../shared/models/FunnelConditionRuleModel";
+import { FunnelConditionRuleModelDto } from "../../../../models/FunnelConditionRuleModel";
 import { RuleConditionGroup } from "./RulesListItem/RuleConditionGroup";
 import { RuleActions } from "./RulesListItem/RuleActions";
 

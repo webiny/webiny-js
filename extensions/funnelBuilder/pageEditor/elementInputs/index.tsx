@@ -1,6 +1,12 @@
 import React from "react";
-import { ElementInputsDecorator } from "./ElementInputs.js";
+import { ContainerElementInputsDecorator } from "./ContainerElementInputs";
+import { FieldElementInputsDecorator } from "./FieldElementInputs";
 
 export const FubElementInputs = () => {
-    return <ElementInputsDecorator />;
+    return (
+        <>
+            <ContainerElementInputsDecorator />
+            <FieldElementInputsDecorator />
+        </>
+    );
 };

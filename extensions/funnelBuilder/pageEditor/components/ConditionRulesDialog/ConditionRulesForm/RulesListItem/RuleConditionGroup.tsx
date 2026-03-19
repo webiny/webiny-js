@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { ReactComponent as BasePlusIcon } from "@material-design-icons/svg/outlined/add.svg";
 
-import { FunnelConditionGroupModelDto } from "../../../../../shared/models/FunnelConditionGroupModel";
+import { FunnelConditionGroupModelDto } from "../../../../../models/FunnelConditionGroupModel";
 import { useConditionRulesForm } from "../../useConditionRulesForm";
 import { RuleCondition } from "./RuleCondition";
 
@@ -50,33 +50,41 @@ export const RuleConditionGroup = ({ conditionGroup, depth = 1 }: RuleConditionG
                     }}
                 >
                     <Text className={"text-xs"}>Operator:</Text>
-                    <Select
-                        className={"w-[100px]"}
-                        value={conditionGroup.operator}
-                        onChange={(value: FunnelConditionGroupModelDto["operator"]) =>
-                            updateConditionGroupOperator(conditionGroup.id, value)
-                        }
-                        options={[
-                            { value: "and", label: "AND" },
-                            { value: "or", label: "OR" }
-                        ]}
-                    />
+                    <div className={"w-[120px]"}>
+                        <Select
+                            displayResetAction={false}
+                            size={"md"}
+                            value={conditionGroup.operator}
+                            onChange={value =>
+                                updateConditionGroupOperator(
+                                    conditionGroup.id,
+                                    value as FunnelConditionGroupModelDto["operator"]
+                                )
+                            }
+                            options={[
+                                { value: "and", label: "AND" },
+                                { value: "or", label: "OR" }
+                            ]}
+                        />
+                    </div>
+
                     <Button
                         variant={"secondary"}
-                        size={"sm"}
+                        size={"md"}
                         icon={<BasePlusIcon />}
                         text={"Add condition"}
                         onClick={() => addCondition(conditionGroup.id)}
                     />
                     <Button
                         variant={"secondary"}
-                        size={"sm"}
+                        size={"md"}
                         icon={<BasePlusIcon />}
                         text={"Add group"}
                         onClick={() => addConditionGroup(conditionGroup.id)}
                     />
                     {depth > 1 ? (
                         <IconButton
+                            variant={"tertiary"}
                             icon={<DeleteIcon />}
                             onClick={() => removeConditionGroup(conditionGroup.id)}
                         />
@@ -85,6 +93,7 @@ export const RuleConditionGroup = ({ conditionGroup, depth = 1 }: RuleConditionG
                             content={"Cannot delete root condition group."}
                             trigger={
                                 <IconButton
+                                    variant={"tertiary"}
                                     disabled={true}
                                     icon={<DeleteIcon />}
                                     onClick={() => removeConditionGroup(conditionGroup.id)}
@@ -97,9 +106,7 @@ export const RuleConditionGroup = ({ conditionGroup, depth = 1 }: RuleConditionG
 
             {conditionGroup.items.length === 0 ? (
                 <NoConditionsMessage>
-                    <Typography use={"body2"} style={{ textAlign: "center", padding: "10px" }}>
-                        No conditions added yet.
-                    </Typography>
+                    <p className={"text-sm text-center py-2.5"}>No conditions added yet.</p>
                 </NoConditionsMessage>
             ) : (
                 conditionGroup.items.map(conditionGroupItem => {
