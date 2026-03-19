@@ -29,7 +29,7 @@ export interface ICancelScheduledActionUseCaseParams {
 export interface ICancelScheduledActionUseCase {
     execute(
         params: ICancelScheduledActionUseCaseParams
-    ): Promise<Result<void, CancelScheduledActionError>>;
+    ): Promise<Result<boolean, CancelScheduledActionError>>;
 }
 
 export const CancelScheduledActionUseCase = createAbstraction<ICancelScheduledActionUseCase>(

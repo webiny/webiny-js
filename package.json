@@ -119,7 +119,6 @@
     "typescript": "5.9.3",
     "validator": "^13.15.26",
     "verdaccio": "^6.3.2",
-    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.0",
     "write-json-file": "^7.0.0",
     "yargs": "^18.0.0"
