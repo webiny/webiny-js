@@ -1,7 +1,5 @@
 import "tsx";
 import { defineConfig } from "vitest/config";
-import tsconfigPaths from "vite-tsconfig-paths";
-
 import fg from "fast-glob";
 import path from "path";
 import chalk from "chalk";
@@ -67,7 +65,7 @@ const getPackageTestSetup = async (pkg: string) => {
     return await importConfig(setupPath);
 };
 
-export default async () => {
+export default defineConfig(async () => {
     // Sanitize Opensearch
     const osIndexPrefix = sanitizeEsIndexName(process.env.OPENSEARCH_INDEX_PREFIX);
 
@@ -119,20 +117,14 @@ export default async () => {
 
     project.rootDir = process.cwd();
 
-    return defineConfig({
-        plugins: [
-            tsconfigPaths({
-                // This flag ensures tsconfig templates don't throw errors (e.g. project-aws/_templates).
-                // Ideally, we would want to list all valid packages ONLY, and disable tsconfig auto-discovery.
-                ignoreConfigErrors: true
-            })
-        ],
+    return {
         resolve: {
             alias: {
                 "graphql/language/index.js": "graphql/language/index.js",
                 "graphql/language/ast.js": "graphql/language/ast.js",
                 graphql: "graphql/index.js"
-            }
+            },
+            tsconfigPaths: true
         },
         test: {
             fileParallelism: process.env.CI === "true",
@@ -145,5 +137,5 @@ export default async () => {
             ],
             tsconfig: `${project.dir}/tsconfig.json`
         }
-    });
-};
+    };
+});

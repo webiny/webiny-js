@@ -1,6 +1,6 @@
 import React from "react";
 import { createUsePermissions } from "./usePermissions.js";
-import type { PermissionSchemaConfig, HasPermissionProps } from "./types.js";
+import type { HasPermissionProps, PermissionSchemaConfig } from "./types.js";
 
 const BUILT_IN_ACTIONS: Record<string, string> = {
     read: "canRead",
@@ -20,18 +20,34 @@ export function createHasPermission<const S extends PermissionSchemaConfig>(
         const permissions = usePermissions();
 
         const action = props.action as string | undefined;
+        const someActions = props.someActions as string[] | undefined;
+        const allActions = props.allActions as string[] | undefined;
         const entities: string[] = props.entity ? [props.entity] : (props.any ?? props.all ?? []);
         const requireAll = !!props.all;
 
+        const checkAction = (entityId: string, singleAction: string | undefined): boolean => {
+            if (!singleAction) {
+                return permissions.canAccess(entityId);
+            }
+            const method = BUILT_IN_ACTIONS[singleAction] as keyof typeof permissions;
+            if (method && typeof permissions[method] === "function") {
+                return permissions[method](entityId);
+            }
+            /**
+             * // TODO cant be typed properly because of the dynamic nature of custom actions.
+             */
+            // @ts-expect-error
+            return permissions.canAction(singleAction, entityId);
+        };
+
         const check = (entityId: string): boolean => {
-            if (!action) {
-                return permissions.canAccess(entityId as any);
+            if (allActions) {
+                return allActions.every(act => checkAction(entityId, act));
             }
-            const method = BUILT_IN_ACTIONS[action];
-            if (method) {
-                return (permissions as any)[method](entityId);
+            if (someActions) {
+                return someActions.some(act => checkAction(entityId, act));
             }
-            return permissions.canAction(action as any, entityId as any);
+            return checkAction(entityId, action);
         };
 
         const allowed = requireAll ? entities.every(check) : entities.some(check);
