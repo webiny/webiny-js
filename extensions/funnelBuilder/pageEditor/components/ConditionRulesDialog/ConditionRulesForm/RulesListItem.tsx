@@ -32,7 +32,13 @@ export const RulesListItem = ({ rule }: RulesListItemProps) => {
             open={true}
             description={description}
             title={`Rule ${ruleIndex + 1}`}
-            actions={<IconButton onClick={() => removeRule(rule.id)} icon={<DeleteIcon />} />}
+            actions={
+                <IconButton
+                    onClick={() => removeRule(rule.id)}
+                    icon={<DeleteIcon />}
+                    variant={"ghost"}
+                />
+            }
         >
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                 {/* Root condition group is passed here. The component can

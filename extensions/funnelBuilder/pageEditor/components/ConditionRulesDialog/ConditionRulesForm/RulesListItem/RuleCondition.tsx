@@ -65,6 +65,7 @@ export const RuleCondition = ({ conditionGroup, condition }: RuleConditionGroupP
 
             <IconButton
                 icon={<DeleteIcon />}
+                variant={"ghost"}
                 onClick={() => removeCondition(conditionGroup.id, condition.id)}
             />
         </Fieldset>

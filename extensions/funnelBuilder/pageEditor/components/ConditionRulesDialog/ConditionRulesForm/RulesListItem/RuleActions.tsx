@@ -71,6 +71,8 @@ export const RuleActions = ({ rule }: RuleActionsProps) => {
                 rule.actions.map(action => (
                     <Fieldset key={action.id}>
                         <Select
+                            placeholder={"Select action..."}
+                            displayResetAction={false}
                             size={"md"}
                             // className={"w-[200px]"}
                             value={action.type}
