@@ -22,10 +22,7 @@ export const SeoCanonicalUrl = () => {
     return (
         <Grid.Column span={12}>
             <Bind name={"properties.seo.canonicalUrl"} validators={[validatePathname]}>
-                <Input
-                    label={"Canonical URL"}
-                    description={"The canonical URL for this page"}
-                />
+                <Input label={"Canonical URL"} description={"The canonical URL for this page"} />
             </Bind>
         </Grid.Column>
     );

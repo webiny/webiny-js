@@ -13639,7 +13639,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-website-builder-scheduler@workspace:packages/api-website-builder-scheduler":
+"@webiny/api-website-builder-scheduler@npm:0.0.0, @webiny/api-website-builder-scheduler@workspace:packages/api-website-builder-scheduler":
   version: 0.0.0-use.local
   resolution: "@webiny/api-website-builder-scheduler@workspace:packages/api-website-builder-scheduler"
   dependencies:
@@ -13811,7 +13811,6 @@ __metadata:
     mobx-react-lite: "npm:^3.4.3"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-hotkeyz: "npm:^1.0.4"
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.8"
     typescript: "npm:5.9.3"
@@ -14005,7 +14004,6 @@ __metadata:
     react-butterfiles: "npm:^1.3.3"
     react-custom-scrollbars: "npm:^4.2.1"
     react-dom: "npm:^18.3.1"
-    react-hotkeyz: "npm:^1.0.4"
     react-lazy-load: "npm:^4.0.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
@@ -14176,7 +14174,6 @@ __metadata:
     react-dnd-html5-backend: "npm:^16.0.1"
     react-dom: "npm:^18.3.1"
     react-helmet: "npm:^6.1.0"
-    react-hotkeyz: "npm:^1.0.4"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
     use-deep-compare-effect: "npm:^1.8.1"
@@ -24051,13 +24048,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-hotkey@npm:^0.1.4":
-  version: 0.1.8
-  resolution: "is-hotkey@npm:0.1.8"
-  checksum: 10/8c1f788d6b554cf1de5156136e7d41a427ef0ea01e63f4a98b95f348f6c2ae5b15e483e468ad5164f9921e0f03a95c7558fe6dea6f37f98e8c8fad373458611d
-  languageName: node
-  linkType: hard
-
 "is-hotkey@npm:^0.2.0":
   version: 0.2.0
   resolution: "is-hotkey@npm:0.2.0"
@@ -29876,18 +29866,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hotkeyz@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "react-hotkeyz@npm:1.0.4"
-  dependencies:
-    "@babel/runtime": "npm:^7.2.0"
-    is-hotkey: "npm:^0.1.4"
-  peerDependencies:
-    react: ">=0.16.8"
-  checksum: 10/c5e38ace143ef6f66dc508cf93df096d5e94e466262c28682573bd28ab4bbe53efde7fdd57df0bc7f410978d521f549d675910442b14a69e8a5c7efad01493bf
-  languageName: node
-  linkType: hard
-
 "react-is@npm:^16.13.1, react-is@npm:^16.7.0":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -34558,6 +34536,7 @@ __metadata:
     "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
     "@webiny/api-scheduler": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
+    "@webiny/api-website-builder-scheduler": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"

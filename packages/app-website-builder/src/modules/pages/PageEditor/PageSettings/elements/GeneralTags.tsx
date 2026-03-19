@@ -8,9 +8,7 @@ export const GeneralTags = () => {
             <SimpleTags
                 bindName={"properties.tags"}
                 label={"Tags"}
-                description={
-                    "Add page tags. These can be used for page rendering, filtering, etc."
-                }
+                description={"Add page tags. These can be used for page rendering, filtering, etc."}
             />
         </Grid.Column>
     );

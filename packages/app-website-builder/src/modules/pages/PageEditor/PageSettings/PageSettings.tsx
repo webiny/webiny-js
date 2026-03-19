@@ -18,7 +18,7 @@ type DynamicProps<T> = T & {
 export const Dialog = () => {
     return (
         <Property id="pageSettings" name={"pageSettings"}>
-            <Property id="pageSettings.viewMode"  name={"viewMode"} value={"dialog"} />
+            <Property id="pageSettings.viewMode" name={"viewMode"} value={"dialog"} />
         </Property>
     );
 };

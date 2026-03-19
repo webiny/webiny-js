@@ -298,12 +298,7 @@ describe("Config Priority Ordering", () => {
         const data = toObject<ToolbarConfig>(properties);
 
         // Both primary and secondary actions must be present.
-        expect(data.actions.map(a => a.name)).toEqual([
-            "bold",
-            "italic",
-            "emoji",
-            "custom"
-        ]);
+        expect(data.actions.map(a => a.name)).toEqual(["bold", "italic", "emoji", "custom"]);
     });
 
     it("should retain secondary config after parent re-render causes primary to remount", async () => {
@@ -431,16 +426,8 @@ describe("Config Priority Ordering", () => {
                 <SettingsConfig priority={priority}>
                     <Property id="pageSettings" name={"pageSettings"}>
                         <Property id={`group:${name}`} name={"groups"} array>
-                            <Property
-                                id={`group:${name}:name`}
-                                name={"name"}
-                                value={name}
-                            />
-                            <Property
-                                id={`group:${name}:title`}
-                                name={"title"}
-                                value={title}
-                            />
+                            <Property id={`group:${name}:name`} name={"name"} value={name} />
+                            <Property id={`group:${name}:title`} name={"title"} value={title} />
                         </Property>
                     </Property>
                 </SettingsConfig>
@@ -475,11 +462,7 @@ describe("Config Priority Ordering", () => {
         await flush();
 
         let data = toObject<SettingsConfig>(getLastCall(onChange));
-        expect(data.pageSettings.groups.map(g => g.name)).toEqual([
-            "general",
-            "seo",
-            "custom"
-        ]);
+        expect(data.pageSettings.groups.map(g => g.name)).toEqual(["general", "seo", "custom"]);
 
         // Re-render the editor — primary Config re-renders, old Property
         // id="pageSettings" unmounts, removeDescendants fires.
@@ -491,11 +474,7 @@ describe("Config Priority Ordering", () => {
 
         data = toObject<SettingsConfig>(getLastCall(onChange));
         // The custom group from secondary must survive the primary remount.
-        expect(data.pageSettings.groups.map(g => g.name)).toEqual([
-            "general",
-            "seo",
-            "custom"
-        ]);
+        expect(data.pageSettings.groups.map(g => g.name)).toEqual(["general", "seo", "custom"]);
     });
 
     it("should preserve position when secondary config overrides a primary property by ID", async () => {
@@ -591,12 +570,7 @@ describe("Config Priority Ordering", () => {
         const data = toObject<ToolbarConfig>(getLastCall(onChange));
 
         // emoji should be right after bold, not pushed to the end by priority re-sort.
-        expect(data.actions.map(a => a.name)).toEqual([
-            "bold",
-            "emoji",
-            "italic",
-            "underline"
-        ]);
+        expect(data.actions.map(a => a.name)).toEqual(["bold", "emoji", "italic", "underline"]);
     });
 
     it("should preserve declaration order across multiple Config calls at the same priority", async () => {

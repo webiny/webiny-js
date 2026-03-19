@@ -6,8 +6,8 @@
     let lastRevision = -1;
     let configs = {};
     let sections = {};
-    let selectedItem = null;   // { type: "config"|"section", name: string }
-    let activeTab = "browse";  // "browse" | "config" | "properties"
+    let selectedItem = null; // { type: "config"|"section", name: string }
+    let activeTab = "browse"; // "browse" | "config" | "properties"
     let selectedKey = null;
 
     // ── DOM refs ───────────────────────────────────────────────────
@@ -98,7 +98,8 @@
             sidebar.appendChild(configHeader);
 
             configNames.forEach(function (name) {
-                var isSelected = selectedItem && selectedItem.type === "config" && selectedItem.name === name;
+                var isSelected =
+                    selectedItem && selectedItem.type === "config" && selectedItem.name === name;
                 var item = document.createElement("div");
                 item.className = "sidebar-item" + (isSelected ? " selected" : "");
                 item.title = name;
@@ -124,7 +125,8 @@
             sidebar.appendChild(sectionHeader);
 
             sectionNames.forEach(function (name) {
-                var isSelected = selectedItem && selectedItem.type === "section" && selectedItem.name === name;
+                var isSelected =
+                    selectedItem && selectedItem.type === "section" && selectedItem.name === name;
                 var item = document.createElement("div");
                 item.className = "sidebar-item" + (isSelected ? " selected" : "");
                 item.title = name;
@@ -139,7 +141,6 @@
                 sidebar.appendChild(item);
             });
         }
-
     }
 
     function renderDetail() {
@@ -170,7 +171,10 @@
 
         var tabBrowse = createTab("Browse", "browse");
         var tabConfig = createTab("Config Object", "config");
-        var tabProps = createTab("Raw Properties (" + (data.properties?.length || 0) + ")", "properties");
+        var tabProps = createTab(
+            "Raw Properties (" + (data.properties?.length || 0) + ")",
+            "properties"
+        );
         tabs.appendChild(tabBrowse);
         tabs.appendChild(tabConfig);
         tabs.appendChild(tabProps);
@@ -178,7 +182,8 @@
 
         // Browse tab — split: key list on the left, value detail on the right
         var browseContent = document.createElement("div");
-        browseContent.className = "tab-content tab-content-browse" + (activeTab !== "browse" ? " hidden" : "");
+        browseContent.className =
+            "tab-content tab-content-browse" + (activeTab !== "browse" ? " hidden" : "");
         var configObj = data.config;
         if (configObj && typeof configObj === "object" && !Array.isArray(configObj)) {
             var rootKeys = Object.keys(configObj);
@@ -203,8 +208,13 @@
                 } else {
                     subtitle = formatValue(val);
                 }
-                keyItem.innerHTML = '<div class="browse-key-name">' + esc(key) + '</div>' +
-                    '<div class="browse-key-type">' + esc(subtitle) + '</div>';
+                keyItem.innerHTML =
+                    '<div class="browse-key-name">' +
+                    esc(key) +
+                    "</div>" +
+                    '<div class="browse-key-type">' +
+                    esc(subtitle) +
+                    "</div>";
                 keyItem.addEventListener("click", function () {
                     selectedKey = key;
                     renderDetail();
@@ -227,7 +237,8 @@
             } else {
                 var emptyMsg = document.createElement("div");
                 emptyMsg.className = "browse-value-empty";
-                emptyMsg.textContent = rootKeys.length > 0 ? "Select a key to inspect." : "Empty config object.";
+                emptyMsg.textContent =
+                    rootKeys.length > 0 ? "Select a key to inspect." : "Empty config object.";
                 browseValue.appendChild(emptyMsg);
             }
 
@@ -309,8 +320,13 @@
                 } else {
                     subtitle = formatValue(val);
                 }
-                keyItem.innerHTML = '<div class="browse-key-name">' + esc(key) + '</div>' +
-                    '<div class="browse-key-type">' + esc(subtitle) + '</div>';
+                keyItem.innerHTML =
+                    '<div class="browse-key-name">' +
+                    esc(key) +
+                    "</div>" +
+                    '<div class="browse-key-type">' +
+                    esc(subtitle) +
+                    "</div>";
                 keyItem.addEventListener("click", function () {
                     selectedKey = key;
                     renderDetail();
@@ -333,7 +349,8 @@
             } else {
                 var emptyMsg = document.createElement("div");
                 emptyMsg.className = "browse-value-empty";
-                emptyMsg.textContent = rootKeys.length > 0 ? "Select a key to inspect." : "Empty section data.";
+                emptyMsg.textContent =
+                    rootKeys.length > 0 ? "Select a key to inspect." : "Empty section data.";
                 valuePane.appendChild(emptyMsg);
             }
 
@@ -480,12 +497,18 @@
 
         function populateChildren() {
             var entries = isArray
-                ? obj.map(function (v, i) { return [i, v]; })
-                : Object.keys(obj).map(function (k) { return [k, obj[k]]; });
+                ? obj.map(function (v, i) {
+                      return [i, v];
+                  })
+                : Object.keys(obj).map(function (k) {
+                      return [k, obj[k]];
+                  });
 
             entries.forEach(function (entry, idx) {
                 var line = document.createElement("div");
-                line.appendChild(span(isArray ? String(entry[0]) : '"' + esc(String(entry[0])) + '"', "json-key"));
+                line.appendChild(
+                    span(isArray ? String(entry[0]) : '"' + esc(String(entry[0])) + '"', "json-key")
+                );
                 line.appendChild(span(": ", "json-bracket"));
                 buildJsonTree(entry[1], line, depth + 1, nodeList);
                 if (idx < entries.length - 1) {
@@ -516,11 +539,21 @@
         properties.forEach(function (p) {
             var row = document.createElement("tr");
             row.innerHTML =
-                "<td>" + esc(p.id) + "</td>" +
-                "<td>" + esc(p.parent || "(root)") + "</td>" +
-                "<td>" + esc(p.name) + "</td>" +
-                "<td>" + esc(formatValue(p.value)) + "</td>" +
-                "<td>" + (p.array ? "true" : "") + "</td>";
+                "<td>" +
+                esc(p.id) +
+                "</td>" +
+                "<td>" +
+                esc(p.parent || "(root)") +
+                "</td>" +
+                "<td>" +
+                esc(p.name) +
+                "</td>" +
+                "<td>" +
+                esc(formatValue(p.value)) +
+                "</td>" +
+                "<td>" +
+                (p.array ? "true" : "") +
+                "</td>";
             tbody.appendChild(row);
         });
         table.appendChild(tbody);

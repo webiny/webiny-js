@@ -29,7 +29,9 @@ export const PageSettingsConfig = () => {
             <PageSettings.Group
                 name={"general"}
                 title={"General"}
-                description={"Configure the page's core details like title, path, snippet, and image."}
+                description={
+                    "Configure the page's core details like title, path, snippet, and image."
+                }
                 icon={<SettingsIcon />}
             >
                 <PageSettings.Element name={"title"} element={<GeneralTitle />} />
