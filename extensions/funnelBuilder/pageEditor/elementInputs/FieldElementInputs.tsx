@@ -20,16 +20,16 @@ export const FieldElementInputsDecorator = ElementInputs.createDecorator(Origina
         const { inputs, updateInputs } = useElementInputs(element.id);
         const component = useComponent(element.component.name);
 
-        if (!element.component.name.startsWith("Fub/Field/")) {
-            return <Original {...props} />;
-        }
-
         const {
             open: showFieldSettingsDialog,
             close: hideFieldSettingsDialog,
             isOpen: isFieldSettingsDialogOpen,
             data: selectedField
         } = useDisclosure<FunnelFieldDefinitionModel>();
+
+        if (!element.component.name.startsWith("Fub/Field/")) {
+            return <Original {...props} />;
+        }
 
         /* Field element: inputs are typed as FunnelFieldInputs. */
         const handleClick = () => {

@@ -35,7 +35,7 @@ export const FieldSettingsDialog = ({ field, open, onClose, onSubmit }: EditFiel
                             open={open}
                             onClose={onClose}
                             title={"Field Settings"}
-                            description={"Configure the field settings and validation rules."}
+                            description={"Configure the field settings and validation rules"}
                             actions={
                                 <>
                                     <Dialog.CancelAction onClick={onClose} text={"Cancel"} />

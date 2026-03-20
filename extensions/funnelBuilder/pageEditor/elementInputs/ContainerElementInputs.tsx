@@ -10,16 +10,16 @@ export const ContainerElementInputsDecorator = ElementInputs.createDecorator(Ori
         const { element } = props;
         const { inputs, updateInputs } = useElementInputs(element.id);
 
-        if (element.component.name !== "Fub/Container") {
-            return <Original {...props} />;
-        }
-
         const {
             open: showConditionRulesDialog,
             close: hideConditionRulesDialog,
             isOpen: isConditionRulesDialogOpen,
             data: conditionRulesData
         } = useDisclosure<FunnelModelDto>();
+
+        if (element.component.name !== "Fub/Container") {
+            return <Original {...props} />;
+        }
 
         /* Container element: open condition rules using the current containerData. */
         const handleClick = () => {
