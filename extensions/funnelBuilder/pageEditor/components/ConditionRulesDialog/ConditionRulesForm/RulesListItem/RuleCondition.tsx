@@ -25,7 +25,7 @@ export const RuleCondition = ({ conditionGroup, condition }: RuleConditionGroupP
             <Select
                 size={"md"}
                 value={condition.sourceFieldId}
-                placeholder={"Select field..."}
+                displayResetAction={false}
                 onChange={value => {
                     return updateCondition(conditionGroup.id, {
                         ...condition,
@@ -41,7 +41,7 @@ export const RuleCondition = ({ conditionGroup, condition }: RuleConditionGroupP
             <Select
                 size={"md"}
                 value={condition.operator.type}
-                placeholder={"Select operator..."}
+                displayResetAction={false}
                 onChange={type => {
                     return updateCondition(conditionGroup.id, {
                         ...condition,
