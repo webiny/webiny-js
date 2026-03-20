@@ -1,5 +1,6 @@
 import { createFeature } from "@webiny/feature/api";
 import { RolesRepository } from "./shared/RolesRepository.js";
+import { RoleProvider } from "./shared/RoleProvider.js";
 import { RolesRepositoryCachingDecorator } from "./shared/decorators/RolesRepositoryCachingDecorator.js";
 import { GetRoleFeature } from "./GetRole/feature.js";
 import { ListRolesFeature } from "./ListRoles/feature.js";
@@ -13,6 +14,7 @@ export const RolesFeature = createFeature({
     register(container) {
         // Register repository in singleton scope
         container.register(RolesRepository).inSingletonScope();
+        container.register(RoleProvider).inSingletonScope();
 
         // Register caching decorator
         container.registerDecorator(RolesRepositoryCachingDecorator);

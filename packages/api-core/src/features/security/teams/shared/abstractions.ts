@@ -23,3 +23,23 @@ export namespace TeamsRepository {
     export type Interface = ITeamsRepository;
     export type Error = RepositoryError;
 }
+
+export type CodeTeam = {
+    name: string;
+    slug: string;
+    description: string;
+    roles: string[];
+    system?: boolean;
+};
+
+export interface ITeamFactory {
+    execute(): Promise<CodeTeam[]>;
+}
+
+export const TeamFactory = createAbstraction<ITeamFactory>("TeamFactory");
+
+export namespace TeamFactory {
+    export type Interface = ITeamFactory;
+    export type Return = Promise<CodeTeam[]>;
+    export type Team = CodeTeam;
+}

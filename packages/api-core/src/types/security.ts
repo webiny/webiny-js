@@ -6,10 +6,6 @@ export type { Jwk, Jwt } from "~/features/security/utils/verifyJwtUsingJwk.js";
 
 export type SecurityIdentity = Identity;
 
-export type GetPermissions = <T extends SecurityPermission = SecurityPermission>(
-    name: string
-) => Promise<T[]>;
-
 export interface GetGroupWhere {
     id?: string;
     slug?: string;
@@ -81,9 +77,6 @@ export interface CreatedBy {
 }
 
 export interface Role {
-    // Roles defined via plugins might not have `tenant` specified (meaning they are global).
-    tenant: string | null;
-
     // Roles defined via plugins don't have `createdOn` and `createdBy` specified.
     createdOn: string | null;
     createdBy: CreatedBy | null;
@@ -114,22 +107,21 @@ export interface ListRolesParams {
     sort?: string[];
 }
 
+export type StorageRole = Role & { tenant: string };
+
 export interface CreateRoleParams {
-    role: Role;
+    role: StorageRole;
 }
 
 export interface UpdateRoleParams {
-    role: Role;
+    role: StorageRole;
 }
 
 export interface DeleteRoleParams {
-    role: Role;
+    role: StorageRole;
 }
 
 export interface Team {
-    // Teams defined via plugins might not have `tenant` specified (meaning they are global).
-    tenant: string | null;
-
     // Teams defined via plugins don't have `createdOn` and `createdBy` specified.
     createdOn: string | null;
     createdBy: CreatedBy | null;
@@ -161,17 +153,19 @@ export interface ListTeamsParams {
     sort?: string[];
 }
 
+export type StorageTeam = Team & { tenant: string };
+
 export interface CreateTeamParams {
-    team: Team;
+    team: StorageTeam;
 }
 
 export interface UpdateTeamParams {
-    original: Team;
-    team: Team;
+    original: StorageTeam;
+    team: StorageTeam;
 }
 
 export interface DeleteTeamParams {
-    team: Team;
+    team: StorageTeam;
 }
 
 export interface ApiKey {

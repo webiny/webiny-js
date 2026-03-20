@@ -1,7 +1,6 @@
 import { mdbid } from "@webiny/utils";
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { CreateRoleUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { RolesRepository } from "../shared/abstractions.js";
@@ -13,7 +12,6 @@ import { NotAuthorizedError, RoleExistsError, RoleValidationError } from "../sha
 
 class CreateRoleUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private tenantContext: TenantContext.Interface,
         private identityContext: IdentityContext.Interface,
         private eventPublisher: EventPublisher.Interface,
         private repository: RolesRepository.Interface
@@ -31,7 +29,6 @@ class CreateRoleUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new RoleValidationError(validation.error.issues[0].message));
         }
 
-        const tenant = this.tenantContext.getTenant();
         const identity = this.identityContext.getIdentity();
         const data = validation.data;
 
@@ -48,7 +45,6 @@ class CreateRoleUseCaseImpl implements UseCaseAbstraction.Interface {
             description: data.description,
             permissions: data.permissions,
             system: input.system || false,
-            tenant: tenant.id,
             createdOn: new Date().toISOString(),
             createdBy: {
                 id: identity.id,
@@ -79,5 +75,5 @@ class CreateRoleUseCaseImpl implements UseCaseAbstraction.Interface {
 export const CreateRoleUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: CreateRoleUseCaseImpl,
-    dependencies: [TenantContext, IdentityContext, EventPublisher, RolesRepository]
+    dependencies: [IdentityContext, EventPublisher, RolesRepository]
 });

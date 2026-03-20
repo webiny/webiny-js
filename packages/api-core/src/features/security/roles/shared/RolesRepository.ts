@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { RolesRepository as RepositoryAbstraction } from "./abstractions.js";
@@ -21,7 +20,7 @@ class RolesRepositoryImpl implements RepositoryAbstraction.Interface {
             const tenant = this.tenantContext.getTenant();
 
             // First check plugin roles
-            const pluginRoles = await this.rolesProvider();
+            const pluginRoles = await this.rolesProvider.getRoles();
             const pluginRole = pluginRoles.find(r => {
                 // Match by ID or slug
                 if (params.id && r.id === params.id) {
@@ -35,11 +34,8 @@ class RolesRepositoryImpl implements RepositoryAbstraction.Interface {
                 return false;
             });
 
-            // Filter by tenant if role has one
             if (pluginRole) {
-                if (!pluginRole.tenant || pluginRole.tenant === tenant.id) {
-                    return Result.ok(pluginRole);
-                }
+                return Result.ok(pluginRole);
             }
 
             // Then check storage
@@ -74,13 +70,8 @@ class RolesRepositoryImpl implements RepositoryAbstraction.Interface {
             });
 
             // Get roles from plugins
-            const pluginRoles = await this.rolesProvider();
+            const pluginRoles = await this.rolesProvider.getRoles();
             const rolesFromPlugins = pluginRoles.filter(role => {
-                // Filter by tenant - plugin roles with no tenant or matching tenant
-                if (role.tenant && role.tenant !== tenant.id) {
-                    return false;
-                }
-
                 // Apply where filters if provided
                 const { id_in, slug_in } = params.where || {};
                 if (id_in && !id_in.includes(role.id)) {
@@ -102,7 +93,8 @@ class RolesRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async create(role: Role): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
-            await this.storageOperations.createRole({ role });
+            const tenant = this.tenantContext.getTenant();
+            await this.storageOperations.createRole({ role: { ...role, tenant: tenant.id } });
             return Result.ok();
         } catch (error) {
             return Result.fail(new RoleStorageError(error));
@@ -111,7 +103,8 @@ class RolesRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async update(role: Role): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
-            await this.storageOperations.updateRole({ role });
+            const tenant = this.tenantContext.getTenant();
+            await this.storageOperations.updateRole({ role: { ...role, tenant: tenant.id } });
             return Result.ok();
         } catch (error) {
             return Result.fail(new RoleStorageError(error));
@@ -120,7 +113,8 @@ class RolesRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async delete(role: Role): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
-            await this.storageOperations.deleteRole({ role });
+            const tenant = this.tenantContext.getTenant();
+            await this.storageOperations.deleteRole({ role: { ...role, tenant: tenant.id } });
             return Result.ok();
         } catch (error) {
             return Result.fail(new RoleStorageError(error));
@@ -128,8 +122,7 @@ class RolesRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const RolesRepository = createImplementation({
-    abstraction: RepositoryAbstraction,
+export const RolesRepository = RepositoryAbstraction.createImplementation({
     implementation: RolesRepositoryImpl,
     dependencies: [TenantContext, SecurityStorageOperations, RolesProvider]
 });

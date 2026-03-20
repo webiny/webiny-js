@@ -1,27 +1,39 @@
 import { describe, it, expect } from "vitest";
+import { ContextPlugin } from "@webiny/api";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import { createSecurityTeamPlugin } from "@webiny/api-core/legacy/security/plugins/SecurityTeamPlugin.js";
+import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 const FOLDER_TYPE = "test-folders";
 
 const identityA: IdentityData = { id: "1", type: "admin", displayName: "A" };
 
+class TestTeamFactory implements TeamFactory.Interface {
+    execute(): TeamFactory.Return {
+        return [
+            {
+                name: "Test Team 1",
+                slug: "test-team-1",
+                description: "",
+                roles: ["test-role"]
+            },
+            {
+                name: "Test Team 2",
+                slug: "test-team-2",
+                description: "",
+                roles: ["test-role"]
+            }
+        ];
+    }
+}
+
 describe("Folder Level Permissions - Inheritance", () => {
     const { aco } = useGraphQlHandler({
         identity: identityA,
         plugins: [
-            createSecurityTeamPlugin({
-                id: "test-team-1",
-                name: "Test Team 1",
-                description: "",
-                roles: ["test-role"]
-            }),
-            createSecurityTeamPlugin({
-                id: "test-team-2",
-                name: "Test Team 2",
-                description: "",
-                roles: ["test-role"]
+            new ContextPlugin<ApiCoreContext>(async context => {
+                context.container.registerInstance(TeamFactory, new TestTeamFactory());
             })
         ]
     });

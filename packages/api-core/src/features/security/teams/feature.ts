@@ -1,5 +1,7 @@
 import { createFeature } from "@webiny/feature/api";
 import { TeamsRepository } from "./shared/TeamsRepository.js";
+import { TeamProvider } from "./shared/TeamProvider.js";
+import { TeamsRepositoryCachingDecorator } from "./shared/decorators/TeamsRepositoryCachingDecorator.js";
 import { GetTeamFeature } from "./GetTeam/feature.js";
 import { ListTeamsFeature } from "./ListTeams/feature.js";
 import { CreateTeamFeature } from "./CreateTeam/feature.js";
@@ -11,6 +13,10 @@ export const TeamsFeature = createFeature({
     register(container) {
         // Register repository in singleton scope
         container.register(TeamsRepository).inSingletonScope();
+        container.register(TeamProvider).inSingletonScope();
+
+        // Register caching decorator
+        container.registerDecorator(TeamsRepositoryCachingDecorator);
 
         // Register all use cases
         GetTeamFeature.register(container);
