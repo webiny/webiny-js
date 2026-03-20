@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { useDrop } from "react-dnd";
 import styled from "@emotion/styled";
@@ -18,8 +18,9 @@ import { ElementDropLines } from "./ElementDropLines.js";
 import { DropBox } from "./DropBox.js";
 import { useDropZoneManager } from "../DropZoneManagerProvider.js";
 import { mergeRefs } from "../mergeRefs.js";
-import { Commands } from "~/BaseEditor/index.js";
+import { Commands, EditorConfig } from "~/BaseEditor/index.js";
 import type { Editor } from "~/editorSdk/Editor.js";
+import { ElementOverlayProvider } from "~/BaseEditor/defaultConfig/Content/Preview/Overlays/ElementOverlayProvider.js";
 
 const OverlayContainer = styled("div")({
     overflow: "hidden",
@@ -128,20 +129,21 @@ export const ElementOverlays = observer(() => {
     return (
         <OverlayContainer ref={mergeRefs(dropRef)} style={viewportContainer}>
             {boxes.preview.filter(filterElements).map(box => (
-                <Fragment key={box.id}>
-                    <ElementOverlay
-                        elementId={box.id}
-                        isSelected={selectedElement === box.id}
-                        isHighlighted={highlightedElement === box.id}
-                        previewBox={box}
-                        editorBox={boxes.editor.get(box.id)!}
-                    />
+                <ElementOverlayProvider
+                    key={box.id}
+                    elementId={box.id}
+                    isSelected={selectedElement === box.id}
+                    isHighlighted={highlightedElement === box.id}
+                    box={box}
+                >
+                    <ElementOverlay />
                     <ElementDropLines
                         isFirst={box.parentIndex === 0}
                         previewBox={box}
                         editorBox={boxes.editor.get(box.id)!}
                     />
-                </Fragment>
+                    <EditorConfig.ElementOverlay.Elements />
+                </ElementOverlayProvider>
             ))}
             {slots.map(slot => (
                 <DropBox key={slot.id} box={slot} onDrop={onDrop} />

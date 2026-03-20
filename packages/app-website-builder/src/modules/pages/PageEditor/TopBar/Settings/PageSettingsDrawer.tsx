@@ -1,12 +1,12 @@
 import React, { Fragment, useRef, useState } from "react";
 import { Form, type FormAPI } from "@webiny/form";
 import { Drawer, Heading, Text, List, Grid } from "@webiny/admin-ui";
-import { useEditorConfig } from "~/BaseEditor/index.js";
 import type { PageSettingsOverlayProps } from "~/modules/pages/PageEditor/TopBar/SettingsButton.js";
+import { usePageEditorConfig } from "~/modules/pages/PageEditor/usePageEditorConfig.js";
 
 export const PageSettingsDrawer = ({ open, data, onSave, onClose }: PageSettingsOverlayProps) => {
     const formRef = useRef<FormAPI | undefined>();
-    const { pageSettings } = useEditorConfig();
+    const { pageSettings } = usePageEditorConfig();
 
     const groups = pageSettings.groups;
 

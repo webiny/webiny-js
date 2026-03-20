@@ -1,1 +1,1 @@
-chrome.devtools.panels.create("Webiny Configs", "icons/icon16.png", "panel.html");
+chrome.devtools.panels.create("Webiny", "icons/icon16.png", "panel.html");

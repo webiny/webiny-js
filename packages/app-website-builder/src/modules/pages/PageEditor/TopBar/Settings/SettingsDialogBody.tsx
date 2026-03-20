@@ -1,6 +1,6 @@
 import React from "react";
 import { Tabs, Grid } from "@webiny/admin-ui";
-import type { EditorPageSettings } from "~/BaseEditor/index.js";
+import type { EditorPageSettings } from "~/modules/pages/PageEditor/usePageEditorConfig.js";
 
 export interface SettingsDialogBodyProps {
     pageSettings: EditorPageSettings;

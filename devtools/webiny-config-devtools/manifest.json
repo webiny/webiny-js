@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Webiny Config DevTools",
+  "name": "Webiny DevTools",
   "version": "1.0.0",
-  "description": "Inspect mounted Webiny Config components and their state",
+  "description": "Inspect Webiny app",
   "devtools_page": "devtools.html",
   "icons": {
     "16": "icons/webiny.png",
