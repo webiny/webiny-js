@@ -1,62 +1,35 @@
 import React from "react";
-import Monaco from "@monaco-editor/react";
-import { Tabs } from "@webiny/admin-ui";
-import { FloatingPanel } from "@webiny/app-admin";
+import { toJS } from "mobx";
+import { observer } from "mobx-react-lite";
+import { DevToolsSection } from "@webiny/app-admin";
 import type { EditorDocument } from "@webiny/website-builder-sdk";
 import type { Editor } from "~/editorSdk/Editor.js";
-import { observer } from "mobx-react-lite";
-
-const monacoTheme = "vs-light";
-const monacoOptions = { minimap: { enabled: false } };
 
 function BaseStateInspector<TDocument extends EditorDocument>({
     editor
 }: {
     editor: Editor<TDocument>;
 }) {
-    const document = editor.getDocumentState().read();
-    const editorState = editor.getEditorState().read();
+    // toJS() deep-reads every observable property, which makes MobX
+    // track them all and re-render this observer when anything changes.
+    const document = toJS(editor.getDocumentState().read());
+    const editorState = toJS(editor.getEditorState().read());
 
     return (
-        <FloatingPanel shortcut={"Cmd+E"} dragHandle={".floating-panel"}>
-            {({ height }) => (
-                <Tabs
-                    size="md"
-                    spacing="sm"
-                    separator={true}
-                    tabs={[
-                        <Tabs.Tab
-                            key="document"
-                            value="document"
-                            trigger={"Document"}
-                            content={
-                                <Monaco
-                                    theme={monacoTheme}
-                                    height={height - 76}
-                                    defaultLanguage={"json"}
-                                    value={JSON.stringify(document, null, 2)}
-                                    options={monacoOptions}
-                                />
-                            }
-                        />,
-                        <Tabs.Tab
-                            key="editorState"
-                            value="editorState"
-                            trigger={"Editor State"}
-                            content={
-                                <Monaco
-                                    theme={monacoTheme}
-                                    height={height - 76}
-                                    defaultLanguage={"json"}
-                                    value={JSON.stringify(editorState, null, 2)}
-                                    options={monacoOptions}
-                                />
-                            }
-                        />
-                    ]}
-                />
-            )}
-        </FloatingPanel>
+        <>
+            <DevToolsSection
+                name={"Document State"}
+                group={"WB Page Editor"}
+                data={document}
+                views={"raw"}
+            />
+            <DevToolsSection
+                name={"Editor State"}
+                group={"WB Page Editor"}
+                data={editorState}
+                views={"raw"}
+            />
+        </>
     );
 }
 

@@ -1,3 +1,4 @@
+export { DevToolsSection } from "~/components/index.js";
 export { createPermissionSchema } from "~/permissions/index.js";
 export { createHasPermission } from "~/permissions/index.js";
 export { createUsePermissions } from "~/permissions/index.js";

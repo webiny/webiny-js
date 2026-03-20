@@ -419,6 +419,29 @@ body {
   background: var(--bg-hover);
 }
 
+/* Context menu */
+.ctx-menu {
+  position: fixed;
+  z-index: 9999;
+  background: var(--bg-toolbar);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  min-width: 160px;
+}
+
+.ctx-menu-item {
+  padding: 5px 12px;
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+.ctx-menu-item:hover {
+  background: var(--bg-selected);
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { CompositionScope, NavigationPrompt, useSnackbar } from "@webiny/app-admin";
+import {
+    CompositionScope,
+    DevToolsSection,
+    NavigationPrompt,
+    useSnackbar
+} from "@webiny/app-admin";
 import type { FormAPI, FormInvalidFields, FormOnSubmit, FormValidation } from "@webiny/form";
 import { Form } from "@webiny/form";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
@@ -159,6 +164,12 @@ export const ContentEntryFormProvider = ({
                 };
                 return (
                     <ContentEntryFormContext.Provider value={context}>
+                        <DevToolsSection
+                            name={"Entry"}
+                            group={"CMS"}
+                            data={context.entry}
+                            views={"raw"}
+                        />
                         {confirmNavigationIfDirty ? (
                             <CompositionScope name={"cms.contentEntryForm"}>
                                 <NavigationPrompt
