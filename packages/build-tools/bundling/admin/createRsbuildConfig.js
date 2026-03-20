@@ -1,3 +1,4 @@
+import fs from "fs";
 import path from "path";
 import { pluginReact } from "@rsbuild/plugin-react";
 import { pluginSvgr } from "@rsbuild/plugin-svgr";
@@ -34,7 +35,7 @@ export const createRsbuildConfig = ({ cwd }) => {
             postcss: (_, { addPlugins }) => {
                 addPlugins(
                     tailwindcss({
-                        base: paths.projectRootFolder
+                        base: getTailwindBasePath(paths.projectRootFolder)
                     })
                 );
             },
@@ -96,6 +97,18 @@ const getPaths = cwd => {
             entryFile: adminEntryFilePath
         }
     };
+};
+
+const getTailwindBasePath = projectRootFolderPath => {
+    const adminUiPkgPath = path.join(projectRootFolderPath, "packages", "admin-ui");
+
+    const isWebinyJsRepo = fs.existsSync(adminUiPkgPath);
+
+    if (isWebinyJsRepo) {
+        return path.join(projectRootFolderPath, "packages");
+    }
+
+    return path.join(projectRootFolderPath, "node_modules", "@webiny");
 };
 
 const getEnvVars = () => {

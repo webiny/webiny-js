@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useRef } from "react";
-import { Alert, Grid, Input } from "@webiny/admin-ui";
+import { Alert, Button, Grid, Input } from "@webiny/admin-ui";
+import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import { Bind, type BindComponentRenderProp } from "@webiny/form";
 import { validation } from "@webiny/validation";
@@ -31,7 +32,6 @@ interface UseShowScheduleDialogResponse {
 interface FormComponentProps {
     scheduleOn: Date | undefined;
     actionType: ScheduleActionType | undefined;
-    onCancel: OnCancelCallable;
 }
 
 const dateToLocaleStringFormatter = new Intl.DateTimeFormat(undefined, {
@@ -44,7 +44,12 @@ const dateToLocaleStringFormatter = new Intl.DateTimeFormat(undefined, {
     hour12: false
 });
 
-const ReschedulingAlert = ({ scheduleOn, actionType }: FormComponentProps) => {
+interface IReschedulingAlertProps {
+    scheduleOn: Date | undefined;
+    actionType: ScheduleActionType | undefined;
+}
+
+const ReschedulingAlert = ({ scheduleOn, actionType }: IReschedulingAlertProps) => {
     if (!scheduleOn || !actionType) {
         return null;
     }
@@ -101,6 +106,26 @@ export interface ISchedulerDialogFormComponentDateTimeInputProps {
     bind: BindComponentRenderProp<Date>;
 }
 
+interface ICancelButtonComponentProps {
+    enabled: boolean;
+    onCancel: OnCancelCallable;
+}
+const CancelButtonComponent = ({ enabled, onCancel }: ICancelButtonComponentProps) => {
+    if (!enabled) {
+        return null;
+    }
+    return (
+        <Button
+            variant="ghost"
+            onClick={onCancel}
+            text={"Cancel Schedule"}
+            size="md"
+            icon={<DeleteIcon />}
+            iconPosition="start"
+        />
+    );
+};
+
 export const SchedulerDialogFormComponentDateTimeInput = makeDecoratable(
     "SchedulerDialogFormComponentDateTimeInput",
     (props: ISchedulerDialogFormComponentDateTimeInputProps) => {
@@ -121,16 +146,10 @@ export const SchedulerDialogFormComponentDateTimeInput = makeDecoratable(
     }
 );
 
-const FormComponent = ({ scheduleOn, onCancel, actionType }: FormComponentProps) => {
+const FormComponent = ({ scheduleOn, actionType }: FormComponentProps) => {
     return (
         <>
-            {
-                <ReschedulingAlert
-                    actionType={actionType}
-                    scheduleOn={scheduleOn}
-                    onCancel={onCancel}
-                />
-            }
+            {<ReschedulingAlert actionType={actionType} scheduleOn={scheduleOn} />}
             <Grid>
                 <Grid.Column span={12}>
                     <Bind
@@ -241,7 +260,7 @@ export const useScheduleDialog = (
         }
         dialogClose.current();
         dialogClose.current = null;
-    }, []);
+    }, [schedulerEntry?.id]);
 
     const showDialog = () => {
         const isPublished = target.status === "published";
@@ -250,11 +269,7 @@ export const useScheduleDialog = (
         dialogClose.current = dialog.showDialog({
             title: `Schedule "${target.title}"`,
             content: (
-                <FormComponent
-                    actionType={schedulerEntry?.actionType}
-                    scheduleOn={scheduleOn}
-                    onCancel={onCancel}
-                />
+                <FormComponent actionType={schedulerEntry?.actionType} scheduleOn={scheduleOn} />
             ),
             formData: {
                 scheduleOn
@@ -262,6 +277,7 @@ export const useScheduleDialog = (
             acceptLabel: isPublished ? "Schedule Unpublish" : "Schedule Publish",
             cancelLabel: "Discard",
             loadingLabel: "Scheduling...",
+            info: <CancelButtonComponent enabled={!!scheduleOn} onCancel={onCancel} />,
             onAccept: (data: Partial<ScheduleFormData>) => {
                 if (!data.scheduleOn) {
                     showSnackbar(`Missing "Schedule On" date!`);
