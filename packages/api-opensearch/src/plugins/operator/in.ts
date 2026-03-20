@@ -8,10 +8,7 @@ export class OpenSearchQueryBuilderOperatorInPlugin extends OpenSearchQueryBuild
         return "in";
     }
 
-    public apply(
-        query: OpenSearchBoolQueryConfig,
-        params: OpenSearchQueryBuilderArgsPlugin
-    ): void {
+    public apply(query: OpenSearchBoolQueryConfig, params: OpenSearchQueryBuilderArgsPlugin): void {
         const { value: values, path, basePath, name } = params;
         const isArray = Array.isArray(values);
         if (isArray === false || values.length === 0) {

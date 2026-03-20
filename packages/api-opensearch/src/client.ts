@@ -75,10 +75,6 @@ export const createOpenSearchClient = (options: OpenSearchClientOptions): Client
             auth: undefined
         };
         console.error(data);
-        throw new WebinyError(
-            "Could not connect to OpenSearch.",
-            "OPENSEARCH_CLIENT_ERROR",
-            data
-        );
+        throw new WebinyError("Could not connect to OpenSearch.", "OPENSEARCH_CLIENT_ERROR", data);
     }
 };

@@ -8,10 +8,7 @@ export class OpenSearchQueryBuilderOperatorNotBetweenPlugin extends OpenSearchQu
         return "not_between";
     }
 
-    public apply(
-        query: OpenSearchBoolQueryConfig,
-        params: OpenSearchQueryBuilderArgsPlugin
-    ): void {
+    public apply(query: OpenSearchBoolQueryConfig, params: OpenSearchQueryBuilderArgsPlugin): void {
         const { value, basePath, name } = params;
         if (Array.isArray(value) === false) {
             throw new Error(

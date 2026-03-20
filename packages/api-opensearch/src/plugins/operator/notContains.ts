@@ -9,10 +9,7 @@ export class OpenSearchQueryBuilderOperatorNotContainsPlugin extends OpenSearchQ
         return "not_contains";
     }
 
-    public apply(
-        query: OpenSearchBoolQueryConfig,
-        params: OpenSearchQueryBuilderArgsPlugin
-    ): void {
+    public apply(query: OpenSearchBoolQueryConfig, params: OpenSearchQueryBuilderArgsPlugin): void {
         const { value, basePath } = params;
         query.must_not.push({
             query_string: {

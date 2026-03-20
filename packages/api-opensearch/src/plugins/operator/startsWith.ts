@@ -8,10 +8,7 @@ export class OpenSearchQueryBuilderOperatorStartsWithPlugin extends OpenSearchQu
         return "startsWith";
     }
 
-    public apply(
-        query: OpenSearchBoolQueryConfig,
-        params: OpenSearchQueryBuilderArgsPlugin
-    ): void {
+    public apply(query: OpenSearchBoolQueryConfig, params: OpenSearchQueryBuilderArgsPlugin): void {
         const { value, basePath } = params;
         if (value === "" || value === null || value === undefined) {
             return;

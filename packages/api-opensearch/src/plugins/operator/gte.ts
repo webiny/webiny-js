@@ -8,10 +8,7 @@ export class OpenSearchQueryBuilderOperatorGreaterThanOrEqualToPlugin extends Op
         return "gte";
     }
 
-    public apply(
-        query: OpenSearchBoolQueryConfig,
-        params: OpenSearchQueryBuilderArgsPlugin
-    ): void {
+    public apply(query: OpenSearchBoolQueryConfig, params: OpenSearchQueryBuilderArgsPlugin): void {
         const { value, basePath } = params;
         query.filter.push({
             range: {

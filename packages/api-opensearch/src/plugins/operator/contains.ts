@@ -9,10 +9,7 @@ export class OpenSearchQueryBuilderOperatorContainsPlugin extends OpenSearchQuer
         return "contains";
     }
 
-    public apply(
-        query: OpenSearchBoolQueryConfig,
-        params: OpenSearchQueryBuilderArgsPlugin
-    ): void {
+    public apply(query: OpenSearchBoolQueryConfig, params: OpenSearchQueryBuilderArgsPlugin): void {
         const { value, basePath } = params;
         query.must.push({
             query_string: {
