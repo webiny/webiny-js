@@ -5,7 +5,7 @@ import { MenuItem } from "./MenuItem.js";
 
 const { Actions } = ContentEntryEditorConfig;
 
-export const Config = () => {
+export const EditorConfig = () => {
     return (
         <ContentEntryEditorConfig>
             <IsModelPublishable>
