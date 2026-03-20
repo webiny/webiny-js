@@ -16,6 +16,8 @@ interface WebinyDevtoolsConfig {
 
 interface WebinyDevtoolsSection {
     data: unknown;
+    group: string;
+    views: string[];
     updatedAt: number;
 }
 

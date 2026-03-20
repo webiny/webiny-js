@@ -46,8 +46,16 @@
         "})()"
     ].join("\n");
 
+    function getSelectedData() {
+        if (!selectedItem) return undefined;
+        if (selectedItem.type === "config") return configs[selectedItem.name];
+        return sections[selectedItem.name];
+    }
+
     function fetchFullData() {
         chrome.devtools.inspectedWindow.eval(SERIALIZER, function (result, err) {
+            var prevSelected = JSON.stringify(getSelectedData());
+
             if (err || !result) {
                 configs = {};
                 sections = {};
@@ -55,14 +63,60 @@
                 configs = result.configs || {};
                 sections = result.sections || {};
             }
-            render();
+
+            var newSelected = JSON.stringify(getSelectedData());
+
+            // If the currently viewed item's data hasn't changed,
+            // only update the sidebar (counts/names) without rebuilding
+            // the detail pane, preserving scroll and expand state.
+            if (selectedItem && prevSelected === newSelected) {
+                var sidebarScroll = sidebar.scrollTop;
+                renderSidebar();
+                sidebar.scrollTop = sidebarScroll;
+            } else {
+                render();
+            }
         });
+    }
+
+    // ── Scroll preservation ─────────────────────────────────────────
+    function saveScrollPositions() {
+        var positions = {};
+        positions.sidebar = sidebar.scrollTop;
+        var browseKeys = detail.querySelector(".browse-keys");
+        if (browseKeys) positions.browseKeys = browseKeys.scrollTop;
+        var browseValue = detail.querySelector(".browse-value");
+        if (browseValue) positions.browseValue = browseValue.scrollTop;
+        // Save all visible tab-content scroll positions by index
+        var tabContents = detail.querySelectorAll(".tab-content");
+        positions.tabs = [];
+        for (var i = 0; i < tabContents.length; i++) {
+            positions.tabs.push(tabContents[i].scrollTop);
+        }
+        return positions;
+    }
+
+    function restoreScrollPositions(positions) {
+        if (!positions) return;
+        sidebar.scrollTop = positions.sidebar || 0;
+        var browseKeys = detail.querySelector(".browse-keys");
+        if (browseKeys) browseKeys.scrollTop = positions.browseKeys || 0;
+        var browseValue = detail.querySelector(".browse-value");
+        if (browseValue) browseValue.scrollTop = positions.browseValue || 0;
+        var tabContents = detail.querySelectorAll(".tab-content");
+        if (positions.tabs) {
+            for (var i = 0; i < tabContents.length && i < positions.tabs.length; i++) {
+                tabContents[i].scrollTop = positions.tabs[i] || 0;
+            }
+        }
     }
 
     // ── Rendering ──────────────────────────────────────────────────
     function render() {
+        var scrollPos = saveScrollPositions();
         renderSidebar();
         renderDetail();
+        restoreScrollPositions(scrollPos);
     }
 
     function renderSidebar() {
@@ -116,28 +170,46 @@
             });
         }
 
-        // Sections group
+        // Sections — grouped by their `group` property
         if (sectionNames.length > 0) {
-            var sectionHeader = document.createElement("div");
-            sectionHeader.className = "sidebar-group-header";
-            sectionHeader.textContent = "SECTIONS (" + sectionNames.length + ")";
-            sidebar.appendChild(sectionHeader);
-
+            // Build groups: { groupName: [name, name, ...] } preserving sorted order
+            var groups = {};
+            var groupOrder = [];
             sectionNames.forEach(function (name) {
-                var isSelected =
-                    selectedItem && selectedItem.type === "section" && selectedItem.name === name;
-                var item = document.createElement("div");
-                item.className = "sidebar-item" + (isSelected ? " selected" : "");
-                item.title = name;
-                item.innerHTML = esc(name);
+                var g = (sections[name] && sections[name].group) || "Sections";
+                if (!groups[g]) {
+                    groups[g] = [];
+                    groupOrder.push(g);
+                }
+                groups[g].push(name);
+            });
 
-                item.addEventListener("click", function () {
-                    selectedItem = { type: "section", name: name };
-                    selectedKey = null;
-                    activeTab = "browse";
-                    render();
+            groupOrder.forEach(function (groupName) {
+                var names = groups[groupName];
+                var groupHeader = document.createElement("div");
+                groupHeader.className = "sidebar-group-header";
+                groupHeader.textContent = groupName.toUpperCase() + " (" + names.length + ")";
+                sidebar.appendChild(groupHeader);
+
+                names.forEach(function (name) {
+                    var isSelected =
+                        selectedItem &&
+                        selectedItem.type === "section" &&
+                        selectedItem.name === name;
+                    var item = document.createElement("div");
+                    item.className = "sidebar-item" + (isSelected ? " selected" : "");
+                    item.title = name;
+                    item.innerHTML = esc(name);
+
+                    item.addEventListener("click", function () {
+                        selectedItem = { type: "section", name: name };
+                        selectedKey = null;
+                        var sv = sections[name] && sections[name].views;
+                        activeTab = sv && sv.length > 0 ? sv[0] : "browse";
+                        render();
+                    });
+                    sidebar.appendChild(item);
                 });
-                sidebar.appendChild(item);
             });
         }
     }
@@ -278,96 +350,125 @@
             return;
         }
 
-        detail.innerHTML = "";
-
-        // Section header
-        var header = document.createElement("div");
-        header.className = "tabs";
-        var label = document.createElement("div");
-        label.className = "tab active";
-        label.textContent = selectedItem.name;
-        header.appendChild(label);
-        detail.appendChild(header);
-
-        // JSON tree with toolbar
-        var content = document.createElement("div");
-        content.className = "tab-content";
+        var views = data.views && data.views.length > 0 ? data.views : ["browse", "raw"];
         var sectionData = data.data;
 
-        // If data is an object, show Browse-style split view
-        if (sectionData && typeof sectionData === "object" && !Array.isArray(sectionData)) {
-            var rootKeys = Object.keys(sectionData);
-
-            if (selectedKey && rootKeys.indexOf(selectedKey) === -1) {
-                selectedKey = null;
-            }
-
-            content.className = "tab-content tab-content-browse";
-
-            var keyList = document.createElement("div");
-            keyList.className = "browse-keys";
-
-            rootKeys.forEach(function (key) {
-                var keyItem = document.createElement("div");
-                keyItem.className = "browse-key-item" + (key === selectedKey ? " selected" : "");
-                var val = sectionData[key];
-                var subtitle = "";
-                if (Array.isArray(val)) {
-                    subtitle = "Array (" + val.length + ")";
-                } else if (val && typeof val === "object") {
-                    subtitle = "Object (" + Object.keys(val).length + " keys)";
-                } else {
-                    subtitle = formatValue(val);
-                }
-                keyItem.innerHTML =
-                    '<div class="browse-key-name">' +
-                    esc(key) +
-                    "</div>" +
-                    '<div class="browse-key-type">' +
-                    esc(subtitle) +
-                    "</div>";
-                keyItem.addEventListener("click", function () {
-                    selectedKey = key;
-                    renderDetail();
-                });
-                keyList.appendChild(keyItem);
-            });
-
-            var valuePane = document.createElement("div");
-            valuePane.className = "browse-value";
-
-            if (selectedKey && sectionData[selectedKey] !== undefined) {
-                var nodes = [];
-                var valueTree = document.createElement("div");
-                valueTree.className = "json-tree";
-                buildJsonTree(sectionData[selectedKey], valueTree, 0, nodes);
-                if (nodes.length > 0) {
-                    buildTreeToolbar(valuePane, nodes, valueTree, sectionData[selectedKey]);
-                }
-                valuePane.appendChild(valueTree);
-            } else {
-                var emptyMsg = document.createElement("div");
-                emptyMsg.className = "browse-value-empty";
-                emptyMsg.textContent =
-                    rootKeys.length > 0 ? "Select a key to inspect." : "Empty section data.";
-                valuePane.appendChild(emptyMsg);
-            }
-
-            content.appendChild(keyList);
-            content.appendChild(valuePane);
-        } else {
-            // Primitive or array — just show JSON tree
-            var nodes = [];
-            var tree = document.createElement("div");
-            tree.className = "json-tree";
-            buildJsonTree(sectionData, tree, 0, nodes);
-            if (nodes.length > 0) {
-                buildTreeToolbar(content, nodes, tree, sectionData);
-            }
-            content.appendChild(tree);
+        // If activeTab is not in the allowed views, default to first view
+        if (views.indexOf(activeTab) === -1) {
+            activeTab = views[0];
         }
 
-        detail.appendChild(content);
+        detail.innerHTML = "";
+
+        // Tabs (show tab bar when multiple views)
+        var tabs = document.createElement("div");
+        tabs.className = "tabs";
+        var viewLabels = { browse: "Browse", raw: "Raw Object" };
+        views.forEach(function (v) {
+            var tab = document.createElement("div");
+            tab.className = "tab" + (activeTab === v ? " active" : "");
+            tab.textContent = viewLabels[v] || v;
+            tab.addEventListener("click", function () {
+                activeTab = v;
+                renderDetail();
+            });
+            tabs.appendChild(tab);
+        });
+        detail.appendChild(tabs);
+
+        // Browse view
+        if (views.indexOf("browse") !== -1) {
+            var browseContent = document.createElement("div");
+            browseContent.className =
+                "tab-content tab-content-browse" + (activeTab !== "browse" ? " hidden" : "");
+
+            if (sectionData && typeof sectionData === "object" && !Array.isArray(sectionData)) {
+                var rootKeys = Object.keys(sectionData);
+
+                if (selectedKey && rootKeys.indexOf(selectedKey) === -1) {
+                    selectedKey = null;
+                }
+
+                var keyList = document.createElement("div");
+                keyList.className = "browse-keys";
+
+                rootKeys.forEach(function (key) {
+                    var keyItem = document.createElement("div");
+                    keyItem.className =
+                        "browse-key-item" + (key === selectedKey ? " selected" : "");
+                    var val = sectionData[key];
+                    var subtitle = "";
+                    if (Array.isArray(val)) {
+                        subtitle = "Array (" + val.length + ")";
+                    } else if (val && typeof val === "object") {
+                        subtitle = "Object (" + Object.keys(val).length + " keys)";
+                    } else {
+                        subtitle = formatValue(val);
+                    }
+                    keyItem.innerHTML =
+                        '<div class="browse-key-name">' +
+                        esc(key) +
+                        "</div>" +
+                        '<div class="browse-key-type">' +
+                        esc(subtitle) +
+                        "</div>";
+                    keyItem.addEventListener("click", function () {
+                        selectedKey = key;
+                        renderDetail();
+                    });
+                    keyList.appendChild(keyItem);
+                });
+
+                var valuePane = document.createElement("div");
+                valuePane.className = "browse-value";
+
+                if (selectedKey && sectionData[selectedKey] !== undefined) {
+                    var bNodes = [];
+                    var valueTree = document.createElement("div");
+                    valueTree.className = "json-tree";
+                    buildJsonTree(sectionData[selectedKey], valueTree, 0, bNodes);
+                    if (bNodes.length > 0) {
+                        buildTreeToolbar(valuePane, bNodes, valueTree, sectionData[selectedKey]);
+                    }
+                    valuePane.appendChild(valueTree);
+                } else {
+                    var emptyMsg = document.createElement("div");
+                    emptyMsg.className = "browse-value-empty";
+                    emptyMsg.textContent =
+                        rootKeys.length > 0 ? "Select a key to inspect." : "Empty section data.";
+                    valuePane.appendChild(emptyMsg);
+                }
+
+                browseContent.appendChild(keyList);
+                browseContent.appendChild(valuePane);
+            } else {
+                // Non-object: fall back to raw tree inside browse tab
+                var fbNodes = [];
+                var fbTree = document.createElement("div");
+                fbTree.className = "json-tree";
+                buildJsonTree(sectionData, fbTree, 0, fbNodes);
+                if (fbNodes.length > 0) {
+                    buildTreeToolbar(browseContent, fbNodes, fbTree, sectionData);
+                }
+                browseContent.appendChild(fbTree);
+            }
+            detail.appendChild(browseContent);
+        }
+
+        // Raw Object view
+        if (views.indexOf("raw") !== -1) {
+            var rawContent = document.createElement("div");
+            rawContent.className = "tab-content" + (activeTab !== "raw" ? " hidden" : "");
+            var rNodes = [];
+            var rTree = document.createElement("div");
+            rTree.className = "json-tree";
+            buildJsonTree(sectionData, rTree, 0, rNodes);
+            if (rNodes.length > 0) {
+                buildTreeToolbar(rawContent, rNodes, rTree, sectionData);
+            }
+            rawContent.appendChild(rTree);
+            detail.appendChild(rawContent);
+        }
     }
 
     function createTab(label, tabId) {
@@ -494,8 +595,20 @@
             }, 200);
         });
 
+        var copyBtn = document.createElement("button");
+        copyBtn.className = "tree-toolbar-btn";
+        copyBtn.textContent = "Copy";
+        copyBtn.addEventListener("click", function () {
+            copyToClipboard(JSON.stringify(originalData, null, 2));
+            copyBtn.textContent = "Copied!";
+            setTimeout(function () {
+                copyBtn.textContent = "Copy";
+            }, 1200);
+        });
+
         bar.appendChild(expandBtn);
         bar.appendChild(collapseBtn);
+        bar.appendChild(copyBtn);
         bar.appendChild(searchInput);
         bar.appendChild(searchInfo);
         targetContainer.appendChild(bar);
@@ -503,7 +616,9 @@
 
     function buildJsonTree(value, container, depth, nodeList) {
         if (value === null) {
-            container.appendChild(span("null", "json-null"));
+            var s = span("null", "json-null");
+            attachCopyMenu(s, null);
+            container.appendChild(s);
             return;
         }
 
@@ -517,26 +632,22 @@
             return;
         }
 
+        var leaf;
         if (typeof value === "string") {
             if (value.startsWith("[Function:") || value.startsWith("[ReactElement:")) {
-                container.appendChild(span(value, "json-function"));
+                leaf = span(value, "json-function");
             } else {
-                container.appendChild(span('"' + esc(value) + '"', "json-string"));
+                leaf = span('"' + esc(value) + '"', "json-string");
             }
-            return;
+        } else if (typeof value === "number") {
+            leaf = span(String(value), "json-number");
+        } else if (typeof value === "boolean") {
+            leaf = span(String(value), "json-boolean");
+        } else {
+            leaf = span(String(value), "json-null");
         }
-
-        if (typeof value === "number") {
-            container.appendChild(span(String(value), "json-number"));
-            return;
-        }
-
-        if (typeof value === "boolean") {
-            container.appendChild(span(String(value), "json-boolean"));
-            return;
-        }
-
-        container.appendChild(span(String(value), "json-null"));
+        attachCopyMenu(leaf, value);
+        container.appendChild(leaf);
     }
 
     function buildCollapsible(obj, container, depth, isArray, nodeList) {
@@ -599,9 +710,12 @@
 
             entries.forEach(function (entry, idx) {
                 var line = document.createElement("div");
-                line.appendChild(
-                    span(isArray ? String(entry[0]) : '"' + esc(String(entry[0])) + '"', "json-key")
+                var keySpan = span(
+                    isArray ? String(entry[0]) : '"' + esc(String(entry[0])) + '"',
+                    "json-key"
                 );
+                attachCopyMenu(keySpan, entry[1]);
+                line.appendChild(keySpan);
                 line.appendChild(span(": ", "json-bracket"));
                 buildJsonTree(entry[1], line, depth + 1, nodeList);
                 if (idx < entries.length - 1) {
@@ -614,6 +728,10 @@
         toggle.addEventListener("click", function () {
             setExpanded(!expanded);
         });
+
+        // Right-click on toggle or bracket copies the whole object/array
+        attachCopyMenu(toggle, obj);
+        attachCopyMenu(preview, obj);
 
         setExpanded(expanded);
     }
@@ -662,6 +780,85 @@
         } catch (e) {
             return String(val);
         }
+    }
+
+    // ── Clipboard ──────────────────────────────────────────────────
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).catch(function () {
+            // Fallback for environments where clipboard API isn't available
+            var ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+        });
+    }
+
+    // ── Context menu ────────────────────────────────────────────────
+    var ctxMenu = null;
+
+    function showContextMenu(e, value) {
+        e.preventDefault();
+        hideContextMenu();
+
+        ctxMenu = document.createElement("div");
+        ctxMenu.className = "ctx-menu";
+
+        var copyItem = document.createElement("div");
+        copyItem.className = "ctx-menu-item";
+        copyItem.textContent = "Copy value";
+        copyItem.addEventListener("click", function () {
+            var text = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+            copyToClipboard(text);
+            hideContextMenu();
+        });
+        ctxMenu.appendChild(copyItem);
+
+        var copyCompactItem = document.createElement("div");
+        copyCompactItem.className = "ctx-menu-item";
+        copyCompactItem.textContent = "Copy value (compact)";
+        copyCompactItem.addEventListener("click", function () {
+            var text = typeof value === "string" ? value : JSON.stringify(value);
+            copyToClipboard(text);
+            hideContextMenu();
+        });
+        ctxMenu.appendChild(copyCompactItem);
+
+        document.body.appendChild(ctxMenu);
+
+        // Position near cursor, but keep within viewport
+        var x = e.clientX;
+        var y = e.clientY;
+        var menuW = ctxMenu.offsetWidth;
+        var menuH = ctxMenu.offsetHeight;
+        if (x + menuW > window.innerWidth) x = window.innerWidth - menuW - 4;
+        if (y + menuH > window.innerHeight) y = window.innerHeight - menuH - 4;
+        ctxMenu.style.left = x + "px";
+        ctxMenu.style.top = y + "px";
+    }
+
+    function hideContextMenu() {
+        if (ctxMenu && ctxMenu.parentNode) {
+            ctxMenu.parentNode.removeChild(ctxMenu);
+        }
+        ctxMenu = null;
+    }
+
+    document.addEventListener("click", hideContextMenu);
+    document.addEventListener("contextmenu", function (e) {
+        // Only hide if clicking outside a json-tree area (let our handler take over)
+        if (ctxMenu && !e.target.closest(".json-tree")) {
+            hideContextMenu();
+        }
+    });
+
+    function attachCopyMenu(el, value) {
+        el.addEventListener("contextmenu", function (e) {
+            showContextMenu(e, value);
+        });
     }
 
     // ── Helpers ────────────────────────────────────────────────────
