@@ -40,6 +40,7 @@ export const FieldElementInputsDecorator = ElementInputs.createDecorator(Origina
 
         const handleSubmit = (data: FunnelFieldDefinitionModelDto) => {
             updateInputs(current => {
+                console.log("test", data);
                 (current as unknown as FunnelFieldInputs).fieldData = data;
             });
             hideFieldSettingsDialog();
