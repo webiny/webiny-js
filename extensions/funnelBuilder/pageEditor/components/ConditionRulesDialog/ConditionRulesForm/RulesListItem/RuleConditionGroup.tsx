@@ -1,25 +1,11 @@
 import React from "react";
 import { Button, IconButton, Select, Text, Tooltip } from "webiny/admin/ui";
-import styled from "@emotion/styled";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { ReactComponent as BasePlusIcon } from "@material-design-icons/svg/outlined/add.svg";
 
 import { FunnelConditionGroupModelDto } from "../../../../../models/FunnelConditionGroupModel";
 import { useConditionRulesForm } from "../../useConditionRulesForm";
 import { RuleCondition } from "./RuleCondition";
-
-const Header = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #ebeaeb;
-    padding: 5px 0;
-`;
-
-const NoConditionsMessage = styled.div`
-    padding: 10px;
-`;
 
 interface RuleConditionGroupProps {
     conditionGroup: FunnelConditionGroupModelDto;
@@ -31,16 +17,14 @@ export const RuleConditionGroup = ({ conditionGroup, depth = 1 }: RuleConditionG
         useConditionRulesForm();
 
     return (
-        <div
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                marginLeft: 40 * (depth - 1)
-            }}
-        >
-            <Header>
+        <div className={"flex flex-col"} style={{ marginLeft: 40 * (depth - 1) }}>
+            <div
+                className={
+                    "flex justify-between items-center mb-sm border-b border-neutral-dimmed py-xs"
+                }
+            >
                 <Text className={"text-xs font-medium uppercase tracking-widest"}>Conditions</Text>
-                <div className={"flex items-center gap-xs flex-1 justify-end"}>
+                <div className={"flex items-center gap-sm flex-1 justify-end"}>
                     <Text className={"text-xs"}>Operator:</Text>
                     <div className={"w-[120px]"}>
                         <Select
@@ -94,12 +78,10 @@ export const RuleConditionGroup = ({ conditionGroup, depth = 1 }: RuleConditionG
                         />
                     )}
                 </div>
-            </Header>
+            </div>
 
             {conditionGroup.items.length === 0 ? (
-                <NoConditionsMessage>
-                    <p className={"text-sm text-center py-2.5"}>No conditions added yet.</p>
-                </NoConditionsMessage>
+                <div className={"text-sm text-center p-sm"}>No conditions added yet.</div>
             ) : (
                 conditionGroup.items.map(conditionGroupItem => {
                     const isConditionGroup = "items" in conditionGroupItem;

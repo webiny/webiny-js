@@ -28,7 +28,9 @@ export const ConditionRulesDialog = ({
                             open={open}
                             onClose={onClose}
                             title={"Conditional Rules"}
-                            description={"Set up conditional rules"}
+                            description={
+                                "Control field visibility and behaviour based on conditions"
+                            }
                             actions={
                                 <>
                                     <Dialog.CancelAction onClick={onClose} text={"Cancel"} />
