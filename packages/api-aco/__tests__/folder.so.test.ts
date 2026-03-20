@@ -3,7 +3,6 @@ import { folderMocks } from "./mocks/folder.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { userMock } from "~tests/mocks/user.mock";
 import { ROOT_FOLDER } from "~/constants";
-import { AnonymousIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 describe("`folder` CRUD", () => {
     let folder1: Record<string, any>;
@@ -942,7 +941,7 @@ describe("`folder` CRUD", () => {
     });
 
     it("should enforce security rules", async () => {
-        const { aco: anonymousAco } = useGraphQlHandler({ identity: new AnonymousIdentity() });
+        const { aco: anonymousAco } = useGraphQlHandler({ identity: null });
         const { aco } = useGraphQlHandler();
 
         const notAuthorizedResponse = {
