@@ -1,18 +1,18 @@
 import { createStandardEntity, standardEntityAttributes } from "@webiny/db-dynamodb";
+import type { StorageApiKey, StorageRole, StorageTeam } from "@webiny/api-core/types/security.js";
 import type { Table } from "@webiny/db-dynamodb/toolbox.js";
 import { ENTITIES } from "../types.js";
 import type { IApiKeyEntity, IRoleEntity, ITeamEntity } from "~/security/definitions/types.js";
-import type { Role, StorageApiKey, Team } from "@webiny/api-core/types/security.js";
 
 export const createRoleEntity = (table: Table<string, string, string>): IRoleEntity => {
-    return createStandardEntity<Role>({
+    return createStandardEntity<StorageRole>({
         name: ENTITIES.ROLE,
         table
     });
 };
 
 export const createTeamEntity = (table: Table<string, string, string>): ITeamEntity => {
-    return createStandardEntity<Team>({
+    return createStandardEntity<StorageTeam>({
         name: ENTITIES.TEAM,
         table,
         attributes: {

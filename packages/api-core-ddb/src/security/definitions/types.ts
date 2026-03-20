@@ -1,12 +1,12 @@
 import type { IEntity, IStandardEntityAttributes } from "@webiny/db-dynamodb";
-import type { Role, StorageApiKey, Team } from "@webiny/api-core/types/security.js";
+import type { StorageApiKey, StorageRole, StorageTeam } from "@webiny/api-core/types/security.js";
 
-export interface IRoleEntityAttributes extends IStandardEntityAttributes<Role> {
+export interface IRoleEntityAttributes extends IStandardEntityAttributes<StorageRole> {
     TYPE: string;
 }
 export type IRoleEntity = IEntity<IRoleEntityAttributes>;
 
-export interface ITeamEntityAttributes extends IStandardEntityAttributes<Team> {
+export interface ITeamEntityAttributes extends IStandardEntityAttributes<StorageTeam> {
     TYPE: string;
 }
 export type ITeamEntity = IEntity<ITeamEntityAttributes>;

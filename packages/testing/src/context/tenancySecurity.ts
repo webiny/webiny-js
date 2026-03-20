@@ -25,7 +25,7 @@ export const FULL_ACCESS_TEAM_ID = "full-access-team";
 export const UNKNOWN_TEAM_ID = "unknown-team";
 
 class FullAccessRoleFactory implements RoleFactory.Interface {
-    execute(): RoleFactory.Return {
+    async execute(): RoleFactory.Return {
         return [
             {
                 name: "Full Access",
@@ -38,7 +38,7 @@ class FullAccessRoleFactory implements RoleFactory.Interface {
 }
 
 class FullAccessTeamFactory implements TeamFactory.Interface {
-    execute(): TeamFactory.Return {
+    async execute(): TeamFactory.Return {
         return [
             {
                 name: "Full access",
