@@ -1,11 +1,11 @@
-import findUp from "find-up";
+import { findUpSync } from "find-up";
 import path from "path";
 
 const TEMPLATES_FOLDER_NAME = "_templates";
 
 export class GetTemplatesFolderPath {
     execute() {
-        const templatesFolderPath = findUp.sync(TEMPLATES_FOLDER_NAME, {
+        const templatesFolderPath = findUpSync(TEMPLATES_FOLDER_NAME, {
             type: "directory",
             cwd: path.join(import.meta.dirname)
         });

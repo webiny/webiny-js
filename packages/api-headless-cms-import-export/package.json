@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.8",
-    "@types/archiver": "^6.0.4",
+    "@types/archiver": "^7.0.0",
     "@types/unzipper": "^0.10.11",
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",

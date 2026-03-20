@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
-import { Project, type SourceFile, SyntaxKind, StringLiteral } from "ts-morph";
-import findUp from "find-up";
+import { Project, type SourceFile, StringLiteral, SyntaxKind } from "ts-morph";
+import { findUpSync } from "find-up";
 import pLimit from "p-limit";
 import cliProgress from "cli-progress";
 import { getFilesUsingGlob } from "./getFilesUsingGlob.js";
@@ -147,7 +147,7 @@ class PackageImportPath {
     }
 
     private resolvePackagePath(packageName: string) {
-        const resolvedPath = findUp.sync(`node_modules/${packageName}`, {
+        const resolvedPath = findUpSync(`node_modules/${packageName}`, {
             cwd: path.dirname(this.sourceFile.getFilePath()),
             type: "directory"
         });
@@ -264,7 +264,7 @@ export async function cjsToEsm(rootDir?: string) {
             return limit(async () => {
                 const filePath = sourceFile.getFilePath();
 
-                const closestPackageJson = findUp.sync("package.json", {
+                const closestPackageJson = findUpSync("package.json", {
                     cwd: path.dirname(filePath)
                 })!;
 

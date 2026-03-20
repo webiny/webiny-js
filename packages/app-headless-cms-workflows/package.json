@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@fortawesome/react-fontawesome": "^3.2.0",
+    "@fortawesome/react-fontawesome": "^3.3.0",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
@@ -19,7 +19,7 @@
     "@webiny/app-headless-cms-common": "0.0.0",
     "@webiny/app-workflows": "0.0.0",
     "@webiny/icons": "0.0.0",
-    "mobx-react-lite": "^3.4.3",
+    "mobx-react-lite": "^4.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-helmet": "^6.1.0"

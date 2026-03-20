@@ -5,7 +5,7 @@
   "dependencies": {
     "@emotion/css": "^11.13.5",
     "@emotion/styled": "^11.14.1",
-    "@lexical/selection": "^0.40.0",
+    "@lexical/selection": "^0.42.0",
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/ui": "0.0.0",
     "react": "^18.3.1",
@@ -13,7 +13,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@types/react-color": "^2.17.12",
+    "@types/react-color": "^3.0.13",
     "@webiny/build-tools": "0.0.0"
   },
   "publishConfig": {

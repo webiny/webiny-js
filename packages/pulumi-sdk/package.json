@@ -16,15 +16,15 @@
   },
   "dependencies": {
     "@pulumi/aws": "^7.23.0",
-    "@pulumi/pulumi": "^3.226.0",
+    "@pulumi/pulumi": "^3.227.0",
     "decompress": "^4.2.1",
     "execa": "^5.1.1",
-    "find-up": "^5.0.0",
+    "find-up": "^8.0.0",
     "fs-extra": "^11.3.4",
     "lodash": "^4.17.23",
     "read-json-sync": "2.0.1",
     "semver": "^7.7.4",
-    "tar": "^7.5.11"
+    "tar": "^7.5.12"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",
