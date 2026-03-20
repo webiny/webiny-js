@@ -5,7 +5,7 @@ import { Bind, useForm } from "webiny/admin/form";
 import { required } from "../../../utils/validators";
 import { FunnelFieldDefinitionModel } from "../../../models/FunnelFieldDefinitionModel";
 import { fieldSettings } from "../fields";
-import { useFunnel } from "../../useFunnel";
+import { useContainer } from "../../useContainer";
 
 interface GeneralTabProps {
     field: FunnelFieldDefinitionModel;
@@ -15,7 +15,7 @@ interface GeneralTabProps {
 export const GeneralTab = ({ open }: GeneralTabProps) => {
     const { setValue, data: field } = useForm();
 
-    const { inputs: containerInputs } = useFunnel();
+    const { inputs: containerInputs } = useContainer();
 
     const inputRef = useRef<HTMLInputElement | null>(null);
 

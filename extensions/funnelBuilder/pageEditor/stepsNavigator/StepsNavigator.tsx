@@ -6,7 +6,7 @@ import {
     useDeleteElement,
     useUpdateElement
 } from "webiny/admin/website-builder/page/editor";
-import { useFunnel } from "../useFunnel.js";
+import { useContainer } from "../useContainer.js";
 import { type FunnelContainerInputs } from "../types.js";
 
 const iconClasses =
@@ -18,7 +18,7 @@ const iconPosition = {
 };
 
 export const StepsNavigator = () => {
-    const funnel = useFunnel();
+    const funnel = useContainer();
     const { createElement } = useCreateElement();
     const { updateElement } = useUpdateElement();
     const { deleteElement } = useDeleteElement();

@@ -5,7 +5,7 @@ import {
 } from "webiny/admin/website-builder/page/editor";
 import { FunnelContainerInputs } from "./types";
 
-export const useFunnel = () => {
+export const useContainer = () => {
     const elementId = useSelectFromDocument(state => {
         const funnel = $getFirstElementOfType(state, "Fub/Container");
         return funnel ? funnel.id : null;
