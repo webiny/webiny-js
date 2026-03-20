@@ -40,7 +40,7 @@ export const RulesListItem = ({ rule }: RulesListItemProps) => {
                 />
             }
         >
-            <div className={"flex flex-col gap-5"}>
+            <div className={"flex flex-col gap-md"}>
                 {/* Root condition group is passed here. The component can
                     then also render nested condition groups. */}
                 <RuleConditionGroup conditionGroup={rule.conditionGroup} />

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, IconButton, Select, Text, Tooltip } from "webiny/admin/ui";
+import { Button, IconButton, Select, Text } from "webiny/admin/ui";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { ReactComponent as BasePlusIcon } from "@material-design-icons/svg/outlined/add.svg";
 
@@ -58,23 +58,11 @@ export const RuleConditionGroup = ({ conditionGroup, depth = 1 }: RuleConditionG
                         text={"Add group"}
                         onClick={() => addConditionGroup(conditionGroup.id)}
                     />
-                    {depth > 1 ? (
+                    {depth > 1 && (
                         <IconButton
                             variant={"ghost"}
                             icon={<DeleteIcon />}
                             onClick={() => removeConditionGroup(conditionGroup.id)}
-                        />
-                    ) : (
-                        <Tooltip
-                            content={"Cannot delete root condition group."}
-                            trigger={
-                                <IconButton
-                                    variant={"tertiary"}
-                                    disabled={true}
-                                    icon={<DeleteIcon />}
-                                    onClick={() => removeConditionGroup(conditionGroup.id)}
-                                />
-                            }
                         />
                     )}
                 </div>
@@ -83,26 +71,28 @@ export const RuleConditionGroup = ({ conditionGroup, depth = 1 }: RuleConditionG
             {conditionGroup.items.length === 0 ? (
                 <div className={"text-sm text-center p-sm"}>No conditions added yet.</div>
             ) : (
-                conditionGroup.items.map(conditionGroupItem => {
-                    const isConditionGroup = "items" in conditionGroupItem;
-                    if (isConditionGroup) {
+                <div className={"flex flex-col gap-sm"}>
+                    {conditionGroup.items.map(conditionGroupItem => {
+                        const isConditionGroup = "items" in conditionGroupItem;
+                        if (isConditionGroup) {
+                            return (
+                                <RuleConditionGroup
+                                    conditionGroup={conditionGroupItem}
+                                    key={conditionGroupItem.id}
+                                    depth={depth + 1}
+                                />
+                            );
+                        }
+
                         return (
-                            <RuleConditionGroup
-                                conditionGroup={conditionGroupItem}
+                            <RuleCondition
+                                condition={conditionGroupItem}
+                                conditionGroup={conditionGroup}
                                 key={conditionGroupItem.id}
-                                depth={depth + 1}
                             />
                         );
-                    }
-
-                    return (
-                        <RuleCondition
-                            condition={conditionGroupItem}
-                            conditionGroup={conditionGroup}
-                            key={conditionGroupItem.id}
-                        />
-                    );
-                })
+                    })}
+                </div>
             )}
         </div>
     );

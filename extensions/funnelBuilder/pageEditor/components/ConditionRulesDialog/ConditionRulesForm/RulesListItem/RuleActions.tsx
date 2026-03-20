@@ -24,7 +24,7 @@ export const RuleActions = ({ rule }: RuleActionsProps) => {
             >
                 <Text className={"text-xs font-medium uppercase tracking-widest"}>Actions</Text>
                 <Button
-                    variant={"secondary"}
+                    variant={"ghost"}
                     icon={<PlusIcon />}
                     text={"Add action"}
                     onClick={() => addAction(rule.id)}
