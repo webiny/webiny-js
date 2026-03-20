@@ -2,15 +2,10 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { Grid, Input } from "webiny/admin/ui";
 import camelCase from "lodash/camelCase";
 import { Bind, useForm } from "webiny/admin/form";
-import {
-    $getFirstElementOfType,
-    useElementInputs,
-    useSelectFromDocument
-} from "webiny/admin/website-builder/page/editor";
 import { required } from "../../../utils/validators";
 import { FunnelFieldDefinitionModel } from "../../../models/FunnelFieldDefinitionModel";
-import type { FunnelContainerInputs } from "../../types";
 import { fieldSettings } from "../fields";
+import { useFunnel } from "../../useFunnel";
 
 interface GeneralTabProps {
     field: FunnelFieldDefinitionModel;
@@ -20,12 +15,7 @@ interface GeneralTabProps {
 export const GeneralTab = ({ open }: GeneralTabProps) => {
     const { setValue, data: field } = useForm();
 
-    const containerElementId = useSelectFromDocument(state => {
-        const el = $getFirstElementOfType(state, "Fub/Container");
-        return el ? el.id : null;
-    });
-
-    const { inputs: containerInputs } = useElementInputs<FunnelContainerInputs>(containerElementId);
+    const { inputs: containerInputs } = useFunnel();
 
     const inputRef = useRef<HTMLInputElement | null>(null);
 

@@ -6,7 +6,8 @@ import {
     useDeleteElement,
     useUpdateElement
 } from "webiny/admin/website-builder/page/editor";
-import { type FunnelInputs, useFunnel } from "./useFunnel.js";
+import { useFunnel } from "../useFunnel.js";
+import { type FunnelContainerInputs } from "../types.js";
 
 const iconClasses =
     "absolute z-10 rounded-full bg-neutral-dimmed border-solid border-sm border-neutral-muted cursor-pointer fill-neutral-strong";
@@ -54,7 +55,7 @@ export const StepsNavigator = () => {
             }
         });
 
-        updateElement<FunnelInputs>(funnel.id, inputs => {
+        updateElement<FunnelContainerInputs>(funnel.id, inputs => {
             inputs.activeStep = insertIndex;
         });
     };
