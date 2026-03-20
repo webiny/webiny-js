@@ -1,19 +1,10 @@
 import React from "react";
 import { IconButton, Select } from "webiny/admin/ui";
-import styled from "@emotion/styled";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { FunnelConditionGroupModelDto } from "../../../../../models/FunnelConditionGroupModel";
 import { useConditionRulesForm } from "../../useConditionRulesForm";
 import { getConditionOperatorsByValueType } from "../../../../../models/conditionOperators/conditionOperatorFactory";
 import { FunnelConditionModelDto } from "../../../../../models/FunnelConditionModel";
-
-const Fieldset = styled.div`
-    display: flex;
-    align-items: center;
-    column-gap: 10px;
-    position: relative;
-    width: 100%;
-`;
 
 interface RuleConditionGroupProps {
     conditionGroup: FunnelConditionGroupModelDto;
@@ -30,7 +21,7 @@ export const RuleCondition = ({ conditionGroup, condition }: RuleConditionGroupP
     );
 
     return (
-        <Fieldset>
+        <div className={"flex items-center gap-xs relative w-full"}>
             <Select
                 size={"md"}
                 value={condition.sourceFieldId}
@@ -68,6 +59,6 @@ export const RuleCondition = ({ conditionGroup, condition }: RuleConditionGroupP
                 variant={"ghost"}
                 onClick={() => removeCondition(conditionGroup.id, condition.id)}
             />
-        </Fieldset>
+        </div>
     );
 };

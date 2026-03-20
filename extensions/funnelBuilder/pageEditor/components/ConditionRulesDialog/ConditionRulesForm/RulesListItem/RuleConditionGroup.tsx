@@ -40,15 +40,7 @@ export const RuleConditionGroup = ({ conditionGroup, depth = 1 }: RuleConditionG
         >
             <Header>
                 <Text className={"text-xs font-medium uppercase tracking-widest"}>Conditions</Text>
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        flex: 1,
-                        justifyContent: "right"
-                    }}
-                >
+                <div className={"flex items-center gap-xs flex-1 justify-end"}>
                     <Text className={"text-xs"}>Operator:</Text>
                     <div className={"w-[120px]"}>
                         <Select
@@ -69,14 +61,14 @@ export const RuleConditionGroup = ({ conditionGroup, depth = 1 }: RuleConditionG
                     </div>
 
                     <Button
-                        variant={"secondary"}
+                        variant={"ghost"}
                         size={"md"}
                         icon={<BasePlusIcon />}
                         text={"Add condition"}
                         onClick={() => addCondition(conditionGroup.id)}
                     />
                     <Button
-                        variant={"secondary"}
+                        variant={"ghost"}
                         size={"md"}
                         icon={<BasePlusIcon />}
                         text={"Add group"}
@@ -84,7 +76,7 @@ export const RuleConditionGroup = ({ conditionGroup, depth = 1 }: RuleConditionG
                     />
                     {depth > 1 ? (
                         <IconButton
-                            variant={"tertiary"}
+                            variant={"ghost"}
                             icon={<DeleteIcon />}
                             onClick={() => removeConditionGroup(conditionGroup.id)}
                         />
