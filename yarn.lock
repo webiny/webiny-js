@@ -12737,6 +12737,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny-scripts/generate-skills@workspace:scripts/generateSkills":
+  version: 0.0.0-use.local
+  resolution: "@webiny-scripts/generate-skills@workspace:scripts/generateSkills"
+  dependencies:
+    ts-morph: "npm:^27.0.2"
+    tsx: "npm:^4.21.0"
+  bin:
+    generate-skills: ./src/bin.ts
+  languageName: unknown
+  linkType: soft
+
 "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly":
   version: 0.0.0-use.local
   resolution: "@webiny-scripts/prepublish-only@workspace:scripts/prepublishOnly"

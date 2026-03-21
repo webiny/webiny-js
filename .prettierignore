@@ -16,3 +16,4 @@ packages/create-webiny-project/utils/binaries/**
 .github/workflows/**/*.yml
 ./nextjs/
 packages/admin-ui/storybook-static/**
+**/*.hbs
