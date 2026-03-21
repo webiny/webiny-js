@@ -1,0 +1,18 @@
+{
+  "skill": "api-settings-before-update",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.410Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "SettingsBeforeUpdateEventHandler",
+  "importPath": "webiny/api/file-manager/settings",
+  "sources": [
+    {
+      "package": "@webiny/api-file-manager",
+      "files": [
+        "src/features/settings/UpdateSettings/events.ts"
+      ]
+    }
+  ],
+  "typeHash": "9d1c2e33f156a77e1ed0ccaa91dde5897d38f301ba0251506b0dfa4a7feda97e"
+}

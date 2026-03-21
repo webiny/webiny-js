@@ -1,0 +1,18 @@
+{
+  "skill": "api-delete-redirect",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.452Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "DeleteRedirectUseCase",
+  "importPath": "webiny/api/website-builder/redirect",
+  "sources": [
+    {
+      "package": "@webiny/api-website-builder",
+      "files": [
+        "src/features/redirects/DeleteRedirect/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "b4eae2e503ccb10f0bec1550efdbcc96e2ce24464a45976f80a750b4f9e9c31f"
+}

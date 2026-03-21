@@ -1,0 +1,18 @@
+{
+  "skill": "api-user-after-update",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.405Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "UserAfterUpdateEventHandler",
+  "importPath": "webiny/api/security/user",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/users/UpdateUser/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "733d20739b8cab4f3e50dec7b6d7c63dbfe06c2a9ee0c8b923f5ac076c15f3a4"
+}

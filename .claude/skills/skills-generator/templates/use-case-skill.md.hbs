@@ -1,0 +1,70 @@
+{{!--
+  Template: UseCase Skill
+  Input: an object with these fields:
+    skillName       — kebab-case skill name (e.g., "create-entry")
+    category        — category id (e.g., "cms")
+    className       — exported class name (e.g., "CreateEntryUseCase")
+    importPath      — webiny import path (e.g., "webiny/api/cms/entry")
+    humanName       — title-case name (e.g., "Create Entry")
+    description     — generated description string
+    typeBlock       — extracted TypeScript types (self-contained, no external imports)
+    exampleCode     — canonical code example
+    registrationSnippet — JSX registration element
+    notes           — array of note strings
+    relatedSkills   — array of { name, reason } objects
+
+  Note: UseCases differ from EventHandlers in that they:
+    - Have Params instead of Event
+    - Have a return type
+    - Are invoked programmatically, not triggered by lifecycle
+    - May not have before/after timing
+--}}
+---
+name: {{skillName}}
+category: {{category}}
+type: UseCase
+class: {{className}}
+import: {{importPath}}
+description: >
+  {{description}}
+---
+
+# {{humanName}}
+
+{{description}}
+
+**Import:** `import { {{className}} } from "{{importPath}}";`
+
+## Types
+
+```typescript
+import { {{className}} } from "{{importPath}}";
+
+{{{typeBlock}}}
+```
+
+## Example
+
+```typescript
+import { {{className}} } from "{{importPath}}";
+
+{{{exampleCode}}}
+```
+
+## Registration
+
+```tsx
+{{{registrationSnippet}}}
+```
+
+## Notes
+
+{{#each notes}}
+- {{{this}}}
+{{/each}}
+
+## Related Skills
+
+{{#each relatedSkills}}
+- `{{this.name}}` — {{this.reason}}
+{{/each}}

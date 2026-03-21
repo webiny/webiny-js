@@ -1,0 +1,18 @@
+{
+  "skill": "api-get-previous-revision-by-entry-id-base",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.442Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "GetPreviousRevisionByEntryIdBaseUseCase",
+  "importPath": "webiny/api/cms/entry",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentEntry/GetPreviousRevisionByEntryId/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "277aa1889b4c51430b0f7516a15776d704b553c0c1e6935ec210be260c5396dc"
+}

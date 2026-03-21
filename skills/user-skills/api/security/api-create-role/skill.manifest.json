@@ -1,0 +1,18 @@
+{
+  "skill": "api-create-role",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.432Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "CreateRoleUseCase",
+  "importPath": "webiny/api/security/role",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/security/roles/CreateRole/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "a7c8ec7a7a3e99bdde0372b926c593ec701447cdefdceed8b215bf44b6e0a669"
+}

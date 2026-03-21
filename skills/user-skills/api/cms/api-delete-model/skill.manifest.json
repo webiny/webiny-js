@@ -1,0 +1,18 @@
+{
+  "skill": "api-delete-model",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.446Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "DeleteModelUseCase",
+  "importPath": "webiny/api/cms/model",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentModel/DeleteModel/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "470184fbc8834ea626ac22e2d05319f348b2f7323c91c1b55ee92d18343ff317"
+}

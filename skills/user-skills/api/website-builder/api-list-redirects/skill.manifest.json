@@ -1,0 +1,18 @@
+{
+  "skill": "api-list-redirects",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.453Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "ListRedirectsUseCase",
+  "importPath": "webiny/api/website-builder/redirect",
+  "sources": [
+    {
+      "package": "@webiny/api-website-builder",
+      "files": [
+        "src/features/redirects/ListRedirects/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "df981af72d07e1182b0b5a710a01588aa820317535af64b83bd21dda7286f590"
+}

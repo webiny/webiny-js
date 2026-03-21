@@ -1,0 +1,18 @@
+{
+  "skill": "api-api-key-after-create",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.402Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "ApiKeyAfterCreateEventHandler",
+  "importPath": "webiny/api/security/api-key",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/security/apiKeys/CreateApiKey/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "536ff34f985658f1d508a1a83fc5bf5d772c37fe12d66be92b00920ee2d15682"
+}

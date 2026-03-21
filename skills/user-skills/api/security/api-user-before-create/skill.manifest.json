@@ -1,0 +1,18 @@
+{
+  "skill": "api-user-before-create",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.405Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "UserBeforeCreateEventHandler",
+  "importPath": "webiny/api/security/user",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/users/CreateUser/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "2a963eae5fd37e68107ee102ffad63a5f52bb44c89d8629eb52ea122af82f7cb"
+}

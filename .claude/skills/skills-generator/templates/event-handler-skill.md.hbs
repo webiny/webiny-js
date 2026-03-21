@@ -1,0 +1,69 @@
+{{!--
+  Template: EventHandler Skill
+  Input: an object with these fields:
+    skillName       — kebab-case skill name (e.g., "entry-before-create")
+    category        — category id (e.g., "cms")
+    className       — exported class name (e.g., "EntryBeforeCreateEventHandler")
+    importPath      — webiny import path (e.g., "webiny/api/cms/entry")
+    humanName       — title-case name (e.g., "Entry Before Create")
+    description     — generated description string
+    firesWhen       — natural language (e.g., "Before a new entry is saved")
+    timing          — "before" or "after"
+    typeBlock       — extracted TypeScript types (self-contained, no external imports)
+    exampleCode     — canonical code example
+    registrationSnippet — JSX registration element
+    notes           — array of note strings
+    relatedSkills   — array of { name, reason } objects
+--}}
+---
+name: {{skillName}}
+category: {{category}}
+type: EventHandler
+class: {{className}}
+import: {{importPath}}
+description: >
+  {{description}}
+---
+
+# {{humanName}}
+
+{{description}}
+
+**Import:** `import { {{className}} as Handler } from "{{importPath}}";`
+**Fires:** {{firesWhen}}
+**Timing:** {{timing}}
+
+## Types
+
+```typescript
+import { {{className}} as Handler } from "{{importPath}}";
+
+{{{typeBlock}}}
+```
+
+## Example
+
+```typescript
+import { {{className}} as Handler } from "{{importPath}}";
+import { Logger } from "webiny/api/logger";
+
+{{{exampleCode}}}
+```
+
+## Registration
+
+```tsx
+{{{registrationSnippet}}}
+```
+
+## Notes
+
+{{#each notes}}
+- {{{this}}}
+{{/each}}
+
+## Related Skills
+
+{{#each relatedSkills}}
+- `{{this.name}}` — {{this.reason}}
+{{/each}}

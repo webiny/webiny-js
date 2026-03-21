@@ -1,0 +1,18 @@
+{
+  "skill": "api-get-folder-hierarchy",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.429Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "GetFolderHierarchyUseCase",
+  "importPath": "webiny/api/aco/folder",
+  "sources": [
+    {
+      "package": "@webiny/api-aco",
+      "files": [
+        "src/features/folder/GetFolderHierarchy/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "beed5bfff2e3e1b594d82b9e9361dfd1306149ba39dffe83546da1e45728877c"
+}

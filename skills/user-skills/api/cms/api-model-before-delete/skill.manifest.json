@@ -1,0 +1,18 @@
+{
+  "skill": "api-model-before-delete",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.419Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "ModelBeforeDeleteEventHandler",
+  "importPath": "webiny/api/cms/model",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentModel/DeleteModel/events.ts"
+      ]
+    }
+  ],
+  "typeHash": "382dc1e1e39410f2999126901897c616f77400f5bddc20935a16dd0517679ee6"
+}

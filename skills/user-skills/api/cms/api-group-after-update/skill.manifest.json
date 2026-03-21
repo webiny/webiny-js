@@ -1,0 +1,18 @@
+{
+  "skill": "api-group-after-update",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.417Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "GroupAfterUpdateEventHandler",
+  "importPath": "webiny/api/cms/group",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentModelGroup/UpdateGroup/events.ts"
+      ]
+    }
+  ],
+  "typeHash": "3ee7286256c34f6beb6bfb2fc02221ea2694af7fef28ed02687a6d486b10ca6a"
+}

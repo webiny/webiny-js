@@ -1,0 +1,18 @@
+{
+  "skill": "api-restore-entry-from-bin",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.439Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "RestoreEntryFromBinUseCase",
+  "importPath": "webiny/api/cms/entry",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentEntry/RestoreEntryFromBin/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "9c56034b8d96ba28b24e3a6899eeefd0ea363d26615dcfe1fa7802a956fa3894"
+}

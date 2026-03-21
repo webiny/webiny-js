@@ -1,0 +1,18 @@
+{
+  "skill": "api-file-after-create",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.408Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "FileAfterCreateEventHandler",
+  "importPath": "webiny/api/file-manager/file",
+  "sources": [
+    {
+      "package": "@webiny/api-file-manager",
+      "files": [
+        "src/features/file/CreateFile/events.ts"
+      ]
+    }
+  ],
+  "typeHash": "01e2bfe6339319b60a25f2ca4d5f11ac2f05864206aa4696a35ab14159574a46"
+}

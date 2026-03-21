@@ -1,0 +1,18 @@
+{
+  "skill": "api-api-key-before-delete",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.403Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "ApiKeyBeforeDeleteEventHandler",
+  "importPath": "webiny/api/security/api-key",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/security/apiKeys/DeleteApiKey/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "3d5fd27b5e2a9b2a477e551397a8d9e9fac4dc7cb92841a97f33383231c52f05"
+}

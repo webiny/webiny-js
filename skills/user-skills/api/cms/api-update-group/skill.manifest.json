@@ -1,0 +1,18 @@
+{
+  "skill": "api-update-group",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.445Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "UpdateGroupUseCase",
+  "importPath": "webiny/api/cms/group",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentModelGroup/UpdateGroup/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "f0a60220cbfb3e13a3fe0a23a957dbedbf0c4c13d82735a38e453138164416a2"
+}

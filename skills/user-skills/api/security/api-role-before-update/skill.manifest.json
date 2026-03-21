@@ -1,0 +1,18 @@
+{
+  "skill": "api-role-before-update",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.405Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "RoleBeforeUpdateEventHandler",
+  "importPath": "webiny/api/security/role",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/security/roles/UpdateRole/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "bb68c60bceb92322ecc9065aa6438aeaecfa48f0e61fed864242116e0b89fe94"
+}

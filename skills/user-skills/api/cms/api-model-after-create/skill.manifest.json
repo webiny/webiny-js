@@ -1,0 +1,18 @@
+{
+  "skill": "api-model-after-create",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.418Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "ModelAfterCreateEventHandler",
+  "importPath": "webiny/api/cms/model",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentModel/CreateModel/events.ts"
+      ]
+    }
+  ],
+  "typeHash": "2467283d9c9aa02eb9eb3e1c83b2fe5f43a9c52f05ce211a1126fc95df91b226"
+}

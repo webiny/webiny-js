@@ -1,0 +1,18 @@
+{
+  "skill": "api-schedule-unpublish-page",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.454Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "ScheduleUnpublishPageUseCase",
+  "importPath": "webiny/api/website-builder/scheduler",
+  "sources": [
+    {
+      "package": "@webiny/api-website-builder-scheduler",
+      "files": [
+        "src/features/ScheduleUnpublishPageUseCase/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "cc47a56395b1361d8083ee16fead7167ef741cb92fd4825a89d64f09c4a11a58"
+}

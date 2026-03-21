@@ -1,0 +1,18 @@
+{
+  "skill": "api-delete-page",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.449Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "DeletePageUseCase",
+  "importPath": "webiny/api/website-builder/page",
+  "sources": [
+    {
+      "package": "@webiny/api-website-builder",
+      "files": [
+        "src/features/pages/DeletePage/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "4ed7fff1b48f24e150539a1daa4a4fd1a7e0cf16cff96936bacd3cee31a0f691"
+}

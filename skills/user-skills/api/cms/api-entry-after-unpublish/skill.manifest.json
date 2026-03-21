@@ -1,0 +1,18 @@
+{
+  "skill": "api-entry-after-unpublish",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.415Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "EntryAfterUnpublishEventHandler",
+  "importPath": "webiny/api/cms/entry",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentEntry/UnpublishEntry/events.ts"
+      ]
+    }
+  ],
+  "typeHash": "c0a6c41dc7e8ba06fa61354e3ab5670dd31e82eaa9997d7f2cac4202a328a39f"
+}

@@ -1,0 +1,18 @@
+{
+  "skill": "api-get-active-redirects",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.452Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "GetActiveRedirectsUseCase",
+  "importPath": "webiny/api/website-builder/redirect",
+  "sources": [
+    {
+      "package": "@webiny/api-website-builder",
+      "files": [
+        "src/features/redirects/GetActiveRedirects/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "65236e4aacde210d482f1146b3f86ffb39d96abd5aa42a4cc318dd250c0698de"
+}

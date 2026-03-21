@@ -1,0 +1,18 @@
+{
+  "skill": "api-get-settings",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.436Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "GetSettingsUseCase",
+  "importPath": "webiny/api/file-manager/settings",
+  "sources": [
+    {
+      "package": "@webiny/api-file-manager",
+      "files": [
+        "src/features/settings/GetSettings/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "f67d926a853100bcf592ce09710d512b3619d98d9371e5feb4d88ebd5a3e7149"
+}

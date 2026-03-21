@@ -1,0 +1,18 @@
+{
+  "skill": "api-group-after-delete",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.418Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "GroupAfterDeleteEventHandler",
+  "importPath": "webiny/api/cms/group",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentModelGroup/DeleteGroup/events.ts"
+      ]
+    }
+  ],
+  "typeHash": "c48365386f9b338f0960d06c88d049b2e7322093b22f16137e80218476e94010"
+}

@@ -1,0 +1,18 @@
+{
+  "skill": "api-update-model",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.446Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "UpdateModelUseCase",
+  "importPath": "webiny/api/cms/model",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentModel/UpdateModel/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "df9af149d0cbebfca0744deca0d7f0ed378350b102af286b1b7d1437bb11c0fb"
+}

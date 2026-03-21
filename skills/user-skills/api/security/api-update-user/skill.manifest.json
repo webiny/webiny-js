@@ -1,0 +1,18 @@
+{
+  "skill": "api-update-user",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.433Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "UpdateUserUseCase",
+  "importPath": "webiny/api/security/user",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/users/UpdateUser/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "d85cdcfbc97ac6bf299bbdcabc46c1115dac1b22204d326eee9c03d99721829d"
+}

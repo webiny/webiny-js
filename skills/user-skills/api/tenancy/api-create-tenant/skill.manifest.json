@@ -1,0 +1,18 @@
+{
+  "skill": "api-create-tenant",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.434Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "CreateTenantUseCase",
+  "importPath": "webiny/api/tenancy",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/tenancy/CreateTenant/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "a5dd991884639a84e718398a4a52f8b1da2398fbde8bddfe2c25770a57a84433"
+}

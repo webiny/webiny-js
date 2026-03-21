@@ -1,0 +1,18 @@
+{
+  "skill": "api-entry-before-create",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.411Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "EntryBeforeCreateEventHandler",
+  "importPath": "webiny/api/cms/entry",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentEntry/CreateEntry/events.ts"
+      ]
+    }
+  ],
+  "typeHash": "aacaa2ef5ad78408ec7b18ad8aebf4296d053e10af5a95f8535c2ed7568e19d0"
+}

@@ -1,0 +1,18 @@
+{
+  "skill": "api-role-before-delete",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.404Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "RoleBeforeDeleteEventHandler",
+  "importPath": "webiny/api/security/role",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/security/roles/DeleteRole/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "b64f47c8e33e3ddeae90870acc6fe44b51db4dd35f0a442d9b784074d4fb3b7f"
+}

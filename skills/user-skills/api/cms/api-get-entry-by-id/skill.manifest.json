@@ -1,0 +1,18 @@
+{
+  "skill": "api-get-entry-by-id",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.441Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "GetEntryByIdUseCase",
+  "importPath": "webiny/api/cms/entry",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentEntry/GetEntryById/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "812592cfa4ee42d1a608f25676f5dbb6c0094bf98ba021416c25c47ff1f0956c"
+}

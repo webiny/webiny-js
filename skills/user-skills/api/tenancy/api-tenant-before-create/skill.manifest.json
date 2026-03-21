@@ -1,0 +1,18 @@
+{
+  "skill": "api-tenant-before-create",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.406Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "TenantBeforeCreateEventHandler",
+  "importPath": "webiny/api/tenancy",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/tenancy/CreateTenant/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "c4e3fe382ec27a936d8af4a656cb4d44847424567247cc97bbf1520cf8421c95"
+}

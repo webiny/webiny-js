@@ -1,0 +1,18 @@
+{
+  "skill": "api-move-entry",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.439Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "MoveEntryUseCase",
+  "importPath": "webiny/api/cms/entry",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentEntry/MoveEntry/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "c730cbb73d898e25e7144b730b6816befaa7c808156e9062edf79b51253cc86b"
+}

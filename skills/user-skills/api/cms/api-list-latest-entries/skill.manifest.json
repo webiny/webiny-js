@@ -1,0 +1,18 @@
+{
+  "skill": "api-list-latest-entries",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.444Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "ListLatestEntriesUseCase",
+  "importPath": "webiny/api/cms/entry",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentEntry/ListEntries/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "93f5c392a1d3577a98cc457087af1dcf1605f27ba6ccf8a7db0e50e37ebba76b"
+}

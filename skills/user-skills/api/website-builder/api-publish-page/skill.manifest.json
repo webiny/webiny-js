@@ -1,0 +1,18 @@
+{
+  "skill": "api-publish-page",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.451Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "PublishPageUseCase",
+  "importPath": "webiny/api/website-builder/page",
+  "sources": [
+    {
+      "package": "@webiny/api-website-builder",
+      "files": [
+        "src/features/pages/PublishPage/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "1e559588d2dc5c1ef157cfc71dc8911be8fbf15f389a4e11e43d48f3e79fe413"
+}

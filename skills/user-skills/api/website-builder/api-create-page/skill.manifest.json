@@ -1,0 +1,18 @@
+{
+  "skill": "api-create-page",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.449Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "CreatePageUseCase",
+  "importPath": "webiny/api/website-builder/page",
+  "sources": [
+    {
+      "package": "@webiny/api-website-builder",
+      "files": [
+        "src/features/pages/CreatePage/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "08e4ddd81c2da5e82c409af91b14392880f3c7724fc956f5e868525e140d0d92"
+}

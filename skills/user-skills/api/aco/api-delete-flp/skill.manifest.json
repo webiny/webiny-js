@@ -1,0 +1,18 @@
+{
+  "skill": "api-delete-flp",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.427Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "DeleteFlpUseCase",
+  "importPath": "webiny/api/aco/flp",
+  "sources": [
+    {
+      "package": "@webiny/api-aco",
+      "files": [
+        "src/features/flp/DeleteFlp/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "ffffaddd8f7012539a9aed3202f7b743e83ed30e578545478174b42288827eec"
+}

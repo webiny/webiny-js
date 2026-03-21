@@ -1,0 +1,18 @@
+{
+  "skill": "api-get-scheduled-action",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.448Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "GetScheduledActionUseCase",
+  "importPath": "webiny/api/scheduler",
+  "sources": [
+    {
+      "package": "@webiny/api-scheduler",
+      "files": [
+        "src/features/GetScheduledAction/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "037f7e5f31ca9a5c4d53010f2c8ad240d79494e26361324d111b7d9ac40205c4"
+}

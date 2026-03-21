@@ -1,0 +1,18 @@
+{
+  "skill": "api-update-role",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.432Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "UpdateRoleUseCase",
+  "importPath": "webiny/api/security/role",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/security/roles/UpdateRole/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "217fb8ac0a508a2f24fec8bfefeb49a611ccd11b9968d7712860c5b9e3ad78df"
+}

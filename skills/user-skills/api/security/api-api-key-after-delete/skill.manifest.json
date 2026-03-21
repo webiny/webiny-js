@@ -1,0 +1,18 @@
+{
+  "skill": "api-api-key-after-delete",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.402Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "ApiKeyAfterDeleteEventHandler",
+  "importPath": "webiny/api/security/api-key",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/security/apiKeys/DeleteApiKey/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "a707c7d20651d7597929744455e4033432ccfa5bd04902db4c8103b2b79b87a4"
+}

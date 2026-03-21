@@ -1,0 +1,18 @@
+{
+  "skill": "api-redirect-before-move",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.424Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "RedirectBeforeMoveEventHandler",
+  "importPath": "webiny/api/website-builder/redirect",
+  "sources": [
+    {
+      "package": "@webiny/api-website-builder",
+      "files": [
+        "src/features/redirects/MoveRedirect/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "3c28132bfb197ff086ec83c02f144626f640c51f5d4f847fb93279201df33731"
+}

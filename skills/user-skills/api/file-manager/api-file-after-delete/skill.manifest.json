@@ -1,0 +1,18 @@
+{
+  "skill": "api-file-after-delete",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.409Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "FileAfterDeleteEventHandler",
+  "importPath": "webiny/api/file-manager/file",
+  "sources": [
+    {
+      "package": "@webiny/api-file-manager",
+      "files": [
+        "src/features/file/DeleteFile/events.ts"
+      ]
+    }
+  ],
+  "typeHash": "aee6d7feca57f03d163dc7f0ad4754f0fa254c1247f91ce220101213a7a6a1c8"
+}

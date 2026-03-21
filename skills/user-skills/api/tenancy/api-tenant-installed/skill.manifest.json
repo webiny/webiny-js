@@ -1,0 +1,18 @@
+{
+  "skill": "api-tenant-installed",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.407Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "TenantInstalledEventHandler",
+  "importPath": "webiny/api/tenancy",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/tenancy/InstallTenant/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "82ee0614f825e38c8cd235f4a624094c68f2525170c96f6c6f8b5842eb3a4d70"
+}

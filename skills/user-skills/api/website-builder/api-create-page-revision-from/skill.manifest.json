@@ -1,0 +1,18 @@
+{
+  "skill": "api-create-page-revision-from",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.449Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "use-case",
+  "className": "CreatePageRevisionFromUseCase",
+  "importPath": "webiny/api/website-builder/page",
+  "sources": [
+    {
+      "package": "@webiny/api-website-builder",
+      "files": [
+        "src/features/pages/CreatePageRevisionFrom/abstractions.ts"
+      ]
+    }
+  ],
+  "typeHash": "ff2c582e90c7e45bd240527b1add17d1a7c801104a8bc35538d543b058ba8a5a"
+}

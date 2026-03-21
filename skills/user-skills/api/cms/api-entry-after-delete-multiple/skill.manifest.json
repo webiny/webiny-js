@@ -1,0 +1,18 @@
+{
+  "skill": "api-entry-after-delete-multiple",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.413Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "EntryAfterDeleteMultipleEventHandler",
+  "importPath": "webiny/api/cms/entry",
+  "sources": [
+    {
+      "package": "@webiny/api-headless-cms",
+      "files": [
+        "src/features/contentEntry/DeleteMultipleEntries/events.ts"
+      ]
+    }
+  ],
+  "typeHash": "c970032bd15c691973e386d2b5b91570f7fa72fa602c7f241f7114801da0a1ea"
+}

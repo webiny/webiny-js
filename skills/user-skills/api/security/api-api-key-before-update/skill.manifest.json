@@ -1,0 +1,18 @@
+{
+  "skill": "api-api-key-before-update",
+  "generated": true,
+  "generatedAt": "2026-03-21T18:11:48.403Z",
+  "generatedFromRef": "73ed3a3a846a36008a75a423903e2ffd4842a46a",
+  "abstractionType": "event-handler",
+  "className": "ApiKeyBeforeUpdateEventHandler",
+  "importPath": "webiny/api/security/api-key",
+  "sources": [
+    {
+      "package": "@webiny/api-core",
+      "files": [
+        "src/features/security/apiKeys/UpdateApiKey/index.ts"
+      ]
+    }
+  ],
+  "typeHash": "67aa663bcde5e007a46e2b33b848354e9d6f32cea8d7824e73b7a90c15db4f06"
+}
