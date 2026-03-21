@@ -1,7 +1,6 @@
 import { mdbid } from "@webiny/utils";
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { CreateTeam } from "./abstractions.js";
 import { TeamsRepository } from "../shared/abstractions.js";
@@ -13,7 +12,6 @@ import { NotAuthorizedError, TeamExistsError, TeamValidationError } from "../sha
 
 export class CreateTeamUseCase implements CreateTeam.Interface {
     constructor(
-        private tenantContext: TenantContext.Interface,
         private identityContext: IdentityContext.Interface,
         private eventPublisher: EventPublisher.Interface,
         private repository: TeamsRepository.Interface
@@ -31,7 +29,6 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
             return Result.fail(new TeamValidationError(validation.error.issues[0].message));
         }
 
-        const tenant = this.tenantContext.getTenant();
         const identity = this.identityContext.getIdentity();
         const data = validation.data;
 
@@ -48,7 +45,6 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
             description: data.description,
             roles: data.roles,
             system: input.system || false,
-            tenant: tenant.id,
             createdOn: new Date().toISOString(),
             createdBy: {
                 id: identity.id,
@@ -79,5 +75,5 @@ export class CreateTeamUseCase implements CreateTeam.Interface {
 export const CreateTeamUseCaseImpl = createImplementation({
     abstraction: CreateTeam,
     implementation: CreateTeamUseCase,
-    dependencies: [TenantContext, IdentityContext, EventPublisher, TeamsRepository]
+    dependencies: [IdentityContext, EventPublisher, TeamsRepository]
 });

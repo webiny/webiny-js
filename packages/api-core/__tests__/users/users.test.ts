@@ -13,7 +13,6 @@ import { users } from "~tests/mocks/users.js";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
 import { RootTenantValue } from "~/domain/tenancy/RootTenantValue.js";
-import { RolesProvider, TeamsProvider } from "~/features/security/shared/index.js";
 import type { SecurityPermission } from "~/types/security.js";
 import { Authorizer } from "~/features/security/authorization/Authorizer/index.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
@@ -36,8 +35,6 @@ describe("Users", function () {
 
         ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
         WcpContextFeature.register(container, testLicense);
-        container.registerFactory(RolesProvider, () => () => Promise.resolve([]));
-        container.registerFactory(TeamsProvider, () => () => Promise.resolve([]));
         container.registerInstance(Authorizer, new TestAuthorizer());
 
         const tenantContext = container.resolve(TenantContext);

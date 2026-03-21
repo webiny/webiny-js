@@ -6,7 +6,6 @@ import { License } from "@webiny/wcp";
 import { WcpContextFeature } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { ApiCoreFeature } from "@webiny/api-core/ApiCoreFeature.js";
 import { RootTenantValue } from "@webiny/api-core/domain/tenancy/RootTenantValue.js";
-import { RolesProvider, TeamsProvider } from "@webiny/api-core/features/security/shared/index.js";
 import { Authorizer } from "@webiny/api-core/features/security/authorization/Authorizer/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -38,8 +37,6 @@ describe("Admin Users (Cognito)", () => {
         // Register api-core features
         ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
         WcpContextFeature.register(container, testLicense);
-        container.registerFactory(RolesProvider, () => () => Promise.resolve([]));
-        container.registerFactory(TeamsProvider, () => () => Promise.resolve([]));
         container.registerInstance(Authorizer, new MockAuthorizer());
 
         // Set tenant context

@@ -1,22 +1,34 @@
 import { describe, test, expect, beforeEach } from "vitest";
-import { createSecurityRolePlugin } from "~/legacy/security/plugins/SecurityRolePlugin";
+import { ContextPlugin } from "@webiny/api";
+import { RoleFactory } from "~/features/security/roles/shared/abstractions.js";
 import { useGqlHandler } from "~tests/useGqlHandler";
 import mocks from "~tests/mocks/securityRole.js";
+import type { ApiCoreContext } from "~/types/core.js";
+
+class TestRoleFactory implements RoleFactory.Interface {
+    execute(): RoleFactory.Return {
+        return [
+            {
+                name: "Test Role 1",
+                slug: "test-role-1",
+                description: "1st test role defined via an extension.",
+                permissions: [{ name: "cms.*" }]
+            },
+            {
+                name: "Test Role 2",
+                slug: "test-role-2",
+                description: "2nd test role defined via an extension.",
+                permissions: [{ name: "pb.*" }]
+            }
+        ];
+    }
+}
 
 describe("Security Role CRUD Test", () => {
     const { install, securityRole } = useGqlHandler({
         plugins: [
-            createSecurityRolePlugin({
-                id: "test-role-1",
-                name: "Test Role 1",
-                description: "1st test role defined via an extension.",
-                permissions: [{ name: "cms.*" }]
-            }),
-            createSecurityRolePlugin({
-                id: "test-role-2",
-                name: "Test Role 2",
-                description: "2nd test role defined via an extension.",
-                permissions: [{ name: "pb.*" }]
+            new ContextPlugin<ApiCoreContext>(async context => {
+                context.container.registerInstance(RoleFactory, new TestRoleFactory());
             })
         ]
     });

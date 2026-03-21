@@ -35,14 +35,14 @@ export type CodeApiKey = Pick<ApiKey, "name" | "permissions" | "slug"> & {
 };
 
 export interface IApiKeyFactory {
-    execute(): Promise<CodeApiKey[]> | CodeApiKey[];
+    execute(): Promise<CodeApiKey[]>;
 }
 
 export const ApiKeyFactory = createAbstraction<IApiKeyFactory>("ApiKeyFactory");
 
 export namespace ApiKeyFactory {
     export type Interface = IApiKeyFactory;
-    export type Return = Promise<CodeApiKey[]> | CodeApiKey[];
+    export type Return = Promise<CodeApiKey[]>;
     export type ApiKey = CodeApiKey;
 }
 

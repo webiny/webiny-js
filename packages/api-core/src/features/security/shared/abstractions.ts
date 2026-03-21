@@ -19,10 +19,10 @@ export namespace SecurityStorageOperations {
 
 /**
  * RolesProvider abstraction
- * Provides roles defined via plugins
+ * Provides roles defined via factories
  */
 export interface IRolesProvider {
-    (): Promise<Role[]>;
+    getRoles(): Promise<Role[]>;
 }
 
 export const RolesProvider = createAbstraction<IRolesProvider>("RolesProvider");
@@ -33,10 +33,10 @@ export namespace RolesProvider {
 
 /**
  * TeamsProvider abstraction
- * Provides teams defined via plugins
+ * Provides teams defined via factories
  */
 export interface ITeamsProvider {
-    (): Promise<Team[]>;
+    getTeams(): Promise<Team[]>;
 }
 
 export const TeamsProvider = createAbstraction<ITeamsProvider>("TeamsProvider");

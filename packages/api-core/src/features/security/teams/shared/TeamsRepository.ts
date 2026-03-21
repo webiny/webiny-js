@@ -21,7 +21,7 @@ class TeamsRepositoryImpl implements RepositoryAbstraction.Interface {
             const tenant = this.tenantContext.getTenant();
 
             // First check plugin teams
-            const pluginTeams = await this.teamsProvider();
+            const pluginTeams = await this.teamsProvider.getTeams();
             const pluginTeam = pluginTeams.find(t => {
                 // Match by ID or slug
                 if (params.id && t.id === params.id) {
@@ -35,11 +35,8 @@ class TeamsRepositoryImpl implements RepositoryAbstraction.Interface {
                 return false;
             });
 
-            // Filter by tenant if team has one
             if (pluginTeam) {
-                if (!pluginTeam.tenant || pluginTeam.tenant === tenant.id) {
-                    return Result.ok(pluginTeam);
-                }
+                return Result.ok(pluginTeam);
             }
 
             // Then check storage
@@ -74,13 +71,8 @@ class TeamsRepositoryImpl implements RepositoryAbstraction.Interface {
             });
 
             // Get teams from plugins
-            const pluginTeams = await this.teamsProvider();
+            const pluginTeams = await this.teamsProvider.getTeams();
             const teamsFromPlugins = pluginTeams.filter(team => {
-                // Filter by tenant - plugin teams with no tenant or matching tenant
-                if (team.tenant && team.tenant !== tenant.id) {
-                    return false;
-                }
-
                 // Apply where filters if provided
                 const { id_in, slug_in } = params.where || {};
                 if (id_in && !id_in.includes(team.id)) {
@@ -102,7 +94,8 @@ class TeamsRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async create(team: Team): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
-            await this.storageOperations.createTeam({ team });
+            const tenant = this.tenantContext.getTenant();
+            await this.storageOperations.createTeam({ team: { ...team, tenant: tenant.id } });
             return Result.ok();
         } catch (error) {
             return Result.fail(new TeamStorageError(error));
@@ -111,10 +104,12 @@ class TeamsRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async update(team: Team): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
-            // Note: The old implementation passes both `original` and `team` to updateTeam.
-            // We'll need to handle this in the use case layer.
-            await this.storageOperations.updateTeam({ team, original: team });
-
+            const tenant = this.tenantContext.getTenant();
+            const teamWithTenant = { ...team, tenant: tenant.id };
+            await this.storageOperations.updateTeam({
+                team: teamWithTenant,
+                original: teamWithTenant
+            });
             return Result.ok();
         } catch (error) {
             return Result.fail(new TeamStorageError(error));
@@ -123,7 +118,8 @@ class TeamsRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async delete(team: Team): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
-            await this.storageOperations.deleteTeam({ team });
+            const tenant = this.tenantContext.getTenant();
+            await this.storageOperations.deleteTeam({ team: { ...team, tenant: tenant.id } });
             return Result.ok();
         } catch (error) {
             return Result.fail(new TeamStorageError(error));
