@@ -12,10 +12,10 @@ import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchInd
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import {
-    createElasticsearchEntity,
-    createElasticsearchTable,
-    ElasticsearchQueryBuilderOperatorPlugin
-} from "@webiny/api-elasticsearch";
+    createOpenSearchEntity as createElasticsearchEntity,
+    createOpenSearchTable as createElasticsearchTable,
+    OpenSearchQueryBuilderOperatorPlugin as ElasticsearchQueryBuilderOperatorPlugin
+} from "@webiny/api-opensearch";
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices/index.js";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex.js";
 import {

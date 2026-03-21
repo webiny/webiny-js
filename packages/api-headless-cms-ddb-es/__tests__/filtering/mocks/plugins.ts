@@ -1,7 +1,7 @@
 import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator";
 import { PluginsContainer } from "@webiny/plugins";
 import type { Plugin } from "@webiny/plugins/types";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch";
+import { getElasticsearchOperators } from "@webiny/api-opensearch";
 import type {
     ElasticsearchQueryBuilderOperatorPlugins,
     ElasticsearchQuerySearchValuePlugins

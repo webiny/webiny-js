@@ -1,4 +1,4 @@
-import type { BoolQueryConfig } from "@webiny/api-elasticsearch/types.js";
+import type { QueryDslBoolQuery as BoolQueryConfig } from "@webiny/api-opensearch/types.js";
 
 /**
  * This function will assign a minimum_should_match for the query if conditions are met:

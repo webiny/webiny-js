@@ -10,7 +10,7 @@ import type { CmsIndexEntry } from "~/types.js";
 import { transformEntryToIndex } from "~/operations/entry/transformations/transformEntryToIndex.js";
 import { CmsEntryElasticsearchValuesModifier } from "~/plugins/index.js";
 import { modifyEntryValues as modifyEntryValuesCallable } from "~/operations/entry/transformations/modifyEntryValues.js";
-import { compress } from "@webiny/api-elasticsearch";
+import { compress } from "@webiny/api-opensearch";
 import {
     createLatestRecordType,
     createPublishedRecordType

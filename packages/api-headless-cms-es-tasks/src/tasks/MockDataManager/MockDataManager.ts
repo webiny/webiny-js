@@ -45,7 +45,7 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
              * If there are no running tasks, we can enable indexing and finish the manager task.
              */
             await enableIndexing({
-                client: this.context.elasticsearch,
+                client: this.context.opensearch,
                 model: {
                     modelId: input.modelId,
                     tenant: "root"
@@ -65,7 +65,7 @@ export class MockDataManager<I extends IMockDataManagerInput, O extends IMockDat
 
         await disableIndexing({
             model: result.model,
-            client: this.context.elasticsearch
+            client: this.context.opensearch
         });
 
         const { amountOfTasks, amountOfRecords } = calculateAmounts(input.amount);

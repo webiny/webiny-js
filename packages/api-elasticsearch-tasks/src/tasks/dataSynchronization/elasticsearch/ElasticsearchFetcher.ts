@@ -1,4 +1,4 @@
-import type { Client } from "@webiny/api-elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import type {
     IElasticsearchFetcher,
     IElasticsearchFetcherFetchParams,
@@ -6,9 +6,9 @@ import type {
     IElasticsearchFetcherFetchResponseItem
 } from "./abstractions/ElasticsearchFetcher.js";
 import type {
-    ElasticsearchSearchResponse,
+    OpenSearchSearchResponse,
     PrimitiveValue
-} from "@webiny/api-elasticsearch/types.js";
+} from "@webiny/api-opensearch/types.js";
 import { shouldIgnoreEsResponseError } from "./shouldIgnoreEsResponseError.js";
 import { inspect } from "node:util";
 
@@ -27,7 +27,7 @@ export class ElasticsearchFetcher implements IElasticsearchFetcher {
         cursor,
         limit
     }: IElasticsearchFetcherFetchParams): Promise<IElasticsearchFetcherFetchResponse> {
-        let response: ElasticsearchSearchResponse<undefined>;
+        let response: OpenSearchSearchResponse<undefined>;
         try {
             response = await this.client.search({
                 index,

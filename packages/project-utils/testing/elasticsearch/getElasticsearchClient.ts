@@ -2,8 +2,8 @@ import { expect } from "vitest";
 import path from "path";
 import { ContextPlugin } from "@webiny/api";
 import elasticsearchClientContextPlugin, {
-    getElasticsearchOperators
-} from "@webiny/api-elasticsearch";
+    getOpenSearchOperators as getElasticsearchOperators
+} from "@webiny/api-opensearch";
 import { logger } from "../logger";
 import { createHandler } from "@webiny/handler-aws";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
@@ -12,8 +12,8 @@ import type { ElasticsearchClient } from "./createClient";
 import { createElasticsearchClient } from "./createClient";
 import { getDocumentClient, simulateStream } from "../dynamodb";
 import type { PluginCollection } from "../environment";
-import type { ElasticsearchContext } from "../../../api-elasticsearch/src/types";
-import { getElasticsearchIndexPrefix } from "../../../api-elasticsearch/src/indexPrefix";
+import type { OpenSearchContext } from "../../../api-opensearch/src/types";
+import { getOpenSearchIndexPrefix as getElasticsearchIndexPrefix } from "../../../api-opensearch/src/indexPrefix";
 import { createMockApiLogContextPlugin } from "../mockApiLog";
 
 interface GetElasticsearchClientParams {
@@ -74,7 +74,7 @@ export class ElasticsearchClientConfig {
         /**
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
          */
-        const simulationContext = new ContextPlugin<ElasticsearchContext>(async context => {
+        const simulationContext = new ContextPlugin<OpenSearchContext>(async context => {
             await elasticsearchClientContext.apply(context);
         });
 

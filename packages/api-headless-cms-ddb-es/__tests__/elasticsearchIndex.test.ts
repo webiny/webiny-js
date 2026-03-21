@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { configurations } from "~/configurations";
-import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
+import { getElasticsearchIndexPrefix } from "@webiny/api-opensearch";
 
 describe("Elasticsearch index", () => {
     const tenants = [["root"], ["admin"]];

@@ -1,5 +1,5 @@
-import type { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types.js";
-import { normalizeValue } from "@webiny/api-elasticsearch";
+import type { OpenSearchBoolQueryConfig as ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
+import { normalizeValue } from "@webiny/api-opensearch";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { PluginsContainer } from "@webiny/plugins";
 import {

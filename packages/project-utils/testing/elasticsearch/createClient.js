@@ -1,5 +1,5 @@
 import { logger } from "@webiny/project-utils/testing/logger";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch";
+import { createOpenSearchClient as createElasticsearchClient } from "@webiny/api-opensearch";
 
 const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;
 

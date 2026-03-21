@@ -26,7 +26,7 @@ const queryAllRecords = (index: string) => {
 interface ICreateSyncBuilderParams {
     records: number;
     timer: ITimer;
-    context: Pick<Context, "elasticsearch">;
+    context: Pick<Context, "opensearch">;
     index: string;
 }
 

@@ -40,7 +40,7 @@ export const createModelAndGroup = async (
     }
     await createIndex({
         model,
-        client: context.elasticsearch,
+        client: context.opensearch,
         plugins: context.plugins
     });
 

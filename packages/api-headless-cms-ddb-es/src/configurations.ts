@@ -2,11 +2,11 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
 import type { CmsContext } from "~/types.js";
 import {
-    getElasticsearchIndexPrefix,
+    getOpenSearchIndexPrefix as getElasticsearchIndexPrefix,
     getLastAddedIndexPlugin,
-    isSharedElasticsearchIndex
-} from "@webiny/api-elasticsearch";
-import type { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types.js";
+    isSharedOpenSearchIndex as isSharedElasticsearchIndex
+} from "@webiny/api-opensearch";
+import type { OpenSearchIndexRequestBody as ElasticsearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
 import { CmsEntryElasticsearchIndexPlugin } from "~/plugins/index.js";
 
 interface ConfigurationsElasticsearch {

@@ -1,5 +1,5 @@
 import { createHandler } from "@webiny/handler-aws";
-import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
+import elasticsearchClientContextPlugin from "@webiny/api-opensearch";
 import { createEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 
 export const handler = createHandler({

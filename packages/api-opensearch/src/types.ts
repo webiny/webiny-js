@@ -36,8 +36,10 @@ export type { SearchSort as Sort };
 /** Single sort entry as an object map. Replaces elastic-ts SortType. */
 export type SortType = Record<string, FieldSortOptions>;
 
-/** Replaces elastic-ts SearchBody */
-export type SearchBody = SearchRequest["body"];
+/** Replaces elastic-ts SearchBody. Overrides search_after to allow PrimitiveValue[] (null | boolean | string | number). */
+export type SearchBody = Omit<NonNullable<SearchRequest["body"]>, "search_after"> & {
+    search_after?: PrimitiveValue[];
+};
 
 // ---------------------------------------------------------------------------
 // Context

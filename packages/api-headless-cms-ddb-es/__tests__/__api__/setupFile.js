@@ -11,13 +11,13 @@ import { configurations } from "../../src/configurations";
 import { base as baseIndexConfigurationPlugin } from "../../src/elasticsearch/indices/base";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
+import { getOpenSearchOperators as getElasticsearchOperators } from "@webiny/api-opensearch";
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
 
-import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
+import { getOpenSearchIndexPrefix as getElasticsearchIndexPrefix } from "@webiny/api-opensearch";
 
 const prefix = getElasticsearchIndexPrefix();
 if (!prefix.includes("api-")) {

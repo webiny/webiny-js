@@ -1,11 +1,11 @@
 import {
     createWaitUntilHealthy,
-    ElasticsearchCatClusterHealthStatus,
+    OpenSearchCatClusterHealthStatus as ElasticsearchCatClusterHealthStatus,
     UnhealthyClusterError,
     WaitingHealthyClusterAbortedError
-} from "@webiny/api-elasticsearch";
+} from "@webiny/api-opensearch";
 import type { ITimer } from "@webiny/handler-aws";
-import type { ApiResponse } from "@webiny/api-elasticsearch/types.js";
+import type { ApiResponse } from "@opensearch-project/opensearch";
 import { WebinyError } from "@webiny/error";
 import type { Context, IOperations } from "./types.js";
 import { shouldShowLogs } from "~/helpers/shouldShowLogs.js";
@@ -31,7 +31,7 @@ export interface IExecuteParams {
     timer: ITimer;
     maxRunningTime: number;
     maxProcessorPercent: number;
-    context: Pick<Context, "elasticsearch">;
+    context: Pick<Context, "opensearch">;
     operations: Pick<IOperations, "items" | "total">;
 }
 
@@ -83,7 +83,7 @@ export const execute = (params: IExecuteParams) => {
             );
         }
 
-        const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
+        const healthCheck = createWaitUntilHealthy(context.opensearch, {
             minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
             waitingTimeStep: 30,
             maxProcessorPercent,
@@ -140,7 +140,7 @@ export const execute = (params: IExecuteParams) => {
         }
 
         try {
-            const res = await context.elasticsearch.bulk<BulkOperationsResponseBody>({
+            const res = await context.opensearch.bulk<BulkOperationsResponseBody>({
                 body: operations.items
             });
             checkErrors(res);

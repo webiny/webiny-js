@@ -2,11 +2,14 @@ import WebinyError from "@webiny/error";
 import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { ModelFields } from "~/operations/entry/elasticsearch/types.js";
 import type { PluginsContainer } from "@webiny/plugins";
-import type { ElasticsearchBoolQueryConfig, Query } from "@webiny/api-elasticsearch/types.js";
+import type {
+    OpenSearchBoolQueryConfig as ElasticsearchBoolQueryConfig,
+    QueryDslQueryContainer as Query
+} from "@webiny/api-opensearch/types.js";
 import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search.js";
 import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator.js";
 import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery.js";
-import { parseWhereKey } from "@webiny/api-elasticsearch";
+import { parseWhereKey } from "@webiny/api-opensearch";
 import { getWhereValues } from "./values.js";
 import { getPopulated } from "./populated.js";
 import { createApplyFiltering } from "./applyFiltering.js";

@@ -7,12 +7,12 @@ import type {
     ITaskUpdateData,
     IUpdateTaskResponse
 } from "@webiny/tasks/types";
-import type { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
+import type { OpenSearchContext } from "@webiny/api-opensearch/types";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 export const createContextMock = (
-    params?: PartialDeep<Context & ElasticsearchContext>
-): Context & ElasticsearchContext => {
+    params?: PartialDeep<Context & OpenSearchContext>
+): Context & OpenSearchContext => {
     const tenants: Tenant[] = [
         {
             id: "root",
@@ -76,5 +76,5 @@ export const createContextMock = (
             },
             ...params?.tasks
         }
-    } as unknown as Context & ElasticsearchContext;
+    } as unknown as Context & OpenSearchContext;
 };

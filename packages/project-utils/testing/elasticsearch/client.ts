@@ -1,10 +1,8 @@
-import type { Client } from "@elastic/elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import {
-    createElasticsearchClient as createClient,
-    ElasticsearchClientOptions
-} from "@webiny/api-elasticsearch/client";
-import type * as RequestParams from "@elastic/elasticsearch/api/requestParams";
-import type { TransportRequestOptions } from "@elastic/elasticsearch/lib/Transport";
+    createOpenSearchClient as createClient,
+    OpenSearchClientOptions as ElasticsearchClientOptions
+} from "@webiny/api-opensearch";
 
 const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;
 
@@ -121,8 +119,8 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
 
     // @ts-expect-error
     client.indices.exists = async (
-        params: RequestParams.IndicesExists,
-        options: TransportRequestOptions = {}
+        params: any,
+        options: any = {}
     ) => {
         registerIndex(params.index);
         // @ts-expect-error
@@ -131,8 +129,8 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
 
     // @ts-expect-error
     client.indices.create = async (
-        params: RequestParams.IndicesCreate<any>,
-        options: TransportRequestOptions = {}
+        params: any,
+        options: any = {}
     ) => {
         await deleteIndexCallable(params.index);
         // @ts-expect-error

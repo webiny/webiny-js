@@ -6,7 +6,7 @@ import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticsearchClientContext, { createElasticsearchClient } from "@webiny/api-elasticsearch";
+import elasticsearchClientContext, { createElasticsearchClient } from "@webiny/api-opensearch";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";

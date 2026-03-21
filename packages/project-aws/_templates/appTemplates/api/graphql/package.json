@@ -11,7 +11,7 @@
     "@webiny/api-core": "latest",
     "@webiny/api-core-ddb": "latest",
     "@webiny/api-dynamodb-to-elasticsearch": "latest",
-    "@webiny/api-elasticsearch": "latest",
+    "@webiny/api-opensearch": "latest",
     "@webiny/api-file-manager": "latest",
     "@webiny/api-file-manager-aco": "latest",
     "@webiny/api-file-manager-s3": "latest",

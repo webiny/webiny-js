@@ -1,5 +1,5 @@
 import { createTestConfig } from "../../testing";
-import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
+import { getElasticsearchIndexPrefix } from "@webiny/api-opensearch";
 
 export default async () => {
     const prefix = getElasticsearchIndexPrefix();

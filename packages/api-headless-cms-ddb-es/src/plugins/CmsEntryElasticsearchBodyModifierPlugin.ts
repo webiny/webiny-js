@@ -1,8 +1,8 @@
 import type {
     ModifyBodyCallable,
     ModifyBodyParams as BaseModifyBodyParams
-} from "@webiny/api-elasticsearch";
-import { ElasticsearchBodyModifierPlugin } from "@webiny/api-elasticsearch";
+} from "@webiny/api-opensearch";
+import { OpenSearchBodyModifierPlugin as ElasticsearchBodyModifierPlugin } from "@webiny/api-opensearch";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 export interface ModifyBodyParams extends BaseModifyBodyParams {

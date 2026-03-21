@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types";
 import { createPluginsContainer, createQuery } from "./filtering/mocks";
 import { createExecFiltering } from "./filtering/mocks/filtering";
 

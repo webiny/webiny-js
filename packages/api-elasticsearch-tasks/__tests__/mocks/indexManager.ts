@@ -1,7 +1,7 @@
 import { IndexManager } from "~/settings";
-import type { Client } from "@webiny/api-elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import type { IElasticsearchIndexingTaskValuesSettings } from "~/types";
-import { createElasticsearchClientMock } from "~tests/mocks/elasticsearch";
+import { createOpenSearchClientMock } from "~tests/mocks/elasticsearch";
 
 interface Params {
     client?: Client;
@@ -10,7 +10,7 @@ interface Params {
 
 export const createIndexManagerMock = (params?: Params) => {
     return new IndexManager(
-        params?.client || createElasticsearchClientMock(),
+        params?.client || createOpenSearchClientMock(),
         params?.settings || {}
     );
 };
