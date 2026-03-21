@@ -39,13 +39,13 @@ export default (params: OpenSearchClientOptions | Client): ContextPlugin<OpenSea
         context.elasticsearch = context.opensearch;
 
         context.plugins.register(getOpenSearchOperators());
-        
+
         context.container.registerInstance(OpenSearchClient, {
             use() {
                 return context.opensearch;
             }
         });
-        
+
         OpenSearchClientFactoryFeature.register(context.container);
     });
 };

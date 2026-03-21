@@ -1,5 +1,5 @@
 import type { OpenSearchBoolQueryConfig } from "../src/types";
-import { createOpenSearchClient as createClient } from "../src/client";
+import { createOpenSearchClient as baseCreateClient } from "../src/client";
 import type { ClientOptions } from "@opensearch-project/opensearch";
 
 export const createBlankQuery = (): OpenSearchBoolQueryConfig => ({
@@ -35,7 +35,7 @@ const wait = (ms: number): Promise<void> => {
 
 const SNAPSHOT_ERROR = "snapshot_in_progress_exception";
 
-const isSnapshotError = (ex: any): boolean => {
+const isSnapshotError = (ex): boolean => {
     const rootCauseType = ex.meta?.body?.error?.type;
     if (rootCauseType === SNAPSHOT_ERROR) {
         return true;
@@ -52,14 +52,14 @@ const isSnapshotError = (ex: any): boolean => {
     return false;
 };
 
-type OpenSearchTestClient = ReturnType<typeof createClient> & {
-    indices: ReturnType<typeof createClient>["indices"] & {
+type OpenSearchTestClient = ReturnType<typeof baseCreateClient> & {
+    indices: ReturnType<typeof baseCreateClient>["indices"] & {
         deleteAll: () => Promise<void>;
         registerIndex: (names: string[] | string) => void;
     };
 };
 
-const createDeleteIndexCallable = (client: ReturnType<typeof createClient>) => {
+const createDeleteIndexCallable = (client: ReturnType<typeof baseCreateClient>) => {
     const max = 10;
     return async (index: string): Promise<void> => {
         for (let counter = 0; counter <= max; counter++) {
@@ -67,11 +67,11 @@ const createDeleteIndexCallable = (client: ReturnType<typeof createClient>) => {
                 const { body: exists } = await client.indices.exists({
                     index,
                     ignore_unavailable: false
-                } as any);
+                });
                 if (!exists) {
                     return;
                 }
-            } catch (ex: any) {
+            } catch (ex) {
                 console.log(`Could not determine that index exists: ${index}`);
                 console.log(ex.message);
                 return;
@@ -80,9 +80,9 @@ const createDeleteIndexCallable = (client: ReturnType<typeof createClient>) => {
                 await client.indices.delete({
                     index,
                     ignore_unavailable: true
-                } as any);
+                });
                 return;
-            } catch (ex: any) {
+            } catch (ex) {
                 console.log(`Could not delete index: ${index}`);
                 if (isSnapshotError(ex) === false) {
                     return;
@@ -94,7 +94,7 @@ const createDeleteIndexCallable = (client: ReturnType<typeof createClient>) => {
     };
 };
 
-const attachCustomEvents = (client: ReturnType<typeof createClient>): OpenSearchTestClient => {
+const attachCustomEvents = (client: OpenSearchTestClient): OpenSearchTestClient => {
     const registeredIndexes = new Set<string>();
     const originalCreate = client.indices.create.bind(client.indices);
     const originalExists = client.indices.exists.bind(client.indices);
@@ -107,12 +107,13 @@ const attachCustomEvents = (client: ReturnType<typeof createClient>): OpenSearch
         }
     };
 
-    (client.indices as any).exists = async (params: any, options: any = {}) => {
+    // @ts-expect-error
+    client.indices.exists = async (params, options = {}) => {
         registerIndex(params.index);
         return originalExists(params, options);
     };
-
-    (client.indices as any).create = async (params: any, options: any = {}) => {
+    // @ts-expect-error
+    client.indices.create = async (params, options = {}) => {
         await deleteIndexCallable(params.index);
         const response = await originalCreate(params, options);
         registerIndex(params.index);
@@ -128,13 +129,14 @@ const attachCustomEvents = (client: ReturnType<typeof createClient>): OpenSearch
         for (const index of indexes) {
             try {
                 await deleteIndexCallable(index);
-            } catch (ex: any) {
-                console.log(`Could not delete index "${index}".`);
+            } catch (ex) {
+                console.log(`Could not delete index ${index}`);
+                console.log(ex.message);
             }
         }
     };
 
-    (client as OpenSearchTestClient).indices.registerIndex = registerIndex;
+    client.indices.registerIndex = registerIndex;
 
     return client as OpenSearchTestClient;
 };
@@ -142,10 +144,10 @@ const attachCustomEvents = (client: ReturnType<typeof createClient>): OpenSearch
 export const createOpenSearchClient = (
     options: Partial<ClientOptions> = {}
 ): OpenSearchTestClient => {
-    const client = createClient({
+    const client = baseCreateClient({
         ...defaultOptions,
         ...options
-    } as any);
+    });
 
-    return attachCustomEvents(client);
+    return attachCustomEvents(client as OpenSearchTestClient);
 };

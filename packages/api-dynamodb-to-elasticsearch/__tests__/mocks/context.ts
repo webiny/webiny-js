@@ -18,7 +18,7 @@ export const createMockContext = (
         WEBINY_VERSION: "0.0.0"
     });
 
-    // @ts-expect-error
+    context.opensearch = params.elasticsearch;
     context.elasticsearch = params.elasticsearch;
     // @ts-expect-error
     context.reply = {} as Reply;

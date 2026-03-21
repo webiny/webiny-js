@@ -83,6 +83,7 @@
     "./api/cms/group": "./api/cms/group.js",
     "./api/cms/model": "./api/cms/model.js",
     "./api/cms/scheduler": "./api/cms/scheduler.js",
+    "./api/opensearch": "./api/opensearch.js",
     "./api/scheduler": "./api/scheduler.js",
     "./api/website-builder/nextjs": "./api/website-builder/nextjs.js",
     "./api/website-builder/page": "./api/website-builder/page.js",

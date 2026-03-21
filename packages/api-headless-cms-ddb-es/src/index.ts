@@ -122,8 +122,8 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             /**
              * Attach the elasticsearch into context if it is not already attached.
              */
-            if (!context.elasticsearch) {
-                context.elasticsearch = elasticsearch;
+            if (!context.opensearch) {
+                context.opensearch = elasticsearch;
             }
 
             /**

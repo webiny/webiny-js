@@ -4018,19 +4018,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@elastic/elasticsearch@npm:7.12.0":
-  version: 7.12.0
-  resolution: "@elastic/elasticsearch@npm:7.12.0"
-  dependencies:
-    debug: "npm:^4.3.1"
-    hpagent: "npm:^0.1.1"
-    ms: "npm:^2.1.3"
-    pump: "npm:^3.0.0"
-    secure-json-parse: "npm:^2.3.1"
-  checksum: 10/f465c04ff7d899f67bbf680f3a84fbe5cd90597e29032e3ec412c62155fde999e7c5c2c929272d7bfbaebf791d26a59caeaacc3f1c64f4882f5c549735e81df9
-  languageName: node
-  linkType: hard
-
 "@emnapi/core@npm:^1.5.0, @emnapi/core@npm:^1.7.1, @emnapi/core@npm:^1.8.1":
   version: 1.9.1
   resolution: "@emnapi/core@npm:1.9.1"
@@ -15337,7 +15324,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
-    "@elastic/elasticsearch": "npm:7.12.0"
     "@webiny/build-tools": "npm:0.0.0"
     get-yarn-workspaces: "npm:1.0.2"
     jest-dynalite: "npm:^3.6.1"
@@ -23115,13 +23101,6 @@ __metadata:
   dependencies:
     lru-cache: "npm:^11.1.0"
   checksum: 10/0619c284ca7fc35322735e03fece90ed3ded67a2cf68e855e688d1bffd47078515d98ab8dff4bd08fb78d68d1a72ab8892180e15c7f23f24c922a6dfa601dbad
-  languageName: node
-  linkType: hard
-
-"hpagent@npm:^0.1.1":
-  version: 0.1.2
-  resolution: "hpagent@npm:0.1.2"
-  checksum: 10/bd033b3700bb523edc9a805f8683c71fddd622df901e73842b5e3357136ce062c2ddb2ab5e9f5b3d84e0977bfe439f5cdc51d755a11e99376eb95e4624312f0a
   languageName: node
   linkType: hard
 
@@ -31116,7 +31095,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"secure-json-parse@npm:^2.3.1, secure-json-parse@npm:^2.4.0":
+"secure-json-parse@npm:^2.4.0":
   version: 2.7.0
   resolution: "secure-json-parse@npm:2.7.0"
   checksum: 10/974386587060b6fc5b1ac06481b2f9dbbb0d63c860cc73dc7533f27835fdb67b0ef08762dbfef25625c15bc0a0c366899e00076cb0d556af06b71e22f1dede4c
