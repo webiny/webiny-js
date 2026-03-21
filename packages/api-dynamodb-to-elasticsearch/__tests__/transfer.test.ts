@@ -12,7 +12,7 @@ describe("transfer data", () => {
         const elasticsearch = createElasticsearchClient();
 
         const context = createMockContext({
-            elasticsearch,
+            elasticsearch
         });
 
         /**

@@ -9,6 +9,8 @@ import type {
 } from "@opensearch-project/opensearch/api/types";
 import type { Context, GenericRecord } from "@webiny/api/types.js";
 
+export type { ApiResponse } from "@opensearch-project/opensearch";
+
 export type { Client };
 
 // ---------------------------------------------------------------------------

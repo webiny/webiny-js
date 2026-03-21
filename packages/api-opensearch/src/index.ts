@@ -1,4 +1,3 @@
-import WebinyError from "@webiny/error";
 import type { OpenSearchContext } from "~/types.js";
 import { ContextPlugin } from "@webiny/api";
 import type { OpenSearchClientOptions } from "~/client.js";
@@ -27,13 +26,12 @@ export * from "./types.js";
 export * from "./abstractions/OpenSearchClientFactory.js";
 export * from "./abstractions/OpenSearchClient.js";
 
-export default (params: OpenSearchClientOptions | Client): ContextPlugin<OpenSearchContext> => {
+export const createOpenSearchContext = (
+    params: OpenSearchClientOptions | Client
+): ContextPlugin<OpenSearchContext> => {
     return new ContextPlugin<OpenSearchContext>(context => {
         if (context.opensearch) {
-            throw new WebinyError(
-                "OpenSearch client is already initialized, no need to define it again. Check your code for duplicate initializations.",
-                "OPENSEARCH_ALREADY_INITIALIZED"
-            );
+            return;
         }
         context.opensearch = params instanceof Client ? params : createOpenSearchClient(params);
         context.elasticsearch = context.opensearch;
@@ -49,3 +47,5 @@ export default (params: OpenSearchClientOptions | Client): ContextPlugin<OpenSea
         OpenSearchClientFactoryFeature.register(context.container);
     });
 };
+
+export default createOpenSearchContext;

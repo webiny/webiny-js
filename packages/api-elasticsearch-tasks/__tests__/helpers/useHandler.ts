@@ -17,6 +17,8 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import createOpenSearchContext from "@webiny/api-opensearch";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient.js";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -37,6 +39,7 @@ export const useHandler = (params?: UseHandlerParams) => {
                     documentClient
                 })
             }),
+            createOpenSearchContext(createElasticsearchClient()),
             createApiCore({
                 storageOperations: apiCoreStorage.storageOperations
             }),

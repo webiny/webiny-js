@@ -5,7 +5,8 @@ import {
     WaitingHealthyClusterAbortedError
 } from "@webiny/api-opensearch";
 import type { ITimer } from "@webiny/handler-aws";
-import type { ApiResponse } from "@opensearch-project/opensearch";
+import type { ApiResponse } from "@webiny/api-opensearch/types.js";
+
 import { WebinyError } from "@webiny/error";
 import type { Context, IOperations } from "./types.js";
 import { shouldShowLogs } from "~/helpers/shouldShowLogs.js";

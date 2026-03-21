@@ -1,12 +1,9 @@
 import { describe, expect, it } from "vitest";
 import opensearchContext from "~/index";
-import { ContextPlugin } from "@webiny/api";
-import { PluginsContainer } from "@webiny/plugins";
+import { Context, ContextPlugin } from "@webiny/api";
 import { OpenSearchQueryBuilderOperatorPlugin } from "~/plugins/definition/OpenSearchQueryBuilderOperatorPlugin";
 import { Client } from "@opensearch-project/opensearch";
-import { OpenSearchContext } from "~/types";
 import { createOpenSearchClient } from "./helpers";
-import { Container } from "@webiny/di";
 
 /**
  * If adding new default operators, they must be added here as well.
@@ -50,10 +47,10 @@ describe("OpenSearchContext", () => {
     });
 
     it("should initialize the OpenSearch context plugin", async () => {
-        const context = {
-            container: new Container(),
-            plugins: new PluginsContainer()
-        } as OpenSearchContext;
+        const context = new Context({
+            plugins: [],
+            WEBINY_VERSION: "0.0.0"
+        });
         const client = createOpenSearchClient();
         const plugin = opensearchContext(client);
         /**
@@ -63,22 +60,25 @@ describe("OpenSearchContext", () => {
         /**
          * Must apply what is required on the context.
          */
+        // @ts-expect-error
         await plugin.apply(context);
         /**
          * A opensearch property must be initialized.
          */
+        // @ts-expect-error
         expect(context.opensearch).toBeInstanceOf(Client);
     });
 
     it.each(operators)(`should initialize the plugin "%s"`, async (operator: string) => {
-        const context = {
-            container: new Container(),
-            plugins: new PluginsContainer()
-        } as OpenSearchContext;
+        const context = new Context({
+            plugins: [],
+            WEBINY_VERSION: "0.0.0"
+        });
         const client = createOpenSearchClient();
         const plugin = opensearchContext(client);
 
         expect(plugin).toBeInstanceOf(ContextPlugin);
+        // @ts-expect-error
         await plugin.apply(context);
         /**
          * Operators should be registered.
@@ -88,13 +88,16 @@ describe("OpenSearchContext", () => {
                 OpenSearchQueryBuilderOperatorPlugin.type
             );
 
-        const uniqueRegisteredOperatorPlugins = registeredOperatorPlugins.reduce<string[]>((acc, item) => {
-            if (acc.includes(item.getOperator())) {
+        const uniqueRegisteredOperatorPlugins = registeredOperatorPlugins.reduce<string[]>(
+            (acc, item) => {
+                if (acc.includes(item.getOperator())) {
+                    return acc;
+                }
+                acc.push(item.getOperator());
                 return acc;
-            }
-            acc.push(item.getOperator());
-            return acc;
-        }, []);
+            },
+            []
+        );
 
         expect(uniqueRegisteredOperatorPlugins).toHaveLength(operators.length);
         const operatorPlugins = registeredOperatorPlugins.filter(pl => {
