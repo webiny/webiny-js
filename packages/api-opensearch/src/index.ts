@@ -29,7 +29,7 @@ export * from "./abstractions/OpenSearchClient.js";
 export const createOpenSearchContext = (
     params: OpenSearchClientOptions | Client
 ): ContextPlugin<OpenSearchContext> => {
-    return new ContextPlugin<OpenSearchContext>(context => {
+    const plugin = new ContextPlugin<OpenSearchContext>(context => {
         if (context.opensearch) {
             return;
         }
@@ -46,6 +46,10 @@ export const createOpenSearchContext = (
 
         OpenSearchClientFactoryFeature.register(context.container);
     });
+
+    plugin.name = "context.opensearch";
+
+    return plugin;
 };
 
 export default createOpenSearchContext;

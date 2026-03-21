@@ -1,9 +1,7 @@
 import { expect } from "vitest";
 import path from "path";
 import { ContextPlugin } from "@webiny/api";
-import elasticsearchClientContextPlugin, {
-    getOpenSearchOperators as getElasticsearchOperators
-} from "@webiny/api-opensearch";
+import elasticsearchClientContextPlugin, { getOpenSearchOperators } from "@webiny/api-opensearch";
 import { logger } from "../logger";
 import { createHandler } from "@webiny/handler-aws";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
@@ -97,7 +95,7 @@ export class ElasticsearchClientConfig {
             }
         });
 
-        this.plugins = [elasticsearchClientContext, ...getElasticsearchOperators()];
+        this.plugins = [elasticsearchClientContext, ...getOpenSearchOperators()];
     }
 
     setOnBeforeEach(name: string, cb: OnBeforeEach) {

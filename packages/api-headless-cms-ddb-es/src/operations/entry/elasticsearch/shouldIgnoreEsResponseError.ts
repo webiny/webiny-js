@@ -6,5 +6,7 @@ const IGNORED_ES_SEARCH_EXCEPTIONS = [
 ];
 
 export const shouldIgnoreEsResponseError = (error: WebinyError) => {
-    return IGNORED_ES_SEARCH_EXCEPTIONS.includes(error.message);
+    return IGNORED_ES_SEARCH_EXCEPTIONS.some(ignoredMessage =>
+        error.message.includes(ignoredMessage)
+    );
 };

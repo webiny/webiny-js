@@ -11,7 +11,7 @@ import { configurations } from "../../src/configurations";
 import { base as baseIndexConfigurationPlugin } from "../../src/elasticsearch/indices/base";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
-import { getOpenSearchOperators as getElasticsearchOperators } from "@webiny/api-opensearch";
+import { getOpenSearchOperators } from "@webiny/api-opensearch";
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
@@ -66,6 +66,8 @@ setStorageOps("cms", () => {
             }
         }));
     });
+    createOrRefreshIndexSubscription.name =
+        "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";
 
     const initializedDbPlugins = dbPlugins({
         table: process.env.DB_TABLE,
@@ -83,7 +85,7 @@ setStorageOps("cms", () => {
             elasticsearch: elasticsearchClient,
             plugins: [
                 ...initializedDbPlugins,
-                getElasticsearchOperators(),
+                getOpenSearchOperators(),
                 createCmsEntryElasticsearchBodyModifierPlugin({
                     modifyBody: ({ body }) => {
                         if (!body.sort.customSorter) {
