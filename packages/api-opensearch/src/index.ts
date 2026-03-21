@@ -3,8 +3,9 @@ import { ContextPlugin } from "@webiny/api";
 import type { OpenSearchClientOptions } from "~/client.js";
 import { Client, createOpenSearchClient } from "~/client.js";
 import { getOpenSearchOperators } from "~/operators.js";
-import { OpenSearchClient } from "~/abstractions/OpenSearchClient.js";
 import { OpenSearchClientFactoryFeature } from "~/features/OpenSearchClientFactory/feature.js";
+import { OpenSearchClientFeature } from "~/features/OpenSearchClient/feature.js";
+import { OpenSearchClient } from "~/features/OpenSearchClient/abstraction.js";
 
 export * from "./indexConfiguration/index.js";
 export * from "./plugins/index.js";
@@ -23,28 +24,28 @@ export * from "./sharedIndex.js";
 export * from "./indexPrefix.js";
 export * from "./db/index.js";
 export * from "./types.js";
-export * from "./abstractions/OpenSearchClientFactory.js";
-export * from "./abstractions/OpenSearchClient.js";
 
 export const createOpenSearchContext = (
     params: OpenSearchClientOptions | Client
 ): ContextPlugin<OpenSearchContext> => {
     const plugin = new ContextPlugin<OpenSearchContext>(context => {
         if (context.opensearch) {
-            return;
+            throw new Error("OpenSearch context must not be loaded more than once!");
         }
-        context.opensearch = params instanceof Client ? params : createOpenSearchClient(params);
-        context.elasticsearch = context.opensearch;
+        const client = params instanceof Client ? params : createOpenSearchClient(params);
+        context.opensearch = client;
+        context.elasticsearch = client;
 
         context.plugins.register(getOpenSearchOperators());
-
-        context.container.registerInstance(OpenSearchClient, {
-            use() {
-                return context.opensearch;
-            }
-        });
-
+        
+        OpenSearchClientFeature.register(context.container, context);
         OpenSearchClientFactoryFeature.register(context.container);
+        console.log("yes!");
+        const r = context.container.resolve(OpenSearchClient);
+        const x = 1;
+        const y = 2;
+        const z = x + y;
+        console.log(z);
     });
 
     plugin.name = "context.opensearch";
