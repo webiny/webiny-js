@@ -4,7 +4,9 @@ import { Client, type OpenSearchClientOptions, createOpenSearchClient } from "~/
 class OpenSearchClientFactoryImpl implements OpenSearchClientFactoryAbstraction.Interface {
     public getClient(params: OpenSearchClientOptions): Client {
         if (!params.endpoint && !params.node && !params.nodes) {
-            throw new Error("OpenSearch client requires an endpoint, nodes or node to be specified.");
+            throw new Error(
+                "OpenSearch client requires an endpoint, nodes or node to be specified."
+            );
         }
         return createOpenSearchClient(params);
     }

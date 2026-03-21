@@ -9,7 +9,6 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition";
 
 const createContextAndTask = async (handler: ReturnType<typeof useHandler>) => {
     const context = await handler.rawHandle();
-    
 
     const task = await context.tasks.createTask({
         name: "Run reindexing to test it",

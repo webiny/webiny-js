@@ -37,7 +37,7 @@ export const createOpenSearchContext = (
         context.elasticsearch = client;
 
         context.plugins.register(getOpenSearchOperators());
-        
+
         OpenSearchClientFeature.register(context.container, context);
         OpenSearchClientFactoryFeature.register(context.container);
         console.log("yes!");

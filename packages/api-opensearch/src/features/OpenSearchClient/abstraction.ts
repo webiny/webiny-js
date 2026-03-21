@@ -1,5 +1,5 @@
+import { createAbstraction } from "@webiny/feature/api";
 import type { Client } from "~/client.js";
-import { createAbstraction } from "@webiny/feature/api/index.js";
 
 export interface IOpenSearchClient {
     use(): Client;

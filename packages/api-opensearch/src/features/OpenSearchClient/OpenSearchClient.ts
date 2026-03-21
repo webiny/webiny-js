@@ -1,8 +1,7 @@
-import { OpenSearchClient as OpenSearchClientAbstraction } from "~/abstractions/OpenSearchClient.js";
+import { OpenSearchClient as OpenSearchClientAbstraction } from "./abstraction.js";
 import type { Client } from "~/types.js";
 
-
-export class OpenSearchClient implements OpenSearchClientAbstraction.Interface {
+export class OpenSearchClientImpl implements OpenSearchClientAbstraction.Interface {
     private readonly client;
 
     public constructor(client: Client) {
