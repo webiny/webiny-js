@@ -2,9 +2,10 @@ import WebinyError from "@webiny/error";
 import type { OpenSearchContext } from "~/types.js";
 import { ContextPlugin } from "@webiny/api";
 import type { OpenSearchClientOptions } from "~/client.js";
-import { createOpenSearchClient, Client } from "~/client.js";
+import { Client, createOpenSearchClient } from "~/client.js";
 import { getOpenSearchOperators } from "~/operators.js";
-import { OpenSearchClientFactory } from "~/abstractions/OpenSearchClientFactory.js";
+import { OpenSearchClient } from "~/abstractions/OpenSearchClient.js";
+import { OpenSearchClientFactoryFeature } from "~/features/OpenSearchClientFactory/feature.js";
 
 export * from "./indexConfiguration/index.js";
 export * from "./plugins/index.js";
@@ -37,9 +38,13 @@ export default (params: OpenSearchClientOptions | Client): ContextPlugin<OpenSea
         context.elasticsearch = context.opensearch;
 
         context.plugins.register(getOpenSearchOperators());
-
-        context.container.registerInstance(OpenSearchClientFactory, {
-            getClient: () => context.opensearch
+        
+        context.container.registerInstance(OpenSearchClient, {
+            use() {
+                return context.opensearch;
+            }
         });
+        
+        OpenSearchClientFactoryFeature.register(context.container);
     });
 };

@@ -1,8 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { Client } from "~/client.js";
+import type { Client, OpenSearchClientOptions } from "~/client.js";
 
 export interface IOpenSearchClientFactory {
-    getClient(): Client;
+    getClient(params: OpenSearchClientOptions): Client;
 }
 
 export const OpenSearchClientFactory =
@@ -10,4 +10,6 @@ export const OpenSearchClientFactory =
 
 export namespace OpenSearchClientFactory {
     export type Interface = IOpenSearchClientFactory;
+    export type Params = OpenSearchClientOptions;
+    export type Return = Client;
 }
