@@ -6,6 +6,7 @@ import { OpenSearchQueryBuilderOperatorPlugin } from "~/plugins/definition/OpenS
 import { Client } from "@opensearch-project/opensearch";
 import { OpenSearchContext } from "~/types";
 import { createOpenSearchClient } from "./helpers";
+import { Container } from "@webiny/di";
 
 /**
  * If adding new default operators, they must be added here as well.
@@ -49,9 +50,10 @@ describe("OpenSearchContext", () => {
     });
 
     it("should initialize the OpenSearch context plugin", async () => {
-        const context: any = {
+        const context = {
+            container: new Container(),
             plugins: new PluginsContainer()
-        };
+        } as OpenSearchContext;
         const client = createOpenSearchClient();
         const plugin = opensearchContext(client);
         /**
@@ -70,8 +72,9 @@ describe("OpenSearchContext", () => {
 
     it.each(operators)(`should initialize the plugin "%s"`, async (operator: string) => {
         const context = {
+            container: new Container(),
             plugins: new PluginsContainer()
-        } as unknown as OpenSearchContext;
+        } as OpenSearchContext;
         const client = createOpenSearchClient();
         const plugin = opensearchContext(client);
 
@@ -85,13 +88,13 @@ describe("OpenSearchContext", () => {
                 OpenSearchQueryBuilderOperatorPlugin.type
             );
 
-        const uniqueRegisteredOperatorPlugins = registeredOperatorPlugins.reduce((acc, item) => {
+        const uniqueRegisteredOperatorPlugins = registeredOperatorPlugins.reduce<string[]>((acc, item) => {
             if (acc.includes(item.getOperator())) {
                 return acc;
             }
             acc.push(item.getOperator());
             return acc;
-        }, [] as string[]);
+        }, []);
 
         expect(uniqueRegisteredOperatorPlugins).toHaveLength(operators.length);
         const operatorPlugins = registeredOperatorPlugins.filter(pl => {

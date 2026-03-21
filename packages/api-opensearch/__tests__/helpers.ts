@@ -1,6 +1,11 @@
 import type { OpenSearchBoolQueryConfig } from "../src/types";
 import { createOpenSearchClient as baseCreateClient } from "../src/client";
 import type { ClientOptions } from "@opensearch-project/opensearch";
+import type {
+    IndicesCreate,
+    IndicesExists
+} from "@opensearch-project/opensearch/api/requestParams.js";
+import { TransportRequestOptions } from "@opensearch-project/opensearch/lib/Transport.js";
 
 export const createBlankQuery = (): OpenSearchBoolQueryConfig => ({
     must_not: [],
@@ -35,7 +40,7 @@ const wait = (ms: number): Promise<void> => {
 
 const SNAPSHOT_ERROR = "snapshot_in_progress_exception";
 
-const isSnapshotError = (ex): boolean => {
+const isSnapshotError = (ex: Error & Record<string, any>): boolean => {
     const rootCauseType = ex.meta?.body?.error?.type;
     if (rootCauseType === SNAPSHOT_ERROR) {
         return true;
@@ -108,12 +113,18 @@ const attachCustomEvents = (client: OpenSearchTestClient): OpenSearchTestClient 
     };
 
     // @ts-expect-error
-    client.indices.exists = async (params, options = {}) => {
+    client.indices.exists = async (
+        params: IndicesExists,
+        options: TransportRequestOptions = {}
+    ) => {
         registerIndex(params.index);
         return originalExists(params, options);
     };
     // @ts-expect-error
-    client.indices.create = async (params, options = {}) => {
+    client.indices.create = async (
+        params: IndicesCreate,
+        options: TransportRequestOptions = {}
+    ) => {
         await deleteIndexCallable(params.index);
         const response = await originalCreate(params, options);
         registerIndex(params.index);
@@ -121,7 +132,7 @@ const attachCustomEvents = (client: OpenSearchTestClient): OpenSearchTestClient 
         return response;
     };
 
-    (client as OpenSearchTestClient).indices.deleteAll = async () => {
+    client.indices.deleteAll = async () => {
         const indexes = Array.from(registeredIndexes.values());
         if (indexes.length === 0) {
             return;
@@ -138,7 +149,7 @@ const attachCustomEvents = (client: OpenSearchTestClient): OpenSearchTestClient 
 
     client.indices.registerIndex = registerIndex;
 
-    return client as OpenSearchTestClient;
+    return client;
 };
 
 export const createOpenSearchClient = (
