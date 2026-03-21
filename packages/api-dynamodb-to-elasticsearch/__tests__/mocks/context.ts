@@ -16,7 +16,7 @@ export const createMockContext = (
     const context = new BaseContext({
         plugins: params.plugins || new PluginsContainer(),
         WEBINY_VERSION: "0.0.0"
-    });
+    }) as unknown as OpenSearchContext;
 
     context.opensearch = params.elasticsearch;
     context.elasticsearch = params.elasticsearch;

@@ -1,8 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createEventHandler, OperationType } from "~/index";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
-// @ts-expect-error
-import { createMockApiLog } from "@webiny/project-utils/testing/mockApiLog";
 import type { LambdaContext, Reply, Request } from "@webiny/handler-aws/types";
 import { marshall } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createMockContext } from "~tests/mocks/context";
@@ -15,7 +13,6 @@ describe("transfer data", () => {
 
         const context = createMockContext({
             elasticsearch,
-            logger: createMockApiLog()
         });
 
         /**
