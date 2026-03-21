@@ -25,6 +25,7 @@ export * from "./indexPrefix.js";
 export * from "./db/index.js";
 export * from "./types.js";
 export * from "./abstractions/OpenSearchClientFactory.js";
+export * from "./abstractions/OpenSearchClient.js";
 
 export default (params: OpenSearchClientOptions | Client): ContextPlugin<OpenSearchContext> => {
     return new ContextPlugin<OpenSearchContext>(context => {

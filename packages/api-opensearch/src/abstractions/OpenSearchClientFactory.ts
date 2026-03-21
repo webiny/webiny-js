@@ -6,7 +6,7 @@ export interface IOpenSearchClientFactory {
 }
 
 export const OpenSearchClientFactory =
-    createAbstraction<IOpenSearchClientFactory>("OpenSearchClientFactory");
+    createAbstraction<IOpenSearchClientFactory>("OpenSearch/ClientFactory");
 
 export namespace OpenSearchClientFactory {
     export type Interface = IOpenSearchClientFactory;
