@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { configurations } from "~/configurations";
-import { getElasticsearchIndexPrefix } from "@webiny/api-opensearch";
+import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 
 describe("Elasticsearch index", () => {
     const tenants = [["root"], ["admin"]];
 
     it.each(tenants)("should create index with tenant id as part of the name", async tenant => {
-        const prefix = getElasticsearchIndexPrefix();
+        const prefix = getOpenSearchIndexPrefix();
 
         const { index } = configurations.es({
             model: {
@@ -40,7 +40,7 @@ describe("Elasticsearch index", () => {
         async tenant => {
             process.env.OPENSEARCH_SHARED_INDEXES = "true";
 
-            const prefix = getElasticsearchIndexPrefix();
+            const prefix = getOpenSearchIndexPrefix();
 
             const { index: noLocaleIndex } = configurations.es({
                 model: {

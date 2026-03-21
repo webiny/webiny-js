@@ -17,9 +17,9 @@ if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
 
-import { getOpenSearchIndexPrefix as getElasticsearchIndexPrefix } from "@webiny/api-opensearch";
+import { getOpenSearchIndexPrefix as getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 
-const prefix = getElasticsearchIndexPrefix();
+const prefix = getOpenSearchIndexPrefix();
 if (!prefix.includes("api-")) {
     process.env.OPENSEARCH_INDEX_PREFIX = `${prefix}api-headless-cms-env-`;
 }

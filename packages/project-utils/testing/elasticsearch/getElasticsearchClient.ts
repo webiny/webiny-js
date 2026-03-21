@@ -13,7 +13,7 @@ import { createElasticsearchClient } from "./createClient";
 import { getDocumentClient, simulateStream } from "../dynamodb";
 import type { PluginCollection } from "../environment";
 import type { OpenSearchContext } from "../../../api-opensearch/src/types";
-import { getOpenSearchIndexPrefix as getElasticsearchIndexPrefix } from "../../../api-opensearch/src/indexPrefix";
+import { getOpenSearchIndexPrefix as getOpenSearchIndexPrefix } from "../../../api-opensearch/src/indexPrefix";
 import { createMockApiLogContextPlugin } from "../mockApiLog";
 
 interface GetElasticsearchClientParams {
@@ -57,13 +57,13 @@ export class ElasticsearchClientConfig {
     public constructor(prefix: string) {
         if (prefix !== "") {
             // Prefix will only be handled once, for the first processed storage operations.
-            const indexPrefix = getElasticsearchIndexPrefix();
+            const indexPrefix = getOpenSearchIndexPrefix();
             if (!indexPrefix.includes("api-")) {
                 process.env.OPENSEARCH_INDEX_PREFIX = `${indexPrefix}${prefix}`;
             }
         }
 
-        logger.debug(`ES index prefix = "%s"`, getElasticsearchIndexPrefix());
+        logger.debug(`ES index prefix = "%s"`, getOpenSearchIndexPrefix());
 
         const documentClient = getDocumentClient();
         this.elasticsearchClient = createElasticsearchClient();
