@@ -21,8 +21,7 @@ const defaultOptions: Partial<ClientOptions> = {
     }
 };
 if (!!osEndpoint) {
-    defaultOptions.node =
-        osEndpoint.match(/^http/) === null ? `https://${osEndpoint}` : osEndpoint;
+    defaultOptions.node = osEndpoint.match(/^http/) === null ? `https://${osEndpoint}` : osEndpoint;
     defaultOptions.auth = undefined;
 }
 
@@ -140,7 +139,9 @@ const attachCustomEvents = (client: ReturnType<typeof createClient>): OpenSearch
     return client as OpenSearchTestClient;
 };
 
-export const createOpenSearchClient = (options: Partial<ClientOptions> = {}): OpenSearchTestClient => {
+export const createOpenSearchClient = (
+    options: Partial<ClientOptions> = {}
+): OpenSearchTestClient => {
     const client = createClient({
         ...defaultOptions,
         ...options

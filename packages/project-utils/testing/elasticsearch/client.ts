@@ -118,20 +118,14 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
     };
 
     // @ts-expect-error
-    client.indices.exists = async (
-        params: any,
-        options: any = {}
-    ) => {
+    client.indices.exists = async (params: any, options: any = {}) => {
         registerIndex(params.index);
         // @ts-expect-error
         return originalExists.apply(client.indices, [params, options]);
     };
 
     // @ts-expect-error
-    client.indices.create = async (
-        params: any,
-        options: any = {}
-    ) => {
+    client.indices.create = async (params: any, options: any = {}) => {
         await deleteIndexCallable(params.index);
         // @ts-expect-error
         const response = await originalCreate.apply(client.indices, [params, options]);

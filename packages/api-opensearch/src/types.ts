@@ -46,6 +46,10 @@ export type SearchBody = Omit<NonNullable<SearchRequest["body"]>, "search_after"
 // ---------------------------------------------------------------------------
 
 export interface OpenSearchContext extends Context {
+    /**
+     * @deprecated Use `context.opensearch` instead.
+     */
+    elasticsearch: Client;
     opensearch: Client;
 }
 

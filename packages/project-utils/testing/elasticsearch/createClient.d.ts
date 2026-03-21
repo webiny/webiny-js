@@ -1,4 +1,7 @@
-import { Client, OpenSearchClientOptions as ElasticsearchClientOptions } from "@webiny/api-opensearch";
+import {
+    Client,
+    OpenSearchClientOptions as ElasticsearchClientOptions
+} from "@webiny/api-opensearch";
 
 interface ElasticsearchClient extends Client {
     indices: Client["indices"] & {

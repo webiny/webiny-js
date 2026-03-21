@@ -5,10 +5,7 @@ import type {
     IElasticsearchFetcherFetchResponse,
     IElasticsearchFetcherFetchResponseItem
 } from "./abstractions/ElasticsearchFetcher.js";
-import type {
-    OpenSearchSearchResponse,
-    PrimitiveValue
-} from "@webiny/api-opensearch/types.js";
+import type { OpenSearchSearchResponse, PrimitiveValue } from "@webiny/api-opensearch/types.js";
 import { shouldIgnoreEsResponseError } from "./shouldIgnoreEsResponseError.js";
 import { inspect } from "node:util";
 

@@ -9,8 +9,5 @@ interface Params {
 }
 
 export const createIndexManagerMock = (params?: Params) => {
-    return new IndexManager(
-        params?.client || createOpenSearchClientMock(),
-        params?.settings || {}
-    );
+    return new IndexManager(params?.client || createOpenSearchClientMock(), params?.settings || {});
 };
