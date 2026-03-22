@@ -42,7 +42,7 @@ export namespace GetLatestRevisionByEntryIdBaseUseCase {
 }
 
 /**
- * Public variation 1: Returns non-deleted revision only
+ * Returns non-deleted revision only
  */
 export const GetLatestRevisionByEntryIdUseCase =
     createAbstraction<IGetLatestRevisionByEntryIdBaseUseCase>("GetLatestRevisionByEntryIdUseCase");
@@ -56,7 +56,7 @@ export namespace GetLatestRevisionByEntryIdUseCase {
 }
 
 /**
- * Public variation 2: Returns deleted revision only (wbyDeleted === true)
+ * Returns deleted revision only (wbyDeleted === true)
  */
 export const GetLatestDeletedRevisionByEntryIdUseCase =
     createAbstraction<IGetLatestRevisionByEntryIdBaseUseCase>(
