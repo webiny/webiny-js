@@ -112,13 +112,13 @@
     "./admin/website-builder/redirect/list": "./admin/website-builder/redirect/list.js",
     "./admin/website-builder": "./admin/website-builder.js",
     "./cli/command": "./cli/command.js",
-    "./cli/index": "./cli/index.js",
+    "./cli": "./cli.js",
     "./api": "./api.js",
     "./admin/lexical": "./admin/lexical.js",
     "./infra/admin": "./infra/admin.js",
     "./infra/api": "./infra/api.js",
     "./infra/core": "./infra/core.js",
-    "./infra/index": "./infra/index.js",
+    "./infra": "./infra.js",
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   }

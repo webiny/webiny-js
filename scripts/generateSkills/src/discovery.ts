@@ -15,8 +15,8 @@ export function discover(project: Project, repoRoot: string): DiscoveredExport[]
     const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
     const exportPaths = Object.keys(pkgJson.exports || {});
 
-    // Only scan ./api/** paths
-    const apiPaths = exportPaths.filter(p => p.startsWith("./api/"));
+    // Scan all non-root export paths (skip "." itself)
+    const apiPaths = exportPaths.filter(p => p !== "." && p.startsWith("./"));
 
     const results: DiscoveredExport[] = [];
 

@@ -1,11 +1,11 @@
 /**
- * Pipeline — discovers all exported abstractions and emits per-category SKILL.md catalogs.
+ * Pipeline — discovers all exported abstractions and emits per-category SKILL.md generated.
  */
 import fs from "fs";
 import path from "path";
 import { discover } from "./discovery.js";
 import { createProject, followReExport, getPackagePath, getJsDoc } from "./source-resolver.js";
-import { deriveCategory } from "./config.js";
+import { deriveCategory, getHowToUse } from "./config.js";
 import type { CliOptions, CatalogEntry } from "./types.js";
 
 export function run(opts: CliOptions): void {
@@ -35,7 +35,7 @@ export function run(opts: CliOptions): void {
 
     // Step 2: Resolve source paths and group by category
     console.log("Resolving source paths...");
-    const catalogs: Record<
+    const generated: Record<
         string,
         { label: string; description: string; entries: CatalogEntry[] }
     > = {};
@@ -59,15 +59,15 @@ export function run(opts: CliOptions): void {
             const description = getJsDoc(sourceFile, exp.className);
             const category = deriveCategory(exp.importPath);
 
-            if (!catalogs[category.id]) {
-                catalogs[category.id] = {
+            if (!generated[category.id]) {
+                generated[category.id] = {
                     label: category.label,
                     description: category.description,
                     entries: []
                 };
             }
 
-            catalogs[category.id].entries.push({
+            generated[category.id].entries.push({
                 className: exp.className,
                 importPath: exp.importPath,
                 sourceFilePath,
@@ -90,16 +90,25 @@ export function run(opts: CliOptions): void {
 
     // Step 3: Write SKILL.md per category
     const written: string[] = [];
-    for (const [categoryId, data] of Object.entries(catalogs)) {
+    for (const [categoryId, data] of Object.entries(generated)) {
         data.entries.sort((a, b) => a.className.localeCompare(b.className));
 
-        const skillDir = path.join(outputDir, categoryId, "catalog");
+        // "api/cms" → "generated/api/cms", "infra" → "generated/infra"
+        const skillDir = path.join(outputDir, "generated", categoryId);
         fs.mkdirSync(skillDir, { recursive: true });
 
-        const md = renderCatalog(categoryId, data.label, data.description, data.entries, format);
+        const howToUse = getHowToUse(categoryId);
+        const md = renderCatalog(
+            categoryId,
+            data.label,
+            data.description,
+            data.entries,
+            format,
+            howToUse
+        );
         fs.writeFileSync(path.join(skillDir, "SKILL.md"), md, "utf-8");
 
-        const relDir = categoryId + "/catalog";
+        const relDir = `generated/${categoryId}`;
         written.push(relDir);
 
         if (opts.verbose) {
@@ -129,7 +138,8 @@ function renderCatalog(
     label: string,
     description: string,
     entries: CatalogEntry[],
-    format: "table" | "cards"
+    format: "table" | "cards",
+    howToUse: string[]
 ): string {
     const skillName = "webiny-" + categoryId.replace(/\//g, "-") + "-catalog";
     const lines: string[] = [];
@@ -153,14 +163,14 @@ function renderCatalog(
         lines.push(description);
         lines.push("");
     }
-    lines.push("## How to Use");
-    lines.push("");
-    lines.push("1. Find the abstraction you need below");
-    lines.push("2. Read the source file to get the exact interface and types");
-    lines.push('3. Import: `import { ClassName } from "<importPath>";`');
-    lines.push(
-        "4. See `webiny-use-case-pattern` or `webiny-event-handler-pattern` skills for implementation patterns"
-    );
+
+    if (howToUse.length > 0) {
+        lines.push("## How to Use");
+        lines.push("");
+        howToUse.forEach((item, i) => {
+            lines.push(`${i + 1}. ${item}`);
+        });
+    }
     lines.push("");
     lines.push("## Abstractions");
     lines.push("");
@@ -176,8 +186,8 @@ function renderCatalog(
 }
 
 function renderTable(lines: string[], entries: CatalogEntry[]): void {
-    lines.push("| Class | Import | Source | Description |");
-    lines.push("|-------|--------|--------|-------------|");
+    lines.push("| Name | Import | Source | Description |");
+    lines.push("|------|--------|--------|-------------|");
     for (const e of entries) {
         const desc = e.description || "";
         lines.push(
@@ -189,7 +199,7 @@ function renderTable(lines: string[], entries: CatalogEntry[]): void {
 function renderCards(lines: string[], entries: CatalogEntry[]): void {
     for (const e of entries) {
         lines.push("---");
-        lines.push(`**Class:** \`${e.className}\``);
+        lines.push(`**Name:** \`${e.className}\``);
         lines.push(`**Import:** \`${e.importPath}\``);
         lines.push(`**Source:** \`${e.sourceFilePath}\``);
         if (e.description) {

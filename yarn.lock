@@ -12742,7 +12742,6 @@ __metadata:
   resolution: "@webiny-scripts/generate-skills@workspace:scripts/generateSkills"
   dependencies:
     ts-morph: "npm:^27.0.2"
-    tsx: "npm:^4.21.0"
   bin:
     generate-skills: ./src/bin.ts
   languageName: unknown

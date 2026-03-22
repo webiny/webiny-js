@@ -25,6 +25,8 @@ export interface CategoryInfo {
     id: string;
     label: string;
     description: string;
+    /** Additional "How to Use" items merged from pattern-matched rules */
+    howToUse?: string[];
 }
 
 /** CLI options */
