@@ -82,14 +82,17 @@ export default SomeEventHandler.createImplementation({
 
 Deploy with: `yarn webiny deploy api --env=dev`
 
-## Resolving Types
+## Resolving Types (MANDATORY)
 
-To see the exact event payload types for a specific EventHandler, read the `sourceFilePath` from the catalog. The abstractions file contains:
+**Before writing any code that accesses event payload properties or domain types (CmsEntry, CmsModel, etc.), you MUST read the source file listed in the catalog's `Source` field to verify the exact property names and types. Do not assume or guess property names from memory.**
 
-- The `Interface` — `IEventHandler<DomainEvent<Payload>>`
-- The namespace with `Interface` and `Event` type aliases
+To see the exact event payload types for a specific EventHandler:
 
-The corresponding `events.ts` file (sibling to `abstractions.ts`) contains the full payload interface.
+1. Read the `abstractions.ts` file from the catalog `Source` path — it contains the payload interface with all property names and types.
+2. Read the `events.ts` file (sibling to `abstractions.ts`) — it contains the `Interface` and `Event` type aliases.
+3. If the payload references domain types (e.g., `CmsEntry`, `CmsModel`), follow the import and read that type declaration too.
+
+Only use properties that are confirmed to exist in the source type declarations.
 
 ## Key Rules
 

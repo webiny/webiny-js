@@ -31,6 +31,7 @@ class MyImplementation implements SomeFactory.Interface {
 
   execute(/* factory-specific params */) {
     this.logger.info("Doing something...");
+    // buildParams.get() returns T | null — always account for null.
     const value = this.buildParams.get<string>("MY_PARAM");
   }
 }
@@ -157,6 +158,8 @@ export default CorePulumi.createImplementation({
 3. The `dependencies` array order must match the constructor parameter order.
 4. Read the `abstractions.ts` file in the feature folder to see available methods.
 5. Extensions with no dependencies use `dependencies: []`.
+6. `BuildParams.get<T>(name)` returns `T | null` — always type the receiving property/variable as nullable (e.g. `string | null`) and handle the `null` case.
+7. **BuildParam declarations belong inside the extension's `Extension.tsx`**, not in `webiny.config.tsx`. Expose required params as React props on the extension component so the consumer decides where values come from (see `webiny-api-custom-feature` skill for the full pattern).
 
 ## Related Skills
 

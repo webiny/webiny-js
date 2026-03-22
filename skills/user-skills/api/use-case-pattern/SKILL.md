@@ -85,13 +85,15 @@ export default SomeUseCase.createImplementation({
 
 Deploy with: `yarn webiny deploy api --env=dev`
 
-## Resolving Types
+## Resolving Types (MANDATORY)
 
-To see the exact `Input`, `Return`, and `Error` types for a specific UseCase, read the `sourceFilePath` from the catalog. The abstractions file contains:
+**Before writing any code that calls a UseCase or accesses its return types, you MUST read the source file listed in the catalog's `Source` field to verify the exact method signatures, input parameters, return types, and error types. Do not assume or guess property names from memory.**
 
-- The `Interface` with the full method signature
-- The `Errors` type union
-- The namespace with `Interface` and `Errors` type aliases
+To see the exact types for a specific UseCase:
+
+1. Read the `abstractions.ts` file from the catalog `Source` path — it contains the `Interface` with the full method signature, input types, and error union.
+2. If the interface references domain types (e.g., `CmsEntry`, `CmsModel`), follow the import and read that type declaration too.
+3. Only use properties and method signatures that are confirmed to exist in the source type declarations.
 
 ## Key Rules
 
