@@ -6,6 +6,7 @@ export interface IAuthenticationContext {
     getAuthToken(): string | undefined;
 }
 
+/** Authenticate incoming requests and resolve the current identity. */
 export const AuthenticationContext =
     createAbstraction<IAuthenticationContext>("AuthenticationContext");
 

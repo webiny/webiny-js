@@ -24,6 +24,7 @@ export interface IUpdateFolderRepositoryErrors {
 
 type RepositoryError = IUpdateFolderRepositoryErrors[keyof IUpdateFolderRepositoryErrors];
 
+/** Persist folder updates. */
 export const UpdateFolderRepository =
     createAbstraction<IUpdateFolderRepository>("UpdateFolderRepository");
 
@@ -49,6 +50,7 @@ export interface IUpdateFolderUseCaseErrors {
 
 type UseCaseError = IUpdateFolderUseCaseErrors[keyof IUpdateFolderUseCaseErrors];
 
+/** Update a folder. */
 export const UpdateFolderUseCase = createAbstraction<IUpdateFolderUseCase>("UpdateFolderUseCase");
 
 export namespace UpdateFolderUseCase {
@@ -70,6 +72,7 @@ export interface FolderAfterUpdatePayload {
 }
 
 // Event Handler Abstractions
+/** Hook into folder lifecycle before a folder is updated. */
 export const FolderBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderBeforeUpdatePayload>>
 >("FolderBeforeUpdateEventHandler");
@@ -79,6 +82,7 @@ export namespace FolderBeforeUpdateEventHandler {
     export type Event = DomainEvent<FolderBeforeUpdatePayload>;
 }
 
+/** Hook into folder lifecycle after a folder is updated. */
 export const FolderAfterUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderAfterUpdatePayload>>
 >("FolderAfterUpdateEventHandler");

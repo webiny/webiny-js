@@ -14,6 +14,7 @@ export interface IDeleteApiKey {
     execute(id: string): Promise<Result<void, DeleteApiKeyError>>;
 }
 
+/** Delete an API key. */
 export const DeleteApiKeyUseCase = createAbstraction<IDeleteApiKey>("DeleteApiKeyUseCase");
 
 export namespace DeleteApiKeyUseCase {

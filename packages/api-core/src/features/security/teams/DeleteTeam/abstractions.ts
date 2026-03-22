@@ -20,6 +20,7 @@ export interface IDeleteTeam {
     execute(id: string): Promise<Result<void, DeleteTeamError>>;
 }
 
+/** Delete a team. */
 export const DeleteTeam = createAbstraction<IDeleteTeam>("DeleteTeam");
 
 export namespace DeleteTeam {

@@ -32,6 +32,7 @@ export interface IInstallSystemUseCase {
     ): Promise<Result<void, IInstallSystemErrors[keyof IInstallSystemErrors]>>;
 }
 
+/** Run system-wide installation. */
 export const InstallSystemUseCase =
     createAbstraction<IInstallSystemUseCase>("InstallSystemUseCase");
 
@@ -40,9 +41,7 @@ export namespace InstallSystemUseCase {
     export type Input = InstallSystemInput;
 }
 
-/**
- * Event Handler Abstraction
- */
+/** Hook into system lifecycle after the system is installed. */
 export const SystemInstalledEventHandler = createAbstraction<IEventHandler<DomainEvent>>(
     "SystemInstalledEventHandler"
 );

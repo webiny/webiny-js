@@ -1,11 +1,11 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { FieldBuilder } from "./FieldBuilder.js";
+import { DataFieldBuilder } from "./FieldBuilder.js";
 import { RequiredValidator, DateGteValidator, DateLteValidator } from "./validators.js";
 
 export type DateTimeType = "date" | "time" | "dateTimeWithTimezone" | "dateTimeWithoutTimezone";
 
 export interface IDateTimeFieldBuilder
-    extends FieldBuilder<"datetime">,
+    extends DataFieldBuilder<"datetime">,
         RequiredValidator,
         DateGteValidator,
         DateLteValidator {
@@ -16,7 +16,7 @@ export interface IDateTimeFieldBuilder
     withoutTimezone(): this;
 }
 
-class DateTimeFieldBuilder extends FieldBuilder<"datetime"> implements IDateTimeFieldBuilder {
+class DateTimeFieldBuilder extends DataFieldBuilder<"datetime"> implements IDateTimeFieldBuilder {
     public constructor() {
         super("datetime");
     }

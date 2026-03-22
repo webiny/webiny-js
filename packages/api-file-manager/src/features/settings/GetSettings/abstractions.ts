@@ -13,6 +13,7 @@ export interface IGetSettingsUseCase {
     execute(): Promise<Result<FileManagerSettings, UseCaseError>>;
 }
 
+/** Retrieve file manager settings. */
 export const GetSettingsUseCase = createAbstraction<IGetSettingsUseCase>("GetSettingsUseCase");
 
 export namespace GetSettingsUseCase {

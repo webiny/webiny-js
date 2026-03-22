@@ -20,6 +20,7 @@ export interface IEnsureFolderIsEmptyError {
 
 type UseCaseError = IEnsureFolderIsEmptyError[keyof IEnsureFolderIsEmptyError];
 
+/** Verify a folder has no children before deletion. */
 export const EnsureFolderIsEmpty = createAbstraction<IEnsureFolderIsEmpty>("EnsureFolderIsEmpty");
 
 export namespace EnsureFolderIsEmpty {

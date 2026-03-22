@@ -17,6 +17,7 @@ export interface IInvalidateRedirectsCacheUseCaseErrors {
 type UseCaseError =
     IInvalidateRedirectsCacheUseCaseErrors[keyof IInvalidateRedirectsCacheUseCaseErrors];
 
+/** Invalidate the redirects cache. */
 export const InvalidateRedirectsCacheUseCase = createAbstraction<IInvalidateRedirectsCacheUseCase>(
     "Wb/InvalidateRedirectsCacheUseCase"
 );

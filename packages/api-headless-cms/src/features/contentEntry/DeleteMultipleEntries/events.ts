@@ -18,6 +18,7 @@ export class EntryBeforeDeleteMultipleEvent extends DomainEvent<EntryBeforeDelet
     }
 }
 
+/** Hook into entry lifecycle before multiple entries are deleted. */
 export const EntryBeforeDeleteMultipleEventHandler = createAbstraction<
     IEventHandler<EntryBeforeDeleteMultipleEvent>
 >("EntryBeforeDeleteMultipleEventHandler");
@@ -38,6 +39,7 @@ export class EntryAfterDeleteMultipleEvent extends DomainEvent<EntryAfterDeleteM
     }
 }
 
+/** Hook into entry lifecycle after multiple entries are deleted. */
 export const EntryAfterDeleteMultipleEventHandler = createAbstraction<
     IEventHandler<EntryAfterDeleteMultipleEvent>
 >("EntryAfterDeleteMultipleEventHandler");

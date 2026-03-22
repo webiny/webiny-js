@@ -34,6 +34,7 @@ export interface IListEntriesUseCaseErrors {
 
 type UseCaseError = IListEntriesUseCaseErrors[keyof IListEntriesUseCaseErrors];
 
+/** List content entries with filtering and pagination. */
 export const ListEntriesUseCase = createAbstraction<IListEntriesUseCase>("ListEntriesUseCase");
 
 export namespace ListEntriesUseCase {
@@ -56,6 +57,7 @@ export interface IListLatestEntriesUseCase {
     ): Promise<Result<IListEntriesResult<T>, UseCaseError>>;
 }
 
+/** List the latest revisions of content entries. */
 export const ListLatestEntriesUseCase = createAbstraction<IListLatestEntriesUseCase>(
     "ListLatestEntriesUseCase"
 );
@@ -80,6 +82,7 @@ export interface IListPublishedEntriesUseCase {
     ): Promise<Result<IListEntriesResult<T>, UseCaseError>>;
 }
 
+/** List published content entries. */
 export const ListPublishedEntriesUseCase = createAbstraction<IListPublishedEntriesUseCase>(
     "ListPublishedEntriesUseCase"
 );
@@ -104,6 +107,7 @@ export interface IListDeletedEntriesUseCase {
     ): Promise<Result<IListEntriesResult<T>, UseCaseError>>;
 }
 
+/** List deleted content entries. */
 export const ListDeletedEntriesUseCase = createAbstraction<IListDeletedEntriesUseCase>(
     "ListDeletedEntriesUseCase"
 );

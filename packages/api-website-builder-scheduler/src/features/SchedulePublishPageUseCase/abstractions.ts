@@ -21,6 +21,7 @@ export interface ISchedulePublishPageUseCase {
     execute(params: ISchedulePublishPageUseCaseParams): ISchedulePublishPageUseCaseResponse;
 }
 
+/** Schedule a page for future publishing. */
 export const SchedulePublishPageUseCase = createAbstraction<ISchedulePublishPageUseCase>(
     "WbScheduler/SchedulePublishPageUseCase"
 );

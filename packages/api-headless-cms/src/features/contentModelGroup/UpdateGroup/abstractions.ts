@@ -26,6 +26,7 @@ export interface IUpdateGroupUseCaseErrors {
 
 type UseCaseError = IUpdateGroupUseCaseErrors[keyof IUpdateGroupUseCaseErrors];
 
+/** Update a content model group. */
 export const UpdateGroupUseCase = createAbstraction<IUpdateGroupUseCase>("UpdateGroupUseCase");
 
 export namespace UpdateGroupUseCase {

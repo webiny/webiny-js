@@ -35,6 +35,7 @@ export interface IUpdateModelUseCaseErrors {
 
 type UseCaseError = IUpdateModelUseCaseErrors[keyof IUpdateModelUseCaseErrors];
 
+/** Update a content model. */
 export const UpdateModelUseCase = createAbstraction<IUpdateModelUseCase>("UpdateModelUseCase");
 
 export namespace UpdateModelUseCase {

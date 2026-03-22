@@ -35,6 +35,7 @@ export interface ICreateEntryRevisionFromUseCaseErrors {
 type UseCaseError =
     ICreateEntryRevisionFromUseCaseErrors[keyof ICreateEntryRevisionFromUseCaseErrors];
 
+/** Create a new entry revision from an existing one. */
 export const CreateEntryRevisionFromUseCase = createAbstraction<ICreateEntryRevisionFromUseCase>(
     "CreateEntryRevisionFromUseCase"
 );

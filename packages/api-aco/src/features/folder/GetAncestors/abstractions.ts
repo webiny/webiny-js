@@ -16,6 +16,7 @@ export interface IGetAncestorsRepositoryErrors {
 
 type RepositoryError = IGetAncestorsRepositoryErrors[keyof IGetAncestorsRepositoryErrors];
 
+/** Fetch ancestor folders from storage. */
 export const GetAncestorsRepository =
     createAbstraction<IGetAncestorsRepository>("GetAncestorsRepository");
 
@@ -42,6 +43,7 @@ export interface IGetAncestorsUseCaseErrors {
 
 type UseCaseError = IGetAncestorsUseCaseErrors[keyof IGetAncestorsUseCaseErrors];
 
+/** Retrieve ancestor folders in the hierarchy. */
 export const GetAncestorsUseCase = createAbstraction<IGetAncestorsUseCase>("GetAncestorsUseCase");
 
 export namespace GetAncestorsUseCase {

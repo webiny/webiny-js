@@ -28,6 +28,7 @@ export interface IGetLatestRevisionByEntryIdUseCaseErrors {
 type UseCaseError =
     IGetLatestRevisionByEntryIdUseCaseErrors[keyof IGetLatestRevisionByEntryIdUseCaseErrors];
 
+/** Base use case for retrieving the latest entry revision. */
 export const GetLatestRevisionByEntryIdBaseUseCase =
     createAbstraction<IGetLatestRevisionByEntryIdBaseUseCase>(
         "GetLatestRevisionByEntryIdBaseUseCase"
@@ -41,9 +42,7 @@ export namespace GetLatestRevisionByEntryIdBaseUseCase {
     export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
-/**
- * Returns non-deleted revision only
- */
+/** Retrieve the latest revision of an entry. */
 export const GetLatestRevisionByEntryIdUseCase =
     createAbstraction<IGetLatestRevisionByEntryIdBaseUseCase>("GetLatestRevisionByEntryIdUseCase");
 
@@ -55,9 +54,7 @@ export namespace GetLatestRevisionByEntryIdUseCase {
     export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
-/**
- * Returns deleted revision only (wbyDeleted === true)
- */
+/** Retrieve the latest deleted revision of an entry. */
 export const GetLatestDeletedRevisionByEntryIdUseCase =
     createAbstraction<IGetLatestRevisionByEntryIdBaseUseCase>(
         "GetLatestDeletedRevisionByEntryIdUseCase"
@@ -79,9 +76,7 @@ export namespace GetLatestNonDeletedRevisionByEntryIdUseCase {
     export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
-/**
- * Public variation 3: Returns any latest revision (both deleted and non-deleted)
- */
+/** Retrieve the latest entry revision, including deleted ones. */
 export const GetLatestRevisionByEntryIdIncludingDeletedUseCase =
     createAbstraction<IGetLatestRevisionByEntryIdBaseUseCase>(
         "GetLatestRevisionByEntryIdIncludingDeletedUseCase"

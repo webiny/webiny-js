@@ -58,6 +58,7 @@ export interface IUnpublishPageUseCaseErrors {
 
 type UseCaseError = IUnpublishPageUseCaseErrors[keyof IUnpublishPageUseCaseErrors];
 
+/** Unpublish a page. */
 export const UnpublishPageUseCase =
     createAbstraction<IUnpublishPageUseCase>("Wb/UnpublishPageUseCase");
 
@@ -85,6 +86,7 @@ export interface PageAfterUnpublishPayload {
 // Event Handler Abstractions
 // ============================================================================
 
+/** Hook into page lifecycle before a page is unpublished. */
 export const PageBeforeUnpublishEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeUnpublishPayload>>
 >("Wb/PageBeforeUnpublishEventHandler");
@@ -95,6 +97,7 @@ export namespace PageBeforeUnpublishEventHandler {
     export type Page = WbPage;
 }
 
+/** Hook into page lifecycle after a page is unpublished. */
 export const PageAfterUnpublishEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterUnpublishPayload>>
 >("Wb/PageAfterUnpublishEventHandler");

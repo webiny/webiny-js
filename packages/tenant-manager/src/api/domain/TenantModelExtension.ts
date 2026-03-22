@@ -7,6 +7,7 @@ export interface ITenantModelExtension {
     execute(extension: IExtension): void;
 }
 
+/** Extend the tenant content model with custom fields. */
 export const TenantModelExtension =
     createAbstraction<ITenantModelExtension>("TenantModelExtension");
 

@@ -18,6 +18,7 @@ export class EntryBeforeRestoreFromBinEvent extends DomainEvent<EntryBeforeResto
     }
 }
 
+/** Hook into entry lifecycle before an entry is restored from bin. */
 export const EntryBeforeRestoreFromBinEventHandler = createAbstraction<
     IEventHandler<EntryBeforeRestoreFromBinEvent>
 >("EntryBeforeRestoreFromBinEventHandler");
@@ -38,6 +39,7 @@ export class EntryAfterRestoreFromBinEvent extends DomainEvent<EntryAfterRestore
     }
 }
 
+/** Hook into entry lifecycle after an entry is restored from bin. */
 export const EntryAfterRestoreFromBinEventHandler = createAbstraction<
     IEventHandler<EntryAfterRestoreFromBinEvent>
 >("EntryAfterRestoreFromBinEventHandler");

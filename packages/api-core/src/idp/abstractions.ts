@@ -24,6 +24,7 @@ export interface IIdentityProvider {
     getIdentity(token: string): Promise<IProviderIdentityData | null>;
 }
 
+/** Generic identity provider for token-based authentication. */
 export const IdentityProvider = createAbstraction<IIdentityProvider>("IdentityProvider");
 
 export namespace IdentityProvider {
@@ -37,6 +38,7 @@ export interface IJwtIdentityProvider {
     getIdentity(token: string, jwt: IJwt): Promise<IProviderIdentityData | null>;
 }
 
+/** JWT-specific identity provider for token validation. */
 export const JwtIdentityProvider = createAbstraction<IJwtIdentityProvider>("JwtIdentityProvider");
 
 export namespace JwtIdentityProvider {
@@ -57,6 +59,7 @@ export interface IOidcIdentityProvider {
     verifyTokenClaims?(token: IJwtPayload): Promise<void>;
 }
 
+/** OIDC-compliant identity provider with issuer validation. */
 export const OidcIdentityProvider =
     createAbstraction<IOidcIdentityProvider>("OidcIdentityProvider");
 
@@ -70,6 +73,7 @@ interface IJwkCache {
     getKeys(issuer: string): Promise<IJwk[]>;
 }
 
+/** Cache for JSON Web Keys used in JWT verification. */
 export const JwkCache = createAbstraction<IJwkCache>("JwkCache");
 export namespace JwkCache {
     export type Interface = IJwkCache;

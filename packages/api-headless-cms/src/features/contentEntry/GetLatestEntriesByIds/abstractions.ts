@@ -23,6 +23,7 @@ export interface IGetLatestEntriesByIdsUseCaseErrors {
 
 type UseCaseError = IGetLatestEntriesByIdsUseCaseErrors[keyof IGetLatestEntriesByIdsUseCaseErrors];
 
+/** Retrieve the latest revisions for multiple entries. */
 export const GetLatestEntriesByIdsUseCase = createAbstraction<IGetLatestEntriesByIdsUseCase>(
     "GetLatestEntriesByIdsUseCase"
 );

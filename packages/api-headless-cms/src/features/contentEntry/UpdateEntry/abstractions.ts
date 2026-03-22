@@ -38,6 +38,7 @@ export interface IUpdateEntryUseCaseErrors {
 
 type UseCaseError = IUpdateEntryUseCaseErrors[keyof IUpdateEntryUseCaseErrors];
 
+/** Update a content entry. */
 export const UpdateEntryUseCase = createAbstraction<IUpdateEntryUseCase>("UpdateEntryUseCase");
 
 export namespace UpdateEntryUseCase {

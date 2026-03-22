@@ -39,6 +39,7 @@ export interface IScheduleActionUseCase {
     ): Promise<Result<IScheduledAction<T>, ScheduleActionError>>;
 }
 
+/** Schedule an action for future execution. */
 export const ScheduleActionUseCase = createAbstraction<IScheduleActionUseCase>(
     "Scheduler/ScheduleActionUseCase"
 );

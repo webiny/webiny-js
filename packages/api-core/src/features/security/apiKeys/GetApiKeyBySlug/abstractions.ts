@@ -15,6 +15,7 @@ export interface IGetApiKeyBySlug {
     execute(slug: string): Promise<Result<ApiKey | null, GetApiKeyBySlugError>>;
 }
 
+/** Retrieve an API key by its slug. */
 export const GetApiKeyBySlugUseCase = createAbstraction<IGetApiKeyBySlug>("GetApiKeyBySlugUseCase");
 
 export namespace GetApiKeyBySlugUseCase {

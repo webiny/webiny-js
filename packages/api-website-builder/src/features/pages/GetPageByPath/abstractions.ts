@@ -46,6 +46,7 @@ export interface IGetPageByPathUseCaseErrors {
 
 type UseCaseError = IGetPageByPathUseCaseErrors[keyof IGetPageByPathUseCaseErrors];
 
+/** Retrieve a page by its URL path. */
 export const GetPageByPathUseCase =
     createAbstraction<IGetPageByPathUseCase>("Wb/GetPageByPathUseCase");
 

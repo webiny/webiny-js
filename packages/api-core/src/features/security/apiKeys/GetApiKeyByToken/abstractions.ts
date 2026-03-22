@@ -15,6 +15,7 @@ export interface IGetApiKeyByToken {
     execute(token: string): Promise<Result<ApiKey | null, GetApiKeyByTokenError>>;
 }
 
+/** Retrieve an API key by its token value. */
 export const GetApiKeyByTokenUseCase =
     createAbstraction<IGetApiKeyByToken>("GetApiKeyByTokenUseCase");
 

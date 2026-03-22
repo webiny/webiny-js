@@ -16,7 +16,7 @@ export interface IListUserTeams {
     execute(userId: string): Promise<Result<Team[], ListUserTeamsError>>;
 }
 
-// Abstraction constant
+/** List teams assigned to a user. */
 export const ListUserTeamsUseCase = createAbstraction<IListUserTeams>("ListUserTeamsUseCase");
 
 // Namespace exports

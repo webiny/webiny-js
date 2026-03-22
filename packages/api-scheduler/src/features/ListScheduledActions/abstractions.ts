@@ -57,6 +57,7 @@ export interface IListScheduledActionsUseCase {
     ): Promise<Result<IListScheduledActionsResponse<T>, ListScheduledActionsError>>;
 }
 
+/** List scheduled actions. */
 export const ListScheduledActionsUseCase = createAbstraction<IListScheduledActionsUseCase>(
     "Scheduler/ListScheduledActionsUseCase"
 );

@@ -26,6 +26,7 @@ export interface IPublishEntryUseCaseErrors {
 
 type UseCaseError = IPublishEntryUseCaseErrors[keyof IPublishEntryUseCaseErrors];
 
+/** Publish a content entry. */
 export const PublishEntryUseCase = createAbstraction<IPublishEntryUseCase>("PublishEntryUseCase");
 
 export namespace PublishEntryUseCase {

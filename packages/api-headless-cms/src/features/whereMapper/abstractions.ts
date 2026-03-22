@@ -11,6 +11,7 @@ export interface ICmsWhereMapper {
     map<T extends GenericRecord>(params: ICmsWhereMapperParams<T>): CmsEntryListWhere | undefined;
 }
 
+/** Map CMS filter conditions to storage queries. */
 export const CmsWhereMapper = createAbstraction<ICmsWhereMapper>("CmsWhereMapper");
 
 export namespace CmsWhereMapper {

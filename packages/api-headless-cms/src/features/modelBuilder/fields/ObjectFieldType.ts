@@ -1,11 +1,11 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { BaseFieldBuilder } from "./BaseFieldBuilder.js";
-import { FieldBuilder } from "./FieldBuilder.js";
+import { DataFieldBuilder } from "./FieldBuilder.js";
 import { FieldBuilderRegistry } from "../abstractions.js";
 import { LayoutBuilder } from "../LayoutBuilder.js";
 import type { CmsModelField, CmsModelLayoutCell } from "~/types/index.js";
 
-export interface IObjectFieldBuilder extends FieldBuilder<"object"> {
+export interface IObjectFieldBuilder extends DataFieldBuilder<"object"> {
     required(message?: string): this;
     fields(
         builder: (registry: FieldBuilderRegistry.Interface) => Record<string, BaseFieldBuilder<any>>
@@ -13,7 +13,7 @@ export interface IObjectFieldBuilder extends FieldBuilder<"object"> {
     layout(layoutOrBuilder: string[][] | ((builder: LayoutBuilder) => void)): this;
 }
 
-export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjectFieldBuilder {
+export class ObjectFieldBuilder extends DataFieldBuilder<"object"> implements IObjectFieldBuilder {
     private layoutBuilder: LayoutBuilder;
     private fieldBuildersMap = new Map<string, BaseFieldBuilder<any>>();
 

@@ -19,6 +19,7 @@ export interface IUpdateSettingsUseCaseErrors {
 
 type UseCaseError = IUpdateSettingsUseCaseErrors[keyof IUpdateSettingsUseCaseErrors];
 
+/** Update file manager settings. */
 export const UpdateSettingsUseCase =
     createAbstraction<IUpdateSettingsUseCase>("UpdateSettingsUseCase");
 

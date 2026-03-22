@@ -6,6 +6,7 @@ export interface ICreateFlpUseCase {
     execute: (folder: Folder) => Promise<void>;
 }
 
+/** Create a folder-level permission. */
 export const CreateFlpUseCase = createAbstraction<ICreateFlpUseCase>("CreateFlpUseCase");
 
 export namespace CreateFlpUseCase {

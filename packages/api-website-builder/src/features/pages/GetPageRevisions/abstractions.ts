@@ -40,6 +40,7 @@ export interface IGetPageRevisionsUseCaseErrors {
 
 type UseCaseError = IGetPageRevisionsUseCaseErrors[keyof IGetPageRevisionsUseCaseErrors];
 
+/** Retrieve all revisions of a page. */
 export const GetPageRevisionsUseCase = createAbstraction<IGetPageRevisionsUseCase>(
     "Wb/GetPageRevisionsUseCase"
 );

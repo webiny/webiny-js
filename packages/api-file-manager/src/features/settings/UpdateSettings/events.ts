@@ -22,6 +22,7 @@ export class SettingsBeforeUpdateEvent extends DomainEvent<SettingsBeforeUpdateP
     }
 }
 
+/** Hook into settings lifecycle before settings are updated. */
 export const SettingsBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<SettingsBeforeUpdateEvent>
 >("SettingsBeforeUpdateEventHandler");
@@ -49,6 +50,7 @@ export class SettingsAfterUpdateEvent extends DomainEvent<SettingsAfterUpdatePay
     }
 }
 
+/** Hook into settings lifecycle after settings are updated. */
 export const SettingsAfterUpdateEventHandler = createAbstraction<
     IEventHandler<SettingsAfterUpdateEvent>
 >("SettingsAfterUpdateEventHandler");

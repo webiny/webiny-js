@@ -13,6 +13,7 @@ export interface ILogger {
     log(objOrMsg: object | string, ...args: any[]): void;
 }
 
+/** Structured logging with multiple log levels. */
 export const Logger = createAbstraction<ILogger>("Logger");
 
 export namespace Logger {

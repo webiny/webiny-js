@@ -45,6 +45,7 @@ export interface IGetActiveRedirectsUseCaseErrors {
 
 type UseCaseError = IGetActiveRedirectsUseCaseErrors[keyof IGetActiveRedirectsUseCaseErrors];
 
+/** Retrieve all active URL redirects. */
 export const GetActiveRedirectsUseCase = createAbstraction<IGetActiveRedirectsUseCase>(
     "Wb/GetActiveRedirectsUseCase"
 );

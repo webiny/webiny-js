@@ -22,6 +22,7 @@ export class FileBeforeUpdateEvent extends DomainEvent<FileBeforeUpdatePayload> 
     }
 }
 
+/** Hook into file lifecycle before a file is updated. */
 export const FileBeforeUpdateEventHandler = createAbstraction<IEventHandler<FileBeforeUpdateEvent>>(
     "FileBeforeUpdateEventHandler"
 );
@@ -49,6 +50,7 @@ export class FileAfterUpdateEvent extends DomainEvent<FileAfterUpdatePayload> {
     }
 }
 
+/** Hook into file lifecycle after a file is updated. */
 export const FileAfterUpdateEventHandler = createAbstraction<IEventHandler<FileAfterUpdateEvent>>(
     "FileAfterUpdateEventHandler"
 );

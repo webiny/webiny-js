@@ -22,6 +22,7 @@ export interface IGetFolderHierarchyRepositoryErrors {
 type RepositoryError =
     IGetFolderHierarchyRepositoryErrors[keyof IGetFolderHierarchyRepositoryErrors];
 
+/** Fetch folder hierarchy from storage. */
 export const GetFolderHierarchyRepository = createAbstraction<IGetFolderHierarchyRepository>(
     "GetFolderHierarchyRepository"
 );
@@ -47,6 +48,7 @@ export interface IGetFolderHierarchyUseCaseErrors {
 
 type UseCaseError = IGetFolderHierarchyUseCaseErrors[keyof IGetFolderHierarchyUseCaseErrors];
 
+/** Retrieve the full folder hierarchy. */
 export const GetFolderHierarchyUseCase = createAbstraction<IGetFolderHierarchyUseCase>(
     "GetFolderHierarchyUseCase"
 );

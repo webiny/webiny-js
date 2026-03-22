@@ -24,7 +24,7 @@ export interface IUpdateUser {
     execute(id: string, input: UpdateUserInput): Promise<Result<AdminUser, UpdateUserError>>;
 }
 
-// Abstraction constant
+/** Update an existing admin user. */
 export const UpdateUserUseCase = createAbstraction<IUpdateUser>("UpdateUserUseCase");
 
 // Namespace exports

@@ -18,6 +18,7 @@ export class EntryRevisionBeforeDeleteEvent extends DomainEvent<EntryRevisionBef
     }
 }
 
+/** Hook into revision lifecycle before a revision is deleted. */
 export const EntryRevisionBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<EntryRevisionBeforeDeleteEvent>
 >("EntryRevisionBeforeDeleteEventHandler");
@@ -38,6 +39,7 @@ export class EntryRevisionAfterDeleteEvent extends DomainEvent<EntryRevisionAfte
     }
 }
 
+/** Hook into revision lifecycle after a revision is deleted. */
 export const EntryRevisionAfterDeleteEventHandler = createAbstraction<
     IEventHandler<EntryRevisionAfterDeleteEvent>
 >("EntryRevisionAfterDeleteEventHandler");

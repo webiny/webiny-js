@@ -1,10 +1,10 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { FieldBuilder } from "./FieldBuilder.js";
+import { DataFieldBuilder } from "./FieldBuilder.js";
 
-export interface ISearchableJsonFieldBuilder extends FieldBuilder<"searchable-json"> {}
+export interface ISearchableJsonFieldBuilder extends DataFieldBuilder<"searchable-json"> {}
 
 class SearchableJsonFieldBuilder
-    extends FieldBuilder<"searchable-json">
+    extends DataFieldBuilder<"searchable-json">
     implements ISearchableJsonFieldBuilder
 {
     public constructor() {

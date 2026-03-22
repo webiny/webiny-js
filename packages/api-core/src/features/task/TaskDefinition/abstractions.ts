@@ -133,6 +133,7 @@ export interface ITaskCreateInputValidationParams {
     validator: typeof zod;
 }
 
+/** Define a long-running background task with lifecycle hooks. */
 export const TaskDefinition = createAbstraction<ITaskDefinition>("TaskDefinition");
 
 /**

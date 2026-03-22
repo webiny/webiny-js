@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { AcoStorageOperations as IAcoStorageOperations } from "~/types.js";
 
+/** Storage operations for folder filtering. */
 export const FilterStorageOperations =
     createAbstraction<IAcoStorageOperations["filter"]>("FilterStorageOperations");
 

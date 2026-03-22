@@ -1,12 +1,12 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { FieldBuilder } from "./FieldBuilder.js";
+import { DataFieldBuilder } from "./FieldBuilder.js";
 import { RequiredValidator } from "./validators.js";
 
-export interface IFileFieldBuilder extends FieldBuilder<"file">, RequiredValidator {
+export interface IFileFieldBuilder extends DataFieldBuilder<"file">, RequiredValidator {
     imagesOnly(): this;
 }
 
-class FileFieldBuilder extends FieldBuilder<"file"> implements IFileFieldBuilder {
+class FileFieldBuilder extends DataFieldBuilder<"file"> implements IFileFieldBuilder {
     public constructor() {
         super("file");
     }

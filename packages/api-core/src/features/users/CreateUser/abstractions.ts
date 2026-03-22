@@ -24,7 +24,7 @@ export interface ICreateUser {
     execute(input: CreateUserInput): Promise<Result<AdminUser, CreateUserError>>;
 }
 
-// Abstraction constant
+/** Create a new admin user. */
 export const CreateUserUseCase = createAbstraction<ICreateUser>("CreateUserUseCase");
 
 // Namespace exports

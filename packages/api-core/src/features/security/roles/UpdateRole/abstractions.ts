@@ -25,6 +25,7 @@ export interface IUpdateRoleUseCase {
     ): Promise<Result<Role, UpdateRoleUseCaseError>>;
 }
 
+/** Update an existing security role. */
 export const UpdateRoleUseCase = createAbstraction<IUpdateRoleUseCase>("UpdateRoleUseCase");
 
 export namespace UpdateRoleUseCase {

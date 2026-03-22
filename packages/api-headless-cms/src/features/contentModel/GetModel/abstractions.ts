@@ -21,6 +21,7 @@ export interface IGetModelUseCaseErrors {
 
 type UseCaseError = IGetModelUseCaseErrors[keyof IGetModelUseCaseErrors];
 
+/** Retrieve a content model. */
 export const GetModelUseCase = createAbstraction<IGetModelUseCase>("GetModelUseCase");
 
 export namespace GetModelUseCase {

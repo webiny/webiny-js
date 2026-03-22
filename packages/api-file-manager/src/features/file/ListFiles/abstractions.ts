@@ -30,6 +30,7 @@ export interface IListFilesRepositoryErrors {
 
 type RepositoryError = IListFilesRepositoryErrors[keyof IListFilesRepositoryErrors];
 
+/** Fetch files from storage with filtering. */
 export const ListFilesRepository = createAbstraction<IListFilesRepository>("ListFilesRepository");
 
 export namespace ListFilesRepository {
@@ -51,6 +52,7 @@ export interface IListFilesUseCaseErrors {
 
 type UseCaseError = IListFilesUseCaseErrors[keyof IListFilesUseCaseErrors];
 
+/** List files with filtering and pagination. */
 export const ListFilesUseCase = createAbstraction<IListFilesUseCase>("ListFilesUseCase");
 
 export namespace ListFilesUseCase {

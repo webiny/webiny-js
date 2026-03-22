@@ -5,6 +5,7 @@ export interface INextjsConfig {
     execute(): Promise<IMarkdownContentBuilder>;
 }
 
+/** Configuration for Next.js website rendering. */
 export const NextjsConfig = createAbstraction<INextjsConfig>("Wb/NextjsConfig");
 export namespace NextjsConfig {
     export type Interface = INextjsConfig;

@@ -21,6 +21,7 @@ export interface ISchedulePublishRedirectUseCase {
     execute(params: ISchedulePublishRedirectUseCaseParams): ISchedulePublishRedirectUseCaseResponse;
 }
 
+/** Schedule a redirect for future publishing. */
 export const SchedulePublishRedirectUseCase = createAbstraction<ISchedulePublishRedirectUseCase>(
     "WbScheduler/SchedulePublishRedirectUseCase"
 );

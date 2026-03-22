@@ -18,6 +18,7 @@ export class EntryBeforeMoveEvent extends DomainEvent<EntryBeforeMoveEventPayloa
     }
 }
 
+/** Hook into entry lifecycle before an entry is moved. */
 export const EntryBeforeMoveEventHandler = createAbstraction<IEventHandler<EntryBeforeMoveEvent>>(
     "EntryBeforeMoveEventHandler"
 );
@@ -38,6 +39,7 @@ export class EntryAfterMoveEvent extends DomainEvent<EntryAfterMoveEventPayload>
     }
 }
 
+/** Hook into entry lifecycle after an entry is moved. */
 export const EntryAfterMoveEventHandler = createAbstraction<IEventHandler<EntryAfterMoveEvent>>(
     "EntryAfterMoveEventHandler"
 );

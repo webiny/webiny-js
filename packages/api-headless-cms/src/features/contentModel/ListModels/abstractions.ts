@@ -19,6 +19,7 @@ export interface IListModelsUseCaseErrors {
 
 type UseCaseError = IListModelsUseCaseErrors[keyof IListModelsUseCaseErrors];
 
+/** List all content models. */
 export const ListModelsUseCase = createAbstraction<IListModelsUseCase>("ListModelsUseCase");
 
 export namespace ListModelsUseCase {

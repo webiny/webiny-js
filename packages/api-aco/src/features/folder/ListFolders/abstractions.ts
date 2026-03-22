@@ -22,6 +22,7 @@ export interface IListFoldersRepositoryErrors {
 
 type RepositoryError = IListFoldersRepositoryErrors[keyof IListFoldersRepositoryErrors];
 
+/** Fetch folders from storage. */
 export const ListFoldersRepository =
     createAbstraction<IListFoldersRepository>("ListFoldersRepository");
 
@@ -45,6 +46,7 @@ export interface IListFoldersUseCaseErrors {
 
 type UseCaseError = IListFoldersUseCaseErrors[keyof IListFoldersUseCaseErrors];
 
+/** List folders with filtering. */
 export const ListFoldersUseCase = createAbstraction<IListFoldersUseCase>("ListFoldersUseCase");
 
 export namespace ListFoldersUseCase {

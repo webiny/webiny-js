@@ -24,6 +24,7 @@ export interface ICreateGroupUseCaseErrors {
 
 type UseCaseError = ICreateGroupUseCaseErrors[keyof ICreateGroupUseCaseErrors];
 
+/** Create a new content model group. */
 export const CreateGroupUseCase = createAbstraction<ICreateGroupUseCase>("CreateGroupUseCase");
 
 export namespace CreateGroupUseCase {

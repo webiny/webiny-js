@@ -34,6 +34,7 @@ export interface IValidateEntryUseCaseErrors {
 
 type UseCaseError = IValidateEntryUseCaseErrors[keyof IValidateEntryUseCaseErrors];
 
+/** Validate a content entry against its model schema. */
 export const ValidateEntryUseCase =
     createAbstraction<IValidateEntryUseCase>("ValidateEntryUseCase");
 

@@ -18,6 +18,7 @@ export class EntryBeforeRepublishEvent extends DomainEvent<EntryBeforeRepublishE
     }
 }
 
+/** Hook into entry lifecycle before an entry is republished. */
 export const EntryBeforeRepublishEventHandler = createAbstraction<
     IEventHandler<EntryBeforeRepublishEvent>
 >("EntryBeforeRepublishEventHandler");
@@ -38,6 +39,7 @@ export class EntryAfterRepublishEvent extends DomainEvent<EntryAfterRepublishEve
     }
 }
 
+/** Hook into entry lifecycle after an entry is republished. */
 export const EntryAfterRepublishEventHandler = createAbstraction<
     IEventHandler<EntryAfterRepublishEvent>
 >("EntryAfterRepublishEventHandler");

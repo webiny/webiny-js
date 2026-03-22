@@ -12,10 +12,4 @@ export { useModel } from "@webiny/app-headless-cms/admin/components/ModelProvide
 export { usePermission } from "@webiny/app-headless-cms/admin/hooks/usePermission.js";
 export { IsModelPublishable } from "@webiny/app-headless-cms/admin/components/IsModelPublishable.js";
 export { Routes } from "@webiny/app-headless-cms/routes.js";
-export type {
-    CmsContentEntry,
-    CmsModel,
-    CmsModelField,
-    CmsModelLayoutField,
-    CmsIdentity
-} from "@webiny/app-headless-cms-common/types/index.ts";
+export type { CmsContentEntry, CmsModel, CmsModelField, CmsModelLayoutField, CmsIdentity } from "@webiny/app-headless-cms-common/types/index.ts";

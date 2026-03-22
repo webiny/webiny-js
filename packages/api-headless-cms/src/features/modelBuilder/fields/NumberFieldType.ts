@@ -1,14 +1,14 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { FieldBuilder } from "./FieldBuilder.js";
+import { DataFieldBuilder } from "./FieldBuilder.js";
 import { RequiredValidator, GteValidator, LteValidator } from "./validators.js";
 
 export interface INumberFieldBuilder
-    extends FieldBuilder<"number">,
+    extends DataFieldBuilder<"number">,
         RequiredValidator,
         GteValidator,
         LteValidator {}
 
-class NumberFieldBuilder extends FieldBuilder<"number"> implements INumberFieldBuilder {
+class NumberFieldBuilder extends DataFieldBuilder<"number"> implements INumberFieldBuilder {
     public constructor() {
         super("number");
     }

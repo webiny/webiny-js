@@ -11,6 +11,7 @@ export class TeamBeforeUpdateEvent extends DomainEvent<TeamBeforeUpdatePayload> 
     }
 }
 
+/** Hook into team lifecycle before a team is updated. */
 export const TeamBeforeUpdateEventHandler = createAbstraction<IEventHandler<TeamBeforeUpdateEvent>>(
     "TeamBeforeUpdateEventHandler"
 );
@@ -28,6 +29,7 @@ export class TeamAfterUpdateEvent extends DomainEvent<TeamAfterUpdatePayload> {
     }
 }
 
+/** Hook into team lifecycle after a team is updated. */
 export const TeamAfterUpdateEventHandler = createAbstraction<IEventHandler<TeamAfterUpdateEvent>>(
     "TeamAfterUpdateEventHandler"
 );

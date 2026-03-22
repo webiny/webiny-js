@@ -36,6 +36,7 @@ export interface IUpdateFileRepositoryErrors {
 
 type RepositoryError = IUpdateFileRepositoryErrors[keyof IUpdateFileRepositoryErrors];
 
+/** Persist file metadata updates. */
 export const UpdateFileRepository =
     createAbstraction<IUpdateFileRepository>("UpdateFileRepository");
 
@@ -59,6 +60,7 @@ export interface IUpdateFileUseCaseErrors {
 
 type UseCaseError = IUpdateFileUseCaseErrors[keyof IUpdateFileUseCaseErrors];
 
+/** Update file metadata. */
 export const UpdateFileUseCase = createAbstraction<IUpdateFileUseCase>("UpdateFileUseCase");
 
 export namespace UpdateFileUseCase {

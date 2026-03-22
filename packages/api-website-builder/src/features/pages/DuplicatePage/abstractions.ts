@@ -61,6 +61,7 @@ export interface IDuplicatePageUseCaseErrors {
 
 type UseCaseError = IDuplicatePageUseCaseErrors[keyof IDuplicatePageUseCaseErrors];
 
+/** Duplicate a page. */
 export const DuplicatePageUseCase =
     createAbstraction<IDuplicatePageUseCase>("Wb/DuplicatePageUseCase");
 
@@ -89,6 +90,7 @@ export interface PageAfterDuplicatePayload {
 // Event Handler Abstractions
 // ============================================================================
 
+/** Hook into page lifecycle before a page is duplicated. */
 export const PageBeforeDuplicateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeDuplicatePayload>>
 >("Wb/PageBeforeDuplicateEventHandler");
@@ -99,6 +101,7 @@ export namespace PageBeforeDuplicateEventHandler {
     export type Page = WbPage;
 }
 
+/** Hook into page lifecycle after a page is duplicated. */
 export const PageAfterDuplicateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterDuplicatePayload>>
 >("Wb/PageAfterDuplicateEventHandler");

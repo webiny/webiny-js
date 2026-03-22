@@ -14,6 +14,7 @@ export interface IGetRole {
     execute(params: GetRoleInput): Promise<Result<Role, GetRoleError>>;
 }
 
+/** Retrieve a security role. */
 export const GetRoleUseCase = createAbstraction<IGetRole>("GetRoleUseCase");
 
 export namespace GetRoleUseCase {

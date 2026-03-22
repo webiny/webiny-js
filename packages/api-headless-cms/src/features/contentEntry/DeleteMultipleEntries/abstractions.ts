@@ -29,6 +29,7 @@ export interface IDeleteMultipleEntriesUseCaseErrors {
 
 type UseCaseError = IDeleteMultipleEntriesUseCaseErrors[keyof IDeleteMultipleEntriesUseCaseErrors];
 
+/** Delete multiple content entries in batch. */
 export const DeleteMultipleEntriesUseCase = createAbstraction<IDeleteMultipleEntriesUseCase>(
     "DeleteMultipleEntriesUseCase"
 );

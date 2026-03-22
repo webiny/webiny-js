@@ -1,6 +1,6 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { type FieldBuildResult } from "./BaseFieldBuilder.js";
-import { FieldBuilder, type BaseFieldBuilder } from "./FieldBuilder.js";
+import { DataFieldBuilder, type BaseFieldBuilder } from "./FieldBuilder.js";
 import { type IFieldBuilderRegistry } from "../abstractions.js";
 import type { CmsIcon, CmsModelField, CmsModelFieldValidation } from "~/types/index.js";
 
@@ -15,7 +15,7 @@ interface IDynamicZoneTemplate {
     validation: CmsModelFieldValidation[];
 }
 
-export interface IDynamicZoneFieldBuilder extends FieldBuilder<"dynamicZone"> {
+export interface IDynamicZoneFieldBuilder extends DataFieldBuilder<"dynamicZone"> {
     required(message?: string): this;
     template(
         id: string,
@@ -40,7 +40,7 @@ interface IDynamicZoneFieldBuilderTemplateConfig {
 }
 
 class DynamicZoneFieldBuilder
-    extends FieldBuilder<"dynamicZone">
+    extends DataFieldBuilder<"dynamicZone">
     implements IDynamicZoneFieldBuilder
 {
     private readonly templates: IDynamicZoneTemplate[] = [];

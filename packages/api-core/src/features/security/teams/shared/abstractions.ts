@@ -17,6 +17,7 @@ export interface ITeamsRepository {
     delete(team: Team): Promise<Result<void, RepositoryError>>;
 }
 
+/** Persist and retrieve teams. */
 export const TeamsRepository = createAbstraction<ITeamsRepository>("TeamsRepository");
 
 export namespace TeamsRepository {
@@ -36,6 +37,7 @@ export interface ITeamFactory {
     execute(): Promise<CodeTeam[]>;
 }
 
+/** Provide code-defined teams. */
 export const TeamFactory = createAbstraction<ITeamFactory>("TeamFactory");
 
 export namespace TeamFactory {

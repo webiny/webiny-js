@@ -42,6 +42,7 @@ export interface IExecuteScheduledActionUseCase {
     ): Promise<Result<void, ExecuteScheduledActionError>>;
 }
 
+/** Execute a scheduled action immediately. */
 export const ExecuteScheduledActionUseCase = createAbstraction<IExecuteScheduledActionUseCase>(
     "Scheduler/ExecuteScheduledActionUseCase"
 );

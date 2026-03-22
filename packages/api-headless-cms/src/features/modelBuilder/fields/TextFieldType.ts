@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/feature/api";
-import { FieldBuilder } from "./FieldBuilder.js";
+import { DataFieldBuilder } from "./FieldBuilder.js";
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import {
     RequiredValidator,
@@ -16,7 +16,7 @@ import {
 } from "./validators.js";
 
 export interface ITextFieldBuilder
-    extends FieldBuilder<"text">,
+    extends DataFieldBuilder<"text">,
         RequiredValidator,
         MinLengthValidator,
         MaxLengthValidator,
@@ -36,7 +36,7 @@ declare module "../abstractions.js" {
     }
 }
 
-class TextFieldBuilder extends FieldBuilder<"text"> implements ITextFieldBuilder {
+class TextFieldBuilder extends DataFieldBuilder<"text"> implements ITextFieldBuilder {
     public constructor() {
         super("text");
     }

@@ -25,6 +25,7 @@ export interface IMoveEntryUseCaseErrors {
 
 type UseCaseError = IMoveEntryUseCaseErrors[keyof IMoveEntryUseCaseErrors];
 
+/** Move a content entry to a different folder. */
 export const MoveEntryUseCase = createAbstraction<IMoveEntryUseCase>("MoveEntryUseCase");
 
 export namespace MoveEntryUseCase {

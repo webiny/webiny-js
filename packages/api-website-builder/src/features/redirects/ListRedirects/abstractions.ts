@@ -89,6 +89,7 @@ export interface IListRedirectsUseCaseErrors {
 
 type UseCaseError = IListRedirectsUseCaseErrors[keyof IListRedirectsUseCaseErrors];
 
+/** List URL redirects with filtering. */
 export const ListRedirectsUseCase =
     createAbstraction<IListRedirectsUseCase>("Wb/ListRedirectsUseCase");
 

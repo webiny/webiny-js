@@ -15,6 +15,7 @@ export interface IDeleteRole {
     execute(id: string): Promise<Result<void, DeleteRoleError>>;
 }
 
+/** Delete a security role. */
 export const DeleteRoleUseCase = createAbstraction<IDeleteRole>("DeleteRoleUseCase");
 
 export namespace DeleteRoleUseCase {

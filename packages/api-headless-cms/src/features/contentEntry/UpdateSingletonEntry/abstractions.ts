@@ -37,6 +37,7 @@ export interface IUpdateSingletonEntryUseCaseErrors {
 
 type UseCaseError = IUpdateSingletonEntryUseCaseErrors[keyof IUpdateSingletonEntryUseCaseErrors];
 
+/** Update a singleton content entry. */
 export const UpdateSingletonEntryUseCase = createAbstraction<IUpdateSingletonEntryUseCase>(
     "UpdateSingletonEntryUseCase"
 );
