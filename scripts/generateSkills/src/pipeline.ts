@@ -4,13 +4,14 @@
 import fs from "fs";
 import path from "path";
 import { discover } from "./discovery.js";
-import { createProject, followReExport, getPackagePath } from "./source-resolver.js";
+import { createProject, followReExport, getPackagePath, getJsDoc } from "./source-resolver.js";
 import { deriveCategory } from "./config.js";
 import type { CliOptions, CatalogEntry } from "./types.js";
 
 export function run(opts: CliOptions): void {
     const repoRoot = opts.repoRoot || process.cwd();
     const outputDir = path.resolve(repoRoot, opts.output || "skills/user-skills");
+    const format = opts.format || "cards";
 
     console.log("Initializing ts-morph project...");
     const project = createProject(repoRoot);
@@ -55,6 +56,7 @@ export function run(opts: CliOptions): void {
             }
 
             const sourceFilePath = getPackagePath(sourceFile, repoRoot);
+            const description = getJsDoc(sourceFile, exp.className);
             const category = deriveCategory(exp.importPath);
 
             if (!catalogs[category.id]) {
@@ -68,13 +70,15 @@ export function run(opts: CliOptions): void {
             catalogs[category.id].entries.push({
                 className: exp.className,
                 importPath: exp.importPath,
-                sourceFilePath
+                sourceFilePath,
+                description
             });
 
             resolved++;
 
             if (opts.verbose) {
-                console.log("  " + exp.className + " → " + sourceFilePath);
+                const desc = description ? " — " + description : "";
+                console.log("  " + exp.className + " → " + sourceFilePath + desc);
             }
         } catch (e) {
             errors.push({ className: exp.className, error: String(e) });
@@ -92,7 +96,7 @@ export function run(opts: CliOptions): void {
         const skillDir = path.join(outputDir, categoryId, "catalog");
         fs.mkdirSync(skillDir, { recursive: true });
 
-        const md = renderCatalog(categoryId, data.label, data.description, data.entries);
+        const md = renderCatalog(categoryId, data.label, data.description, data.entries, format);
         fs.writeFileSync(path.join(skillDir, "SKILL.md"), md, "utf-8");
 
         const relDir = categoryId + "/catalog";
@@ -107,7 +111,7 @@ export function run(opts: CliOptions): void {
     console.log("");
     console.log("=== Summary ===");
     console.log("Resolved: " + resolved + " abstractions");
-    console.log("Catalogs: " + written.length + " SKILL.md files");
+    console.log("Catalogs: " + written.length + " SKILL.md files (format: " + format + ")");
     for (const d of written.sort()) {
         console.log("  " + d + "/SKILL.md");
     }
@@ -124,11 +128,13 @@ function renderCatalog(
     categoryId: string,
     label: string,
     description: string,
-    entries: CatalogEntry[]
+    entries: CatalogEntry[],
+    format: "table" | "cards"
 ): string {
     const skillName = "webiny-" + categoryId.replace(/\//g, "-") + "-catalog";
     const lines: string[] = [];
 
+    // Front-matter
     lines.push("---");
     lines.push(`name: ${skillName}`);
     lines.push("context: webiny-api");
@@ -139,6 +145,8 @@ function renderCatalog(
     }
     lines.push("---");
     lines.push("");
+
+    // Header
     lines.push(`# ${label}`);
     lines.push("");
     if (description) {
@@ -147,7 +155,7 @@ function renderCatalog(
     }
     lines.push("## How to Use");
     lines.push("");
-    lines.push("1. Find the abstraction you need in the table below");
+    lines.push("1. Find the abstraction you need below");
     lines.push("2. Read the source file to get the exact interface and types");
     lines.push('3. Import: `import { ClassName } from "<importPath>";`');
     lines.push(
@@ -156,15 +164,41 @@ function renderCatalog(
     lines.push("");
     lines.push("## Abstractions");
     lines.push("");
-    lines.push("| Class | Import | Source |");
-    lines.push("|-------|--------|--------|");
 
-    for (const e of entries) {
-        lines.push(`| \`${e.className}\` | \`${e.importPath}\` | \`${e.sourceFilePath}\` |`);
+    if (format === "table") {
+        renderTable(lines, entries);
+    } else {
+        renderCards(lines, entries);
     }
 
     lines.push("");
     return lines.join("\n");
+}
+
+function renderTable(lines: string[], entries: CatalogEntry[]): void {
+    lines.push("| Class | Import | Source | Description |");
+    lines.push("|-------|--------|--------|-------------|");
+    for (const e of entries) {
+        const desc = e.description || "";
+        lines.push(
+            `| \`${e.className}\` | \`${e.importPath}\` | \`${e.sourceFilePath}\` | ${desc} |`
+        );
+    }
+}
+
+function renderCards(lines: string[], entries: CatalogEntry[]): void {
+    for (const e of entries) {
+        lines.push("---");
+        lines.push(`**Class:** \`${e.className}\``);
+        lines.push(`**Import:** \`${e.importPath}\``);
+        lines.push(`**Source:** \`${e.sourceFilePath}\``);
+        if (e.description) {
+            lines.push(`**Description:** ${e.description}`);
+        }
+        lines.push("");
+    }
+    // Close the last card
+    lines.push("---");
 }
 
 function printCheckReport(discovered: { className: string; importPath: string }[]): void {

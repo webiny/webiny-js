@@ -21,6 +21,14 @@ function parseArgs(argv: string[]): CliOptions {
         } else if ((arg === "--category" || arg === "-c") && i + 1 < args.length) {
             opts.category = args[i + 1];
             i += 2;
+        } else if (arg === "--format" && i + 1 < args.length) {
+            const val = args[i + 1];
+            if (val !== "table" && val !== "cards") {
+                console.error("Invalid format: " + val + " (must be 'table' or 'cards')");
+                process.exit(1);
+            }
+            opts.format = val;
+            i += 2;
         } else if (arg === "--verbose" || arg === "-v") {
             opts.verbose = true;
             i++;
@@ -48,6 +56,7 @@ function printHelp(): void {
     console.log("");
     console.log("Options:");
     console.log("  --category, -c <id>  Only process a specific category (e.g., api/tenancy)");
+    console.log("  --format <fmt>       Output format: 'cards' (default) or 'table'");
     console.log("  --check              Report only, don't write files");
     console.log("  --output <path>      Output directory (default: skills/user-skills)");
     console.log("  --repo-root <path>   Repository root (default: cwd)");

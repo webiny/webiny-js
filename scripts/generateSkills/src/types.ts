@@ -10,6 +10,8 @@ export interface CatalogEntry {
     importPath: string;
     /** Package-resolvable path to the source file */
     sourceFilePath: string;
+    /** JSDoc description, empty if none */
+    description: string;
 }
 
 /** Discovered export before source resolution */
@@ -30,6 +32,7 @@ export interface CliOptions {
     check?: boolean;
     output?: string;
     category?: string;
+    format?: "table" | "cards";
     verbose?: boolean;
     repoRoot?: string;
 }

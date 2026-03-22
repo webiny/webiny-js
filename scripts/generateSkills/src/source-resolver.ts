@@ -56,3 +56,63 @@ export function getPackagePath(sourceFile: SourceFile, repoRoot: string): string
     // Fallback to relative path if pattern doesn't match
     return relPath;
 }
+
+/**
+ * Extract JSDoc description from a declaration, following re-exports if needed.
+ */
+export function getJsDoc(sourceFile: SourceFile, exportName: string): string {
+    // Try to find JSDoc directly in this file
+    const doc = extractJsDoc(sourceFile, exportName);
+    if (doc) return doc;
+
+    // If not found, the file may re-export from another file — follow it
+    for (const exportDecl of sourceFile.getExportDeclarations()) {
+        const targetFile = exportDecl.getModuleSpecifierSourceFile();
+        if (!targetFile) continue;
+
+        // Named re-export: `export { Foo } from "./bar.js"`
+        const match = exportDecl
+            .getNamedExports()
+            .find(ne => ne.getName() === exportName || ne.getAliasNode()?.getText() === exportName);
+        if (match) {
+            const doc = getJsDoc(targetFile, exportName);
+            if (doc) return doc;
+        }
+
+        // Star re-export: `export * from "./bar.js"`
+        if (exportDecl.isNamespaceExport() || exportDecl.getNamedExports().length === 0) {
+            const doc = getJsDoc(targetFile, exportName);
+            if (doc) return doc;
+        }
+    }
+
+    return "";
+}
+
+function extractJsDoc(sourceFile: SourceFile, name: string): string {
+    const varDecl = sourceFile.getVariableDeclaration(name);
+    if (varDecl) {
+        const jsDocs = varDecl.getVariableStatement()?.getJsDocs();
+        if (jsDocs && jsDocs.length > 0) {
+            return jsDocs[0].getDescription().trim();
+        }
+    }
+
+    const classDecl = sourceFile.getClass(name);
+    if (classDecl) {
+        const jsDocs = classDecl.getJsDocs();
+        if (jsDocs.length > 0) {
+            return jsDocs[0].getDescription().trim();
+        }
+    }
+
+    const funcDecl = sourceFile.getFunction(name);
+    if (funcDecl) {
+        const jsDocs = funcDecl.getJsDocs();
+        if (jsDocs.length > 0) {
+            return jsDocs[0].getDescription().trim();
+        }
+    }
+
+    return "";
+}
