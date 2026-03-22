@@ -8,6 +8,8 @@
     let selectedItem = null; // { type: "config"|"section", name: string }
     let activeTab = "browse"; // "browse" | "config" | "properties"
     let selectedKey = null;
+    // Remembers expand-all state per toolbar context: key → true|false|null
+    var expandAllStates = {};
 
     // ── DOM refs ───────────────────────────────────────────────────
     const sidebar = document.getElementById("sidebar");
@@ -300,9 +302,11 @@
                 var browseNodes = [];
                 var valueTree = document.createElement("div");
                 valueTree.className = "json-tree";
-                buildJsonTree(configObj[selectedKey], valueTree, 0, browseNodes);
+                var browseStateKey = getExpandStateKey("browse-value");
+                buildJsonTree(configObj[selectedKey], valueTree, 0, browseNodes, expandAllStates[browseStateKey]);
                 if (browseNodes.length > 0) {
-                    buildTreeToolbar(browseValue, browseNodes, valueTree, configObj[selectedKey]);
+                    buildTreeToolbar(browseValue, browseNodes, valueTree, configObj[selectedKey], browseStateKey);
+                    applyExpandState(browseNodes, expandAllStates[browseStateKey]);
                 }
                 browseValue.appendChild(valueTree);
             } else {
@@ -329,9 +333,11 @@
         var configNodes = [];
         var tree = document.createElement("div");
         tree.className = "json-tree";
-        buildJsonTree(data.config, tree, 0, configNodes);
+        var configStateKey = getExpandStateKey("config-object");
+        buildJsonTree(data.config, tree, 0, configNodes, expandAllStates[configStateKey]);
         if (configNodes.length > 0) {
-            buildTreeToolbar(configContent, configNodes, tree, data.config);
+            buildTreeToolbar(configContent, configNodes, tree, data.config, configStateKey);
+            applyExpandState(configNodes, expandAllStates[configStateKey]);
         }
         configContent.appendChild(tree);
         detail.appendChild(configContent);
@@ -426,9 +432,11 @@
                     var bNodes = [];
                     var valueTree = document.createElement("div");
                     valueTree.className = "json-tree";
-                    buildJsonTree(sectionData[selectedKey], valueTree, 0, bNodes);
+                    var secBrowseStateKey = getExpandStateKey("section-browse-value");
+                    buildJsonTree(sectionData[selectedKey], valueTree, 0, bNodes, expandAllStates[secBrowseStateKey]);
                     if (bNodes.length > 0) {
-                        buildTreeToolbar(valuePane, bNodes, valueTree, sectionData[selectedKey]);
+                        buildTreeToolbar(valuePane, bNodes, valueTree, sectionData[selectedKey], secBrowseStateKey);
+                        applyExpandState(bNodes, expandAllStates[secBrowseStateKey]);
                     }
                     valuePane.appendChild(valueTree);
                 } else {
@@ -446,9 +454,11 @@
                 var fbNodes = [];
                 var fbTree = document.createElement("div");
                 fbTree.className = "json-tree";
-                buildJsonTree(sectionData, fbTree, 0, fbNodes);
+                var fbStateKey = getExpandStateKey("section-browse-raw");
+                buildJsonTree(sectionData, fbTree, 0, fbNodes, expandAllStates[fbStateKey]);
                 if (fbNodes.length > 0) {
-                    buildTreeToolbar(browseContent, fbNodes, fbTree, sectionData);
+                    buildTreeToolbar(browseContent, fbNodes, fbTree, sectionData, fbStateKey);
+                    applyExpandState(fbNodes, expandAllStates[fbStateKey]);
                 }
                 browseContent.appendChild(fbTree);
             }
@@ -462,12 +472,32 @@
             var rNodes = [];
             var rTree = document.createElement("div");
             rTree.className = "json-tree";
-            buildJsonTree(sectionData, rTree, 0, rNodes);
+            var rawStateKey = getExpandStateKey("section-raw");
+            buildJsonTree(sectionData, rTree, 0, rNodes, expandAllStates[rawStateKey]);
             if (rNodes.length > 0) {
-                buildTreeToolbar(rawContent, rNodes, rTree, sectionData);
+                buildTreeToolbar(rawContent, rNodes, rTree, sectionData, rawStateKey);
+                applyExpandState(rNodes, expandAllStates[rawStateKey]);
             }
             rawContent.appendChild(rTree);
             detail.appendChild(rawContent);
+        }
+    }
+
+    function getExpandStateKey(context) {
+        var item = selectedItem ? selectedItem.type + ":" + selectedItem.name : "none";
+        var key = selectedKey || "";
+        return item + "|" + activeTab + "|" + key + "|" + context;
+    }
+
+    function applyExpandState(nodeList, expandAllState) {
+        if (expandAllState === true) {
+            for (var i = 0; i < nodeList.length; i++) {
+                nodeList[i].setExpanded(true);
+            }
+        } else if (expandAllState === false) {
+            for (var i = 0; i < nodeList.length; i++) {
+                nodeList[i].setExpanded(nodeList[i].depth < 2);
+            }
         }
     }
 
@@ -539,13 +569,19 @@
         return undefined;
     }
 
-    function buildTreeToolbar(targetContainer, nodeList, treeContainer, originalData) {
+    function buildTreeToolbar(targetContainer, nodeList, treeContainer, originalData, stateKey) {
         var bar = document.createElement("div");
         bar.className = "tree-toolbar";
+        // null = default (depth-based), true = expand all, false = collapse all
+        // Persist state across re-renders via expandAllStates map
+        var expandAllState = stateKey != null ? (expandAllStates[stateKey] ?? null) : null;
+
         var expandBtn = document.createElement("button");
         expandBtn.className = "tree-toolbar-btn";
         expandBtn.textContent = "Expand All";
         expandBtn.addEventListener("click", function () {
+            expandAllState = true;
+            if (stateKey != null) expandAllStates[stateKey] = true;
             for (var i = 0; i < nodeList.length; i++) {
                 nodeList[i].setExpanded(true);
             }
@@ -554,6 +590,8 @@
         collapseBtn.className = "tree-toolbar-btn";
         collapseBtn.textContent = "Collapse";
         collapseBtn.addEventListener("click", function () {
+            expandAllState = false;
+            if (stateKey != null) expandAllStates[stateKey] = false;
             for (var i = 0; i < nodeList.length; i++) {
                 nodeList[i].setExpanded(nodeList[i].depth < 2);
             }
@@ -578,11 +616,20 @@
 
                 if (!query) {
                     searchInfo.textContent = "";
-                    buildJsonTree(originalData, treeContainer, 0, nodeList);
+                    buildJsonTree(originalData, treeContainer, 0, nodeList, expandAllState);
+                    if (expandAllState === true) {
+                        for (var i = 0; i < nodeList.length; i++) {
+                            nodeList[i].setExpanded(true);
+                        }
+                    } else if (expandAllState === false) {
+                        for (var i = 0; i < nodeList.length; i++) {
+                            nodeList[i].setExpanded(nodeList[i].depth < 2);
+                        }
+                    }
                 } else {
                     var filtered = filterValue(originalData, query);
                     if (filtered !== undefined) {
-                        buildJsonTree(filtered, treeContainer, 0, nodeList);
+                        buildJsonTree(filtered, treeContainer, 0, nodeList, expandAllState);
                         // Expand all when searching
                         for (var i = 0; i < nodeList.length; i++) {
                             nodeList[i].setExpanded(true);
@@ -614,7 +661,7 @@
         targetContainer.appendChild(bar);
     }
 
-    function buildJsonTree(value, container, depth, nodeList) {
+    function buildJsonTree(value, container, depth, nodeList, expandAllState) {
         if (value === null) {
             var s = span("null", "json-null");
             attachCopyMenu(s, null);
@@ -623,12 +670,12 @@
         }
 
         if (Array.isArray(value)) {
-            buildCollapsible(value, container, depth, true, nodeList);
+            buildCollapsible(value, container, depth, true, nodeList, expandAllState);
             return;
         }
 
         if (typeof value === "object") {
-            buildCollapsible(value, container, depth, false, nodeList);
+            buildCollapsible(value, container, depth, false, nodeList, expandAllState);
             return;
         }
 
@@ -650,12 +697,13 @@
         container.appendChild(leaf);
     }
 
-    function buildCollapsible(obj, container, depth, isArray, nodeList) {
+    function buildCollapsible(obj, container, depth, isArray, nodeList, expandAllState) {
         var keys = isArray ? obj : Object.keys(obj);
         var count = isArray ? obj.length : Object.keys(obj).length;
         var openBracket = isArray ? "[" : "{";
         var closeBracket = isArray ? "]" : "}";
-        var expanded = depth < 2; // auto-expand first 2 levels
+        var expanded =
+            expandAllState === true ? true : expandAllState === false ? depth < 2 : depth < 2;
 
         if (count === 0) {
             container.appendChild(span(openBracket + closeBracket, "json-bracket"));
@@ -717,7 +765,7 @@
                 attachCopyMenu(keySpan, entry[1]);
                 line.appendChild(keySpan);
                 line.appendChild(span(": ", "json-bracket"));
-                buildJsonTree(entry[1], line, depth + 1, nodeList);
+                buildJsonTree(entry[1], line, depth + 1, nodeList, expandAllState);
                 if (idx < entries.length - 1) {
                     line.appendChild(span(",", "json-bracket"));
                 }

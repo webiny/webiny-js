@@ -10,6 +10,7 @@ export interface DropZoneProximity {
 interface DropzoneEntry {
     id: string;
     box: Box;
+    canAccept?: () => boolean;
     onProximityChange: (proximity: DropZoneProximity | null) => void;
 }
 
@@ -70,25 +71,88 @@ export class DropZoneManager {
         let matchedPosition: DropPosition = null;
         let matchedBox: Box | null = null;
 
-        for (const [id, { box }] of this.zones) {
+        // Collect all candidate matches with their canAccept callback.
+        const candidates: { id: string; box: Box; position: number; canAccept?: () => boolean }[] =
+            [];
+
+        for (const [id, { box, canAccept }] of this.zones) {
             const isWithinX = mouseX >= box.left && mouseX <= box.right;
 
             if (!isWithinX) {
                 continue;
             }
 
-            if (mouseY >= box.top - threshold && mouseY <= box.top + threshold) {
-                matchedId = id;
-                matchedPosition = 0; // before
-                matchedBox = box;
-                break;
+            if (Math.abs(mouseY - box.top) <= threshold) {
+                candidates.push({ id, box, position: 0, canAccept });
             }
 
-            if (mouseY >= box.bottom - threshold && mouseY <= box.bottom + threshold) {
-                matchedId = id;
-                matchedPosition = 1; // after
-                matchedBox = box;
-                break;
+            if (Math.abs(mouseY - box.bottom) <= threshold) {
+                candidates.push({ id, box, position: 1, canAccept });
+            }
+        }
+
+        if (candidates.length > 0) {
+            // Sort by depth descending (deepest first).
+            const uniqueDepths = [...new Set(candidates.map(c => c.box.depth))].sort(
+                (a, b) => b - a
+            );
+
+            if (uniqueDepths.length === 1) {
+                // Single depth — pick the first candidate that can accept.
+                const winner = candidates.find(c => !c.canAccept || c.canAccept()) ?? null;
+                if (winner) {
+                    matchedId = winner.id;
+                    matchedPosition = winner.position;
+                    matchedBox = winner.box;
+                }
+            } else {
+                // Use X position to select depth band.
+                let rangeLeft = Infinity;
+                let rangeRight = -Infinity;
+                for (const c of candidates) {
+                    rangeLeft = Math.min(rangeLeft, c.box.left);
+                    rangeRight = Math.max(rangeRight, c.box.right);
+                }
+
+                const centerX = (rangeLeft + rangeRight) / 2;
+                const halfWidth = (rangeRight - rangeLeft) / 2;
+
+                // 0 at center, 1 at edges.
+                const distFromCenter = halfWidth > 0 ? Math.abs(mouseX - centerX) / halfWidth : 0;
+
+                // Map distance to depth index: center → 0 (deepest), edges → last (shallowest).
+                const startIndex = Math.min(
+                    Math.floor(distFromCenter * uniqueDepths.length),
+                    uniqueDepths.length - 1
+                );
+
+                // Try the selected band, then search outward (shallower), then inward (deeper).
+                const findWinnerAtDepth = (depth: number) =>
+                    candidates.find(c => c.box.depth === depth && (!c.canAccept || c.canAccept()));
+
+                let winner = findWinnerAtDepth(uniqueDepths[startIndex]);
+
+                if (!winner) {
+                    // Search shallower bands first, then deeper.
+                    for (let i = startIndex + 1; i < uniqueDepths.length; i++) {
+                        winner = findWinnerAtDepth(uniqueDepths[i]);
+                        if (winner) break;
+                    }
+                }
+
+                if (!winner) {
+                    // Search deeper bands.
+                    for (let i = startIndex - 1; i >= 0; i--) {
+                        winner = findWinnerAtDepth(uniqueDepths[i]);
+                        if (winner) break;
+                    }
+                }
+
+                if (winner) {
+                    matchedId = winner.id;
+                    matchedPosition = winner.position;
+                    matchedBox = winner.box;
+                }
             }
         }
 

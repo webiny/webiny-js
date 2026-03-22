@@ -11,9 +11,10 @@ export interface DropEvent {
 interface UseProximityDropzoneParams {
     id: string;
     box: Box;
+    canAccept?: () => boolean;
 }
 
-export function useProximityDropzone({ id, box }: UseProximityDropzoneParams) {
+export function useProximityDropzone({ id, box, canAccept }: UseProximityDropzoneParams) {
     const dropzoneManager = useDropZoneManager();
     const [proximity, setProximity] = useState<DropZoneProximity | null>(null);
 
@@ -21,6 +22,7 @@ export function useProximityDropzone({ id, box }: UseProximityDropzoneParams) {
         dropzoneManager.register({
             id,
             box,
+            canAccept,
             onProximityChange: proximity => {
                 setProximity(proximity);
             }
@@ -29,7 +31,7 @@ export function useProximityDropzone({ id, box }: UseProximityDropzoneParams) {
         return () => {
             dropzoneManager.unregister(id);
         };
-    }, [id, box]);
+    }, [id, box, canAccept]);
 
     return { proximity };
 }
