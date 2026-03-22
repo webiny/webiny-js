@@ -25,6 +25,7 @@ export interface IGetEntryByIdUseCaseErrors {
 
 type UseCaseError = IGetEntryByIdUseCaseErrors[keyof IGetEntryByIdUseCaseErrors];
 
+/** Retrieve a content entry by its exact revision ID. */
 export const GetEntryByIdUseCase = createAbstraction<IGetEntryByIdUseCase>("GetEntryByIdUseCase");
 
 export namespace GetEntryByIdUseCase {

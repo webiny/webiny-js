@@ -21,6 +21,7 @@ export interface IGetGroupUseCaseErrors {
 
 type UseCaseError = IGetGroupUseCaseErrors[keyof IGetGroupUseCaseErrors];
 
+/** Retrieve a content model group. */
 export const GetGroupUseCase = createAbstraction<IGetGroupUseCase>("GetGroupUseCase");
 
 export namespace GetGroupUseCase {

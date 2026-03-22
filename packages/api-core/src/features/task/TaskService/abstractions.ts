@@ -2,6 +2,7 @@ import { BaseError, createAbstraction, Result } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { type ITaskOutput, TaskDefinition } from "~/features/task/TaskDefinition/index.js";
 
+/** Trigger and manage long-running background tasks. */
 export const TaskService = createAbstraction<ITaskService>("TaskService");
 
 export namespace TaskService {

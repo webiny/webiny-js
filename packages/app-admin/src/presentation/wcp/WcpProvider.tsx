@@ -2,6 +2,7 @@ import { autorun } from "mobx";
 import React, { useEffect, useState } from "react";
 import { useFeature } from "@webiny/app";
 import { WcpFeature } from "~/features/wcp/feature.js";
+import { DevToolsSection } from "~/components/index.js";
 
 interface WcpProviderProps {
     loader?: React.ReactElement;
@@ -24,5 +25,17 @@ export const WcpProvider = ({ children, loader }: WcpProviderProps) => {
         return loader || null;
     }
 
-    return <>{children}</>;
+    const project = service.getProject();
+
+    return (
+        <>
+            <DevToolsSection
+                name={"License"}
+                group={"Project"}
+                data={project.getRawLicense()}
+                views={"raw"}
+            />
+            {children}
+        </>
+    );
 };

@@ -14,6 +14,6 @@ export interface IFieldTypeFactory {
 }
 
 /**
- * Field Type abstraction - use with { multiple: true } in DI
+ * Use to implement new field types.
  */
 export const FieldType = createAbstraction<IFieldTypeFactory>("FieldType");

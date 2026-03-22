@@ -62,6 +62,7 @@ export interface ICreatePageRevisionFromUseCaseErrors {
 type UseCaseError =
     ICreatePageRevisionFromUseCaseErrors[keyof ICreatePageRevisionFromUseCaseErrors];
 
+/** Create a page revision from an existing one. */
 export const CreatePageRevisionFromUseCase = createAbstraction<ICreatePageRevisionFromUseCase>(
     "Wb/CreatePageRevisionFromUseCase"
 );
@@ -90,6 +91,7 @@ export interface PageAfterCreateRevisionFromPayload {
 // Event Handler Abstractions
 // ============================================================================
 
+/** Hook into page lifecycle before a revision is created from existing. */
 export const PageBeforeCreateRevisionFromEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeCreateRevisionFromPayload>>
 >("Wb/PageBeforeCreateRevisionFromEventHandler");
@@ -100,6 +102,7 @@ export namespace PageBeforeCreateRevisionFromEventHandler {
     export type Page = WbPage;
 }
 
+/** Hook into page lifecycle after a revision is created from existing. */
 export const PageAfterCreateRevisionFromEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterCreateRevisionFromPayload>>
 >("Wb/PageAfterCreateRevisionFromEventHandler");

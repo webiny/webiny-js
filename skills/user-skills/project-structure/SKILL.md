@@ -130,15 +130,35 @@ Use `<Infra.Env.Is>` to load extensions or config only in specific environments:
 
 ## Build Parameters
 
-Pass custom values from config to extensions at build time:
+Build parameters pass values from config to extensions at build time. They are accessed in backend code via the `BuildParams` DI service (see dependency-injection skill).
+
+**Rule: `<Api.BuildParam>` and `<Admin.BuildParam>` MUST live inside the extension's `Extension.tsx`, NOT directly in `webiny.config.tsx`.** Required parameters are exposed as React props on the extension component. The consumer in `webiny.config.tsx` decides where the value comes from (env var, hardcoded, config, etc.).
 
 ```tsx
-<Api.BuildParam paramName="MY_CUSTOM_PARAM" value="customValue" />
-<Api.BuildParam paramName="MY_CONFIG" value={{ myKey: 2, nested: { foo: "bar" } }} />
-<Admin.BuildParam paramName="ADMIN_CUSTOM_PARAM" value="adminValue" />
+// extensions/myExtension/Extension.tsx
+import React from "react";
+import { Api } from "webiny/extensions";
+
+interface MyExtensionProps {
+    apiKey: string;
+}
+
+export const MyExtension = ({ apiKey }: MyExtensionProps) => {
+    return (
+        <>
+            <Api.BuildParam paramName="MY_API_KEY" value={apiKey} />
+            <Api.Extension src={"@/extensions/myExtension/features/myService/feature.ts"} />
+        </>
+    );
+};
 ```
 
-These are accessed in extensions via the `BuildParams` feature (see dependency-injection skill).
+```tsx
+// webiny.config.tsx — consumer decides where the value comes from
+<MyExtension apiKey={process.env.MY_API_KEY || ""} />
+```
+
+This keeps extensions self-contained — all required configuration is declared via typed props in one place.
 
 ## Installing Pre-Built Extensions
 

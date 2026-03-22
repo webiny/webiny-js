@@ -19,7 +19,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/icons": "0.0.0",
     "mobx": "^6.15.0",
-    "mobx-react-lite": "^3.4.3",
+    "mobx-react-lite": "^4.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-helmet": "^6.1.0"

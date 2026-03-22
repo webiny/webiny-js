@@ -1,9 +1,9 @@
 import type { SecurityStorageParams } from "./types.js";
 import type {
     StorageApiKey,
-    Role,
+    StorageRole,
     SecurityStorageOperations,
-    Team
+    StorageTeam
 } from "@webiny/api-core/types/security.js";
 import WebinyError from "@webiny/error";
 import { createApiKeyEntity, createRoleEntity, createTeamEntity } from "./definitions/entities.js";
@@ -43,24 +43,24 @@ export const createStorageOperations = (
         GSI2_SK: slug
     });
 
-    const createRoleKeys = (role: Pick<Role, "tenant" | "id">) => ({
+    const createRoleKeys = (role: Pick<StorageRole, "tenant" | "id">) => ({
         PK: `T#${role.tenant}#ROLE#${role.id}`,
         SK: `A`
     });
 
-    const createRoleGsiKeys = (role: Pick<Role, "tenant" | "slug">) => ({
+    const createRoleGsiKeys = (role: Pick<StorageRole, "tenant" | "slug">) => ({
         GSI1_PK: `T#${role.tenant}#ROLES`,
         GSI1_SK: role.slug,
         GSI_TENANT: role.tenant as string,
         TYPE: "security.role"
     });
 
-    const createTeamKeys = (team: Pick<Team, "tenant" | "id">) => ({
+    const createTeamKeys = (team: Pick<StorageTeam, "tenant" | "id">) => ({
         PK: `T#${team.tenant}#TEAM#${team.id}`,
         SK: `A`
     });
 
-    const createTeamGsiKeys = (team: Pick<Team, "tenant" | "slug">) => ({
+    const createTeamGsiKeys = (team: Pick<StorageTeam, "tenant" | "slug">) => ({
         GSI1_PK: `T#${team.tenant}#TEAMS`,
         GSI1_SK: team.slug,
         GSI_TENANT: team.tenant as string,
@@ -285,8 +285,8 @@ export const createStorageOperations = (
 
             return sortItems({ items, sort }).map(item => item.data);
         },
-        async listRoles({ where: { tenant, id_in, slug_in }, sort }): Promise<Role[]> {
-            let items: Role[];
+        async listRoles({ where: { tenant, id_in, slug_in }, sort }): Promise<StorageRole[]> {
+            let items: StorageRole[];
             try {
                 const ddbItems = await entities.roles.queryAll({
                     partitionKey: `T#${tenant}#ROLES`,
@@ -314,8 +314,8 @@ export const createStorageOperations = (
 
             return items;
         },
-        async listTeams({ where: { tenant, id_in, slug_in }, sort }): Promise<Team[]> {
-            let items: Team[];
+        async listTeams({ where: { tenant, id_in, slug_in }, sort }): Promise<StorageTeam[]> {
+            let items: StorageTeam[];
             try {
                 const ddbRecords = await entities.teams.queryAll({
                     partitionKey: `T#${tenant}#TEAMS`,

@@ -11,6 +11,7 @@ export interface IListFolderLevelPermissionsTargetsUseCase {
     >;
 }
 
+/** List targets for folder-level permissions. */
 export const ListFolderLevelPermissionsTargetsUseCase =
     createAbstraction<IListFolderLevelPermissionsTargetsUseCase>(
         "ListFolderLevelPermissionsTargetsUseCase"

@@ -23,6 +23,7 @@ export interface IApiKeysRepository {
     delete(apiKey: ApiKey): Promise<Result<void, RepositoryError>>;
 }
 
+/** Persist and retrieve API keys. */
 export const ApiKeysRepository = createAbstraction<IApiKeysRepository>("ApiKeysRepository");
 
 export namespace ApiKeysRepository {
@@ -35,14 +36,15 @@ export type CodeApiKey = Pick<ApiKey, "name" | "permissions" | "slug"> & {
 };
 
 export interface IApiKeyFactory {
-    execute(): Promise<CodeApiKey[]> | CodeApiKey[];
+    execute(): Promise<CodeApiKey[]>;
 }
 
+/** Provide code-defined API keys. */
 export const ApiKeyFactory = createAbstraction<IApiKeyFactory>("ApiKeyFactory");
 
 export namespace ApiKeyFactory {
     export type Interface = IApiKeyFactory;
-    export type Return = Promise<CodeApiKey[]> | CodeApiKey[];
+    export type Return = Promise<CodeApiKey[]>;
     export type ApiKey = CodeApiKey;
 }
 
@@ -51,6 +53,7 @@ export interface IApiKeyProvider {
     getBySlug(slug: string): Promise<ApiKey | null>;
 }
 
+/** Retrieve API keys by token or slug. */
 export const ApiKeyProvider = createAbstraction<IApiKeyProvider>("ApiKeyProvider");
 
 export namespace ApiKeyProvider {

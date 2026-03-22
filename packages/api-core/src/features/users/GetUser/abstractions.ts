@@ -18,7 +18,7 @@ export interface IGetUser {
     execute(input: GetUserInput): Promise<Result<AdminUser, GetUserError>>;
 }
 
-// Abstraction constant
+/** Retrieve an admin user. */
 export const GetUserUseCase = createAbstraction<IGetUser>("GetUserUseCase");
 
 // Namespace exports

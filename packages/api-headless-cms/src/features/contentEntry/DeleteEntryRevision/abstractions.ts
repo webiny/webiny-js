@@ -22,6 +22,7 @@ export interface IDeleteEntryRevisionUseCaseErrors {
 
 type UseCaseError = IDeleteEntryRevisionUseCaseErrors[keyof IDeleteEntryRevisionUseCaseErrors];
 
+/** Delete a specific entry revision. */
 export const DeleteEntryRevisionUseCase = createAbstraction<IDeleteEntryRevisionUseCase>(
     "DeleteEntryRevisionUseCase"
 );

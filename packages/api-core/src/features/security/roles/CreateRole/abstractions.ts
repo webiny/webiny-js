@@ -16,6 +16,7 @@ export interface ICreateRole {
     execute(input: CreateRoleInput): Promise<Result<Role, CreateRoleError>>;
 }
 
+/** Create a new security role. */
 export const CreateRoleUseCase = createAbstraction<ICreateRole>("CreateRoleUseCase");
 
 export namespace CreateRoleUseCase {

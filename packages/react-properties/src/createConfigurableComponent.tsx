@@ -120,7 +120,7 @@ export function createConfigurableComponent<TConfig>(name: string) {
                 {/* ConfigApplyTree always renders so Property components inside
                     composed HOCs can mount and register with the PropertyStore.
                     It lives outside the children gate below. */}
-                <Properties onChange={stateUpdater}>
+                <Properties name={name} onChange={stateUpdater}>
                     <ConfigApplyTree />
                 </Properties>
                 {/* Gate: only render children once the PropertyStore has flushed

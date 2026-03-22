@@ -1,7 +1,7 @@
 // We'll use this class once the package is converted to TS!
 
 import readJson from "read-json-sync";
-import findUp from "find-up";
+import { findUp } from "find-up";
 
 export class PackageJson {
     private readonly filePath: string;

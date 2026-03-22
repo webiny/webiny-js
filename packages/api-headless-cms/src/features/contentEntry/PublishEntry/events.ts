@@ -18,6 +18,7 @@ export class EntryBeforePublishEvent extends DomainEvent<EntryBeforePublishEvent
     }
 }
 
+/** Hook into entry lifecycle before an entry is published. */
 export const EntryBeforePublishEventHandler = createAbstraction<
     IEventHandler<EntryBeforePublishEvent>
 >("EntryBeforePublishEventHandler");
@@ -38,6 +39,7 @@ export class EntryAfterPublishEvent extends DomainEvent<EntryAfterPublishEventPa
     }
 }
 
+/** Hook into entry lifecycle after an entry is published. */
 export const EntryAfterPublishEventHandler = createAbstraction<
     IEventHandler<EntryAfterPublishEvent>
 >("EntryAfterPublishEventHandler");

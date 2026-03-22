@@ -1,11 +1,11 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { FieldBuilder } from "./FieldBuilder.js";
+import { DataFieldBuilder } from "./FieldBuilder.js";
 
-export interface IRichTextFieldBuilder extends FieldBuilder<"rich-text"> {
+export interface IRichTextFieldBuilder extends DataFieldBuilder<"rich-text"> {
     required(message?: string): this;
 }
 
-class RichTextFieldBuilder extends FieldBuilder<"rich-text"> implements IRichTextFieldBuilder {
+class RichTextFieldBuilder extends DataFieldBuilder<"rich-text"> implements IRichTextFieldBuilder {
     public constructor() {
         super("rich-text");
     }

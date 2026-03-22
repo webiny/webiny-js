@@ -57,11 +57,6 @@ export const Extension = () => {
                 </HasPermission>
 
                 <HasPermission entity={"page"}>
-                    <Menu
-                        name="wb.pagesLabel"
-                        parent="Wb"
-                        element={<Menu.Group text={"Pages"} pinnable={true} />}
-                    />
                     <Route route={Routes.Pages.List} element={<PageList />} />
                     <Route route={Routes.Pages.Editor} element={<PageEditor />} />
                     <Menu

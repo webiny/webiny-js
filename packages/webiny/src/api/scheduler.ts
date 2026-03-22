@@ -15,3 +15,7 @@ export {
     ScheduledActionModel,
     ScheduledActionHandler
 } from "@webiny/api-scheduler/shared/abstractions.js";
+export {
+    SCHEDULED_ACTION_PUBLISH as ScheduledActionTypePublish,
+    SCHEDULED_ACTION_UNPUBLISH as ScheduledActionTypeUnpublish
+} from "@webiny/api-scheduler/constants.js";

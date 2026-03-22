@@ -23,6 +23,7 @@ export interface IScheduleUnpublishRedirectUseCase {
     ): IScheduleUnpublishRedirectUseCaseResponse;
 }
 
+/** Schedule a redirect for future unpublishing. */
 export const ScheduleUnpublishRedirectUseCase =
     createAbstraction<IScheduleUnpublishRedirectUseCase>(
         "WbScheduler/ScheduleUnpublishRedirectUseCase"

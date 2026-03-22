@@ -1,15 +1,18 @@
+export { usePageEditorConfig } from "~/modules/pages/PageEditor/usePageEditorConfig.js";
+export { PageEditorConfig } from "~/modules/pages/PageEditor/PageEditorConfig.js";
 export { createCommand } from "~/editorSdk/createCommand.js";
 export { Commands } from "~/BaseEditor/index.js";
 export { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 export { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 export { useDocumentEditor } from "~/DocumentEditor/index.js";
 export { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
+export { useHighlightedElement } from "~/BaseEditor/hooks/useHighlightedElement.js";
 export { useComponent } from "~/BaseEditor/hooks/useComponent.js";
 export { useElementInputs } from "~/BaseEditor/hooks/useElementInputs.js";
 export { useCreateElement } from "~/BaseEditor/hooks/useCreateElement.js";
 export { useDeleteElement } from "~/BaseEditor/hooks/useDeleteElement.js";
 export { useUpdateElement } from "~/BaseEditor/hooks/useUpdateElement.js";
-export { PageEditorConfig } from "~/index.js";
+export { useElementOverlay } from "~/BaseEditor/hooks/useElementOverlay.js";
 export { ElementInputs } from "~/BaseEditor/defaultConfig/Sidebar/ElementSettings/ElementInputs.js";
 
 export { $selectElement } from "~/editorSdk/utils/index.js";

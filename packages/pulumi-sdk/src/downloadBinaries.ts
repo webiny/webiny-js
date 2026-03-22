@@ -5,7 +5,7 @@ import path from "path";
 // @ts-expect-error `tar` has no types.
 import decompress from "decompress";
 import semver from "semver";
-import findUp from "find-up";
+import { findUpSync } from "find-up";
 import readJsonSync from "read-json-sync";
 import { downloadFile } from "./downloadFile.js";
 
@@ -13,7 +13,7 @@ import { downloadFile } from "./downloadFile.js";
 // can look like the following: "2.25.2+dirty". We want to ensure only "2.25.2" is returned.
 // @see https://github.com/pulumi/pulumi/issues/6847
 const getPulumiVersion = () => {
-    const pkgJsonPath = findUp.sync("node_modules/@pulumi/pulumi/package.json");
+    const pkgJsonPath = findUpSync("node_modules/@pulumi/pulumi/package.json");
     const { version } = readJsonSync(pkgJsonPath!);
     return semver.clean(version);
 };

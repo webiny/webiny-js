@@ -1,10 +1,10 @@
-import findUp from "find-up";
+import { findUpSync } from "find-up";
 import { loadJsonFileSync } from "load-json-file";
 import type { PackageJson } from "type-fest";
 
 export class GetCwpVersion {
     execute(): string {
-        const cwpPackageJsonPath = findUp.sync("package.json", {
+        const cwpPackageJsonPath = findUpSync("package.json", {
             cwd: import.meta.dirname
         });
         if (!cwpPackageJsonPath) {

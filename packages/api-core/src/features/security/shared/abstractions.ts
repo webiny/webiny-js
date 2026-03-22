@@ -5,10 +5,7 @@ import type {
     Team
 } from "~/types/security.js";
 
-/**
- * SecurityStorageOperations abstraction
- * Provides access to all storage operations for security entities
- */
+/** Storage operations for all security entities. */
 export const SecurityStorageOperations = createAbstraction<ISecurityStorageOperations>(
     "SecurityStorageOperations"
 );
@@ -17,28 +14,22 @@ export namespace SecurityStorageOperations {
     export type Interface = ISecurityStorageOperations;
 }
 
-/**
- * RolesProvider abstraction
- * Provides roles defined via plugins
- */
 export interface IRolesProvider {
-    (): Promise<Role[]>;
+    getRoles(): Promise<Role[]>;
 }
 
+/** Provide roles defined via code-based factories. */
 export const RolesProvider = createAbstraction<IRolesProvider>("RolesProvider");
 
 export namespace RolesProvider {
     export type Interface = IRolesProvider;
 }
 
-/**
- * TeamsProvider abstraction
- * Provides teams defined via plugins
- */
 export interface ITeamsProvider {
-    (): Promise<Team[]>;
+    getTeams(): Promise<Team[]>;
 }
 
+/** Provide teams defined via code-based factories. */
 export const TeamsProvider = createAbstraction<ITeamsProvider>("TeamsProvider");
 
 export namespace TeamsProvider {

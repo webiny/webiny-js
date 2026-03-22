@@ -40,6 +40,7 @@ export interface IModelFactory {
     execute(builder: IModelBuilder): Promise<PrivateModelBuilder[] | PublicModelBuilder[]>;
 }
 
+/** Provide code-defined content models. */
 export const ModelFactory = createAbstraction<IModelFactory>("Cms/ModelFactory");
 export namespace ModelFactory {
     export type Interface = IModelFactory;

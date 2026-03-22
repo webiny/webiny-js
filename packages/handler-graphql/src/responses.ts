@@ -18,6 +18,7 @@ const defaultParams: Required<ErrorResponseParams> = {
     stack: null
 };
 
+/** GraphQL error response helper. */
 export class ErrorResponse {
     public readonly data: null;
     public readonly error: {
@@ -47,6 +48,7 @@ export class ErrorResponse {
     }
 }
 
+/** GraphQL not-found response helper. */
 export class NotFoundResponse extends ErrorResponse {
     constructor(message: string) {
         super({
@@ -56,6 +58,7 @@ export class NotFoundResponse extends ErrorResponse {
     }
 }
 
+/** GraphQL list error response helper. */
 export class ListErrorResponse {
     public readonly data: null;
     public readonly meta: null;
@@ -87,6 +90,7 @@ export class ListErrorResponse {
     }
 }
 
+/** GraphQL response helper. */
 export class Response<T = any> {
     public readonly data: T;
     public readonly error: null;
@@ -97,6 +101,7 @@ export class Response<T = any> {
     }
 }
 
+/** GraphQL list response helper. */
 export class ListResponse<T, M = IMeta> {
     public readonly data: Array<T>;
     public readonly meta: M;

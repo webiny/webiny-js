@@ -108,14 +108,14 @@ describe("CancelScheduledActionUseCase", () => {
             scheduleFor: scheduledFor
         });
 
-        expect(createResult.isOk()).toBe(true);
+        expect(createResult.isOk()).toBeTrue();
 
         const result = await cancelScheduledActionUseCase.execute({
             id: createResult.value.id,
             namespace
         });
 
-        expect(result.isOk()).toBe(true);
-        expect(result.value).toBeUndefined();
+        expect(result.isOk()).toBeTrue();
+        expect(result.value).toBeTrue();
     });
 });

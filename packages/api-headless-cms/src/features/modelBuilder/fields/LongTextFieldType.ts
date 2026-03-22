@@ -1,5 +1,5 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { FieldBuilder } from "./FieldBuilder.js";
+import { DataFieldBuilder } from "./FieldBuilder.js";
 import {
     RequiredValidator,
     MinLengthValidator,
@@ -14,7 +14,7 @@ import {
 } from "./validators.js";
 
 export interface ILongTextFieldBuilder
-    extends FieldBuilder<"long-text">,
+    extends DataFieldBuilder<"long-text">,
         RequiredValidator,
         MinLengthValidator,
         MaxLengthValidator,
@@ -26,7 +26,7 @@ export interface ILongTextFieldBuilder
         LowerCaseSpaceValidator,
         UpperCaseSpaceValidator {}
 
-class LongTextFieldBuilder extends FieldBuilder<"long-text"> implements ILongTextFieldBuilder {
+class LongTextFieldBuilder extends DataFieldBuilder<"long-text"> implements ILongTextFieldBuilder {
     public constructor() {
         super("long-text");
     }

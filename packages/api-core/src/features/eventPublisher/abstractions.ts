@@ -1,5 +1,6 @@
 import { Abstraction } from "@webiny/di";
 
+/** Base class for all domain events. */
 export abstract class DomainEvent<TPayload = void> {
     public abstract readonly eventType: string;
     public readonly occurredAt: Date;
@@ -27,6 +28,7 @@ export interface IEventPublisher {
     publish<TEvent extends DomainEvent<any>>(event: TEvent): Promise<void>;
 }
 
+/** Publish domain events to registered handlers. */
 export const EventPublisher = new Abstraction<IEventPublisher>("EventPublisher");
 
 export namespace EventPublisher {

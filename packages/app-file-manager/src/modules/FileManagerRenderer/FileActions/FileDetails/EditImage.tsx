@@ -1,7 +1,5 @@
 import React from "react";
 // @ts-expect-error
-import { Hotkeys } from "react-hotkeyz";
-// @ts-expect-error
 import dataURLtoBlob from "dataurl-to-blob";
 import { ImageEditorDialog } from "~/components/ImageEditor/ImageEditorDialog.js";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
@@ -93,28 +91,26 @@ export const EditImage = () => {
                     dispatch({ type: "setDataUrl", dataUrl });
                 }}
             />
-            <Hotkeys zIndex={100} disabled={!state.dataUrl}>
-                <ImageEditorDialog
-                    data-testid={"fm-image-editor-dialog"}
-                    dialogZIndex={100}
-                    open={state.showImageEditor}
-                    src={state.dataUrl as string}
-                    onClose={() => dispatch({ type: "hideImageEditor" })}
-                    onAccept={async src => {
-                        const blob = dataURLtoBlob(src);
-                        blob.name = file.name;
-                        blob.key = file.key.split("/").pop();
-                        const newFile = await uploadFile(blob);
+            <ImageEditorDialog
+                data-testid={"fm-image-editor-dialog"}
+                dialogZIndex={100}
+                open={state.showImageEditor}
+                src={state.dataUrl as string}
+                onClose={() => dispatch({ type: "hideImageEditor" })}
+                onAccept={async src => {
+                    const blob = dataURLtoBlob(src);
+                    blob.name = file.name;
+                    blob.key = file.key.split("/").pop();
+                    const newFile = await uploadFile(blob);
 
-                        if (newFile) {
-                            showSnackbar("A new version of the image has been created!");
-                            dispatch({ type: "hideImageEditor" });
-                            fileDetails.setFile(newFile);
-                            fileDetails.close();
-                        }
-                    }}
-                />
-            </Hotkeys>
+                    if (newFile) {
+                        showSnackbar("A new version of the image has been created!");
+                        dispatch({ type: "hideImageEditor" });
+                        fileDetails.setFile(newFile);
+                        fileDetails.close();
+                    }
+                }}
+            />
         </>
     );
 };

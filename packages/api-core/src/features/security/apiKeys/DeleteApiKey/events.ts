@@ -11,6 +11,7 @@ export class ApiKeyBeforeDeleteEvent extends DomainEvent<ApiKeyBeforeDeletePaylo
     }
 }
 
+/** Hook into API key lifecycle before an API key is deleted. */
 export const ApiKeyBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<ApiKeyBeforeDeleteEvent>
 >("ApiKeyBeforeDeleteEventHandler");
@@ -28,6 +29,7 @@ export class ApiKeyAfterDeleteEvent extends DomainEvent<ApiKeyAfterDeletePayload
     }
 }
 
+/** Hook into API key lifecycle after an API key is deleted. */
 export const ApiKeyAfterDeleteEventHandler = createAbstraction<
     IEventHandler<ApiKeyAfterDeleteEvent>
 >("ApiKeyAfterDeleteEventHandler");

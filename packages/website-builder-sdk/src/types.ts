@@ -272,6 +272,7 @@ export type Document = {
     state: DocumentState;
     version: number;
     properties: Record<string, any>;
+    extensions: Record<string, any>;
     metadata: DocumentMetadata;
     bindings: DocumentBindings;
     elements: ElementMap;

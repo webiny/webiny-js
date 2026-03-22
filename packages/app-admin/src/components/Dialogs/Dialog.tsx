@@ -9,6 +9,7 @@ export interface DialogProps {
     description: ReactNode;
     dismissible: boolean;
     content: ReactNode;
+    info?: ReactNode;
     icon: ReactNode;
     acceptLabel?: ReactNode;
     cancelLabel?: ReactNode;
@@ -67,6 +68,7 @@ export const Dialog = ({
                     description={props.description}
                     icon={<AdminDialog.Icon icon={props.icon} label={""} />}
                     dismissible={props.dismissible}
+                    info={props.info}
                     actions={
                         <>
                             {cancelLabel ? (

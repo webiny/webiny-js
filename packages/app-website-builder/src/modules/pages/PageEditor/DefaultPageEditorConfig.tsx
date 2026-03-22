@@ -1,5 +1,4 @@
 import React from "react";
-import { PageEditorConfig } from "./PageEditorConfig.js";
 import { PageAutoSave } from "./PageAutoSave.js";
 import { BackButton } from "./TopBar/BackButton.js";
 import { Title } from "./TopBar/Title.js";
@@ -7,12 +6,14 @@ import { PublishButton } from "./TopBar/PublishButton.js";
 import { RevisionsMenu } from "./TopBar/RevisionsMenu.js";
 import { SettingsButton } from "./TopBar/SettingsButton.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
+import { InternalPageEditorConfig } from "./PageEditorConfig.js";
+import { PageSettingsConfig } from "~/modules/pages/PageEditor/PageSettings/PageSettingsConfig.js";
 
-const { Ui } = PageEditorConfig;
+const { Ui } = InternalPageEditorConfig;
 
 export const DefaultPageEditorConfig = () => {
     return (
-        <PageEditorConfig>
+        <InternalPageEditorConfig>
             <Ui.TopBar.Element name={"buttonBack"} group={"left"} element={<BackButton />} />
             <Ui.TopBar.Element name={"title"} group={"left"} element={<Title />} />
             <Ui.TopBar.Action name={"revisionsMenu"} element={<RevisionsMenu />} />
@@ -30,6 +31,7 @@ export const DefaultPageEditorConfig = () => {
             <HasPermission entity={"page"} action={"edit"}>
                 <Ui.TopBar.Element group={"left"} name={"autoSave"} element={<PageAutoSave />} />
             </HasPermission>
-        </PageEditorConfig>
+            <PageSettingsConfig />
+        </InternalPageEditorConfig>
     );
 };

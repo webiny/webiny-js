@@ -88,7 +88,7 @@ export class LinkProjectCommand implements CliCommandFactory.Interface<void> {
                     selectedOrg = await prompt({
                         name: "org",
                         message: "Select organization:",
-                        type: "list",
+                        type: "select",
                         choices,
                         default: choices[0].value
                     }).then(result => result.org);
@@ -133,7 +133,7 @@ export class LinkProjectCommand implements CliCommandFactory.Interface<void> {
                     selectedProject = await prompt({
                         name: "project",
                         message: "Select project:",
-                        type: "list",
+                        type: "select",
                         choices,
                         default: choices[0].value
                     }).then(result => result.project);

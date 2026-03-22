@@ -46,6 +46,7 @@ export interface IGetPageByIdUseCaseErrors {
 
 type UseCaseError = IGetPageByIdUseCaseErrors[keyof IGetPageByIdUseCaseErrors];
 
+/** Retrieve a page by ID. */
 export const GetPageByIdUseCase = createAbstraction<IGetPageByIdUseCase>("Wb/GetPageByIdUseCase");
 
 export namespace GetPageByIdUseCase {

@@ -1,8 +1,8 @@
 import type { Plugin } from "@webiny/plugins";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { createSecurityRolePlugin } from "@webiny/api-core/legacy/security/plugins/SecurityRolePlugin.js";
-import { createSecurityTeamPlugin } from "@webiny/api-core/legacy/security/plugins/SecurityTeamPlugin";
+import { RoleFactory } from "@webiny/api-core/features/security/roles/shared/abstractions.js";
+import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
 import { IdentityData } from "@webiny/api-core/features/IdentityContext";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
@@ -24,19 +24,37 @@ export const FULL_ACCESS_ROLE_ID = "full-access-role";
 export const FULL_ACCESS_TEAM_ID = "full-access-team";
 export const UNKNOWN_TEAM_ID = "unknown-team";
 
+class FullAccessRoleFactory implements RoleFactory.Interface {
+    async execute(): RoleFactory.Return {
+        return [
+            {
+                name: "Full Access",
+                slug: FULL_ACCESS_ROLE_ID,
+                description: "Full access",
+                permissions: [{ name: "*" }]
+            }
+        ];
+    }
+}
+
+class FullAccessTeamFactory implements TeamFactory.Interface {
+    async execute(): TeamFactory.Return {
+        return [
+            {
+                name: "Full access",
+                slug: FULL_ACCESS_TEAM_ID,
+                description: "Full access",
+                roles: ["full-access"]
+            }
+        ];
+    }
+}
+
 export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plugin[] => {
     return [
-        createSecurityRolePlugin({
-            id: FULL_ACCESS_ROLE_ID,
-            name: "Full Access",
-            description: "Full access",
-            permissions: [{ name: "*" }]
-        }),
-        createSecurityTeamPlugin({
-            id: FULL_ACCESS_TEAM_ID,
-            name: "Full access",
-            description: "Full access",
-            roles: ["full-access"]
+        new ContextPlugin<ApiCoreContext>(async context => {
+            context.container.registerInstance(RoleFactory, new FullAccessRoleFactory());
+            context.container.registerInstance(TeamFactory, new FullAccessTeamFactory());
         }),
         new ContextPlugin<ApiCoreContext>(async context => {
             context.adminUsers.listUserTeams = async () => {

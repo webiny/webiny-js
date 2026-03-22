@@ -2,7 +2,6 @@ import { basename, join } from "path";
 import fs from "fs";
 import type { ViteUserConfig } from "vitest/config";
 import { testPattern } from "./vitest.project.js";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 type TestPreset = {
     setupFiles?: string[];
@@ -59,8 +58,10 @@ export const createTestConfig = async ({
         fileParallelism: false,
         ...vitestConfig,
         css: false,
-        // @ts-expect-error This _does_ actually work!
-        plugins: [tsconfigPaths({ root: path })]
+        plugins: [],
+        resolve: {
+            tsconfigPaths: true
+        }
     };
 
     const setupAfterEnv = join(path, "__tests__", "setup", "setupAfterEnv.js");

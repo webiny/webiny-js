@@ -21,7 +21,7 @@
     "@webiny/website-builder-sdk": "0.0.0",
     "deep-equal": "^2.2.3",
     "mobx": "^6.15.0",
-    "mobx-react-lite": "^3.4.3",
+    "mobx-react-lite": "^4.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -29,7 +29,7 @@
     "@types/react": "^18.3.28",
     "@webiny/build-tools": "0.0.0",
     "typescript": "5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.0"
   },
   "publishConfig": {
     "access": "public",

@@ -60,6 +60,7 @@ export interface IMoveRedirectUseCaseErrors {
 
 type UseCaseError = IMoveRedirectUseCaseErrors[keyof IMoveRedirectUseCaseErrors];
 
+/** Move a URL redirect to a different folder. */
 export const MoveRedirectUseCase =
     createAbstraction<IMoveRedirectUseCase>("Wb/MoveRedirectUseCase");
 
@@ -90,6 +91,7 @@ export interface RedirectAfterMovePayload {
 // Event Handler Abstractions
 // ============================================================================
 
+/** Hook into redirect lifecycle before a redirect is moved. */
 export const RedirectBeforeMoveEventHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectBeforeMovePayload>>
 >("Wb/RedirectBeforeMoveEventHandler");
@@ -100,6 +102,7 @@ export namespace RedirectBeforeMoveEventHandler {
     export type Redirect = WbRedirect;
 }
 
+/** Hook into redirect lifecycle after a redirect is moved. */
 export const RedirectAfterMoveEventHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectAfterMovePayload>>
 >("Wb/RedirectAfterMoveEventHandler");

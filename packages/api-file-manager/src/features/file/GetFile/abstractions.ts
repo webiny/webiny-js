@@ -22,6 +22,7 @@ export interface IGetFileRepositoryErrors {
 
 type RepositoryError = IGetFileRepositoryErrors[keyof IGetFileRepositoryErrors];
 
+/** Fetch a file from storage. */
 export const GetFileRepository = createAbstraction<IGetFileRepository>("GetFileRepository");
 
 export namespace GetFileRepository {
@@ -44,6 +45,7 @@ export interface IGetFileUseCaseErrors {
 
 type UseCaseError = IGetFileUseCaseErrors[keyof IGetFileUseCaseErrors];
 
+/** Retrieve a file by ID. */
 export const GetFileUseCase = createAbstraction<IGetFileUseCase>("GetFileUseCase");
 
 export namespace GetFileUseCase {

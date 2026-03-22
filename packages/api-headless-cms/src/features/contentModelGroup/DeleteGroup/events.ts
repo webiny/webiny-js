@@ -30,6 +30,7 @@ export class GroupBeforeDeleteEvent extends DomainEvent<GroupBeforeDeleteEventPa
     }
 }
 
+/** Hook into group lifecycle before a group is deleted. */
 export const GroupBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<GroupBeforeDeleteEvent>
 >("GroupBeforeDeleteEventHandler");
@@ -50,6 +51,7 @@ export class GroupAfterDeleteEvent extends DomainEvent<GroupAfterDeleteEventPayl
     }
 }
 
+/** Hook into group lifecycle after a group is deleted. */
 export const GroupAfterDeleteEventHandler = createAbstraction<IEventHandler<GroupAfterDeleteEvent>>(
     "GroupAfterDeleteEventHandler"
 );

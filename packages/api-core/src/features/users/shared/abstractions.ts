@@ -21,7 +21,7 @@ export interface IAdminUsersRepository {
     clearCache(keys: Array<{ tenant: string; id: string }>): void;
 }
 
-// Abstraction constant
+/** Persist and retrieve admin users. */
 export const AdminUsersRepository =
     createAbstraction<IAdminUsersRepository>("AdminUsersRepository");
 

@@ -24,6 +24,7 @@ export interface IFolderLevelPermissions {
     getFolderLevelPermissions(id: string): Promise<FolderPermission[]>;
 }
 
+/** Manage folder-level access control. */
 export const FolderLevelPermissions =
     createAbstraction<IFolderLevelPermissions>("FolderLevelPermissions");
 

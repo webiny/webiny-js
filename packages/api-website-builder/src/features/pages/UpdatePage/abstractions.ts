@@ -66,6 +66,7 @@ export interface IUpdatePageUseCaseErrors {
 
 type UseCaseError = IUpdatePageUseCaseErrors[keyof IUpdatePageUseCaseErrors];
 
+/** Update a page. */
 export const UpdatePageUseCase = createAbstraction<IUpdatePageUseCase>("Wb/UpdatePageUseCase");
 
 export namespace UpdatePageUseCase {
@@ -101,6 +102,7 @@ export interface PageAfterUpdatePayload {
 // Event Handler Abstractions
 // ============================================================================
 
+/** Hook into page lifecycle before a page is updated. */
 export const PageBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeUpdatePayload>>
 >("Wb/PageBeforeUpdateEventHandler");
@@ -111,6 +113,7 @@ export namespace PageBeforeUpdateEventHandler {
     export type Page = WbPage;
 }
 
+/** Hook into page lifecycle after a page is updated. */
 export const PageAfterUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterUpdatePayload>>
 >("Wb/PageAfterUpdateEventHandler");

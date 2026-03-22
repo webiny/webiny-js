@@ -23,6 +23,7 @@ export interface IDeleteFolderRepositoryErrors {
 
 type RepositoryError = IDeleteFolderRepositoryErrors[keyof IDeleteFolderRepositoryErrors];
 
+/** Persist folder deletion. */
 export const DeleteFolderRepository =
     createAbstraction<IDeleteFolderRepository>("DeleteFolderRepository");
 
@@ -47,6 +48,7 @@ export interface IDeleteFolderUseCaseErrors {
 
 type UseCaseError = IDeleteFolderUseCaseErrors[keyof IDeleteFolderUseCaseErrors];
 
+/** Delete a folder. */
 export const DeleteFolderUseCase = createAbstraction<IDeleteFolderUseCase>("DeleteFolderUseCase");
 
 export namespace DeleteFolderUseCase {
@@ -64,6 +66,7 @@ export interface FolderAfterDeletePayload {
 }
 
 // Event Handler Abstractions
+/** Hook into folder lifecycle before a folder is deleted. */
 export const FolderBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderBeforeDeletePayload>>
 >("FolderBeforeDeleteEventHandler");
@@ -73,6 +76,7 @@ export namespace FolderBeforeDeleteEventHandler {
     export type Event = DomainEvent<FolderBeforeDeletePayload>;
 }
 
+/** Hook into folder lifecycle after a folder is deleted. */
 export const FolderAfterDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderAfterDeletePayload>>
 >("FolderAfterDeleteEventHandler");

@@ -21,6 +21,7 @@ export interface IDeleteFileRepositoryErrors {
 
 type RepositoryError = IDeleteFileRepositoryErrors[keyof IDeleteFileRepositoryErrors];
 
+/** Persist file deletion. */
 export const DeleteFileRepository =
     createAbstraction<IDeleteFileRepository>("DeleteFileRepository");
 
@@ -44,6 +45,7 @@ export interface IDeleteFileUseCaseErrors {
 
 type UseCaseError = IDeleteFileUseCaseErrors[keyof IDeleteFileUseCaseErrors];
 
+/** Delete a file. */
 export const DeleteFileUseCase = createAbstraction<IDeleteFileUseCase>("DeleteFileUseCase");
 
 export namespace DeleteFileUseCase {

@@ -204,6 +204,7 @@ export default defineConfig([
     "idea.js",
     "scripts/**/*.js",
     "packages/admin-ui/.storybook/**/*",
+    "packages/admin-ui/storybook-static/**/*",
     //"packages/create-webiny-project/**/*",
     "packages/create-webiny-project/_templates/**/*"
   ])

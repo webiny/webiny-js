@@ -25,6 +25,7 @@ export interface IRepublishEntryUseCaseErrors {
 
 type UseCaseError = IRepublishEntryUseCaseErrors[keyof IRepublishEntryUseCaseErrors];
 
+/** Republish a content entry. */
 export const RepublishEntryUseCase =
     createAbstraction<IRepublishEntryUseCase>("RepublishEntryUseCase");
 

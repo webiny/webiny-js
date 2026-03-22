@@ -1,37 +1,57 @@
 import { describe, test, expect, beforeEach } from "vitest";
+import { ContextPlugin } from "@webiny/api";
 import { useGqlHandler } from "../useGqlHandler";
 import mocks from "../mocks/securityTeam";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import { createSecurityTeamPlugin } from "~/legacy/security/plugins/SecurityTeamPlugin";
-import { createSecurityRolePlugin } from "~/legacy/security/plugins/SecurityRolePlugin.js";
+import { RoleFactory } from "~/features/security/roles/shared/abstractions.js";
+import { TeamFactory } from "~/features/security/teams/shared/abstractions.js";
+import type { ApiCoreContext } from "~/types/core.js";
+
+class TestRoleFactory implements RoleFactory.Interface {
+    execute(): RoleFactory.Return {
+        return [
+            {
+                name: "Test Team 1",
+                slug: "test-team-1",
+                description: "1st test team defined via an extension.",
+                permissions: [{ name: "cms.*" }]
+            },
+            {
+                name: "Test Team 2",
+                slug: "test-team-2",
+                description: "2nd test team defined via an extension.",
+                permissions: [{ name: "pb.*" }]
+            }
+        ];
+    }
+}
+
+class TestTeamFactory implements TeamFactory.Interface {
+    execute(): TeamFactory.Return {
+        return [
+            {
+                name: "Test Team 2",
+                slug: "test-team-2",
+                description: "2nd test team defined via an extension.",
+                roles: ["test-team-1"]
+            },
+            {
+                name: "Test Team 1",
+                slug: "test-team-1",
+                description: "1st test team defined via an extension.",
+                roles: ["test-team-2"]
+            }
+        ];
+    }
+}
 
 describe("Security Team CRUD Test", () => {
     const { install, securityTeam } = useGqlHandler({
         wcpLicense: createTestWcpLicense(),
         plugins: [
-            createSecurityRolePlugin({
-                id: "test-team-1",
-                name: "Test Team 1",
-                description: "1st test team defined via an extension.",
-                permissions: [{ name: "cms.*" }]
-            }),
-            createSecurityRolePlugin({
-                id: "test-team-2",
-                name: "Test Team 2",
-                description: "2nd test team defined via an extension.",
-                permissions: [{ name: "pb.*" }]
-            }),
-            createSecurityTeamPlugin({
-                id: "test-team-2",
-                name: "Test Team 2",
-                description: "2nd test team defined via an extension.",
-                roles: ["test-team-1"]
-            }),
-            createSecurityTeamPlugin({
-                id: "test-team-1",
-                name: "Test Team 1",
-                description: "1st test team defined via an extension.",
-                roles: ["test-team-2"]
+            new ContextPlugin<ApiCoreContext>(async context => {
+                context.container.registerInstance(RoleFactory, new TestRoleFactory());
+                context.container.registerInstance(TeamFactory, new TestTeamFactory());
             })
         ]
     });

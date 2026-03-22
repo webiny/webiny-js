@@ -1,4 +1,5 @@
 import React from "react";
+import { DevToolsSection } from "@webiny/react-properties";
 import { RouteElementRegistry, useRoute } from "~/presentation/router/index.js";
 import { useContainer } from "~/shared/di/DiContainerProvider.js";
 
@@ -13,5 +14,10 @@ export const RouteContent = () => {
 
     const element = elementRegistry.getElement(route.name);
 
-    return <>{element ?? null}</>;
+    return (
+        <>
+            <DevToolsSection name={"Current Route"} group={"Router"} data={route} views={"raw"} />
+            {element ?? null}
+        </>
+    );
 };

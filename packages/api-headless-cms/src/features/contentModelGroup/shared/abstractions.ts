@@ -32,6 +32,7 @@ export interface IModelGroupFactory {
     execute(): Promise<IModelGroup[]>;
 }
 
+/** Provide code-defined content model groups. */
 export const ModelGroupFactory = createAbstraction<IModelGroupFactory>("ModelGroupFactory");
 export namespace ModelGroupFactory {
     export type Interface = IModelGroupFactory;

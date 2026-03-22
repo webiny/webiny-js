@@ -16,6 +16,7 @@ export interface ITaskController<
     // Empty - augmented by tasks package
 }
 
+/** Runtime controller providing capabilities to running tasks. */
 export const TaskController = createAbstraction<ITaskController>("TaskController");
 
 export namespace TaskController {

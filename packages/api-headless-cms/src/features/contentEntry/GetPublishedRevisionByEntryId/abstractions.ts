@@ -19,6 +19,7 @@ export interface IGetPublishedRevisionByEntryIdUseCaseErrors {
 type UseCaseError =
     IGetPublishedRevisionByEntryIdUseCaseErrors[keyof IGetPublishedRevisionByEntryIdUseCaseErrors];
 
+/** Retrieve the published revision of an entry. */
 export const GetPublishedRevisionByEntryIdUseCase =
     createAbstraction<IGetPublishedRevisionByEntryIdUseCase>(
         "GetPublishedRevisionByEntryIdUseCase"

@@ -12,6 +12,7 @@ export class UserBeforeCreateEvent extends DomainEvent<UserBeforeCreatePayload> 
     }
 }
 
+/** Hook into user lifecycle before a user is created. */
 export const UserBeforeCreateEventHandler = createAbstraction<IEventHandler<UserBeforeCreateEvent>>(
     "UserBeforeCreateEventHandler"
 );
@@ -30,6 +31,7 @@ export class UserAfterCreateEvent extends DomainEvent<UserAfterCreatePayload> {
     }
 }
 
+/** Hook into user lifecycle after a user is created. */
 export const UserAfterCreateEventHandler = createAbstraction<IEventHandler<UserAfterCreateEvent>>(
     "UserAfterCreateEventHandler"
 );

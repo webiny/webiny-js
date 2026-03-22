@@ -22,6 +22,7 @@ export interface ICreateFolderRepositoryErrors {
 
 type RepositoryError = ICreateFolderRepositoryErrors[keyof ICreateFolderRepositoryErrors];
 
+/** Persist a newly created folder. */
 export const CreateFolderRepository =
     createAbstraction<ICreateFolderRepository>("CreateFolderRepository");
 
@@ -45,6 +46,7 @@ export interface ICreateFolderUseCaseErrors {
 
 type UseCaseError = ICreateFolderUseCaseErrors[keyof ICreateFolderUseCaseErrors];
 
+/** Create a new folder. */
 export const CreateFolderUseCase = createAbstraction<ICreateFolderUseCase>("CreateFolderUseCase");
 
 export namespace CreateFolderUseCase {
@@ -63,6 +65,7 @@ export interface FolderAfterCreatePayload {
 }
 
 // Event Handler Abstractions
+/** Hook into folder lifecycle before a folder is created. */
 export const FolderBeforeCreateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderBeforeCreatePayload>>
 >("FolderBeforeCreateEventHandler");
@@ -72,6 +75,7 @@ export namespace FolderBeforeCreateEventHandler {
     export type Event = DomainEvent<FolderBeforeCreatePayload>;
 }
 
+/** Hook into folder lifecycle after a folder is created. */
 export const FolderAfterCreateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderAfterCreatePayload>>
 >("FolderAfterCreateEventHandler");

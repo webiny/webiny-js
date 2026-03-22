@@ -21,7 +21,7 @@ export interface IDeleteUser {
     execute(id: string): Promise<Result<void, DeleteUserError>>;
 }
 
-// Abstraction constant
+/** Delete an admin user. */
 export const DeleteUserUseCase = createAbstraction<IDeleteUser>("DeleteUserUseCase");
 
 // Namespace exports

@@ -1,4 +1,4 @@
-import findUp from "find-up";
+import { findUpSync } from "find-up";
 import path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import type { PulumiAppModuleDefinition } from "./PulumiAppModule.js";
@@ -28,7 +28,7 @@ import { DEFAULT_PROD_ENV_NAMES } from "./constants.js";
 export function createPulumiApp<TResources extends Record<string, unknown>>(
     params: CreatePulumiAppParams<TResources>
 ): PulumiApp<TResources> {
-    let projectRootPath = findUp.sync("webiny.config.tsx");
+    let projectRootPath = findUpSync("webiny.config.tsx");
     if (projectRootPath) {
         projectRootPath = path.dirname(projectRootPath).replace(/\\/g, "/");
     } else {

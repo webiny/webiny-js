@@ -58,6 +58,7 @@ export interface IDeleteRedirectUseCaseErrors {
 
 type UseCaseError = IDeleteRedirectUseCaseErrors[keyof IDeleteRedirectUseCaseErrors];
 
+/** Delete a URL redirect. */
 export const DeleteRedirectUseCase = createAbstraction<IDeleteRedirectUseCase>(
     "Wb/DeleteRedirectUseCase"
 );
@@ -85,6 +86,7 @@ export interface RedirectAfterDeletePayload {
 // Event Handler Abstractions
 // ============================================================================
 
+/** Hook into redirect lifecycle before a redirect is deleted. */
 export const RedirectBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectBeforeDeletePayload>>
 >("Wb/RedirectBeforeDeleteEventHandler");
@@ -95,6 +97,7 @@ export namespace RedirectBeforeDeleteEventHandler {
     export type Redirect = WbRedirect;
 }
 
+/** Hook into redirect lifecycle after a redirect is deleted. */
 export const RedirectAfterDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectAfterDeletePayload>>
 >("Wb/RedirectAfterDeleteEventHandler");

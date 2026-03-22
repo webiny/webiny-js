@@ -75,6 +75,7 @@ export { Tree } from "@webiny/admin-ui/Tree/index.js";
 export { Widget } from "@webiny/admin-ui/Widget/index.js";
 export { cn, cva, generateId } from "@webiny/admin-ui/utils.js";
 export { useDisclosure } from "@webiny/admin-ui/hooks/index.js";
+export { useHotkeys } from "@webiny/app-admin/hooks/useHotkeys.js";
 export { useDialogs } from "@webiny/app-admin/components/Dialogs/useDialogs.js";
 export { Logo } from "@webiny/app-admin/base/ui/Logo.js";
 export { TenantSelector } from "@webiny/app-admin/base/ui/TenantSelector.js";

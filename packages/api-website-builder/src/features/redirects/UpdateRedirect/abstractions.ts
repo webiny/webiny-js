@@ -67,6 +67,7 @@ export interface IUpdateRedirectUseCaseErrors {
 
 type UseCaseError = IUpdateRedirectUseCaseErrors[keyof IUpdateRedirectUseCaseErrors];
 
+/** Update a URL redirect. */
 export const UpdateRedirectUseCase = createAbstraction<IUpdateRedirectUseCase>(
     "Wb/UpdateRedirectUseCase"
 );
@@ -104,6 +105,7 @@ export interface RedirectAfterUpdatePayload {
 // Event Handler Abstractions
 // ============================================================================
 
+/** Hook into redirect lifecycle before a redirect is updated. */
 export const RedirectBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectBeforeUpdatePayload>>
 >("Wb/RedirectBeforeUpdateEventHandler");
@@ -114,6 +116,7 @@ export namespace RedirectBeforeUpdateEventHandler {
     export type Redirect = WbRedirect;
 }
 
+/** Hook into redirect lifecycle after a redirect is updated. */
 export const RedirectAfterUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectAfterUpdatePayload>>
 >("Wb/RedirectAfterUpdateEventHandler");

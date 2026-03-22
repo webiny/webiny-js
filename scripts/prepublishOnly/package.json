@@ -7,14 +7,14 @@
   "bin": "./src/index.js",
   "main": "./src/index.js",
   "dependencies": {
-    "chalk": "^4.1.2",
-    "find-up": "^5.0.0",
+    "chalk": "^5.6.2",
+    "find-up": "^8.0.0",
     "fs-extra": "^11.3.4",
     "get-yarn-workspaces": "1.0.2",
     "load-json-file": "^7.0.1",
     "write-json-file": "^7.0.0"
   },
   "devDependencies": {
-    "type-fest": "^5.4.4"
+    "type-fest": "^5.5.0"
   }
 }

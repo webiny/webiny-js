@@ -13,6 +13,7 @@ export interface IListFlps {
     execute: (params: ListFlpsParams) => Promise<FolderLevelPermission[]>;
 }
 
+/** List folder-level permissions. */
 export const ListFlpsUseCase = createAbstraction<IListFlps>("ListFlpsUseCase");
 
 export namespace ListFlpsUseCase {

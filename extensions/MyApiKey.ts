@@ -1,7 +1,7 @@
 import { ApiKeyFactory } from "webiny/api/security";
 
 class MyApiKeyImpl implements ApiKeyFactory.Interface {
-    execute(): ApiKeyFactory.Return {
+    async execute(): ApiKeyFactory.Return {
         return [
             {
                 name: "Universal API Key",

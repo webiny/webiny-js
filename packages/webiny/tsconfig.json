@@ -3,11 +3,14 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../admin-ui" },
+    { "path": "../api-aco" },
     { "path": "../api-core" },
+    { "path": "../api-file-manager" },
     { "path": "../api-headless-cms" },
     { "path": "../api-headless-cms-scheduler" },
     { "path": "../api-scheduler" },
     { "path": "../api-website-builder" },
+    { "path": "../api-website-builder-scheduler" },
     { "path": "../app" },
     { "path": "../app-aco" },
     { "path": "../app-admin" },
@@ -35,6 +38,35 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/admin-ui/*": ["../admin-ui/src/*"],
       "@webiny/admin-ui": ["../admin-ui/src"],
+      "@webiny/api-aco/features/flp/FolderLevelPermissions": [
+        "../api-aco/src/features/flp/FolderLevelPermissions/index.js"
+      ],
+      "@webiny/api-aco/features/folder/CreateFolder": [
+        "../api-aco/src/features/folder/CreateFolder/index.js"
+      ],
+      "@webiny/api-aco/features/folder/UpdateFolder": [
+        "../api-aco/src/features/folder/UpdateFolder/index.js"
+      ],
+      "@webiny/api-aco/features/folder/DeleteFolder": [
+        "../api-aco/src/features/folder/DeleteFolder/index.js"
+      ],
+      "@webiny/api-aco/features/folder/GetAncestors": [
+        "../api-aco/src/features/folder/GetAncestors/index.js"
+      ],
+      "@webiny/api-aco/features/folder/GetFolder": [
+        "../api-aco/src/features/folder/GetFolder/index.js"
+      ],
+      "@webiny/api-aco/features/folder/GetFolderHierarchy": [
+        "../api-aco/src/features/folder/GetFolderHierarchy/index.js"
+      ],
+      "@webiny/api-aco/features/folder/ListFolders": [
+        "../api-aco/src/features/folder/ListFolders/index.js"
+      ],
+      "@webiny/api-aco/features/folder/EnsureFolderIsEmpty": [
+        "../api-aco/src/features/folder/EnsureFolderIsEmpty/index.js"
+      ],
+      "@webiny/api-aco/*": ["../api-aco/src/*"],
+      "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-core/features/EventPublisher": [
         "../api-core/src/features/eventPublisher/index.js"
       ],
@@ -155,6 +187,8 @@
       ],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-headless-cms-scheduler/*": ["../api-headless-cms-scheduler/src/*"],
@@ -163,6 +197,8 @@
       "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],
       "@webiny/api-website-builder": ["../api-website-builder/src"],
+      "@webiny/api-website-builder-scheduler/*": ["../api-website-builder-scheduler/src/*"],
+      "@webiny/api-website-builder-scheduler": ["../api-website-builder-scheduler/src"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-aco/*": ["../app-aco/src/*"],

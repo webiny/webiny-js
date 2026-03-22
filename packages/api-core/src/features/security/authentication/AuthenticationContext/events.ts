@@ -15,6 +15,7 @@ export class BeforeAuthenticationEvent extends DomainEvent<BeforeAuthenticationP
     }
 }
 
+/** Hook into authentication lifecycle before authentication occurs. */
 export const BeforeAuthenticationEventHandler = createAbstraction<
     IEventHandler<BeforeAuthenticationEvent>
 >("BeforeAuthenticationEventHandler");
@@ -37,6 +38,7 @@ export class AfterAuthenticationEvent extends DomainEvent<AfterAuthenticationPay
     }
 }
 
+/** Hook into authentication lifecycle after authentication occurs. */
 export const AfterAuthenticationEventHandler = createAbstraction<
     IEventHandler<AfterAuthenticationEvent>
 >("AfterAuthenticationEventHandler");

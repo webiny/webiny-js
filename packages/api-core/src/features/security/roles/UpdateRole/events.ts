@@ -11,6 +11,7 @@ export class RoleBeforeUpdateEvent extends DomainEvent<RoleBeforeUpdatePayload> 
     }
 }
 
+/** Hook into role lifecycle before a role is updated. */
 export const RoleBeforeUpdateEventHandler = createAbstraction<IEventHandler<RoleBeforeUpdateEvent>>(
     "RoleBeforeUpdateEventHandler"
 );
@@ -28,6 +29,7 @@ export class RoleAfterUpdateEvent extends DomainEvent<RoleAfterUpdatePayload> {
     }
 }
 
+/** Hook into role lifecycle after a role is updated. */
 export const RoleAfterUpdateEventHandler = createAbstraction<IEventHandler<RoleAfterUpdateEvent>>(
     "RoleAfterUpdateEventHandler"
 );

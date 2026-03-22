@@ -11,6 +11,7 @@ export class RoleBeforeDeleteEvent extends DomainEvent<RoleBeforeDeletePayload> 
     }
 }
 
+/** Hook into role lifecycle before a role is deleted. */
 export const RoleBeforeDeleteEventHandler = createAbstraction<IEventHandler<RoleBeforeDeleteEvent>>(
     "RoleBeforeDeleteEventHandler"
 );
@@ -28,6 +29,7 @@ export class RoleAfterDeleteEvent extends DomainEvent<RoleAfterDeletePayload> {
     }
 }
 
+/** Hook into role lifecycle after a role is deleted. */
 export const RoleAfterDeleteEventHandler = createAbstraction<IEventHandler<RoleAfterDeleteEvent>>(
     "RoleAfterDeleteEventHandler"
 );

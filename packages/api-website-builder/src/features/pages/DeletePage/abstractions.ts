@@ -57,6 +57,7 @@ export interface IDeletePageUseCaseErrors {
 
 type UseCaseError = IDeletePageUseCaseErrors[keyof IDeletePageUseCaseErrors];
 
+/** Delete a page. */
 export const DeletePageUseCase = createAbstraction<IDeletePageUseCase>("Wb/DeletePageUseCase");
 
 export namespace DeletePageUseCase {
@@ -82,6 +83,7 @@ export interface PageAfterDeletePayload {
 // Event Handler Abstractions
 // ============================================================================
 
+/** Hook into page lifecycle before a page is deleted. */
 export const PageBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeDeletePayload>>
 >("Wb/PageBeforeDeleteEventHandler");
@@ -92,6 +94,7 @@ export namespace PageBeforeDeleteEventHandler {
     export type Page = WbPage;
 }
 
+/** Hook into page lifecycle after a page is deleted. */
 export const PageAfterDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterDeletePayload>>
 >("Wb/PageAfterDeleteEventHandler");

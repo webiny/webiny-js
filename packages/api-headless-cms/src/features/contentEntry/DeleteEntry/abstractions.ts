@@ -26,6 +26,7 @@ export interface IDeleteEntryUseCaseErrors {
 
 type UseCaseError = IDeleteEntryUseCaseErrors[keyof IDeleteEntryUseCaseErrors];
 
+/** Delete a content entry. */
 export const DeleteEntryUseCase = createAbstraction<IDeleteEntryUseCase>("DeleteEntryUseCase");
 
 export namespace DeleteEntryUseCase {
@@ -92,6 +93,7 @@ export interface IMoveEntryToBinUseCase {
     execute(model: CmsModel, id: string): Promise<Result<void, UseCaseError>>;
 }
 
+/** Move a content entry to the recycle bin. */
 export const MoveEntryToBinUseCase =
     createAbstraction<IMoveEntryToBinUseCase>("MoveEntryToBinUseCase");
 

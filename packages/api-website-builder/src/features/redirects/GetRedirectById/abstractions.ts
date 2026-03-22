@@ -47,6 +47,7 @@ export interface IGetRedirectByIdUseCaseErrors {
 
 type UseCaseError = IGetRedirectByIdUseCaseErrors[keyof IGetRedirectByIdUseCaseErrors];
 
+/** Retrieve a URL redirect by ID. */
 export const GetRedirectByIdUseCase = createAbstraction<IGetRedirectByIdUseCase>(
     "Wb/GetRedirectByIdUseCase"
 );

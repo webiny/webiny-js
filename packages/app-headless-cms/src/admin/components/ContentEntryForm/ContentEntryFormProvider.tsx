@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { CompositionScope, NavigationPrompt, useSnackbar } from "@webiny/app-admin";
+import {
+    CompositionScope,
+    DevToolsSection,
+    NavigationPrompt,
+    useSnackbar
+} from "@webiny/app-admin";
 import type { FormAPI, FormInvalidFields, FormOnSubmit, FormValidation } from "@webiny/form";
 import { Form } from "@webiny/form";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
@@ -19,7 +24,7 @@ interface SaveEntryOptions {
 }
 
 export interface ContentEntryFormContext {
-    entry: Partial<CmsContentEntry>;
+    entry: Partial<Omit<CmsContentEntry, "values">> & Pick<CmsContentEntry, "values">;
     saveEntry: (options?: SaveEntryOptions) => Promise<CmsContentEntry | null>;
     invalidFields: FormInvalidFields;
 }
@@ -40,7 +45,7 @@ export interface PersistEntry {
 }
 
 interface ContentEntryFormProviderProps {
-    entry: Partial<CmsContentEntry>;
+    entry: Partial<Omit<CmsContentEntry, "values">> & Pick<CmsContentEntry, "values">;
     model: CmsModel;
     persistEntry: PersistEntry;
     confirmNavigationIfDirty: boolean;
@@ -159,6 +164,12 @@ export const ContentEntryFormProvider = ({
                 };
                 return (
                     <ContentEntryFormContext.Provider value={context}>
+                        <DevToolsSection
+                            name={"Entry"}
+                            group={"CMS"}
+                            data={context.entry}
+                            views={"raw"}
+                        />
                         {confirmNavigationIfDirty ? (
                             <CompositionScope name={"cms.contentEntryForm"}>
                                 <NavigationPrompt

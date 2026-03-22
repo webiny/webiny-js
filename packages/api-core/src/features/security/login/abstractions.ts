@@ -15,6 +15,7 @@ export class AfterLoginEvent extends DomainEvent<AfterLoginPayload> {
     }
 }
 
+/** Hook into login lifecycle after a user logs in. */
 export const AfterLoginEventHandler =
     createAbstraction<IEventHandler<AfterLoginEvent>>("AfterLoginEventHandler");
 

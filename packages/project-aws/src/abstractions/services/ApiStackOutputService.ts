@@ -12,7 +12,6 @@ export interface IApiStackOutput {
     region?: string;
     websocketApiId?: string;
     websocketApiUrl?: string;
-    migrationLambdaArn?: string;
     graphqlLambdaName?: string;
     backgroundTaskLambdaArn?: string;
     backgroundTaskStepFunctionArn?: string;

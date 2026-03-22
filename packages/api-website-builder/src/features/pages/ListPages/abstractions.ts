@@ -57,6 +57,7 @@ export interface IListPagesUseCaseErrors {
 
 type UseCaseError = IListPagesUseCaseErrors[keyof IListPagesUseCaseErrors];
 
+/** List pages with filtering and pagination. */
 export const ListPagesUseCase = createAbstraction<IListPagesUseCase>("Wb/ListPagesUseCase");
 
 export namespace ListPagesUseCase {

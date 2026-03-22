@@ -19,6 +19,7 @@ export class FileBeforeDeleteEvent extends DomainEvent<FileBeforeDeletePayload> 
     }
 }
 
+/** Hook into file lifecycle before a file is deleted. */
 export const FileBeforeDeleteEventHandler = createAbstraction<IEventHandler<FileBeforeDeleteEvent>>(
     "FileBeforeDeleteEventHandler"
 );
@@ -44,6 +45,7 @@ export class FileAfterDeleteEvent extends DomainEvent<FileAfterDeletePayload> {
     }
 }
 
+/** Hook into file lifecycle after a file is deleted. */
 export const FileAfterDeleteEventHandler = createAbstraction<IEventHandler<FileAfterDeleteEvent>>(
     "FileAfterDeleteEventHandler"
 );

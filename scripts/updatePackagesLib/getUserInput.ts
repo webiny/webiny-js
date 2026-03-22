@@ -32,7 +32,7 @@ export const getUserInput = async ({
         name: "preset",
         message: "Do you want to use a preset?",
         default: null,
-        type: "list",
+        type: "select",
         choices: [
             { name: "I will write my own custom matching", value: null },
 
@@ -77,7 +77,7 @@ export const getUserInput = async ({
 
     const { skipResolutions } = await prompt({
         name: "skipResolutions",
-        type: "list",
+        type: "select",
         default: null,
         message: "Skip adding packages to main package.json resolutions?",
         choices: [
@@ -88,7 +88,7 @@ export const getUserInput = async ({
 
     const { useCaret } = await prompt({
         name: "useCaret",
-        type: "list",
+        type: "select",
         default: null,
         message: "Use caret (^) to match any package in the major version?",
         choices: [

@@ -35,6 +35,7 @@ export interface IGetScheduledActionUseCase {
     ): Promise<Result<IScheduledAction<T>, GetScheduledActionError>>;
 }
 
+/** Retrieve a scheduled action. */
 export const GetScheduledActionUseCase = createAbstraction<IGetScheduledActionUseCase>(
     "Scheduler/GetScheduledActionUseCase"
 );
