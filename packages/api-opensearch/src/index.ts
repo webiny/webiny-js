@@ -40,12 +40,6 @@ export const createOpenSearchContext = (
 
         OpenSearchClientFeature.register(context.container, context);
         OpenSearchClientFactoryFeature.register(context.container);
-        console.log("yes!");
-        const r = context.container.resolve(OpenSearchClient);
-        const x = 1;
-        const y = 2;
-        const z = x + y;
-        console.log(z);
     });
 
     plugin.name = "context.opensearch";
