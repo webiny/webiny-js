@@ -1,3 +1,4 @@
+/** Represents an API token identity. */
 export class ApiToken {
     /**
      * Validate that the token is valid.

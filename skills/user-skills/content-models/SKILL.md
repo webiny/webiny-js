@@ -302,5 +302,4 @@ Deploy:       yarn webiny deploy api  (or use watch mode)
 ## Related Skills
 
 - `dependency-injection` -- The `createImplementation` pattern used here
-- `lifecycle-events` -- Hook into create/update/delete events on your models
 - `webiny-sdk` -- Query and write data to your models from external apps

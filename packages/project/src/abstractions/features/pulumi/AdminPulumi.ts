@@ -4,6 +4,9 @@ export interface IAdminPulumi<TApp> {
     execute(app: TApp): void | Promise<void>;
 }
 
+/**
+ * Implement this abstraction to add custom Pulumi code to Admin.
+ */
 export const AdminPulumi = createAbstraction<IAdminPulumi<unknown>>("AdminPulumi");
 
 export namespace AdminPulumi {

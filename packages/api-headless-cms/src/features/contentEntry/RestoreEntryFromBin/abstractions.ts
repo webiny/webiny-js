@@ -25,6 +25,7 @@ export interface IRestoreEntryFromBinUseCaseErrors {
 
 type UseCaseError = IRestoreEntryFromBinUseCaseErrors[keyof IRestoreEntryFromBinUseCaseErrors];
 
+/** Restore a content entry from the recycle bin. */
 export const RestoreEntryFromBinUseCase = createAbstraction<IRestoreEntryFromBinUseCase>(
     "RestoreEntryFromBinUseCase"
 );

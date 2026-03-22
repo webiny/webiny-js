@@ -1,9 +1,9 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { FieldBuilder } from "./FieldBuilder.js";
+import { DataFieldBuilder } from "./FieldBuilder.js";
 
-export interface IJsonFieldBuilder extends FieldBuilder<"json"> {}
+export interface IJsonFieldBuilder extends DataFieldBuilder<"json"> {}
 
-class JsonFieldBuilder extends FieldBuilder<"json"> implements IJsonFieldBuilder {
+class JsonFieldBuilder extends DataFieldBuilder<"json"> implements IJsonFieldBuilder {
     public constructor() {
         super("json");
     }

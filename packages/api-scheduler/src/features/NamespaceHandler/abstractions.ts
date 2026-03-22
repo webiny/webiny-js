@@ -35,6 +35,7 @@ export interface INamespaceHandler<T extends GenericRecord = GenericRecord> {
     ): Promise<Result<INamespaceHandlerResult<T>, NamespaceHandlerError>>;
 }
 
+/** Handle namespace-specific scheduled action logic. */
 export const NamespaceHandler = createAbstraction<INamespaceHandler>("Scheduler/NamespaceHandler");
 
 export namespace NamespaceHandler {

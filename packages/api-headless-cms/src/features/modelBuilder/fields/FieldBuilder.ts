@@ -1,4 +1,4 @@
-export { DataFieldBuilder, DataFieldBuilder as FieldBuilder } from "./DataFieldBuilder.js";
+export { DataFieldBuilder } from "./DataFieldBuilder.js";
 export { LayoutFieldBuilder } from "./LayoutFieldBuilder.js";
 export { BaseFieldBuilder } from "./BaseFieldBuilder.js";
 export type {

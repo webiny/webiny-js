@@ -61,6 +61,7 @@ export interface IScheduledActionHandler {
     handle(action: IScheduledAction<any>): Promise<void>;
 }
 
+/** Handle execution of a scheduled action. */
 export const ScheduledActionHandler =
     createAbstraction<IScheduledActionHandler>("ScheduledActionHandler");
 
@@ -92,6 +93,7 @@ export interface ISchedulerService {
     exists(id: string): Promise<boolean>;
 }
 
+/** Core service for managing scheduled actions. */
 export const SchedulerService = createAbstraction<ISchedulerService>("SchedulerService");
 
 export namespace SchedulerService {
@@ -101,6 +103,7 @@ export namespace SchedulerService {
 /**
  * ScheduledActionModel - A CMS model used by the scheduler for persistence.
  */
+/** Content model definition for scheduled actions. */
 export const ScheduledActionModel = createAbstraction<CmsModel>("ScheduledActionModel");
 
 export namespace ScheduledActionModel {

@@ -23,6 +23,7 @@ export interface IGetEntriesByIdsUseCaseErrors {
 
 type UseCaseError = IGetEntriesByIdsUseCaseErrors[keyof IGetEntriesByIdsUseCaseErrors];
 
+/** Retrieve multiple content entries by their IDs. */
 export const GetEntriesByIdsUseCase =
     createAbstraction<IGetEntriesByIdsUseCase>("GetEntriesByIdsUseCase");
 

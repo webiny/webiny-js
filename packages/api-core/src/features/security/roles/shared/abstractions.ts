@@ -18,6 +18,7 @@ export interface IRolesRepository {
     delete(role: Role): Promise<Result<void, RepositoryError>>;
 }
 
+/** Persist and retrieve security roles. */
 export const RolesRepository = createAbstraction<IRolesRepository>("RolesRepository");
 
 export namespace RolesRepository {
@@ -37,6 +38,7 @@ export interface IRoleFactory {
     execute(): Promise<CodeRole[]>;
 }
 
+/** Provide code-defined security roles with permissions. */
 export const RoleFactory = createAbstraction<IRoleFactory>("RoleFactory");
 
 export namespace RoleFactory {

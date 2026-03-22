@@ -16,6 +16,7 @@ export interface ICreateTeam {
     execute(input: CreateTeamInput): Promise<Result<Team, CreateTeamError>>;
 }
 
+/** Create a new team. */
 export const CreateTeam = createAbstraction<ICreateTeam>("CreateTeam");
 
 export namespace CreateTeam {

@@ -14,6 +14,7 @@ export interface IListTeams {
     execute(params?: ListTeamsInput): Promise<Result<Team[], ListTeamsError>>;
 }
 
+/** List all teams. */
 export const ListTeamsUseCase = createAbstraction<IListTeams>("ListTeamsUseCase");
 
 export namespace ListTeamsUseCase {

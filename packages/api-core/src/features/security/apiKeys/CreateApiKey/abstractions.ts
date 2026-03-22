@@ -15,6 +15,7 @@ export interface ICreateApiKey {
     execute(input: CreateApiKeyInput): Promise<Result<ApiKey, CreateApiKeyError>>;
 }
 
+/** Create a new API key. */
 export const CreateApiKeyUseCase = createAbstraction<ICreateApiKey>("CreateApiKeyUseCase");
 
 export namespace CreateApiKeyUseCase {

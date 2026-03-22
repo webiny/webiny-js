@@ -41,6 +41,7 @@ export interface ICreateFileRepositoryErrors {
 
 type RepositoryError = ICreateFileRepositoryErrors[keyof ICreateFileRepositoryErrors];
 
+/** Persist a newly created file. */
 export const CreateFileRepository =
     createAbstraction<ICreateFileRepository>("CreateFileRepository");
 
@@ -68,6 +69,7 @@ export interface ICreateFileUseCaseErrors {
 
 type UseCaseError = ICreateFileUseCaseErrors[keyof ICreateFileUseCaseErrors];
 
+/** Upload and create a new file. */
 export const CreateFileUseCase = createAbstraction<ICreateFileUseCase>("CreateFileUseCase");
 
 export namespace CreateFileUseCase {

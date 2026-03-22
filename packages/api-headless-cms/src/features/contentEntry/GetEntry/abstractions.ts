@@ -25,6 +25,7 @@ export interface IGetEntryUseCaseErrors {
 
 type UseCaseError = IGetEntryUseCaseErrors[keyof IGetEntryUseCaseErrors];
 
+/** Retrieve a content entry. */
 export const GetEntryUseCase = createAbstraction<IGetEntryUseCase>("GetEntryUseCase");
 
 export namespace GetEntryUseCase {

@@ -24,6 +24,7 @@ export interface IGetPublishedEntriesByIdsUseCaseErrors {
 type UseCaseError =
     IGetPublishedEntriesByIdsUseCaseErrors[keyof IGetPublishedEntriesByIdsUseCaseErrors];
 
+/** Retrieve published revisions for multiple entries. */
 export const GetPublishedEntriesByIdsUseCase = createAbstraction<IGetPublishedEntriesByIdsUseCase>(
     "GetPublishedEntriesByIdsUseCase"
 );

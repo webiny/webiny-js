@@ -11,6 +11,7 @@ export class TeamBeforeDeleteEvent extends DomainEvent<TeamBeforeDeletePayload> 
     }
 }
 
+/** Hook into team lifecycle before a team is deleted. */
 export const TeamBeforeDeleteEventHandler = createAbstraction<IEventHandler<TeamBeforeDeleteEvent>>(
     "TeamBeforeDeleteEventHandler"
 );
@@ -28,6 +29,7 @@ export class TeamAfterDeleteEvent extends DomainEvent<TeamAfterDeletePayload> {
     }
 }
 
+/** Hook into team lifecycle after a team is deleted. */
 export const TeamAfterDeleteEventHandler = createAbstraction<IEventHandler<TeamAfterDeleteEvent>>(
     "TeamAfterDeleteEventHandler"
 );

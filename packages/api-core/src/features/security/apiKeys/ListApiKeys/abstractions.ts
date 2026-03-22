@@ -16,6 +16,7 @@ export interface IListApiKeys {
     execute(params?: ListApiKeysInput): Promise<Result<ApiKey[], ListApiKeysError>>;
 }
 
+/** List all API keys. */
 export const ListApiKeysUseCase = createAbstraction<IListApiKeys>("ListApiKeysUseCase");
 
 export namespace ListApiKeysUseCase {

@@ -29,6 +29,7 @@ export interface IDeleteModelUseCaseErrors {
 
 type UseCaseError = IDeleteModelUseCaseErrors[keyof IDeleteModelUseCaseErrors];
 
+/** Delete a content model. */
 export const DeleteModelUseCase = createAbstraction<IDeleteModelUseCase>("DeleteModelUseCase");
 
 export namespace DeleteModelUseCase {

@@ -31,6 +31,7 @@ export class EntryBeforeUpdateEvent extends DomainEvent<EntryBeforeUpdateEventPa
     }
 }
 
+/** Hook into entry lifecycle before an entry is updated. */
 export const EntryBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<EntryBeforeUpdateEvent>
 >("EntryBeforeUpdateEventHandler");
@@ -51,6 +52,7 @@ export class EntryAfterUpdateEvent extends DomainEvent<EntryAfterUpdateEventPayl
     }
 }
 
+/** Hook into entry lifecycle after an entry is updated. */
 export const EntryAfterUpdateEventHandler = createAbstraction<IEventHandler<EntryAfterUpdateEvent>>(
     "EntryAfterUpdateEventHandler"
 );

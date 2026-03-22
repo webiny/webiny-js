@@ -35,6 +35,7 @@ export class ModelBeforeUpdateEvent extends DomainEvent<ModelBeforeUpdateEventPa
     }
 }
 
+/** Hook into model lifecycle before a model is updated. */
 export const ModelBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<ModelBeforeUpdateEvent>
 >("ModelBeforeUpdateEventHandler");
@@ -55,6 +56,7 @@ export class ModelAfterUpdateEvent extends DomainEvent<ModelAfterUpdateEventPayl
     }
 }
 
+/** Hook into model lifecycle after a model is updated. */
 export const ModelAfterUpdateEventHandler = createAbstraction<IEventHandler<ModelAfterUpdateEvent>>(
     "ModelAfterUpdateEventHandler"
 );

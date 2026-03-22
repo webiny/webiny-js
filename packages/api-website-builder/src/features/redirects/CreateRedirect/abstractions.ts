@@ -60,6 +60,7 @@ export interface ICreateRedirectUseCaseErrors {
 
 type UseCaseError = ICreateRedirectUseCaseErrors[keyof ICreateRedirectUseCaseErrors];
 
+/** Create a URL redirect. */
 export const CreateRedirectUseCase = createAbstraction<ICreateRedirectUseCase>(
     "Wb/CreateRedirectUseCase"
 );
@@ -88,6 +89,7 @@ export interface RedirectAfterCreatePayload {
 // Event Handler Abstractions
 // ============================================================================
 
+/** Hook into redirect lifecycle before a redirect is created. */
 export const RedirectBeforeCreateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectBeforeCreatePayload>>
 >("Wb/RedirectBeforeCreateEventHandler");
@@ -98,6 +100,7 @@ export namespace RedirectBeforeCreateEventHandler {
     export type Redirect = WbRedirect;
 }
 
+/** Hook into redirect lifecycle after a redirect is created. */
 export const RedirectAfterCreateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<RedirectAfterCreatePayload>>
 >("Wb/RedirectAfterCreateEventHandler");

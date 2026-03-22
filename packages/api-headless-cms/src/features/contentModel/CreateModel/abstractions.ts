@@ -31,6 +31,7 @@ export interface ICreateModelUseCaseErrors {
 
 type UseCaseError = ICreateModelUseCaseErrors[keyof ICreateModelUseCaseErrors];
 
+/** Create a new content model. */
 export const CreateModelUseCase = createAbstraction<ICreateModelUseCase>("CreateModelUseCase");
 
 export namespace CreateModelUseCase {

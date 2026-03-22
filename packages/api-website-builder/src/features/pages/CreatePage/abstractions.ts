@@ -57,6 +57,7 @@ export interface ICreatePageUseCaseErrors {
 
 type UseCaseError = ICreatePageUseCaseErrors[keyof ICreatePageUseCaseErrors];
 
+/** Create a new page. */
 export const CreatePageUseCase = createAbstraction<ICreatePageUseCase>("Wb/CreatePageUseCase");
 
 export namespace CreatePageUseCase {
@@ -83,6 +84,7 @@ export interface PageAfterCreatePayload {
 // Event Handler Abstractions
 // ============================================================================
 
+/** Hook into page lifecycle before a page is created. */
 export const PageBeforeCreateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeCreatePayload>>
 >("Wb/PageBeforeCreateEventHandler");
@@ -93,6 +95,7 @@ export namespace PageBeforeCreateEventHandler {
     export type Page = WbPage;
 }
 
+/** Hook into page lifecycle after a page is created. */
 export const PageAfterCreateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterCreatePayload>>
 >("Wb/PageAfterCreateEventHandler");

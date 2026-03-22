@@ -26,6 +26,7 @@ export interface ICreateFilesInBatchRepositoryErrors {
 type RepositoryError =
     ICreateFilesInBatchRepositoryErrors[keyof ICreateFilesInBatchRepositoryErrors];
 
+/** Persist multiple files created in batch. */
 export const CreateFilesInBatchRepository = createAbstraction<ICreateFilesInBatchRepository>(
     "CreateFilesInBatchRepository"
 );
@@ -50,6 +51,7 @@ export interface ICreateFilesInBatchUseCaseErrors {
 
 type UseCaseError = ICreateFilesInBatchUseCaseErrors[keyof ICreateFilesInBatchUseCaseErrors];
 
+/** Upload and create multiple files in batch. */
 export const CreateFilesInBatchUseCase = createAbstraction<ICreateFilesInBatchUseCase>(
     "CreateFilesInBatchUseCase"
 );

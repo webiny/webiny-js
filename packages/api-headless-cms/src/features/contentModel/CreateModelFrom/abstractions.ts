@@ -34,6 +34,7 @@ export interface ICreateModelFromUseCaseErrors {
 
 type UseCaseError = ICreateModelFromUseCaseErrors[keyof ICreateModelFromUseCaseErrors];
 
+/** Create a content model by cloning an existing one. */
 export const CreateModelFromUseCase =
     createAbstraction<ICreateModelFromUseCase>("CreateModelFromUseCase");
 

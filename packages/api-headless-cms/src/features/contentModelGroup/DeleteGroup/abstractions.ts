@@ -23,6 +23,7 @@ export interface IDeleteGroupUseCaseErrors {
 
 type UseCaseError = IDeleteGroupUseCaseErrors[keyof IDeleteGroupUseCaseErrors];
 
+/** Delete a content model group. */
 export const DeleteGroupUseCase = createAbstraction<IDeleteGroupUseCase>("DeleteGroupUseCase");
 
 export namespace DeleteGroupUseCase {

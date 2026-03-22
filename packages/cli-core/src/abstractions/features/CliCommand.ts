@@ -37,6 +37,9 @@ export interface ICliCommand<TCommandParams> {
         | ICliCommandDefinition<TCommandParams>;
 }
 
+/**
+ * Implement a custom CLI command for Webiny CLI.
+ */
 export const CliCommandFactory = createAbstraction<ICliCommand<any>>("CliCommandFactory");
 
 export namespace CliCommandFactory {

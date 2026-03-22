@@ -35,6 +35,7 @@ export class EntryBeforeUnpublishEvent extends DomainEvent<EntryBeforeUnpublishE
     }
 }
 
+/** Hook into entry lifecycle before an entry is unpublished. */
 export const EntryBeforeUnpublishEventHandler = createAbstraction<
     IEventHandler<EntryBeforeUnpublishEvent>
 >("EntryBeforeUnpublishEventHandler");
@@ -55,6 +56,7 @@ export class EntryAfterUnpublishEvent extends DomainEvent<EntryAfterUnpublishEve
     }
 }
 
+/** Hook into entry lifecycle after an entry is unpublished. */
 export const EntryAfterUnpublishEventHandler = createAbstraction<
     IEventHandler<EntryAfterUnpublishEvent>
 >("EntryAfterUnpublishEventHandler");

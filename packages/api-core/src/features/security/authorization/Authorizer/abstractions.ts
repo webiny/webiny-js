@@ -6,6 +6,7 @@ export interface IAuthorizer {
     authorize(identity: Identity): Promise<SecurityPermission[] | null>;
 }
 
+/** Retrieve permissions for an identity. */
 export const Authorizer = createAbstraction<IAuthorizer>("Authorizer");
 
 export namespace Authorizer {

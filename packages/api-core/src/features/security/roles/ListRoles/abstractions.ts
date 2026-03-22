@@ -14,6 +14,7 @@ export interface IListRoles {
     execute(params?: ListRolesInput): Promise<Result<Role[], ListRolesError>>;
 }
 
+/** List all security roles. */
 export const ListRolesUseCase = createAbstraction<IListRoles>("ListRolesUseCase");
 
 export namespace ListRolesUseCase {

@@ -19,6 +19,7 @@ export interface IListGroupsUseCaseErrors {
 
 type UseCaseError = IListGroupsUseCaseErrors[keyof IListGroupsUseCaseErrors];
 
+/** List all content model groups. */
 export const ListGroupsUseCase = createAbstraction<IListGroupsUseCase>("ListGroupsUseCase");
 
 export namespace ListGroupsUseCase {

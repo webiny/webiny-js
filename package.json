@@ -10,7 +10,8 @@
       "scripts/buildPackages",
       "scripts/prepublishOnly",
       "scripts/cli",
-      "scripts/cjsToEsm"
+      "scripts/cjsToEsm",
+      "scripts/generateSkills"
     ]
   },
   "author": "Webiny Ltd.",
@@ -185,7 +186,8 @@
     "webiny-admin-storybook": "cd packages/admin-ui && yarn storybook",
     "webiny-admin-storybook-docs": "cd packages/admin-ui && yarn storybook-docs",
     "webiny-scripts": "tsx ./scripts/cli/src/bin.ts",
-    "webiny-versions": "node ./scripts/webinyVersions.js"
+    "webiny-versions": "node ./scripts/webinyVersions.js",
+    "generate-skills": "tsx ./scripts/generateSkills/src/bin.ts"
   },
   "husky": {
     "hooks": {

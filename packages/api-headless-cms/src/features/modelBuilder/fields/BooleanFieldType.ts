@@ -1,11 +1,11 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import { FieldBuilder } from "./FieldBuilder.js";
+import { DataFieldBuilder } from "./FieldBuilder.js";
 
-export interface IBooleanFieldBuilder extends FieldBuilder<"boolean"> {
+export interface IBooleanFieldBuilder extends DataFieldBuilder<"boolean"> {
     defaultValue(value: boolean): this;
 }
 
-class BooleanFieldBuilder extends FieldBuilder<"boolean"> implements IBooleanFieldBuilder {
+class BooleanFieldBuilder extends DataFieldBuilder<"boolean"> implements IBooleanFieldBuilder {
     public constructor() {
         super("boolean");
     }

@@ -21,6 +21,7 @@ const schema = {
 
 type FmSchema = typeof schema;
 
+/** File manager permission checks. */
 export const FmPermissions = createPermissions(schema);
 
 export namespace FmPermissions {

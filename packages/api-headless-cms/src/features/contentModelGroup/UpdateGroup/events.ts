@@ -34,6 +34,7 @@ export class GroupBeforeUpdateEvent extends DomainEvent<GroupBeforeUpdateEventPa
     }
 }
 
+/** Hook into group lifecycle before a group is updated. */
 export const GroupBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<GroupBeforeUpdateEvent>
 >("GroupBeforeUpdateEventHandler");
@@ -54,6 +55,7 @@ export class GroupAfterUpdateEvent extends DomainEvent<GroupAfterUpdateEventPayl
     }
 }
 
+/** Hook into group lifecycle after a group is updated. */
 export const GroupAfterUpdateEventHandler = createAbstraction<IEventHandler<GroupAfterUpdateEvent>>(
     "GroupAfterUpdateEventHandler"
 );

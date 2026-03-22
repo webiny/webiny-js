@@ -204,6 +204,6 @@ Deploy:       yarn webiny deploy api --env=dev
 
 ## Related Skills
 
-- `api-custom-feature` -- Define custom abstractions and services consumed by resolvers
+- `webiny-api-custom-feature` -- Define custom abstractions and services consumed by resolvers
 - `dependency-injection` -- Full DI reference for all injectable services
 - `project-structure` -- How to register extensions in `webiny.config.tsx`

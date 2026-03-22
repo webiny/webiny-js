@@ -32,6 +32,7 @@ export interface ICancelScheduledActionUseCase {
     ): Promise<Result<boolean, CancelScheduledActionError>>;
 }
 
+/** Cancel a scheduled action. */
 export const CancelScheduledActionUseCase = createAbstraction<ICancelScheduledActionUseCase>(
     "Scheduler/CancelScheduledActionUseCase"
 );

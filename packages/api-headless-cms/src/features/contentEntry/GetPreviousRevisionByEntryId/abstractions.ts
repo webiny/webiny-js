@@ -28,6 +28,7 @@ export interface IGetPreviousRevisionByEntryIdUseCaseErrors {
 type UseCaseError =
     IGetPreviousRevisionByEntryIdUseCaseErrors[keyof IGetPreviousRevisionByEntryIdUseCaseErrors];
 
+/** Base use case for retrieving the previous entry revision. */
 export const GetPreviousRevisionByEntryIdBaseUseCase =
     createAbstraction<IGetPreviousRevisionByEntryIdBaseUseCase>(
         "GetPreviousRevisionByEntryIdBaseUseCase"
@@ -41,9 +42,7 @@ export namespace GetPreviousRevisionByEntryIdBaseUseCase {
     export type Return<T extends CmsEntryValues> = Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
-/**
- * Public use case: Returns non-deleted revision only (default behavior)
- */
+/** Retrieve the previous revision of an entry. */
 export const GetPreviousRevisionByEntryIdUseCase =
     createAbstraction<IGetPreviousRevisionByEntryIdBaseUseCase>(
         "GetPreviousRevisionByEntryIdUseCase"

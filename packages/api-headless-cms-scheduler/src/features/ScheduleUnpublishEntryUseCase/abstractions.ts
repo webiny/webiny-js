@@ -23,6 +23,7 @@ export interface IScheduleUnpublishEntryUseCase {
     execute(params: IScheduleUnpublishEntryUseCaseParams): IScheduleUnpublishEntryUseCaseResponse;
 }
 
+/** Schedule an entry for future unpublishing. */
 export const ScheduleUnpublishEntryUseCase = createAbstraction<IScheduleUnpublishEntryUseCase>(
     "CmsScheduler/ScheduleUnpublishEntryUseCase"
 );

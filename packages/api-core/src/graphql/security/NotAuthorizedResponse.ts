@@ -6,6 +6,7 @@ interface NotAuthorizedResponseArgsType {
     data: any | null;
 }
 
+/** GraphQL not-authorized response helper. */
 export class NotAuthorizedResponse extends ErrorResponse {
     constructor({ message, code, data }: Partial<NotAuthorizedResponseArgsType> = {}) {
         super({

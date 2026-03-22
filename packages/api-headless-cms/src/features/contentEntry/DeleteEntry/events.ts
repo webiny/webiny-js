@@ -18,6 +18,7 @@ export class EntryBeforeDeleteEvent extends DomainEvent<EntryBeforeDeleteEventPa
     }
 }
 
+/** Hook into entry lifecycle before an entry is deleted. */
 export const EntryBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<EntryBeforeDeleteEvent>
 >("EntryBeforeDeleteEventHandler");
@@ -38,6 +39,7 @@ export class EntryAfterDeleteEvent extends DomainEvent<EntryAfterDeleteEventPayl
     }
 }
 
+/** Hook into entry lifecycle after an entry is deleted. */
 export const EntryAfterDeleteEventHandler = createAbstraction<IEventHandler<EntryAfterDeleteEvent>>(
     "EntryAfterDeleteEventHandler"
 );

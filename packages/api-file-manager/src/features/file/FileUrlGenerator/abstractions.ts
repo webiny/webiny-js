@@ -4,6 +4,7 @@ interface IFileUrlGenerator {
     generateUrl(file: File): string;
 }
 
+/** Generate URLs for uploaded files. */
 export const FileUrlGenerator = createAbstraction<IFileUrlGenerator>("IFileUrlGenerator");
 
 export namespace FileUrlGenerator {

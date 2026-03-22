@@ -44,6 +44,7 @@ export interface IGetFolderUseCaseErrors {
 
 type UseCaseError = IGetFolderUseCaseErrors[keyof IGetFolderUseCaseErrors];
 
+/** Retrieve a folder. */
 export const GetFolderUseCase = createAbstraction<IGetFolderUseCase>("GetFolderUseCase");
 
 export namespace GetFolderUseCase {
@@ -61,6 +62,7 @@ export interface FolderAfterGetPayload {
 }
 
 // Event Handler Abstractions
+/** Hook into folder lifecycle before a folder is retrieved. */
 export const FolderBeforeGetEventHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderBeforeGetPayload>>
 >("FolderBeforeGetEventHandler");
@@ -70,6 +72,7 @@ export namespace FolderBeforeGetEventHandler {
     export type Event = DomainEvent<FolderBeforeGetPayload>;
 }
 
+/** Hook into folder lifecycle after a folder is retrieved. */
 export const FolderAfterGetEventHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderAfterGetPayload>>
 >("FolderAfterGetEventHandler");

@@ -10,6 +10,7 @@ export interface ICmsSortMapper {
     map(params: ICmsSortMapperParams): CmsEntryListSort | undefined;
 }
 
+/** Map CMS sort parameters to storage queries. */
 export const CmsSortMapper = createAbstraction<ICmsSortMapper>("CmsSortMapper");
 
 export namespace CmsSortMapper {

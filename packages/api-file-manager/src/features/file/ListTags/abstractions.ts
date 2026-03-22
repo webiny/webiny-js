@@ -26,6 +26,7 @@ export interface IListTagsRepositoryErrors {
 
 type RepositoryError = IListTagsRepositoryErrors[keyof IListTagsRepositoryErrors];
 
+/** Fetch file tags from storage. */
 export const ListTagsRepository = createAbstraction<IListTagsRepository>("ListTagsRepository");
 
 export namespace ListTagsRepository {
@@ -47,6 +48,7 @@ export interface IListTagsUseCaseErrors {
 
 type UseCaseError = IListTagsUseCaseErrors[keyof IListTagsUseCaseErrors];
 
+/** List all file tags. */
 export const ListTagsUseCase = createAbstraction<IListTagsUseCase>("ListTagsUseCase");
 
 export namespace ListTagsUseCase {

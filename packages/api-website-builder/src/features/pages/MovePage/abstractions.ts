@@ -57,6 +57,7 @@ export interface IMovePageUseCaseErrors {
 
 type UseCaseError = IMovePageUseCaseErrors[keyof IMovePageUseCaseErrors];
 
+/** Move a page to a different folder. */
 export const MovePageUseCase = createAbstraction<IMovePageUseCase>("Wb/MovePageUseCase");
 
 export namespace MovePageUseCase {
@@ -86,6 +87,7 @@ export interface PageAfterMovePayload {
 // Event Handler Abstractions
 // ============================================================================
 
+/** Hook into page lifecycle before a page is moved. */
 export const PageBeforeMoveEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforeMovePayload>>
 >("Wb/PageBeforeMoveEventHandler");
@@ -96,6 +98,7 @@ export namespace PageBeforeMoveEventHandler {
     export type Page = WbPage;
 }
 
+/** Hook into page lifecycle after a page is moved. */
 export const PageAfterMoveEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterMovePayload>>
 >("Wb/PageAfterMoveEventHandler");

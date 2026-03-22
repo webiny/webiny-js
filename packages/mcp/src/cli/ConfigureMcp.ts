@@ -1,5 +1,5 @@
 import { CliCommandFactory } from "@webiny/cli-core/exports/cli/command.js";
-import { Ui } from "@webiny/cli-core/exports/cli/index.js";
+import { Ui } from "@webiny/cli-core/exports/cli.js";
 
 export interface IInitAgentParams {
     agent: string;

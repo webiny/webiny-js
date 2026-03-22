@@ -23,6 +23,7 @@ export interface IGetRevisionsByEntryIdUseCaseErrors {
 
 type UseCaseError = IGetRevisionsByEntryIdUseCaseErrors[keyof IGetRevisionsByEntryIdUseCaseErrors];
 
+/** Retrieve all revisions of an entry. */
 export const GetRevisionsByEntryIdUseCase = createAbstraction<IGetRevisionsByEntryIdUseCase>(
     "GetRevisionsByEntryIdUseCase"
 );

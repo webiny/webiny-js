@@ -31,6 +31,7 @@ export interface ICreateEntryUseCaseErrors {
 
 type UseCaseError = ICreateEntryUseCaseErrors[keyof ICreateEntryUseCaseErrors];
 
+/** Create a new content entry. */
 export const CreateEntryUseCase = createAbstraction<ICreateEntryUseCase>("CreateEntryUseCase");
 
 export namespace CreateEntryUseCase {

@@ -26,6 +26,7 @@ export interface IIdentityContext {
     isAuthorizationEnabled(): boolean;
 }
 
+/** Provides access to the current identity and its permissions. */
 export const IdentityContext = createAbstraction<IIdentityContext>("IdentityContext");
 
 export namespace IdentityContext {

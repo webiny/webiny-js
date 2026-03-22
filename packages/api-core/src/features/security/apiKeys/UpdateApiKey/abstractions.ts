@@ -15,6 +15,7 @@ export interface IUpdateApiKey {
     execute(id: string, input: UpdateApiKeyInput): Promise<Result<ApiKey, UpdateApiKeyError>>;
 }
 
+/** Update an existing API key. */
 export const UpdateApiKeyUseCase = createAbstraction<IUpdateApiKey>("UpdateApiKeyUseCase");
 
 export namespace UpdateApiKeyUseCase {

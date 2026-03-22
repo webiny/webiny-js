@@ -58,6 +58,7 @@ export interface IPublishPageUseCaseErrors {
 
 type UseCaseError = IPublishPageUseCaseErrors[keyof IPublishPageUseCaseErrors];
 
+/** Publish a page. */
 export const PublishPageUseCase = createAbstraction<IPublishPageUseCase>("Wb/PublishPageUseCase");
 
 export namespace PublishPageUseCase {
@@ -84,6 +85,7 @@ export interface PageAfterPublishPayload {
 // Event Handler Abstractions
 // ============================================================================
 
+/** Hook into page lifecycle before a page is published. */
 export const PageBeforePublishEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageBeforePublishPayload>>
 >("Wb/PageBeforePublishEventHandler");
@@ -94,6 +96,7 @@ export namespace PageBeforePublishEventHandler {
     export type Page = WbPage;
 }
 
+/** Hook into page lifecycle after a page is published. */
 export const PageAfterPublishEventHandler = createAbstraction<
     IEventHandler<DomainEvent<PageAfterPublishPayload>>
 >("Wb/PageAfterPublishEventHandler");

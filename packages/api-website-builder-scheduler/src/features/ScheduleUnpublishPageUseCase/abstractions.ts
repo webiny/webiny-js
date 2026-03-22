@@ -21,6 +21,7 @@ export interface IScheduleUnpublishPageUseCase {
     execute(params: IScheduleUnpublishPageUseCaseParams): IScheduleUnpublishPageUseCaseResponse;
 }
 
+/** Schedule a page for future unpublishing. */
 export const ScheduleUnpublishPageUseCase = createAbstraction<IScheduleUnpublishPageUseCase>(
     "WbScheduler/ScheduleUnpublishPageUseCase"
 );

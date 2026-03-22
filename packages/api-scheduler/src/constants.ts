@@ -8,7 +8,9 @@ export const SCHEDULE_MIN_FUTURE_SECONDS = 65;
 
 export const SCHEDULED_ACTION_EVENT_IDENTIFIER = "WebinyScheduledAction";
 
+/** Constant identifier for the publish scheduled action type. */
 export const SCHEDULED_ACTION_PUBLISH = "publish" as const;
+/** Constant identifier for the unpublish scheduled action type. */
 export const SCHEDULED_ACTION_UNPUBLISH = "unpublish" as const;
 
 export const SCHEDULED_ACTIONS = [SCHEDULED_ACTION_PUBLISH, SCHEDULED_ACTION_UNPUBLISH] as const;

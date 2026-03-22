@@ -30,6 +30,7 @@ export class ModelBeforeDeleteEvent extends DomainEvent<ModelBeforeDeleteEventPa
     }
 }
 
+/** Hook into model lifecycle before a model is deleted. */
 export const ModelBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<ModelBeforeDeleteEvent>
 >("ModelBeforeDeleteEventHandler");
@@ -50,6 +51,7 @@ export class ModelAfterDeleteEvent extends DomainEvent<ModelAfterDeleteEventPayl
     }
 }
 
+/** Hook into model lifecycle after a model is deleted. */
 export const ModelAfterDeleteEventHandler = createAbstraction<IEventHandler<ModelAfterDeleteEvent>>(
     "ModelAfterDeleteEventHandler"
 );

@@ -159,32 +159,6 @@ State files are JSON files that track the current state of your deployment:
 - Essential for managing environments and tracking changes
 - Stored in S3 by default
 
-## Build Parameters
-
-Pass custom config values from `webiny.config.tsx` to your extensions:
-
-```tsx
-// webiny.config.tsx
-<Api.BuildParam paramName="MY_PARAM" value="customValue" />
-<Api.BuildParam paramName="MY_CONFIG" value={{ myKey: 2, nested: { foo: "bar" } }} />
-<Admin.BuildParam paramName="ADMIN_PARAM" value="adminValue" />
-```
-
-Access in API extensions:
-
-```typescript
-import { BuildParams } from "webiny/api/build-params";
-
-class MyExtension implements SomeFactory.Interface {
-  constructor(private buildParams: BuildParams.Interface) {}
-
-  execute() {
-    const value = this.buildParams.get<string>("MY_PARAM");
-    const config = this.buildParams.get<{ myKey: number }>("MY_CONFIG");
-  }
-}
-```
-
 ## Debugging
 
 ### API Errors

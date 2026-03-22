@@ -6,6 +6,7 @@ export interface IDeleteFlpUseCase {
     execute: (folder: Folder) => Promise<void>;
 }
 
+/** Delete a folder-level permission. */
 export const DeleteFlpUseCase = createAbstraction<IDeleteFlpUseCase>("DeleteFlpUseCase");
 
 export namespace DeleteFlpUseCase {

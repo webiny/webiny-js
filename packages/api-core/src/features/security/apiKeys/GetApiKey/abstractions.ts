@@ -14,6 +14,7 @@ export interface IGetApiKey {
     execute(id: string): Promise<Result<ApiKey | null, GetApiKeyError>>;
 }
 
+/** Retrieve an API key by ID. */
 export const GetApiKeyUseCase = createAbstraction<IGetApiKey>("GetApiKeyUseCase");
 
 export namespace GetApiKeyUseCase {

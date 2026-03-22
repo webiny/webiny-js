@@ -9,6 +9,7 @@ export interface IAuthorizationContext {
     clearPermissionsCache(): void;
 }
 
+/** Load and cache security permissions for the current identity. */
 export const AuthorizationContext =
     createAbstraction<IAuthorizationContext>("AuthorizationContext");
 
@@ -20,6 +21,7 @@ export interface IPermissionTransformer {
     execute(permission: SecurityPermission): SecurityPermission | SecurityPermission[];
 }
 
+/** Transform security permissions before they are applied. */
 export const PermissionTransformer =
     createAbstraction<IPermissionTransformer>("PermissionTransformer");
 

@@ -26,6 +26,7 @@ export interface IUnpublishEntryUseCaseErrors {
 
 type UseCaseError = IUnpublishEntryUseCaseErrors[keyof IUnpublishEntryUseCaseErrors];
 
+/** Unpublish a content entry. */
 export const UnpublishEntryUseCase =
     createAbstraction<IUnpublishEntryUseCase>("UnpublishEntryUseCase");
 

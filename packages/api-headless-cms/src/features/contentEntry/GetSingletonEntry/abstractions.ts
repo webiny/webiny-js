@@ -27,6 +27,7 @@ export interface IGetSingletonEntryUseCaseErrors {
 
 type UseCaseError = IGetSingletonEntryUseCaseErrors[keyof IGetSingletonEntryUseCaseErrors];
 
+/** Retrieve a singleton content entry. */
 export const GetSingletonEntryUseCase = createAbstraction<IGetSingletonEntryUseCase>(
     "GetSingletonEntryUseCase"
 );

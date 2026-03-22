@@ -15,13 +15,12 @@ export interface IGraphQLSchema {
     resolverDecorators?: IResolverDecorators;
 }
 
-/**
- * GraphQLSchemaFactory
- */
+/** Define custom GraphQL schema extensions. */
 export interface IGraphQLSchemaFactory {
     execute(builder: GraphQLSchemaBuilder.Interface): Promise<GraphQLSchemaBuilder.Interface>;
 }
 
+/** Define custom GraphQL schema extensions. */
 export const GraphQLSchemaFactory =
     createAbstraction<IGraphQLSchemaFactory>("GraphQLSchemaFactory");
 

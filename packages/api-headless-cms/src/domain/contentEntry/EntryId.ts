@@ -1,6 +1,7 @@
 import { createIdentifier, parseIdentifier } from "@webiny/utils";
 import { mdbid } from "@webiny/utils/mdbid.js";
 
+/** Generate and parse content entry IDs. */
 export class EntryId {
     private constructor(
         private _id: string,

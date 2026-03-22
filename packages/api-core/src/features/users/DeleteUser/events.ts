@@ -12,6 +12,7 @@ export class UserBeforeDeleteEvent extends DomainEvent<UserBeforeDeletePayload> 
     }
 }
 
+/** Hook into user lifecycle before a user is deleted. */
 export const UserBeforeDeleteEventHandler = createAbstraction<IEventHandler<UserBeforeDeleteEvent>>(
     "UserBeforeDeleteEventHandler"
 );
@@ -30,6 +31,7 @@ export class UserAfterDeleteEvent extends DomainEvent<UserAfterDeletePayload> {
     }
 }
 
+/** Hook into user lifecycle after a user is deleted. */
 export const UserAfterDeleteEventHandler = createAbstraction<IEventHandler<UserAfterDeleteEvent>>(
     "UserAfterDeleteEventHandler"
 );

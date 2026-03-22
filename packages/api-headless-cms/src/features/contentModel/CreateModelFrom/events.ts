@@ -35,6 +35,7 @@ export class ModelBeforeCreateFromEvent extends DomainEvent<ModelBeforeCreateFro
     }
 }
 
+/** Hook into model lifecycle before a model is cloned. */
 export const ModelBeforeCreateFromEventHandler = createAbstraction<
     IEventHandler<ModelBeforeCreateFromEvent>
 >("ModelBeforeCreateFromEventHandler");
@@ -55,6 +56,7 @@ export class ModelAfterCreateFromEvent extends DomainEvent<ModelAfterCreateFromE
     }
 }
 
+/** Hook into model lifecycle after a model is cloned. */
 export const ModelAfterCreateFromEventHandler = createAbstraction<
     IEventHandler<ModelAfterCreateFromEvent>
 >("ModelAfterCreateFromEventHandler");

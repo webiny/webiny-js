@@ -4,6 +4,9 @@ export interface ICorePulumi<TApp> {
     execute(app: TApp): void | Promise<void>;
 }
 
+/**
+ * Implement this abstraction to add custom Pulumi code to Core.
+ */
 export const CorePulumi = createAbstraction<ICorePulumi<unknown>>("CorePulumi");
 
 export namespace CorePulumi {

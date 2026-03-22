@@ -28,6 +28,7 @@ export interface IGlobalKeyValueStore {
     ): Promise<Result<void, KeyValueStoreRepository.Error>>;
 }
 
+/** Global (non-tenant-scoped) key-value store. */
 export const GlobalKeyValueStore = createAbstraction<IGlobalKeyValueStore>("GlobalKeyValueStore");
 
 export namespace GlobalKeyValueStore {
@@ -43,6 +44,7 @@ export interface IKeyValueStore {
     delete(key: string): Promise<Result<void, KeyValueStoreRepository.Error>>;
 }
 
+/** Tenant-scoped key-value store. */
 export const KeyValueStore = createAbstraction<IKeyValueStore>("KeyValueStore");
 
 export namespace KeyValueStore {
@@ -65,6 +67,7 @@ export interface IKeyValueStoreRepository {
     delete(key: string, scope: string): Promise<Result<void, RepositoryError>>;
 }
 
+/** Persist and retrieve key-value pairs. */
 export const KeyValueStoreRepository =
     createAbstraction<IKeyValueStoreRepository>("KeyValueStoreRepository");
 
@@ -81,6 +84,7 @@ export interface IKeyValueStorageOperations {
     delete(key: string, scope: string): Promise<void>;
 }
 
+/** Storage operations for key-value persistence. */
 export const KeyValueStorageOperations = createAbstraction<IKeyValueStorageOperations>(
     "KeyValueStorageOperations"
 );

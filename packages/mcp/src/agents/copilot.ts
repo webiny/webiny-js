@@ -11,7 +11,7 @@
 
 import { join, dirname } from "path";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
-import type { Ui } from "@webiny/cli-core/exports/cli/index.js";
+import type { Ui } from "@webiny/cli-core/exports/cli.js";
 import { writeHintFile, webinyHintBlock, printDone } from "./shared.js";
 
 interface InitParams {

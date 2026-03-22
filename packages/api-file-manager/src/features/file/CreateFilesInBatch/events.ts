@@ -20,6 +20,7 @@ export class FileBeforeBatchCreateEvent extends DomainEvent<FileBeforeBatchCreat
     }
 }
 
+/** Hook into file lifecycle before files are created in batch. */
 export const FileBeforeBatchCreateEventHandler = createAbstraction<
     IEventHandler<FileBeforeBatchCreateEvent>
 >("FileBeforeBatchCreateEventHandler");
@@ -46,6 +47,7 @@ export class FileAfterBatchCreateEvent extends DomainEvent<FileAfterBatchCreateP
     }
 }
 
+/** Hook into file lifecycle after files are created in batch. */
 export const FileAfterBatchCreateEventHandler = createAbstraction<
     IEventHandler<FileAfterBatchCreateEvent>
 >("FileAfterBatchCreateEventHandler");

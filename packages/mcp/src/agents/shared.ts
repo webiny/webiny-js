@@ -4,7 +4,7 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { dirname } from "path";
-import type { Ui } from "@webiny/cli-core/exports/cli/index.js";
+import type { Ui } from "@webiny/cli-core/exports/cli.js";
 
 // ---------------------------------------------------------------------------
 // MCP config helpers

@@ -14,6 +14,7 @@ export interface IGetTeamUseCase {
     execute(params: GetTeamInput): Promise<Result<Team, GetTeamError>>;
 }
 
+/** Retrieve a team. */
 export const GetTeamUseCase = createAbstraction<IGetTeamUseCase>("GetTeamUseCase");
 
 export namespace GetTeamUseCase {
