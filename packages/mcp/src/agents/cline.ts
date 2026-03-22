@@ -10,7 +10,7 @@
  */
 
 import { join } from "path";
-import type { Ui } from "@webiny/cli-core/exports/cli/index.js";
+import type { Ui } from "@webiny/cli-core/exports/cli.js";
 import { writeMcpConfig, printDone } from "./shared.js";
 
 interface InitParams {
