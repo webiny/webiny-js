@@ -30,6 +30,12 @@ export const ElementDropLines = ({ editorBox, previewBox, isFirst }: ElementDrop
 
     const canAccept = useCallback(() => {
         const item = draggingItemRef.current;
+
+        // If nothing is being dragged, don't filter out candidates.
+        if (!item) {
+            return true;
+        }
+
         const manifest = componentManifestRef.current;
         const inputsAst = ComponentManifestToAstConverter.convert(manifest?.inputs ?? []);
         const targetNode = findMatchingAstNode(editorBox.parentSlot, inputsAst);
@@ -38,11 +44,11 @@ export const ElementDropLines = ({ editorBox, previewBox, isFirst }: ElementDrop
             return false;
         }
 
-        if (item && targetNode.type === "slot") {
+        if (targetNode.type === "slot") {
             const slotInput = targetNode.input as SlotInput;
             const whitelistedComponents = slotInput.components;
             if (whitelistedComponents && whitelistedComponents.length > 0) {
-                return whitelistedComponents.includes(item?.componentName);
+                return whitelistedComponents.includes(item.componentName);
             }
         }
 
