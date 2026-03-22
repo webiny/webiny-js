@@ -29,48 +29,76 @@ interface SomeEventHandler.Interface {
 
 The `Event` is a `DomainEvent<Payload>` where the payload contains the entity and input data.
 
+## Architecture Rule: Always Wrap Logic in a Reusable Abstraction (MANDATORY)
+
+**Never put business logic directly inside an EventHandler.** EventHandlers are thin orchestrators — they receive an event and delegate to an injected service (abstraction). The real logic lives in a dedicated service defined with `createAbstraction` and `createFeature`.
+
+**Why:** Inline handler logic cannot be reused by other handlers, GraphQL resolvers, or CLI commands. Wrapping it in an abstraction makes it injectable, testable, and replaceable.
+
+**Always follow this structure:**
+
+```
+features/
+├── myService/             ← the reusable abstraction
+│   ├── abstractions.ts
+│   ├── feature.ts
+│   └── MyService.ts
+└── myHandler/             ← thin handler that injects the service
+    ├── feature.ts
+    └── MyHandler.ts
+```
+
+The EventHandler feature and the service feature are **registered separately** in `Extension.tsx`.
+
 ## How to Implement
 
 ```ts
 import { SomeEventHandler } from "webiny/api/<category>";
+import { MyService } from "../myService/abstractions.js";
 
+// ✅ Handler is a thin orchestrator — no business logic here
 class MyHandler implements SomeEventHandler.Interface {
-    async handle(event: SomeEventHandler.Event) {
-        const { entity, input } = event.payload;
+  constructor(private myService: MyService.Interface) {}
 
-        // For CMS handlers: always filter by model
-        // if (model.modelId !== "myModel") return;
+  async handle(event: SomeEventHandler.Event) {
+    const { entity } = event.payload;
 
-        // Your logic here
-    }
+    // For CMS handlers: always filter by model
+    // if (entity.modelId !== "myModel") return;
+
+    await this.myService.doWork(entity);
+  }
 }
 
 export default SomeEventHandler.createImplementation({
-    implementation: MyHandler,
-    dependencies: []
+  implementation: MyHandler,
+  dependencies: [MyService]
 });
 ```
 
+See **webiny-api-custom-feature** for how to define `MyService` as a proper abstraction.
+
 ## Injecting Dependencies
 
-EventHandlers can depend on UseCases or other abstractions:
+EventHandlers can depend on UseCases, platform services, or your own custom abstractions:
 
 ```ts
 import { SomeEventHandler } from "webiny/api/<category>";
 import { SomeUseCase } from "webiny/api/<category>";
 
 class MyHandler implements SomeEventHandler.Interface {
-    constructor(private someUseCase: SomeUseCase.Interface) {}
+  constructor(private someUseCase: SomeUseCase.Interface) {}
 
-    async handle(event: SomeEventHandler.Event) {
-        // Use the injected dependency
-        const result = await this.someUseCase.execute({ /* ... */ });
-    }
+  async handle(event: SomeEventHandler.Event) {
+    const result = await this.someUseCase.execute({
+      /* ... */
+    });
+  }
 }
 
 export default SomeEventHandler.createImplementation({
-    implementation: MyHandler,
-    dependencies: [SomeUseCase]
+  implementation: MyHandler,
+  dependencies: [SomeUseCase]
 });
 ```
 
