@@ -1,11 +1,10 @@
-import type { OpenSearchContext } from "~/types.js";
+import type { OpenSearchContext } from "./types.js";
 import { ContextPlugin } from "@webiny/api";
-import type { OpenSearchClientOptions } from "~/client.js";
-import { Client, createOpenSearchClient } from "~/client.js";
-import { getOpenSearchOperators } from "~/operators.js";
-import { OpenSearchClientFactoryFeature } from "~/features/OpenSearchClientFactory/feature.js";
-import { OpenSearchClientFeature } from "~/features/OpenSearchClient/feature.js";
-import { OpenSearchClient } from "~/features/OpenSearchClient/abstraction.js";
+import type { OpenSearchClientOptions } from "./client.js";
+import { Client, createOpenSearchClient } from "./client.js";
+import { getOpenSearchOperators } from "./operators.js";
+import { OpenSearchClientFactoryFeature } from "./features/OpenSearchClientFactory/feature.js";
+import { OpenSearchClientFeature } from "./features/OpenSearchClient/feature.js";
 
 export * from "./indexConfiguration/index.js";
 export * from "./plugins/index.js";
