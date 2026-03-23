@@ -400,16 +400,13 @@ describe("Pages Use Cases (Authorized)", () => {
 
         expect(deleted.isOk()).toBeTrue();
 
-        // Wait for deletion to be indexed
+        // regular get
         const getPageByIdAfterDelete = context.container.resolve(GetPageByIdUseCase);
-
-        const fetchedPageAfterDelete = await until(
-            async () => {
-                const result = await getPageByIdAfterDelete.execute(page.id);
-                return result.isFail() ? null : result.value;
-            },
-            (result: any) => result === null,
-            { tries: 10 }
-        );
+        const resultGetAfterDelete = await getPageByIdAfterDelete.execute(page.id);
+        expect(resultGetAfterDelete.isFail()).toBeTrue();
+        // deleted get
+        const getDeletedPageById = context.container.resolve(GetDeletedPageByIdUseCase);
+        const resultGetDeletedAfterDelete = await getDeletedPageById.execute(page.id);
+        expect(resultGetDeletedAfterDelete.isFail()).toBeTrue();
     });
 });
