@@ -36,8 +36,7 @@ export const TrashBin = () => {
 
     const deleteGateway = useMemo(() => {
         return new TrashBinDeletePageGraphQLGateway({
-            client,
-            fields: pageFields
+            client
         });
     }, [client, pageFields]);
 

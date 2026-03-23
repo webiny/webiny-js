@@ -1,5 +1,6 @@
 export interface DeletePageParams {
     id: string;
+    permanently: boolean;
 }
 
 export interface IDeletePageUseCase {

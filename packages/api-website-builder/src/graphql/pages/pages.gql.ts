@@ -255,7 +255,7 @@ export const createPagesSchema = () => {
                         return result.value;
                     });
                 },
-                deletePage: async (_, { id, permanent }, context) => {
+                deletePage: async (_, { id, permanently }, context) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
                         const deletePage = context.container.resolve(
@@ -263,7 +263,7 @@ export const createPagesSchema = () => {
                              * If "permanent" flag is set, we want to permanently delete the page. Otherwise, we just want to trash it.
                              * This allows us to have a two-step deletion process, where pages are first moved to trash and can be restored from there, before being permanently deleted.
                              */
-                            permanent ? DeletePageUseCase : TrashPageUseCase
+                            permanently ? DeletePageUseCase : TrashPageUseCase
                         );
                         const result = await deletePage.execute({
                             id

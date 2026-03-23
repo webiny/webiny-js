@@ -534,6 +534,9 @@ export const createEntriesStorageOperations = (
          */
         try {
             await entityBatch.execute();
+            dataLoaders.clearAll({
+                model
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not move the entry to the bin.",

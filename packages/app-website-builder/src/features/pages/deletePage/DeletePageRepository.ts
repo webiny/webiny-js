@@ -15,8 +15,8 @@ export class DeletePageRepository implements IDeletePageRepository {
         this.gateway = gateway;
     }
 
-    async execute(page: Page) {
-        await this.gateway.execute(page.id);
+    async execute(page: Page, permanently = false) {
+        await this.gateway.execute(page.id, permanently);
         this.cache.removeItems(p => p.id === page.id);
         await this.meta.decreaseTotalCount();
     }

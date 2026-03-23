@@ -1,31 +1,28 @@
 import type { ApolloClient } from "apollo-client";
 import type { ITrashBinDeleteItemGateway } from "@webiny/app-trash-bin";
-import { createTrashPageMutation } from "./graphql/trashMutation.js";
 import type {
-    ITrashPageDeleteMutationResponse,
-    ITrashPageDeleteMutationVariables
-} from "./graphql/trashMutation.js";
+    IPermanentDeletePageMutationResponse,
+    IPermanentDeletePageMutationVariables
+} from "./graphql/permanentDeleteMutation.js";
+import { createPermanentDeletePageMutation } from "./graphql/permanentDeleteMutation.js";
 
 interface ITrashBinDeletePageGraphQLGatewayParams {
     client: ApolloClient<object>;
-    fields: string[];
 }
 
 export class TrashBinDeletePageGraphQLGateway implements ITrashBinDeleteItemGateway {
     private readonly client: ApolloClient<object>;
-    private readonly fields: string[];
 
     public constructor(params: ITrashBinDeletePageGraphQLGatewayParams) {
         this.client = params.client;
-        this.fields = params.fields;
     }
 
     public async execute(id: string) {
         const { data: response } = await this.client.mutate<
-            ITrashPageDeleteMutationResponse,
-            ITrashPageDeleteMutationVariables
+            IPermanentDeletePageMutationResponse,
+            IPermanentDeletePageMutationVariables
         >({
-            mutation: createTrashPageMutation(this.fields),
+            mutation: createPermanentDeletePageMutation(),
             variables: {
                 id,
                 permanently: true
@@ -36,7 +33,7 @@ export class TrashBinDeletePageGraphQLGateway implements ITrashBinDeleteItemGate
             throw new Error("Network error while deleting entry.");
         }
 
-        const { data, error } = response.websiteBuilder.trashPage;
+        const { data, error } = response.websiteBuilder.deletePage;
 
         if (!data) {
             throw new Error(error?.message || "Could not delete the entry.");

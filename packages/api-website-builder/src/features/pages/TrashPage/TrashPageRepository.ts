@@ -1,6 +1,5 @@
 import { Result } from "@webiny/feature/api";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry";
-import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { TrashPageRepository as RepositoryAbstraction } from "./abstractions.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
@@ -8,21 +7,10 @@ import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js
 class TrashPageRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private deleteEntry: DeleteEntryUseCase.Interface,
-        private getEntryById: GetEntryByIdUseCase.Interface,
         private pageModel: PageModel.Interface
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        // First, validate the page exists
-        const getResult = await this.getEntryById.execute(this.pageModel, params.id);
-
-        if (getResult.isFail()) {
-            if (getResult.error.code === "Cms/Entry/NotFound") {
-                return Result.fail(new PageNotFoundError(params.id));
-            }
-            return Result.fail(new PagePersistenceError(getResult.error));
-        }
-
         // Trash the entry
         const result = await this.deleteEntry.execute(this.pageModel, params.id, {
             permanently: false
@@ -41,5 +29,5 @@ class TrashPageRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const TrashPageRepository = RepositoryAbstraction.createImplementation({
     implementation: TrashPageRepositoryImpl,
-    dependencies: [DeleteEntryUseCase, GetEntryByIdUseCase, PageModel]
+    dependencies: [DeleteEntryUseCase, PageModel]
 });

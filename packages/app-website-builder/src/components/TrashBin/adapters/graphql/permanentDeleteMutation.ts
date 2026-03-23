@@ -2,28 +2,26 @@ import type { WbError } from "~/types.js";
 import gql from "graphql-tag";
 import type { PageGatewayDto } from "~/features/pages/getPage/PageGatewayDto.js";
 
-export interface ITrashPageDeleteMutationVariables {
+export interface IPermanentDeletePageMutationVariables {
     id: string;
     permanently: boolean;
 }
 
-export interface ITrashPageDeleteMutationResponse {
+export interface IPermanentDeletePageMutationResponse {
     websiteBuilder: {
-        trashPage: {
+        deletePage: {
             data: PageGatewayDto | null;
             error: WbError | null;
         };
     };
 }
 
-export const createTrashPageMutation = (fields: string[]) => {
+export const createPermanentDeletePageMutation = () => {
     return gql`
-        mutation WebsiteBuilderTrashPage($id: ID!, $permanently: Boolean!) {
+        mutation WebsiteBuilderPermanentlyDeletePage($id: ID!, $permanently: Boolean!) {
             websiteBuilder {
-                trashPage(id: $id, permanently: $permanently) {
-                    data {
-                        ${fields.join("\n")}
-                    }
+                deletePage(id: $id, permanently: $permanently) {
+                    data
                     error {
                         code
                         message
