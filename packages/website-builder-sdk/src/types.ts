@@ -187,6 +187,7 @@ export type ComponentChangeContext<TInputs = Record<string, any>> = {
     getAncestor: (componentName: string) => ManifestAncestorContext | undefined;
     getElement: (id: string) => OnChangeElementContext | undefined;
     createElement: (params: any) => any;
+    executeCommand: <T = unknown>(command: string, payload?: T) => void;
     breakpoint: string;
     log: (...args: any[]) => void;
     stop: () => Stop;
@@ -203,6 +204,7 @@ export type DescendantChangeContext<TInputs = Record<string, any>> = {
     inputs: TInputs;
     updateInputs: (cb: (inputs: TInputs) => void) => void;
     getElement: (id: string) => OnChangeElementContext | undefined;
+    executeCommand: <T = unknown>(command: string, payload?: T) => void;
     breakpoint: string;
     log: (...args: any[]) => void;
     stop: () => Stop;
