@@ -5,3 +5,4 @@
 5. can't delete steps if has fields
 6. can't delete field if in cond rules
 7. middleware on NEXTJS side - bring back
+8. dialog scrollable
