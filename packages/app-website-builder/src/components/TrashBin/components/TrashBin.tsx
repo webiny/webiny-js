@@ -6,11 +6,10 @@ import {
     TrashBinItemMapper,
     TrashBinListPagesGraphQLGateway,
     TrashBinRestorePageGraphQLGateway,
-    TrashBinRestorePageGraphQLGatewayWithCallback,
     usePageFields
 } from "../adapters/index.js";
 import { TrashBinButton } from "./TrashBinButton.js";
-import { useNavigateFolder, useRecords } from "@webiny/app-aco";
+import { useNavigateFolder } from "@webiny/app-aco";
 import { useApolloClient } from "@apollo/react-hooks";
 import { usePermissions } from "~/presentation/security/usePermissions.js";
 
@@ -18,7 +17,6 @@ export const TrashBin = () => {
     const client = useApolloClient();
     const { canDelete } = usePermissions();
     const { navigateToFolder } = useNavigateFolder();
-    const { getRecord } = useRecords();
 
     const pageFields = usePageFields();
 
@@ -44,11 +42,10 @@ export const TrashBin = () => {
     }, [client, pageFields]);
 
     const restoreGateway = useMemo(() => {
-        const restoreGateway = new TrashBinRestorePageGraphQLGateway({
+        return new TrashBinRestorePageGraphQLGateway({
             client,
             fields: pageFields
         });
-        return new TrashBinRestorePageGraphQLGatewayWithCallback(getRecord, restoreGateway);
     }, [client, pageFields]);
 
     const itemMapper = useMemo(() => {
@@ -61,6 +58,7 @@ export const TrashBin = () => {
         },
         [navigateToFolder]
     );
+    console.log("TrashBin rendered");
 
     if (!canDelete("page")) {
         return null;

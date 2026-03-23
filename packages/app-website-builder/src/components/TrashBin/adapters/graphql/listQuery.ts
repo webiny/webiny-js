@@ -14,7 +14,7 @@ export interface IListTrashPagesQueryVariables {
 
 export interface IListTrashPagesQueryResponse {
     websiteBuilder: {
-        listTrashPages: {
+        listDeletedPages: {
             data: PageGatewayDto[] | null;
             meta: WbListMeta | null;
             error: WbError | null;
@@ -26,7 +26,7 @@ export const createListTrashPagesQuery = (fields: string[]) => {
     return gql`
         query WebsiteBuilderListTrashPages($where: WbPagesListWhereInput, $limit: Int, $after: String, $sort: [WbPageListSorter], $search: String) {
             websiteBuilder {
-                listPages(where: $where, limit: $limit, after: $after, sort: $sort, search: $search) {
+                listDeletedPages(where: $where, limit: $limit, after: $after, sort: $sort, search: $search) {
                     data {
                         ${fields.join("\n")}
                     }

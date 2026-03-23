@@ -31,11 +31,7 @@ export class TrashBinListPagesGraphQLGateway implements ITrashBinListGateway<Pag
         >({
             query: createListTrashPagesQuery(this.fields),
             variables: {
-                ...params,
-                where: {
-                    ...params.where,
-                    deleted: true
-                }
+                ...params
             },
             fetchPolicy: "network-only"
         });
@@ -44,7 +40,7 @@ export class TrashBinListPagesGraphQLGateway implements ITrashBinListGateway<Pag
             throw new Error("Network error while listing deleted entries.");
         }
 
-        const { data, error, meta } = response.websiteBuilder.listTrashPages;
+        const { data, error, meta } = response.websiteBuilder.listDeletedPages;
 
         if (!data || !meta) {
             throw new Error(error?.message || "Could not fetch deleted entries.");

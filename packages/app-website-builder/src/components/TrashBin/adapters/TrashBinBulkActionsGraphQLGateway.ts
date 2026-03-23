@@ -1,8 +1,11 @@
 import type { ApolloClient } from "apollo-client";
 import type { ITrashBinBulkActionsGateway } from "@webiny/app-trash-bin";
 import type { TrashBinBulkActionsGatewayParams } from "@webiny/app-trash-bin/types.js";
-import {createBulkActionsMutation} from "./graphql/bulkActionsMutation.js";
-import type {IBulkActionsMutationResponse, IBulkActionsMutationVariables} from "./graphql/bulkActionsMutation.js";
+import { createBulkActionsMutation } from "./graphql/bulkActionsMutation.js";
+import type {
+    IBulkActionsMutationResponse,
+    IBulkActionsMutationVariables
+} from "./graphql/bulkActionsMutation.js";
 
 interface ITrashBinBulkActionsGraphQLGatewayParams {
     client: ApolloClient<object>;
