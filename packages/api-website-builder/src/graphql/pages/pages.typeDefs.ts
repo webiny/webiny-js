@@ -247,6 +247,7 @@ export const pagesTypeDefs = /* GraphQL */ `
         movePage(id: ID!, folderId: ID!): WbBooleanResponse
         createPageRevisionFrom(id: ID!): WbPageResponse
         deletePage(id: ID!, permanent: Boolean): WbBooleanResponse
+        restorePage(id: ID!): WbBooleanResponse
         updateSettings(data: WbSettingsInput!): BooleanResponse
         updateIntegrations(data: JSON!): BooleanResponse
     }

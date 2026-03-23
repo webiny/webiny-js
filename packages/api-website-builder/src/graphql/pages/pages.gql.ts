@@ -1,25 +1,32 @@
-import {ErrorResponse, GraphQLSchemaPlugin, ListResponse, NotFoundError, Response} from "@webiny/handler-graphql";
-import {ensureAuthentication} from "~/utils/ensureAuthentication.js";
-import {resolve} from "~/utils/resolve.js";
-import {WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS} from "~/constants.js";
-import {pagesTypeDefs} from "~/graphql/pages/pages.typeDefs.js";
-import type {ApiCoreContext} from "@webiny/api-core/types/core.js";
-import {PageModel} from "~/domain/page/abstractions.js";
-import {GetPageByIdUseCase} from "~/features/pages/GetPageById/index.js";
-import {GetPageByPathUseCase} from "~/features/pages/GetPageByPath/index.js";
-import {GetPageRevisionsUseCase} from "~/features/pages/GetPageRevisions/index.js";
-import {ListPagesUseCase} from "~/features/pages/ListPages/index.js";
-import {CreatePageUseCase} from "~/features/pages/CreatePage/index.js";
-import {UpdatePageUseCase} from "~/features/pages/UpdatePage/index.js";
-import {DeletePageUseCase} from "~/features/pages/DeletePage/index.js";
-import {PublishPageUseCase} from "~/features/pages/PublishPage/index.js";
-import {UnpublishPageUseCase} from "~/features/pages/UnpublishPage/index.js";
-import {MovePageUseCase} from "~/features/pages/MovePage/index.js";
-import {DuplicatePageUseCase} from "~/features/pages/DuplicatePage/index.js";
-import {CreatePageRevisionFromUseCase} from "~/features/pages/CreatePageRevisionFrom/index.js";
-import {KeyValueStore} from "@webiny/api-core/features/keyValueStore/index.js";
-import {ListDeletedPagesUseCase} from "~/features/pages/ListDeletedPages/index.js";
-import {TrashPageUseCase} from "~/features/pages/TrashPage/index.js";
+import {
+    ErrorResponse,
+    GraphQLSchemaPlugin,
+    ListResponse,
+    NotFoundError,
+    Response
+} from "@webiny/handler-graphql";
+import { ensureAuthentication } from "~/utils/ensureAuthentication.js";
+import { resolve } from "~/utils/resolve.js";
+import { WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS } from "~/constants.js";
+import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { PageModel } from "~/domain/page/abstractions.js";
+import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
+import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
+import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
+import { ListPagesUseCase } from "~/features/pages/ListPages/index.js";
+import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
+import { UpdatePageUseCase } from "~/features/pages/UpdatePage/index.js";
+import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
+import { PublishPageUseCase } from "~/features/pages/PublishPage/index.js";
+import { UnpublishPageUseCase } from "~/features/pages/UnpublishPage/index.js";
+import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
+import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
+import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
+import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
+import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
+import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
 
 export const createPagesSchema = () => {
     const pageGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
@@ -256,9 +263,24 @@ export const createPagesSchema = () => {
                              * If "permanent" flag is set, we want to permanently delete the page. Otherwise, we just want to trash it.
                              * This allows us to have a two-step deletion process, where pages are first moved to trash and can be restored from there, before being permanently deleted.
                              */
-                            permanent ? DeletePageUseCase : TrashPageUseCase,
+                            permanent ? DeletePageUseCase : TrashPageUseCase
                         );
                         const result = await deletePage.execute({
+                            id
+                        });
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return true;
+                    });
+                },
+                restorePage: async (_, { id }, context) => {
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const restorePage = context.container.resolve(RestorePageUseCase);
+                        const result = await restorePage.execute({
                             id
                         });
 
