@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "./utils/useHandler.js";
 import { pageMocks } from "./mocks/page.mock.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
@@ -14,6 +14,9 @@ import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
 import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
+import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
+import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
+import { GetDeletedPageByIdUseCase } from "~/features/pages/GetDeletedPageById/index.js";
 
 describe("Pages Use Cases (Authorized)", () => {
     let context: ApiCoreContext;
@@ -329,5 +332,81 @@ describe("Pages Use Cases (Authorized)", () => {
         );
 
         expect(fetchedPage).toBeNull();
+    });
+
+    it("should trash a page, not find it and then restore it", async () => {
+        const createPage = context.container.resolve(CreatePageUseCase);
+        const createResult = await createPage.execute(pageMocks.pageA);
+
+        if (createResult.isFail()) {
+            throw createResult.error;
+        }
+
+        const page = createResult.value;
+
+        const trashPage = context.container.resolve(TrashPageUseCase);
+        const trashed = await trashPage.execute({ id: page.id });
+
+        expect(trashed.isOk()).toBeTrue();
+
+        const getPageById = context.container.resolve(GetPageByIdUseCase);
+
+        const fetchedPage = await getPageById.execute(page.id);
+
+        expect(fetchedPage.isFail()).toBeTrue();
+
+        const restorePage = context.container.resolve(RestorePageUseCase);
+        const restored = await restorePage.execute({ id: page.id });
+
+        expect(restored.isOk()).toBeTrue();
+
+        const fetchedPageAfterRestore = await getPageById.execute(page.id);
+
+        expect(fetchedPageAfterRestore.isOk()).toBeTrue();
+        expect(fetchedPageAfterRestore.value).toMatchObject({
+            id: page.id,
+            deleted: false
+        });
+    });
+
+    it("should trash a page, find it in trash and then delete it permanently", async () => {
+        const createPage = context.container.resolve(CreatePageUseCase);
+        const createResult = await createPage.execute(pageMocks.pageA);
+
+        if (createResult.isFail()) {
+            throw createResult.error;
+        }
+
+        const page = createResult.value;
+
+        const trashPage = context.container.resolve(TrashPageUseCase);
+        const trashed = await trashPage.execute({ id: page.id });
+
+        expect(trashed.isOk()).toBeTrue();
+
+        const getPageById = context.container.resolve(GetDeletedPageByIdUseCase);
+
+        const fetchedPage = await getPageById.execute(page.id);
+
+        expect(fetchedPage.isOk()).toBeTrue();
+        expect(fetchedPage.value).toMatchObject({
+            id: page.id,
+            deleted: true
+        });
+
+        const deletePage = context.container.resolve(DeletePageUseCase);
+
+        const deleted = await deletePage.execute({ id: page.id });
+
+        expect(deleted.isOk()).toBeTrue();
+
+        // regular get
+        const getPageByIdAfterDelete = context.container.resolve(GetPageByIdUseCase);
+        const resultGetAfterDelete = await getPageByIdAfterDelete.execute(page.id);
+        expect(resultGetAfterDelete.isFail()).toBeTrue();
+        // deleted get
+        const getDeletedPageById = context.container.resolve(GetDeletedPageByIdUseCase);
+        const resultGetDeletedAfterDelete = await getDeletedPageById.execute(page.id);
+        expect(resultGetDeletedAfterDelete.isFail()).toBeTrue();
     });
 });

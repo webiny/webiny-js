@@ -13,16 +13,6 @@ class DeletePageRepositoryImpl implements RepositoryAbstraction.Interface {
     ) {}
 
     async execute(params: RepositoryAbstraction.Params): RepositoryAbstraction.Return {
-        // First, validate the page exists
-        const getResult = await this.getEntryById.execute(this.pageModel, params.id);
-
-        if (getResult.isFail()) {
-            if (getResult.error.code === "Cms/Entry/NotFound") {
-                return Result.fail(new PageNotFoundError(params.id));
-            }
-            return Result.fail(new PagePersistenceError(getResult.error));
-        }
-
         // Delete the entry
         const result = await this.deleteEntry.execute(this.pageModel, params.id);
 

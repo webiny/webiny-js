@@ -1,3 +1,3 @@
 export interface IDeletePageGateway {
-    execute: (id: string) => Promise<void>;
+    execute: (id: string, permanently: boolean) => Promise<void>;
 }

@@ -3,23 +3,23 @@ import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
 } from "@webiny/api-core/features/EventPublisher";
-import { DeletePageUseCase as UseCaseAbstraction, DeletePageRepository } from "./abstractions.js";
-import { PageBeforeDeleteEvent, PageAfterDeleteEvent } from "./events.js";
-import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
+import { DeletePageRepository, DeletePageUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { PageAfterDeleteEvent, PageBeforeDeleteEvent } from "./events.js";
 import { WbPermissions } from "~/domain/permissions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
+import { GetDeletedPageByIdUseCase } from "~/features/pages/GetDeletedPageById/index.js";
 
 class DeletePageUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private permissions: WbPermissions.Interface,
         private eventPublisher: EventPublisherAbstraction.Interface,
-        private getPageById: GetPageByIdUseCase.Interface,
+        private getDeletedPageById: GetDeletedPageByIdUseCase.Interface,
         private repository: DeletePageRepository.Interface
     ) {}
 
     async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
         // Get the page first to include in events and for item-level permission check
-        const getResult = await this.getPageById.execute(params.id);
+        const getResult = await this.getDeletedPageById.execute(params.id);
 
         if (getResult.isFail()) {
             return Result.fail(getResult.error);
@@ -62,7 +62,7 @@ export const DeletePageUseCase = UseCaseAbstraction.createImplementation({
     dependencies: [
         WbPermissions.Abstraction,
         EventPublisher,
-        GetPageByIdUseCase,
+        GetDeletedPageByIdUseCase,
         DeletePageRepository
     ]
 });
