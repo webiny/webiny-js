@@ -14,6 +14,11 @@ export {
     PageBeforeDeleteEventHandler
 } from "@webiny/api-website-builder/features/pages/DeletePage/abstractions.js";
 export {
+    TrashPageUseCase,
+    PageAfterTrashEventHandler,
+    PageBeforeTrashEventHandler
+} from "@webiny/api-website-builder/features/pages/TrashPage/abstractions.js";
+export {
     DuplicatePageUseCase,
     PageAfterDuplicateEventHandler,
     PageBeforeDuplicateEventHandler
