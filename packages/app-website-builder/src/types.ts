@@ -25,6 +25,7 @@ export interface WbError {
     code: string;
     message: string;
     data?: Record<string, any> | null;
+    stack?: string;
 }
 
 export interface WbListMeta {
