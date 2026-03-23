@@ -124,6 +124,9 @@ export function executeOnChange(params: ExecuteOnChangeParams): AncestorUpdate[]
             },
             getElement,
             createElement: p => createElement(p),
+            executeCommand: (command: string, payload: Record<string, any>) => {
+                editor.executeCommand({ type: command }, payload);
+            },
             breakpoint: baseBreakpoint,
             log: (...args: any[]) => console.log(...args),
             stop,
@@ -133,6 +136,7 @@ export function executeOnChange(params: ExecuteOnChangeParams): AncestorUpdate[]
 
     // --- onDescendantChange on each ancestor ---
     fireDescendantChange({
+        editor,
         element,
         elementId,
         deepInputs,
@@ -149,6 +153,7 @@ export function executeOnChange(params: ExecuteOnChangeParams): AncestorUpdate[]
 }
 
 function fireDescendantChange(params: {
+    editor: Editor;
     element: { parent?: { id: string; slot: string }; component: { name: string } };
     elementId: string;
     deepInputs: Record<string, any>;
@@ -161,6 +166,7 @@ function fireDescendantChange(params: {
     ancestorUpdates: AncestorUpdate[];
 }) {
     const {
+        editor,
         element,
         elementId,
         deepInputs,
@@ -214,6 +220,8 @@ function fireDescendantChange(params: {
                     });
                 },
                 getElement,
+                executeCommand: (command: string, payload: Record<string, any>) =>
+                    editor.executeCommand({ type: command }, payload),
                 breakpoint: baseBreakpoint,
                 log: (...args: any[]) => console.log(...args),
                 stop,

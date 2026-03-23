@@ -1,21 +1,30 @@
 import React, { useMemo } from "react";
 import { Dialog, Tabs } from "webiny/admin/ui";
-import { Form, FormOnSubmit } from "webiny/admin/form";
+import { Form } from "webiny/admin/form";
 import { GeneralTab } from "./FieldSettingsDialog/GeneralTab";
 import { ValidatorsTab } from "./FieldSettingsDialog/ValidatorsTab";
 import {
     FunnelFieldDefinitionModel,
     FunnelFieldDefinitionModelDto
 } from "../../models/FunnelFieldDefinitionModel";
+import { useElementInputs } from "webiny/admin/website-builder/page/editor";
 
 interface EditFieldDialogProps {
-    field: FunnelFieldDefinitionModel;
-    onClose: () => void;
     open: boolean;
-    onSubmit: FormOnSubmit<FunnelFieldDefinitionModelDto>;
+    elementId: string | null;
+    onClose: () => void;
 }
 
-export const FieldSettingsDialog = ({ field, open, onClose, onSubmit }: EditFieldDialogProps) => {
+/* Inputs shape for any Fub/Field* element. */
+interface FunnelFieldInputs {
+    fieldData: FunnelFieldDefinitionModelDto;
+}
+
+export const FieldSettingsDialog = ({ open, elementId, onClose }: EditFieldDialogProps) => {
+    const { inputs, updateInputs } = useElementInputs<FunnelFieldInputs>(elementId);
+    const hasData = elementId && inputs.fieldData;
+    const field = hasData ? FunnelFieldDefinitionModel.fromDto(inputs.fieldData) : null;
+
     const initialFormData = useMemo(() => {
         if (!field) {
             return {};
@@ -23,10 +32,18 @@ export const FieldSettingsDialog = ({ field, open, onClose, onSubmit }: EditFiel
         return field.toDto();
     }, [field]);
 
+    const handleSubmit = (data: FunnelFieldDefinitionModelDto) => {
+        updateInputs(current => {
+            console.log("test", data);
+            (current as unknown as FunnelFieldInputs).fieldData = data;
+        });
+        onClose();
+    };
+
     return (
         <>
             {field && (
-                <Form<FunnelFieldDefinitionModelDto> data={initialFormData} onSubmit={onSubmit}>
+                <Form<FunnelFieldDefinitionModelDto> data={initialFormData} onSubmit={handleSubmit}>
                     {({ submit }) => (
                         <Dialog
                             style={{ width: 875 }}
