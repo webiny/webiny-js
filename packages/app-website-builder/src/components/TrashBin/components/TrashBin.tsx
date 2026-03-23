@@ -57,7 +57,6 @@ export const TrashBin = () => {
         },
         [navigateToFolder]
     );
-    console.log("TrashBin rendered");
 
     if (!canDelete("page")) {
         return null;
