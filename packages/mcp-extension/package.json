@@ -1,0 +1,26 @@
+{
+  "name": "@webiny/mcp-extension",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Webiny CLI extension for the MCP server.",
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "dependencies": {
+    "@webiny/cli-core": "0.0.0",
+    "@webiny/mcp": "0.0.0",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "5.9.3"
+  }
+}

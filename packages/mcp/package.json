@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "type": "module",
   "main": "./index.js",
+  "bin": {
+    "webiny-mcp": "./bin.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -16,9 +19,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
-    "@webiny/cli-core": "0.0.0",
     "front-matter": "^4.0.2",
-    "react": "^18.3.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {

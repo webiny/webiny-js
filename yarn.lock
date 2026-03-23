@@ -15043,6 +15043,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/mcp-extension@npm:0.0.0, @webiny/mcp-extension@workspace:packages/mcp-extension":
+  version: 0.0.0-use.local
+  resolution: "@webiny/mcp-extension@workspace:packages/mcp-extension"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cli-core": "npm:0.0.0"
+    "@webiny/mcp": "npm:0.0.0"
+    react: "npm:^18.3.1"
+    typescript: "npm:5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/mcp@npm:0.0.0, @webiny/mcp@workspace:packages/mcp":
   version: 0.0.0-use.local
   resolution: "@webiny/mcp@workspace:packages/mcp"
@@ -15051,11 +15063,11 @@ __metadata:
     "@types/lodash": "npm:^4.17.24"
     "@types/ncp": "npm:^2.0.8"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/cli-core": "npm:0.0.0"
     front-matter: "npm:^4.0.2"
-    react: "npm:^18.3.1"
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
+  bin:
+    webiny-mcp: ./bin.js
   languageName: unknown
   linkType: soft
 
@@ -15157,7 +15169,7 @@ __metadata:
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
-    "@webiny/mcp": "npm:0.0.0"
+    "@webiny/mcp-extension": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"

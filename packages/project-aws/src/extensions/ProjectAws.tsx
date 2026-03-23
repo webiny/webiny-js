@@ -15,7 +15,7 @@ import {
 import { createPathResolver } from "@webiny/project";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
 import { CorePulumi } from "@webiny/project/extensions/index.js";
-import { McpExtension } from "@webiny/mcp";
+import { McpExtension } from "@webiny/mcp-extension";
 
 const p = createPathResolver(import.meta.dirname);
 
