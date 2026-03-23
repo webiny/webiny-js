@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Icon } from "webiny/admin/ui";
 import { ReactComponent as DeleteIcon } from "webiny/admin/icons/close.svg";
 import {
     useCreateElement,
     useDeleteElement,
-    useUpdateElement
+    useDocumentEditor,
+    Commands
 } from "webiny/admin/website-builder/page/editor";
 import { useContainer } from "../useContainer.js";
-import { type FunnelContainerInputs } from "../types.js";
 
 const iconClasses =
     "absolute z-10 rounded-full bg-neutral-dimmed border-solid border-sm border-neutral-muted cursor-pointer fill-neutral-strong";
@@ -17,21 +17,34 @@ const iconPosition = {
     right: -8
 };
 
-export const StepsNavigator = () => {
-    const funnel = useContainer();
-    const { createElement } = useCreateElement();
-    const { updateElement } = useUpdateElement();
-    const { deleteElement } = useDeleteElement();
+export const Stepper = () => {
+    const container = useContainer();
 
-    if (!funnel) {
+    // @ts-ignore
+    const editor = useDocumentEditor();
+    const { createElement } = useCreateElement();
+    const { deleteElement } = useDeleteElement();
+    const [activeStep, setActiveStep] = useState(0);
+
+    if (!container) {
         return null;
     }
 
-    const { activeStep, steps = [] } = funnel.inputs;
+    if (!container.inputs.containerData) {
+        return null;
+    }
+
+    console.log("container", container);
+    const steps = container.inputs.containerData.steps ?? [];
+    // Slot steps carry the editor element IDs needed for deletion.
+    const slotSteps = container.inputs.steps ?? [];
 
     const activateStep = (index: number) => {
-        funnel.updateInputs(inputs => {
-            inputs.activeStep = index;
+        const stepId = container.inputs.containerData.steps[index]?.id;
+        setActiveStep(index);
+        editor.executeCommand(Commands.SendPreviewMessage, {
+            type: "fub.activeStepChanged",
+            payload: { stepId }
         });
     };
 
@@ -40,12 +53,11 @@ export const StepsNavigator = () => {
     };
 
     const addStep = () => {
-        const steps = funnel.inputs.steps ?? [];
         const insertIndex = Math.max(steps.length - 1, 0);
 
         createElement({
             componentName: "Fub/Step",
-            parentId: funnel.id,
+            parentId: container.id,
             slot: "steps",
             index: insertIndex,
             bindings: {
@@ -55,11 +67,15 @@ export const StepsNavigator = () => {
             }
         });
 
-        updateElement<FunnelContainerInputs>(funnel.id, inputs => {
-            inputs.activeStep = insertIndex;
+        const stepId = container.inputs.containerData.steps[insertIndex]?.id;
+        setActiveStep(insertIndex);
+        editor.executeCommand(Commands.SendPreviewMessage, {
+            type: "fub.activeStepChanged",
+            payload: { stepId }
         });
     };
 
+    console.log("steps, steps", JSON.stringify(steps));
     return (
         <div
             className={"flex flex-row p-sm bg-neutral-light justify-between"}
@@ -71,21 +87,22 @@ export const StepsNavigator = () => {
                     const isLastStep = index === steps.length - 1;
                     const canDelete = !isFirstStep && !isLastStep;
                     const activeVariant = activeStep === index ? "primary" : "secondary";
+                    const elementId = slotSteps[index]?.elementId;
 
                     return (
-                        <div className={"relative"} key={index}>
+                        <div className={"relative"} key={step.id}>
                             <Button
                                 variant={activeVariant}
-                                text={step.label}
+                                text={step.title}
                                 className={"border-solid border-sm border-neutral-muted"}
                                 onClick={() => activateStep(index)}
                             />
-                            {canDelete ? (
+                            {canDelete && elementId ? (
                                 <Icon
                                     icon={<DeleteIcon />}
                                     label={"Delete step"}
                                     style={iconPosition}
-                                    onClick={() => deleteStep(step.elementId)}
+                                    onClick={() => deleteStep(elementId)}
                                     className={iconClasses}
                                 />
                             ) : null}

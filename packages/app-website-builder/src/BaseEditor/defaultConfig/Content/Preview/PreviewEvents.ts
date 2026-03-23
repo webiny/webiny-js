@@ -83,6 +83,11 @@ export class PreviewEvents {
             // Element preview
             this.editor.registerCommandHandler(Commands.PreviewPatchElement, payload => {
                 this.getMessenger().send(`element.patch.${payload.elementId}`, payload.patch);
+            }),
+
+            // Forward arbitrary messages to the preview iframe.
+            this.editor.registerCommandHandler(Commands.SendPreviewMessage, ({ type, payload }) => {
+                this.getMessenger().send(type, payload);
             })
         );
     }
