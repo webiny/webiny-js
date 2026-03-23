@@ -13,6 +13,7 @@ export { useCreateElement } from "~/BaseEditor/hooks/useCreateElement.js";
 export { useDeleteElement } from "~/BaseEditor/hooks/useDeleteElement.js";
 export { useUpdateElement } from "~/BaseEditor/hooks/useUpdateElement.js";
 export { useElementOverlay } from "~/BaseEditor/hooks/useElementOverlay.js";
+export { useElementComponentManifest } from "~/BaseEditor/defaultConfig/Content/Preview/useElementComponentManifest.js";
 export { ElementInputs } from "~/BaseEditor/defaultConfig/Sidebar/ElementSettings/ElementInputs.js";
 
 export { $selectElement } from "~/editorSdk/utils/index.js";
