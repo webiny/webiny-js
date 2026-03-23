@@ -8,6 +8,7 @@ import {
     Commands
 } from "webiny/admin/website-builder/page/editor";
 import { useContainer } from "../useContainer.js";
+import { FunnelStepModel } from "@/extensions/funnelBuilder/models/FunnelStepModel";
 
 const iconClasses =
     "absolute z-10 rounded-full bg-neutral-dimmed border-solid border-sm border-neutral-muted cursor-pointer fill-neutral-strong";
@@ -20,7 +21,6 @@ const iconPosition = {
 export const Stepper = () => {
     const container = useContainer();
 
-    // @ts-ignore
     const editor = useDocumentEditor();
     const { createElement } = useCreateElement();
     const { deleteElement } = useDeleteElement();
@@ -62,7 +62,7 @@ export const Stepper = () => {
             index: insertIndex,
             bindings: {
                 inputs: {
-                    label: `Step ${steps.length}`
+                    stepData: new FunnelStepModel().toDto()
                 }
             }
         });
