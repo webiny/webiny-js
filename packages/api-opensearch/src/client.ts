@@ -1,8 +1,9 @@
 import crypto from "crypto";
 import WebinyError from "@webiny/error";
-import { Client } from "@opensearch-project/opensearch";
-import type { ClientOptions } from "@opensearch-project/opensearch";
-import { AwsSigv4Signer } from "@opensearch-project/opensearch/aws";
+import type {ClientOptions} from "@opensearch-project/opensearch";
+import {Client} from "@opensearch-project/opensearch";
+import {defaultProvider} from '@aws-sdk/credential-provider-node';
+import {AwsSigv4Signer} from "@opensearch-project/opensearch/aws";
 
 export interface OpenSearchClientOptions extends ClientOptions {
     endpoint?: string;
@@ -45,19 +46,28 @@ export const createOpenSearchClient = (options: OpenSearchClientOptions): Client
             ...AwsSigv4Signer({
                 region,
                 service: "es",
-                getCredentials: () => {
-                    const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
-                    const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
-                    const sessionToken = process.env.AWS_SESSION_TOKEN;
-
+                getCredentials: async () => {
+                    
+                    const provider = defaultProvider();
+                    
+                    const { accessKeyId, secretAccessKey, ...credentials} = await provider();
+                    // const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+                    // const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+                    // const sessionToken = process.env.AWS_SESSION_TOKEN;
+                    //
                     if (!accessKeyId || !secretAccessKey) {
                         throw new WebinyError(
                             "Missing AWS credentials (AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY).",
                             "MISSING_AWS_CREDENTIALS"
                         );
                     }
-
-                    return Promise.resolve({ accessKeyId, secretAccessKey, sessionToken });
+                    return {
+                        ...credentials,
+                        accessKeyId,
+                        secretAccessKey
+                    }
+                    //
+                    // return Promise.resolve({ accessKeyId, secretAccessKey, sessionToken });
                 }
             })
         };
