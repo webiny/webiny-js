@@ -8,5 +8,4 @@
 8. double inputs / quatro imputs
 9. do we need updateElementData?
 10. dbl check page type
-11. dyn zone visuals
-12. steps kontorle
+11. steps kontorle
