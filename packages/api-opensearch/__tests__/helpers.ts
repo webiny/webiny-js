@@ -1,8 +1,11 @@
-import type {OpenSearchBoolQueryConfig} from "~/types.js";
-import {createOpenSearchClient as baseCreateClient} from "~/client.js";
-import type {ClientOptions} from "@opensearch-project/opensearch";
-import type {IndicesCreate, IndicesExists} from "@opensearch-project/opensearch/api/requestParams.js";
-import {TransportRequestOptions} from "@opensearch-project/opensearch/lib/Transport.js";
+import type { OpenSearchBoolQueryConfig } from "~/types.js";
+import { createOpenSearchClient as baseCreateClient } from "~/client.js";
+import type { ClientOptions } from "@opensearch-project/opensearch";
+import type {
+    IndicesCreate,
+    IndicesExists
+} from "@opensearch-project/opensearch/api/requestParams.js";
+import { TransportRequestOptions } from "@opensearch-project/opensearch/lib/Transport.js";
 
 export const createBlankQuery = (): OpenSearchBoolQueryConfig => ({
     must_not: [],

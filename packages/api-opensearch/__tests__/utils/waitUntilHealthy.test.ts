@@ -49,6 +49,7 @@ describe("wait until healthy", () => {
 
         try {
             await waitUntilHealthy.wait();
+            throw new Error("Should not reach here!");
         } catch (ex) {
             expect(ex).toBeInstanceOf(UnhealthyClusterError);
             expect(ex.message).toEqual("Cluster did not become healthy in 3 seconds.");
@@ -68,6 +69,7 @@ describe("wait until healthy", () => {
         try {
             const { runs } = await waitUntilHealthy.wait();
             expect(runs).toEqual("reaching here would fail the test");
+            throw new Error("Should not reach here!");
         } catch (ex) {
             expect(ex).toBeInstanceOf(UnhealthyClusterError);
             expect(ex.message).toEqual("Cluster did not become healthy in 3 seconds.");
@@ -93,6 +95,7 @@ describe("wait until healthy", () => {
                 }
             });
             expect(runs).toEqual("reaching here would fail the test");
+            throw new Error("Should not reach here!");
         } catch (ex) {
             expect(ex).toBeInstanceOf(UnhealthyClusterError);
         }
@@ -123,6 +126,7 @@ describe("wait until healthy", () => {
                 }
             });
             expect(runs).toEqual("reaching here would fail the test");
+            throw new Error("Should not reach here!");
         } catch (ex) {
             expect(ex).toBeInstanceOf(UnhealthyClusterError);
         }
@@ -157,6 +161,7 @@ describe("wait until healthy", () => {
                 }
             });
             expect(runs).toEqual("reaching here would fail the test");
+            throw new Error("Should not reach here!");
         } catch (ex) {
             expect(ex).toBeInstanceOf(WaitingHealthyClusterAbortedError);
         }
@@ -185,6 +190,7 @@ describe("wait until healthy", () => {
                 }
             });
             expect(runs).toEqual("reaching here would fail the test");
+            throw new Error("Should not reach here!");
         } catch (ex) {
             expect(ex).toBeInstanceOf(WaitingHealthyClusterAbortedError);
         }
