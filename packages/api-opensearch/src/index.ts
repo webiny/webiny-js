@@ -52,5 +52,3 @@ export const createOpenSearchContext = (
 
     return plugin;
 };
-
-export default createOpenSearchContext;

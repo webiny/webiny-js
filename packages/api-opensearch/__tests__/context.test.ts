@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import opensearchContext from "~/index";
+import { createOpenSearchContext } from "~/index";
 import { Context, ContextPlugin } from "@webiny/api";
 import { OpenSearchQueryBuilderOperatorPlugin } from "~/plugins/definition/OpenSearchQueryBuilderOperatorPlugin";
 import { Client } from "@opensearch-project/opensearch";
@@ -52,7 +52,7 @@ describe("OpenSearchContext", () => {
             WEBINY_VERSION: "0.0.0"
         });
         const client = createOpenSearchClient();
-        const plugin = opensearchContext(client);
+        const plugin = createOpenSearchContext(client);
         /**
          * A context plugin must be created.
          */
@@ -75,7 +75,7 @@ describe("OpenSearchContext", () => {
             WEBINY_VERSION: "0.0.0"
         });
         const client = createOpenSearchClient();
-        const plugin = opensearchContext(client);
+        const plugin = createOpenSearchContext(client);
 
         expect(plugin).toBeInstanceOf(ContextPlugin);
         // @ts-expect-error
