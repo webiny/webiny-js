@@ -24,7 +24,7 @@ export const Stepper = () => {
     const editor = useDocumentEditor();
     const { createElement } = useCreateElement();
     const { deleteElement } = useDeleteElement();
-    const [activeStep, setActiveStep] = useState(0);
+    const [activeStepId, setActiveStepId] = useState<string | null>(null);
 
     if (!container) {
         return null;
@@ -34,14 +34,12 @@ export const Stepper = () => {
         return null;
     }
 
-    console.log("container", container);
     const steps = container.inputs.containerData.steps ?? [];
     // Slot steps carry the editor element IDs needed for deletion.
     const slotSteps = container.inputs.steps ?? [];
 
-    const activateStep = (index: number) => {
-        const stepId = container.inputs.containerData.steps[index]?.id;
-        setActiveStep(index);
+    const activateStep = (stepId: string) => {
+        setActiveStepId(stepId);
         editor.executeCommand(Commands.SendPreviewMessage, {
             type: "fub.activeStepChanged",
             payload: { stepId }
@@ -54,6 +52,7 @@ export const Stepper = () => {
 
     const addStep = () => {
         const insertIndex = Math.max(steps.length - 1, 0);
+        const newStep = new FunnelStepModel();
 
         createElement({
             componentName: "Fub/Step",
@@ -62,20 +61,20 @@ export const Stepper = () => {
             index: insertIndex,
             bindings: {
                 inputs: {
-                    stepData: new FunnelStepModel().toDto()
+                    stepData: newStep.toDto()
                 }
             }
         });
 
-        const stepId = container.inputs.containerData.steps[insertIndex]?.id;
-        setActiveStep(insertIndex);
-        editor.executeCommand(Commands.SendPreviewMessage, {
-            type: "fub.activeStepChanged",
-            payload: { stepId }
-        });
+        setTimeout(() => {
+            setActiveStepId(newStep.id);
+            editor.executeCommand(Commands.SendPreviewMessage, {
+                type: "fub.activeStepChanged",
+                payload: { stepId: newStep.id }
+            });
+        }, 10);
     };
 
-    console.log("steps, steps", JSON.stringify(steps));
     return (
         <div
             className={"flex flex-row p-sm bg-neutral-light justify-between"}
@@ -86,7 +85,7 @@ export const Stepper = () => {
                     const isFirstStep = index === 0;
                     const isLastStep = index === steps.length - 1;
                     const canDelete = !isFirstStep && !isLastStep;
-                    const activeVariant = activeStep === index ? "primary" : "secondary";
+                    const activeVariant = activeStepId === step.id ? "primary" : "secondary";
                     const elementId = slotSteps[index]?.elementId;
 
                     return (
@@ -95,7 +94,7 @@ export const Stepper = () => {
                                 variant={activeVariant}
                                 text={step.title}
                                 className={"border-solid border-sm border-neutral-muted"}
-                                onClick={() => activateStep(index)}
+                                onClick={() => activateStep(step.id)}
                             />
                             {canDelete && elementId ? (
                                 <Icon

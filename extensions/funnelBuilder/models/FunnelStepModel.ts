@@ -13,7 +13,7 @@ export class FunnelStepModel extends AbstractModel<FunnelStepModelDto> {
     constructor(dto?: FunnelStepModelDto) {
         super();
         this.id = dto?.id ?? getRandomId();
-        this.title = dto?.title ?? "Step";
+        this.title = dto?.title ?? "New step";
     }
 
     toDto(): FunnelStepModelDto {
