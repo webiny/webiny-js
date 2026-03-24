@@ -17,6 +17,8 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import {createOpenSearchContext} from "@webiny/api-opensearch"
+import {createElasticsearchClient} from "@webiny/project-utils/testing/elasticsearch/createClient"
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -28,6 +30,7 @@ export const useHandler = (params?: UseHandlerParams) => {
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const documentClient = getDocumentClient();
+    const elasticsearchClient = createElasticsearchClient();
 
     const plugins = [
         [
@@ -40,6 +43,7 @@ export const useHandler = (params?: UseHandlerParams) => {
             createApiCore({
                 storageOperations: apiCoreStorage.storageOperations
             }),
+            createOpenSearchContext(elasticsearchClient),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: false,
