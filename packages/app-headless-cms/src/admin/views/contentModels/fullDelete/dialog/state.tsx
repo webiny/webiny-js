@@ -4,7 +4,7 @@ import { FullyDeleteModelStateStatus } from "../types.js";
 import type { CmsErrorResponse, CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import type { IDeleteCmsModelTask } from "~/admin/viewsGraphql.js";
 
-const getDefaultState = (model: CmsModel):IFullyDeleteModelState => {
+const getDefaultState = (model: CmsModel): IFullyDeleteModelState => {
     return {
         confirmation: "",
         status: FullyDeleteModelStateStatus.NONE,
