@@ -13,6 +13,19 @@ export class PageNotFoundError extends BaseError<{ id: string }> {
     }
 }
 
+export class PageNotFoundTrashedError extends BaseError<{ id: string }> {
+    override readonly code = "WebsiteBuilder/Page/NotFoundTrashed" as const;
+
+    constructor(id: string) {
+        super({
+            message: "Trashed page not found!",
+            data: {
+                id
+            }
+        });
+    }
+}
+
 export class PagePersistenceError extends BaseError {
     override readonly code = "WebsiteBuilder/Page/PersistenceError" as const;
 

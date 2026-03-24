@@ -317,7 +317,15 @@ describe("Pages Use Cases (Authorized)", () => {
         const page = createResult.value;
 
         const deletePage = context.container.resolve(DeletePageUseCase);
-        await deletePage.execute({ id: page.id });
+        const triedToDeleteAPageBeforeTrashResult = await deletePage.execute({ id: page.id });
+        expect(triedToDeleteAPageBeforeTrashResult.isFail()).toBeTrue();
+
+        const trashPage = context.container.resolve(TrashPageUseCase);
+        const trashed = await trashPage.execute({ id: page.id });
+        expect(trashed.isOk()).toBeTrue();
+
+        const triedToDeleteAPageAfterTrashResult = await deletePage.execute({ id: page.id });
+        expect(triedToDeleteAPageAfterTrashResult.isOk()).toBeTrue();
 
         // Wait for deletion to be indexed
         const getPageById = context.container.resolve(GetPageByIdUseCase);

@@ -102,11 +102,33 @@ export const CREATE_PAGE_REVISION_FROM = /* GraphQL */ `
     }
 `;
 
+export const TRASH_PAGE = /* GraphQL */ `
+    mutation TrashPage($id: ID!) {
+        websiteBuilder {
+            trashPage: deletePage(id: $id, permanently: false) {
+                data
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const DELETE_PAGE = /* GraphQL */ `
     mutation DeletePage($id: ID!) {
         websiteBuilder {
-            deletePage(id: $id) {
+            deletePage(id: $id, permanently: true) {
                 data
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const RESTORE_PAGE = /* GraphQL */ `
+    mutation RestorePage($id: ID!) {
+        websiteBuilder {
+            restorePage(id: $id) {
+                data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -163,6 +185,22 @@ export const LIST_PAGES = /* GraphQL */ `
     query ListPages($limit: Int, $after: String, $where: WbPagesListWhereInput) {
         websiteBuilder {
             listPages(limit: $limit, after: $after, where: $where) {
+                data ${PAGE_DATA_FIELD}
+                error ${ERROR_FIELD}
+                meta {
+                    cursor
+                    totalCount
+                    hasMoreItems
+                }
+            }
+        }
+    }
+`;
+
+export const LIST_TRASHED_PAGES = /* GraphQL */ `
+    query ListTrashedPages {
+        websiteBuilder {
+            listTrashedPages: listDeletedPages {
                 data ${PAGE_DATA_FIELD}
                 error ${ERROR_FIELD}
                 meta {

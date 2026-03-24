@@ -1,6 +1,5 @@
 import { Result } from "@webiny/feature/api";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry";
-import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById";
 import { DeletePageRepository as RepositoryAbstraction } from "./abstractions.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js";
@@ -8,7 +7,6 @@ import { PageNotFoundError, PagePersistenceError } from "~/domain/page/errors.js
 class DeletePageRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private deleteEntry: DeleteEntryUseCase.Interface,
-        private getEntryById: GetEntryByIdUseCase.Interface,
         private pageModel: PageModel.Interface
     ) {}
 
@@ -29,5 +27,5 @@ class DeletePageRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const DeletePageRepository = RepositoryAbstraction.createImplementation({
     implementation: DeletePageRepositoryImpl,
-    dependencies: [DeleteEntryUseCase, GetEntryByIdUseCase, PageModel]
+    dependencies: [DeleteEntryUseCase, PageModel]
 });

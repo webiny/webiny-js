@@ -18,6 +18,11 @@ export {
     PageAfterTrashEventHandler,
     PageBeforeTrashEventHandler
 } from "~/features/pages/TrashPage/abstractions.js";
+export {
+    RestorePageUseCase,
+    PageAfterRestoreEventHandler,
+    PageBeforeRestoreEventHandler
+} from "~/features/pages/RestorePage/abstractions.js";
 
 export {
     DuplicatePageUseCase,
@@ -25,9 +30,11 @@ export {
     PageBeforeDuplicateEventHandler
 } from "~/features/pages/DuplicatePage/abstractions.js";
 export { GetPageByIdUseCase } from "~/features/pages/GetPageById/abstractions.js";
+export { GetDeletedPageByIdUseCase } from "~/features/pages/GetDeletedPageById/abstractions.js";
 export { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/abstractions.js";
 export { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/abstractions.js";
 export { ListPagesUseCase } from "~/features/pages/ListPages/abstractions.js";
+export { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/abstractions.js";
 export {
     MovePageUseCase,
     PageAfterMoveEventHandler,

@@ -1,10 +1,11 @@
-import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/api";
 import type { WbPage } from "~/domain/page/abstractions.js";
 import type {
+    PageNotAuthorizedError,
     PageNotFoundError,
-    PagePersistenceError,
-    PageNotAuthorizedError
+    PageNotFoundTrashedError,
+    PagePersistenceError
 } from "~/domain/page/errors.js";
 
 /**
@@ -16,6 +17,7 @@ export interface IGetDeletedPageByIdRepository {
 
 export interface IGetDeletedPageByIdRepositoryErrors {
     notFound: PageNotFoundError;
+    trashedNotFound: PageNotFoundTrashedError;
     persistence: PagePersistenceError;
 }
 
@@ -42,6 +44,7 @@ export interface IGetDeletedPageByIdUseCase {
 export interface IGetDeletedPageByIdUseCaseErrors {
     notAuthorized: PageNotAuthorizedError;
     notFound: PageNotFoundError;
+    trashedNotFound: PageNotFoundTrashedError;
     persistence: PagePersistenceError;
 }
 

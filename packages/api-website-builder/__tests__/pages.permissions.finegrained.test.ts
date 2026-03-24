@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "./utils/useHandler.js";
 import { pageMocks } from "./mocks/page.mock.js";
 import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
@@ -13,6 +13,7 @@ import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisi
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
 import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
 import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
+import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 
 const NOT_AUTHORIZED = "WebsiteBuilder/Page/NotAuthorized";
 
@@ -203,13 +204,33 @@ describe("Pages Fine-Grained Permissions", () => {
         });
 
         describe("insufficient permissions", () => {
-            it.each([
+            const permissions = [
                 { label: "no permissions", permissions: [] },
                 { label: "rwd=r (no d)", permissions: [{ name: "wb.page", rwd: "r" }] },
                 { label: "rwd=rw (no d)", permissions: [{ name: "wb.page", rwd: "rw" }] }
-            ])("should deny delete with $label", async ({ permissions }) => {
+            ];
+
+            it.each(permissions)("should deny trash with $label", async ({ permissions }) => {
                 const handler = useHandler({ permissions });
                 const context = await handler.handler();
+                // first we need to trash the page, as only trashed pages can be deleted
+                const trashPage = context.container.resolve(TrashPageUseCase);
+                // we will act like trashing is possible at this point. we tested trash permissions in another test
+                const trashResult = await trashPage.execute({ id: seedPageId });
+                expect(trashResult.isFail()).toBe(true);
+                expect(trashResult.error.code).toBe(NOT_AUTHORIZED);
+            });
+
+            it.each(permissions)("should deny delete with $label", async ({ permissions }) => {
+                const handler = useHandler({ permissions });
+                const context = await handler.handler();
+                // first we need to trash the page, as only trashed pages can be deleted
+                const trashPage = context.container.resolve(TrashPageUseCase);
+                // we will act like trashing is possible at this point. we tested trash permissions in another test
+                const trashResult = await context.security.withoutAuthorization(async () => {
+                    return trashPage.execute({ id: seedPageId });
+                });
+                expect(trashResult.isOk()).toBeTrue();
 
                 const deletePage = context.container.resolve(DeletePageUseCase);
                 const r = await deletePage.execute({ id: seedPageId });
@@ -226,6 +247,11 @@ describe("Pages Fine-Grained Permissions", () => {
             ])("should allow delete with $label", async ({ permissions }) => {
                 const handler = useHandler({ permissions });
                 const context = await handler.handler();
+
+                const trashPage = context.container.resolve(TrashPageUseCase);
+                // we will act like trashing is possible at this point. we tested trash permissions in another test
+                const trashResult = await trashPage.execute({ id: seedPageId });
+                expect(trashResult.isOk()).toBe(true);
 
                 const deletePage = context.container.resolve(DeletePageUseCase);
                 const r = await deletePage.execute({ id: seedPageId });
