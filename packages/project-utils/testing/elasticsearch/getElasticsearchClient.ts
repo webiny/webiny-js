@@ -1,7 +1,7 @@
 import { expect } from "vitest";
 import path from "path";
 import { ContextPlugin } from "@webiny/api";
-import elasticsearchClientContextPlugin, { getOpenSearchOperators } from "@webiny/api-opensearch";
+import { createOpenSearchContext, getOpenSearchOperators } from "@webiny/api-opensearch";
 import { logger } from "../logger";
 import { createHandler } from "@webiny/handler-aws";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
@@ -65,9 +65,7 @@ export class ElasticsearchClientConfig {
 
         const documentClient = getDocumentClient();
         this.elasticsearchClient = createElasticsearchClient();
-        const elasticsearchClientContext = elasticsearchClientContextPlugin(
-            this.elasticsearchClient
-        );
+        const elasticsearchClientContext = createOpenSearchContext(this.elasticsearchClient);
 
         /**
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)

@@ -1,4 +1,4 @@
-import { OpenSearchClient } from "@webiny/api-opensearch/exports/api/opensearch.js";
+import { OpenSearchClient } from "@webiny/api-opensearch/features/OpenSearchClient/abstraction.js";
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { Context, IElasticsearchTaskConfig } from "~/types.js";
 

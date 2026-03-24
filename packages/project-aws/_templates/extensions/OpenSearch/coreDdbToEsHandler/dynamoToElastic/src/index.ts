@@ -1,10 +1,10 @@
 import { createHandler } from "@webiny/handler-aws";
-import elasticsearchClientContextPlugin from "@webiny/api-opensearch";
+import { createOpenSearchContext } from "@webiny/api-opensearch";
 import { createEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 
 export const handler = createHandler({
     plugins: [
-        elasticsearchClientContextPlugin({
+        createOpenSearchContext({
             endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
         }),
         createEventHandler()

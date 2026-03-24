@@ -3,11 +3,11 @@
  * Plugin, if exists, makes sure that response value is correct.
  */
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import type { ElasticsearchQuerySearchValuePlugins } from "./types.js";
+import type { OpenSearchQuerySearchValuePlugins } from "./types.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 interface Params {
-    plugins: ElasticsearchQuerySearchValuePlugins;
+    plugins: OpenSearchQuerySearchValuePlugins;
     field: CmsModelField;
     value: any;
 }

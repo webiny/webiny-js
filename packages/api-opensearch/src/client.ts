@@ -9,7 +9,7 @@ export interface OpenSearchClientOptions extends ClientOptions {
 }
 
 export { Client };
-export type { ClientOptions };
+export type { OpenSearchClientOptions as ClientOptions };
 
 const clients = new Map<string, Client>();
 

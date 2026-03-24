@@ -6,7 +6,7 @@ import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticsearchClientContext, { createElasticsearchClient } from "@webiny/api-opensearch";
+import { createOpenSearchContext } from "@webiny/api-opensearch";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";
@@ -36,10 +36,6 @@ const debug = process.env.DEBUG === "true";
 
 const documentClient = getDocumentClient();
 
-const elasticsearchClient = createElasticsearchClient({
-    endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
-});
-
 export const handler = createHandler({
     plugins: [
         createApiCore({
@@ -47,7 +43,9 @@ export const handler = createHandler({
         }),
         dynamoDbPlugins(),
         graphqlPlugins({ debug }),
-        elasticsearchClientContext(elasticsearchClient),
+        createOpenSearchContext({
+            endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
+        }),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({ documentClient })

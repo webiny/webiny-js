@@ -16,7 +16,12 @@ export * from "./normalize.js";
 export * from "./compression.js";
 export * from "./operators.js";
 export * from "./cursors.js";
-export * from "./client.js";
+export {
+    createOpenSearchClient,
+    type Client,
+    type ClientOptions,
+    type OpenSearchClientOptions
+} from "./client.js";
 export * from "./utils/index.js";
 export * from "./operations/index.js";
 export * from "./sharedIndex.js";
