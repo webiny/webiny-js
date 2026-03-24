@@ -249,10 +249,7 @@ export class ElementFactory {
                         id: generateElementId(),
                         static: ignoreDefaultValues
                             ? undefined
-                            : (value ??
-                              (typeof node.input.defaultValue === "function"
-                                  ? node.input.defaultValue()
-                                  : node.input.defaultValue)),
+                            : (value ?? node.input.defaultValue),
                         type: node.type,
                         list: node.list,
                         translatable: node.input.translatable
