@@ -5,6 +5,7 @@ import { Client, createOpenSearchClient } from "./client.js";
 import { getOpenSearchOperators } from "./operators.js";
 import { OpenSearchClientFactoryFeature } from "./features/OpenSearchClientFactory/feature.js";
 import { OpenSearchClientFeature } from "./features/OpenSearchClient/feature.js";
+import { OpenSearchContextFeature } from "~/features/OpenSearchContext/feature.js";
 
 export * from "./indexConfiguration/index.js";
 export * from "./plugins/index.js";
@@ -41,6 +42,8 @@ export const createOpenSearchContext = (
         context.elasticsearch = client;
 
         context.plugins.register(getOpenSearchOperators());
+
+        OpenSearchContextFeature.register(context.container, context);
 
         OpenSearchClientFeature.register(context.container, context);
         OpenSearchClientFactoryFeature.register(context.container);
