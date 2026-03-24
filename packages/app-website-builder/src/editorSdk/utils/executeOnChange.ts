@@ -124,7 +124,7 @@ export function executeOnChange(params: ExecuteOnChangeParams): AncestorUpdate[]
             },
             getElement,
             createElement: p => createElement(p),
-            executeCommand: (command: string, payload: Record<string, any>) => {
+            executeCommand: <T = unknown>(command: string, payload?: T) => {
                 editor.executeCommand({ type: command }, payload);
             },
             breakpoint: baseBreakpoint,
@@ -220,8 +220,8 @@ function fireDescendantChange(params: {
                     });
                 },
                 getElement,
-                executeCommand: (command: string, payload: Record<string, any>) =>
-                    editor.executeCommand({ type: command }, payload),
+                executeCommand: <T = unknown>(command: string, payload?: T) =>
+                    editor.executeCommand({ type: command }, payload as Record<string, any>),
                 breakpoint: baseBreakpoint,
                 log: (...args: any[]) => console.log(...args),
                 stop,
