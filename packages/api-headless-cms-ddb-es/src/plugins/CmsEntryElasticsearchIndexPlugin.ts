@@ -1,5 +1,5 @@
-import { OpenSearchIndexPlugin as ElasticsearchIndexPlugin } from "@webiny/api-opensearch";
+import { OpenSearchIndexPlugin } from "@webiny/api-opensearch";
 
-export class CmsEntryElasticsearchIndexPlugin extends ElasticsearchIndexPlugin {
+export class CmsEntryElasticsearchIndexPlugin extends OpenSearchIndexPlugin {
     public static override readonly type: string = "cms.entry.elasticsearch.index";
 }

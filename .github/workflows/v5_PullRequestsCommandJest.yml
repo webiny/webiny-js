@@ -279,8 +279,7 @@ jobs:
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-headless-cms-ddb-es","id":"23bea783bb40390ae069dfa4985f97d2"},{"cmd":"packages/api-headless-cms-es-tasks
           --storage=ddb-os,ddb","storage":["ddb-os"],"packageName":"api-headless-cms-es-tasks","id":"ee446fd78ad6294bbfb3c0689ff2602e"},{"cmd":"packages/api-headless-cms-import-export
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-headless-cms-import-export","id":"6059cf3e78f93525c8ed72ad83b7de1a"},{"cmd":"packages/api-mailer
-          --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-mailer","id":"0ede859b604febdfa78018cdd1067a77"},{"cmd":"packages/api-opensearch
-          --storage=ddb-os,ddb","storage":["ddb-os"],"packageName":"api-opensearch","id":"0252030d14c58cb3978962217c7ef879"},{"cmd":"packages/tasks
+          --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-mailer","id":"0ede859b604febdfa78018cdd1067a77"},{"cmd":"packages/tasks
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"tasks","id":"5eadfa5cc14ec4e8ba87ac3dfb112580"}]')
           }}
     runs-on: ${{ matrix.os }}

@@ -53,8 +53,8 @@ import {
     type IOpenSearchEntityAttributes as IElasticsearchEntityAttributes
 } from "@webiny/api-opensearch";
 import type {
-    OpenSearchSearchResponse as ElasticsearchSearchResponse,
-    SearchBody as ElasticsearchSearchBody
+    OpenSearchSearchResponse,
+    SearchBody as OpenSearchSearchBody
 } from "@webiny/api-opensearch/types.js";
 import type { CmsEntryStorageOperations, CmsIndexEntry } from "~/types.js";
 import { createElasticsearchBody } from "./elasticsearch/body.js";
@@ -1323,7 +1323,7 @@ export const createEntriesStorageOperations = (
             plugins
         });
 
-        let response: ElasticsearchSearchResponse<CmsIndexEntry>;
+        let response: OpenSearchSearchResponse<CmsIndexEntry>;
         try {
             response = await elasticsearch.search({
                 index,
@@ -2031,7 +2031,7 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        const body: ElasticsearchSearchBody = {
+        const body: OpenSearchSearchBody = {
             ...initialBody,
             /**
              * We do not need any hits returned, we only need the aggregations.
@@ -2047,7 +2047,7 @@ export const createEntriesStorageOperations = (
             }
         };
 
-        let response: ElasticsearchSearchResponse<string> | undefined = undefined;
+        let response: OpenSearchSearchResponse<string> | undefined = undefined;
 
         try {
             response = await elasticsearch.search({

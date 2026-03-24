@@ -1,7 +1,7 @@
 import type { IMockDataCreatorInput, IMockDataCreatorOutput } from "./types.js";
 import { mockData } from "./mockData.js";
 import { createWaitUntilHealthy } from "@webiny/api-opensearch/utils/waitUntilHealthy/index.js";
-import { OpenSearchCatClusterHealthStatus as ElasticsearchCatClusterHealthStatus } from "@webiny/api-opensearch/operations/types.js";
+import { OpenSearchCatClusterHealthStatus } from "@webiny/api-opensearch/operations/types.js";
 import { mdbid } from "@webiny/utils";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
@@ -38,7 +38,7 @@ export class MockDataCreator<I extends IMockDataCreatorInput, O extends IMockDat
             waitingTimeStep: 20,
             maxWaitingTime: 150,
             maxProcessorPercent: 80,
-            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
+            minClusterHealthStatus: OpenSearchCatClusterHealthStatus.Yellow,
             maxRamPercent: 101
         });
 

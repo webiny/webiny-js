@@ -1,8 +1,5 @@
-import type { Sort as esSort } from "@webiny/api-opensearch/types.js";
-import {
-    createSort,
-    OpenSearchFieldPlugin as ElasticsearchFieldPlugin
-} from "@webiny/api-opensearch";
+import type { Sort as OpenSearchSort } from "@webiny/api-opensearch/types.js";
+import { createSort, OpenSearchFieldPlugin } from "@webiny/api-opensearch";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { CmsEntryListSort, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { ModelFields } from "./types.js";
@@ -46,7 +43,7 @@ interface Params {
     model: CmsModel;
 }
 
-export const createElasticsearchSort = (params: Params): esSort => {
+export const createElasticsearchSort = (params: Params): OpenSearchSort => {
     const { sort, modelFields, plugins } = params;
 
     if (!sort || sort.length === 0) {
@@ -69,7 +66,7 @@ export const createElasticsearchSort = (params: Params): esSort => {
 
     const fieldIdToStorageIdIdMap: Record<string, string> = {};
 
-    const sortPlugins = Object.values(modelFields).reduce<Record<string, ElasticsearchFieldPlugin>>(
+    const sortPlugins = Object.values(modelFields).reduce<Record<string, OpenSearchFieldPlugin>>(
         (plugins, field) => {
             /**
              * We do not support sorting by nested fields.
@@ -94,7 +91,7 @@ export const createElasticsearchSort = (params: Params): esSort => {
             /**
              * Plugins must be stored with fieldId as key because it is later used to find the sorting plugin.
              */
-            plugins[fieldIdPath] = new ElasticsearchFieldPlugin({
+            plugins[fieldIdPath] = new OpenSearchFieldPlugin({
                 unmappedType: field.unmappedType,
                 keyword: hasKeyword(field),
                 sortable: field.sortable,
@@ -105,8 +102,8 @@ export const createElasticsearchSort = (params: Params): esSort => {
             return plugins;
         },
         {
-            ["*"]: new ElasticsearchFieldPlugin({
-                field: ElasticsearchFieldPlugin.ALL,
+            ["*"]: new OpenSearchFieldPlugin({
+                field: OpenSearchFieldPlugin.ALL,
                 keyword: false
             })
         }

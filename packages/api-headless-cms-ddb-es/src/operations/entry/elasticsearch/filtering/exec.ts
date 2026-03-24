@@ -3,7 +3,7 @@ import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types
 import type { ModelFields } from "~/operations/entry/elasticsearch/types.js";
 import type { PluginsContainer } from "@webiny/plugins";
 import type {
-    OpenSearchBoolQueryConfig as ElasticsearchBoolQueryConfig,
+    OpenSearchBoolQueryConfig,
     QueryDslQueryContainer as Query
 } from "@webiny/api-opensearch/types.js";
 import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search.js";
@@ -24,7 +24,7 @@ export interface CreateExecParams {
 }
 export interface IExecParams {
     where: CmsEntryListWhere;
-    query: ElasticsearchBoolQueryConfig;
+    query: OpenSearchBoolQueryConfig;
     isValues?: boolean;
 }
 export interface CreateExecFilteringResponse {

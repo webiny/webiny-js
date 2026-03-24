@@ -1,14 +1,14 @@
 import type { Client } from "@webiny/api-opensearch";
 import {
     createOpenSearchClient as createClient,
-    OpenSearchClientOptions as ElasticsearchClientOptions
+    OpenSearchClientOptions
 } from "@webiny/api-opensearch";
 
 const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;
 
 const esEndpoint: string | undefined = process.env.OPENSEARCH_ENDPOINT;
 
-const defaultOptions: Partial<ElasticsearchClientOptions> = {
+const defaultOptions: Partial<OpenSearchClientOptions> = {
     node: `http://localhost:${OPENSEARCH_PORT}`,
     auth: {
         username: "",
@@ -98,14 +98,14 @@ const createDeleteIndexCallable = (client: Client) => {
     };
 };
 
-interface ElasticsearchClient extends Client {
+interface OpenSearchClient extends Client {
     indices: Client["indices"] & {
         deleteAll: () => Promise<any>;
         registerIndex: (names: string[] | string) => void;
     };
 }
 
-const attachCustomEvents = (client: Client): ElasticsearchClient => {
+const attachCustomEvents = (client: Client): OpenSearchClient => {
     const registeredIndexes = new Set<string>();
     const originalCreate = client.indices.create;
     const originalExists = client.indices.exists;
@@ -141,7 +141,7 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
 
     const deleteIndexCallable = createDeleteIndexCallable(client);
 
-    (client as ElasticsearchClient).indices.deleteAll = async () => {
+    (client as OpenSearchClient).indices.deleteAll = async () => {
         const indexes = Array.from(registeredIndexes.values());
         if (indexes.length === 0) {
             return;
@@ -155,16 +155,16 @@ const attachCustomEvents = (client: Client): ElasticsearchClient => {
             }
         }
     };
-    (client as ElasticsearchClient).indices.registerIndex = registerIndex;
+    (client as OpenSearchClient).indices.registerIndex = registerIndex;
 
-    return client as ElasticsearchClient;
+    return client as OpenSearchClient;
 };
 
-export type { ElasticsearchClientOptions, ElasticsearchClient };
+export type { OpenSearchClientOptions, OpenSearchClient };
 
 export const createElasticsearchClient = (
-    options: Partial<ElasticsearchClientOptions> = {}
-): ElasticsearchClient => {
+    options: Partial<OpenSearchClientOptions> = {}
+): OpenSearchClient => {
     const client = createClient({
         ...defaultOptions,
         ...options

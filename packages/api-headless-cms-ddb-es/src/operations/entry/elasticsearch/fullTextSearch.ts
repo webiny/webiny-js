@@ -1,4 +1,4 @@
-import type { OpenSearchBoolQueryConfig as ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
+import type { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
 import { normalizeValue } from "@webiny/api-opensearch";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { PluginsContainer } from "@webiny/plugins";
@@ -70,7 +70,7 @@ const getPlugin = (params: GetPluginParams): CmsEntryElasticsearchFullTextSearch
 interface Params {
     plugins: PluginsContainer;
     model: CmsModel;
-    query: ElasticsearchBoolQueryConfig;
+    query: OpenSearchBoolQueryConfig;
     term?: string;
     fields: ModelFields;
 }

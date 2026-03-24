@@ -1,10 +1,10 @@
-import type { OpenSearchBoolQueryConfig as ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
+import type { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
 
 export const getPopulated = (
-    query: ElasticsearchBoolQueryConfig
-): Partial<ElasticsearchBoolQueryConfig> => {
-    const result: Partial<ElasticsearchBoolQueryConfig> = {};
-    let key: keyof ElasticsearchBoolQueryConfig;
+    query: OpenSearchBoolQueryConfig
+): Partial<OpenSearchBoolQueryConfig> => {
+    const result: Partial<OpenSearchBoolQueryConfig> = {};
+    let key: keyof OpenSearchBoolQueryConfig;
     for (key in query) {
         const value = query[key];
         if (value === undefined || (Array.isArray(value) && value.length === 0)) {

@@ -6,7 +6,7 @@ import {
     getLastAddedIndexPlugin,
     isSharedOpenSearchIndex as isSharedElasticsearchIndex
 } from "@webiny/api-opensearch";
-import type { OpenSearchIndexRequestBody as ElasticsearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
+import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
 import { CmsEntryElasticsearchIndexPlugin } from "~/plugins/index.js";
 
 interface ConfigurationsElasticsearch {
@@ -25,7 +25,7 @@ export interface Configurations {
     es: (params: CmsElasticsearchParams) => ConfigurationsElasticsearch;
     indexSettings: (
         params: ConfigurationsIndexSettingsParams
-    ) => Partial<ElasticsearchIndexRequestBody>;
+    ) => Partial<OpenSearchIndexRequestBody>;
 }
 
 export const configurations: Configurations = {

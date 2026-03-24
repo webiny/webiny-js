@@ -229,10 +229,10 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             }
         ];
     },
-    "api-opensearch": () => {
+    "api-elasticsearch": () => {
         return [
             {
-                cmd: "packages/api-opensearch --storage=ddb-os,ddb",
+                cmd: "packages/api-elasticsearch --storage=ddb-os,ddb",
                 storage: ["ddb-os"]
             }
         ];
@@ -382,7 +382,7 @@ const V5_PACKAGES_LIST = [
     "api-background-tasks-os",
     "api-cognito-authenticator",
     "api-dynamodb-to-elasticsearch",
-    "api-opensearch",
+    "api-elasticsearch",
     "api-elasticsearch-tasks",
     "api-file-manager",
     "api-file-manager-aco",

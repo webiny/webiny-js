@@ -1,10 +1,10 @@
 import WebinyError from "@webiny/error";
-import type { OpenSearchBoolQueryConfig as ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
+import type { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
 import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { createLatestRecordType, createPublishedRecordType } from "../recordType.js";
 import { isSharedOpenSearchIndex as isSharedElasticsearchIndex } from "@webiny/api-opensearch";
 
-export const createBaseQuery = (): ElasticsearchBoolQueryConfig => {
+export const createBaseQuery = (): OpenSearchBoolQueryConfig => {
     return {
         must: [],
         must_not: [],
@@ -25,7 +25,7 @@ interface Params {
  *
  * We add the query.filter terms because we do not need scored search here and it is a bit faster.
  */
-export const createInitialQuery = (params: Params): ElasticsearchBoolQueryConfig => {
+export const createInitialQuery = (params: Params): OpenSearchBoolQueryConfig => {
     const { model, where } = params;
 
     const query = createBaseQuery();

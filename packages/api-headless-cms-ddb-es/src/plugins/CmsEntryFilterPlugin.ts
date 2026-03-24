@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins";
 import type { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin.js";
 import type { ModelField, ModelFields } from "~/operations/entry/elasticsearch/types.js";
-import type { OpenSearchBoolQueryConfig as ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
+import type { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
 
 interface CmsEntryFilterPluginConfig {
     fieldType: string;
@@ -10,7 +10,7 @@ interface CmsEntryFilterPluginConfig {
 interface ApplyParams {
     key: string;
     value: any;
-    query: ElasticsearchBoolQueryConfig;
+    query: OpenSearchBoolQueryConfig;
     operator: string;
     field: ModelField;
 }
@@ -30,7 +30,7 @@ interface ExecParams {
     operator: string;
     field: ModelField;
     fields: ModelFields;
-    query: ElasticsearchBoolQueryConfig;
+    query: OpenSearchBoolQueryConfig;
 }
 
 export interface CmsEntryFilterPluginCreateResponse {

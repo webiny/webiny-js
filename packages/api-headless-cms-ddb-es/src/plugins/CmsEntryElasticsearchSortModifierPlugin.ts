@@ -2,7 +2,7 @@ import type {
     ModifySortCallable,
     ModifySortParams as BaseModifySortParams
 } from "@webiny/api-opensearch";
-import { OpenSearchSortModifierPlugin as ElasticsearchSortModifierPlugin } from "@webiny/api-opensearch";
+import { OpenSearchSortModifierPlugin } from "@webiny/api-opensearch";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 export interface ModifySortParams extends BaseModifySortParams {
@@ -17,7 +17,7 @@ export interface CmsEntryElasticsearchSortModifierPluginConfig {
     modelId?: string;
 }
 
-export class CmsEntryElasticsearchSortModifierPlugin extends ElasticsearchSortModifierPlugin<ModifySortParams> {
+export class CmsEntryElasticsearchSortModifierPlugin extends OpenSearchSortModifierPlugin<ModifySortParams> {
     public static override readonly type: string = "cms.elasticsearch.modifier.sort.entry";
 
     public readonly modelId?: string;

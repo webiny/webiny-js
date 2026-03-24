@@ -1,6 +1,6 @@
 import {
     createWaitUntilHealthy,
-    OpenSearchCatClusterHealthStatus as ElasticsearchCatClusterHealthStatus,
+    OpenSearchCatClusterHealthStatus,
     UnhealthyClusterError,
     WaitingHealthyClusterAbortedError
 } from "@webiny/api-opensearch";
@@ -85,7 +85,7 @@ export const execute = (params: IExecuteParams) => {
         }
 
         const healthCheck = createWaitUntilHealthy(context.opensearch, {
-            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
+            minClusterHealthStatus: OpenSearchCatClusterHealthStatus.Yellow,
             waitingTimeStep: 30,
             maxProcessorPercent,
             maxWaitingTime
