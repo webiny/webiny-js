@@ -1,14 +1,10 @@
 import { createFeature } from "@webiny/feature/api/index.js";
-import { OpenSearchClient as OpenSearchClientAbstraction } from "./abstraction.js";
-import { OpenSearchClientImpl } from "./OpenSearchClient.js";
-import type { OpenSearchContext } from "~/types.js";
 
-export const OpenSearchClientFeature = createFeature<OpenSearchContext>({
+import { OpenSearchClient } from "./OpenSearchClient.js";
+
+export const OpenSearchClientFeature = createFeature({
     name: "opensearch.internal.client",
-    register(container, context) {
-        container.registerInstance(
-            OpenSearchClientAbstraction,
-            new OpenSearchClientImpl(context!.opensearch)
-        );
+    register(container) {
+        container.register(OpenSearchClient);
     }
 });

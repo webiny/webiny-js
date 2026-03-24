@@ -1,17 +1,18 @@
 import { OpenSearchContext as OpenSearchContextAbstraction } from "./abstraction.js";
+import { OpenSearchContext as OpenSearchContextType } from "~/types.js";
 
 export class OpenSearchContext implements OpenSearchContextAbstraction.Interface {
-    private readonly client: OpenSearchContextAbstraction.Client;
+    private readonly context;
 
-    public constructor(client: OpenSearchContextAbstraction.Client) {
-        this.client = client;
+    public constructor(context: OpenSearchContextType) {
+        this.context = context;
     }
 
     public get opensearch(): OpenSearchContextAbstraction.Client {
-        return this.client;
+        return this.context.opensearch;
     }
 
     public get elasticsearch(): OpenSearchContextAbstraction.Client {
-        return this.client;
+        return this.context.opensearch;
     }
 }

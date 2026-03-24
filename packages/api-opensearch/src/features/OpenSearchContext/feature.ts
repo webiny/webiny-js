@@ -7,7 +7,7 @@ export const OpenSearchContextFeature = createFeature<OpenSearchContextType>({
     name: "opensearch.internal.context",
     register(container, context) {
         container.registerFactory(OpenSearchContext, () => {
-            return new OpenSearchContextImplementation(context!.opensearch);
+            return new OpenSearchContextImplementation(context!);
         });
     }
 });

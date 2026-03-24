@@ -1,14 +1,16 @@
 import { OpenSearchClient as OpenSearchClientAbstraction } from "./abstraction.js";
 import type { Client } from "~/types.js";
+import { OpenSearchContext } from "~/features/OpenSearchContext/abstraction.js";
 
-export class OpenSearchClientImpl implements OpenSearchClientAbstraction.Interface {
-    private readonly client;
-
-    public constructor(client: Client) {
-        this.client = client;
-    }
+class OpenSearchClientImpl implements OpenSearchClientAbstraction.Interface {
+    public constructor(private readonly context: OpenSearchContext.Interface) {}
 
     public use(): Client {
-        return this.client;
+        return this.context.opensearch;
     }
 }
+
+export const OpenSearchClient = OpenSearchClientAbstraction.createImplementation({
+    implementation: OpenSearchClientImpl,
+    dependencies: [OpenSearchContext]
+});

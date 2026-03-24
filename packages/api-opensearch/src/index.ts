@@ -44,8 +44,7 @@ export const createOpenSearchContext = (
         context.plugins.register(getOpenSearchOperators());
 
         OpenSearchContextFeature.register(context.container, context);
-
-        OpenSearchClientFeature.register(context.container, context);
+        OpenSearchClientFeature.register(context.container);
         OpenSearchClientFactoryFeature.register(context.container);
     });
 
