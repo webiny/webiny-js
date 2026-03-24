@@ -38,7 +38,7 @@ const documentClient = getDocumentClient();
 
 const openSearchClient = createOpenSearchClient({
     endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
-})
+});
 
 export const handler = createHandler({
     plugins: [

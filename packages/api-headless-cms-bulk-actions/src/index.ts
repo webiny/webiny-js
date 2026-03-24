@@ -18,8 +18,8 @@ import { RestoreEntriesBulkActionFeature } from "~/features/RestoreEntriesBulkAc
 import type { HcmsBulkActionsContext } from "~/types.js";
 
 export type * from "./abstractions/index.js";
-export * from "./handlers/index.js";
-export * from "./tasks/index.js";
+export { createHandlers } from "./handlers/index.js";
+export { createEmptyTrashBinsTask } from "./tasks/index.js";
 
 interface BulkActionsConfig {
     batchSize?: number;
