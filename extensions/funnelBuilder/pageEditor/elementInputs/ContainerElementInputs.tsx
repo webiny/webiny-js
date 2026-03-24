@@ -2,6 +2,7 @@ import React from "react";
 import { Button, useDisclosure } from "webiny/admin/ui";
 import { ElementInputs, useElementInputs } from "webiny/admin/website-builder/page/editor";
 import { ConditionRulesDialog } from "../components/ConditionRulesDialog";
+import { StepsList } from "../stepper/StepsList.js";
 import type { FunnelModelDto } from "../../models/FunnelModel";
 import type { FunnelContainerInputs } from "../types";
 
@@ -36,6 +37,7 @@ export const ContainerElementInputsDecorator = ElementInputs.createDecorator(Ori
 
         return (
             <>
+                <StepsList />
                 <Button
                     variant={"primary"}
                     text={"Edit Condition Rules"}

@@ -145,6 +145,8 @@ export type ConstraintContext = {
     slotChildCount: () => number;
     /** Count instances of a component type in the entire document */
     countInstances: (componentName: string) => number;
+    /** True if the component has any descendant element carrying the given tag */
+    hasDescendantWithTag: (tag: string) => boolean;
     /** Debug logger — safe to call inside serialized constraints */
     log: (...args: any[]) => void;
     /** Block placement with an error message shown to the user */

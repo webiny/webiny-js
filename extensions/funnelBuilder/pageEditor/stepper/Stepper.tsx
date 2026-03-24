@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Icon } from "webiny/admin/ui";
 import { ReactComponent as DeleteIcon } from "webiny/admin/icons/close.svg";
 import {
@@ -26,15 +26,26 @@ export const Stepper = () => {
     const { deleteElement } = useDeleteElement();
     const [activeStepId, setActiveStepId] = useState<string | null>(null);
 
-    if (!container) {
+    const steps = container?.inputs.containerData?.steps ?? [];
+
+    // Auto-select the first step when the editor loads and no step is active.
+    useEffect(() => {
+        if (activeStepId || !steps.length) {
+            return;
+        }
+        const firstStepId = steps[0].id;
+        setActiveStepId(firstStepId);
+        editor.executeCommand(Commands.SendPreviewMessage, {
+            type: "fub.activeStepChanged",
+            payload: { stepId: firstStepId }
+        });
+    }, [steps]);
+
+    // Container might not be ready immediately.
+    if (!container?.inputs.containerData) {
         return null;
     }
 
-    if (!container.inputs.containerData) {
-        return null;
-    }
-
-    const steps = container.inputs.containerData.steps ?? [];
     // Slot steps carry the editor element IDs needed for deletion.
     const slotSteps = container.inputs.steps ?? [];
 
@@ -72,7 +83,7 @@ export const Stepper = () => {
                 type: "fub.activeStepChanged",
                 payload: { stepId: newStep.id }
             });
-        }, 10);
+        }, 100);
     };
 
     return (
@@ -109,7 +120,7 @@ export const Stepper = () => {
                     );
                 })}
             </div>
-            <Button variant={"ghost"} text={"+ Add step"} onClick={addStep} />
+            <Button variant={"primary"} text={"+ Add step"} onClick={addStep} />
         </div>
     );
 };

@@ -197,6 +197,38 @@ function countInstances(document: Document, componentName: string): number {
     return count;
 }
 
+function hasDescendantWithTag(
+    document: Document,
+    components: Record<string, ComponentManifest>,
+    elementId: string,
+    tag: string
+): boolean {
+    for (const id in document.elements) {
+        const el = document.elements[id];
+        if (id === elementId) {
+            continue;
+        }
+        // Walk up parent chain to see if elementId is an ancestor.
+        let current = el.parent?.id ? document.elements[el.parent.id] : undefined;
+        let isDescendant = false;
+        while (current) {
+            if (current.id === elementId) {
+                isDescendant = true;
+                break;
+            }
+            current = current.parent?.id ? document.elements[current.parent.id] : undefined;
+        }
+        if (!isDescendant) {
+            continue;
+        }
+        const elManifest = components[el.component.name];
+        if (elManifest?.tags?.includes(tag)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 export function evaluateConstraints(params: EvaluateConstraintsParams): ConstraintResult {
     const { componentName, parentId, slot, document, components } = params;
 
@@ -244,6 +276,8 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
             return Array.isArray(items) ? items.length : 0;
         },
         countInstances: (name: string) => countInstances(document, name),
+        // Element doesn't exist yet during placement — no descendants to check.
+        hasDescendantWithTag: () => false,
         log: (...args: any[]) => console.log(...args),
         block
     };
@@ -373,6 +407,8 @@ export function evaluateDeleteConstraint(params: EvaluateDeleteConstraintParams)
             return Array.isArray(items) ? items.length : 0;
         },
         countInstances: (name: string) => countInstances(document, name),
+        hasDescendantWithTag: (tag: string) =>
+            hasDescendantWithTag(document, components, element.id, tag),
         log: (...args: any[]) => console.log(...args),
         block
     };
