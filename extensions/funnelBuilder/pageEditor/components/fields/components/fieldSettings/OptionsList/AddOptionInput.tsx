@@ -1,4 +1,5 @@
 import React from "react";
+import camelCase from "lodash/camelCase";
 import { Input } from "webiny/admin/ui";
 import { Form } from "webiny/admin/form";
 import type { BindComponentRenderPropValidation } from "@webiny/form/types";
@@ -25,8 +26,10 @@ export const AddOptionInput = ({
                             return true;
                         }
 
-                        if (options.find(item => item.value === value)) {
-                            throw new Error(`Option with value "${value}" already exists.`);
+                        if (options.find(item => item.value === camelCase(value))) {
+                            throw new Error(
+                                `Option with key "${camelCase(value)}" already exists.`
+                            );
                         }
                         return true;
                     }}
@@ -44,13 +47,13 @@ export const AddOptionInput = ({
                                 onEnter={async () => {
                                     if (value) {
                                         const result = await validate();
-                                        if (result !== false) {
+                                        if (result.isValid !== false) {
                                             onChange("");
                                             onAdd(value.trim());
                                         }
                                     }
                                 }}
-                                placeholder={"Enter an option and press enter"}
+                                placeholder={"Press enter to add"}
                             />
                         );
                     }}

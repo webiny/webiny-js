@@ -1,35 +1,13 @@
 import React from "react";
-import styled from "@emotion/styled";
 import camelCase from "lodash/camelCase";
 import { OptionsListItem, SortableContainerContextProvider } from "./OptionsList/OptionsListItem";
 import { AddOptionInput } from "./OptionsList/AddOptionInput";
 import { FieldOption } from "./OptionsList/types";
-import { Icon, Grid } from "webiny/admin/ui";
-import { ReactComponent as HandleIcon } from "@material-design-icons/svg/outlined/drag_indicator.svg";
+import { Grid } from "webiny/admin/ui";
 import { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Bind, useBind, validation } from "webiny/admin/form";
 import { getRandomId } from "../../../../../utils/getRandomId";
-
-const OptionListItem = styled.li`
-    z-index: 10;
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--mdc-theme-background);
-    background: var(--mdc-theme-surface);
-
-    &:hover {
-        background: var(--mdc-theme-background);
-    }
-
-    &:last-child {
-        border: none;
-    }
-`;
-
-const DragHandle = () => (
-    <Icon icon={<HandleIcon style={{ cursor: "pointer" }} />} label={"Drag to reorder"} />
-);
 
 interface OptionsListProps {
     multiple?: boolean;
@@ -67,8 +45,8 @@ const OptionsList = ({ multiple }: OptionsListProps) => {
 
     return (
         <>
-            <div>Options</div>
-            <Grid>
+            <div className={"font-bold text-sm mb-sm text-neutral-primary"}>Options</div>
+            <Grid className={"mb-sm"}>
                 <Grid.Column span={12}>
                     <AddOptionInput
                         options={optionsValue}
@@ -86,16 +64,20 @@ const OptionsList = ({ multiple }: OptionsListProps) => {
                 </Grid.Column>
             </Grid>
 
-            <div style={{ position: "relative" }}>
+            <div>
                 {Array.isArray(optionsValue) && optionsValue.length > 0 ? (
                     <SortableContainerContextProvider
                         optionsValue={optionsValue}
                         onDragEnd={onDragEnd}
                     >
                         {optionsValue.map((item, index) => (
-                            <OptionListItem key={`item-${index}`}>
+                            <li
+                                key={`item-${index}`}
+                                className={
+                                    "z-10 flex items-center justify-between border-b border-solid border-neutral-dimmed bg-neutral-base px-sm py-xs hover:bg-neutral-dimmed last:border-none"
+                                }
+                            >
                                 <OptionsListItem
-                                    dragHandle={<DragHandle />}
                                     multiple={!!multiple}
                                     option={item}
                                     Bind={Bind}
@@ -105,11 +87,11 @@ const OptionsList = ({ multiple }: OptionsListProps) => {
                                         setOptionsValue(newValue);
                                     }}
                                 />
-                            </OptionListItem>
+                            </li>
                         ))}
                     </SortableContainerContextProvider>
                 ) : (
-                    <div style={{ padding: 40, textAlign: "center" }}>No options added.</div>
+                    <div className={"p-xl text-center"}>No options added.</div>
                 )}
             </div>
         </>

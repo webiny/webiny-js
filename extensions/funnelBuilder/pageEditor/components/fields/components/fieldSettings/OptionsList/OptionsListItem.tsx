@@ -1,6 +1,5 @@
 import React from "react";
-import { Tooltip, IconButton, Switch } from "webiny/admin/ui";
-import styled from "@emotion/styled";
+import { Tooltip, IconButton, Switch, Icon } from "webiny/admin/ui";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -14,35 +13,10 @@ import {
     UniqueIdentifier
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates, SortableContext } from "@dnd-kit/sortable";
-import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
+import { ReactComponent as DeleteIcon } from "webiny/admin/icons/delete.svg";
+import { ReactComponent as DragIndicator } from "webiny/admin/icons/drag_indicator.svg";
 import type { BindComponent } from "@webiny/form/types";
 import { FieldOption } from "./types";
-
-const OptionList = styled.ul`
-    padding: 25px;
-    border: 1px solid var(--mdc-theme-on-background);
-`;
-
-const OptionsListItemLeft = styled.div({
-    display: "flex",
-    justifyContent: "left",
-    alignItems: "center",
-    ">div": {
-        display: "flex",
-        flexDirection: "column",
-        marginLeft: 10,
-        color: "var(--mdc-theme-on-surface)",
-        span: {
-            lineHeight: "125%"
-        }
-    }
-});
-
-const OptionsListItemRight = styled.div({
-    display: "flex",
-    justifyContent: "right",
-    alignItems: "center"
-});
 
 interface DefaultValueSwitchProps {
     multiple: boolean;
@@ -125,7 +99,7 @@ export const SortableContainerContextProvider = ({
     return (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
             <SortableContext items={optionsValue as unknown as SortableContextItemsProp}>
-                <OptionList>{children}</OptionList>
+                <ul className={"m-0 list-none rounded p-0"}>{children}</ul>
             </SortableContext>
         </DndContext>
     );
@@ -133,14 +107,13 @@ export const SortableContainerContextProvider = ({
 
 type OptionsListItemProps = {
     multiple: boolean;
-    dragHandle: React.ReactNode;
     option: { label: string; value: string; id: string };
     Bind: BindComponent;
     deleteOption: () => void;
 };
 
 export const OptionsListItem = (props: OptionsListItemProps) => {
-    const { multiple, dragHandle, Bind, option, deleteOption } = props;
+    const { multiple, Bind, option, deleteOption } = props;
 
     const { attributes, listeners, setNodeRef, transform } = useSortable({ id: option.id || "" });
     const style = {
@@ -148,26 +121,23 @@ export const OptionsListItem = (props: OptionsListItemProps) => {
     };
 
     return (
-        <>
-            <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-                <OptionsListItemLeft>
-                    <Tooltip
-                        content={<span>Drag to rearrange the order</span>}
-                        trigger={<span>{dragHandle}</span>}
-                    />
-                    <div>
-                        <span>{option.label}</span>
-                        <span>{option.value}</span>
-                    </div>
-                </OptionsListItemLeft>
+        <div ref={setNodeRef} style={style} className={"flex w-full items-center"} {...attributes}>
+            <div className={"flex flex-1 items-center gap-sm"}>
+                <Tooltip
+                    content={<span>Drag to reorder</span>}
+                    trigger={
+                        <span {...listeners} className={"cursor-grab"}>
+                            <Icon icon={<DragIndicator />} label={"Drag to reorder"} />
+                        </span>
+                    }
+                />
+                <span className={"ml-2"}>{option.label}</span>
             </div>
-            <OptionsListItemRight>
-                <IconButton icon={<DeleteIcon />} onClick={deleteOption} />
-
+            <div className={"flex items-center justify-end gap-sm"}>
                 <Bind name={"value.value"}>
                     {({ onChange, value }) => (
                         <Tooltip
-                            content={<span>Set as default value</span>}
+                            content={"Set as default value"}
                             trigger={
                                 <DefaultValueSwitch
                                     onChange={onChange}
@@ -179,7 +149,8 @@ export const OptionsListItem = (props: OptionsListItemProps) => {
                         />
                     )}
                 </Bind>
-            </OptionsListItemRight>
-        </>
+                <IconButton icon={<DeleteIcon />} onClick={deleteOption} variant={"ghost"} />
+            </div>
+        </div>
     );
 };

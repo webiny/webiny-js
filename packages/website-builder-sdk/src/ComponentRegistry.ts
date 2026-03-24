@@ -40,6 +40,16 @@ export class ComponentRegistry {
                 component.manifest.onDescendantChange
             );
         }
+        // Serialize function defaultValues for cross-boundary transport.
+        // Wrapped in { __factory: string } so the editor side can distinguish
+        // them from plain string defaultValues.
+        for (const input of component.manifest.inputs ?? []) {
+            if (typeof input.defaultValue === "function") {
+                (input as any).defaultValue = {
+                    __factory: functionConverter.serialize(input.defaultValue)
+                };
+            }
+        }
         this.registry.set(name, component);
         // notify subscribers
         this.listeners.forEach(fn => fn({ name, component }));
