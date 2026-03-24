@@ -21,7 +21,7 @@ export interface IRestoreWbPageParams {
 // ============================================================================
 
 export interface IRestorePageRepository {
-    execute(params: IRestoreWbPageParams): Promise<Result<void, RepositoryError>>;
+    execute(params: IRestoreWbPageParams): Promise<Result<WbPage, RepositoryError>>;
 }
 
 export interface IRestorePageRepositoryErrors {
@@ -38,7 +38,7 @@ export const RestorePageRepository = createAbstraction<IRestorePageRepository>(
 export namespace RestorePageRepository {
     export type Interface = IRestorePageRepository;
     export type Params = IRestoreWbPageParams;
-    export type Return = Promise<Result<void, RepositoryError>>;
+    export type Return = Promise<Result<WbPage, RepositoryError>>;
     export type Error = RepositoryError;
 }
 
@@ -47,7 +47,7 @@ export namespace RestorePageRepository {
 // ============================================================================
 
 export interface IRestorePageUseCase {
-    execute(params: IRestoreWbPageParams): Promise<Result<void, UseCaseError>>;
+    execute(params: IRestoreWbPageParams): Promise<Result<WbPage, UseCaseError>>;
 }
 
 export interface IRestorePageUseCaseErrors {
@@ -63,7 +63,7 @@ export const RestorePageUseCase = createAbstraction<IRestorePageUseCase>("Wb/Res
 export namespace RestorePageUseCase {
     export type Interface = IRestorePageUseCase;
     export type Params = IRestoreWbPageParams;
-    export type Return = Promise<Result<void, UseCaseError>>;
+    export type Return = Promise<Result<WbPage, UseCaseError>>;
     export type Error = UseCaseError;
 }
 

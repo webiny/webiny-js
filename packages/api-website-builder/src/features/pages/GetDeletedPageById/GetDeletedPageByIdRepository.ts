@@ -20,6 +20,8 @@ class GetDeletedPageByIdRepositoryImpl implements RepositoryAbstraction.Interfac
             }
 
             return Result.fail(new PagePersistenceError(result.error));
+        } else if (!result.value.wbyDeleted) {
+            return Result.fail(new PageNotFoundError(id));
         }
 
         const page = EntryToPageMapper.toPage(result.value);

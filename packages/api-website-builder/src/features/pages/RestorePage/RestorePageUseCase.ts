@@ -53,7 +53,7 @@ class RestorePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
         await this.eventPublisher.publish(afterEvent);
 
-        return Result.ok();
+        return result;
     }
 }
 
