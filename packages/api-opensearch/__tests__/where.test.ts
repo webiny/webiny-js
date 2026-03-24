@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseWhereKey, ParseWhereKeyResult } from "~/where";
+import { parseWhereKey, ParseWhereKeyResult } from "~/where.js";
 
 describe("where", () => {
     const whereKeys: [string, ParseWhereKeyResult][] = [

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankQuery } from "../../helpers";
-import { OpenSearchBoolQueryConfig } from "~/types";
-import { OpenSearchQueryBuilderOperatorNotBetweenPlugin } from "~/plugins/operator";
+import { OpenSearchBoolQueryConfig } from "~/types.js";
+import { OpenSearchQueryBuilderOperatorNotBetweenPlugin } from "~/plugins/operator/index.js";
 
 describe("OpenSearchQueryBuilderOperatorNotBetweenPlugin", () => {
     const plugin = new OpenSearchQueryBuilderOperatorNotBetweenPlugin();

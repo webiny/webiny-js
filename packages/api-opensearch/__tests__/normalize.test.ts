@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeValue } from "~/normalize";
+import { normalizeValue } from "~/normalize.js";
 
 describe(`GraphQL "contains" operator - query normalization`, () => {
     it("must properly escape ES reserved characters", async () => {

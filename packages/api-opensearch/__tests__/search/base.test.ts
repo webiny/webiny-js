@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createOpenSearchClient } from "../helpers";
 import { people } from "./base.entries";
-import { getBaseConfiguration } from "~/indexConfiguration";
-import { OpenSearchBoolQueryConfig } from "~/types";
-import { OpenSearchQueryBuilderOperatorContainsPlugin } from "~/plugins/operator/contains";
-import { getOpenSearchIndexPrefix } from "~/indexPrefix";
+import { getBaseConfiguration } from "~/indexConfiguration/index.js";
+import { OpenSearchBoolQueryConfig } from "~/types.js";
+import { OpenSearchQueryBuilderOperatorContainsPlugin } from "~/plugins/operator/contains.js";
+import { getOpenSearchIndexPrefix } from "~/indexPrefix.js";
 
 describe("OpenSearch Base Search", () => {
     const client = createOpenSearchClient();

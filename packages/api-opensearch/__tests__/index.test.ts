@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getBaseConfiguration } from "~/indexConfiguration";
-import { OpenSearchIndexRequestBody } from "~/types";
+import { getBaseConfiguration } from "~/indexConfiguration/index.js";
+import { OpenSearchIndexRequestBody } from "~/types.js";
 import { createOpenSearchClient } from "./helpers";
-import { getOpenSearchIndexPrefix } from "~/indexPrefix";
+import { getOpenSearchIndexPrefix } from "~/indexPrefix.js";
 
 /**
  * Add configurations when added to the code.

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createOpenSearchContext } from "~/index";
+import { createOpenSearchContext } from "~/index.js";
 import { Context, ContextPlugin } from "@webiny/api";
-import { OpenSearchQueryBuilderOperatorPlugin } from "~/plugins/definition/OpenSearchQueryBuilderOperatorPlugin";
+import { OpenSearchQueryBuilderOperatorPlugin } from "~/plugins/definition/OpenSearchQueryBuilderOperatorPlugin.js";
 import { Client } from "@opensearch-project/opensearch";
 import { createOpenSearchClient } from "./helpers";
 

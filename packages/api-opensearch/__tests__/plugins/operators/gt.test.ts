@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankQuery } from "../../helpers";
-import { OpenSearchBoolQueryConfig } from "~/types";
-import { OpenSearchQueryBuilderOperatorGreaterThanPlugin } from "~/plugins/operator";
+import { OpenSearchBoolQueryConfig } from "~/types.js";
+import { OpenSearchQueryBuilderOperatorGreaterThanPlugin } from "~/plugins/operator/index.js";
 
 describe("OpenSearchQueryBuilderOperatorGreaterThanPlugin", () => {
     const plugin = new OpenSearchQueryBuilderOperatorGreaterThanPlugin();

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { OpenSearchCatHealth } from "~/operations/OpenSearchCatHealth";
+import { OpenSearchCatHealth } from "~/operations/OpenSearchCatHealth.js";
 import { createOpenSearchClient } from "../helpers";
-import { IOpenSearchCatHealthResponse } from "~/operations/types";
+import { IOpenSearchCatHealthResponse } from "~/operations/types.js";
 
 describe("cat health", () => {
     it("should fetch health information", async () => {

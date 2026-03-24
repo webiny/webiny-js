@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createOpenSearchClient } from "../helpers";
-import { OpenSearchCatNodes } from "~/operations";
-import { IOpenSearchCatNodeResponse } from "~/operations/types";
+import { OpenSearchCatNodes } from "~/operations/index.js";
+import { IOpenSearchCatNodeResponse } from "~/operations/types.js";
 
 describe("cat nodes", () => {
     it("should fetch nodes information", async () => {
