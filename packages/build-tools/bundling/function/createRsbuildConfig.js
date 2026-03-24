@@ -30,7 +30,7 @@ export const createRsbuildConfig = ({ cwd }) => {
         },
         tools: {
             rspack: {
-                externals: [/^@aws-sdk/, /^sharp$/],
+                externals: [/^@aws-sdk/, /^aws-sdk$/, /^sharp$/],
                 plugins: [
                     // This is necessary to enable JSDOM usage in Lambda.
                     // https://rspack.dev/plugins/webpack/ignore-plugin
