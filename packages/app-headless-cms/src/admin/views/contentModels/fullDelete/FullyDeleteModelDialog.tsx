@@ -17,7 +17,7 @@ import { useDialogState } from "./dialog/state.js";
 import { updateModelInCache } from "~/admin/views/contentModels/cache.js";
 
 export interface FullyDeleteModelDialogProps {
-    model: CmsModel | null;
+    model: CmsModel;
     onClose: () => void;
 }
 
@@ -83,11 +83,11 @@ export const FullyDeleteModelDialog = ({
     }, [state]);
 
     const title = useMemo(() => {
-        if (model?.plugin) {
+        if (model.plugin) {
             return "Delete all entries of the model?";
         }
         return "Delete content model and all its entries?";
-    }, [model?.modelId]);
+    }, [model.modelId]);
 
     const primaryButtonText = useMemo(() => {
         if (status === FullyDeleteModelStateStatus.UNDERSTOOD) {
