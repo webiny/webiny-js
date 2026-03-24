@@ -22,7 +22,7 @@ export const Extensions = () => {
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
             <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
             <Infra.Vpc enabled={false} />
-            <Infra.OpenSearch enabled={true} />
+            <Infra.OpenSearch enabled={false} />
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
