@@ -2,8 +2,9 @@ import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import type { WbPage } from "~/domain/page/abstractions.js";
-import {
+import type {
     PageNotFoundError,
+    PageNotFoundTrashedError,
     PagePersistenceError,
     PageNotAuthorizedError
 } from "~/domain/page/errors.js";
@@ -53,6 +54,7 @@ export interface IRestorePageUseCase {
 export interface IRestorePageUseCaseErrors {
     notAuthorized: PageNotAuthorizedError;
     notFound: PageNotFoundError;
+    trashedNotFound: PageNotFoundTrashedError;
     persistence: PagePersistenceError;
 }
 
