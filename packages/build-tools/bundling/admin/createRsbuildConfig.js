@@ -1,4 +1,3 @@
-import fs from "fs";
 import path from "path";
 import { pluginReact } from "@rsbuild/plugin-react";
 import { pluginSvgr } from "@rsbuild/plugin-svgr";
@@ -100,15 +99,7 @@ const getPaths = cwd => {
 };
 
 const getTailwindBasePath = projectRootFolderPath => {
-    const adminUiPkgPath = path.join(projectRootFolderPath, "packages", "admin-ui");
-
-    const isWebinyJsRepo = fs.existsSync(adminUiPkgPath);
-
-    if (isWebinyJsRepo) {
-        return path.join(projectRootFolderPath, "packages");
-    }
-
-    return path.join(projectRootFolderPath, "node_modules", "@webiny");
+    return projectRootFolderPath;
 };
 
 const getEnvVars = () => {
