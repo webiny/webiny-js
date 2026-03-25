@@ -1,17 +1,14 @@
 ## WIP
 
-- controls
 - button
-- on delete step, select some other step
+- themes
 
 ## P1
 
-- themes
 - middleware on NEXTJS side - bring back
 - dialog scrollable
 - double inputs / quatro imputs
-- do we need updateElementData?
-- dbl check page type
+- dbl check page type - only have funnel!
 - cond rules wrap/test
 - check preview
 
