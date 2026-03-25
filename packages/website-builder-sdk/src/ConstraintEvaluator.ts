@@ -276,8 +276,10 @@ export function evaluateConstraints(params: EvaluateConstraintsParams): Constrai
             return Array.isArray(items) ? items.length : 0;
         },
         countInstances: (name: string) => countInstances(document, name),
-        // Element doesn't exist yet during placement — no descendants to check.
+        // Element doesn't exist yet during placement — no descendants or inputs to check.
         hasDescendantWithTag: () => false,
+        getAncestorInputs: () => undefined,
+        getElementInputs: () => ({}),
         log: (...args: any[]) => console.log(...args),
         block
     };
@@ -409,6 +411,22 @@ export function evaluateDeleteConstraint(params: EvaluateDeleteConstraintParams)
         countInstances: (name: string) => countInstances(document, name),
         hasDescendantWithTag: (tag: string) =>
             hasDescendantWithTag(document, components, element.id, tag),
+        getAncestorInputs: (name: string) => {
+            const found = ancestors.find(a => a.manifest.name === name);
+            if (!found) {
+                return undefined;
+            }
+            const bindings = document.bindings[found.element.id]?.inputs ?? {};
+            return Object.fromEntries(
+                Object.entries(bindings).map(([k, v]) => [k, (v as any)?.static])
+            );
+        },
+        getElementInputs: () => {
+            const bindings = document.bindings[element.id]?.inputs ?? {};
+            return Object.fromEntries(
+                Object.entries(bindings).map(([k, v]) => [k, (v as any)?.static])
+            );
+        },
         log: (...args: any[]) => console.log(...args),
         block
     };

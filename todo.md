@@ -1,8 +1,8 @@
 ## P1
 
 - [] themes
-- [] can't delete steps if has fields
-- [] can't delete field if in cond rules
+- [~] can't delete steps if has fields
+- [~] can't delete field if in cond rules
 - [] middleware on NEXTJS side - bring back
 - [] dialog scrollable
 - [] double inputs / quatro imputs

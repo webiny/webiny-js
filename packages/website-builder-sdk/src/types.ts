@@ -147,6 +147,10 @@ export type ConstraintContext = {
     countInstances: (componentName: string) => number;
     /** True if the component has any descendant element carrying the given tag */
     hasDescendantWithTag: (tag: string) => boolean;
+    /** Returns the resolved inputs of the nearest ancestor matching componentName, or undefined */
+    getAncestorInputs: (componentName: string) => Record<string, any> | undefined;
+    /** Returns the resolved inputs of the element this constraint is evaluating */
+    getElementInputs: () => Record<string, any>;
     /** Debug logger — safe to call inside serialized constraints */
     log: (...args: any[]) => void;
     /** Block placement with an error message shown to the user */

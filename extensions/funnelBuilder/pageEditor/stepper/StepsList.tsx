@@ -71,7 +71,7 @@ const StepsListItem = ({ step, canDelete, elementId, onRename }: StepsListItemPr
             ref={setNodeRef}
             style={style}
             className={
-                "flex items-center justify-between border-b border-solid border-neutral-muted bg-neutral-base px-sm py-xs last:border-none hover:bg-neutral-dimmed"
+                "flex items-center justify-between border-b border-solid border-neutral-dimmed bg-neutral-base px-sm py-xs last:border-none hover:bg-neutral-dimmed"
             }
             {...attributes}
         >
@@ -171,27 +171,25 @@ export const StepsList = () => {
     };
 
     return (
-        <div className={"rounded border border-solid border-neutral-muted"}>
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-                <SortableContext items={steps} strategy={verticalListSortingStrategy}>
-                    {steps.map((step, index) => {
-                        const isFirstStep = index === 0;
-                        const isLastStep = index === steps.length - 1;
-                        const canDelete = !isFirstStep && !isLastStep;
-                        const elementId = slotSteps[index]?.elementId;
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+            <SortableContext items={steps} strategy={verticalListSortingStrategy}>
+                {steps.map((step, index) => {
+                    const isFirstStep = index === 0;
+                    const isLastStep = index === steps.length - 1;
+                    const canDelete = !isFirstStep && !isLastStep;
+                    const elementId = slotSteps[index]?.elementId;
 
-                        return (
-                            <StepsListItem
-                                key={step.id}
-                                step={step}
-                                canDelete={canDelete}
-                                elementId={elementId}
-                                onRename={onRename}
-                            />
-                        );
-                    })}
-                </SortableContext>
-            </DndContext>
-        </div>
+                    return (
+                        <StepsListItem
+                            key={step.id}
+                            step={step}
+                            canDelete={canDelete}
+                            elementId={elementId}
+                            onRename={onRename}
+                        />
+                    );
+                })}
+            </SortableContext>
+        </DndContext>
     );
 };
