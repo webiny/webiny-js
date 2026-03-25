@@ -36,6 +36,7 @@ interface StepsListItemProps {
     isLastStep: boolean;
     elementId: string | undefined;
     onRename: (stepId: string, title: string) => void;
+    onDelete: (stepId: string, elementId: string) => void;
 }
 
 const StepsListItem = ({
@@ -43,10 +44,10 @@ const StepsListItem = ({
     isFirstStep,
     isLastStep,
     elementId,
-    onRename
+    onRename,
+    onDelete
 }: StepsListItemProps) => {
     const canDelete = !isFirstStep && !isLastStep;
-    const { deleteElement } = useDeleteElement();
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(step.title);
 
@@ -128,7 +129,7 @@ const StepsListItem = ({
                             icon={<DeleteIcon />}
                             variant={"ghost"}
                             disabled={!canDelete || !elementId}
-                            onClick={() => elementId && deleteElement(elementId)}
+                            onClick={() => elementId && onDelete(step.id, elementId)}
                         />
                     }
                 />
@@ -141,6 +142,7 @@ const StepsListItem = ({
 export const StepsList = () => {
     const container = useContainer();
     const editor = useDocumentEditor();
+    const { deleteElement } = useDeleteElement();
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -178,6 +180,10 @@ export const StepsList = () => {
         });
     };
 
+    const onDelete = (_stepId: string, elementId: string) => {
+        deleteElement(elementId);
+    };
+
     const onRename = (stepId: string, title: string) => {
         container.updateInputs(current => {
             const inputs = current as unknown as FunnelContainerInputs;
@@ -194,7 +200,6 @@ export const StepsList = () => {
                 {steps.map((step, index) => {
                     const isFirstStep = index === 0;
                     const isLastStep = index === steps.length - 1;
-                    const canDelete = !isFirstStep && !isLastStep;
                     const elementId = slotSteps[index]?.elementId;
 
                     return (
@@ -205,6 +210,7 @@ export const StepsList = () => {
                             isLastStep={isLastStep}
                             elementId={elementId}
                             onRename={onRename}
+                            onDelete={onDelete}
                         />
                     );
                 })}

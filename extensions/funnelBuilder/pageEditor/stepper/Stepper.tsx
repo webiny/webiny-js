@@ -28,11 +28,18 @@ export const Stepper = () => {
 
     const steps = container?.inputs.containerData?.steps ?? [];
 
-    // Auto-select the first step when the editor loads and no step is active.
+    /* Steps can also be deleted or reordered via the StepsList component in the sidebar —
+     any change to the steps array will trigger this effect. */
+    // Auto-select the first step on load, or when the active step no longer exists (e.g. after deletion).
     useEffect(() => {
-        if (activeStepId || !steps.length) {
+        if (!steps.length) {
             return;
         }
+        const activeStepExists = steps.some(s => s.id === activeStepId);
+        if (activeStepExists) {
+            return;
+        }
+
         const firstStepId = steps[0].id;
         setActiveStepId(firstStepId);
         editor.executeCommand(Commands.SendPreviewMessage, {
