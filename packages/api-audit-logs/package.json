@@ -23,7 +23,7 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "graphql": "^16.13.1",
+    "graphql": "^16.13.2",
     "typescript": "5.9.3",
     "vitest": "^4.1.1"
   },
