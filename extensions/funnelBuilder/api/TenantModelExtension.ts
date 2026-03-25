@@ -8,6 +8,7 @@ class TenantModelExtension implements ModelExtension.Interface {
             .fields(fields => ({
                 theme: fields
                     .object()
+                    .renderer("objectAccordionSingle")
                     .label("Theme")
                     .fields(themeFields => ({
                         primaryColor: themeFields
@@ -29,6 +30,7 @@ class TenantModelExtension implements ModelExtension.Interface {
                             .renderer("textInput")
                             .defaultValue("")
                     }))
+                    .layout([["primaryColor"], ["secondaryColor"], ["logo"]])
             }))
             .layout([["theme"]]);
     }

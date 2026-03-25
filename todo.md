@@ -2,6 +2,8 @@
 
 - button
 - themes
+- MT setup
+-
 
 ## P1
 
@@ -11,6 +13,7 @@
 - dbl check page type - only have funnel!
 - cond rules wrap/test
 - check preview
+- validation does not work
 
 ## P2
 
