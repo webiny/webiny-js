@@ -5,6 +5,7 @@ import { FunnelPageForm } from "./FunnelPageForm.js";
 export default () => {
     return (
         <PageListConfig>
+            <PageListConfig.PageType name={"static"} remove />
             <PageListConfig.PageType
                 name={"funnel"}
                 label={"Funnel"}
