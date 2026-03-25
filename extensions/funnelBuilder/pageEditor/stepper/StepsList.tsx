@@ -32,12 +32,20 @@ import type { FunnelContainerInputs } from "../types";
 /* Single sortable step row. */
 interface StepsListItemProps {
     step: FunnelStepModelDto;
-    canDelete: boolean;
+    isFirstStep: boolean;
+    isLastStep: boolean;
     elementId: string | undefined;
     onRename: (stepId: string, title: string) => void;
 }
 
-const StepsListItem = ({ step, canDelete, elementId, onRename }: StepsListItemProps) => {
+const StepsListItem = ({
+    step,
+    isFirstStep,
+    isLastStep,
+    elementId,
+    onRename
+}: StepsListItemProps) => {
+    const canDelete = !isFirstStep && !isLastStep;
     const { deleteElement } = useDeleteElement();
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(step.title);
@@ -107,13 +115,23 @@ const StepsListItem = ({ step, canDelete, elementId, onRename }: StepsListItemPr
                 {!editing && (
                     <IconButton icon={<EditIcon />} variant={"ghost"} onClick={startEditing} />
                 )}
-                {canDelete && elementId ? (
-                    <IconButton
-                        icon={<DeleteIcon />}
-                        variant={"ghost"}
-                        onClick={() => deleteElement(elementId)}
-                    />
-                ) : null}
+                <Tooltip
+                    content={
+                        isFirstStep
+                            ? "The first step cannot be deleted."
+                            : isLastStep
+                              ? "The success step cannot be deleted."
+                              : "Delete step"
+                    }
+                    trigger={
+                        <IconButton
+                            icon={<DeleteIcon />}
+                            variant={"ghost"}
+                            disabled={!canDelete || !elementId}
+                            onClick={() => elementId && deleteElement(elementId)}
+                        />
+                    }
+                />
             </div>
         </div>
     );
@@ -183,7 +201,8 @@ export const StepsList = () => {
                         <StepsListItem
                             key={step.id}
                             step={step}
-                            canDelete={canDelete}
+                            isFirstStep={isFirstStep}
+                            isLastStep={isLastStep}
                             elementId={elementId}
                             onRename={onRename}
                         />
