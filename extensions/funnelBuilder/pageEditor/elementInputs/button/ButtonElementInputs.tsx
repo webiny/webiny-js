@@ -87,7 +87,7 @@ export const ButtonElementInputsDecorator = ElementInputs.createDecorator(Origin
             return <Original {...props} />;
         }
 
-        const actions: ButtonActionDto[] = inputs.actions ?? [];
+        const actions: ButtonActionDto[] = inputs.buttonData?.actions ?? [];
 
         const addAction = (type: string) => {
             const definition = buttonActionsRegistry.find(def => def.type === type);
@@ -104,16 +104,21 @@ export const ButtonElementInputsDecorator = ElementInputs.createDecorator(Origin
             updateInputs(current => {
                 const buttonInputs = current as unknown as ButtonInputs;
                 if (definition.updateButtonLabel) {
-                    buttonInputs.label = definition.updateButtonLabel;
+                    buttonInputs.buttonData.label = definition.updateButtonLabel;
                 }
-                buttonInputs.actions = [...(buttonInputs.actions ?? []), newAction];
+                buttonInputs.buttonData.actions = [
+                    ...(buttonInputs.buttonData.actions ?? []),
+                    newAction
+                ];
             });
         };
 
         const deleteAction = (actionId: string) => {
             updateInputs(current => {
                 const buttonInputs = current as unknown as ButtonInputs;
-                buttonInputs.actions = buttonInputs.actions.filter(a => a.id !== actionId);
+                buttonInputs.buttonData.actions = buttonInputs.buttonData.actions.filter(
+                    a => a.id !== actionId
+                );
             });
         };
 
@@ -127,7 +132,7 @@ export const ButtonElementInputsDecorator = ElementInputs.createDecorator(Origin
             const newIndex = actions.findIndex(a => a.id === over?.id);
 
             updateInputs(current => {
-                (current as unknown as ButtonInputs).actions = arrayMove(
+                (current as unknown as ButtonInputs).buttonData.actions = arrayMove(
                     actions,
                     oldIndex,
                     newIndex
@@ -179,6 +184,7 @@ export const ButtonElementInputsDecorator = ElementInputs.createDecorator(Origin
                                 {availableActions.map(def => (
                                     <button
                                         key={def.type}
+                                        type={"button"}
                                         className={
                                             "w-full rounded border border-solid border-neutral-muted bg-neutral-base px-sm py-xs text-left text-sm hover:bg-neutral-dimmed"
                                         }

@@ -4,9 +4,13 @@ export interface ButtonActionDto {
     extra: Record<string, unknown>;
 }
 
-export interface ButtonInputs {
+export interface ButtonElementData {
     actions: ButtonActionDto[];
     label: string;
+}
+
+export interface ButtonInputs {
+    buttonData: ButtonElementData;
 }
 
 export interface ButtonActionDefinition {
