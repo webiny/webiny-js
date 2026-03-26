@@ -1,16 +1,16 @@
 import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator";
 import { PluginsContainer } from "@webiny/plugins";
 import type { Plugin } from "@webiny/plugins/types";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch";
+import { getOpenSearchOperators } from "@webiny/api-opensearch";
 import type {
-    ElasticsearchQueryBuilderOperatorPlugins,
-    ElasticsearchQuerySearchValuePlugins
+    OpenSearchQueryBuilderOperatorPlugins,
+    OpenSearchQuerySearchValuePlugins
 } from "~/operations/entry/elasticsearch/types";
 import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search";
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
 
 export const createPluginsContainer = (plugins: Plugin[] = []) => {
-    return new PluginsContainer([getElasticsearchOperators(), createFilterPlugins(), ...plugins]);
+    return new PluginsContainer([getOpenSearchOperators(), createFilterPlugins(), ...plugins]);
 };
 
 export const buildElasticsearchOperatorPlugins = (container?: PluginsContainer) => {
@@ -21,15 +21,15 @@ export const buildElasticsearchOperatorPlugins = (container?: PluginsContainer) 
 
 export const buildElasticsearchSearchPlugins = (
     container?: PluginsContainer
-): ElasticsearchQuerySearchValuePlugins => {
+): OpenSearchQuerySearchValuePlugins => {
     return createSearchPluginList({
         plugins: container || createPluginsContainer()
     });
 };
 
 export interface Plugins {
-    operators: ElasticsearchQueryBuilderOperatorPlugins;
-    search: ElasticsearchQuerySearchValuePlugins;
+    operators: OpenSearchQueryBuilderOperatorPlugins;
+    search: OpenSearchQuerySearchValuePlugins;
     container: PluginsContainer;
 }
 export const createPlugins = (): Plugins => {

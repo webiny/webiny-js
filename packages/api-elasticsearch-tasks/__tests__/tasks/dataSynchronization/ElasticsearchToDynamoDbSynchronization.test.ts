@@ -26,7 +26,7 @@ const queryAllRecords = (index: string) => {
 interface ICreateSyncBuilderParams {
     records: number;
     timer: ITimer;
-    context: Pick<Context, "elasticsearch">;
+    context: Pick<Context, "opensearch">;
     index: string;
 }
 
@@ -118,7 +118,7 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
         });
 
         // Get task index from context
-        const indexManager = new IndexManager(context.elasticsearch, {});
+        const indexManager = new IndexManager(context.opensearch, {});
         const index = await getTaskIndex(indexManager);
 
         // Insert mock data into Elasticsearch
@@ -133,7 +133,7 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
         await recordsFactory.run();
 
         // Verify data was inserted (includes task record created during task creation)
-        const response = await context.elasticsearch.search(queryAllRecords(index));
+        const response = await context.opensearch.search(queryAllRecords(index));
         expect(response.body.hits.hits).toHaveLength(totalMockItemsToInsert + 1);
 
         // Get task definition and create runner
@@ -154,7 +154,7 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
         expect(result.webinyTaskId).toBe(task.id);
 
         // Verify data was cleaned up
-        const afterRunResponse = await context.elasticsearch.search(queryAllRecords(index));
+        const afterRunResponse = await context.opensearch.search(queryAllRecords(index));
         expect(afterRunResponse.body.hits.hits).toHaveLength(1);
     });
 });

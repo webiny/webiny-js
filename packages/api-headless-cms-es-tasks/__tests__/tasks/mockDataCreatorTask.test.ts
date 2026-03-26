@@ -49,7 +49,7 @@ describe("mock data creator task", () => {
         expect(modelAndGroupResult).not.toBeInstanceOf(String);
 
         await disableIndexing({
-            client: context.elasticsearch,
+            client: context.opensearch,
             model: modelAndGroupResult.model
         });
 
@@ -73,7 +73,7 @@ describe("mock data creator task", () => {
         });
 
         await enableIndexing({
-            client: context.elasticsearch,
+            client: context.opensearch,
             model: modelAndGroupResult.model
         });
 

@@ -6,7 +6,7 @@ import type {
     RouteHandlerMethod
 } from "fastify";
 export type { FastifyInstance } from "fastify";
-import type { ClientContext } from "@webiny/handler-client/types.js";
+import type { Context as BaseContext } from "@webiny/api/types.js";
 
 export interface RouteMethodOptions {
     override?: boolean;
@@ -36,7 +36,7 @@ export interface ContextRoutes {
     onHead: RouteMethod;
 }
 
-export interface Context extends ClientContext {
+export interface Context extends BaseContext {
     /**
      * Current request. Must be set only once!
      */

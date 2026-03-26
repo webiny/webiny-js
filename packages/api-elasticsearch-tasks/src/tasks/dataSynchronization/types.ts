@@ -1,5 +1,5 @@
 import type { IManager } from "~/types.js";
-import type { PrimitiveValue } from "@webiny/api-elasticsearch/types.js";
+import type { PrimitiveValue } from "@webiny/api-opensearch/types.js";
 import type { IIndexManager } from "~/settings/types.js";
 import type { IElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize.js";
 import type { IElasticsearchFetcher } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchFetcher.js";

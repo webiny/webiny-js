@@ -11,10 +11,10 @@ import type {
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { Client } from "@elastic/elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
-import type { IElasticsearchEntity } from "@webiny/api-elasticsearch";
+import type { IOpenSearchEntity as IElasticsearchEntity } from "@webiny/api-opensearch";
 import type { ITable } from "@webiny/db-dynamodb";
 
 /**

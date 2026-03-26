@@ -1,10 +1,10 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types.js";
+import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 export interface IOpensearchIndexConfig {
     index: string;
-    settings?: Partial<ElasticsearchIndexRequestBody>;
+    settings?: Partial<OpenSearchIndexRequestBody>;
 }
 
 export interface IOpensearchTenantIndexFactory {

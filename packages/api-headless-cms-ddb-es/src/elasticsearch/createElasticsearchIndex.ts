@@ -1,7 +1,7 @@
-import type { Client } from "@elastic/elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import type { PluginsContainer } from "@webiny/plugins";
 import { CmsEntryElasticsearchIndexPlugin } from "~/plugins/CmsEntryElasticsearchIndexPlugin.js";
-import { createIndex } from "@webiny/api-elasticsearch";
+import { createIndex } from "@webiny/api-opensearch";
 import { configurations } from "~/configurations.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 

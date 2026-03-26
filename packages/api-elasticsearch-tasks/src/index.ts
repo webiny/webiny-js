@@ -22,7 +22,8 @@ export const createElasticsearchBackgroundTasks = (
             context.container.registerInstance(DbRegistry, context.db.registry);
 
             context.container.registerInstance(SynchronizationContext, {
-                elasticsearch: context.elasticsearch
+                opensearch: context.opensearch,
+                elasticsearch: context.opensearch
             });
         }),
         createElasticsearchReindexingTask(params),

@@ -1,8 +1,8 @@
 import type {
     ModifyQueryCallable,
     ModifyQueryParams as BaseModifyQueryParams
-} from "@webiny/api-elasticsearch";
-import { ElasticsearchQueryModifierPlugin } from "@webiny/api-elasticsearch";
+} from "@webiny/api-opensearch";
+import { OpenSearchQueryModifierPlugin } from "@webiny/api-opensearch";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 export interface ModifyQueryParams extends BaseModifyQueryParams {
@@ -17,7 +17,7 @@ export interface CmsEntryElasticsearchQueryModifierPluginConfig {
     modelId?: string;
 }
 
-export class CmsEntryElasticsearchQueryModifierPlugin extends ElasticsearchQueryModifierPlugin<ModifyQueryParams> {
+export class CmsEntryElasticsearchQueryModifierPlugin extends OpenSearchQueryModifierPlugin<ModifyQueryParams> {
     public static override readonly type: string = "cms.elasticsearch.modifier.query.entry";
 
     public readonly modelId?: string;

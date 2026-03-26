@@ -14,8 +14,8 @@ export const createEventHandler = () => {
     return createDynamoDBEventHandler(async ({ event, context: ctx, lambdaContext }) => {
         const timer = timerFactory(lambdaContext);
         const context = ctx as unknown as Context;
-        if (!context.elasticsearch) {
-            console.error("Missing elasticsearch definition on context.");
+        if (!context.opensearch) {
+            console.error("Missing opensearch definition on context.");
             return null;
         }
 
