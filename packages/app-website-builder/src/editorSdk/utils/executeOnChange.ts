@@ -208,7 +208,15 @@ function fireDescendantChange(params: {
                 descendant: {
                     component: components[element.component.name],
                     id: elementId,
-                    inputs: structuredClone(deepInputs)
+                    inputs: structuredClone(deepInputs),
+                    updateInputs: (cb: (inputs: Record<string, any>) => void) => {
+                        cb(deepInputs);
+                        ancestorUpdates.push({
+                            elementId,
+                            manifest: components[element.component.name],
+                            inputs: deepInputs
+                        });
+                    }
                 },
                 inputs: parentDeep,
                 updateInputs: (cb: (inputs: Record<string, any>) => void) => {

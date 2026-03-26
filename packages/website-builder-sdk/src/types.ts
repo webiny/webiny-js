@@ -200,12 +200,16 @@ export type ComponentChangeContext<TInputs = Record<string, any>> = {
     continue: () => Continue;
 };
 
-export type DescendantChangeContext<TInputs = Record<string, any>> = {
+export type DescendantChangeContext<
+    TInputs = Record<string, any>,
+    TDescendantInputs = Record<string, any>
+> = {
     action: OnChangeAction;
     descendant: {
         component: ComponentManifest;
         id: string;
-        inputs: Record<string, any>;
+        inputs: TDescendantInputs;
+        updateInputs: (cb: (inputs: TDescendantInputs) => void) => void;
     };
     inputs: TInputs;
     updateInputs: (cb: (inputs: TInputs) => void) => void;
@@ -221,9 +225,10 @@ export type ComponentChangeHandler<TInputs = Record<string, any>> = (
     ctx: ComponentChangeContext<TInputs>
 ) => HandlerResult;
 
-export type DescendantChangeHandler<TInputs = Record<string, any>> = (
-    ctx: DescendantChangeContext<TInputs>
-) => HandlerResult;
+export type DescendantChangeHandler<
+    TInputs = Record<string, any>,
+    TDescendantInputs = Record<string, any>
+> = (ctx: DescendantChangeContext<TInputs, TDescendantInputs>) => HandlerResult;
 
 export type ComponentManifest = {
     name: string;
