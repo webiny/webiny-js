@@ -1,10 +1,15 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
+export type UpgradeCommandPackageVersion = `${number}.${number}.${number}` | "latest";
+
 export interface IUpgradeCommandHandlerHandleParams {
-    _: [string, string | undefined];
     showLogs: boolean;
     logLevel: string;
-    showStackTrace: false;
+    showStackTrace: boolean;
+    disableSemver: boolean;
+    skipChecks: boolean;
+    debug: boolean;
+    version: UpgradeCommandPackageVersion;
 }
 
 export interface IUpgradeCommandHandler {
@@ -18,4 +23,5 @@ export const UpgradeCommandHandler = createAbstraction<IUpgradeCommandHandler>(
 export namespace UpgradeCommandHandler {
     export type Interface = IUpgradeCommandHandler;
     export type Params = IUpgradeCommandHandlerHandleParams;
+    export type Version = UpgradeCommandPackageVersion;
 }
