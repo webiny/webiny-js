@@ -60,7 +60,6 @@
       "@webiny/sdk": ["../sdk/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

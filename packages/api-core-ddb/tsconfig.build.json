@@ -25,7 +25,6 @@
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }
