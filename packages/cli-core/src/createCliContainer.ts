@@ -36,6 +36,9 @@ import {
     syncDepsCommand,
     verifyDepsCommand,
     watchCommand,
+    // Upgrade Command
+    upgradeCommand,
+    UpgradeCommandHandler,
 
     // WCP
     linkProjectCommand,
@@ -86,6 +89,8 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(openCommand).inSingletonScope();
     container.register(outputCommand).inSingletonScope();
     container.register(watchCommand).inSingletonScope();
+    container.register(upgradeCommand).inSingletonScope();
+    container.register(UpgradeCommandHandler);
 
     container.register(linkProjectCommand).inSingletonScope();
     container.register(loginCommand).inSingletonScope();
