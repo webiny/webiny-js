@@ -4,7 +4,7 @@ import chalk from "chalk";
 import execa from "execa";
 import { UiService } from "~/abstractions/index.js";
 
-const GITHUB_REPOSITORY_URL = "https://github.com/webiny/webiny-upgrades";
+const GITHUB_REPOSITORY_URL = "https://github.com/webiny/webiny-upgrades-v6";
 const UPGRADE_PACKAGE_LATEST_TARGET = "webiny";
 
 interface IGetTargetVersionParams {
