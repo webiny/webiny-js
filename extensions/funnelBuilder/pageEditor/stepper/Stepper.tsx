@@ -5,6 +5,7 @@ import {
     useCreateElement,
     useDeleteElement,
     useDocumentEditor,
+    $deselectElement,
     Commands
 } from "webiny/admin/website-builder/page/editor";
 import { useContainer } from "../useContainer.js";
@@ -20,7 +21,6 @@ const iconPosition = {
 
 export const Stepper = () => {
     const container = useContainer();
-
     const editor = useDocumentEditor();
     const { createElement } = useCreateElement();
     const { deleteElement } = useDeleteElement();
@@ -57,11 +57,16 @@ export const Stepper = () => {
     const slotSteps = container.inputs.steps ?? [];
 
     const activateStep = (stepId: string) => {
-        setActiveStepId(stepId);
         editor.executeCommand(Commands.SendPreviewMessage, {
             type: "fub.activeStepChanged",
             payload: { stepId }
         });
+
+        setActiveStepId(stepId);
+        const slotStep = slotSteps.find(s => s.stepData?.id === stepId);
+        if (slotStep?.elementId) {
+            $deselectElement(editor);
+        }
     };
 
     const deleteStep = (stepElementId: string) => {
@@ -101,8 +106,8 @@ export const Stepper = () => {
             <div className={"flex gap-md"}>
                 {steps.map((step, index) => {
                     const isFirstStep = index === 0;
-                    const isLastStep = index === steps.length - 1;
-                    const canDelete = !isFirstStep && !isLastStep;
+                    const isSuccessStep = step.id === "success";
+                    const canDelete = !isFirstStep && !isSuccessStep;
                     const activeVariant = activeStepId === step.id ? "primary" : "secondary";
                     const elementId = slotSteps[index]?.elementId;
 

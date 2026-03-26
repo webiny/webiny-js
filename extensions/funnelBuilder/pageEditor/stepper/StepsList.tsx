@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { IconButton, Input, Tooltip } from "webiny/admin/ui";
-import {
-    useDeleteElement,
-    useDocumentEditor,
-    Commands
-} from "webiny/admin/website-builder/page/editor";
+import { useDeleteElement } from "webiny/admin/website-builder/page/editor";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -33,7 +29,7 @@ import type { FunnelContainerInputs } from "../types";
 interface StepsListItemProps {
     step: FunnelStepModelDto;
     isFirstStep: boolean;
-    isLastStep: boolean;
+    isSuccessStep: boolean;
     elementId: string | undefined;
     onRename: (stepId: string, title: string) => void;
     onDelete: (stepId: string, elementId: string) => void;
@@ -42,17 +38,18 @@ interface StepsListItemProps {
 const StepsListItem = ({
     step,
     isFirstStep,
-    isLastStep,
+    isSuccessStep,
     elementId,
     onRename,
     onDelete
 }: StepsListItemProps) => {
-    const canDelete = !isFirstStep && !isLastStep;
+    const canDelete = !isFirstStep && !isSuccessStep;
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(step.title);
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-        id: step.id
+        id: step.id,
+        disabled: isSuccessStep
     });
 
     const style = {
@@ -85,14 +82,16 @@ const StepsListItem = ({
             {...attributes}
         >
             <div className={"flex flex-1 items-center gap-xs"}>
-                <Tooltip
-                    content={"Drag to reorder"}
-                    trigger={
-                        <span {...listeners} className={"cursor-grab"}>
-                            <DragIndicator />
-                        </span>
-                    }
-                />
+                {!isSuccessStep && (
+                    <Tooltip
+                        content={"Drag to reorder"}
+                        trigger={
+                            <span {...listeners} className={"cursor-grab"}>
+                                <DragIndicator />
+                            </span>
+                        }
+                    />
+                )}
                 {editing ? (
                     <Input
                         autoFocus
@@ -116,23 +115,19 @@ const StepsListItem = ({
                 {!editing && (
                     <IconButton icon={<EditIcon />} variant={"ghost"} onClick={startEditing} />
                 )}
-                <Tooltip
-                    content={
-                        isFirstStep
-                            ? "The first step cannot be deleted."
-                            : isLastStep
-                              ? "The success step cannot be deleted."
-                              : "Delete step"
-                    }
-                    trigger={
-                        <IconButton
-                            icon={<DeleteIcon />}
-                            variant={"ghost"}
-                            disabled={!canDelete || !elementId}
-                            onClick={() => elementId && onDelete(step.id, elementId)}
-                        />
-                    }
-                />
+                {!isSuccessStep && (
+                    <Tooltip
+                        content={isFirstStep ? "The first step cannot be deleted." : "Delete step"}
+                        trigger={
+                            <IconButton
+                                icon={<DeleteIcon />}
+                                variant={"ghost"}
+                                disabled={!canDelete || !elementId}
+                                onClick={() => elementId && onDelete(step.id, elementId)}
+                            />
+                        }
+                    />
+                )}
             </div>
         </div>
     );
@@ -141,7 +136,6 @@ const StepsListItem = ({
 /* Drag-and-drop list of funnel steps shown in the sidebar. */
 export const StepsList = () => {
     const container = useContainer();
-    const editor = useDocumentEditor();
     const { deleteElement } = useDeleteElement();
 
     const sensors = useSensors(
@@ -167,16 +161,15 @@ export const StepsList = () => {
         const oldIndex = steps.findIndex(s => s.id === active.id);
         const newIndex = steps.findIndex(s => s.id === over?.id);
 
+        // Prevent moving any step into the last (success) position.
+        if (newIndex === steps.length - 1) {
+            return;
+        }
+
         const reordered = arrayMove(steps, oldIndex, newIndex);
 
         container.updateInputs(current => {
             (current as unknown as FunnelContainerInputs).containerData.steps = reordered;
-        });
-
-        /* Notify the preview so it can re-sync step order. */
-        editor.executeCommand(Commands.SendPreviewMessage, {
-            type: "fub.stepsReordered",
-            payload: { steps: reordered }
         });
     };
 
@@ -199,7 +192,7 @@ export const StepsList = () => {
             <SortableContext items={steps} strategy={verticalListSortingStrategy}>
                 {steps.map((step, index) => {
                     const isFirstStep = index === 0;
-                    const isLastStep = index === steps.length - 1;
+                    const isSuccessStep = step.id === "success";
                     const elementId = slotSteps[index]?.elementId;
 
                     return (
@@ -207,7 +200,7 @@ export const StepsList = () => {
                             key={step.id}
                             step={step}
                             isFirstStep={isFirstStep}
-                            isLastStep={isLastStep}
+                            isSuccessStep={isSuccessStep}
                             elementId={elementId}
                             onRename={onRename}
                             onDelete={onDelete}
