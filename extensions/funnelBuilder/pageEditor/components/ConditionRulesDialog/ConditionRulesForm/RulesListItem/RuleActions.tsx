@@ -1,17 +1,20 @@
 import React from "react";
 import { Button, IconButton, Select, Text } from "webiny/admin/ui";
+import { Form } from "webiny/admin/form";
 import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
 import { ReactComponent as PlusIcon } from "@material-design-icons/svg/outlined/add.svg";
 import { useConditionRulesForm } from "../../useConditionRulesForm";
 import { FunnelConditionRuleModelDto } from "../../../../../models/FunnelConditionRuleModel";
 import { listConditionActions } from "../../../../../models/conditionActions/conditionActionFactory";
+import { conditionActions } from "../../../conditionActions/index.js";
+import type { ConditionActionParamsDto } from "../../../../../models/FunnelConditionActionModel";
 
 export interface RuleActionsProps {
     rule: FunnelConditionRuleModelDto;
 }
 
 export const RuleActions = ({ rule }: RuleActionsProps) => {
-    const { addAction, removeAction, updateAction } = useConditionRulesForm();
+    const { funnel, addAction, removeAction, updateAction } = useConditionRulesForm();
 
     const availableConditionActions = listConditionActions();
 
@@ -37,32 +40,49 @@ export const RuleActions = ({ rule }: RuleActionsProps) => {
                 </div>
             ) : (
                 <div className={"flex flex-col gap-sm"}>
-                    {rule.actions.map(action => (
-                        <div key={action.id} className={"flex items-center gap-sm relative w-full"}>
-                            <Select
-                                placeholder={"Select action..."}
-                                displayResetAction={false}
-                                size={"md"}
-                                value={action.type}
-                                onChange={type => {
-                                    updateAction(rule.id, {
-                                        id: action.id,
-                                        type,
-                                        params: { extra: {} }
-                                    });
-                                }}
-                                options={availableConditionActions.map(action => ({
-                                    value: action.type,
-                                    label: action.optionLabel
-                                }))}
-                            />
-                            <IconButton
-                                variant={"ghost"}
-                                icon={<DeleteIcon />}
-                                onClick={() => removeAction(rule.id, action.id!)}
-                            />
-                        </div>
-                    ))}
+                    {rule.actions.map(action => {
+                        const definition = conditionActions.find(d => d.type === action.type);
+                        const SettingsComponent = definition?.settingsRenderer;
+
+                        return (
+                            <div key={action.id} className={"flex flex-col gap-xs"}>
+                                <div className={"flex items-center gap-sm"}>
+                                    <Select
+                                        placeholder={"Select action..."}
+                                        displayResetAction={false}
+                                        size={"md"}
+                                        value={action.type}
+                                        onChange={type => {
+                                            updateAction(rule.id, {
+                                                id: action.id,
+                                                type,
+                                                params: { extra: {} }
+                                            });
+                                        }}
+                                        options={availableConditionActions.map(def => ({
+                                            value: def.type,
+                                            label: def.optionLabel
+                                        }))}
+                                    />
+                                    {SettingsComponent && (
+                                        <Form<ConditionActionParamsDto>
+                                            data={action.params}
+                                            onChange={params => {
+                                                updateAction(rule.id, { ...action, params });
+                                            }}
+                                        >
+                                            {() => <SettingsComponent funnel={funnel} />}
+                                        </Form>
+                                    )}
+                                    <IconButton
+                                        variant={"ghost"}
+                                        icon={<DeleteIcon />}
+                                        onClick={() => removeAction(rule.id, action.id!)}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             )}
         </div>

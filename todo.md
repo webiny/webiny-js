@@ -7,6 +7,9 @@
 - dialog scrollable
 - double inputs / quatro imputs
 - cond rules wrap/test
+- console logs
+- emotion check
+- material icons check
 
 ## SH
 
