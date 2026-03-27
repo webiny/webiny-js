@@ -1,5 +1,5 @@
 import path from "path";
-import { Container } from "@webiny/di";
+import {Container} from "@webiny/di";
 import {
     argvParserService,
     cliParamsService,
@@ -7,8 +7,8 @@ import {
     getArgvService,
     getCliRunnerService,
     getIsCiService,
-    globalOptionsRegistryService,
     getProjectSdkService,
+    globalOptionsRegistryService,
     loggerService,
     runCliRunnerService,
     stdioService,
@@ -27,44 +27,30 @@ import {
     extensionCommand,
     infoCommand,
     isCi,
+    linkProjectCommand,
+    loginCommand,
+    logLevelGlobalOption,
+    logoutCommand,
     missingFilesInBuildGracefulErrorHandler,
     openCommand,
     outputCommand,
     pendingOperationsGracefulErrorHandler,
     pulumiCommand,
     refreshCommand,
+    showLogsGlobalOption,
+    stackTraceGlobalOption,
     syncDepsCommand,
+    UpgradeCommandFeature,
     verifyDepsCommand,
     watchCommand,
-    // Upgrade Command
-    upgradeCommand,
-    UpgradeCommandHandler,
-
-    // WCP
-    linkProjectCommand,
-    loginCommand,
-    logoutCommand,
-    whoAmICommand,
-
-    // Global Options
-    showLogsGlobalOption,
-    logLevelGlobalOption,
-    stackTraceGlobalOption
+    whoAmICommand
 } from "./features/index.js";
 
 import chalk from "chalk";
-import {
-    CliParamsService,
-    GetArgvService,
-    GetProjectSdkService,
-    UiService
-} from "~/abstractions/index.js";
-import { GracefulError, toImportSpecifier } from "@webiny/project";
-import {
-    commandsWithGracefulErrorHandling,
-    deployCommandWithTelemetry
-} from "./decorators/index.js";
-import { CliCommand } from "~/extensions/index.js";
+import {CliParamsService, GetArgvService, GetProjectSdkService, UiService} from "~/abstractions/index.js";
+import {GracefulError, toImportSpecifier} from "@webiny/project";
+import {commandsWithGracefulErrorHandling, deployCommandWithTelemetry} from "./decorators/index.js";
+import {CliCommand} from "~/extensions/index.js";
 
 const { bgYellow, bold } = chalk;
 
@@ -89,8 +75,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(openCommand).inSingletonScope();
     container.register(outputCommand).inSingletonScope();
     container.register(watchCommand).inSingletonScope();
-    container.register(upgradeCommand).inSingletonScope();
-    container.register(UpgradeCommandHandler);
+    UpgradeCommandFeature.register(container);
 
     container.register(linkProjectCommand).inSingletonScope();
     container.register(loginCommand).inSingletonScope();

@@ -4,13 +4,13 @@ import chalk from "chalk";
 import execa from "execa";
 import { UiService } from "~/abstractions/index.js";
 
-const GITHUB_REPOSITORY_URL = "https://github.com/webiny/webiny-upgrades-v6";
+const GITHUB_REPOSITORY_URL = "https://github.com/webiny/webiny-upgrades-v6-non-existing";
 
 export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstraction.Interface {
     public constructor(private ui: UiService.Interface) {}
 
     public async handle(params: UpgradeCommandHandlerAbstraction.Params): Promise<void> {
-        const { version, skipChecks, debug } = params;
+        const { version, skipChecks, debug, logLevel, showLogs, showStackTrace } = params;
 
         if (!skipChecks) {
             /**
@@ -45,7 +45,14 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
             }
         }
 
-        const command = [GITHUB_REPOSITORY_URL, version || undefined].filter(Boolean);
+        const command = [
+            GITHUB_REPOSITORY_URL,
+            version || undefined,
+            debug ? "--debug" : "",
+            showLogs ? `--showLogs=${showLogs}` : "",
+            showStackTrace ? `--showStackTrace=${showStackTrace}` : "",
+            logLevel ? `--logLevel=${logLevel}` : ""
+        ].filter(Boolean);
 
         const npx = execa("npx", command, {
             env: {
@@ -66,6 +73,7 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
         }
 
         npx.stdout.on("data", data => {
+            console.log("received data on stdout:", data);
             const lines = data.toString().replace(/\n$/, "").split("\n") as string[];
             for (const line of lines) {
                 try {
@@ -78,6 +86,7 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
                         }
                     }
                 } catch {
+                    console.log("received data on stdout:");
                     // Not JSON, let's just print the line then.
                     console.log(line);
                 }
@@ -85,6 +94,7 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
         });
 
         npx.stderr.on("data", data => {
+            console.log("received data on stderr:");
             console.log(data.toString());
         });
 

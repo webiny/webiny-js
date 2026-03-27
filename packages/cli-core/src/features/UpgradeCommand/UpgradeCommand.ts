@@ -1,8 +1,8 @@
-import { CliCommandFactory } from "~/abstractions/index.js";
+import { CliCommandFactory, UiService} from "~/abstractions/index.js";
 import { UpgradeCommandHandler } from "./abstraction.js";
 import semver from "semver";
 
-export interface UpgradeCommandParams {
+interface UpgradeCommandParams {
     skipChecks?: boolean;
     disableSemver?: boolean;
     debug?: boolean;
@@ -13,8 +13,11 @@ export interface UpgradeCommandParams {
     version?: string;
 }
 
-export class UpgradeCommand implements CliCommandFactory.Interface<UpgradeCommandParams> {
-    public constructor(private upgradeCommandHandler: UpgradeCommandHandler.Interface) {}
+class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandParams> {
+    public constructor(
+        private ui: UiService.Interface,
+        private upgradeCommandHandler: UpgradeCommandHandler.Interface
+    ) {}
 
     public async execute(): Promise<CliCommandFactory.CommandDefinition<UpgradeCommandParams>> {
         return {
@@ -34,13 +37,6 @@ export class UpgradeCommand implements CliCommandFactory.Interface<UpgradeComman
             ],
             options: [
                 {
-                    name: "disable-semver",
-                    description:
-                        "Disable semver parsing to allow for versions that don't follow semver, such as 'latest', 0.0.0-unstable, etc...",
-                    type: "boolean",
-                    default: false
-                },
-                {
                     name: "skip-checks",
                     description: "Do not perform CLI version and Git tree checks.",
                     type: "boolean",
@@ -51,9 +47,28 @@ export class UpgradeCommand implements CliCommandFactory.Interface<UpgradeComman
                     default: false,
                     description: `Turn on debug logs`,
                     type: "boolean"
+                },
+                {
+                    name: "log-level",
+                    default: "info",
+                    description: `Set log level for the upgrade process executed by npx. Possible values are "debug", "info", "warning", and "error".`,
+                    type: "string"
+                },
+                {
+                    name: "show-logs",
+                    default: false,
+                    description: `Show logs from the upgrade process executed by npx.`,
+                    type: "boolean"
+                },
+                {
+                    name: "show-stack-trace",
+                    default: false,
+                    description: `Show stack trace if the upgrade process executed by npx fails.`,
+                    type: "boolean"
                 }
             ],
             handler: async params => {
+                this.ui.error(JSON.stringify(params));
                 /**
                  * We assign only what we want so that we don't accidentally pass some parameters that are not relevant to the handler.
                  */
@@ -64,7 +79,6 @@ export class UpgradeCommand implements CliCommandFactory.Interface<UpgradeComman
                     showStackTrace: params.showStackTrace || false,
                     skipChecks: params.skipChecks || false,
                     debug: params.debug || false,
-                    disableSemver: params.disableSemver || false,
                     version
                 });
             }
@@ -94,7 +108,7 @@ export class UpgradeCommand implements CliCommandFactory.Interface<UpgradeComman
     }
 }
 
-export const upgradeCommand = CliCommandFactory.createImplementation({
-    implementation: UpgradeCommand,
-    dependencies: [UpgradeCommandHandler]
+export const UpgradeCommand = CliCommandFactory.createImplementation({
+    implementation: UpgradeCommandImpl,
+    dependencies: [UiService, UpgradeCommandHandler]
 });

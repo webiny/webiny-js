@@ -6,7 +6,6 @@ export interface IUpgradeCommandHandlerHandleParams {
     showLogs: boolean;
     logLevel: string;
     showStackTrace: boolean;
-    disableSemver: boolean;
     skipChecks: boolean;
     debug: boolean;
     version: UpgradeCommandPackageVersion;

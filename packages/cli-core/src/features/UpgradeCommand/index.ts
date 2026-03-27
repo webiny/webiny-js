@@ -1,2 +1,2 @@
-export { upgradeCommand } from "./UpgradeCommand.js";
+export { UpgradeCommandFeature } from "./feature.js";
 export { UpgradeCommandHandler } from "./UpgradeCommandHandler.js";
