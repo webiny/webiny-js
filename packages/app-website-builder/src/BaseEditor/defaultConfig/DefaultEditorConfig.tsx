@@ -28,8 +28,8 @@ const ClickToActivate = () => {
 export const DefaultEditorConfig = React.memo(() => {
     return (
         <>
+            <CommandHandlers />
             <EditorConfig>
-                <CommandHandlers />
                 <ElementInputRenderers />
                 <ContentPreviewConfig />
                 <Ui.Toolbar.Element
