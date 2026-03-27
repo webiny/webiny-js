@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button, Icon } from "webiny/admin/ui";
 import { ReactComponent as DeleteIcon } from "webiny/admin/icons/close.svg";
 import {
@@ -9,7 +9,6 @@ import {
     Commands
 } from "webiny/admin/website-builder/page/editor";
 import { useContainer } from "../useContainer.js";
-import { FunnelStepModel } from "@/extensions/funnelBuilder/models/FunnelStepModel";
 
 const iconClasses =
     "absolute z-10 rounded-full bg-neutral-dimmed border-solid border-sm border-neutral-muted cursor-pointer fill-neutral-strong";
@@ -27,25 +26,46 @@ export const Stepper = () => {
     const [activeStepId, setActiveStepId] = useState<string | null>(null);
 
     const steps = container?.inputs.containerData?.steps ?? [];
+    const prevStepsRef = useRef(steps);
 
-    /* Steps can also be deleted or reordered via the StepsList component in the sidebar —
-     any change to the steps array will trigger this effect. */
-    // Auto-select the first step on load, or when the active step no longer exists (e.g. after deletion).
+    /* Sync active step when steps are added, removed, or on initial mount. */
     useEffect(() => {
-        if (!steps.length) {
-            return;
-        }
-        const activeStepExists = steps.some(s => s.id === activeStepId);
-        if (activeStepExists) {
-            return;
-        }
+        const prevSteps = prevStepsRef.current;
+        prevStepsRef.current = steps;
 
-        const firstStepId = steps[0].id;
-        setActiveStepId(firstStepId);
-        editor.executeCommand(Commands.SendPreviewMessage, {
-            type: "fub.activeStepChanged",
-            payload: { stepId: firstStepId }
-        });
+        if (steps.length > prevSteps.length) {
+            // A step was added — activate the newly inserted step (second-to-last, just before success).
+            const newStep = steps[steps.length - 2];
+            if (newStep) {
+                setActiveStepId(newStep.id);
+                editor.executeCommand(Commands.SendPreviewMessage, {
+                    type: "fub.activeStepChanged",
+                    payload: { stepId: newStep.id }
+                });
+            }
+        } else if (steps.length < prevSteps.length) {
+            // A step was deleted — if it was the active one, fall back to the previous step.
+            const activeStepExists = steps.some(s => s.id === activeStepId);
+            if (!activeStepExists) {
+                const prevActiveIndex = prevSteps.findIndex(s => s.id === activeStepId);
+                const fallbackStep = steps[Math.max(0, prevActiveIndex - 1)] ?? steps[0];
+                if (fallbackStep) {
+                    setActiveStepId(fallbackStep.id);
+                    editor.executeCommand(Commands.SendPreviewMessage, {
+                        type: "fub.activeStepChanged",
+                        payload: { stepId: fallbackStep.id }
+                    });
+                }
+            }
+        } else if (steps.length && !activeStepId) {
+            // No active step yet (initial mount) — activate the first step.
+            const firstStep = steps[0];
+            setActiveStepId(firstStep.id);
+            editor.executeCommand(Commands.SendPreviewMessage, {
+                type: "fub.activeStepChanged",
+                payload: { stepId: firstStep.id }
+            });
+        }
     }, [steps]);
 
     // Container might not be ready immediately.
@@ -57,16 +77,12 @@ export const Stepper = () => {
     const slotSteps = container.inputs.steps ?? [];
 
     const activateStep = (stepId: string) => {
+        setActiveStepId(stepId);
+        $deselectElement(editor);
         editor.executeCommand(Commands.SendPreviewMessage, {
             type: "fub.activeStepChanged",
             payload: { stepId }
         });
-
-        setActiveStepId(stepId);
-        const slotStep = slotSteps.find(s => s.stepData?.id === stepId);
-        if (slotStep?.elementId) {
-            $deselectElement(editor);
-        }
     };
 
     const deleteStep = (stepElementId: string) => {
@@ -74,28 +90,12 @@ export const Stepper = () => {
     };
 
     const addStep = () => {
-        const insertIndex = Math.max(steps.length - 1, 0);
-        const newStep = new FunnelStepModel();
-
         createElement({
             componentName: "Fub/Step",
             parentId: container.id,
             slot: "steps",
-            index: insertIndex,
-            bindings: {
-                inputs: {
-                    stepData: newStep.toDto()
-                }
-            }
+            index: steps.length - 1
         });
-
-        setTimeout(() => {
-            setActiveStepId(newStep.id);
-            editor.executeCommand(Commands.SendPreviewMessage, {
-                type: "fub.activeStepChanged",
-                payload: { stepId: newStep.id }
-            });
-        }, 100);
     };
 
     return (
@@ -106,7 +106,8 @@ export const Stepper = () => {
             <div className={"flex gap-md"}>
                 {steps.map((step, index) => {
                     const isFirstStep = index === 0;
-                    const isSuccessStep = step.id === "success";
+                    const isLastStep = index === steps.length - 1;
+                    const isSuccessStep = isLastStep;
                     const canDelete = !isFirstStep && !isSuccessStep;
                     const activeVariant = activeStepId === step.id ? "primary" : "secondary";
                     const elementId = slotSteps[index]?.elementId;

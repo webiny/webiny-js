@@ -7,7 +7,8 @@ import {
     FunnelFieldDefinitionModel,
     FunnelFieldDefinitionModelDto
 } from "../../models/FunnelFieldDefinitionModel";
-import { useElementInputs } from "webiny/admin/website-builder/page/editor";
+import { useContainer } from "../useContainer";
+import { FunnelContainerInputs } from "@/extensions/funnelBuilder/pageEditor/types";
 
 interface EditFieldDialogProps {
     open: boolean;
@@ -21,28 +22,39 @@ interface FunnelFieldInputs {
 }
 
 export const FieldSettingsDialog = ({ open, elementId, onClose }: EditFieldDialogProps) => {
-    const { inputs, updateInputs } = useElementInputs<FunnelFieldInputs>(elementId);
-    const hasData = elementId && inputs.fieldData;
-    const field = hasData ? FunnelFieldDefinitionModel.fromDto(inputs.fieldData) : null;
+    const { inputs, updateInputs } = useContainer();
+
+    const fieldDataDto = inputs.containerData?.fields.find(f => f.id === elementId)!;
+    let fieldDef: null | FunnelFieldDefinitionModel = null;
+    if (fieldDataDto) {
+        fieldDef = FunnelFieldDefinitionModel.fromDto(fieldDataDto);
+    }
 
     const initialFormData = useMemo(() => {
-        if (!field) {
+        if (!fieldDef) {
             return {};
         }
-        return field.toDto();
-    }, [field]);
+        return fieldDef.toDto();
+    }, [fieldDef]);
 
     const handleSubmit = (data: FunnelFieldDefinitionModelDto) => {
         updateInputs(current => {
-            console.log("test", data);
-            (current as unknown as FunnelFieldInputs).fieldData = data;
+            const fieldIndex = current.containerData.fields.findIndex(f => f.id === elementId);
+            if (fieldIndex > -1) {
+                console.log(
+                    "current.containerData.fields[fieldIndex]",
+                    current.containerData.fields[fieldIndex]
+                );
+
+                current.containerData.fields[fieldIndex] = data;
+            }
         });
         onClose();
     };
 
     return (
         <>
-            {field && (
+            {fieldDef && (
                 <Form<FunnelFieldDefinitionModelDto> data={initialFormData} onSubmit={handleSubmit}>
                     {({ submit }) => (
                         <Dialog
@@ -69,14 +81,14 @@ export const FieldSettingsDialog = ({ open, elementId, onClose }: EditFieldDialo
                                             key={"general"}
                                             value={"general"}
                                             trigger={"General"}
-                                            content={<GeneralTab field={field} open={open} />}
+                                            content={<GeneralTab field={fieldDef} open={open} />}
                                         />,
                                         <Tabs.Tab
                                             key={"validators"}
                                             value={"validators"}
                                             trigger={"Validators"}
-                                            content={<ValidatorsTab field={field} />}
-                                            visible={field.supportedValidatorTypes.length > 0}
+                                            content={<ValidatorsTab field={fieldDef} />}
+                                            visible={fieldDef.supportedValidatorTypes.length > 0}
                                         />
                                     ]}
                                 />

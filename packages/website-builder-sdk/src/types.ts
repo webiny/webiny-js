@@ -457,7 +457,7 @@ export type BaseInput<T = any> = {
     label?: string;
     description?: string;
     helperText?: string;
-    defaultValue?: T | (() => T);
+    defaultValue?: T;
     responsive?: boolean;
     required?: boolean;
     hideFromUi?: boolean;
