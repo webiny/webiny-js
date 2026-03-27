@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "type": "module",
   "main": "./index.js",
+  "bin": {
+    "webiny-mcp": "./bin.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -15,34 +18,19 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.27.1",
-    "@webiny/cli-core": "0.0.0",
+    "@modelcontextprotocol/sdk": "^1.28.0",
     "front-matter": "^4.0.2",
-    "react": "^18.3.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
+    "execa": "^5.1.1",
+    "tsx": "^4.21.0",
     "typescript": "5.9.3"
   },
   "scripts": {
-    "prepublishOnly": "cp -R ../../skills/user-skills ./dist/skills"
-  },
-  "adio": {
-    "ignoreDirs": [
-      "_templates"
-    ],
-    "ignore": {
-      "src": [
-        "listr2",
-        "cloudfront"
-      ],
-      "dependencies": [
-        "@pulumi/pulumi",
-        "@pulumi/aws"
-      ]
-    }
+    "prepublishOnly": "bash ./prepublishOnly.sh"
   }
 }

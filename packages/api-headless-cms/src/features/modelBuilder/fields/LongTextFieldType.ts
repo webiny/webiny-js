@@ -11,7 +11,7 @@ import {
     UpperCaseValidator,
     LowerCaseSpaceValidator,
     UpperCaseSpaceValidator
-} from "./validators.js";
+} from "./fieldTypeValidator.js";
 
 export interface ILongTextFieldBuilder
     extends DataFieldBuilder<"long-text">,
@@ -156,7 +156,6 @@ export const LongTextFieldType = FieldType.createImplementation({
 // Module augmentation for TypeScript autocomplete
 declare module "../abstractions.js" {
     interface IFieldBuilderRegistry {
-        "long-text"(): ILongTextFieldBuilder;
         longText(): ILongTextFieldBuilder;
     }
 }

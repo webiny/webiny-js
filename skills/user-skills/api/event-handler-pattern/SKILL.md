@@ -76,7 +76,7 @@ export default SomeEventHandler.createImplementation({
 });
 ```
 
-See **webiny-api-custom-feature** for how to define `MyService` as a proper abstraction.
+See **webiny-api-architect** for how to define `MyService` as a proper abstraction.
 
 ## Injecting Dependencies
 

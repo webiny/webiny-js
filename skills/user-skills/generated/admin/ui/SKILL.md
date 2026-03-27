@@ -16,453 +16,543 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `Accordion`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Accordion } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Accordion/index.ts`
 
 ---
+
 **Name:** `Alert`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Alert } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Alert/index.ts`
 
 ---
+
 **Name:** `AutoComplete`
-**Import:** `webiny/admin/ui`
+**Import:** `import { AutoComplete } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/AutoComplete/index.ts`
 
 ---
+
 **Name:** `Avatar`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Avatar } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Avatar/index.ts`
 
 ---
+
 **Name:** `Button`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Button } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Button/index.ts`
 
 ---
+
 **Name:** `Card`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Card } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Card/index.ts`
 
 ---
+
 **Name:** `Checkbox`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Checkbox } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Checkbox/index.ts`
 
 ---
+
 **Name:** `CheckboxGroup`
-**Import:** `webiny/admin/ui`
+**Import:** `import { CheckboxGroup } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/CheckboxGroup/index.ts`
 
 ---
+
 **Name:** `CloneIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { CloneIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `cn`
-**Import:** `webiny/admin/ui`
+**Import:** `import { cn } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/utils.tsx`
 
 ---
+
 **Name:** `CodeEditor`
-**Import:** `webiny/admin/ui`
+**Import:** `import { CodeEditor } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/CodeEditor/index.ts`
 
 ---
+
 **Name:** `ColorPicker`
-**Import:** `webiny/admin/ui`
+**Import:** `import { ColorPicker } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/ColorPicker/index.ts`
 
 ---
+
 **Name:** `CopyButton`
-**Import:** `webiny/admin/ui`
+**Import:** `import { CopyButton } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Button/index.ts`
 
 ---
+
 **Name:** `CreateIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { CreateIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `cva`
-**Import:** `webiny/admin/ui`
+**Import:** `import { cva } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/utils.tsx`
 
 ---
+
 **Name:** `DataList`
-**Import:** `webiny/admin/ui`
+**Import:** `import { DataList } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `DataListModal`
-**Import:** `webiny/admin/ui`
+**Import:** `import { DataListModal } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `DataListWithSections`
-**Import:** `webiny/admin/ui`
+**Import:** `import { DataListWithSections } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `DataTable`
-**Import:** `webiny/admin/ui`
+**Import:** `import { DataTable } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataTable/index.ts`
 
 ---
+
 **Name:** `DelayedOnChange`
-**Import:** `webiny/admin/ui`
+**Import:** `import { DelayedOnChange } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DelayedOnChange/index.ts`
 
 ---
+
 **Name:** `DeleteIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { DeleteIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `Dialog`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Dialog } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Dialog/index.ts`
 
 ---
+
 **Name:** `DownloadIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { DownloadIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `Drawer`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Drawer } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Drawer/index.ts`
 
 ---
+
 **Name:** `DropdownMenu`
-**Import:** `webiny/admin/ui`
+**Import:** `import { DropdownMenu } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DropdownMenu/index.ts`
 
 ---
+
 **Name:** `DynamicFieldset`
-**Import:** `webiny/admin/ui`
+**Import:** `import { DynamicFieldset } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DynamicFieldset/index.ts`
 
 ---
+
 **Name:** `EditIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { EditIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `FilePicker`
-**Import:** `webiny/admin/ui`
+**Import:** `import { FilePicker } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/FilePicker/index.ts`
 
 ---
+
 **Name:** `FilterIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { FilterIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `generateId`
-**Import:** `webiny/admin/ui`
+**Import:** `import { generateId } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/utils.tsx`
 
 ---
+
 **Name:** `Grid`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Grid } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Grid/index.ts`
 
 ---
+
 **Name:** `HeaderBar`
-**Import:** `webiny/admin/ui`
+**Import:** `import { HeaderBar } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/HeaderBar/index.ts`
 
 ---
+
 **Name:** `Heading`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Heading } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Heading/index.ts`
 
 ---
+
 **Name:** `Icon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Icon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Icon/index.ts`
 
 ---
+
 **Name:** `IconButton`
-**Import:** `webiny/admin/ui`
+**Import:** `import { IconButton } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Button/index.ts`
 
 ---
+
 **Name:** `IconPicker`
-**Import:** `webiny/admin/ui`
+**Import:** `import { IconPicker } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/IconPicker/index.ts`
 
 ---
+
 **Name:** `Image`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Image } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Image/index.ts`
 
 ---
+
 **Name:** `Input`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Input } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Input/index.ts`
 
 ---
+
 **Name:** `Label`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Label } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Label/index.ts`
 
 ---
+
 **Name:** `LexicalEditor`
-**Import:** `webiny/admin/ui`
+**Import:** `import { LexicalEditor } from "webiny/admin/ui"`
 **Source:** `@webiny/app-admin/components/LexicalEditor/LexicalEditor.tsx`
 
 ---
+
 **Name:** `Link`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Link } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Link/index.ts`
 
 ---
+
 **Name:** `List`
-**Import:** `webiny/admin/ui`
+**Import:** `import { List } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/List/index.ts`
 
 ---
+
 **Name:** `ListIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { ListIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `Loader`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Loader } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Loader/index.ts`
 
 ---
+
 **Name:** `LoginIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { LoginIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `Logo`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Logo } from "webiny/admin/ui"`
 **Source:** `@webiny/app-admin/base/ui/Logo.tsx`
 
 ---
+
 **Name:** `MultiAutoComplete`
-**Import:** `webiny/admin/ui`
+**Import:** `import { MultiAutoComplete } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/MultiAutoComplete/index.ts`
 
 ---
+
 **Name:** `MultiFilePicker`
-**Import:** `webiny/admin/ui`
+**Import:** `import { MultiFilePicker } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/MultiFilePicker/index.ts`
 
 ---
+
 **Name:** `NextPageIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { NextPageIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `OptionsIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { OptionsIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `OverlayLoader`
-**Import:** `webiny/admin/ui`
+**Import:** `import { OverlayLoader } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Loader/index.ts`
 
 ---
+
 **Name:** `Popover`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Popover } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Popover/index.ts`
 
 ---
+
 **Name:** `Portal`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Portal } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Portal/index.ts`
 
 ---
+
 **Name:** `PreviousPageIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { PreviousPageIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `ProgressBar`
-**Import:** `webiny/admin/ui`
+**Import:** `import { ProgressBar } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/ProgressBar/index.ts`
 
 ---
+
 **Name:** `Radio`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Radio } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/RadioGroup/index.ts`
 
 ---
+
 **Name:** `RadioGroup`
-**Import:** `webiny/admin/ui`
+**Import:** `import { RadioGroup } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/RadioGroup/index.ts`
 
 ---
+
 **Name:** `RangeSlider`
-**Import:** `webiny/admin/ui`
+**Import:** `import { RangeSlider } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/RangeSlider/index.ts`
 
 ---
+
 **Name:** `RefreshIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { RefreshIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `ScrollArea`
-**Import:** `webiny/admin/ui`
+**Import:** `import { ScrollArea } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/ScrollArea/index.ts`
 
 ---
+
 **Name:** `Scrollbar`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Scrollbar } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Scrollbar/index.ts`
 
 ---
+
 **Name:** `ScrollBar`
-**Import:** `webiny/admin/ui`
+**Import:** `import { ScrollBar } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/ScrollArea/index.ts`
 
 ---
+
 **Name:** `SegmentedControl`
-**Import:** `webiny/admin/ui`
+**Import:** `import { SegmentedControl } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/SegmentedControl/index.ts`
 
 ---
+
 **Name:** `Select`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Select } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Select/index.ts`
 
 ---
+
 **Name:** `Separator`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Separator } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Separator/index.ts`
 
 ---
+
 **Name:** `Sidebar`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Sidebar } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Sidebar/index.ts`
 
 ---
+
 **Name:** `SidebarProvider`
-**Import:** `webiny/admin/ui`
+**Import:** `import { SidebarProvider } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Sidebar/index.ts`
 
 ---
+
 **Name:** `Skeleton`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Skeleton } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Skeleton/index.ts`
 
 ---
+
 **Name:** `Slider`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Slider } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Slider/index.ts`
 
 ---
+
 **Name:** `SortIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { SortIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `SteppedProgress`
-**Import:** `webiny/admin/ui`
+**Import:** `import { SteppedProgress } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/SteppedProgress/index.ts`
 
 ---
+
 **Name:** `Switch`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Switch } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Switch/index.ts`
 
 ---
+
 **Name:** `Table`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Table } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Table/index.ts`
 
 ---
+
 **Name:** `Tabs`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Tabs } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Tabs/index.ts`
 
 ---
+
 **Name:** `Tag`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Tag } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Tag/index.ts`
 
 ---
+
 **Name:** `Tags`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Tags } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Tags/index.ts`
 
 ---
+
 **Name:** `TenantSelector`
-**Import:** `webiny/admin/ui`
+**Import:** `import { TenantSelector } from "webiny/admin/ui"`
 **Source:** `@webiny/app-admin/base/ui/TenantSelector.tsx`
 
 ---
+
 **Name:** `Text`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Text } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Text/index.ts`
 
 ---
+
 **Name:** `Textarea`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Textarea } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Textarea/index.ts`
 
 ---
+
 **Name:** `TimeAgo`
-**Import:** `webiny/admin/ui`
+**Import:** `import { TimeAgo } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/TimeAgo/index.ts`
 
 ---
+
 **Name:** `Toast`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Toast } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Toast/index.ts`
 
 ---
+
 **Name:** `Tooltip`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Tooltip } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Tooltip/index.ts`
 
 ---
+
 **Name:** `Tree`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Tree } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Tree/index.ts`
 
 ---
+
 **Name:** `UploadIcon`
-**Import:** `webiny/admin/ui`
+**Import:** `import { UploadIcon } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/DataList/index.ts`
 
 ---
+
 **Name:** `useDialogs`
-**Import:** `webiny/admin/ui`
+**Import:** `import { useDialogs } from "webiny/admin/ui"`
 **Source:** `@webiny/app-admin/components/Dialogs/useDialogs.ts`
 
 ---
+
 **Name:** `useDisclosure`
-**Import:** `webiny/admin/ui`
+**Import:** `import { useDisclosure } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/hooks/index.ts`
 
 ---
+
 **Name:** `useHotkeys`
-**Import:** `webiny/admin/ui`
+**Import:** `import { useHotkeys } from "webiny/admin/ui"`
 **Source:** `@webiny/app-admin/hooks/useHotkeys.ts`
 
 ---
+
 **Name:** `useSidebar`
-**Import:** `webiny/admin/ui`
+**Import:** `import { useSidebar } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Sidebar/index.ts`
 
 ---
+
 **Name:** `useToast`
-**Import:** `webiny/admin/ui`
+**Import:** `import { useToast } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Toast/index.ts`
 
 ---
+
 **Name:** `Widget`
-**Import:** `webiny/admin/ui`
+**Import:** `import { Widget } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Widget/index.ts`
 
 ---

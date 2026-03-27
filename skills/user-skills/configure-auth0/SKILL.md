@@ -296,7 +296,7 @@ Both API and Admin need to be redeployed since Auth0 affects both the backend (t
 
 ## Related Skills
 
-- **configure-okta** — Alternative IDP: configuring Okta authentication
-- **dependency-injection** — The universal DI pattern used by `Auth0IdpConfig.createImplementation()`
-- **project-structure** — How `webiny.config.tsx` and extensions are organized
-- **local-development** — Deploying and testing your Auth0 configuration
+- **webiny-configure-okta** — Alternative IDP: configuring Okta authentication
+- **webiny-dependency-injection** — The universal DI pattern used by `Auth0IdpConfig.createImplementation()`
+- **webiny-project-structure** — How `webiny.config.tsx` and extensions are organized
+- **webiny-local-development** — Deploying and testing your Auth0 configuration

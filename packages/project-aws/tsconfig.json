@@ -5,7 +5,6 @@
     { "path": "../api-headless-cms" },
     { "path": "../aws-sdk" },
     { "path": "../cli-core" },
-    { "path": "../mcp" },
     { "path": "../project" },
     { "path": "../pulumi" },
     { "path": "../utils" }
@@ -23,8 +22,6 @@
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/cli-core/*": ["../cli-core/src/*"],
       "@webiny/cli-core": ["../cli-core/src"],
-      "@webiny/mcp/*": ["../mcp/src/*"],
-      "@webiny/mcp": ["../mcp/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],

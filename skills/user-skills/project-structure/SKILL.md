@@ -35,6 +35,7 @@ my-webiny-project/
 ```
 
 Key points:
+
 - **Single `package.json`** -- no monorepo, no workspaces needed.
 - **Single `tsconfig.json`** -- straightforward TypeScript setup.
 - **`webiny.config.tsx`** -- the entry point for everything. All extensions, infrastructure options, and project settings are declared here.
@@ -51,66 +52,66 @@ import { Admin, Api, Cli, Infra, Project, Security } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 
 export const Extensions = () => {
-    return (
-        <>
-            {/* Infrastructure configuration */}
-            <Infra.Aws.DefaultRegion name={"us-east-1"} />
-            <Infra.OpenSearch enabled={true} />
-            <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
+  return (
+    <>
+      {/* Infrastructure configuration */}
+      <Infra.Aws.DefaultRegion name={"us-east-1"} />
+      <Infra.OpenSearch enabled={true} />
+      <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
 
-            {/* Identity provider */}
-            <Cognito />
+      {/* Identity provider */}
+      <Cognito />
 
-            {/* API extensions (backend) */}
-            <Api.Extension src={"/extensions/ProductCategoryModel.ts"} />
-            <Api.Extension src={"/extensions/ProductModel.ts"} />
-            <Api.Extension src={"/extensions/contactSubmission/ContactSubmissionHook.ts"} />
+      {/* API extensions (backend) */}
+      <Api.Extension src={"/extensions/ProductCategoryModel.ts"} />
+      <Api.Extension src={"/extensions/ProductModel.ts"} />
+      <Api.Extension src={"/extensions/contactSubmission/ContactSubmissionHook.ts"} />
 
-            {/* Security hooks */}
-            <Api.Extension src={"/extensions/MyApiKey.ts"} />
-            <Security.ApiKey.AfterUpdate src={"/extensions/MyApiKeyAfterUpdate.ts"} />
+      {/* Security hooks */}
+      <Api.Extension src={"/extensions/MyApiKey.ts"} />
+      <Security.ApiKey.AfterUpdate src={"/extensions/MyApiKeyAfterUpdate.ts"} />
 
-            {/* Admin extensions (frontend) */}
-            <Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />
-            <Admin.Extension src={"/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />
-            <Admin.Extension src={"/extensions/contactSubmission/EmailEntryListColumn.tsx"} />
+      {/* Admin extensions (frontend) */}
+      <Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />
+      <Admin.Extension src={"/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />
+      <Admin.Extension src={"/extensions/contactSubmission/EmailEntryListColumn.tsx"} />
 
-            {/* Infrastructure / Pulumi extensions */}
-            <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
+      {/* Infrastructure / Pulumi extensions */}
+      <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
 
-            {/* CLI extensions */}
-            <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
+      {/* CLI extensions */}
+      <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
 
-            {/* Project settings */}
-            <Project.Telemetry enabled={false} />
-        </>
-    );
+      {/* Project settings */}
+      <Project.Telemetry enabled={false} />
+    </>
+  );
 };
 ```
 
 ## Extension Types
 
-| JSX Element | What It Does | File Type |
-|---|---|---|
-| `<Api.Extension src="..." />` | Registers a backend extension (GraphQL schemas, content models, lifecycle hooks) | `.ts` |
-| `<Admin.Extension src="..." />` | Registers a frontend Admin UI extension (themes, branding, custom columns, custom forms) | `.tsx` |
-| `<Infra.Core.Pulumi src="..." />` | Registers a Pulumi infrastructure handler | `.ts` |
-| `<Cli.Command src="..." />` | Registers a custom CLI command | `.ts` |
-| `<Security.ApiKey.AfterUpdate src="..." />` | Registers a security lifecycle hook | `.ts` |
+| JSX Element                                 | What It Does                                                                             | File Type |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------- | --------- |
+| `<Api.Extension src="..." />`               | Registers a backend extension (GraphQL schemas, content models, lifecycle hooks)         | `.ts`     |
+| `<Admin.Extension src="..." />`             | Registers a frontend Admin UI extension (themes, branding, custom columns, custom forms) | `.tsx`    |
+| `<Infra.Core.Pulumi src="..." />`           | Registers a Pulumi infrastructure handler                                                | `.ts`     |
+| `<Cli.Command src="..." />`                 | Registers a custom CLI command                                                           | `.ts`     |
+| `<Security.ApiKey.AfterUpdate src="..." />` | Registers a security lifecycle hook                                                      | `.ts`     |
 
 ## Infrastructure Components
 
 Declarative components for configuring AWS infrastructure:
 
-| Component | Purpose |
-|---|---|
-| `<Infra.Aws.DefaultRegion name="us-east-1" />` | Set the AWS region |
-| `<Infra.Aws.Tags tags={{ KEY: "value" }} />` | Apply tags to all AWS resources |
-| `<Infra.OpenSearch enabled={true} />` | Enable/disable OpenSearch |
-| `<Infra.Vpc enabled={true} />` | Enable/disable VPC deployment |
-| `<Infra.PulumiResourceNamePrefix prefix="myproj-" />` | Prefix all Pulumi resource names |
+| Component                                                             | Purpose                                |
+| --------------------------------------------------------------------- | -------------------------------------- |
+| `<Infra.Aws.DefaultRegion name="us-east-1" />`                        | Set the AWS region                     |
+| `<Infra.Aws.Tags tags={{ KEY: "value" }} />`                          | Apply tags to all AWS resources        |
+| `<Infra.OpenSearch enabled={true} />`                                 | Enable/disable OpenSearch              |
+| `<Infra.Vpc enabled={true} />`                                        | Enable/disable VPC deployment          |
+| `<Infra.PulumiResourceNamePrefix prefix="myproj-" />`                 | Prefix all Pulumi resource names       |
 | `<Infra.ProductionEnvironments environments={["prod", "staging"]} />` | Define which envs use production infra |
-| `<Project.Telemetry enabled={false} />` | Enable/disable telemetry |
+| `<Project.Telemetry enabled={false} />`                               | Enable/disable telemetry               |
 
 ## Environment-Conditional Configuration
 
@@ -140,16 +141,16 @@ import React from "react";
 import { Api } from "webiny/extensions";
 
 interface MyExtensionProps {
-    apiKey: string;
+  apiKey: string;
 }
 
 export const MyExtension = ({ apiKey }: MyExtensionProps) => {
-    return (
-        <>
-            <Api.BuildParam paramName="MY_API_KEY" value={apiKey} />
-            <Api.Extension src={"@/extensions/myExtension/features/myService/feature.ts"} />
-        </>
-    );
+  return (
+    <>
+      <Api.BuildParam paramName="MY_API_KEY" value={apiKey} />
+      <Api.Extension src={"@/extensions/myExtension/features/myService/feature.ts"} />
+    </>
+  );
 };
 ```
 
@@ -172,5 +173,6 @@ This downloads the extension code into `extensions/`, updates `webiny.config.tsx
 
 ## Related Skills
 
-- `dependency-injection` -- How extensions use DI to access services
-- `local-development` -- How to deploy and develop locally
+- `webiny-dependency-injection` -- How extensions use DI to access services
+- `webiny-local-development` -- How to deploy and develop locally
+- `webiny-full-stack-architect` -- Full-stack extension skeleton, entry points, and shared domain layer

@@ -1,33 +1,21 @@
 import { createImplementation } from "@webiny/feature/api";
 import { DataFieldBuilder } from "./FieldBuilder.js";
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
-import {
-    RequiredValidator,
-    MinLengthValidator,
-    MaxLengthValidator,
-    PatternValidator,
-    EmailValidator,
-    UrlValidator,
-    LowerCaseValidator,
-    UpperCaseValidator,
-    LowerCaseSpaceValidator,
-    UpperCaseSpaceValidator,
-    UniqueValidator
-} from "./validators.js";
+import type { FieldTypeValidator } from "./fieldTypeValidator.js";
 
 export interface ITextFieldBuilder
     extends DataFieldBuilder<"text">,
-        RequiredValidator,
-        MinLengthValidator,
-        MaxLengthValidator,
-        PatternValidator,
-        EmailValidator,
-        UrlValidator,
-        LowerCaseValidator,
-        UpperCaseValidator,
-        LowerCaseSpaceValidator,
-        UpperCaseSpaceValidator,
-        UniqueValidator {}
+        FieldTypeValidator.Required,
+        FieldTypeValidator.MinLength,
+        FieldTypeValidator.MaxLength,
+        FieldTypeValidator.Pattern,
+        FieldTypeValidator.Email,
+        FieldTypeValidator.Url,
+        FieldTypeValidator.LowerCase,
+        FieldTypeValidator.UpperCase,
+        FieldTypeValidator.LowerCaseSpace,
+        FieldTypeValidator.UpperCaseSpace,
+        FieldTypeValidator.Unique {}
 
 // Module augmentation for TypeScript autocomplete
 declare module "../abstractions.js" {

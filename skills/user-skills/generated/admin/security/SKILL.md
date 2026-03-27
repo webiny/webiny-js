@@ -16,48 +16,57 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `AuthenticationContext`
-**Import:** `webiny/admin/security`
+**Import:** `import { AuthenticationContext } from "webiny/admin/security"`
 **Source:** `@webiny/app-admin/features/security/AuthenticationContext/index.ts`
 
 ---
+
 **Name:** `AuthenticationErrorEventHandler`
-**Import:** `webiny/admin/security`
+**Import:** `import { AuthenticationErrorEventHandler } from "webiny/admin/security"`
 **Source:** `@webiny/app/errors/abstractions.ts`
 
 ---
+
 **Name:** `HasPermissionComponent`
-**Import:** `webiny/admin/security`
+**Import:** `import { HasPermissionComponent } from "webiny/admin/security"`
 **Source:** `@webiny/app-admin/presentation/security/components/HasPermission.tsx`
 
 ---
+
 **Name:** `IdentityContext`
-**Import:** `webiny/admin/security`
+**Import:** `import { IdentityContext } from "webiny/admin/security"`
 **Source:** `@webiny/app-admin/features/security/IdentityContext/index.ts`
 
 ---
+
 **Name:** `LoginScreenComponent`
-**Import:** `webiny/admin/security`
+**Import:** `import { LoginScreenComponent } from "webiny/admin/security"`
 **Source:** `@webiny/app-admin/base/ui/LoginScreen.tsx`
 
 ---
+
 **Name:** `LogInUseCase`
-**Import:** `webiny/admin/security`
+**Import:** `import { LogInUseCase } from "webiny/admin/security"`
 **Source:** `@webiny/app-admin/features/security/LogIn/index.ts`
 
 ---
+
 **Name:** `LogOutUseCase`
-**Import:** `webiny/admin/security`
+**Import:** `import { LogOutUseCase } from "webiny/admin/security"`
 **Source:** `@webiny/app-admin/features/security/LogOut/index.ts`
 
 ---
+
 **Name:** `useAuthentication`
-**Import:** `webiny/admin/security`
+**Import:** `import { useAuthentication } from "webiny/admin/security"`
 **Source:** `@webiny/app-admin/presentation/security/hooks/useAuthentication.ts`
 
 ---
+
 **Name:** `useIdentity`
-**Import:** `webiny/admin/security`
+**Import:** `import { useIdentity } from "webiny/admin/security"`
 **Source:** `@webiny/app-admin/presentation/security/hooks/useIdentity.ts`
 
 ---

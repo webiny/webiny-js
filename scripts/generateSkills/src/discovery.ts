@@ -37,14 +37,17 @@ export function discover(project: Project, repoRoot: string): DiscoveredExport[]
         const importPath = "webiny/" + srcRelative;
 
         for (const exportDecl of sourceFile.getExportDeclarations()) {
+            const declIsType = exportDecl.isTypeOnly();
             for (const ne of exportDecl.getNamedExports()) {
                 const name = ne.getName();
-                // Skip type-only exports (interfaces, type aliases)
-                if (exportDecl.isTypeOnly()) continue;
+                // A named export is type-only if the whole declaration is `export type { ... }`
+                // or the individual specifier uses `export { type Foo }`.
+                const isType = declIsType || ne.isTypeOnly();
 
                 results.push({
                     className: name,
-                    importPath
+                    importPath,
+                    isType
                 });
             }
         }

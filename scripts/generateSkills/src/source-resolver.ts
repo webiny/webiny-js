@@ -89,6 +89,35 @@ export function getJsDoc(sourceFile: SourceFile, exportName: string): string {
     return "";
 }
 
+/**
+ * Determine whether a named export is a TypeScript type or interface.
+ * Walks the same re-export chain used by getJsDoc.
+ */
+export function isTypeExport(sourceFile: SourceFile, exportName: string): boolean {
+    // Direct declaration in this file
+    if (sourceFile.getInterface(exportName)) return true;
+    if (sourceFile.getTypeAlias(exportName)) return true;
+
+    // Follow re-exports
+    for (const exportDecl of sourceFile.getExportDeclarations()) {
+        const targetFile = exportDecl.getModuleSpecifierSourceFile();
+        if (!targetFile) continue;
+
+        const match = exportDecl
+            .getNamedExports()
+            .find(ne => ne.getName() === exportName || ne.getAliasNode()?.getText() === exportName);
+        if (match) {
+            return isTypeExport(targetFile, exportName);
+        }
+
+        if (exportDecl.isNamespaceExport() || exportDecl.getNamedExports().length === 0) {
+            if (isTypeExport(targetFile, exportName)) return true;
+        }
+    }
+
+    return false;
+}
+
 function extractJsDoc(sourceFile: SourceFile, name: string): string {
     const varDecl = sourceFile.getVariableDeclaration(name);
     if (varDecl) {
@@ -109,6 +138,22 @@ function extractJsDoc(sourceFile: SourceFile, name: string): string {
     const funcDecl = sourceFile.getFunction(name);
     if (funcDecl) {
         const jsDocs = funcDecl.getJsDocs();
+        if (jsDocs.length > 0) {
+            return jsDocs[0].getDescription().trim();
+        }
+    }
+
+    const interfaceDecl = sourceFile.getInterface(name);
+    if (interfaceDecl) {
+        const jsDocs = interfaceDecl.getJsDocs();
+        if (jsDocs.length > 0) {
+            return jsDocs[0].getDescription().trim();
+        }
+    }
+
+    const typeAlias = sourceFile.getTypeAlias(name);
+    if (typeAlias) {
+        const jsDocs = typeAlias.getJsDocs();
         if (jsDocs.length > 0) {
             return jsDocs[0].getDescription().trim();
         }

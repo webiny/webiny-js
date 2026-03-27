@@ -263,4 +263,6 @@ Deploy:              yarn webiny deploy admin
 
 ## Related Skills
 
-- `project-structure` -- How to register Admin extensions
+- `webiny-project-structure` -- How to register Admin extensions
+- `webiny-full-stack-architect` -- Full-stack extension skeleton and registration
+- `webiny-admin-architect` -- Admin-side architecture patterns (headless + presentation features)

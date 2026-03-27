@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../project/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../pulumi-sdk/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -14,6 +15,10 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/pulumi-sdk/*": ["../pulumi-sdk/src/*"],
       "@webiny/pulumi-sdk": ["../pulumi-sdk/src"]
     },

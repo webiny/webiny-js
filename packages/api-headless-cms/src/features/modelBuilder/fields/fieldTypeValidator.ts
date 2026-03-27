@@ -91,3 +91,26 @@ export interface ListMinLengthValidator {
 export interface ListMaxLengthValidator {
     listMaxLength(value: number, message?: string): this;
 }
+
+/**
+ * Validators to use when building a custom field type
+ */
+export namespace FieldTypeValidator {
+    export type Required = RequiredValidator;
+    export type MinLength = MinLengthValidator;
+    export type MaxLength = MaxLengthValidator;
+    export type Pattern = PatternValidator;
+    export type Email = EmailValidator;
+    export type Url = UrlValidator;
+    export type LowerCase = LowerCaseValidator;
+    export type UpperCase = UpperCaseValidator;
+    export type LowerCaseSpace = LowerCaseSpaceValidator;
+    export type UpperCaseSpace = UpperCaseSpaceValidator;
+    export type Gte = GteValidator;
+    export type Lte = LteValidator;
+    export type DateGte = DateGteValidator;
+    export type DateLte = DateLteValidator;
+    export type Unique = UniqueValidator;
+    export type ListMinLength = ListMinLengthValidator;
+    export type ListMaxLength = ListMaxLengthValidator;
+}

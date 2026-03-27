@@ -16,17 +16,9 @@ export interface FieldBuilderConfig
 }
 
 /**
- * Augmentable renderer registry.
- * Each entry maps a renderer name to its applicable field type(s) and settings.
- *
- * Example:
- *   declare module "@webiny/api-headless-cms/features/modelBuilder/fields/FieldBuilder" {
- *       interface FieldRendererRegistry {
- *           "my-renderer": { fieldType: "text" | "long-text"; settings: { color: string } };
- *       }
- *   }
+ * Augmentable renderer registry. Each entry maps a renderer name to its applicable field type(s) and settings.
  */
-export interface FieldRendererRegistry {
+export interface IFieldRendererRegistry {
     switch: {
         fieldType: "boolean";
         settings: undefined;
@@ -194,7 +186,7 @@ export interface FieldRendererRegistry {
  * Maps camelCase renderer names (used in the builder API) to the
  * kebab-case names expected by the frontend renderer registry.
  */
-const rendererNameMap: Record<keyof FieldRendererRegistry, string> = {
+const rendererNameMap: Record<keyof IFieldRendererRegistry, string> = {
     switch: "boolean-input",
     checkboxes: "checkboxes",
     dateTimeInput: "date-time-input",
@@ -232,7 +224,7 @@ const rendererNameMap: Record<keyof FieldRendererRegistry, string> = {
  * Resolves a camelCase renderer name to the kebab-case name used by the frontend.
  */
 function resolveRendererName(name: string): string {
-    return rendererNameMap[name as keyof FieldRendererRegistry] ?? name;
+    return rendererNameMap[name as keyof IFieldRendererRegistry] ?? name;
 }
 
 /**
@@ -240,16 +232,16 @@ function resolveRendererName(name: string): string {
  * When TType is a broad `string`, all renderer names are returned.
  */
 export type FieldRendererName<TType extends string = string> = string extends TType
-    ? keyof FieldRendererRegistry & string
+    ? keyof IFieldRendererRegistry & string
     : {
-          [K in keyof FieldRendererRegistry]: TType extends FieldRendererRegistry[K]["fieldType"]
+          [K in keyof IFieldRendererRegistry]: TType extends IFieldRendererRegistry[K]["fieldType"]
               ? K
               : never;
-      }[keyof FieldRendererRegistry] &
+      }[keyof IFieldRendererRegistry] &
           string;
 
-export type FieldRendererSettings<TName extends string> = TName extends keyof FieldRendererRegistry
-    ? FieldRendererRegistry[TName]["settings"]
+export type FieldRendererSettings<TName extends string> = TName extends keyof IFieldRendererRegistry
+    ? IFieldRendererRegistry[TName]["settings"]
     : Record<string, any> | undefined;
 
 /**

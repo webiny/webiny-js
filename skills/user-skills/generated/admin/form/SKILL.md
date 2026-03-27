@@ -2,7 +2,7 @@
 name: webiny-admin-form-catalog
 context: webiny-api
 description: >
-  admin/form — 10 abstractions.
+  admin/form — 13 abstractions.
 ---
 
 # admin/form
@@ -16,55 +16,86 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `Bind`
-**Import:** `webiny/admin/form`
+**Import:** `import { Bind } from "webiny/admin/form"`
 **Source:** `@webiny/form/index.ts`
 
 ---
+
 **Name:** `Form`
-**Import:** `webiny/admin/form`
+**Import:** `import { Form } from "webiny/admin/form"`
 **Source:** `@webiny/form/index.ts`
 
 ---
+
+**Name:** `FormAPI`
+**Kind:** type
+**Import:** `import type { FormAPI } from "webiny/admin/form"`
+**Source:** `@webiny/form/index.ts`
+
+---
+
+**Name:** `FormOnSubmit`
+**Kind:** type
+**Import:** `import type { FormOnSubmit } from "webiny/admin/form"`
+**Source:** `@webiny/form/index.ts`
+
+---
+
+**Name:** `GenericFormData`
+**Kind:** type
+**Import:** `import type { GenericFormData } from "webiny/admin/form"`
+**Source:** `@webiny/form/index.ts`
+
+---
+
 **Name:** `UnsetOnUnmount`
-**Import:** `webiny/admin/form`
+**Import:** `import { UnsetOnUnmount } from "webiny/admin/form"`
 **Source:** `@webiny/form/index.ts`
 
 ---
+
 **Name:** `useBind`
-**Import:** `webiny/admin/form`
+**Import:** `import { useBind } from "webiny/admin/form"`
 **Source:** `@webiny/form/index.ts`
 
 ---
+
 **Name:** `useBindPrefix`
-**Import:** `webiny/admin/form`
+**Import:** `import { useBindPrefix } from "webiny/admin/form"`
 **Source:** `@webiny/form/index.ts`
 
 ---
+
 **Name:** `useForm`
-**Import:** `webiny/admin/form`
+**Import:** `import { useForm } from "webiny/admin/form"`
 **Source:** `@webiny/form/index.ts`
 
 ---
+
 **Name:** `useGenerateSlug`
-**Import:** `webiny/admin/form`
+**Import:** `import { useGenerateSlug } from "webiny/admin/form"`
 **Source:** `@webiny/form/index.ts`
 **Description:** This hook is designed to be used with the `useForm` hook.
 When `generateSlug` is called, it will generate a slug using the `from` form field, and set it into the `to` form field.
 
 ---
+
 **Name:** `validation`
-**Import:** `webiny/admin/form`
+**Import:** `import { validation } from "webiny/admin/form"`
 **Source:** `@webiny/validation/index.ts`
 
 ---
+
 **Name:** `Validation`
-**Import:** `webiny/admin/form`
+**Import:** `import { Validation } from "webiny/admin/form"`
 **Source:** `@webiny/validation/index.ts`
 
 ---
+
 **Name:** `ValidationError`
-**Import:** `webiny/admin/form`
+**Import:** `import { ValidationError } from "webiny/admin/form"`
 **Source:** `@webiny/validation/index.ts`
 
 ---

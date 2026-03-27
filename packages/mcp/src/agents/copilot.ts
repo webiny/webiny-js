@@ -11,21 +11,21 @@
 
 import { join, dirname } from "path";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
-import type { Ui } from "@webiny/cli-core/exports/cli.js";
+import type { IUi } from "../ui.js";
 import { writeHintFile, webinyHintBlock, printDone } from "./shared.js";
 
 interface InitParams {
-    ui: Ui.Interface;
+    ui: IUi;
     cwd: string;
 }
 
-function writeCopilotMcpConfig(ui: Ui.Interface, configPath: string): boolean {
+function writeCopilotMcpConfig(ui: IUi, configPath: string): boolean {
     const dir = dirname(configPath);
     if (!existsSync(dir)) {
         mkdirSync(dir, { recursive: true });
     }
 
-    const entry = { command: "npx", args: ["webiny", "mcp-server"] };
+    const entry = { command: "npx", args: ["webiny-mcp", "serve"] };
     let config: { servers: Record<string, unknown> } = { servers: {} };
 
     if (existsSync(configPath)) {

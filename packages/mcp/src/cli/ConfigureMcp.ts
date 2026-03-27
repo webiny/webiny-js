@@ -1,66 +1,34 @@
-import { CliCommandFactory } from "@webiny/cli-core/exports/cli/command.js";
-import { Ui } from "@webiny/cli-core/exports/cli.js";
+import type { IUi } from "../ui.js";
+import { ConsoleUi } from "../ui.js";
 
-export interface IInitAgentParams {
-    agent: string;
-    instructions: boolean;
+export interface IConfigureMcpParams {
+    agent?: string;
+    instructions?: boolean;
+    ui?: IUi;
+    cwd?: string;
 }
 
-const SUPPORTED = ["claude", "cursor", "windsurf", "copilot", "cline", "opencode"];
+const SUPPORTED = ["claude", "cursor", "windsurf", "copilot", "cline", "opencode", "kiro"];
 
-class ConfigureMcp implements CliCommandFactory.Interface<IInitAgentParams> {
-    constructor(private ui: Ui.Interface) {}
+export async function configureMcp(params: IConfigureMcpParams = {}): Promise<void> {
+    const ui = params.ui ?? new ConsoleUi();
+    const cwd = params.cwd ?? process.cwd();
 
-    execute(): CliCommandFactory.CommandDefinition<IInitAgentParams> {
-        return {
-            name: "configure-mcp",
-            description: "Configure MCP server for a specific agent.",
-            examples: [
-                "$0 configure-mcp claude",
-                "$0 configure-mcp cursor",
-                "$0 configure-mcp --instructions"
-            ],
-            params: [
-                {
-                    name: "agent",
-                    description: "Agent name (claude, cursor, windsurf, copilot, cline, opencode)",
-                    type: "string",
-                    default: "claude"
-                }
-            ],
-            options: [
-                {
-                    name: "instructions",
-                    description: "Print MCP setup instructions",
-                    type: "boolean",
-                    default: false
-                }
-            ],
-            handler: async params => {
-                if (params.instructions) {
-                    const { printInstructions } = await import("../agents/instructions.js");
-                    printInstructions();
-                    return;
-                }
-
-                const target = params.agent || "claude";
-
-                if (!SUPPORTED.includes(target)) {
-                    this.ui.error(`Unknown agent "${target}".`);
-                    this.ui.text(`Supported: ${SUPPORTED.join(", ")}`);
-                    this.ui.text("For other agents, run: npx webiny configure-mcp --instructions");
-                    process.exit(1);
-                }
-
-                const cwd = process.cwd();
-                const { init } = await import(`../agents/${target}.js`);
-                await init({ ui: this.ui, cwd });
-            }
-        };
+    if (params.instructions) {
+        const { printInstructions } = await import("../agents/instructions.js");
+        printInstructions();
+        return;
     }
-}
 
-export default CliCommandFactory.createImplementation({
-    implementation: ConfigureMcp,
-    dependencies: [Ui]
-});
+    const target = params.agent || "claude";
+
+    if (!SUPPORTED.includes(target)) {
+        ui.error(`Unknown agent "${target}".`);
+        ui.text(`Supported: ${SUPPORTED.join(", ")}`);
+        ui.text("For other agents, run: npx webiny-mcp configure --instructions");
+        process.exit(1);
+    }
+
+    const { init } = await import(`../agents/${target}.js`);
+    await init({ ui, cwd });
+}

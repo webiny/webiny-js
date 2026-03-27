@@ -4,7 +4,13 @@
 import fs from "fs";
 import path from "path";
 import { discover } from "./discovery.js";
-import { createProject, followReExport, getPackagePath, getJsDoc } from "./source-resolver.js";
+import {
+    createProject,
+    followReExport,
+    getPackagePath,
+    getJsDoc,
+    isTypeExport
+} from "./source-resolver.js";
 import { deriveCategory, getHowToUse } from "./config.js";
 import type { CliOptions, CatalogEntry } from "./types.js";
 
@@ -57,6 +63,8 @@ export function run(opts: CliOptions): void {
 
             const sourceFilePath = getPackagePath(sourceFile, repoRoot);
             const description = getJsDoc(sourceFile, exp.className);
+            // Prefer the flag set during discovery; fall back to deep AST check.
+            const isType = exp.isType ?? isTypeExport(sourceFile, exp.className);
             const category = deriveCategory(exp.importPath);
 
             if (!generated[category.id]) {
@@ -71,7 +79,8 @@ export function run(opts: CliOptions): void {
                 className: exp.className,
                 importPath: exp.importPath,
                 sourceFilePath,
-                description
+                description,
+                isType
             });
 
             resolved++;
@@ -186,12 +195,14 @@ function renderCatalog(
 }
 
 function renderTable(lines: string[], entries: CatalogEntry[]): void {
-    lines.push("| Name | Import | Source | Description |");
-    lines.push("|------|--------|--------|-------------|");
+    lines.push("| Name | Kind | Import | Source | Description |");
+    lines.push("|------|------|--------|--------|-------------|");
     for (const e of entries) {
         const desc = e.description || "";
+        const kind = e.isType ? "type" : "value";
+        const importKw = e.isType ? "import type" : "import";
         lines.push(
-            `| \`${e.className}\` | \`${e.importPath}\` | \`${e.sourceFilePath}\` | ${desc} |`
+            `| \`${e.className}\` | ${kind} | \`${importKw} { ${e.className} } from "${e.importPath}"\` | \`${e.sourceFilePath}\` | ${desc} |`
         );
     }
 }
@@ -200,7 +211,12 @@ function renderCards(lines: string[], entries: CatalogEntry[]): void {
     for (const e of entries) {
         lines.push("---");
         lines.push(`**Name:** \`${e.className}\``);
-        lines.push(`**Import:** \`${e.importPath}\``);
+        if (e.isType) {
+            lines.push(`**Kind:** type`);
+            lines.push(`**Import:** \`import type { ${e.className} } from "${e.importPath}"\``);
+        } else {
+            lines.push(`**Import:** \`import { ${e.className} } from "${e.importPath}"\``);
+        }
         lines.push(`**Source:** \`${e.sourceFilePath}\``);
         if (e.description) {
             lines.push(`**Description:** ${e.description}`);

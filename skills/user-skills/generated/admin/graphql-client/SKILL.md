@@ -16,8 +16,9 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `GraphQLClient`
-**Import:** `webiny/admin/graphql-client`
+**Import:** `import { GraphQLClient } from "webiny/admin/graphql-client"`
 **Source:** `@webiny/app/features/graphqlClient/abstractions.ts`
 
 ---
