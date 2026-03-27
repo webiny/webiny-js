@@ -7,7 +7,7 @@ export type {
     LayoutFieldBuildResult
 } from "./BaseFieldBuilder.js";
 export type {
-    FieldRendererRegistry,
+    IFieldRendererRegistry,
     FieldRendererName,
     FieldRendererSettings,
     FieldBuilderConfig

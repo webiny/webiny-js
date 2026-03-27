@@ -159,9 +159,12 @@ export default CorePulumi.createImplementation({
 4. Read the `abstractions.ts` file in the feature folder to see available methods.
 5. Extensions with no dependencies use `dependencies: []`.
 6. `BuildParams.get<T>(name)` returns `T | null` — always type the receiving property/variable as nullable (e.g. `string | null`) and handle the `null` case.
-7. **BuildParam declarations belong inside the extension's `Extension.tsx`**, not in `webiny.config.tsx`. Expose required params as React props on the extension component so the consumer decides where values come from (see `webiny-api-custom-feature` skill for the full pattern).
+7. **BuildParam declarations belong inside the extension's `Extension.tsx`**, not in `webiny.config.tsx`. Expose required params as React props on the extension component so the consumer decides where values come from (see `webiny-full-stack-architect` skill for the full pattern).
 
 ## Related Skills
 
-- `custom-graphql-api` -- DI in GraphQL schema extensions
-- `cli-extensions` -- DI in CLI command extensions
+- `webiny-custom-graphql-api` -- DI in GraphQL schema extensions
+- `webiny-cli-extensions` -- DI in CLI command extensions
+- `webiny-full-stack-architect` -- Full-stack extension skeleton and registration pattern
+- `webiny-api-architect` -- API-side architecture using DI
+- `webiny-admin-architect` -- Admin-side architecture using DI

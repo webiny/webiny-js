@@ -2,7 +2,7 @@
 name: webiny-admin-lexical-catalog
 context: webiny-api
 description: >
-  admin/lexical — 15 abstractions.
+  admin/lexical — 17 abstractions.
 ---
 
 # admin/lexical
@@ -16,78 +16,107 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `Divider`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { Divider } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/ui/Divider.tsx`
 
 ---
+
 **Name:** `DropDown`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { DropDown } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/ui/DropDown.tsx`
 
 ---
+
 **Name:** `DropDownItem`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { DropDownItem } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/ui/DropDown.tsx`
 
 ---
+
 **Name:** `getNodeFromSelection`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { getNodeFromSelection } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/hooks/index.ts`
 
 ---
+
+**Name:** `Klass`
+**Kind:** type
+**Import:** `import type { Klass } from "webiny/admin/lexical"`
+**Source:** `@webiny/lexical-editor/types.ts`
+
+---
+
 **Name:** `LexicalEditorConfig`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { LexicalEditorConfig } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/components/LexicalEditorConfig/LexicalEditorConfig.tsx`
 
 ---
+
 **Name:** `LexicalHtmlRenderer`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { LexicalHtmlRenderer } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/components/LexicalHtmlRenderer.tsx`
 
 ---
+
+**Name:** `LexicalNode`
+**Kind:** type
+**Import:** `import type { LexicalNode } from "webiny/admin/lexical"`
+**Source:** `@webiny/lexical-editor/types.ts`
+
+---
+
 **Name:** `useCurrentElement`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { useCurrentElement } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/hooks/index.ts`
 
 ---
+
 **Name:** `useCurrentSelection`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { useCurrentSelection } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/hooks/index.ts`
 
 ---
+
 **Name:** `useDeriveValueFromSelection`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { useDeriveValueFromSelection } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/hooks/index.ts`
 
 ---
+
 **Name:** `useFontColorPicker`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { useFontColorPicker } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/hooks/index.ts`
 
 ---
+
 **Name:** `useIsMounted`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { useIsMounted } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/hooks/index.ts`
 
 ---
+
 **Name:** `useLexicalEditorConfig`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { useLexicalEditorConfig } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/components/LexicalEditorConfig/LexicalEditorConfig.tsx`
 
 ---
+
 **Name:** `useRichTextEditor`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { useRichTextEditor } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/hooks/index.ts`
 
 ---
+
 **Name:** `useTextAlignmentAction`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { useTextAlignmentAction } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/hooks/index.ts`
 
 ---
+
 **Name:** `useTypographyAction`
-**Import:** `webiny/admin/lexical`
+**Import:** `import { useTypographyAction } from "webiny/admin/lexical"`
 **Source:** `@webiny/lexical-editor/hooks/index.ts`
 
 ---

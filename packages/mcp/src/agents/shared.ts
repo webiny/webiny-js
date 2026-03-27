@@ -4,14 +4,14 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { dirname } from "path";
-import type { Ui } from "@webiny/cli-core/exports/cli.js";
+import type { IUi } from "../ui.js";
 
 // ---------------------------------------------------------------------------
 // MCP config helpers
 // ---------------------------------------------------------------------------
 
 interface WriteMcpConfigParams {
-    ui: Ui.Interface;
+    ui: IUi;
     configPath: string;
 }
 
@@ -21,7 +21,7 @@ interface WriteMcpConfigParams {
  * All agents use the same JSON shape — only the file path differs:
  * {
  *   "mcpServers": {
- *     "webiny": { "command": "npx", "args": ["webiny", "mcp-server"] }
+ *     "webiny": { "command": "npx", "args": ["webiny-mcp", "serve"] }
  *   }
  * }
  */
@@ -30,7 +30,7 @@ export function writeMcpConfig({ ui, configPath }: WriteMcpConfigParams): boolea
 
     const entry = {
         command: "npx",
-        args: ["webiny", "mcp-server", "--additional-skills=./my-skills"]
+        args: ["webiny-mcp", "serve", "--additional-skills=./my-skills"]
     };
     let config: { mcpServers: Record<string, unknown> } = { mcpServers: {} };
 
@@ -59,7 +59,7 @@ export function writeMcpConfig({ ui, configPath }: WriteMcpConfigParams): boolea
 // ---------------------------------------------------------------------------
 
 interface WriteHintFileParams {
-    ui: Ui.Interface;
+    ui: IUi;
     hintPath: string;
     content: string;
     marker?: string;
@@ -122,7 +122,7 @@ export function webinyHintBlock({
 // ---------------------------------------------------------------------------
 
 interface PrintDoneParams {
-    ui: Ui.Interface;
+    ui: IUi;
     extra?: string;
 }
 
@@ -134,7 +134,7 @@ export function printDone({ ui, extra }: PrintDoneParams): void {
     ui.info("Restart your agent/editor session if it is already running.");
     ui.emptyLine();
     ui.info("To test the MCP server directly:");
-    ui.info("  %s", "npx @modelcontextprotocol/inspector npx webiny mcp-server");
+    ui.info("  %s", "npx @modelcontextprotocol/inspector npx webiny-mcp serve");
     ui.emptyLine();
 }
 

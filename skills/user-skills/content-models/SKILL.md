@@ -1,5 +1,5 @@
 ---
-name: webiny-content-models
+name: webiny-api-cms-content-models
 context: webiny-extensions
 description: >
   Creating Headless CMS content models via code using the ModelFactory pattern.
@@ -24,25 +24,27 @@ Every code-based content model follows the same structure:
 import { ModelFactory } from "webiny/api/cms/model";
 
 class MyModelImpl implements ModelFactory.Interface {
-    async execute(builder: ModelFactory.Builder) {
-        return [
-            builder
-                .public({ modelId: "myModel", name: "My Model", group: "ungrouped" })
-                .description("Description of the model")
-                .fields(fields => ({
-                    // field definitions here
-                }))
-                .layout([/* row definitions */])
-                .titleFieldId("fieldId")
-                .singularApiName("MyModel")
-                .pluralApiName("MyModels")
-        ];
-    }
+  async execute(builder: ModelFactory.Builder) {
+    return [
+      builder
+        .public({ modelId: "myModel", name: "My Model", group: "ungrouped" })
+        .description("Description of the model")
+        .fields(fields => ({
+          // field definitions here
+        }))
+        .layout([
+          /* row definitions */
+        ])
+        .titleFieldId("fieldId")
+        .singularApiName("MyModel")
+        .pluralApiName("MyModels")
+    ];
+  }
 }
 
 export const MyModel = ModelFactory.createImplementation({
-    implementation: MyModelImpl,
-    dependencies: []
+  implementation: MyModelImpl,
+  dependencies: []
 });
 ```
 
@@ -54,52 +56,52 @@ Register in `webiny.config.tsx`:
 
 ## Model Configuration Methods
 
-| Method | Purpose |
-|---|---|
-| `.public({ modelId, name, group })` | Creates a public model (accessible via Read API). `modelId` is the internal DB identifier. `group` organizes it in the Admin sidebar. |
-| `.description("...")` | Model description shown in Admin UI |
-| `.fields(fields => ({ ... }))` | Define all fields using the fluent field builder |
-| `.layout([["field1", "field2"], ["field3"]])` | Arrange fields in rows in the Admin editor. Each inner array is one row. |
-| `.titleFieldId("name")` | Which field to use as the entry's display title |
-| `.descriptionFieldId("message")` | Which field to use as the entry's description |
-| `.singularApiName("Product")` | Singular name for GraphQL queries (e.g., `getProduct`) |
-| `.pluralApiName("Products")` | Plural name for GraphQL queries (e.g., `listProducts`) |
+| Method                                        | Purpose                                                                                                                               |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `.public({ modelId, name, group })`           | Creates a public model (accessible via Read API). `modelId` is the internal DB identifier. `group` organizes it in the Admin sidebar. |
+| `.description("...")`                         | Model description shown in Admin UI                                                                                                   |
+| `.fields(fields => ({ ... }))`                | Define all fields using the fluent field builder                                                                                      |
+| `.layout([["field1", "field2"], ["field3"]])` | Arrange fields in rows in the Admin editor. Each inner array is one row.                                                              |
+| `.titleFieldId("name")`                       | Which field to use as the entry's display title                                                                                       |
+| `.descriptionFieldId("message")`              | Which field to use as the entry's description                                                                                         |
+| `.singularApiName("Product")`                 | Singular name for GraphQL queries (e.g., `getProduct`)                                                                                |
+| `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                |
 
 ## Field Types
 
-| Builder Method | Description | Common Renderers |
-|---|---|---|
-| `fields.text()` | Single-line text | `"textInput"` |
-| `fields.longText()` | Multi-line text | `"textarea"` |
-| `fields.richText()` | Rich text (Lexical) | `"lexicalTextInput"` |
-| `fields.number()` | Numeric value | `"numberInput"` |
-| `fields.boolean()` | True/false toggle | `"boolean"` |
-| `fields.datetime()` | Date/time picker | `"dateTimeInput"` |
-| `fields.file()` | File/image attachment | `"fileInput"` |
-| `fields.ref()` | Reference to another model | `"refDialogSingle"`, `"refAdvancedMultiple"` |
-| `fields.object()` | Nested object with sub-fields | `"objectInput"` |
+| Builder Method      | Description                   | Common Renderers                             |
+| ------------------- | ----------------------------- | -------------------------------------------- |
+| `fields.text()`     | Single-line text              | `"textInput"`                                |
+| `fields.longText()` | Multi-line text               | `"textarea"`                                 |
+| `fields.richText()` | Rich text (Lexical)           | `"lexicalTextInput"`                         |
+| `fields.number()`   | Numeric value                 | `"numberInput"`                              |
+| `fields.boolean()`  | True/false toggle             | `"boolean"`                                  |
+| `fields.datetime()` | Date/time picker              | `"dateTimeInput"`                            |
+| `fields.file()`     | File/image attachment         | `"fileInput"`                                |
+| `fields.ref()`      | Reference to another model    | `"refDialogSingle"`, `"refAdvancedMultiple"` |
+| `fields.object()`   | Nested object with sub-fields | `"objectInput"`                              |
 
 ## Field Validators (Chainable)
 
-| Validator | Description | Example |
-|---|---|---|
-| `.required("msg")` | Field is required | `.required("Name is required")` |
-| `.unique()` | Value must be unique across entries | `.unique()` |
-| `.email()` | Must be a valid email | `.email()` |
-| `.pattern(regex, msg)` | Must match a regex | `.pattern("^[a-z0-9-]+$", "Lowercase and hyphens only")` |
-| `.minLength(n)` | Minimum string length | `.minLength(2)` |
-| `.maxLength(n)` | Maximum string length | `.maxLength(100)` |
-| `.gte(n, msg)` | Greater than or equal (numbers) | `.gte(0, "Must be non-negative")` |
-| `.predefinedValues([...])` | Restrict to predefined options | `.predefinedValues([{ label: "Work", value: "work" }])` |
+| Validator                  | Description                         | Example                                                  |
+| -------------------------- | ----------------------------------- | -------------------------------------------------------- |
+| `.required("msg")`         | Field is required                   | `.required("Name is required")`                          |
+| `.unique()`                | Value must be unique across entries | `.unique()`                                              |
+| `.email()`                 | Must be a valid email               | `.email()`                                               |
+| `.pattern(regex, msg)`     | Must match a regex                  | `.pattern("^[a-z0-9-]+$", "Lowercase and hyphens only")` |
+| `.minLength(n)`            | Minimum string length               | `.minLength(2)`                                          |
+| `.maxLength(n)`            | Maximum string length               | `.maxLength(100)`                                        |
+| `.gte(n, msg)`             | Greater than or equal (numbers)     | `.gte(0, "Must be non-negative")`                        |
+| `.predefinedValues([...])` | Restrict to predefined options      | `.predefinedValues([{ label: "Work", value: "work" }])`  |
 
 ## Field Configuration (Chainable)
 
-| Method | Description |
-|---|---|
-| `.renderer("rendererName")` | Set the Admin UI renderer |
-| `.label("Display Name")` | Field label in the editor |
-| `.help("Helper text")` | Helper text shown below the field |
-| `.list()` | Make the field accept multiple values (arrays) |
+| Method                          | Description                                        |
+| ------------------------------- | -------------------------------------------------- |
+| `.renderer("rendererName")`     | Set the Admin UI renderer                          |
+| `.label("Display Name")`        | Field label in the editor                          |
+| `.help("Helper text")`          | Helper text shown below the field                  |
+| `.list()`                       | Make the field accept multiple values (arrays)     |
 | `.models([{ modelId: "..." }])` | For `ref()` fields: which models can be referenced |
 
 ## Full Examples
@@ -113,48 +115,44 @@ import { ModelFactory } from "webiny/api/cms/model";
 export const PRODUCT_CATEGORY_MODEL_ID = "productCategory";
 
 class ProductCategoryModelImpl implements ModelFactory.Interface {
-    async execute(builder: ModelFactory.Builder) {
-        return [
-            builder
-                .public({
-                    modelId: PRODUCT_CATEGORY_MODEL_ID,
-                    name: "Product Category",
-                    group: "ungrouped"
-                })
-                .description("Product categories for organizing products")
-                .fields(fields => ({
-                    name: fields
-                        .text()
-                        .renderer("textInput")
-                        .label("Name")
-                        .help("Name of the product category")
-                        .required("Name is required")
-                        .minLength(2)
-                        .maxLength(100),
-                    slug: fields
-                        .text()
-                        .renderer("textInput")
-                        .label("Slug")
-                        .help("URL-friendly identifier")
-                        .required("Slug is required")
-                        .unique(),
-                    description: fields
-                        .longText()
-                        .renderer("textarea")
-                        .label("Description")
-                        .minLength(10)
-                }))
-                .layout([["name", "slug"], ["description"]])
-                .titleFieldId("name")
-                .singularApiName("ProductCategory")
-                .pluralApiName("ProductCategories")
-        ];
-    }
+  async execute(builder: ModelFactory.Builder) {
+    return [
+      builder
+        .public({
+          modelId: PRODUCT_CATEGORY_MODEL_ID,
+          name: "Product Category",
+          group: "ungrouped"
+        })
+        .description("Product categories for organizing products")
+        .fields(fields => ({
+          name: fields
+            .text()
+            .renderer("textInput")
+            .label("Name")
+            .help("Name of the product category")
+            .required("Name is required")
+            .minLength(2)
+            .maxLength(100),
+          slug: fields
+            .text()
+            .renderer("textInput")
+            .label("Slug")
+            .help("URL-friendly identifier")
+            .required("Slug is required")
+            .unique(),
+          description: fields.longText().renderer("textarea").label("Description").minLength(10)
+        }))
+        .layout([["name", "slug"], ["description"]])
+        .titleFieldId("name")
+        .singularApiName("ProductCategory")
+        .pluralApiName("ProductCategories")
+    ];
+  }
 }
 
 export const ProductCategoryModel = ModelFactory.createImplementation({
-    implementation: ProductCategoryModelImpl,
-    dependencies: []
+  implementation: ProductCategoryModelImpl,
+  dependencies: []
 });
 ```
 
@@ -167,57 +165,57 @@ import { ModelFactory } from "webiny/api/cms/model";
 export const PRODUCT_MODEL_ID = "product";
 
 class ProductModelImpl implements ModelFactory.Interface {
-    async execute(builder: ModelFactory.Builder) {
-        return [
-            builder
-                .public({
-                    modelId: PRODUCT_MODEL_ID,
-                    name: "Product",
-                    group: "ungrouped"
-                })
-                .description("Products for our e-commerce store")
-                .fields(fields => ({
-                    name: fields
-                        .text()
-                        .renderer("textInput")
-                        .label("Name")
-                        .help("Product name")
-                        .required("Name is required"),
-                    sku: fields
-                        .text()
-                        .renderer("textInput")
-                        .label("SKU")
-                        .help("Stock Keeping Unit - unique product identifier")
-                        .required("SKU is required")
-                        .unique(),
-                    description: fields
-                        .longText()
-                        .renderer("textarea")
-                        .label("Description")
-                        .help("Detailed product description"),
-                    price: fields
-                        .number()
-                        .renderer("numberInput")
-                        .label("Price")
-                        .required("Price is required")
-                        .gte(0, "Price must be greater than or equal to 0"),
-                    category: fields
-                        .ref()
-                        .renderer("refDialogSingle")
-                        .label("Category")
-                        .models([{ modelId: "productCategory" }])
-                }))
-                .layout([["name"], ["sku"], ["category"], ["description"], ["price"]])
-                .titleFieldId("name")
-                .singularApiName("Product")
-                .pluralApiName("Products")
-        ];
-    }
+  async execute(builder: ModelFactory.Builder) {
+    return [
+      builder
+        .public({
+          modelId: PRODUCT_MODEL_ID,
+          name: "Product",
+          group: "ungrouped"
+        })
+        .description("Products for our e-commerce store")
+        .fields(fields => ({
+          name: fields
+            .text()
+            .renderer("textInput")
+            .label("Name")
+            .help("Product name")
+            .required("Name is required"),
+          sku: fields
+            .text()
+            .renderer("textInput")
+            .label("SKU")
+            .help("Stock Keeping Unit - unique product identifier")
+            .required("SKU is required")
+            .unique(),
+          description: fields
+            .longText()
+            .renderer("textarea")
+            .label("Description")
+            .help("Detailed product description"),
+          price: fields
+            .number()
+            .renderer("numberInput")
+            .label("Price")
+            .required("Price is required")
+            .gte(0, "Price must be greater than or equal to 0"),
+          category: fields
+            .ref()
+            .renderer("refDialogSingle")
+            .label("Category")
+            .models([{ modelId: "productCategory" }])
+        }))
+        .layout([["name"], ["sku"], ["category"], ["description"], ["price"]])
+        .titleFieldId("name")
+        .singularApiName("Product")
+        .pluralApiName("Products")
+    ];
+  }
 }
 
 export const ProductModel = ModelFactory.createImplementation({
-    implementation: ProductModelImpl,
-    dependencies: []
+  implementation: ProductModelImpl,
+  dependencies: []
 });
 ```
 
@@ -230,61 +228,61 @@ import { ModelFactory } from "webiny/api/cms/model";
 export const CONTACT_SUBMISSION_MODEL_ID = "contactSubmission";
 
 class ContactSubmissionModelImpl implements ModelFactory.Interface {
-    async execute(builder: ModelFactory.Builder) {
-        return [
-            builder
-                .public({
-                    modelId: CONTACT_SUBMISSION_MODEL_ID,
-                    name: "Contact Submission",
-                    group: "ungrouped"
-                })
-                .description("Stores contact form submissions from the website")
-                .fields(fields => ({
-                    name: fields
-                        .text()
-                        .renderer("textInput")
-                        .label("Name")
-                        .help("Enter your full name")
-                        .required("Name is required")
-                        .minLength(2)
-                        .maxLength(100),
-                    email: fields
-                        .text()
-                        .renderer("textInput")
-                        .label("Email")
-                        .help("Enter a valid email address")
-                        .required("Email is required")
-                        .email(),
-                    message: fields
-                        .longText()
-                        .renderer("textarea")
-                        .label("Message")
-                        .help("Enter your message...")
-                        .required("Message is required")
-                        .minLength(10)
-                        .maxLength(1000),
-                    emailType: fields
-                        .text()
-                        .renderer("radioButtons")
-                        .label("Email Type")
-                        .help("Automatically classified as Work or Personal")
-                        .predefinedValues([
-                            { label: "Work", value: "work" },
-                            { label: "Personal", value: "personal" }
-                        ])
-                }))
-                .layout([["name", "email"], ["message"], ["emailType"]])
-                .titleFieldId("name")
-                .descriptionFieldId("message")
-                .singularApiName("ContactSubmission")
-                .pluralApiName("ContactSubmissions")
-        ];
-    }
+  async execute(builder: ModelFactory.Builder) {
+    return [
+      builder
+        .public({
+          modelId: CONTACT_SUBMISSION_MODEL_ID,
+          name: "Contact Submission",
+          group: "ungrouped"
+        })
+        .description("Stores contact form submissions from the website")
+        .fields(fields => ({
+          name: fields
+            .text()
+            .renderer("textInput")
+            .label("Name")
+            .help("Enter your full name")
+            .required("Name is required")
+            .minLength(2)
+            .maxLength(100),
+          email: fields
+            .text()
+            .renderer("textInput")
+            .label("Email")
+            .help("Enter a valid email address")
+            .required("Email is required")
+            .email(),
+          message: fields
+            .longText()
+            .renderer("textarea")
+            .label("Message")
+            .help("Enter your message...")
+            .required("Message is required")
+            .minLength(10)
+            .maxLength(1000),
+          emailType: fields
+            .text()
+            .renderer("radioButtons")
+            .label("Email Type")
+            .help("Automatically classified as Work or Personal")
+            .predefinedValues([
+              { label: "Work", value: "work" },
+              { label: "Personal", value: "personal" }
+            ])
+        }))
+        .layout([["name", "email"], ["message"], ["emailType"]])
+        .titleFieldId("name")
+        .descriptionFieldId("message")
+        .singularApiName("ContactSubmission")
+        .pluralApiName("ContactSubmissions")
+    ];
+  }
 }
 
 export const ContactSubmissionModel = ModelFactory.createImplementation({
-    implementation: ContactSubmissionModelImpl,
-    dependencies: []
+  implementation: ContactSubmissionModelImpl,
+  dependencies: []
 });
 ```
 
@@ -301,5 +299,5 @@ Deploy:       yarn webiny deploy api  (or use watch mode)
 
 ## Related Skills
 
-- `dependency-injection` -- The `createImplementation` pattern used here
+- `webiny-dependency-injection` -- The `createImplementation` pattern used here
 - `webiny-sdk` -- Query and write data to your models from external apps

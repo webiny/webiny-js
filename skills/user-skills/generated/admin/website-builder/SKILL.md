@@ -2,7 +2,7 @@
 name: webiny-admin-website-builder-catalog
 context: webiny-api
 description: >
-  admin/website-builder — 55 abstractions.
+  admin/website-builder — 57 abstractions.
 ---
 
 # admin/website-builder
@@ -16,286 +16,355 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `$addElementReferenceToParent`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $addElementReferenceToParent } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$createElement`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $createElement } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$deleteElement`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $deleteElement } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$deselectElement`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $deselectElement } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$getActiveElementId`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $getActiveElementId } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$getComponentManifestByElementId`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $getComponentManifestByElementId } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$getElementById`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $getElementById } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$getElementInputValues`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $getElementInputValues } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$getElementsOfType`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $getElementsOfType } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$getFirstElementOfType`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $getFirstElementOfType } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$highlightElement`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $highlightElement } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$moveElement`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $moveElement } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$previewElementInputs`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $previewElementInputs } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 **Description:** Programmatically update an element's inputs in the preview iframe only (via JSON patch).
 Does NOT write to the editor document state.
 
 ---
+
 **Name:** `$removeElementReferenceFromParent`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $removeElementReferenceFromParent } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$selectElement`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $selectElement } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 
 ---
+
 **Name:** `$updateElementInputs`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { $updateElementInputs } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/utils/index.ts`
 **Description:** Programmatically update an element's inputs using a callback-based API.
 The updater receives a deep object representation of the element's inputs
 which can be mutated in place.
 
 ---
+
 **Name:** `Commands`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { Commands } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/BaseEditor/index.tsx`
 
 ---
+
 **Name:** `CompactEditorConfig`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { CompactEditorConfig } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditorConfig.tsx`
 
 ---
+
 **Name:** `createCommand`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { createCommand } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/editorSdk/createCommand.ts`
 
 ---
+
 **Name:** `createElement`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { createElement } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/website-builder-sdk/index.ts`
 
 ---
+
 **Name:** `Divider`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { Divider } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
 **Name:** `DropDown`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { DropDown } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
 **Name:** `DropDownItem`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { DropDownItem } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
 **Name:** `EcommerceIntegration`
-**Import:** `webiny/admin/website-builder`
+**Import:** `import { EcommerceIntegration } from "webiny/admin/website-builder"`
 **Source:** `@webiny/app-website-builder/ecommerce/index.tsx`
 
 ---
+
 **Name:** `ElementInputs`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { ElementInputs } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/BaseEditor/defaultConfig/Sidebar/ElementSettings/ElementInputs.tsx`
 
 ---
+
 **Name:** `ExpandedEditorConfig`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { ExpandedEditorConfig } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditorConfig.tsx`
 
 ---
+
 **Name:** `getNodeFromSelection`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { getNodeFromSelection } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
+**Name:** `Klass`
+**Kind:** type
+**Import:** `import type { Klass } from "webiny/admin/website-builder/lexical"`
+**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+
+---
+
 **Name:** `LexicalHtmlRenderer`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { LexicalHtmlRenderer } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
+**Name:** `LexicalNode`
+**Kind:** type
+**Import:** `import type { LexicalNode } from "webiny/admin/website-builder/lexical"`
+**Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+
+---
+
 **Name:** `PageEditorConfig`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { PageEditorConfig } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/modules/pages/PageEditor/PageEditorConfig.tsx`
 
 ---
+
 **Name:** `PageListConfig`
-**Import:** `webiny/admin/website-builder/page/list`
+**Import:** `import { PageListConfig } from "webiny/admin/website-builder/page/list"`
 **Source:** `@webiny/app-website-builder/index.ts`
 
 ---
+
 **Name:** `pagePathFromTitle`
-**Import:** `webiny/admin/website-builder`
+**Import:** `import { pagePathFromTitle } from "webiny/admin/website-builder"`
 **Source:** `@webiny/app-website-builder/index.ts`
 
 ---
+
 **Name:** `RedirectListConfig`
-**Import:** `webiny/admin/website-builder/redirect/list`
+**Import:** `import { RedirectListConfig } from "webiny/admin/website-builder/redirect/list"`
 **Source:** `@webiny/app-website-builder/index.ts`
 
 ---
+
 **Name:** `Routes`
-**Import:** `webiny/admin/website-builder`
+**Import:** `import { Routes } from "webiny/admin/website-builder"`
 **Source:** `@webiny/app-website-builder/routes.ts`
 
 ---
+
 **Name:** `useActiveElement`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { useActiveElement } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/BaseEditor/hooks/useActiveElement.ts`
 
 ---
+
 **Name:** `useComponent`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { useComponent } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/BaseEditor/hooks/useComponent.ts`
 
 ---
+
 **Name:** `useCreateElement`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { useCreateElement } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/BaseEditor/hooks/useCreateElement.ts`
 
 ---
+
 **Name:** `useCurrentElement`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { useCurrentElement } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
 **Name:** `useCurrentSelection`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { useCurrentSelection } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
 **Name:** `useDeleteElement`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { useDeleteElement } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/BaseEditor/hooks/useDeleteElement.ts`
 
 ---
+
 **Name:** `useDeriveValueFromSelection`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { useDeriveValueFromSelection } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
 **Name:** `useDocumentEditor`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { useDocumentEditor } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/DocumentEditor/index.ts`
 
 ---
+
 **Name:** `useElementInputs`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { useElementInputs } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/BaseEditor/hooks/useElementInputs.ts`
 **Description:** Returns the resolved input values for the given element, plus an updater callback.
 
 ---
+
 **Name:** `useElementOverlay`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { useElementOverlay } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/BaseEditor/hooks/useElementOverlay.ts`
 
 ---
+
 **Name:** `useFontColorPicker`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { useFontColorPicker } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
 **Name:** `useHighlightedElement`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { useHighlightedElement } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/BaseEditor/hooks/useHighlightedElement.ts`
 
 ---
+
 **Name:** `useIsMounted`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { useIsMounted } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
 **Name:** `useLexicalEditorConfig`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { useLexicalEditorConfig } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
 **Name:** `usePageEditorConfig`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { usePageEditorConfig } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/modules/pages/PageEditor/usePageEditorConfig.ts`
 
 ---
+
 **Name:** `usePermissions`
-**Import:** `webiny/admin/website-builder`
+**Import:** `import { usePermissions } from "webiny/admin/website-builder"`
 **Source:** `@webiny/app-website-builder/presentation/security/usePermissions.ts`
 
 ---
+
 **Name:** `useRichTextEditor`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { useRichTextEditor } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
 **Name:** `useSelectFromDocument`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { useSelectFromDocument } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/BaseEditor/hooks/useSelectFromDocument.ts`
 **Description:** Subscribe to part of the document state.
 
 ---
+
 **Name:** `useSelectFromEditor`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { useSelectFromEditor } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/BaseEditor/hooks/useSelectFromEditor.ts`
 **Description:** Subscribe to part of the document state.
 
 ---
+
 **Name:** `useTextAlignmentAction`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { useTextAlignmentAction } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
 **Name:** `useTypographyAction`
-**Import:** `webiny/admin/website-builder/lexical`
+**Import:** `import { useTypographyAction } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
 
 ---
+
 **Name:** `useUpdateElement`
-**Import:** `webiny/admin/website-builder/page/editor`
+**Import:** `import { useUpdateElement } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/BaseEditor/hooks/useUpdateElement.ts`
 
 ---

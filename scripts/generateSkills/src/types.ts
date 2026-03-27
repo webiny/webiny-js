@@ -12,12 +12,16 @@ export interface CatalogEntry {
     sourceFilePath: string;
     /** JSDoc description, empty if none */
     description: string;
+    /** True when this export is a TypeScript type/interface (use `import type`) */
+    isType?: boolean;
 }
 
 /** Discovered export before source resolution */
 export interface DiscoveredExport {
     className: string;
     importPath: string;
+    /** True when this export is a TypeScript type/interface (use `import type`) */
+    isType?: boolean;
 }
 
 /** Category info derived from import path */

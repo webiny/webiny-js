@@ -46,15 +46,14 @@ export { SystemInstallerProvider } from "./presentation/installation/components/
 export type { AaclPermission } from "./features/wcp/types.js";
 export type { Tenant } from "./features/tenancy/types.js";
 
-// Features
-export { BuildParamsFeature } from "./features/buildParams/feature.js";
-
 // Hooks
 export * from "./hooks/index.js";
 export { useWcp } from "./presentation/wcp/useWcp.js";
 export { useTenantContext } from "./presentation/tenancy/useTenantContext.js";
 export { useIdentity } from "./presentation/security/hooks/useIdentity.js";
 export { useAuthentication } from "./presentation/security/hooks/useAuthentication.js";
+export { useBuildParams } from "./presentation/buildParams/useBuildParams.js";
+
 // Legacy hook for easier migration
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";
 

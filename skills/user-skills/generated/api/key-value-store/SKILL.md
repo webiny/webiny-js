@@ -17,14 +17,16 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `GlobalKeyValueStore`
-**Import:** `webiny/api/key-value-store`
+**Import:** `import { GlobalKeyValueStore } from "webiny/api/key-value-store"`
 **Source:** `@webiny/api-core/features/keyValueStore/index.ts`
 **Description:** Global (non-tenant-scoped) key-value store.
 
 ---
+
 **Name:** `KeyValueStore`
-**Import:** `webiny/api/key-value-store`
+**Import:** `import { KeyValueStore } from "webiny/api/key-value-store"`
 **Source:** `@webiny/api-core/features/keyValueStore/index.ts`
 **Description:** Tenant-scoped key-value store.
 

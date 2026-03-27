@@ -10,11 +10,11 @@
  */
 
 import { join } from "path";
-import type { Ui } from "@webiny/cli-core/exports/cli.js";
+import type { IUi } from "../ui.js";
 import { writeMcpConfig, printDone } from "./shared.js";
 
 interface InitParams {
-    ui: Ui.Interface;
+    ui: IUi;
     cwd: string;
 }
 

@@ -206,5 +206,6 @@ Deploy:          yarn webiny deploy core  (infrastructure changes)
 
 ## Related Skills
 
-- `project-structure` -- Full `webiny.config.tsx` anatomy
-- `local-development` -- Deployment commands and environment management
+- `webiny-project-structure` -- Full `webiny.config.tsx` anatomy
+- `webiny-local-development` -- Deployment commands and environment management
+- `webiny-full-stack-architect` -- Full-stack extensions that may require custom infrastructure

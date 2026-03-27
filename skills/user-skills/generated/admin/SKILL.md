@@ -16,68 +16,80 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `AdminConfig`
-**Import:** `webiny/admin`
+**Import:** `import { AdminConfig } from "webiny/admin"`
 **Source:** `@webiny/app-admin/config/AdminConfig.tsx`
 
 ---
+
 **Name:** `BaseError`
-**Import:** `webiny/admin`
+**Import:** `import { BaseError } from "webiny/admin"`
 **Source:** `@webiny/feature/admin/index.ts`
 
 ---
+
 **Name:** `BuildParam`
-**Import:** `webiny/admin`
+**Import:** `import { BuildParam } from "webiny/admin"`
 **Source:** `@webiny/app-admin/features/buildParams/index.ts`
 
 ---
+
 **Name:** `BuildParams`
-**Import:** `webiny/admin`
+**Import:** `import { BuildParams } from "webiny/admin"`
 **Source:** `@webiny/app-admin/features/buildParams/index.ts`
 
 ---
+
 **Name:** `createAbstraction`
-**Import:** `webiny/admin`
+**Import:** `import { createAbstraction } from "webiny/admin"`
 **Source:** `@webiny/feature/admin/index.ts`
 
 ---
+
 **Name:** `createFeature`
-**Import:** `webiny/admin`
+**Import:** `import { createFeature } from "webiny/admin"`
 **Source:** `@webiny/feature/admin/index.ts`
 
 ---
+
 **Name:** `createHasPermission`
-**Import:** `webiny/admin`
+**Import:** `import { createHasPermission } from "webiny/admin"`
 **Source:** `@webiny/app-admin/permissions/index.ts`
 
 ---
+
 **Name:** `createPermissionSchema`
-**Import:** `webiny/admin`
+**Import:** `import { createPermissionSchema } from "webiny/admin"`
 **Source:** `@webiny/app-admin/permissions/index.ts`
 
 ---
+
 **Name:** `createProvider`
-**Import:** `webiny/admin`
+**Import:** `import { createProvider } from "webiny/admin"`
 **Source:** `@webiny/app/core/createProvider.tsx`
 **Description:** Creates a Higher Order Component which wraps the entire app content.
 This is mostly useful for adding React Context providers.
 
 ---
+
 **Name:** `createProviderPlugin`
-**Import:** `webiny/admin`
+**Import:** `import { createProviderPlugin } from "webiny/admin"`
 **Source:** `@webiny/app/core/createProviderPlugin.tsx`
 **Description:** Creates a component, which, when mounted, will register an app provider.
 This is particularly useful for wrapping the entire app with custom React Context providers.
 For more information, visit https://www.webiny.com/docs/admin-area/basics/framework.
 
 ---
+
 **Name:** `createUsePermissions`
-**Import:** `webiny/admin`
+**Import:** `import { createUsePermissions } from "webiny/admin"`
 **Source:** `@webiny/app-admin/permissions/index.ts`
 
 ---
+
 **Name:** `DevToolsSection`
-**Import:** `webiny/admin`
+**Import:** `import { DevToolsSection } from "webiny/admin"`
 **Source:** `@webiny/app-admin/components/index.ts`
 **Description:** Registers a named section in the Webiny DevTools extension.
 Renders nothing — purely a data registration side-effect.
@@ -86,34 +98,40 @@ When the component unmounts (e.g., route change), the section
 is automatically removed from DevTools.
 
 ---
+
 **Name:** `NetworkErrorEventHandler`
-**Import:** `webiny/admin`
+**Import:** `import { NetworkErrorEventHandler } from "webiny/admin"`
 **Source:** `@webiny/app/errors/index.ts`
 
 ---
+
 **Name:** `Plugin`
-**Import:** `webiny/admin`
+**Import:** `import { Plugin } from "webiny/admin"`
 **Source:** `@webiny/app/core/Plugin.tsx`
 
 ---
+
 **Name:** `Provider`
-**Import:** `webiny/admin`
+**Import:** `import { Provider } from "webiny/admin"`
 **Source:** `@webiny/app/core/Provider.tsx`
 **Description:** Register a new React context provider.
 
 ---
+
 **Name:** `RegisterFeature`
-**Import:** `webiny/admin`
+**Import:** `import { RegisterFeature } from "webiny/admin"`
 **Source:** `@webiny/app-admin/components/RegisterFeature.tsx`
 
 ---
+
 **Name:** `Routes`
-**Import:** `webiny/admin`
+**Import:** `import { Routes } from "webiny/admin"`
 **Source:** `@webiny/app-admin/routes.ts`
 
 ---
+
 **Name:** `useFeature`
-**Import:** `webiny/admin`
+**Import:** `import { useFeature } from "webiny/admin"`
 **Source:** `@webiny/app/shared/di/useFeature.ts`
 
 ---

@@ -16,11 +16,11 @@
 
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
-import type { Ui } from "@webiny/cli-core/exports/cli.js";
+import type { IUi } from "../ui.js";
 import { writeHintFile, webinyHintBlock, printDone } from "./shared.js";
 
 interface InitParams {
-    ui: Ui.Interface;
+    ui: IUi;
     cwd: string;
 }
 
@@ -43,14 +43,14 @@ export async function init({ ui, cwd }: InitParams): Promise<void> {
 // ---------------------------------------------------------------------------
 
 interface WriteOpenCodeMcpConfigParams {
-    ui: Ui.Interface;
+    ui: IUi;
     configPath: string;
 }
 
 function writeOpenCodeMcpConfig({ ui, configPath }: WriteOpenCodeMcpConfigParams): boolean {
     const entry = {
         type: "local",
-        command: ["npx", "webiny", "mcp-server", "--additional-skills=./my-skills"],
+        command: ["npx", "webiny-mcp", "serve", "--additional-skills=./my-skills"],
         enabled: true
     };
 

@@ -6,13 +6,12 @@ import fm from "front-matter";
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { CliCommandFactory } from "@webiny/cli-core/exports/cli/command.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export interface IMcpServerParams {
-    skills: string;
-    "additional-skills": string[];
+    skills?: string;
+    additionalSkills?: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -145,138 +144,100 @@ function readSkillContent(skill: Skill): string {
 }
 
 // ---------------------------------------------------------------------------
-// CLI Command
+// Standalone entry point
 // ---------------------------------------------------------------------------
 
-class McpServerCommand implements CliCommandFactory.Interface<IMcpServerParams> {
-    execute(): CliCommandFactory.CommandDefinition<IMcpServerParams> {
-        return {
-            name: "mcp-server",
-            description: "Start the Webiny MCP server (stdio transport).",
-            examples: [
-                "$0 mcp-server",
-                "$0 mcp-server --skills=./my-skills",
-                "$0 mcp-server --additional-skills=./extra-skills"
-            ],
-            options: [
-                {
-                    name: "skills",
-                    description:
-                        "Replace the built-in skills folder entirely. Only skills found in the given path will be served.",
-                    type: "string"
-                },
-                {
-                    name: "additional-skills",
-                    description:
-                        "Add a folder on top of the built-in (or --skills) folder. Can be repeated.",
-                    type: "string",
-                    array: true
-                }
-            ],
-            handler: async params => {
-                const cwd = process.cwd();
-                const builtInSkillsDir = join(__dirname, "..", "skills");
-                const skillsOverride = params.skills;
-                const additionalSkillsDirs = params["additional-skills"] || [];
+export async function startMcpServer(params: IMcpServerParams = {}): Promise<void> {
+    const cwd = process.cwd();
+    const builtInSkillsDir = join(__dirname, "..", "skills");
+    const skillsOverride = params.skills;
+    const additionalSkillsDirs = params.additionalSkills || [];
 
-                const baseDir = skillsOverride ? resolve(cwd, skillsOverride) : builtInSkillsDir;
+    const baseDir = skillsOverride ? resolve(cwd, skillsOverride) : builtInSkillsDir;
 
-                // skillsDirs[0] = highest priority, skillsDirs[last] = lowest priority
-                const skillsDirs = [
-                    ...[...additionalSkillsDirs].map(p => resolve(cwd, p)).reverse(),
-                    baseDir
-                ];
+    // skillsDirs[0] = highest priority, skillsDirs[last] = lowest priority
+    const skillsDirs = [...[...additionalSkillsDirs].map(p => resolve(cwd, p)).reverse(), baseDir];
 
-                if (skillsOverride) {
-                    console.error(`[webiny-mcp] skills override: ${baseDir}`);
-                }
-                for (const d of additionalSkillsDirs) {
-                    console.error(`[webiny-mcp] additional skills: ${resolve(cwd, d)}`);
-                }
-
-                // In-memory cache: populated on first list, reused by get.
-                let skillsCache: Map<string, Skill> | null = null;
-
-                function getSkills(): Map<string, Skill> {
-                    if (!skillsCache) {
-                        skillsCache = discoverSkills(skillsDirs);
-                        console.error(`[webiny-mcp] discovered ${skillsCache.size} skill(s)`);
-                    }
-                    return skillsCache;
-                }
-
-                // ---------------------------------------------------------------
-                // MCP server
-                // ---------------------------------------------------------------
-
-                const server = new McpServer({ name: "webiny", version: getVersion() });
-
-                server.registerTool(
-                    "list_webiny_skills",
-                    {
-                        title: "List Webiny Skills",
-                        description:
-                            "Returns a catalog of all available Webiny skills with names and descriptions. " +
-                            "Always call this first when working on anything Webiny-related, then call " +
-                            "get_webiny_skill to load the specific skill you need.",
-                        inputSchema: {},
-                        annotations: { readOnlyHint: true }
-                    },
-                    async () => ({
-                        content: [{ type: "text", text: buildCatalog(getSkills()) }]
-                    })
-                );
-
-                server.registerTool(
-                    "get_webiny_skill",
-                    {
-                        title: "Get Webiny Skill",
-                        description:
-                            "Loads the full Webiny documentation for a specific skill. " +
-                            "Call list_webiny_skills first to see available skill names.",
-                        inputSchema: {
-                            topic: z
-                                .string()
-                                .describe("Skill name — use exact names from list_webiny_skills")
-                        },
-                        annotations: { readOnlyHint: true }
-                    },
-                    async ({ topic }) => {
-                        const skills = getSkills();
-                        const skill = skills.get(topic);
-                        if (!skill) {
-                            const available = [...skills.keys()].sort();
-                            return {
-                                content: [
-                                    {
-                                        type: "text",
-                                        text:
-                                            `Skill not found: "${topic}".\n\n` +
-                                            `Available skills: ${available.join(", ") || "(none)"}.`
-                                    }
-                                ],
-                                isError: true
-                            };
-                        }
-                        return {
-                            content: [{ type: "text", text: readSkillContent(skill) }]
-                        };
-                    }
-                );
-
-                // ---------------------------------------------------------------
-                // Start
-                // ---------------------------------------------------------------
-
-                const transport = new StdioServerTransport();
-                await server.connect(transport);
-                console.error("[webiny-mcp] server ready");
-            }
-        };
+    if (skillsOverride) {
+        console.error(`[webiny-mcp] skills override: ${baseDir}`);
     }
-}
+    for (const d of additionalSkillsDirs) {
+        console.error(`[webiny-mcp] additional skills: ${resolve(cwd, d)}`);
+    }
 
-export default CliCommandFactory.createImplementation({
-    implementation: McpServerCommand,
-    dependencies: []
-});
+    // In-memory cache: populated on first list, reused by get.
+    let skillsCache: Map<string, Skill> | null = null;
+
+    function getSkills(): Map<string, Skill> {
+        if (!skillsCache) {
+            skillsCache = discoverSkills(skillsDirs);
+            console.error(`[webiny-mcp] discovered ${skillsCache.size} skill(s)`);
+        }
+        return skillsCache;
+    }
+
+    // ---------------------------------------------------------------
+    // MCP server
+    // ---------------------------------------------------------------
+
+    const server = new McpServer({ name: "webiny", version: getVersion() });
+
+    server.registerTool(
+        "list_webiny_skills",
+        {
+            title: "List Webiny Skills",
+            description:
+                "Returns a catalog of all available Webiny skills with names and descriptions. " +
+                "Always call this first when working on anything Webiny-related, then call " +
+                "get_webiny_skill to load the specific skill you need.",
+            inputSchema: {},
+            annotations: { readOnlyHint: true }
+        },
+        async () => ({
+            content: [{ type: "text", text: buildCatalog(getSkills()) }]
+        })
+    );
+
+    server.registerTool(
+        "get_webiny_skill",
+        {
+            title: "Get Webiny Skill",
+            description:
+                "Loads the full Webiny documentation for a specific skill. " +
+                "Call list_webiny_skills first to see available skill names.",
+            inputSchema: {
+                topic: z.string().describe("Skill name — use exact names from list_webiny_skills")
+            },
+            annotations: { readOnlyHint: true }
+        },
+        async ({ topic }) => {
+            const skills = getSkills();
+            const skill = skills.get(topic);
+            if (!skill) {
+                const available = [...skills.keys()].sort();
+                return {
+                    content: [
+                        {
+                            type: "text",
+                            text:
+                                `Skill not found: "${topic}".\n\n` +
+                                `Available skills: ${available.join(", ") || "(none)"}.`
+                        }
+                    ],
+                    isError: true
+                };
+            }
+            return {
+                content: [{ type: "text", text: readSkillContent(skill) }]
+            };
+        }
+    );
+
+    // ---------------------------------------------------------------
+    // Start
+    // ---------------------------------------------------------------
+
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    console.error("[webiny-mcp] server ready");
+}

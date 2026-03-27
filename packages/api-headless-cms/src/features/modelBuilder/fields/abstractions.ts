@@ -17,3 +17,7 @@ export interface IFieldTypeFactory {
  * Use to implement new field types.
  */
 export const FieldType = createAbstraction<IFieldTypeFactory>("FieldType");
+
+export namespace FieldType {
+    export type Factory = IFieldTypeFactory;
+}

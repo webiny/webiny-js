@@ -224,5 +224,5 @@ After watch:      yarn webiny deploy api  (MUST redeploy!)
 
 ## Related Skills
 
-- `project-structure` -- Project layout and `webiny.config.tsx`
-- `infrastructure-extensions` -- Customizing AWS infrastructure and environments
+- `webiny-project-structure` -- Project layout and `webiny.config.tsx`
+- `webiny-infrastructure-extensions` -- Customizing AWS infrastructure and environments
