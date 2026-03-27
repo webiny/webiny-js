@@ -1,4 +1,4 @@
-import type { Messenger } from "@webiny/website-builder-sdk";
+©import type { Messenger } from "@webiny/website-builder-sdk";
 import {
     type BoxesData,
     type ComponentManifest,

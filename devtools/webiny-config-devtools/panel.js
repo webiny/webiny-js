@@ -303,9 +303,21 @@
                 var valueTree = document.createElement("div");
                 valueTree.className = "json-tree";
                 var browseStateKey = getExpandStateKey("browse-value");
-                buildJsonTree(configObj[selectedKey], valueTree, 0, browseNodes, expandAllStates[browseStateKey]);
+                buildJsonTree(
+                    configObj[selectedKey],
+                    valueTree,
+                    0,
+                    browseNodes,
+                    expandAllStates[browseStateKey]
+                );
                 if (browseNodes.length > 0) {
-                    buildTreeToolbar(browseValue, browseNodes, valueTree, configObj[selectedKey], browseStateKey);
+                    buildTreeToolbar(
+                        browseValue,
+                        browseNodes,
+                        valueTree,
+                        configObj[selectedKey],
+                        browseStateKey
+                    );
                     applyExpandState(browseNodes, expandAllStates[browseStateKey]);
                 }
                 browseValue.appendChild(valueTree);
@@ -433,9 +445,21 @@
                     var valueTree = document.createElement("div");
                     valueTree.className = "json-tree";
                     var secBrowseStateKey = getExpandStateKey("section-browse-value");
-                    buildJsonTree(sectionData[selectedKey], valueTree, 0, bNodes, expandAllStates[secBrowseStateKey]);
+                    buildJsonTree(
+                        sectionData[selectedKey],
+                        valueTree,
+                        0,
+                        bNodes,
+                        expandAllStates[secBrowseStateKey]
+                    );
                     if (bNodes.length > 0) {
-                        buildTreeToolbar(valuePane, bNodes, valueTree, sectionData[selectedKey], secBrowseStateKey);
+                        buildTreeToolbar(
+                            valuePane,
+                            bNodes,
+                            valueTree,
+                            sectionData[selectedKey],
+                            secBrowseStateKey
+                        );
                         applyExpandState(bNodes, expandAllStates[secBrowseStateKey]);
                     }
                     valuePane.appendChild(valueTree);
