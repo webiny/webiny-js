@@ -1,5 +1,5 @@
 ---
-name: webiny-content-models
+name: webiny-api-cms-content-models
 context: webiny-extensions
 description: >
   Creating Headless CMS content models via code using the ModelFactory pattern.

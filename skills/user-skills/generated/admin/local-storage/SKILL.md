@@ -16,25 +16,29 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `LocalStorage`
-**Import:** `webiny/admin/local-storage`
+**Import:** `import { LocalStorage } from "webiny/admin/local-storage"`
 **Source:** `@webiny/app/features/localStorage/abstractions.ts`
 
 ---
+
 **Name:** `useLocalStorage`
-**Import:** `webiny/admin/local-storage`
+**Import:** `import { useLocalStorage } from "webiny/admin/local-storage"`
 **Source:** `@webiny/app/presentation/localStorage/index.ts`
 **Description:** Returns the LocalStorage instance from DI.
 Useful when you want to call service methods imperatively inside components.
 
 ---
+
 **Name:** `useLocalStorageValue`
-**Import:** `webiny/admin/local-storage`
+**Import:** `import { useLocalStorageValue } from "webiny/admin/local-storage"`
 **Source:** `@webiny/app/presentation/localStorage/index.ts`
 
 ---
+
 **Name:** `useLocalStorageValues`
-**Import:** `webiny/admin/local-storage`
+**Import:** `import { useLocalStorageValues } from "webiny/admin/local-storage"`
 **Source:** `@webiny/app/presentation/localStorage/index.ts`
 **Description:** Observes multiple keys in LocalStorage and returns an object of { key: value }.
 Re-renders when any of the observed keys change.

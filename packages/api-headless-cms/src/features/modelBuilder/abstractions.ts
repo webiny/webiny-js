@@ -4,8 +4,7 @@ import type { PublicModelBuilder } from "./models/PublicModelBuilder.js";
 import type { IModelBuilderPrivateInput, IModelBuilderPublicInput } from "./models/ModelBuilder.js";
 
 /**
- * Field Builder Registry
- * Provides access to all registered field types via dynamic methods
+ * Augmentable field builder registry. Provides access to all registered field types.
  */
 export interface IFieldBuilderRegistry {
     /**
@@ -19,11 +18,14 @@ export interface IFieldBuilderRegistry {
     // Example: text(): ITextFieldBuilder;
 }
 
+/**
+ * @internal Do not export this abstraction. We don't want external developers to use it.
+ */
 export const FieldBuilderRegistry =
-    createAbstraction<IFieldBuilderRegistry>("FieldBuilderRegistry");
+    createAbstraction<FieldBuilderRegistry.Interface>("FieldBuilderRegistry");
 
 export namespace FieldBuilderRegistry {
-    export type Interface = IFieldBuilderRegistry;
+    export interface Interface extends IFieldBuilderRegistry {}
 }
 
 /**

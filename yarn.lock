@@ -15053,7 +15053,9 @@ __metadata:
     "@types/lodash": "npm:^4.17.24"
     "@types/ncp": "npm:^2.0.8"
     "@webiny/build-tools": "npm:0.0.0"
+    execa: "npm:^5.1.1"
     front-matter: "npm:^4.0.2"
+    tsx: "npm:^4.21.0"
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
   bin:

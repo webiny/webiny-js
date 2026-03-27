@@ -16,8 +16,9 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `CliCommandFactory`
-**Import:** `webiny/cli/command`
+**Import:** `import { CliCommandFactory } from "webiny/cli/command"`
 **Source:** `@webiny/cli-core/abstractions/features/CliCommand.ts`
 **Description:** Implement a custom CLI command for Webiny CLI.
 

@@ -268,5 +268,5 @@ API endpoint:   yarn webiny info (in your Webiny project)
 
 ## Related Skills
 
-- `webiny-content-models` -- Define the models you query with the SDK
+- `webiny-api-cms-content-models` -- Define the models you query with the SDK
 - `webiny-website-builder` -- Use the SDK inside Website Builder components to fetch CMS data

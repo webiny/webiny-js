@@ -16,13 +16,15 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `useNavigateFolder`
-**Import:** `webiny/admin/aco`
+**Import:** `import { useNavigateFolder } from "webiny/admin/aco"`
 **Source:** `@webiny/app-aco/hooks/useNavigateFolder.ts`
 
 ---
+
 **Name:** `useRecords`
-**Import:** `webiny/admin/aco`
+**Import:** `import { useRecords } from "webiny/admin/aco"`
 **Source:** `@webiny/app-aco/hooks/useRecords.ts`
 
 ---

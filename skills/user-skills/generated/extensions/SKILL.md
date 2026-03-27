@@ -16,28 +16,33 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `Admin`
-**Import:** `webiny/extensions`
+**Import:** `import { Admin } from "webiny/extensions"`
 **Source:** `@webiny/project-aws/admin.ts`
 
 ---
+
 **Name:** `Api`
-**Import:** `webiny/extensions`
+**Import:** `import { Api } from "webiny/extensions"`
 **Source:** `@webiny/project-aws/api.ts`
 
 ---
+
 **Name:** `Cli`
-**Import:** `webiny/extensions`
+**Import:** `import { Cli } from "webiny/extensions"`
 **Source:** `@webiny/project-aws/cli.ts`
 
 ---
+
 **Name:** `Infra`
-**Import:** `webiny/extensions`
+**Import:** `import { Infra } from "webiny/extensions"`
 **Source:** `@webiny/project-aws/infra.ts`
 
 ---
+
 **Name:** `Project`
-**Import:** `webiny/extensions`
+**Import:** `import { Project } from "webiny/extensions"`
 **Source:** `@webiny/project-aws/project.ts`
 
 ---

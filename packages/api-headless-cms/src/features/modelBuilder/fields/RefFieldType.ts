@@ -1,12 +1,13 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { DataFieldBuilder } from "./FieldBuilder.js";
-import { RequiredValidator, ListMinLengthValidator, ListMaxLengthValidator } from "./validators.js";
+import type { FieldTypeValidator } from "./fieldTypeValidator.js";
 
 export interface IRefFieldBuilder
-    extends DataFieldBuilder<"ref">,
-        RequiredValidator,
-        ListMinLengthValidator,
-        ListMaxLengthValidator {
+    extends
+        DataFieldBuilder<"ref">,
+        FieldTypeValidator.Required,
+        FieldTypeValidator.ListMinLength,
+        FieldTypeValidator.ListMaxLength {
     models(models: Array<{ modelId: string }>): this;
 }
 
