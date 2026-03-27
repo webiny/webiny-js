@@ -1,6 +1,7 @@
 import React from "react";
 import { Form, FormOnSubmit } from "webiny/admin/form";
 import { Dialog } from "webiny/admin/ui";
+import { ScrollArea } from "webiny/admin/ui";
 import { FunnelModelDto } from "../../models/FunnelModel";
 import { ConditionRulesForm } from "./ConditionRulesDialog/ConditionRulesForm";
 
@@ -38,7 +39,9 @@ export const ConditionRulesDialog = ({
                                 </>
                             }
                         >
-                            <ConditionRulesForm />
+                            <ScrollArea className="max-h-[70vh] flex flex-col">
+                                <ConditionRulesForm />
+                            </ScrollArea>
                         </Dialog>
                     )}
                 </Form>
