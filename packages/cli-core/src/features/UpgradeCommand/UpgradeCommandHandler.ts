@@ -5,7 +5,6 @@ import execa from "execa";
 import { UiService } from "~/abstractions/index.js";
 
 const GITHUB_REPOSITORY_URL = "https://github.com/webiny/webiny-upgrades-v6";
-const UPGRADE_PACKAGE_LATEST_TARGET = "webiny";
 
 interface IGetTargetVersionParams {
     version: string;
@@ -16,7 +15,7 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
     public constructor(private ui: UiService.Interface) {}
 
     public async handle(params: UpgradeCommandHandlerAbstraction.Params): Promise<void> {
-        const { version: inputVersion, skipChecks, debug } = params;
+        const { version, skipChecks, debug } = params;
 
         if (!skipChecks) {
             /**
@@ -51,12 +50,7 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
             }
         }
 
-        const version = await this.getTargetVersion({
-            version: inputVersion,
-            debug
-        });
-
-        const command = [GITHUB_REPOSITORY_URL, version];
+        const command = [GITHUB_REPOSITORY_URL, version || undefined].filter(Boolean);
 
         const npx = execa("npx", command, {
             env: {
@@ -100,34 +94,6 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
         });
 
         await npx;
-    }
-    /**
-     * We need to fetch the latest version from npm if the user has specified "latest" as the version,
-     * because otherwise we won't be able to pass it to npx, which doesn't understand "latest" as a version.
-     */
-    private async getTargetVersion(params: IGetTargetVersionParams): Promise<string> {
-        const { version, debug } = params;
-        if (version !== "latest") {
-            return version;
-        }
-        try {
-            const { stdout } = await execa("npm", [
-                "view",
-                UPGRADE_PACKAGE_LATEST_TARGET,
-                "version"
-            ]);
-            return stdout.trim();
-        } catch (ex) {
-            this.ui.error(
-                chalk.red(
-                    `Failed to fetch the latest version of ${UPGRADE_PACKAGE_LATEST_TARGET} from npm. Please specify the version manually.`
-                )
-            );
-            if (debug) {
-                this.ui.debug(ex.message);
-            }
-            process.exit(1);
-        }
     }
 }
 
