@@ -117,25 +117,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@auth0/auth0-auth-js@npm:1.5.0":
-  version: 1.5.0
-  resolution: "@auth0/auth0-auth-js@npm:1.5.0"
+"@auth0/auth0-auth-js@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@auth0/auth0-auth-js@npm:1.6.0"
   dependencies:
     jose: "npm:^6.0.8"
     openid-client: "npm:^6.8.0"
-  checksum: 10/ec296b783a013d56629fc4f087214060b03b2aadc6811bd8bb0bf0b5e73442324578eaa4e8a1519198678cc130db17bc6948cd4302a3b95956d47b4413dad690
+  checksum: 10/5b6c1fdb83fe7d27586749908764a5e9b06379608195103019cb92317436c5f54fc396e38c41b70877dea184615b63db490dbaf1879ebd7168c65308937d9cd5
   languageName: node
   linkType: hard
 
-"@auth0/auth0-spa-js@npm:^2.18.0":
-  version: 2.18.0
-  resolution: "@auth0/auth0-spa-js@npm:2.18.0"
+"@auth0/auth0-spa-js@npm:^2.18.2":
+  version: 2.18.2
+  resolution: "@auth0/auth0-spa-js@npm:2.18.2"
   dependencies:
-    "@auth0/auth0-auth-js": "npm:1.5.0"
+    "@auth0/auth0-auth-js": "npm:1.6.0"
     browser-tabs-lock: "npm:1.3.0"
     dpop: "npm:2.1.1"
     es-cookie: "npm:1.3.2"
-  checksum: 10/3deea91845064d89e5a8851ebd0c441bb3791873dea62c016d28325050d0b302b7b1862940b4bbb2d5441501d9a2eeb0f959450641229a149ad0c292bacba271
+  checksum: 10/9cdc9aea56bfd7e975660daaccd6eb2a070b55e80da375f8cf242bddd38e79d0d8165db689a0d13334c1f3f3e2eadbb2d05867cea51d1e7274510b092481d1c8
   languageName: node
   linkType: hard
 
@@ -317,7 +317,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-apigatewaymanagementapi@npm:^3.1016.0":
+"@aws-sdk/client-apigatewaymanagementapi@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-apigatewaymanagementapi@npm:3.1018.0"
   dependencies:
@@ -364,7 +364,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudfront@npm:^3.1016.0":
+"@aws-sdk/client-cloudfront@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-cloudfront@npm:3.1018.0"
   dependencies:
@@ -413,7 +413,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudwatch-events@npm:^3.1016.0":
+"@aws-sdk/client-cloudwatch-events@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-cloudwatch-events@npm:3.1018.0"
   dependencies:
@@ -499,7 +499,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cloudwatch-logs@npm:^3.1016.0":
+"@aws-sdk/client-cloudwatch-logs@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-cloudwatch-logs@npm:3.1018.0"
   dependencies:
@@ -549,7 +549,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-cognito-identity-provider@npm:^3.1016.0":
+"@aws-sdk/client-cognito-identity-provider@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-cognito-identity-provider@npm:3.1018.0"
   dependencies:
@@ -643,7 +643,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-dynamodb-streams@npm:^3.1016.0":
+"@aws-sdk/client-dynamodb-streams@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-dynamodb-streams@npm:3.1018.0"
   dependencies:
@@ -690,7 +690,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-dynamodb@npm:^3.1016.0":
+"@aws-sdk/client-dynamodb@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-dynamodb@npm:3.1018.0"
   dependencies:
@@ -740,7 +740,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-eventbridge@npm:^3.1016.0":
+"@aws-sdk/client-eventbridge@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-eventbridge@npm:3.1018.0"
   dependencies:
@@ -788,7 +788,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-iam@npm:^3.1016.0":
+"@aws-sdk/client-iam@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-iam@npm:3.1018.0"
   dependencies:
@@ -836,7 +836,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-iot@npm:^3.1016.0":
+"@aws-sdk/client-iot@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-iot@npm:3.1018.0"
   dependencies:
@@ -883,7 +883,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-lambda@npm:^3.1016.0":
+"@aws-sdk/client-lambda@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-lambda@npm:3.1018.0"
   dependencies:
@@ -935,7 +935,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-s3@npm:3.1018.0, @aws-sdk/client-s3@npm:^3.1016.0":
+"@aws-sdk/client-s3@npm:3.1018.0, @aws-sdk/client-s3@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-s3@npm:3.1018.0"
   dependencies:
@@ -998,7 +998,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-scheduler@npm:^3.1016.0":
+"@aws-sdk/client-scheduler@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-scheduler@npm:3.1018.0"
   dependencies:
@@ -1045,7 +1045,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sfn@npm:^3.1016.0":
+"@aws-sdk/client-sfn@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-sfn@npm:3.1018.0"
   dependencies:
@@ -1092,7 +1092,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sqs@npm:^3.1016.0":
+"@aws-sdk/client-sqs@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-sqs@npm:3.1018.0"
   dependencies:
@@ -1141,7 +1141,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sts@npm:^3.1016.0":
+"@aws-sdk/client-sts@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/client-sts@npm:3.1018.0"
   dependencies:
@@ -1440,7 +1440,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/credential-providers@npm:^3.1016.0":
+"@aws-sdk/credential-providers@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/credential-providers@npm:3.1018.0"
   dependencies:
@@ -1535,7 +1535,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/lib-dynamodb@npm:^3.1016.0":
+"@aws-sdk/lib-dynamodb@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/lib-dynamodb@npm:3.1018.0"
   dependencies:
@@ -1551,7 +1551,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/lib-storage@npm:^3.1016.0":
+"@aws-sdk/lib-storage@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/lib-storage@npm:3.1018.0"
   dependencies:
@@ -1955,7 +1955,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/s3-presigned-post@npm:^3.1016.0":
+"@aws-sdk/s3-presigned-post@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/s3-presigned-post@npm:3.1018.0"
   dependencies:
@@ -1972,7 +1972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/s3-request-presigner@npm:^3.1016.0":
+"@aws-sdk/s3-request-presigner@npm:^3.1018.0":
   version: 3.1018.0
   resolution: "@aws-sdk/s3-request-presigner@npm:3.1018.0"
   dependencies:
@@ -5076,7 +5076,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify/json@npm:^2.2.454":
+"@iconify/json@npm:^2.2.455":
   version: 2.2.455
   resolution: "@iconify/json@npm:2.2.455"
   dependencies:
@@ -6371,9 +6371,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@modelcontextprotocol/sdk@npm:^1.27.1":
-  version: 1.27.1
-  resolution: "@modelcontextprotocol/sdk@npm:1.27.1"
+"@modelcontextprotocol/sdk@npm:^1.28.0":
+  version: 1.28.0
+  resolution: "@modelcontextprotocol/sdk@npm:1.28.0"
   dependencies:
     "@hono/node-server": "npm:^1.19.9"
     ajv: "npm:^8.17.1"
@@ -6400,7 +6400,7 @@ __metadata:
       optional: true
     zod:
       optional: false
-  checksum: 10/3cb0d61cfb916e555c85b4a527e772f88fcf9c6abacbe5eb5e965aac7c898190c416341ab3b3cba8c2d5f5ce4d513279fba3ad7784a0903d7ccd335decc55395
+  checksum: 10/df5d6db04607d26029c6c60f82dc10a09f7d60939aaf7916fd5ab5d45d434eb1d4551089735321527fa724a81f9231dcef395978a31ee0d0338d7cc154172ccd
   languageName: node
   linkType: hard
 
@@ -7852,7 +7852,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^3.142.0, @pulumi/pulumi@npm:^3.227.0":
+"@pulumi/pulumi@npm:^3.142.0":
   version: 3.227.0
   resolution: "@pulumi/pulumi@npm:3.227.0"
   dependencies:
@@ -7894,6 +7894,51 @@ __metadata:
     typescript:
       optional: true
   checksum: 10/721cf1ffd4170aba8f1983f959bfeee4affc73c666e09ae620cb16b2414638902bfc2c62cf8cd616fe89eff4842a8ab0a256ebefaca06e8e7927d09658753321
+  languageName: node
+  linkType: hard
+
+"@pulumi/pulumi@npm:^3.228.0":
+  version: 3.228.0
+  resolution: "@pulumi/pulumi@npm:3.228.0"
+  dependencies:
+    "@grpc/grpc-js": "npm:^1.10.1"
+    "@logdna/tail-file": "npm:^2.0.6"
+    "@npmcli/arborist": "npm:^9.0.0"
+    "@opentelemetry/api": "npm:^1.9"
+    "@opentelemetry/exporter-trace-otlp-grpc": "npm:^0.57"
+    "@opentelemetry/exporter-zipkin": "npm:^1.30"
+    "@opentelemetry/instrumentation": "npm:^0.57"
+    "@opentelemetry/instrumentation-grpc": "npm:^0.57"
+    "@opentelemetry/resources": "npm:^1.30"
+    "@opentelemetry/sdk-trace-base": "npm:^1.30"
+    "@opentelemetry/sdk-trace-node": "npm:^1.30"
+    "@types/google-protobuf": "npm:^3.15.5"
+    "@types/semver": "npm:^7.5.6"
+    "@types/tmp": "npm:^0.2.6"
+    execa: "npm:^5.1.0"
+    fdir: "npm:^6.5.0"
+    google-protobuf: "npm:^3.21.4"
+    got: "npm:^11.8.6"
+    ini: "npm:^2.0.0"
+    js-yaml: "npm:^3.14.2"
+    minimist: "npm:^1.2.6"
+    normalize-package-data: "npm:^6.0.0"
+    package-directory: "npm:^8.1.0"
+    picomatch: "npm:^3.0.1"
+    require-from-string: "npm:^2.0.1"
+    semver: "npm:^7.5.2"
+    source-map-support: "npm:^0.5.6"
+    tmp: "npm:^0.2.4"
+    upath: "npm:^1.1.0"
+  peerDependencies:
+    ts-node: ">= 7.0.1 < 12"
+    typescript: ">= 3.8.3 < 6"
+  peerDependenciesMeta:
+    ts-node:
+      optional: true
+    typescript:
+      optional: true
+  checksum: 10/4e10473b6aa636c8cac09eff38caafaf09c5a256b052bc904c622f526edf62c80f42d0622e47c4e55fa378ae9270e5c9642b26fb4ad1acf391ddcba13df38b0d
   languageName: node
   linkType: hard
 
@@ -9377,18 +9422,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rsbuild/core@npm:^1.7.3":
-  version: 1.7.3
-  resolution: "@rsbuild/core@npm:1.7.3"
+"@rsbuild/core@npm:^1.7.4":
+  version: 1.7.4
+  resolution: "@rsbuild/core@npm:1.7.4"
   dependencies:
-    "@rspack/core": "npm:~1.7.5"
+    "@rspack/core": "npm:~1.7.10"
     "@rspack/lite-tapable": "npm:~1.1.0"
     "@swc/helpers": "npm:^0.5.18"
     core-js: "npm:~3.47.0"
     jiti: "npm:^2.6.1"
   bin:
     rsbuild: bin/rsbuild.js
-  checksum: 10/f28946b9a1c9b49ce2094c3d7356799af49accaf2238abe74aef20217a387406d51719e5e3a2e6323fbb9d49c5df42306bdb76cbe7fd05ec135dfaaa98148c77
+  checksum: 10/f36b48ea358345f0effd4046ae85041b805abf8004b94d431cfec8f736d53c6e416640021e9a516e6e5e25bb11e6e6e1723f64f6e401f40e4722ffdf0e292274
   languageName: node
   linkType: hard
 
@@ -9468,23 +9513,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-darwin-arm64@npm:1.7.9":
-  version: 1.7.9
-  resolution: "@rspack/binding-darwin-arm64@npm:1.7.9"
-  conditions: os=darwin & cpu=arm64
-  languageName: node
-  linkType: hard
-
 "@rspack/binding-darwin-x64@npm:1.7.10":
   version: 1.7.10
   resolution: "@rspack/binding-darwin-x64@npm:1.7.10"
-  conditions: os=darwin & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@rspack/binding-darwin-x64@npm:1.7.9":
-  version: 1.7.9
-  resolution: "@rspack/binding-darwin-x64@npm:1.7.9"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
@@ -9496,23 +9527,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-arm64-gnu@npm:1.7.9":
-  version: 1.7.9
-  resolution: "@rspack/binding-linux-arm64-gnu@npm:1.7.9"
-  conditions: os=linux & cpu=arm64 & libc=glibc
-  languageName: node
-  linkType: hard
-
 "@rspack/binding-linux-arm64-musl@npm:1.7.10":
   version: 1.7.10
   resolution: "@rspack/binding-linux-arm64-musl@npm:1.7.10"
-  conditions: os=linux & cpu=arm64 & libc=musl
-  languageName: node
-  linkType: hard
-
-"@rspack/binding-linux-arm64-musl@npm:1.7.9":
-  version: 1.7.9
-  resolution: "@rspack/binding-linux-arm64-musl@npm:1.7.9"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
@@ -9524,23 +9541,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-linux-x64-gnu@npm:1.7.9":
-  version: 1.7.9
-  resolution: "@rspack/binding-linux-x64-gnu@npm:1.7.9"
-  conditions: os=linux & cpu=x64 & libc=glibc
-  languageName: node
-  linkType: hard
-
 "@rspack/binding-linux-x64-musl@npm:1.7.10":
   version: 1.7.10
   resolution: "@rspack/binding-linux-x64-musl@npm:1.7.10"
-  conditions: os=linux & cpu=x64 & libc=musl
-  languageName: node
-  linkType: hard
-
-"@rspack/binding-linux-x64-musl@npm:1.7.9":
-  version: 1.7.9
-  resolution: "@rspack/binding-linux-x64-musl@npm:1.7.9"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
@@ -9554,25 +9557,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-wasm32-wasi@npm:1.7.9":
-  version: 1.7.9
-  resolution: "@rspack/binding-wasm32-wasi@npm:1.7.9"
-  dependencies:
-    "@napi-rs/wasm-runtime": "npm:1.0.7"
-  conditions: cpu=wasm32
-  languageName: node
-  linkType: hard
-
 "@rspack/binding-win32-arm64-msvc@npm:1.7.10":
   version: 1.7.10
   resolution: "@rspack/binding-win32-arm64-msvc@npm:1.7.10"
-  conditions: os=win32 & cpu=arm64
-  languageName: node
-  linkType: hard
-
-"@rspack/binding-win32-arm64-msvc@npm:1.7.9":
-  version: 1.7.9
-  resolution: "@rspack/binding-win32-arm64-msvc@npm:1.7.9"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -9584,23 +9571,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding-win32-ia32-msvc@npm:1.7.9":
-  version: 1.7.9
-  resolution: "@rspack/binding-win32-ia32-msvc@npm:1.7.9"
-  conditions: os=win32 & cpu=ia32
-  languageName: node
-  linkType: hard
-
 "@rspack/binding-win32-x64-msvc@npm:1.7.10":
   version: 1.7.10
   resolution: "@rspack/binding-win32-x64-msvc@npm:1.7.10"
-  conditions: os=win32 & cpu=x64
-  languageName: node
-  linkType: hard
-
-"@rspack/binding-win32-x64-msvc@npm:1.7.9":
-  version: 1.7.9
-  resolution: "@rspack/binding-win32-x64-msvc@npm:1.7.9"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -9644,46 +9617,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rspack/binding@npm:1.7.9":
-  version: 1.7.9
-  resolution: "@rspack/binding@npm:1.7.9"
-  dependencies:
-    "@rspack/binding-darwin-arm64": "npm:1.7.9"
-    "@rspack/binding-darwin-x64": "npm:1.7.9"
-    "@rspack/binding-linux-arm64-gnu": "npm:1.7.9"
-    "@rspack/binding-linux-arm64-musl": "npm:1.7.9"
-    "@rspack/binding-linux-x64-gnu": "npm:1.7.9"
-    "@rspack/binding-linux-x64-musl": "npm:1.7.9"
-    "@rspack/binding-wasm32-wasi": "npm:1.7.9"
-    "@rspack/binding-win32-arm64-msvc": "npm:1.7.9"
-    "@rspack/binding-win32-ia32-msvc": "npm:1.7.9"
-    "@rspack/binding-win32-x64-msvc": "npm:1.7.9"
-  dependenciesMeta:
-    "@rspack/binding-darwin-arm64":
-      optional: true
-    "@rspack/binding-darwin-x64":
-      optional: true
-    "@rspack/binding-linux-arm64-gnu":
-      optional: true
-    "@rspack/binding-linux-arm64-musl":
-      optional: true
-    "@rspack/binding-linux-x64-gnu":
-      optional: true
-    "@rspack/binding-linux-x64-musl":
-      optional: true
-    "@rspack/binding-wasm32-wasi":
-      optional: true
-    "@rspack/binding-win32-arm64-msvc":
-      optional: true
-    "@rspack/binding-win32-ia32-msvc":
-      optional: true
-    "@rspack/binding-win32-x64-msvc":
-      optional: true
-  checksum: 10/2a723c2fdcd322b3d2229825640d4174fc82e009c87c5b5ca1d4b400477731f57b799dde74a1bc81a7207d0dce75f9c956443684986b0d673d8e44e8a5470398
-  languageName: node
-  linkType: hard
-
-"@rspack/core@npm:^1.7.10":
+"@rspack/core@npm:^1.7.10, @rspack/core@npm:~1.7.10":
   version: 1.7.10
   resolution: "@rspack/core@npm:1.7.10"
   dependencies:
@@ -9696,22 +9630,6 @@ __metadata:
     "@swc/helpers":
       optional: true
   checksum: 10/29fa0b9d7f02b0d9d36cd36ad31dc07a512127015aa8f47eff1e1dbd158555485e9df40d11252436591686812fd508da02163decfe25c9b8b3eca0ef69684fbb
-  languageName: node
-  linkType: hard
-
-"@rspack/core@npm:~1.7.5":
-  version: 1.7.9
-  resolution: "@rspack/core@npm:1.7.9"
-  dependencies:
-    "@module-federation/runtime-tools": "npm:0.22.0"
-    "@rspack/binding": "npm:1.7.9"
-    "@rspack/lite-tapable": "npm:1.1.0"
-  peerDependencies:
-    "@swc/helpers": ">=0.5.1"
-  peerDependenciesMeta:
-    "@swc/helpers":
-      optional: true
-  checksum: 10/f75ddd35d1ba8daae5c41b9a839a81999bc09043bff4741750f1fca03ea60862d19d57019758a94dbf0b9a0a2b97c18f6e1e06962b279f93a815fbe5ca9fae57
   languageName: node
   linkType: hard
 
@@ -11875,12 +11793,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.3.7":
-  version: 18.3.7
-  resolution: "@types/react-dom@npm:18.3.7"
-  peerDependencies:
-    "@types/react": ^18.0.0
-  checksum: 10/317569219366d487a3103ba1e5e47154e95a002915fdcf73a44162c48fe49c3a57fcf7f57fc6979e70d447112681e6b13c6c3c1df289db8b544df4aab2d318f3
+"@types/react-dom@npm:18.2.25":
+  version: 18.2.25
+  resolution: "@types/react-dom@npm:18.2.25"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10/0e45856a2fdbf09e74632b132b3af773c6b18fc2ab0bd04595c9f2bcc0bb04d5e732ac8156d145b712dedab7484a8fe9dce5cf720a5437b5d26099c7060c7ba4
   languageName: node
   linkType: hard
 
@@ -11921,13 +11839,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.3.28":
-  version: 18.3.28
-  resolution: "@types/react@npm:18.3.28"
+"@types/react@npm:18.2.79":
+  version: 18.2.79
+  resolution: "@types/react@npm:18.2.79"
   dependencies:
     "@types/prop-types": "npm:*"
-    csstype: "npm:^3.2.2"
-  checksum: 10/6db7bb7f19957ee9f530baa7d143527f8befedad1585b064eb80777be0d84621157de75aba4f499ff429b10c5ef0c7d13e89be6bca3296ef71c80472894ff0eb
+    csstype: "npm:^3.0.2"
+  checksum: 10/2ef833e7d0a5c226beddbbe090811582371f6ae5e2f092a3d9f47cc6087c8bce0b96ee33e351de6d1d470f0a0ec5892d971933f841ef31538c1821681fc6569e
   languageName: node
   linkType: hard
 
@@ -12607,7 +12525,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/coverage-v8@npm:^4.1.1":
+"@vitest/coverage-v8@npm:^4.1.2":
   version: 4.1.2
   resolution: "@vitest/coverage-v8@npm:4.1.2"
   dependencies:
@@ -13044,7 +12962,7 @@ __metadata:
     "@svgr/webpack": "npm:^8.1.0"
     "@tailwindcss/postcss": "npm:^4.2.2"
     "@tanstack/react-table": "npm:^8.21.3"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@types/react-color": "npm:^3.0.13"
     "@types/react-custom-scrollbars": "npm:^4.0.13"
     "@types/react-virtualized": "npm:^9.22.3"
@@ -13068,7 +12986,7 @@ __metadata:
     postcss-loader: "npm:^8.2.1"
     prettier: "npm:3.6.2"
     radix-ui: "npm:^1.4.3"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     react-color: "npm:^2.19.3"
     react-custom-scrollbars: "npm:^4.2.1"
     react-dnd: "npm:^16.0.1"
@@ -13083,7 +13001,7 @@ __metadata:
     tw-animate-css: "npm:^1.4.0"
     type-fest: "npm:^5.5.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13117,7 +13035,7 @@ __metadata:
     prettier: "npm:3.6.2"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13148,7 +13066,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.13.2"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -13227,7 +13145,7 @@ __metadata:
     pino-lambda: "npm:^4.4.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -13275,7 +13193,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.5.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13301,7 +13219,7 @@ __metadata:
     graphql: "npm:^16.13.2"
     ttypescript: "npm:^1.5.15"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13331,7 +13249,7 @@ __metadata:
     sanitize-filename: "npm:^1.6.4"
     sharp: "npm:^0.34.5"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13379,7 +13297,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.13.2"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13402,7 +13320,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.13.2"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13436,7 +13354,7 @@ __metadata:
     prettier: "npm:3.6.2"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13462,7 +13380,7 @@ __metadata:
     jest-dynalite: "npm:^3.6.1"
     lodash: "npm:^4.17.23"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13485,7 +13403,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13521,7 +13439,7 @@ __metadata:
     typescript: "npm:5.9.3"
     uniqid: "npm:^5.4.0"
     unzipper: "npm:^0.12.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -13545,7 +13463,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     aws-sdk-client-mock: "npm:^4.1.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13584,7 +13502,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -13605,7 +13523,7 @@ __metadata:
     "@webiny/testing": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13649,7 +13567,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.8"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     write-json-file: "npm:^7.0.0"
     zod: "npm:^4.3.6"
   languageName: unknown
@@ -13679,7 +13597,7 @@ __metadata:
     nodemailer: "npm:^8.0.4"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -13699,7 +13617,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13724,7 +13642,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.5.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13752,7 +13670,7 @@ __metadata:
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -13779,7 +13697,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     semver: "npm:^7.7.4"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -13805,7 +13723,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     aws-sdk-client-mock: "npm:^4.1.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13825,7 +13743,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/testing": "npm:0.0.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13853,7 +13771,7 @@ __metadata:
     prettier: "npm:3.6.2"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13880,7 +13798,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.5.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -13903,7 +13821,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     type-fest: "npm:^5.5.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -13920,7 +13838,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -13929,7 +13847,7 @@ __metadata:
   resolution: "@webiny/app-aco@workspace:packages/app-aco"
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -13954,12 +13872,12 @@ __metadata:
     lodash: "npm:^4.17.23"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.8"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -13969,15 +13887,15 @@ __metadata:
   resolution: "@webiny/app-admin-ui@workspace:packages/app-admin-ui"
   dependencies:
     "@emotion/babel-plugin": "npm:^11.13.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@types/react-helmet": "npm:^6.1.11"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
@@ -13994,13 +13912,13 @@ __metadata:
     "@emotion/css": "npm:^11.13.5"
     "@emotion/react": "npm:11.14.0"
     "@emotion/styled": "npm:11.14.1"
-    "@iconify/json": "npm:^2.2.454"
+    "@iconify/json": "npm:^2.2.455"
     "@svgr/webpack": "npm:^8.1.0"
     "@testing-library/react": "npm:^16.3.2"
     "@types/bytes": "npm:^3.1.5"
     "@types/graphlib": "npm:^2.1.12"
     "@types/is-hotkey": "npm:^0.1.10"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@types/react-resizable": "npm:^3.0.8"
     "@types/react-transition-group": "npm:^4.4.12"
     "@types/store": "npm:^2.0.5"
@@ -14040,8 +13958,8 @@ __metadata:
     mobx-react-lite: "npm:^4.1.1"
     monaco-editor: "npm:0.53.0"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     react-resizable-panels: "npm:^4.7.6"
     react-transition-group: "npm:^4.4.5"
     react-virtualized: "npm:^9.22.6"
@@ -14050,7 +13968,7 @@ __metadata:
     tinycolor2: "npm:^1.6.0"
     typescript: "npm:5.9.3"
     unicode-emoji-json: "npm:^0.8.0"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -14062,7 +13980,7 @@ __metadata:
     "@emotion/css": "npm:^11.13.5"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -14080,7 +13998,7 @@ __metadata:
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
   peerDependencies:
-    react: ^18.3.1
+    react: 18.2.0
   languageName: unknown
   linkType: soft
 
@@ -14105,7 +14023,7 @@ __metadata:
     "@apollo/react-components": "npm:^3.1.5"
     "@apollo/react-hooks": "npm:^3.1.5"
     "@svgr/webpack": "npm:^8.1.0"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
@@ -14140,14 +14058,14 @@ __metadata:
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     react-butterfiles: "npm:^1.3.3"
     react-custom-scrollbars: "npm:^4.2.1"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:18.2.0"
     react-lazy-load: "npm:^4.0.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -14173,8 +14091,8 @@ __metadata:
     graphql: "npm:^16.13.2"
     load-script: "npm:^2.0.0"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14189,7 +14107,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@fortawesome/fontawesome-svg-core": "npm:^7.2.0"
     "@fortawesome/react-fontawesome": "npm:^3.3.0"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -14204,7 +14122,7 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.23"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14216,15 +14134,15 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
     "@emotion/babel-plugin": "npm:^11.13.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/app-headless-cms-common": "npm:0.0.0"
     "@webiny/app-scheduler": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14236,7 +14154,7 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
     "@fortawesome/react-fontawesome": "npm:^3.3.0"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -14246,8 +14164,8 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
@@ -14272,7 +14190,7 @@ __metadata:
     "@fortawesome/react-fontawesome": "npm:^3.3.0"
     "@lexical/utils": "npm:^0.42.0"
     "@svgr/webpack": "npm:^8.1.0"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
@@ -14308,16 +14226,16 @@ __metadata:
     mobx-react-lite: "npm:^4.1.1"
     prop-types: "npm:^15.8.1"
     raw.macro: "npm:0.4.2"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     react-butterfiles: "npm:^1.3.3"
     react-dnd: "npm:^16.0.1"
     react-dnd-html5-backend: "npm:^16.0.1"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
     use-deep-compare-effect: "npm:^1.8.1"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -14327,7 +14245,7 @@ __metadata:
   resolution: "@webiny/app-mailer@workspace:packages/app-mailer"
   dependencies:
     "@apollo/react-components": "npm:^3.1.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -14341,8 +14259,8 @@ __metadata:
     graphql: "npm:^16.13.2"
     graphql-tag: "npm:^2.12.6"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14367,8 +14285,8 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     crypto-hash: "npm:^4.0.1"
     graphql-tag: "npm:^2.12.6"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14382,7 +14300,7 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
     "@material-design-icons/svg": "npm:^0.14.15"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -14402,8 +14320,8 @@ __metadata:
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
@@ -14422,8 +14340,8 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
     monaco-editor: "npm:0.53.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14446,8 +14364,8 @@ __metadata:
     "@webiny/validation": "npm:0.0.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.23"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14491,8 +14409,8 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     apollo-link-batch-http: "npm:^1.2.14"
     apollo-utilities: "npm:^1.3.4"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14502,7 +14420,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-trash-bin@workspace:packages/app-trash-bin"
   dependencies:
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -14518,11 +14436,11 @@ __metadata:
     lodash: "npm:^4.17.23"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -14544,14 +14462,14 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
     "@emotion/babel-plugin": "npm:^11.13.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app-scheduler": "npm:0.0.0"
     "@webiny/app-website-builder": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14562,7 +14480,7 @@ __metadata:
   resolution: "@webiny/app-website-builder-workflows@workspace:packages/app-website-builder-workflows"
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -14573,8 +14491,8 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
@@ -14595,7 +14513,7 @@ __metadata:
     "@svgr/webpack": "npm:^8.1.0"
     "@types/deep-equal": "npm:^1.0.4"
     "@types/is-hotkey": "npm:^0.1.10"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
@@ -14635,14 +14553,14 @@ __metadata:
     mobx-react-lite: "npm:^4.1.1"
     pluralize: "npm:^8.0.0"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     react-dnd: "npm:^16.0.1"
     react-dnd-html5-backend: "npm:^16.0.1"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.8"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -14654,8 +14572,8 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14666,7 +14584,7 @@ __metadata:
   resolution: "@webiny/app-workflows@workspace:packages/app-workflows"
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -14683,8 +14601,8 @@ __metadata:
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
@@ -14698,7 +14616,7 @@ __metadata:
     "@apollo/react-hooks": "npm:^3.1.5"
     "@emotion/styled": "npm:^11.14.1"
     "@types/lodash": "npm:^4.17.24"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@types/warning": "npm:^3.0.4"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^0.2.3"
@@ -14725,13 +14643,13 @@ __metadata:
     minimatch: "npm:^10.2.4"
     mobx: "npm:^6.15.0"
     nanoid: "npm:^5.1.7"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     ts-invariant: "npm:^0.10.3"
     type-fest: "npm:^5.5.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     warning: "npm:^4.0.3"
     zod: "npm:^4.3.6"
   languageName: unknown
@@ -14741,7 +14659,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/auth0@workspace:packages/auth0"
   dependencies:
-    "@auth0/auth0-spa-js": "npm:^2.18.0"
+    "@auth0/auth0-spa-js": "npm:^2.18.2"
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@types/jwk-to-pem": "npm:^2.0.3"
     "@webiny/admin-ui": "npm:0.0.0"
@@ -14755,8 +14673,8 @@ __metadata:
     jsonwebtoken: "npm:^9.0.3"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
@@ -14786,27 +14704,27 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/aws-sdk@workspace:packages/aws-sdk"
   dependencies:
-    "@aws-sdk/client-apigatewaymanagementapi": "npm:^3.1016.0"
-    "@aws-sdk/client-cloudfront": "npm:^3.1016.0"
-    "@aws-sdk/client-cloudwatch-events": "npm:^3.1016.0"
-    "@aws-sdk/client-cloudwatch-logs": "npm:^3.1016.0"
-    "@aws-sdk/client-cognito-identity-provider": "npm:^3.1016.0"
-    "@aws-sdk/client-dynamodb": "npm:^3.1016.0"
-    "@aws-sdk/client-dynamodb-streams": "npm:^3.1016.0"
-    "@aws-sdk/client-eventbridge": "npm:^3.1016.0"
-    "@aws-sdk/client-iam": "npm:^3.1016.0"
-    "@aws-sdk/client-iot": "npm:^3.1016.0"
-    "@aws-sdk/client-lambda": "npm:^3.1016.0"
-    "@aws-sdk/client-s3": "npm:^3.1016.0"
-    "@aws-sdk/client-scheduler": "npm:^3.1016.0"
-    "@aws-sdk/client-sfn": "npm:^3.1016.0"
-    "@aws-sdk/client-sqs": "npm:^3.1016.0"
-    "@aws-sdk/client-sts": "npm:^3.1016.0"
-    "@aws-sdk/credential-providers": "npm:^3.1016.0"
-    "@aws-sdk/lib-dynamodb": "npm:^3.1016.0"
-    "@aws-sdk/lib-storage": "npm:^3.1016.0"
-    "@aws-sdk/s3-presigned-post": "npm:^3.1016.0"
-    "@aws-sdk/s3-request-presigner": "npm:^3.1016.0"
+    "@aws-sdk/client-apigatewaymanagementapi": "npm:^3.1018.0"
+    "@aws-sdk/client-cloudfront": "npm:^3.1018.0"
+    "@aws-sdk/client-cloudwatch-events": "npm:^3.1018.0"
+    "@aws-sdk/client-cloudwatch-logs": "npm:^3.1018.0"
+    "@aws-sdk/client-cognito-identity-provider": "npm:^3.1018.0"
+    "@aws-sdk/client-dynamodb": "npm:^3.1018.0"
+    "@aws-sdk/client-dynamodb-streams": "npm:^3.1018.0"
+    "@aws-sdk/client-eventbridge": "npm:^3.1018.0"
+    "@aws-sdk/client-iam": "npm:^3.1018.0"
+    "@aws-sdk/client-iot": "npm:^3.1018.0"
+    "@aws-sdk/client-lambda": "npm:^3.1018.0"
+    "@aws-sdk/client-s3": "npm:^3.1018.0"
+    "@aws-sdk/client-scheduler": "npm:^3.1018.0"
+    "@aws-sdk/client-sfn": "npm:^3.1018.0"
+    "@aws-sdk/client-sqs": "npm:^3.1018.0"
+    "@aws-sdk/client-sts": "npm:^3.1018.0"
+    "@aws-sdk/credential-providers": "npm:^3.1018.0"
+    "@aws-sdk/lib-dynamodb": "npm:^3.1018.0"
+    "@aws-sdk/lib-storage": "npm:^3.1018.0"
+    "@aws-sdk/s3-presigned-post": "npm:^3.1018.0"
+    "@aws-sdk/s3-request-presigner": "npm:^3.1018.0"
     "@aws-sdk/util-dynamodb": "npm:^3.996.2"
     "@types/aws-lambda": "npm:8.10.161"
     "@webiny/build-tools": "npm:0.0.0"
@@ -14825,7 +14743,7 @@ __metadata:
     "@babel/preset-react": "npm:^7.28.5"
     "@babel/preset-typescript": "npm:^7.28.5"
     "@babel/runtime": "npm:^7.29.2"
-    "@rsbuild/core": "npm:^1.7.3"
+    "@rsbuild/core": "npm:^1.7.4"
     "@rsbuild/plugin-react": "npm:^1.4.6"
     "@rsbuild/plugin-sass": "npm:^1.5.1"
     "@rsbuild/plugin-svgr": "npm:^1.3.1"
@@ -14847,7 +14765,7 @@ __metadata:
     postcss-loader: "npm:^8.2.1"
     process: "npm:^0.11.10"
     raw-loader: "npm:^4.0.2"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:18.2.0"
     react-refresh: "npm:^0.18.0"
     read-json-sync: "npm:2.0.1"
     rimraf: "npm:^6.1.3"
@@ -14870,6 +14788,7 @@ __metadata:
     "@types/lodash": "npm:^4.17.24"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^0.2.3"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
@@ -14917,7 +14836,7 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
     "@aws-amplify/auth": "npm:^5.6.19"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:*"
     "@webiny/api-core": "npm:*"
     "@webiny/app": "npm:*"
@@ -14941,8 +14860,8 @@ __metadata:
     lodash: "npm:^4.17.23"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    vitest: "npm:^4.1.1"
+    react: "npm:18.2.0"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -14979,7 +14898,7 @@ __metadata:
     lodash: "npm:^4.17.23"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15052,9 +14971,9 @@ __metadata:
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.8"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   peerDependencies:
-    react: ^18.3.1
+    react: 18.2.0
   languageName: unknown
   linkType: soft
 
@@ -15083,7 +15002,7 @@ __metadata:
     pino-lambda: "npm:^4.4.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15122,7 +15041,7 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -15142,7 +15061,7 @@ __metadata:
     fastify: "npm:5.8.4"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15156,7 +15075,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   peerDependencies:
-    react: ^18.3.1
+    react: 18.2.0
   languageName: unknown
   linkType: soft
 
@@ -15175,10 +15094,10 @@ __metadata:
     rimraf: "npm:^6.1.3"
     short-hash: "npm:^1.0.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     yargs: "npm:^18.0.0"
   peerDependencies:
-    react: ^18.3.1
+    react: 18.2.0
   languageName: unknown
   linkType: soft
 
@@ -15201,7 +15120,7 @@ __metadata:
     cheerio: "npm:^1.2.0"
     jsdom: "npm:^29.0.1"
     lexical: "npm:^0.42.0"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15216,9 +15135,9 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     react-color: "npm:^2.19.3"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:18.2.0"
   languageName: unknown
   linkType: soft
 
@@ -15241,8 +15160,8 @@ __metadata:
     "@webiny/react-properties": "npm:0.0.0"
     lexical: "npm:^0.42.0"
     lodash: "npm:^4.17.23"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
   languageName: unknown
   linkType: soft
 
@@ -15263,7 +15182,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/lexical-theme": "npm:0.0.0"
     lexical: "npm:^0.42.0"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
   languageName: unknown
   linkType: soft
 
@@ -15287,19 +15206,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/mcp@npm:0.0.0, @webiny/mcp@workspace:packages/mcp":
+"@webiny/mcp@workspace:packages/mcp":
   version: 0.0.0-use.local
   resolution: "@webiny/mcp@workspace:packages/mcp"
   dependencies:
-    "@modelcontextprotocol/sdk": "npm:^1.27.1"
+    "@modelcontextprotocol/sdk": "npm:^1.28.0"
     "@types/lodash": "npm:^4.17.24"
     "@types/ncp": "npm:^2.0.8"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/cli-core": "npm:0.0.0"
+    execa: "npm:^5.1.1"
     front-matter: "npm:^4.0.2"
-    react: "npm:^18.3.1"
+    tsx: "npm:^4.21.0"
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
+  bin:
+    webiny-mcp: ./bin.js
   languageName: unknown
   linkType: soft
 
@@ -15321,8 +15242,8 @@ __metadata:
     jsonwebtoken: "npm:^9.0.3"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
@@ -15338,7 +15259,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
     uniqid: "npm:^5.4.0"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15382,7 +15303,7 @@ __metadata:
     "@webiny/tenant-manager": "npm:*"
     core-js: "npm:3.49.0"
     cross-fetch: "npm:^4.1.0"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     regenerator-runtime: "npm:^0.14.1"
   languageName: unknown
   linkType: soft
@@ -15392,7 +15313,7 @@ __metadata:
   resolution: "@webiny/project-aws@workspace:packages/project-aws"
   dependencies:
     "@pulumi/aws": "npm:^7.23.0"
-    "@pulumi/pulumi": "npm:^3.227.0"
+    "@pulumi/pulumi": "npm:^3.228.0"
     "@pulumi/random": "npm:^4.19.1"
     "@types/lodash": "npm:^4.17.24"
     "@types/ncp": "npm:^2.0.8"
@@ -15401,7 +15322,6 @@ __metadata:
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
-    "@webiny/mcp": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -15410,7 +15330,7 @@ __metadata:
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.17.23"
     mime: "npm:^4.1.0"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     replace-in-path: "npm:^1.1.0"
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
@@ -15429,7 +15349,7 @@ __metadata:
     lodash: "npm:^4.17.23"
     pino: "npm:^10.3.1"
     pino-pretty: "npm:^13.1.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     yargs: "npm:^18.0.0"
   peerDependencies:
     "@webiny/api": "*"
@@ -15484,8 +15404,8 @@ __metadata:
     p-retry: "npm:^7.1.1"
     pino: "npm:^10.3.1"
     pino-pretty: "npm:^13.1.3"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     read-json-sync: "npm:2.0.1"
     replace-in-path: "npm:^1.1.0"
     rimraf: "npm:^6.1.3"
@@ -15504,7 +15424,7 @@ __metadata:
   resolution: "@webiny/pulumi-sdk@workspace:packages/pulumi-sdk"
   dependencies:
     "@pulumi/aws": "npm:^7.23.0"
-    "@pulumi/pulumi": "npm:^3.227.0"
+    "@pulumi/pulumi": "npm:^3.228.0"
     "@types/lodash": "npm:^4.17.24"
     "@webiny/build-tools": "npm:0.0.0"
     decompress: "npm:^4.2.1"
@@ -15524,7 +15444,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi@workspace:packages/pulumi"
   dependencies:
-    "@pulumi/pulumi": "npm:^3.227.0"
+    "@pulumi/pulumi": "npm:^3.228.0"
     "@types/lodash": "npm:^4.17.24"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
@@ -15540,12 +15460,12 @@ __metadata:
   resolution: "@webiny/react-composition@workspace:packages/react-composition"
   dependencies:
     "@testing-library/react": "npm:^16.3.2"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/build-tools": "npm:0.0.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15554,14 +15474,14 @@ __metadata:
   resolution: "@webiny/react-properties@workspace:packages/react-properties"
   dependencies:
     "@testing-library/react": "npm:^16.3.2"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     lodash: "npm:^4.17.23"
     nanoid: "npm:^5.1.7"
     prettier: "npm:3.6.2"
-    react: "npm:^18.3.1"
-    vitest: "npm:^4.1.1"
+    react: "npm:18.2.0"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15571,15 +15491,15 @@ __metadata:
   dependencies:
     "@emotion/react": "npm:^11.14.0"
     "@testing-library/react": "npm:^16.3.2"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     identity-obj-proxy: "npm:^3.0.0"
     prettier: "npm:3.6.2"
-    react: "npm:^18.3.1"
-    vitest: "npm:^4.1.1"
+    react: "npm:18.2.0"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15589,7 +15509,7 @@ __metadata:
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15637,7 +15557,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     type-fest: "npm:^5.5.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -15676,8 +15596,8 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -15736,8 +15656,8 @@ __metadata:
     typescript: "npm:5.9.3"
   peerDependencies:
     minimatch: ^10.2.4
-    react: ^18.3.1
-    react-dom: ^18.3.1
+    react: 18.2.0
+    react-dom: 18.2.0
   languageName: unknown
   linkType: soft
 
@@ -15756,7 +15676,7 @@ __metadata:
     p-retry: "npm:^7.1.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
@@ -15771,7 +15691,7 @@ __metadata:
     lodash: "npm:^4.17.23"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15796,7 +15716,7 @@ __metadata:
     postcss: "npm:^8.5.8"
     postcss-import: "npm:^16.1.1"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     webpack: "npm:^5.105.4"
   languageName: unknown
   linkType: soft
@@ -15805,16 +15725,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/website-builder-react@workspace:packages/website-builder-react"
   dependencies:
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -15839,7 +15759,7 @@ __metadata:
     pino: "npm:^10.3.1"
     pino-pretty: "npm:^13.1.3"
     typescript: "npm:5.9.3"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
 
@@ -19156,7 +19076,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csstype@npm:^3.0.2, csstype@npm:^3.2.2, csstype@npm:^3.2.3":
+"csstype@npm:^3.0.2, csstype@npm:^3.2.3":
   version: 3.2.3
   resolution: "csstype@npm:3.2.3"
   checksum: 10/ad41baf7e2ffac65ab544d79107bf7cd1a4bb9bab9ac3302f59ab4ba655d5e30942a8ae46e10ba160c6f4ecea464cc95b975ca2fefbdeeacd6ac63f12f99fe1f
@@ -29672,15 +29592,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18.3.1":
-  version: 18.3.1
-  resolution: "react-dom@npm:18.3.1"
+"react-dom@npm:18.2.0":
+  version: 18.2.0
+  resolution: "react-dom@npm:18.2.0"
   dependencies:
     loose-envify: "npm:^1.1.0"
-    scheduler: "npm:^0.23.2"
+    scheduler: "npm:^0.23.0"
   peerDependencies:
-    react: ^18.3.1
-  checksum: 10/3f4b73a3aa083091173b29812b10394dd06f4ac06aff410b74702cfb3aa29d7b0ced208aab92d5272919b612e5cda21aeb1d54191848cf6e46e9e354f3541f81
+    react: ^18.2.0
+  checksum: 10/ca5e7762ec8c17a472a3605b6f111895c9f87ac7d43a610ab7024f68cd833d08eda0625ce02ec7178cc1f3c957cf0b9273cdc17aa2cd02da87544331c43b1d21
   languageName: node
   linkType: hard
 
@@ -29896,12 +29816,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.3.1":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
+"react@npm:18.2.0":
+  version: 18.2.0
+  resolution: "react@npm:18.2.0"
   dependencies:
     loose-envify: "npm:^1.1.0"
-  checksum: 10/261137d3f3993eaa2368a83110466fc0e558bc2c7f7ae7ca52d94f03aac945f45146bd85e5f481044db1758a1dbb57879e2fcdd33924e2dde1bdc550ce73f7bf
+  checksum: 10/b9214a9bd79e99d08de55f8bef2b7fc8c39630be97c4e29d7be173d14a9a10670b5325e94485f74cd8bff4966ef3c78ee53c79a7b0b9b70cba20aa8973acc694
   languageName: node
   linkType: hard
 
@@ -30675,11 +30595,11 @@ __metadata:
     "@types/fs-extra": "npm:^11.0.4"
     "@types/hoist-non-react-statics": "npm:^3.3.7"
     "@types/node": "npm:^24.12.0"
-    "@types/react": "npm:^18.3.28"
-    "@types/react-dom": "npm:^18.3.7"
+    "@types/react": "npm:18.2.79"
+    "@types/react-dom": "npm:18.2.25"
     "@typescript-eslint/eslint-plugin": "npm:^8.57.2"
     "@typescript-eslint/parser": "npm:^8.57.2"
-    "@vitest/coverage-v8": "npm:^4.1.1"
+    "@vitest/coverage-v8": "npm:^4.1.2"
     "@vitest/eslint-plugin": "npm:^1.6.13"
     "@webiny/di": "npm:^0.2.3"
     adio: "npm:^2.1.0"
@@ -30722,8 +30642,8 @@ __metadata:
     minimatch: "npm:^10.2.4"
     nanoid: "npm:^5.1.7"
     prettier: "npm:3.6.2"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     semver: "npm:^7.7.4"
     ts-expect: "npm:^1.3.0"
     tsx: "npm:^4.21.0"
@@ -30731,7 +30651,7 @@ __metadata:
     typescript: "npm:5.9.3"
     validator: "npm:^13.15.26"
     verdaccio: "npm:^6.3.2"
-    vitest: "npm:^4.1.1"
+    vitest: "npm:^4.1.2"
     write-json-file: "npm:^7.0.0"
     yargs: "npm:^18.0.0"
   dependenciesMeta:
@@ -31144,7 +31064,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.23.2":
+"scheduler@npm:^0.23.0":
   version: 0.23.2
   resolution: "scheduler@npm:0.23.2"
   dependencies:
@@ -34115,7 +34035,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:^4.1.1":
+"vitest@npm:^4.1.2":
   version: 4.1.2
   resolution: "vitest@npm:4.1.2"
   dependencies:
@@ -34295,7 +34215,7 @@ __metadata:
     "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
