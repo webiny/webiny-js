@@ -14611,6 +14611,7 @@ __metadata:
     "@types/lodash": "npm:^4.17.24"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^0.2.3"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
