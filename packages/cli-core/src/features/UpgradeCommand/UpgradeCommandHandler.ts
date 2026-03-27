@@ -4,7 +4,7 @@ import chalk from "chalk";
 import execa from "execa";
 import { UiService } from "~/abstractions/index.js";
 
-const GITHUB_REPOSITORY_URL = "https://github.com/webiny/webiny-upgrades-v6-non-existing";
+const GITHUB_REPOSITORY_URL = "https://github.com/webiny/webiny-upgrades-v6";
 
 export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstraction.Interface {
     public constructor(private ui: UiService.Interface) {}
@@ -92,10 +92,14 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
         });
 
         npx.stderr.on("data", data => {
-            console.log(data.toString());
+            this.ui.error(data.toString());
         });
 
-        await npx;
+        try {
+            await npx;
+        } catch (ex) {
+            this.ui.error(`Upgrade process failed: ${ex.message}`);
+        }
     }
 }
 
