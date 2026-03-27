@@ -34,7 +34,7 @@ export const createRsbuildConfig = ({ cwd }) => {
             postcss: (_, { addPlugins }) => {
                 addPlugins(
                     tailwindcss({
-                        base: getTailwindBasePath(paths.projectRootFolder)
+                        base: paths.projectRootFolder
                     })
                 );
             },
@@ -96,10 +96,6 @@ const getPaths = cwd => {
             entryFile: adminEntryFilePath
         }
     };
-};
-
-const getTailwindBasePath = projectRootFolderPath => {
-    return projectRootFolderPath;
 };
 
 const getEnvVars = () => {
