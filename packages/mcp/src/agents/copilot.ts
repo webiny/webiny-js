@@ -25,7 +25,7 @@ function writeCopilotMcpConfig(ui: IUi, configPath: string): boolean {
         mkdirSync(dir, { recursive: true });
     }
 
-    const entry = { command: "npx", args: ["webiny-mcp", "server"] };
+    const entry = { command: "npx", args: ["webiny-mcp", "serve"] };
     let config: { servers: Record<string, unknown> } = { servers: {} };
 
     if (existsSync(configPath)) {

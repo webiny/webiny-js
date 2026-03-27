@@ -50,7 +50,7 @@ interface WriteOpenCodeMcpConfigParams {
 function writeOpenCodeMcpConfig({ ui, configPath }: WriteOpenCodeMcpConfigParams): boolean {
     const entry = {
         type: "local",
-        command: ["npx", "webiny-mcp", "server", "--additional-skills=./my-skills"],
+        command: ["npx", "webiny-mcp", "serve", "--additional-skills=./my-skills"],
         enabled: true
     };
 

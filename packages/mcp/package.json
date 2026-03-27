@@ -29,21 +29,6 @@
     "typescript": "5.9.3"
   },
   "scripts": {
-    "prepublishOnly": "cp -R ../../skills/user-skills ./dist/skills"
-  },
-  "adio": {
-    "ignoreDirs": [
-      "_templates"
-    ],
-    "ignore": {
-      "src": [
-        "listr2",
-        "cloudfront"
-      ],
-      "dependencies": [
-        "@pulumi/pulumi",
-        "@pulumi/aws"
-      ]
-    }
+    "prepublishOnly": "bash ./prepublishOnly.sh"
   }
 }

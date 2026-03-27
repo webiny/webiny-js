@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { startMcpServer } from "./cli/McpServer.js";
 import { configureMcp } from "./cli/ConfigureMcp.js";
 
@@ -29,7 +27,7 @@ function parseFlags(args: string[]): Record<string, string | string[] | boolean>
 }
 
 async function main(): Promise<void> {
-    if (command === "server") {
+    if (command === "serve") {
         const flags = parseFlags(args.slice(1));
         const additionalSkills = flags["additional-skills"];
         await startMcpServer({
@@ -51,12 +49,12 @@ async function main(): Promise<void> {
         console.log("Usage: webiny-mcp <command>");
         console.log("");
         console.log("Commands:");
-        console.log("  server       Start the MCP server (stdio transport)");
+        console.log("  serve        Start the MCP server (stdio transport)");
         console.log("  configure    Configure MCP server for a specific agent");
         console.log("");
         console.log("Examples:");
-        console.log("  npx webiny-mcp server");
-        console.log("  npx webiny-mcp server --additional-skills=./my-skills");
+        console.log("  npx webiny-mcp serve");
+        console.log("  npx webiny-mcp serve --additional-skills=./my-skills");
         console.log("  npx webiny-mcp configure claude");
         console.log("  npx webiny-mcp configure cursor");
         console.log("  npx webiny-mcp configure --instructions");

@@ -298,6 +298,6 @@ Both API and Admin need to be redeployed since Okta affects both the backend (to
 
 ## Related Skills
 
-- **dependency-injection** — The universal DI pattern used by `OktaIdpConfig.createImplementation()`
-- **project-structure** — How `webiny.config.tsx` and extensions are organized
-- **local-development** — Deploying and testing your Okta configuration
+- **webiny-dependency-injection** — The universal DI pattern used by `OktaIdpConfig.createImplementation()`
+- **webiny-project-structure** — How `webiny.config.tsx` and extensions are organized
+- **webiny-local-development** — Deploying and testing your Okta configuration

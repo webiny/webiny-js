@@ -5,7 +5,6 @@
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../cli-core/tsconfig.build.json" },
-    { "path": "../mcp-extension/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
     { "path": "../pulumi/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" }
@@ -23,8 +22,6 @@
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/cli-core/*": ["../cli-core/src/*"],
       "@webiny/cli-core": ["../cli-core/src"],
-      "@webiny/mcp-extension/*": ["../mcp-extension/src/*"],
-      "@webiny/mcp-extension": ["../mcp-extension/src"],
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/pulumi/*": ["../pulumi/src/*"],

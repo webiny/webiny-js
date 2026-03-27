@@ -40,6 +40,7 @@ The Webiny Website Builder uses a unique architecture: the Admin editor loads yo
 ```
 
 Key implications:
+
 - **No style clashes** -- your components, your styles, full ownership
 - **Genuine WYSIWYG** -- editors see your real app, not a simulation
 - **Framework-owned code** -- all React components live in your Next.js repo
@@ -69,6 +70,7 @@ NEXT_PUBLIC_WEBSITE_BUILDER_API_TENANT=root
 ## Editor Components
 
 An editor component has two parts:
+
 1. **React component** -- renders the UI, receives configured values via `inputs` prop
 2. **Manifest** -- metadata (name, label, group, inputs) that tells the editor about the component
 
@@ -80,25 +82,25 @@ import React from "react";
 import { ComponentProps } from "@webiny/website-builder-nextjs";
 
 interface BannerInputs {
-    headline: string;
-    ctaLabel: string;
-    ctaUrl: string;
+  headline: string;
+  ctaLabel: string;
+  ctaUrl: string;
 }
 
 export function Banner({ inputs: { headline, ctaLabel, ctaUrl } }: ComponentProps<BannerInputs>) {
-    return (
-        <div className="bg-primary py-12 px-6 text-center text-white">
-            <h2 className="text-3xl font-bold mb-4">{headline}</h2>
-            {ctaLabel && ctaUrl && (
-                <a
-                    href={ctaUrl}
-                    className="inline-block bg-white text-primary font-semibold px-6 py-3 rounded-md"
-                >
-                    {ctaLabel}
-                </a>
-            )}
-        </div>
-    );
+  return (
+    <div className="bg-primary py-12 px-6 text-center text-white">
+      <h2 className="text-3xl font-bold mb-4">{headline}</h2>
+      {ctaLabel && ctaUrl && (
+        <a
+          href={ctaUrl}
+          className="inline-block bg-white text-primary font-semibold px-6 py-3 rounded-md"
+        >
+          {ctaLabel}
+        </a>
+      )}
+    </div>
+  );
 }
 ```
 
@@ -113,29 +115,29 @@ import { createComponent, createTextInput } from "@webiny/website-builder-nextjs
 import { Banner } from "./Banner";
 
 export const editorComponents = [
-    createComponent(Banner, {
-        name: "Custom/Banner",
-        label: "Banner",
-        group: "custom",
-        inputs: [
-            createTextInput({
-                name: "headline",
-                label: "Headline",
-                description: "The main headline text.",
-                defaultValue: "Ready to get started?"
-            }),
-            createTextInput({
-                name: "ctaLabel",
-                label: "Button Label",
-                defaultValue: "Get started"
-            }),
-            createTextInput({
-                name: "ctaUrl",
-                label: "Button URL",
-                defaultValue: "/"
-            })
-        ]
-    })
+  createComponent(Banner, {
+    name: "Custom/Banner",
+    label: "Banner",
+    group: "custom",
+    inputs: [
+      createTextInput({
+        name: "headline",
+        label: "Headline",
+        description: "The main headline text.",
+        defaultValue: "Ready to get started?"
+      }),
+      createTextInput({
+        name: "ctaLabel",
+        label: "Button Label",
+        defaultValue: "Get started"
+      }),
+      createTextInput({
+        name: "ctaUrl",
+        label: "Button URL",
+        defaultValue: "/"
+      })
+    ]
+  })
 ];
 ```
 
@@ -147,21 +149,21 @@ Use a namespaced string: `"YourNamespace/ComponentName"`. Component names are st
 
 ## Input Types
 
-| Factory Function | Use Case |
-|---|---|
-| `createTextInput` | Single-line text, URLs, labels |
-| `createLongTextInput` | Multi-line text |
-| `createNumberInput` | Numeric values |
-| `createBooleanInput` | Toggle / checkbox |
-| `createColorInput` | Color picker |
-| `createDateInput` | Date / date-time picker |
-| `createSelectInput` | Dropdown with predefined options |
-| `createRadioInput` | Radio button group |
-| `createTagsInput` | List of tags |
-| `createObjectInput` | Nested object (group of sub-inputs) |
-| `createLexicalInput` | Rich text (Lexical editor) |
-| `createFileInput` | File / media picker |
-| `createSlotInput` | Slot for nesting other components |
+| Factory Function      | Use Case                            |
+| --------------------- | ----------------------------------- |
+| `createTextInput`     | Single-line text, URLs, labels      |
+| `createLongTextInput` | Multi-line text                     |
+| `createNumberInput`   | Numeric values                      |
+| `createBooleanInput`  | Toggle / checkbox                   |
+| `createColorInput`    | Color picker                        |
+| `createDateInput`     | Date / date-time picker             |
+| `createSelectInput`   | Dropdown with predefined options    |
+| `createRadioInput`    | Radio button group                  |
+| `createTagsInput`     | List of tags                        |
+| `createObjectInput`   | Nested object (group of sub-inputs) |
+| `createLexicalInput`  | Rich text (Lexical editor)          |
+| `createFileInput`     | File / media picker                 |
+| `createSlotInput`     | Slot for nesting other components   |
 
 Each factory accepts: `name`, `label`, `description`, `defaultValue`, and type-specific options.
 
@@ -174,17 +176,17 @@ Groups organize the editor's component palette:
 import { registerComponentGroup, type ComponentManifest } from "@webiny/website-builder-nextjs";
 
 export const registerComponentGroups = () => {
-    registerComponentGroup({
-        name: "basic",
-        label: "Basic",
-        description: "Components for simple content creation"
-    });
-    registerComponentGroup({
-        name: "custom",
-        label: "Custom",
-        description: "Assorted custom components",
-        filter: (component: ComponentManifest) => !component.group
-    });
+  registerComponentGroup({
+    name: "basic",
+    label: "Basic",
+    description: "Components for simple content creation"
+  });
+  registerComponentGroup({
+    name: "custom",
+    label: "Custom",
+    description: "Assorted custom components",
+    filter: (component: ComponentManifest) => !component.group
+  });
 };
 ```
 
@@ -201,26 +203,26 @@ The theme system has three files that work together:
 @import "@webiny/website-builder-nextjs/lexical.css";
 
 :root {
-    --wb-theme-color-primary: #4632f5;
-    --wb-theme-color-secondary: #00ccb0;
-    --wb-theme-color-background: #ffffff;
-    --wb-theme-color-surface: #f9f9f9;
-    --wb-theme-color-text-base: #0a0a0a;
-    --wb-theme-color-text-muted: #6b7280;
-    --wb-theme-color-border: #e5e7eb;
-    --wb-theme-font-family: "Inter", sans-serif;
+  --wb-theme-color-primary: #4632f5;
+  --wb-theme-color-secondary: #00ccb0;
+  --wb-theme-color-background: #ffffff;
+  --wb-theme-color-surface: #f9f9f9;
+  --wb-theme-color-text-base: #0a0a0a;
+  --wb-theme-color-text-muted: #6b7280;
+  --wb-theme-color-border: #e5e7eb;
+  --wb-theme-font-family: "Inter", sans-serif;
 }
 
 .wb-heading-1 {
-    font-weight: 700;
-    line-height: 1.2;
-    font-size: clamp(2rem, 1.5rem + 1.5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.2;
+  font-size: clamp(2rem, 1.5rem + 1.5vw, 3rem);
 }
 
 .wb-paragraph-1 {
-    font-weight: 400;
-    line-height: 1.6;
-    font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1rem);
+  font-weight: 400;
+  line-height: 1.6;
+  font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1rem);
 }
 ```
 
@@ -234,28 +236,20 @@ declare const __THEME_CSS__: string;
 export const css = __THEME_CSS__;
 
 export const theme = createTheme({
-    css,
-    fonts: ["https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"],
-    colors: [
-        { id: "color-primary", label: "Primary", value: "var(--wb-theme-color-primary)" },
-        { id: "color-secondary", label: "Secondary", value: "var(--wb-theme-color-secondary)" },
-        { id: "color-background", label: "Background", value: "var(--wb-theme-color-background)" },
-        { id: "color-text-base", label: "Text", value: "var(--wb-theme-color-text-base)" }
-    ],
-    typography: {
-        headings: [
-            { id: "heading1", label: "Heading 1", tag: "h1", className: "wb-heading-1" }
-        ],
-        paragraphs: [
-            { id: "paragraph1", label: "Paragraph 1", tag: "p", className: "wb-paragraph-1" }
-        ],
-        quotes: [
-            { id: "quote", label: "Quote", tag: "blockquote", className: "wb-blockquote-1" }
-        ],
-        lists: [
-            { id: "list1", label: "List 1", tag: "ul", className: "wb-unordered-list-1" }
-        ]
-    }
+  css,
+  fonts: ["https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"],
+  colors: [
+    { id: "color-primary", label: "Primary", value: "var(--wb-theme-color-primary)" },
+    { id: "color-secondary", label: "Secondary", value: "var(--wb-theme-color-secondary)" },
+    { id: "color-background", label: "Background", value: "var(--wb-theme-color-background)" },
+    { id: "color-text-base", label: "Text", value: "var(--wb-theme-color-text-base)" }
+  ],
+  typography: {
+    headings: [{ id: "heading1", label: "Heading 1", tag: "h1", className: "wb-heading-1" }],
+    paragraphs: [{ id: "paragraph1", label: "Paragraph 1", tag: "p", className: "wb-paragraph-1" }],
+    quotes: [{ id: "quote", label: "Quote", tag: "blockquote", className: "wb-blockquote-1" }],
+    lists: [{ id: "list1", label: "List 1", tag: "ul", className: "wb-unordered-list-1" }]
+  }
 });
 ```
 
@@ -270,10 +264,10 @@ export const theme = createTheme({
 @import "tailwindcss";
 
 @theme inline {
-    --font-sans: InterVariable, sans-serif;
-    --color-primary: var(--wb-theme-color-primary);
-    --color-secondary: var(--wb-theme-color-secondary);
-    --color-text-base: var(--wb-theme-color-text-base);
+  --font-sans: InterVariable, sans-serif;
+  --color-primary: var(--wb-theme-color-primary);
+  --color-secondary: var(--wb-theme-color-secondary);
+  --color-text-base: var(--wb-theme-color-text-base);
 }
 ```
 
@@ -283,12 +277,12 @@ This bridges WB CSS variables to Tailwind tokens, enabling `bg-primary`, `text-p
 
 When switching fonts, update all four places:
 
-| File | What to Update |
-|---|---|
-| `src/app/layout.tsx` | Font import and config (e.g., `import { Geist } from "next/font/google"`) |
-| `src/theme/tailwind.css` | `--font-sans` token |
-| `src/theme/theme.css` | `--wb-theme-font-family` variable |
-| `src/theme/theme.ts` | `fonts` array URL (must include same weight range as layout.tsx) |
+| File                     | What to Update                                                            |
+| ------------------------ | ------------------------------------------------------------------------- |
+| `src/app/layout.tsx`     | Font import and config (e.g., `import { Geist } from "next/font/google"`) |
+| `src/theme/tailwind.css` | `--font-sans` token                                                       |
+| `src/theme/theme.css`    | `--wb-theme-font-family` variable                                         |
+| `src/theme/theme.ts`     | `fonts` array URL (must include same weight range as layout.tsx)          |
 
 ## Server Components Fetching CMS Data
 
@@ -303,40 +297,40 @@ import type { Product } from "@/lib/types";
 import type { CmsEntryData } from "@webiny/sdk";
 
 interface ProductListingInputs {
-    heading: string;
-    limit: string;
+  heading: string;
+  limit: string;
 }
 
 export async function ProductListing({
-    inputs: { heading, limit }
+  inputs: { heading, limit }
 }: ComponentProps<ProductListingInputs>) {
-    const parsedLimit = parseInt(limit, 10) || 6;
+  const parsedLimit = parseInt(limit, 10) || 6;
 
-    const result = await sdk.cms.listEntries<Product>({
-        modelId: "product",
-        limit: parsedLimit,
-        sort: ["values.name_ASC"]
-    });
+  const result = await sdk.cms.listEntries<Product>({
+    modelId: "product",
+    limit: parsedLimit,
+    sort: ["values.name_ASC"]
+  });
 
-    if (!result.isOk()) {
-        return <div className="text-red-600">Failed to load products: {result.error.message}</div>;
-    }
+  if (!result.isOk()) {
+    return <div className="text-red-600">Failed to load products: {result.error.message}</div>;
+  }
 
-    const products: CmsEntryData<Product>[] = result.value.data;
+  const products: CmsEntryData<Product>[] = result.value.data;
 
-    return (
-        <section className="py-12 px-6">
-            {heading && <h2 className="text-3xl font-bold text-center mb-8">{heading}</h2>}
-            <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
-                {products.map(product => (
-                    <li key={product.id} className="border rounded-lg p-6">
-                        <h3 className="text-xl font-semibold">{product.values.name}</h3>
-                        <p className="text-lg font-bold mt-2">${product.values.price.toFixed(2)}</p>
-                    </li>
-                ))}
-            </ul>
-        </section>
-    );
+  return (
+    <section className="py-12 px-6">
+      {heading && <h2 className="text-3xl font-bold text-center mb-8">{heading}</h2>}
+      <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
+        {products.map(product => (
+          <li key={product.id} className="border rounded-lg p-6">
+            <h3 className="text-xl font-semibold">{product.values.name}</h3>
+            <p className="text-lg font-bold mt-2">${product.values.price.toFixed(2)}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
 }
 ```
 
@@ -344,13 +338,13 @@ Register it (async Server Components work even though `index.tsx` is `"use clien
 
 ```tsx
 createComponent(ProductListing, {
-    name: "Custom/ProductListing",
-    label: "Product Listing",
-    inputs: [
-        createTextInput({ name: "heading", label: "Section Heading", defaultValue: "Our Products" }),
-        createTextInput({ name: "limit", label: "Number of products", defaultValue: "6" })
-    ]
-})
+  name: "Custom/ProductListing",
+  label: "Product Listing",
+  inputs: [
+    createTextInput({ name: "heading", label: "Section Heading", defaultValue: "Our Products" }),
+    createTextInput({ name: "limit", label: "Number of products", defaultValue: "6" })
+  ]
+});
 ```
 
 To use the Headless CMS SDK, initialize it in `src/lib/webiny.ts` with a **Read API** key (see the `webiny-sdk` skill).
@@ -381,4 +375,4 @@ Groups:           registerComponentGroup({ name, label, description })
 ## Related Skills
 
 - `webiny-sdk` -- Using the Headless CMS SDK inside Website Builder components
-- `project-structure` -- Webiny project setup and extension registration
+- `webiny-project-structure` -- Webiny project setup and extension registration

@@ -29,9 +29,9 @@ Initialize once and reuse:
 import { Sdk } from "@webiny/sdk";
 
 export const sdk = new Sdk({
-    token: process.env.WEBINY_API_TOKEN!,
-    endpoint: process.env.WEBINY_API_ENDPOINT!,
-    tenant: process.env.WEBINY_API_TENANT || "root"
+  token: process.env.WEBINY_API_TOKEN!,
+  endpoint: process.env.WEBINY_API_ENDPOINT!,
+  tenant: process.env.WEBINY_API_TENANT || "root"
 });
 ```
 
@@ -43,13 +43,14 @@ export const sdk = new Sdk({
 
 Webiny provides three separate GraphQL APIs:
 
-| API | URL Path | Returns | Can Write | Use For |
-|---|---|---|---|---|
-| **Read** | `/cms/read` | Published entries only | No | Public-facing apps, SSG |
-| **Manage** | `/cms/manage` | All revisions (drafts + published) | Yes | Admin tools, content creation |
-| **Preview** | `/cms/preview` | Latest revisions (drafts + published) | No | Content preview |
+| API         | URL Path       | Returns                               | Can Write | Use For                       |
+| ----------- | -------------- | ------------------------------------- | --------- | ----------------------------- |
+| **Read**    | `/cms/read`    | Published entries only                | No        | Public-facing apps, SSG       |
+| **Manage**  | `/cms/manage`  | All revisions (drafts + published)    | Yes       | Admin tools, content creation |
+| **Preview** | `/cms/preview` | Latest revisions (drafts + published) | No        | Content preview               |
 
 The SDK automatically routes to the correct API based on the method:
+
 - `listEntries`, `getEntry` -> Read API
 - `createEntry`, `updateEntry`, `publishEntry`, `unpublishEntry` -> Manage API
 
@@ -61,9 +62,9 @@ Every SDK method returns a `Result` object -- it never throws:
 const result = await sdk.cms.listEntries({ modelId: "product", fields: ["id"] });
 
 if (result.isOk()) {
-    console.log(result.value.data);    // success -- typed data
+  console.log(result.value.data); // success -- typed data
 } else {
-    console.error(result.error.message); // failure -- error info
+  console.error(result.error.message); // failure -- error info
 }
 ```
 
@@ -75,26 +76,26 @@ Pass a type parameter for full type safety on `values`:
 import type { CmsEntryData } from "@webiny/sdk";
 
 interface Product {
-    name: string;
-    price: number;
-    sku: string;
-    description: string;
-    category?: CmsEntryData<ProductCategory>;
+  name: string;
+  price: number;
+  sku: string;
+  description: string;
+  category?: CmsEntryData<ProductCategory>;
 }
 
 interface ProductCategory {
-    name: string;
-    slug: string;
+  name: string;
+  slug: string;
 }
 
 const result = await sdk.cms.listEntries<Product>({
-    modelId: "product"
+  modelId: "product"
 });
 
 if (result.isOk()) {
-    // result.value.data is CmsEntryData<Product>[]
-    const products = result.value.data;
-    // products[0].values.name -- fully typed
+  // result.value.data is CmsEntryData<Product>[]
+  const products = result.value.data;
+  // products[0].values.name -- fully typed
 }
 ```
 
@@ -106,9 +107,9 @@ Reference fields like `category` are typed as `CmsEntryData<T>`, which wraps ref
 
 ```typescript
 const result = await sdk.cms.listEntries<Product>({
-    modelId: "product",
-    sort: ["values.name_ASC"],
-    limit: 10
+  modelId: "product",
+  sort: ["values.name_ASC"],
+  limit: 10
 });
 ```
 
@@ -116,43 +117,43 @@ const result = await sdk.cms.listEntries<Product>({
 
 ```typescript
 const result = await sdk.cms.listEntries<Product>({
-    modelId: "product",
-    where: {
-        "values.price_gte": 100,
-        "values.name_contains": "Pro"
-    },
-    sort: ["values.price_DESC"]
+  modelId: "product",
+  where: {
+    "values.price_gte": 100,
+    "values.name_contains": "Pro"
+  },
+  sort: ["values.price_DESC"]
 });
 ```
 
 ### Filter Operators
 
-| Operator | Description | Example |
-|---|---|---|
-| `_eq` | Equals (default) | `"values.status": "active"` |
-| `_not` | Not equals | `"values.status_not": "archived"` |
-| `_contains` | Contains substring | `"values.name_contains": "Pro"` |
-| `_startsWith` | Starts with | `"values.name_startsWith": "Web"` |
-| `_gt` / `_gte` | Greater than / >= | `"values.price_gte": 100` |
-| `_lt` / `_lte` | Less than / <= | `"values.price_lt": 500` |
-| `_in` | In array | `"values.status_in": ["active", "featured"]` |
+| Operator       | Description        | Example                                      |
+| -------------- | ------------------ | -------------------------------------------- |
+| `_eq`          | Equals (default)   | `"values.status": "active"`                  |
+| `_not`         | Not equals         | `"values.status_not": "archived"`            |
+| `_contains`    | Contains substring | `"values.name_contains": "Pro"`              |
+| `_startsWith`  | Starts with        | `"values.name_startsWith": "Web"`            |
+| `_gt` / `_gte` | Greater than / >=  | `"values.price_gte": 100`                    |
+| `_lt` / `_lte` | Less than / <=     | `"values.price_lt": 500`                     |
+| `_in`          | In array           | `"values.status_in": ["active", "featured"]` |
 
 ### Sort Format
 
 Sort strings follow the pattern `values.<fieldId>_ASC` or `values.<fieldId>_DESC`:
 
 ```typescript
-sort: ["values.name_ASC"]          // alphabetical
-sort: ["values.price_DESC"]         // highest price first
-sort: ["values.createdOn_DESC"]     // newest first
+sort: ["values.name_ASC"]; // alphabetical
+sort: ["values.price_DESC"]; // highest price first
+sort: ["values.createdOn_DESC"]; // newest first
 ```
 
 ### Get Single Entry
 
 ```typescript
 const result = await sdk.cms.getEntry<Product>({
-    modelId: "product",
-    id: "abc123#0001"
+  modelId: "product",
+  id: "abc123#0001"
 });
 ```
 
@@ -162,8 +163,8 @@ Control which fields are returned:
 
 ```typescript
 const result = await sdk.cms.listEntries<Product>({
-    modelId: "product",
-    fields: ["id", "values.name", "values.price"]
+  modelId: "product",
+  fields: ["id", "values.name", "values.price"]
 });
 ```
 
@@ -175,12 +176,12 @@ When omitted, all fields are returned. The `depth` parameter (default: `1`) cont
 
 ```typescript
 const result = await sdk.cms.createEntry({
-    modelId: "contactSubmission",
-    data: {
-        name: "John Doe",
-        email: "john@example.com",
-        message: "Hello from the contact form!"
-    }
+  modelId: "contactSubmission",
+  data: {
+    name: "John Doe",
+    email: "john@example.com",
+    message: "Hello from the contact form!"
+  }
 });
 ```
 
@@ -188,11 +189,11 @@ const result = await sdk.cms.createEntry({
 
 ```typescript
 const result = await sdk.cms.updateEntry({
-    modelId: "product",
-    id: "abc123#0001",
-    data: {
-        price: 29.99
-    }
+  modelId: "product",
+  id: "abc123#0001",
+  data: {
+    price: 29.99
+  }
 });
 ```
 
@@ -222,21 +223,21 @@ For programmatic access, create API keys as an extension:
 import { ApiKeyFactory } from "webiny/api/security";
 
 class MyApiKeyImpl implements ApiKeyFactory.Interface {
-    execute(): ApiKeyFactory.Return {
-        return [
-            {
-                name: "Universal API Key",
-                slug: "universal-key",
-                token: "wat_12345678",
-                permissions: [{ name: "*" }]
-            }
-        ];
-    }
+  execute(): ApiKeyFactory.Return {
+    return [
+      {
+        name: "Universal API Key",
+        slug: "universal-key",
+        token: "wat_12345678",
+        permissions: [{ name: "*" }]
+      }
+    ];
+  }
 }
 
 export default ApiKeyFactory.createImplementation({
-    implementation: MyApiKeyImpl,
-    dependencies: []
+  implementation: MyApiKeyImpl,
+  dependencies: []
 });
 ```
 
@@ -248,11 +249,11 @@ Register:
 
 ## SDK Modules Reference
 
-| Module | Webiny App | What You Can Do |
-|---|---|---|
-| `sdk.cms` | Headless CMS | List, get, create, update, publish, unpublish entries |
-| `sdk.fileManager` | File Manager | List, upload, and manage files and folders |
-| `sdk.websiteBuilder` | Website Builder | List and retrieve website builder content |
+| Module               | Webiny App      | What You Can Do                                       |
+| -------------------- | --------------- | ----------------------------------------------------- |
+| `sdk.cms`            | Headless CMS    | List, get, create, update, publish, unpublish entries |
+| `sdk.fileManager`    | File Manager    | List, upload, and manage files and folders            |
+| `sdk.websiteBuilder` | Website Builder | List and retrieve website builder content             |
 
 ## Quick Reference
 
@@ -267,5 +268,5 @@ API endpoint:   yarn webiny info (in your Webiny project)
 
 ## Related Skills
 
-- `content-models` -- Define the models you query with the SDK
-- `website-builder` -- Use the SDK inside Website Builder components to fetch CMS data
+- `webiny-content-models` -- Define the models you query with the SDK
+- `webiny-website-builder` -- Use the SDK inside Website Builder components to fetch CMS data

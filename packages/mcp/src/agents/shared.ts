@@ -21,7 +21,7 @@ interface WriteMcpConfigParams {
  * All agents use the same JSON shape — only the file path differs:
  * {
  *   "mcpServers": {
- *     "webiny": { "command": "npx", "args": ["webiny-mcp", "server"] }
+ *     "webiny": { "command": "npx", "args": ["webiny-mcp", "serve"] }
  *   }
  * }
  */
@@ -30,7 +30,7 @@ export function writeMcpConfig({ ui, configPath }: WriteMcpConfigParams): boolea
 
     const entry = {
         command: "npx",
-        args: ["webiny-mcp", "server", "--additional-skills=./my-skills"]
+        args: ["webiny-mcp", "serve", "--additional-skills=./my-skills"]
     };
     let config: { mcpServers: Record<string, unknown> } = { mcpServers: {} };
 
@@ -134,7 +134,7 @@ export function printDone({ ui, extra }: PrintDoneParams): void {
     ui.info("Restart your agent/editor session if it is already running.");
     ui.emptyLine();
     ui.info("To test the MCP server directly:");
-    ui.info("  %s", "npx @modelcontextprotocol/inspector npx webiny-mcp server");
+    ui.info("  %s", "npx @modelcontextprotocol/inspector npx webiny-mcp serve");
     ui.emptyLine();
 }
 

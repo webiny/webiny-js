@@ -8,7 +8,7 @@ export interface IConfigureMcpParams {
     cwd?: string;
 }
 
-const SUPPORTED = ["claude", "cursor", "windsurf", "copilot", "cline", "opencode"];
+const SUPPORTED = ["claude", "cursor", "windsurf", "copilot", "cline", "opencode", "kiro"];
 
 export async function configureMcp(params: IConfigureMcpParams = {}): Promise<void> {
     const ui = params.ui ?? new ConsoleUi();
