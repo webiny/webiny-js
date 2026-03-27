@@ -6,7 +6,7 @@ import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
-import elasticsearchClientContext, { createElasticsearchClient } from "@webiny/api-elasticsearch";
+import { createOpenSearchContext, createOpenSearchClient } from "@webiny/api-opensearch";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";
@@ -36,7 +36,7 @@ const debug = process.env.DEBUG === "true";
 
 const documentClient = getDocumentClient();
 
-const elasticsearchClient = createElasticsearchClient({
+const openSearchClient = createOpenSearchClient({
     endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
 });
 
@@ -47,7 +47,7 @@ export const handler = createHandler({
         }),
         dynamoDbPlugins(),
         graphqlPlugins({ debug }),
-        elasticsearchClientContext(elasticsearchClient),
+        createOpenSearchContext(openSearchClient),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({ documentClient })
@@ -57,7 +57,7 @@ export const handler = createHandler({
         createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({
                 documentClient,
-                elasticsearch: elasticsearchClient,
+                elasticsearch: openSearchClient,
                 plugins: []
             })
         }),

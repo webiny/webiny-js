@@ -288,7 +288,7 @@ export const createPagesSchema = () => {
                             throw new Error(result.error.message);
                         }
 
-                        return true;
+                        return result.value;
                     });
                 },
                 // TODO: move these settings updates into dedicated use cases

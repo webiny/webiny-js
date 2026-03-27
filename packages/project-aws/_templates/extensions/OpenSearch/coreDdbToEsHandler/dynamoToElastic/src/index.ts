@@ -1,14 +1,13 @@
 import { createHandler } from "@webiny/handler-aws";
-import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
+import { createOpenSearchClient, createOpenSearchContext } from "@webiny/api-opensearch";
 import { createEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 
+const client = createOpenSearchClient({
+    endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
+});
+
 export const handler = createHandler({
-    plugins: [
-        elasticsearchClientContextPlugin({
-            endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
-        }),
-        createEventHandler()
-    ],
+    plugins: [createOpenSearchContext(client), createEventHandler()],
     options: {
         bodyLimit: 536870912 // 512MB
     }

@@ -17,6 +17,7 @@ yarn-error.log*
 dist/
 lib/
 api/**/build/
+.run/
 apps/**/build/
 .files/
 .changelog

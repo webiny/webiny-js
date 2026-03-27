@@ -1,6 +1,6 @@
 {
   "$schema": "../../.github/workflows/ci.config.schema.json",
   "vitest": {
-    "storageOps": ["ddb-es,ddb", "ddb-os,ddb"]
+    "storageOps": ["ddb-os,ddb"]
   }
 }

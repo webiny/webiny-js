@@ -45,7 +45,7 @@ class MockDataManagerTask
     }
     async onError() {
         await enableIndexing({
-            client: this.context.elasticsearch,
+            client: this.context.opensearch,
             model: {
                 modelId: CARS_MODEL_ID,
                 tenant: "root"
@@ -55,7 +55,7 @@ class MockDataManagerTask
 
     async onAbort() {
         await enableIndexing({
-            client: this.context.elasticsearch,
+            client: this.context.opensearch,
             model: {
                 modelId: CARS_MODEL_ID,
                 tenant: "root"

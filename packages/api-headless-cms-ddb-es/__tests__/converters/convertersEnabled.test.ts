@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import type { SearchBody } from "@webiny/api-elasticsearch/types";
+import type { SearchBody } from "@webiny/api-opensearch/types";
 import { useHandler } from "~tests/graphql/handler";
 import { createMockPlugins } from "./mocks";
 import {

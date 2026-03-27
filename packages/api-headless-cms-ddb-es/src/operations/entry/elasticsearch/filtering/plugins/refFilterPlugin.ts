@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin.js";
-import { parseWhereKey } from "@webiny/api-elasticsearch";
+import { parseWhereKey } from "@webiny/api-opensearch";
 
 export const createRefFilterPlugin = () => {
     const plugin = new CmsEntryFilterPlugin({

@@ -24,7 +24,7 @@
     "@webiny/project-aws": "*",
     "@webiny/ui": "*",
     "@webiny/validation": "*",
-    "graphql": "^16.13.1",
+    "graphql": "^16.13.2",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.23",

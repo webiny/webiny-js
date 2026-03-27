@@ -39,8 +39,14 @@ export const createWbSdk = (invoke: InvokeCallable) => {
         async createPageRevisionFrom(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.CREATE_PAGE_REVISION_FROM, variables } });
         },
+        async trashPage(variables = {}) {
+            return invoke({ body: { query: PAGES_GQL.TRASH_PAGE, variables } });
+        },
         async deletePage(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.DELETE_PAGE, variables } });
+        },
+        async restorePage(variables = {}) {
+            return invoke({ body: { query: PAGES_GQL.RESTORE_PAGE, variables } });
         },
         async getPageByPath(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.GET_PAGE_BY_PATH, variables } });
@@ -53,6 +59,9 @@ export const createWbSdk = (invoke: InvokeCallable) => {
         },
         async listPages(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.LIST_PAGES, variables } });
+        },
+        async listTrashedPages(variables = {}) {
+            return invoke({ body: { query: PAGES_GQL.LIST_TRASHED_PAGES, variables } });
         },
         async getSettings(variables = {}) {
             return invoke({ body: { query: PAGES_GQL.GET_SETTINGS, variables } });

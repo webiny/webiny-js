@@ -12,7 +12,7 @@ export enum FullyDeleteModelStateStatus {
 export interface IFullyDeleteModelState {
     status: FullyDeleteModelStateStatus;
     confirmation: string;
-    model: CmsModel | null;
+    model: CmsModel;
     error: CmsErrorResponse | null;
     task: IDeleteCmsModelTask | null;
 }

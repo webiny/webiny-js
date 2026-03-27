@@ -3,7 +3,7 @@ import { DisableIndexing } from "./DisableIndexing.js";
 import { EnableIndexing } from "./EnableIndexing.js";
 import type { IElasticsearchIndexingTaskValuesSettings, IIndexSettingsValues } from "~/types.js";
 import type { IIndexManager } from "~/settings/types.js";
-import type { Client } from "@webiny/api-elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import { getObjectProperties } from "@webiny/utils";
 
 const defaultIndexSettings: IIndexSettingsValues = {

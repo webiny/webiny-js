@@ -1,11 +1,11 @@
 import type {
-    ElasticsearchQuerySearchValuePlugins,
+    OpenSearchQuerySearchValuePlugins,
     ModelField
 } from "~/operations/entry/elasticsearch/types.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 interface FieldPathFactoryParams {
-    plugins: ElasticsearchQuerySearchValuePlugins;
+    plugins: OpenSearchQuerySearchValuePlugins;
 }
 interface FieldPathParams {
     field: ModelField;
