@@ -73,7 +73,6 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
         }
 
         npx.stdout.on("data", data => {
-            console.log("received data on stdout:", data);
             const lines = data.toString().replace(/\n$/, "").split("\n") as string[];
             for (const line of lines) {
                 try {
@@ -86,7 +85,6 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
                         }
                     }
                 } catch {
-                    console.log("received data on stdout:");
                     // Not JSON, let's just print the line then.
                     console.log(line);
                 }
@@ -94,7 +92,6 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
         });
 
         npx.stderr.on("data", data => {
-            console.log("received data on stderr:");
             console.log(data.toString());
         });
 

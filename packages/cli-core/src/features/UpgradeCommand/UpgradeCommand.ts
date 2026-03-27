@@ -1,4 +1,4 @@
-import { CliCommandFactory, UiService} from "~/abstractions/index.js";
+import { CliCommandFactory, UiService } from "~/abstractions/index.js";
 import { UpgradeCommandHandler } from "./abstraction.js";
 import semver from "semver";
 
@@ -27,9 +27,9 @@ class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandPa
             examples: ["upgrade", "upgrade 6.2.0", "upgrade 0.0.0-unstable.abc --disable-semver"],
             params: [
                 {
-                    name: "version",
+                    name: "target",
                     description:
-                        "Version to upgrade to. Can be a specific version (e.g. 6.2.0) or 'latest' to upgrade to the latest version.",
+                        "Target version to upgrade to. Can be a specific version (e.g. 6.2.0) or 'latest' to upgrade to the latest version.",
                     type: "string",
                     default: "latest",
                     required: false
@@ -68,7 +68,6 @@ class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandPa
                 }
             ],
             handler: async params => {
-                this.ui.error(JSON.stringify(params));
                 /**
                  * We assign only what we want so that we don't accidentally pass some parameters that are not relevant to the handler.
                  */

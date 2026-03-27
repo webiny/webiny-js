@@ -1,5 +1,5 @@
 import path from "path";
-import {Container} from "@webiny/di";
+import { Container } from "@webiny/di";
 import {
     argvParserService,
     cliParamsService,
@@ -47,10 +47,18 @@ import {
 } from "./features/index.js";
 
 import chalk from "chalk";
-import {CliParamsService, GetArgvService, GetProjectSdkService, UiService} from "~/abstractions/index.js";
-import {GracefulError, toImportSpecifier} from "@webiny/project";
-import {commandsWithGracefulErrorHandling, deployCommandWithTelemetry} from "./decorators/index.js";
-import {CliCommand} from "~/extensions/index.js";
+import {
+    CliParamsService,
+    GetArgvService,
+    GetProjectSdkService,
+    UiService
+} from "~/abstractions/index.js";
+import { GracefulError, toImportSpecifier } from "@webiny/project";
+import {
+    commandsWithGracefulErrorHandling,
+    deployCommandWithTelemetry
+} from "./decorators/index.js";
+import { CliCommand } from "~/extensions/index.js";
 
 const { bgYellow, bold } = chalk;
 
