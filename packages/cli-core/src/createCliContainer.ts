@@ -7,8 +7,8 @@ import {
     getArgvService,
     getCliRunnerService,
     getIsCiService,
-    globalOptionsRegistryService,
     getProjectSdkService,
+    globalOptionsRegistryService,
     loggerService,
     runCliRunnerService,
     stdioService,
@@ -27,26 +27,23 @@ import {
     extensionCommand,
     infoCommand,
     isCi,
+    linkProjectCommand,
+    loginCommand,
+    logLevelGlobalOption,
+    logoutCommand,
     missingFilesInBuildGracefulErrorHandler,
     openCommand,
     outputCommand,
     pendingOperationsGracefulErrorHandler,
     pulumiCommand,
     refreshCommand,
+    showLogsGlobalOption,
+    stackTraceGlobalOption,
     syncDepsCommand,
+    UpgradeCommandFeature,
     verifyDepsCommand,
     watchCommand,
-
-    // WCP
-    linkProjectCommand,
-    loginCommand,
-    logoutCommand,
-    whoAmICommand,
-
-    // Global Options
-    showLogsGlobalOption,
-    logLevelGlobalOption,
-    stackTraceGlobalOption
+    whoAmICommand
 } from "./features/index.js";
 
 import chalk from "chalk";
@@ -86,6 +83,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(openCommand).inSingletonScope();
     container.register(outputCommand).inSingletonScope();
     container.register(watchCommand).inSingletonScope();
+    UpgradeCommandFeature.register(container);
 
     container.register(linkProjectCommand).inSingletonScope();
     container.register(loginCommand).inSingletonScope();
