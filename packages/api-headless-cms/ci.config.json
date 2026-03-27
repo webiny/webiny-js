@@ -1,7 +1,7 @@
 {
   "$schema": "../../.github/workflows/ci.config.schema.json",
   "vitest": {
-    "storageOps": ["ddb", "ddb-es,ddb", "ddb-os,ddb"],
+    "storageOps": ["ddb", "ddb-os,ddb"],
     "sharding": {
       "shardsCount": 6
     }

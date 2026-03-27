@@ -13,7 +13,6 @@ import type {
 import { Context } from "~/Context.js";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin.js";
-import { createHandlerClient } from "@webiny/handler-client";
 import fastifyCookie from "@fastify/cookie";
 import fastifyCompress from "@fastify/compress";
 import { ContextPlugin } from "@webiny/api";
@@ -232,13 +231,7 @@ export const createHandler = (params: CreateHandlerParams) => {
     };
     let context: Context;
 
-    const plugins = new PluginsContainer([
-        /**
-         * We must have handlerClient by default.
-         * And it must be one of the first context plugins applied.
-         */
-        createHandlerClient()
-    ]);
+    const plugins = new PluginsContainer([]);
     plugins.merge(params.plugins || []);
 
     try {

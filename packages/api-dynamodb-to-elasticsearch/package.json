@@ -13,7 +13,7 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@webiny/api": "0.0.0",
-    "@webiny/api-elasticsearch": "0.0.0",
+    "@webiny/api-opensearch": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler-aws": "0.0.0",

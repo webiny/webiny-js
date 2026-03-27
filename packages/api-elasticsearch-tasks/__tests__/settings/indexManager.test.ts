@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { IndexManager } from "~/settings";
-import { createElasticsearchClientMock, indexSettings } from "~tests/mocks/elasticsearch";
+import { createOpenSearchClientMock, indexSettings } from "~tests/mocks/elasticsearch";
 
 describe("index manager", () => {
     it("should construct index manager", () => {
-        const client = createElasticsearchClientMock();
+        const client = createOpenSearchClientMock();
         const manager = new IndexManager(client, structuredClone(indexSettings));
 
         expect(manager.settings).toEqual(indexSettings);
     });
 
     it("should disable indexing", async () => {
-        const client = createElasticsearchClientMock();
+        const client = createOpenSearchClientMock();
         const manager = new IndexManager(client, structuredClone({}));
 
         expect(manager.settings).toEqual({});
@@ -24,7 +24,7 @@ describe("index manager", () => {
     });
 
     it("should enable indexing", async () => {
-        const client = createElasticsearchClientMock();
+        const client = createOpenSearchClientMock();
         const manager = new IndexManager(
             client,
             structuredClone({

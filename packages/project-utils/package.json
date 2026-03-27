@@ -18,7 +18,6 @@
     "lodash": "^4.17.23"
   },
   "devDependencies": {
-    "@elastic/elasticsearch": "7.12.0",
     "@webiny/build-tools": "0.0.0",
     "jest-dynalite": "^3.6.1",
     "listr2": "^5.0.8",
@@ -32,7 +31,7 @@
     "@webiny/api": "*",
     "@webiny/api-core": "*",
     "@webiny/api-dynamodb-to-elasticsearch": "*",
-    "@webiny/api-elasticsearch": "*",
+    "@webiny/api-opensearch": "*",
     "@webiny/aws-sdk": "*",
     "@webiny/handler-aws": "*",
     "@webiny/tasks": "*"

@@ -15,9 +15,9 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api-core": "0.0.0",
-    "@webiny/api-elasticsearch": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-ddb-es": "0.0.0",
+    "@webiny/api-opensearch": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/tasks": "0.0.0",

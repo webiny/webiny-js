@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types";
 import { createPluginsContainer, createQuery, Query } from "./mocks";
-import { normalizeValue } from "@webiny/api-elasticsearch";
+import { normalizeValue } from "@webiny/api-opensearch";
 import { createExecFiltering, CreateExecFilteringResponse } from "./mocks/filtering";
 
 describe("contains filter", () => {

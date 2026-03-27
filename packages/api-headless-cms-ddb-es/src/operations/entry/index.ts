@@ -30,7 +30,7 @@ import type {
 import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
 import { extractEntriesFromIndex } from "~/helpers/index.js";
 import { configurations } from "~/configurations.js";
-import type { Client } from "@elastic/elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
 import { DataLoadersHandler } from "./dataLoaders.js";
@@ -49,13 +49,13 @@ import {
     decodeCursor,
     decompress,
     encodeCursor,
-    type IElasticsearchEntity,
-    type IElasticsearchEntityAttributes
-} from "@webiny/api-elasticsearch";
+    type IOpenSearchEntity as IElasticsearchEntity,
+    type IOpenSearchEntityAttributes as IElasticsearchEntityAttributes
+} from "@webiny/api-opensearch";
 import type {
-    ElasticsearchSearchResponse,
-    SearchBody as ElasticsearchSearchBody
-} from "@webiny/api-elasticsearch/types.js";
+    OpenSearchSearchResponse,
+    SearchBody as OpenSearchSearchBody
+} from "@webiny/api-opensearch/types.js";
 import type { CmsEntryStorageOperations, CmsIndexEntry } from "~/types.js";
 import { createElasticsearchBody } from "./elasticsearch/body.js";
 import { shouldIgnoreEsResponseError } from "./elasticsearch/shouldIgnoreEsResponseError.js";
@@ -1323,7 +1323,7 @@ export const createEntriesStorageOperations = (
             plugins
         });
 
-        let response: ElasticsearchSearchResponse<CmsIndexEntry>;
+        let response: OpenSearchSearchResponse<CmsIndexEntry>;
         try {
             response = await elasticsearch.search({
                 index,
@@ -2031,7 +2031,7 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        const body: ElasticsearchSearchBody = {
+        const body: OpenSearchSearchBody = {
             ...initialBody,
             /**
              * We do not need any hits returned, we only need the aggregations.
@@ -2047,7 +2047,7 @@ export const createEntriesStorageOperations = (
             }
         };
 
-        let response: ElasticsearchSearchResponse<string> | undefined = undefined;
+        let response: OpenSearchSearchResponse<string> | undefined = undefined;
 
         try {
             response = await elasticsearch.search({

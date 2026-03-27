@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types";
 import { createPluginsContainer, createQuery } from "./filtering/mocks";
 import { createExecFiltering } from "./filtering/mocks/filtering";
 
 describe("convert where to elasticsearch query", () => {
-    let query: ElasticsearchBoolQueryConfig;
+    let query: OpenSearchBoolQueryConfig;
     let execFiltering: ReturnType<typeof createExecFiltering>;
 
     beforeEach(() => {
