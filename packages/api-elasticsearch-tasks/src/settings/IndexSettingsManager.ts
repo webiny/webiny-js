@@ -1,4 +1,4 @@
-import type { Client } from "@webiny/api-elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import { IndexSettingsGetError, IndexSettingsSetError } from "~/errors/index.js";
 import type { IIndexSettingsValues } from "~/types.js";
 

@@ -2,11 +2,11 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
 import type { CmsContext } from "~/types.js";
 import {
-    getElasticsearchIndexPrefix,
+    getOpenSearchIndexPrefix as getOpenSearchIndexPrefix,
     getLastAddedIndexPlugin,
-    isSharedElasticsearchIndex
-} from "@webiny/api-elasticsearch";
-import type { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types.js";
+    isSharedOpenSearchIndex as isSharedElasticsearchIndex
+} from "@webiny/api-opensearch";
+import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
 import { CmsEntryElasticsearchIndexPlugin } from "~/plugins/index.js";
 
 interface ConfigurationsElasticsearch {
@@ -25,7 +25,7 @@ export interface Configurations {
     es: (params: CmsElasticsearchParams) => ConfigurationsElasticsearch;
     indexSettings: (
         params: ConfigurationsIndexSettingsParams
-    ) => Partial<ElasticsearchIndexRequestBody>;
+    ) => Partial<OpenSearchIndexRequestBody>;
 }
 
 export const configurations: Configurations = {
@@ -44,7 +44,7 @@ export const configurations: Configurations = {
             .join("-")
             .toLowerCase();
 
-        const prefix = getElasticsearchIndexPrefix();
+        const prefix = getOpenSearchIndexPrefix();
 
         if (!prefix) {
             return {

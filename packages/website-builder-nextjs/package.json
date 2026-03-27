@@ -28,7 +28,7 @@
     "@webiny/build-tools": "0.0.0",
     "next": "^15.5.14",
     "typescript": "5.9.3",
-    "vitest": "^4.1.0",
+    "vitest": "^4.1.1",
     "webpack": "^5.105.4"
   },
   "publishConfig": {

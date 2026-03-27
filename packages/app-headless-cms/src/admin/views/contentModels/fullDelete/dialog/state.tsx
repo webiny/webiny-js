@@ -4,23 +4,27 @@ import { FullyDeleteModelStateStatus } from "../types.js";
 import type { CmsErrorResponse, CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import type { IDeleteCmsModelTask } from "~/admin/viewsGraphql.js";
 
-const defaultState: IFullyDeleteModelState = {
-    confirmation: "",
-    status: FullyDeleteModelStateStatus.NONE,
-    model: null,
-    error: null,
-    task: null
+const getDefaultState = (model: CmsModel): IFullyDeleteModelState => {
+    return {
+        confirmation: "",
+        status: FullyDeleteModelStateStatus.NONE,
+        model,
+        error: null,
+        task: null
+    };
 };
 
-export const useDialogState = (input: CmsModel | null) => {
-    const [state, setState] = useState(defaultState);
+export const useDialogState = (input: CmsModel) => {
+    const [state, setState] = useState(() => {
+        return getDefaultState(input);
+    });
 
     const reset = useCallback(() => {
-        setState(defaultState);
-    }, [setState]);
+        setState(getDefaultState(input));
+    }, [input]);
 
     const setModel = useCallback(
-        (model: CmsModel | null) => {
+        (model: CmsModel) => {
             setState(prev => {
                 return {
                     ...prev,

@@ -17,6 +17,8 @@ type Params = CreateHandlerCoreParams;
 export const useHandler = <C extends CmsContext = CmsContext>(params: Params) => {
     const core = createHandlerCore(params);
 
+    const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
+
     const plugins = [...core.plugins].concat([
         createRawEventHandler<CmsHandlerEvent, C, C>(async ({ context }) => {
             return context;
@@ -27,8 +29,6 @@ export const useHandler = <C extends CmsContext = CmsContext>(params: Params) =>
         plugins,
         debug: process.env.DEBUG === "true"
     });
-
-    const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
 
     return {
         plugins,

@@ -12,10 +12,10 @@ import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchInd
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import {
-    createElasticsearchEntity,
-    createElasticsearchTable,
-    ElasticsearchQueryBuilderOperatorPlugin
-} from "@webiny/api-elasticsearch";
+    createOpenSearchEntity,
+    createOpenSearchTable,
+    OpenSearchQueryBuilderOperatorPlugin
+} from "@webiny/api-opensearch";
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices/index.js";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex.js";
 import {
@@ -47,7 +47,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         name: table || (process.env.DB_TABLE as string),
         documentClient
     });
-    const tableElasticsearchInstance = createElasticsearchTable({
+    const tableElasticsearchInstance = createOpenSearchTable({
         name: esTable,
         documentClient
     });
@@ -65,7 +65,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entityName: ENTITIES.ENTRIES,
             table: tableInstance
         }),
-        entriesEs: createElasticsearchEntity({
+        entriesEs: createOpenSearchEntity({
             entityName: ENTITIES.ENTRIES_ES,
             table: tableElasticsearchInstance
         })
@@ -122,8 +122,8 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             /**
              * Attach the elasticsearch into context if it is not already attached.
              */
-            if (!context.elasticsearch) {
-                context.elasticsearch = elasticsearch;
+            if (!context.opensearch) {
+                context.opensearch = elasticsearch;
             }
 
             /**
@@ -140,7 +140,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
              * This way we do not need to register plugins in the storage plugins contains.
              */
             const types: string[] = [
-                ElasticsearchQueryBuilderOperatorPlugin.type,
+                OpenSearchQueryBuilderOperatorPlugin.type,
                 // Headless CMS
                 "cms-model-field-to-graphql",
                 CmsEntryFilterPlugin.type,

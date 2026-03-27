@@ -1,10 +1,8 @@
 import { logger } from "@webiny/project-utils/testing/logger";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch";
+import { createOpenSearchClient } from "@webiny/api-opensearch";
 
 const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;
-
 const esEndpoint = process.env.OPENSEARCH_ENDPOINT;
-
 const defaultOptions = {
     node: `http://localhost:${OPENSEARCH_PORT}`,
     auth: {},
@@ -230,7 +228,7 @@ const attachCustomEvents = client => {
 
 module.exports = {
     createElasticsearchClient: (options = {}) => {
-        const client = createElasticsearchClient({
+        const client = createOpenSearchClient({
             ...defaultOptions,
             ...options
         });

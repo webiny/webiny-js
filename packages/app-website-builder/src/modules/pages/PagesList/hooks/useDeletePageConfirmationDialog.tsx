@@ -15,8 +15,8 @@ export const useDeletePageConfirmationDialog = ({ page }: UseDeletePageConfirmat
         title: "Delete page",
         message: (
             <p>
-                You are about to permanently delete <strong>{page.properties.title}</strong> and all
-                of its revisions. Are you sure you want to continue?
+                You are about to move <strong>{page.properties.title}</strong> to trash. Are you
+                sure you want to continue?
             </p>
         )
     });
@@ -25,8 +25,11 @@ export const useDeletePageConfirmationDialog = ({ page }: UseDeletePageConfirmat
         () =>
             showConfirmation(async () => {
                 try {
-                    await deletePage({ id: page.id });
-                    showSnackbar(`${page.properties.title} was deleted successfully!`);
+                    await deletePage({
+                        id: page.id,
+                        permanently: false
+                    });
+                    showSnackbar(`${page.properties.title} was moved to trash!`);
                 } catch (ex) {
                     showSnackbar(ex.message || `Error while deleting ${page.properties.title}`);
                 }

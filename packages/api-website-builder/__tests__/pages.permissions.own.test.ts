@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "./utils/useHandler.js";
 import { pageMocks } from "./mocks/page.mock.js";
 import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
@@ -9,6 +9,7 @@ import { PublishPageUseCase } from "~/features/pages/PublishPage/index.js";
 import { UnpublishPageUseCase } from "~/features/pages/UnpublishPage/index.js";
 import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 
 const NOT_AUTHORIZED = "WebsiteBuilder/Page/NotAuthorized";
 
@@ -228,6 +229,12 @@ describe("Pages Own Scope Permissions", () => {
                 identity: identityB
             });
             const ctx = await handler.handler();
+            const trashPage = ctx.container.resolve(TrashPageUseCase);
+            const trashResult = await ctx.security.withoutAuthorization(async () => {
+                return trashPage.execute({ id: seedPageId });
+            });
+            expect(trashResult.isOk()).toBeTrue();
+
             const deletePage = ctx.container.resolve(DeletePageUseCase);
             const result = await deletePage.execute({ id: seedPageId });
             expect(result.isFail()).toBe(true);
@@ -240,6 +247,12 @@ describe("Pages Own Scope Permissions", () => {
                 identity: identityA
             });
             const ctx = await handler.handler();
+            const trashPage = ctx.container.resolve(TrashPageUseCase);
+            const trashResult = await ctx.security.withoutAuthorization(async () => {
+                return trashPage.execute({ id: seedPageId });
+            });
+            expect(trashResult.isOk()).toBeTrue();
+
             const deletePage = ctx.container.resolve(DeletePageUseCase);
             const result = await deletePage.execute({ id: seedPageId });
             expect(result.isFail()).toBe(false);

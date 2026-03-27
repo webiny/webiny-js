@@ -1,4 +1,4 @@
-import type { Client } from "@webiny/api-elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import type { IElasticsearchIndexingTaskValuesSettings } from "~/types";
 
 interface GetIndexSettingsParams {
@@ -35,7 +35,7 @@ export interface ExtendedClient extends Client {
     disabled: Set<string>;
 }
 
-export const createElasticsearchClientMock = (): ExtendedClient => {
+export const createOpenSearchClientMock = (): ExtendedClient => {
     const enabled = new Set<string>();
     const disabled = new Set<string>();
     return {

@@ -27,7 +27,10 @@ export const BulkActionDelete = observer(() => {
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
-                        await deletePage({ id: item.id });
+                        await deletePage({
+                            id: item.id,
+                            permanently: false
+                        });
 
                         report.success({
                             title: item.properties.title,

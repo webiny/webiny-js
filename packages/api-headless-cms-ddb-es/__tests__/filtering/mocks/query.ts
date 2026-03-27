@@ -1,5 +1,5 @@
 import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery";
-import type { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import type { ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
 
 export type { ElasticsearchBoolQueryConfig as Query };
 

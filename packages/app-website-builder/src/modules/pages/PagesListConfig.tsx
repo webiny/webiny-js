@@ -25,6 +25,7 @@ import {
 import { FilterByStatus } from "~/modules/pages/PagesList/components/Filters/index.js";
 import { StaticPageForm } from "~/modules/pages/PagesList/components/Main/CreatePage/StaticPageForm.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
+import { TrashBin } from "~/components/TrashBin/index.js";
 
 const { Browser } = InternalPageListConfig;
 
@@ -93,6 +94,7 @@ export const PagesListConfig = () => {
                     hideable={false}
                     className={"text-right"}
                 />
+                <Browser.Sidebar.Footer name={"trash-bin"} element={<TrashBin />} />
             </InternalPageListConfig>
         </>
     );

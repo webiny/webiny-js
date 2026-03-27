@@ -1,4 +1,4 @@
-import { getBaseConfiguration } from "@webiny/api-elasticsearch";
+import { getBaseConfiguration } from "@webiny/api-opensearch";
 import { CmsEntryElasticsearchIndexPlugin } from "~/plugins/CmsEntryElasticsearchIndexPlugin";
 
 export const createIndexConfigurationPlugin = () => {

@@ -5,6 +5,7 @@ import type { WbError } from "~/types.js";
 
 export interface DeletePageVariables {
     id: string;
+    permanently: boolean;
 }
 
 export interface DeletePageResponse {
@@ -38,14 +39,15 @@ export class DeletePageGqlGateway implements IDeletePageGateway {
         this.client = client;
     }
 
-    async execute(id: string) {
+    async execute(id: string, permanently: boolean) {
         const { data: response } = await this.client.mutate<
             DeletePageResponse,
             DeletePageVariables
         >({
             mutation: DELETE_PAGE,
             variables: {
-                id
+                id,
+                permanently
             }
         });
 

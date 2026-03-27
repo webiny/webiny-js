@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler.js";
 import { pageMocks } from "./mocks/page.mock.js";
 
@@ -205,6 +205,42 @@ describe("Pages CRUD", () => {
             data: pageMocks.pageA
         });
         const page = createResponse.data.websiteBuilder.createPage.data;
+
+        const [trashResponse] = await handler.wb.trashPage({ id: page.id });
+
+        expect(trashResponse.data.websiteBuilder.trashPage.error).toBeNull();
+        expect(trashResponse.data.websiteBuilder.trashPage.data).toBe(true);
+
+        const [getAfterTrashResponse] = await handler.wb.getPageById({ id: page.id });
+        expect(getAfterTrashResponse.data.websiteBuilder.getPageById.data).toBeNull();
+        expect(getAfterTrashResponse.data.websiteBuilder.getPageById.error).not.toBeNull();
+
+        const [listTrashedResponse] = await handler.wb.listTrashedPages();
+        expect(listTrashedResponse.data.websiteBuilder.listTrashedPages.error).toBeNull();
+        expect(listTrashedResponse.data.websiteBuilder.listTrashedPages.data).toHaveLength(1);
+        expect(listTrashedResponse.data.websiteBuilder.listTrashedPages.data[0].id).toBe(page.id);
+
+        const [restorePage] = await handler.wb.restorePage({ id: page.id });
+
+        expect(restorePage.data.websiteBuilder.restorePage.error).toBeNull();
+        expect(restorePage.data.websiteBuilder.restorePage.data).toMatchObject({
+            id: page.id
+        });
+
+        const [getAfterRestoreResponse] = await handler.wb.getPageById({ id: page.id });
+        expect(getAfterRestoreResponse.data.websiteBuilder.getPageById.error).toBeNull();
+        expect(getAfterRestoreResponse.data.websiteBuilder.getPageById.data).toMatchObject(page);
+
+        // should not be possible to delete because the page is not trashed
+        const [tryToDeleteResponse] = await handler.wb.deletePage({ id: page.id });
+
+        expect(tryToDeleteResponse.data.websiteBuilder.deletePage.error).not.toBeNull();
+        expect(tryToDeleteResponse.data.websiteBuilder.deletePage.data).toBeNull();
+
+        // trash page again
+        const [trashPageAgainResponse] = await handler.wb.trashPage({ id: page.id });
+        expect(trashPageAgainResponse.data.websiteBuilder.trashPage.error).toBeNull();
+        expect(trashPageAgainResponse.data.websiteBuilder.trashPage.data).toEqual(true);
 
         const [deleteResponse] = await handler.wb.deletePage({ id: page.id });
 

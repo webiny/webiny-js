@@ -95,12 +95,13 @@ describe("event", () => {
         expect(result).toEqual(null);
     });
 
-    it("should just skip because of no elasticsearch", async () => {
+    it("should just skip because of no opensearch", async () => {
         const eventHandler = createEventHandler();
 
         const result = await eventHandler.cb({
             context: {
                 ...context,
+                opensearch: undefined,
                 elasticsearch: undefined
             },
             event,

@@ -24,6 +24,9 @@ import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
 import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
+import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
+import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
 
 export const createPagesSchema = () => {
     const pageGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
@@ -97,6 +100,22 @@ export const createPagesSchema = () => {
                     try {
                         ensureAuthentication(context);
                         const listPages = context.container.resolve(ListPagesUseCase);
+                        const result = await listPages.execute(args);
+
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+
+                        const { pages, meta } = result.value;
+                        return new ListResponse(pages, meta);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                listDeletedPages: async (_, args: any, context) => {
+                    try {
+                        ensureAuthentication(context);
+                        const listPages = context.container.resolve(ListDeletedPagesUseCase);
                         const result = await listPages.execute(args);
 
                         if (result.isFail()) {
@@ -236,17 +255,40 @@ export const createPagesSchema = () => {
                         return result.value;
                     });
                 },
-                deletePage: async (_, { id }, context) => {
+                deletePage: async (_, { id, permanently }, context) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
-                        const deletePage = context.container.resolve(DeletePageUseCase);
-                        const result = await deletePage.execute({ id });
+                        const deletePage = context.container.resolve(
+                            /**
+                             * If "permanent" flag is set, we want to permanently delete the page. Otherwise, we just want to trash it.
+                             * This allows us to have a two-step deletion process, where pages are first moved to trash and can be restored from there, before being permanently deleted.
+                             */
+                            permanently ? DeletePageUseCase : TrashPageUseCase
+                        );
+                        const result = await deletePage.execute({
+                            id
+                        });
 
                         if (result.isFail()) {
                             throw new Error(result.error.message);
                         }
 
                         return true;
+                    });
+                },
+                restorePage: async (_, { id }, context) => {
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const restorePage = context.container.resolve(RestorePageUseCase);
+                        const result = await restorePage.execute({
+                            id
+                        });
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return result.value;
                     });
                 },
                 // TODO: move these settings updates into dedicated use cases

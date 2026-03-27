@@ -34,6 +34,7 @@ export interface WbPage extends CmsEntryWbPage {
     modifiedBy: WbIdentity | null;
     tenant: string;
     system?: ICmsEntrySystem;
+    deleted: boolean;
     live: ICmsEntryLive | null;
 }
 

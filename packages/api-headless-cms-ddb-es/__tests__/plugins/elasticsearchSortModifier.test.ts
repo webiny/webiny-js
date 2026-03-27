@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Sort } from "@webiny/api-elasticsearch/types";
+import { Sort } from "@webiny/api-opensearch/types";
 import { CmsEntryElasticsearchSortModifierPlugin } from "~/plugins";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 

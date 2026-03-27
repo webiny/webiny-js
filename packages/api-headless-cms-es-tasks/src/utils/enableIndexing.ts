@@ -1,4 +1,4 @@
-import type { Client } from "@webiny/api-elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { configurations } from "@webiny/api-headless-cms-ddb-es/configurations.js";
 

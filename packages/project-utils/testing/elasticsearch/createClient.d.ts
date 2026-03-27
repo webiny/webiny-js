@@ -1,5 +1,4 @@
-import { Client } from "@elastic/elasticsearch";
-import { ElasticsearchClientOptions } from "../../../api-elasticsearch/src/client";
+import { Client, OpenSearchClientOptions } from "@webiny/api-opensearch";
 
 interface ElasticsearchClient extends Client {
     indices: Client["indices"] & {
@@ -9,10 +8,10 @@ interface ElasticsearchClient extends Client {
     };
 }
 
-export { ElasticsearchClientOptions, ElasticsearchClient };
+export { OpenSearchClientOptions, ElasticsearchClient };
 
 export declare function createElasticsearchClient(
-    options?: Partial<ElasticsearchClientOptions>
+    options?: Partial<OpenSearchClientOptions>
 ): ElasticsearchClient;
 
 export type { ElasticsearchClient as Client };

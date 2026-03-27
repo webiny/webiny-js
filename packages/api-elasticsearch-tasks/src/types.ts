@@ -1,7 +1,7 @@
-import type { ElasticsearchContext } from "@webiny/api-elasticsearch/types.js";
+import type { OpenSearchContext } from "@webiny/api-opensearch/types.js";
 import type { Context as TasksContext } from "@webiny/tasks/types.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { Client, createElasticsearchTable } from "@webiny/api-elasticsearch";
+import type { Client, createOpenSearchTable } from "@webiny/api-opensearch";
 import type { BatchReadItem } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
 import type { IEntity } from "@webiny/db-dynamodb";
 import type { GenericRecord } from "@webiny/api/types.js";
@@ -9,7 +9,7 @@ import { TaskController } from "@webiny/api-core/features/task/TaskController/in
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { DbRegistry } from "~/abstractions/DbRegistry.js";
 
-export interface Context extends ElasticsearchContext, TasksContext {}
+export interface Context extends OpenSearchContext, TasksContext {}
 
 export interface IElasticsearchTaskConfig {
     documentClient: DynamoDBDocument;
@@ -60,7 +60,7 @@ export interface IManager<
 > {
     readonly documentClient: DynamoDBDocument;
     readonly elasticsearch: Client;
-    readonly table: ReturnType<typeof createElasticsearchTable>;
+    readonly table: ReturnType<typeof createOpenSearchTable>;
     readonly controller: TaskController.Interface<I, O>;
     readonly dbRegistry?: DbRegistry.Interface;
     getEntity: (name: string) => IEntity;
