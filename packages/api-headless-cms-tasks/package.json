@@ -36,7 +36,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "typescript": "5.9.3",
-    "vitest": "^4.1.1"
+    "vitest": "^4.1.2"
   },
   "publishConfig": {
     "access": "public",
