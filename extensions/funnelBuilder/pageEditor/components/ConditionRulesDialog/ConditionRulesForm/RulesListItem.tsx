@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Accordion, IconButton } from "webiny/admin/ui";
-import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
+import { ReactComponent as DeleteIcon } from "webiny/admin/icons/delete.svg";
 import { useConditionRulesForm } from "../useConditionRulesForm";
 import { FunnelConditionRuleModelDto } from "../../../../models/FunnelConditionRuleModel";
 import { RuleConditionGroup } from "./RulesListItem/RuleConditionGroup";

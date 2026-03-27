@@ -2,8 +2,7 @@ import React from "react";
 import type { ReactElement } from "react";
 import { Accordion, Button, Icon, Text } from "webiny/admin/ui";
 import { useConditionRulesForm } from "../useConditionRulesForm";
-import styled from "@emotion/styled";
-import { ReactComponent as BasePlusIcon } from "webiny/admin/icons/add.svg";
+import { ReactComponent as PlusIconSvg } from "webiny/admin/icons/add.svg";
 import { ReactComponent as FileIcon } from "webiny/admin/icons/description.svg";
 
 export interface EmptyViewProps {
@@ -36,12 +35,7 @@ export const EmptyView = ({ icon = <FileIcon />, title, action }: EmptyViewProps
     );
 };
 
-const PlusIcon = styled(BasePlusIcon)`
-    fill: white;
-    width: 16px;
-    height: 16px;
-    margin-right: 2px;
-`;
+const PlusIcon = () => <PlusIconSvg className="fill-white w-4 h-4 mr-0.5" />;
 
 export interface ConditionRulesFormProps {
     children: React.ReactNode;

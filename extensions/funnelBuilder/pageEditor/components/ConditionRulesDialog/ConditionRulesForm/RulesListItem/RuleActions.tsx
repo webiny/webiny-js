@@ -1,8 +1,8 @@
 import React from "react";
 import { Button, IconButton, Select, Text } from "webiny/admin/ui";
 import { Form } from "webiny/admin/form";
-import { ReactComponent as DeleteIcon } from "@material-design-icons/svg/outlined/delete.svg";
-import { ReactComponent as PlusIcon } from "@material-design-icons/svg/outlined/add.svg";
+import { ReactComponent as DeleteIcon } from "webiny/admin/icons/delete.svg";
+import { ReactComponent as PlusIcon } from "webiny/admin/icons/add.svg";
 import { useConditionRulesForm } from "../../useConditionRulesForm";
 import { FunnelConditionRuleModelDto } from "../../../../../models/FunnelConditionRuleModel";
 import { listConditionActions } from "../../../../../models/conditionActions/conditionActionFactory";
