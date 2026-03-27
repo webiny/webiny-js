@@ -11699,12 +11699,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.3.7":
-  version: 18.3.7
-  resolution: "@types/react-dom@npm:18.3.7"
-  peerDependencies:
-    "@types/react": ^18.0.0
-  checksum: 10/317569219366d487a3103ba1e5e47154e95a002915fdcf73a44162c48fe49c3a57fcf7f57fc6979e70d447112681e6b13c6c3c1df289db8b544df4aab2d318f3
+"@types/react-dom@npm:18.2.25":
+  version: 18.2.25
+  resolution: "@types/react-dom@npm:18.2.25"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10/0e45856a2fdbf09e74632b132b3af773c6b18fc2ab0bd04595c9f2bcc0bb04d5e732ac8156d145b712dedab7484a8fe9dce5cf720a5437b5d26099c7060c7ba4
   languageName: node
   linkType: hard
 
@@ -11745,13 +11745,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.3.28":
-  version: 18.3.28
-  resolution: "@types/react@npm:18.3.28"
+"@types/react@npm:18.2.79":
+  version: 18.2.79
+  resolution: "@types/react@npm:18.2.79"
   dependencies:
     "@types/prop-types": "npm:*"
-    csstype: "npm:^3.2.2"
-  checksum: 10/6db7bb7f19957ee9f530baa7d143527f8befedad1585b064eb80777be0d84621157de75aba4f499ff429b10c5ef0c7d13e89be6bca3296ef71c80472894ff0eb
+    csstype: "npm:^3.0.2"
+  checksum: 10/2ef833e7d0a5c226beddbbe090811582371f6ae5e2f092a3d9f47cc6087c8bce0b96ee33e351de6d1d470f0a0ec5892d971933f841ef31538c1821681fc6569e
   languageName: node
   linkType: hard
 
@@ -12785,7 +12785,7 @@ __metadata:
     "@svgr/webpack": "npm:^8.1.0"
     "@tailwindcss/postcss": "npm:^4.2.2"
     "@tanstack/react-table": "npm:^8.21.3"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@types/react-color": "npm:^3.0.13"
     "@types/react-custom-scrollbars": "npm:^4.0.13"
     "@types/react-virtualized": "npm:^9.22.3"
@@ -12809,7 +12809,7 @@ __metadata:
     postcss-loader: "npm:^8.2.1"
     prettier: "npm:3.6.2"
     radix-ui: "npm:^1.4.3"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     react-color: "npm:^2.19.3"
     react-custom-scrollbars: "npm:^4.2.1"
     react-dnd: "npm:^16.0.1"
@@ -13670,7 +13670,7 @@ __metadata:
   resolution: "@webiny/app-aco@workspace:packages/app-aco"
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -13695,8 +13695,8 @@ __metadata:
     lodash: "npm:^4.17.23"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.8"
     typescript: "npm:5.9.3"
@@ -13710,15 +13710,15 @@ __metadata:
   resolution: "@webiny/app-admin-ui@workspace:packages/app-admin-ui"
   dependencies:
     "@emotion/babel-plugin": "npm:^11.13.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@types/react-helmet": "npm:^6.1.11"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
@@ -13741,7 +13741,7 @@ __metadata:
     "@types/bytes": "npm:^3.1.5"
     "@types/graphlib": "npm:^2.1.12"
     "@types/is-hotkey": "npm:^0.1.10"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@types/react-resizable": "npm:^3.0.8"
     "@types/react-transition-group": "npm:^4.4.12"
     "@types/store": "npm:^2.0.5"
@@ -13781,8 +13781,8 @@ __metadata:
     mobx-react-lite: "npm:^4.1.1"
     monaco-editor: "npm:0.53.0"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     react-resizable-panels: "npm:^4.7.6"
     react-transition-group: "npm:^4.4.5"
     react-virtualized: "npm:^9.22.6"
@@ -13803,7 +13803,7 @@ __metadata:
     "@emotion/css": "npm:^11.13.5"
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -13821,7 +13821,7 @@ __metadata:
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
   peerDependencies:
-    react: ^18.3.1
+    react: 18.2.0
   languageName: unknown
   linkType: soft
 
@@ -13846,7 +13846,7 @@ __metadata:
     "@apollo/react-components": "npm:^3.1.5"
     "@apollo/react-hooks": "npm:^3.1.5"
     "@svgr/webpack": "npm:^8.1.0"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
@@ -13881,10 +13881,10 @@ __metadata:
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     react-butterfiles: "npm:^1.3.3"
     react-custom-scrollbars: "npm:^4.2.1"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:18.2.0"
     react-lazy-load: "npm:^4.0.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
@@ -13914,8 +13914,8 @@ __metadata:
     graphql: "npm:^16.13.2"
     load-script: "npm:^2.0.0"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -13930,7 +13930,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@fortawesome/fontawesome-svg-core": "npm:^7.2.0"
     "@fortawesome/react-fontawesome": "npm:^3.3.0"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -13945,7 +13945,7 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.23"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -13957,15 +13957,15 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
     "@emotion/babel-plugin": "npm:^11.13.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/app-headless-cms-common": "npm:0.0.0"
     "@webiny/app-scheduler": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -13977,7 +13977,7 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
     "@fortawesome/react-fontawesome": "npm:^3.3.0"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -13987,8 +13987,8 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
@@ -14013,7 +14013,7 @@ __metadata:
     "@fortawesome/react-fontawesome": "npm:^3.3.0"
     "@lexical/utils": "npm:^0.42.0"
     "@svgr/webpack": "npm:^8.1.0"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
@@ -14049,11 +14049,11 @@ __metadata:
     mobx-react-lite: "npm:^4.1.1"
     prop-types: "npm:^15.8.1"
     raw.macro: "npm:0.4.2"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     react-butterfiles: "npm:^1.3.3"
     react-dnd: "npm:^16.0.1"
     react-dnd-html5-backend: "npm:^16.0.1"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
@@ -14068,7 +14068,7 @@ __metadata:
   resolution: "@webiny/app-mailer@workspace:packages/app-mailer"
   dependencies:
     "@apollo/react-components": "npm:^3.1.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -14082,8 +14082,8 @@ __metadata:
     graphql: "npm:^16.13.2"
     graphql-tag: "npm:^2.12.6"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14108,8 +14108,8 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     crypto-hash: "npm:^4.0.1"
     graphql-tag: "npm:^2.12.6"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14123,7 +14123,7 @@ __metadata:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
     "@material-design-icons/svg": "npm:^0.14.15"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -14143,8 +14143,8 @@ __metadata:
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
@@ -14163,8 +14163,8 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
     monaco-editor: "npm:0.53.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14187,8 +14187,8 @@ __metadata:
     "@webiny/validation": "npm:0.0.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.23"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14232,8 +14232,8 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     apollo-link-batch-http: "npm:^1.2.14"
     apollo-utilities: "npm:^1.3.4"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14243,7 +14243,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-trash-bin@workspace:packages/app-trash-bin"
   dependencies:
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -14259,8 +14259,8 @@ __metadata:
     lodash: "npm:^4.17.23"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
     vitest: "npm:^4.1.2"
@@ -14285,14 +14285,14 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
     "@emotion/babel-plugin": "npm:^11.13.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app-scheduler": "npm:0.0.0"
     "@webiny/app-website-builder": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14303,7 +14303,7 @@ __metadata:
   resolution: "@webiny/app-website-builder-workflows@workspace:packages/app-website-builder-workflows"
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -14314,8 +14314,8 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
@@ -14336,7 +14336,7 @@ __metadata:
     "@svgr/webpack": "npm:^8.1.0"
     "@types/deep-equal": "npm:^1.0.4"
     "@types/is-hotkey": "npm:^0.1.10"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
@@ -14376,10 +14376,10 @@ __metadata:
     mobx-react-lite: "npm:^4.1.1"
     pluralize: "npm:^8.0.0"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     react-dnd: "npm:^16.0.1"
     react-dnd-html5-backend: "npm:^16.0.1"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.8"
     typescript: "npm:5.9.3"
@@ -14395,8 +14395,8 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14407,7 +14407,7 @@ __metadata:
   resolution: "@webiny/app-workflows@workspace:packages/app-workflows"
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -14424,8 +14424,8 @@ __metadata:
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
     prop-types: "npm:^15.8.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
@@ -14439,7 +14439,7 @@ __metadata:
     "@apollo/react-hooks": "npm:^3.1.5"
     "@emotion/styled": "npm:^11.14.1"
     "@types/lodash": "npm:^4.17.24"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@types/warning": "npm:^3.0.4"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^0.2.3"
@@ -14466,8 +14466,8 @@ __metadata:
     minimatch: "npm:^10.2.4"
     mobx: "npm:^6.15.0"
     nanoid: "npm:^5.1.7"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     ts-invariant: "npm:^0.10.3"
     type-fest: "npm:^5.5.0"
@@ -14496,8 +14496,8 @@ __metadata:
     jsonwebtoken: "npm:^9.0.3"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
@@ -14588,7 +14588,7 @@ __metadata:
     postcss-loader: "npm:^8.2.1"
     process: "npm:^0.11.10"
     raw-loader: "npm:^4.0.2"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:18.2.0"
     react-refresh: "npm:^0.18.0"
     read-json-sync: "npm:2.0.1"
     rimraf: "npm:^6.1.3"
@@ -14659,7 +14659,7 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
     "@aws-amplify/auth": "npm:^5.6.19"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:*"
     "@webiny/api-core": "npm:*"
     "@webiny/app": "npm:*"
@@ -14683,7 +14683,7 @@ __metadata:
     lodash: "npm:^4.17.23"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     vitest: "npm:^4.1.2"
     zod: "npm:^4.3.6"
   languageName: unknown
@@ -14796,7 +14796,7 @@ __metadata:
     typescript: "npm:5.9.3"
     vitest: "npm:^4.1.2"
   peerDependencies:
-    react: ^18.3.1
+    react: 18.2.0
   languageName: unknown
   linkType: soft
 
@@ -14898,7 +14898,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   peerDependencies:
-    react: ^18.3.1
+    react: 18.2.0
   languageName: unknown
   linkType: soft
 
@@ -14920,7 +14920,7 @@ __metadata:
     vitest: "npm:^4.1.2"
     yargs: "npm:^18.0.0"
   peerDependencies:
-    react: ^18.3.1
+    react: 18.2.0
   languageName: unknown
   linkType: soft
 
@@ -14958,9 +14958,9 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     react-color: "npm:^2.19.3"
-    react-dom: "npm:^18.3.1"
+    react-dom: "npm:18.2.0"
   languageName: unknown
   linkType: soft
 
@@ -14983,8 +14983,8 @@ __metadata:
     "@webiny/react-properties": "npm:0.0.0"
     lexical: "npm:^0.42.0"
     lodash: "npm:^4.17.23"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
   languageName: unknown
   linkType: soft
 
@@ -15005,7 +15005,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/lexical-theme": "npm:0.0.0"
     lexical: "npm:^0.42.0"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
   languageName: unknown
   linkType: soft
 
@@ -15065,8 +15065,8 @@ __metadata:
     jsonwebtoken: "npm:^9.0.3"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
@@ -15126,7 +15126,7 @@ __metadata:
     "@webiny/tenant-manager": "npm:*"
     core-js: "npm:3.49.0"
     cross-fetch: "npm:^4.1.0"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     regenerator-runtime: "npm:^0.14.1"
   languageName: unknown
   linkType: soft
@@ -15153,7 +15153,7 @@ __metadata:
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.17.23"
     mime: "npm:^4.1.0"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     replace-in-path: "npm:^1.1.0"
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
@@ -15227,8 +15227,8 @@ __metadata:
     p-retry: "npm:^7.1.1"
     pino: "npm:^10.3.1"
     pino-pretty: "npm:^13.1.3"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     read-json-sync: "npm:2.0.1"
     replace-in-path: "npm:^1.1.0"
     rimraf: "npm:^6.1.3"
@@ -15283,10 +15283,10 @@ __metadata:
   resolution: "@webiny/react-composition@workspace:packages/react-composition"
   dependencies:
     "@testing-library/react": "npm:^16.3.2"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/build-tools": "npm:0.0.0"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^4.1.2"
   languageName: unknown
@@ -15297,13 +15297,13 @@ __metadata:
   resolution: "@webiny/react-properties@workspace:packages/react-properties"
   dependencies:
     "@testing-library/react": "npm:^16.3.2"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     lodash: "npm:^4.17.23"
     nanoid: "npm:^5.1.7"
     prettier: "npm:3.6.2"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
@@ -15314,14 +15314,14 @@ __metadata:
   dependencies:
     "@emotion/react": "npm:^11.14.0"
     "@testing-library/react": "npm:^16.3.2"
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/lexical-theme": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     identity-obj-proxy: "npm:^3.0.0"
     prettier: "npm:3.6.2"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     vitest: "npm:^4.1.2"
   languageName: unknown
   linkType: soft
@@ -15419,8 +15419,8 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -15479,8 +15479,8 @@ __metadata:
     typescript: "npm:5.9.3"
   peerDependencies:
     minimatch: ^10.2.4
-    react: ^18.3.1
-    react-dom: ^18.3.1
+    react: 18.2.0
+    react-dom: 18.2.0
   languageName: unknown
   linkType: soft
 
@@ -15548,14 +15548,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/website-builder-react@workspace:packages/website-builder-react"
   dependencies:
-    "@types/react": "npm:^18.3.28"
+    "@types/react": "npm:18.2.79"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^4.1.1"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^4.1.2"
   languageName: unknown
@@ -18902,7 +18902,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csstype@npm:^3.0.2, csstype@npm:^3.2.2, csstype@npm:^3.2.3":
+"csstype@npm:^3.0.2, csstype@npm:^3.2.3":
   version: 3.2.3
   resolution: "csstype@npm:3.2.3"
   checksum: 10/ad41baf7e2ffac65ab544d79107bf7cd1a4bb9bab9ac3302f59ab4ba655d5e30942a8ae46e10ba160c6f4ecea464cc95b975ca2fefbdeeacd6ac63f12f99fe1f
@@ -29420,15 +29420,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18.3.1":
-  version: 18.3.1
-  resolution: "react-dom@npm:18.3.1"
+"react-dom@npm:18.2.0":
+  version: 18.2.0
+  resolution: "react-dom@npm:18.2.0"
   dependencies:
     loose-envify: "npm:^1.1.0"
-    scheduler: "npm:^0.23.2"
+    scheduler: "npm:^0.23.0"
   peerDependencies:
-    react: ^18.3.1
-  checksum: 10/3f4b73a3aa083091173b29812b10394dd06f4ac06aff410b74702cfb3aa29d7b0ced208aab92d5272919b612e5cda21aeb1d54191848cf6e46e9e354f3541f81
+    react: ^18.2.0
+  checksum: 10/ca5e7762ec8c17a472a3605b6f111895c9f87ac7d43a610ab7024f68cd833d08eda0625ce02ec7178cc1f3c957cf0b9273cdc17aa2cd02da87544331c43b1d21
   languageName: node
   linkType: hard
 
@@ -29644,12 +29644,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.3.1":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
+"react@npm:18.2.0":
+  version: 18.2.0
+  resolution: "react@npm:18.2.0"
   dependencies:
     loose-envify: "npm:^1.1.0"
-  checksum: 10/261137d3f3993eaa2368a83110466fc0e558bc2c7f7ae7ca52d94f03aac945f45146bd85e5f481044db1758a1dbb57879e2fcdd33924e2dde1bdc550ce73f7bf
+  checksum: 10/b9214a9bd79e99d08de55f8bef2b7fc8c39630be97c4e29d7be173d14a9a10670b5325e94485f74cd8bff4966ef3c78ee53c79a7b0b9b70cba20aa8973acc694
   languageName: node
   linkType: hard
 
@@ -30421,8 +30421,8 @@ __metadata:
     "@types/fs-extra": "npm:^11.0.4"
     "@types/hoist-non-react-statics": "npm:^3.3.7"
     "@types/node": "npm:^24.12.0"
-    "@types/react": "npm:^18.3.28"
-    "@types/react-dom": "npm:^18.3.7"
+    "@types/react": "npm:18.2.79"
+    "@types/react-dom": "npm:18.2.25"
     "@typescript-eslint/eslint-plugin": "npm:^8.57.2"
     "@typescript-eslint/parser": "npm:^8.57.2"
     "@vitest/coverage-v8": "npm:^4.1.2"
@@ -30468,8 +30468,8 @@ __metadata:
     minimatch: "npm:^10.2.4"
     nanoid: "npm:^5.1.7"
     prettier: "npm:3.6.2"
-    react: "npm:^18.3.1"
-    react-dom: "npm:^18.3.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
     semver: "npm:^7.7.4"
     ts-expect: "npm:^1.3.0"
     tsx: "npm:^4.21.0"
@@ -30890,7 +30890,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.23.2":
+"scheduler@npm:^0.23.0":
   version: 0.23.2
   resolution: "scheduler@npm:0.23.2"
   dependencies:
@@ -34028,7 +34028,7 @@ __metadata:
     "@webiny/tenant-manager": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
-    react: "npm:^18.3.1"
+    react: "npm:18.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:5.9.3"
   languageName: unknown
