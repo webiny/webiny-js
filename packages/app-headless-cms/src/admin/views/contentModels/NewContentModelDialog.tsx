@@ -24,6 +24,7 @@ import { Checkbox } from "@webiny/ui/Checkbox/index.js";
 import { IconPicker } from "~/admin/components/IconPicker.js";
 import { Switch } from "@webiny/ui/Switch/index.js";
 import { Routes } from "~/routes.js";
+import { ScrollArea } from "@webiny/admin-ui/ScrollArea";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 
@@ -175,107 +176,114 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                     >
                         <>
                             {loading && <CircularProgress label={"Creating content model..."} />}
-                            <Grid>
-                                <Grid.Column span={12}>
-                                    <Bind
-                                        name={"name"}
-                                        validators={[
-                                            validation.create("required,maxLength:100"),
-                                            nameValidator
-                                        ]}
-                                    >
-                                        <Input
-                                            label={t`Name`}
-                                            description={t`The name of the content model. Use the singular form, e.g. Author Category, not Author Categories.`}
-                                            data-testid="cms.newcontentmodeldialog.name"
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <Bind
-                                        name={"singularApiName"}
-                                        validators={[
-                                            validation.create("required,maxLength:100"),
-                                            apiNameValidator
-                                        ]}
-                                    >
-                                        <Input
-                                            label={t`Singular API Name`}
-                                            description={t`The API name of the content model. For example: AuthorCategory.`}
-                                            data-testid="cms.newcontentmodeldialog.singularApiName"
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <Bind name={"singleEntry"} defaultValue={false}>
-                                        <Switch
-                                            description={t`Create a model that can hold only one entry. Cannot be changed later.`}
-                                            label={t`Single entry model`}
-                                            data-testid="cms.newcontentmodeldialog.singleEntry"
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <Bind
-                                        name={"pluralApiName"}
-                                        validators={
-                                            data.singleEntry
-                                                ? []
-                                                : [
-                                                      validation.create("required,maxLength:100"),
-                                                      apiNameValidator
-                                                  ]
-                                        }
-                                    >
-                                        <Input
-                                            disabled={data.singleEntry}
-                                            label={t`Plural API Name`}
-                                            description={t`The plural API name of the content model. For example: AuthorCategories.`}
-                                            data-testid="cms.newcontentmodeldialog.pluralApiName"
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <Bind name={"group"} validators={validation.create("required")}>
-                                        <Select
-                                            description={t`Choose a content model group`}
-                                            label={t`Content model group`}
-                                            options={contentModelGroups}
-                                            data-testid="cms.newcontentmodeldialog.selectgroup"
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <Bind name="icon">
-                                        <IconPicker
-                                            label={t`Icon`}
-                                            description={t`Choose an icon to represent the model.`}
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <Bind name="description">
-                                        {props => (
+                            <ScrollArea className="max-h-[70vh] flex flex-col">
+                                <Grid>
+                                    <Grid.Column span={12}>
+                                        <Bind
+                                            name={"name"}
+                                            validators={[
+                                                validation.create("required,maxLength:100"),
+                                                nameValidator
+                                            ]}
+                                        >
                                             <Input
-                                                {...props}
-                                                rows={4}
-                                                maxLength={200}
-                                                label={t`Description`}
-                                                data-testid="cms.newcontentmodeldialog.description"
+                                                label={t`Name`}
+                                                description={t`The name of the content model. Use the singular form, e.g. Author Category, not Author Categories.`}
+                                                data-testid="cms.newcontentmodeldialog.name"
                                             />
-                                        )}
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <Bind name={"defaultFields"} defaultValue={true}>
-                                        <Checkbox
-                                            description={t`Create model with default title (text), description (long text) and image (file) fields`}
-                                            label={t`Create model with default fields`}
-                                            data-testid="cms.newcontentmodeldialog.defaultfields"
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                            </Grid>
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind
+                                            name={"singularApiName"}
+                                            validators={[
+                                                validation.create("required,maxLength:100"),
+                                                apiNameValidator
+                                            ]}
+                                        >
+                                            <Input
+                                                label={t`Singular API Name`}
+                                                description={t`The API name of the content model. For example: AuthorCategory.`}
+                                                data-testid="cms.newcontentmodeldialog.singularApiName"
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind name={"singleEntry"} defaultValue={false}>
+                                            <Switch
+                                                description={t`Create a model that can hold only one entry. Cannot be changed later.`}
+                                                label={t`Single entry model`}
+                                                data-testid="cms.newcontentmodeldialog.singleEntry"
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind
+                                            name={"pluralApiName"}
+                                            validators={
+                                                data.singleEntry
+                                                    ? []
+                                                    : [
+                                                          validation.create(
+                                                              "required,maxLength:100"
+                                                          ),
+                                                          apiNameValidator
+                                                      ]
+                                            }
+                                        >
+                                            <Input
+                                                disabled={data.singleEntry}
+                                                label={t`Plural API Name`}
+                                                description={t`The plural API name of the content model. For example: AuthorCategories.`}
+                                                data-testid="cms.newcontentmodeldialog.pluralApiName"
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind
+                                            name={"group"}
+                                            validators={validation.create("required")}
+                                        >
+                                            <Select
+                                                description={t`Choose a content model group`}
+                                                label={t`Content model group`}
+                                                options={contentModelGroups}
+                                                data-testid="cms.newcontentmodeldialog.selectgroup"
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind name="icon">
+                                            <IconPicker
+                                                label={t`Icon`}
+                                                description={t`Choose an icon to represent the model.`}
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind name="description">
+                                            {props => (
+                                                <Input
+                                                    {...props}
+                                                    rows={4}
+                                                    maxLength={200}
+                                                    label={t`Description`}
+                                                    data-testid="cms.newcontentmodeldialog.description"
+                                                />
+                                            )}
+                                        </Bind>
+                                    </Grid.Column>
+                                    <Grid.Column span={12}>
+                                        <Bind name={"defaultFields"} defaultValue={true}>
+                                            <Checkbox
+                                                description={t`Create model with default title (text), description (long text) and image (file) fields`}
+                                                label={t`Create model with default fields`}
+                                                data-testid="cms.newcontentmodeldialog.defaultfields"
+                                            />
+                                        </Bind>
+                                    </Grid.Column>
+                                </Grid>
+                            </ScrollArea>
                         </>
                     </Dialog>
                 );
