@@ -6,11 +6,6 @@ import { UiService } from "~/abstractions/index.js";
 
 const GITHUB_REPOSITORY_URL = "https://github.com/webiny/webiny-upgrades-v6";
 
-interface IGetTargetVersionParams {
-    version: string;
-    debug: boolean;
-}
-
 export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstraction.Interface {
     public constructor(private ui: UiService.Interface) {}
 
