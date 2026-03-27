@@ -10,6 +10,7 @@ export interface UpgradeCommandParams {
     logLevel?: string;
     showLogs?: boolean;
     showStackTrace?: boolean;
+    version?: string;
 }
 
 export class UpgradeCommand implements CliCommandFactory.Interface<UpgradeCommandParams> {
@@ -21,6 +22,16 @@ export class UpgradeCommand implements CliCommandFactory.Interface<UpgradeComman
             description:
                 "Upgrade Webiny packages and dependencies to the latest or selected version.",
             examples: ["upgrade", "upgrade 6.2.0", "upgrade 0.0.0-unstable.abc --disable-semver"],
+            params: [
+                {
+                    name: "version",
+                    description:
+                        "Version to upgrade to. Can be a specific version (e.g. 6.2.0) or 'latest' to upgrade to the latest version.",
+                    type: "string",
+                    default: "latest",
+                    required: false
+                }
+            ],
             options: [
                 {
                     name: "disable-semver",
