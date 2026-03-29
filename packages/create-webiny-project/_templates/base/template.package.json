@@ -1,16 +1,18 @@
 {
   "type": "module",
-  "devDependencies": {
-    "@types/node": "^24.12.0",
-    "@types/react": "18.2.79",
-    "@types/react-dom": "18.2.25",
+  "dependencies": {
     "@webiny/cli": "latest",
     "@webiny/cognito": "latest",
     "@webiny/mcp": "latest",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "typescript": "5.9.3",
     "webiny": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.0",
+    "@types/react": "18.2.79",
+    "@types/react-dom": "18.2.25",
+    "typescript": "5.9.3"
   },
   "scripts": {},
   "engines": {
