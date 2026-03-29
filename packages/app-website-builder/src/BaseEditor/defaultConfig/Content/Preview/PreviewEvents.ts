@@ -181,12 +181,6 @@ export class PreviewEvents {
                         component.onDescendantChange as any
                     ) as any;
                 }
-                for (const input of component.inputs ?? []) {
-                    const dv = (input as any).defaultValue;
-                    if (dv && typeof dv === "object" && typeof dv.__factory === "string") {
-                        input.defaultValue = functionConverter.deserialize(dv.__factory);
-                    }
-                }
             } catch (e) {
                 console.log(
                     `Couldn't deserialize ${component.name} component callbacks:`,
