@@ -4,7 +4,8 @@ import { Route } from "./Route.js";
 import {
     RouterRepository,
     RouterPresenter as Abstraction,
-    type OnRouteExit
+    type RouteTransitionGuardConfig,
+    type GuardDisposer
 } from "./abstractions.js";
 
 class RouterPresenterImpl implements Abstraction.Interface {
@@ -45,8 +46,24 @@ class RouterPresenterImpl implements Abstraction.Interface {
         return this.routerRepository.getLink(route, params);
     };
 
-    onRouteExit = (cb: OnRouteExit) => {
-        this.routerRepository.onRouteExit(cb);
+    addTransitionGuard = (config: RouteTransitionGuardConfig): GuardDisposer => {
+        return this.routerRepository.addGuard(config);
+    };
+
+    isTransitionBlocked = (): boolean => {
+        return this.routerRepository.isBlocked();
+    };
+
+    unblockTransition = (): void => {
+        this.routerRepository.unblock();
+    };
+
+    confirmTransition = (): void => {
+        this.routerRepository.confirmTransition();
+    };
+
+    cancelTransition = (): void => {
+        this.routerRepository.cancelTransition();
     };
 
     destroy = () => {

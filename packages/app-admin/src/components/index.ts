@@ -1,6 +1,5 @@
 export { DevToolsSection } from "@webiny/react-properties";
 export { FileManager } from "~/base/ui/FileManager.js";
-export { NavigationPrompt } from "~/components/NavigationPrompt.js";
 export * from "~/components/AdminLayout.js";
 export * from "~/components/Buttons/index.js";
 export { DialogsProvider } from "~/components/Dialogs/DialogsContext.js";
@@ -24,7 +23,6 @@ export type { RichTextValueWithHtml } from "~/components/LexicalEditor/index.js"
 export { LexicalLinkForm } from "~/components/LexicalEditor/index.js";
 export { Wcp } from "~/components/Wcp.js";
 export * from "~/components/IconPicker/index.js";
-export * from "~/components/NavigationPrompt.js";
 export * from "~/components/SplitView/index.js";
 export * from "~/components/Permissions/index.js";
 export * from "~/components/SearchUI.js";
