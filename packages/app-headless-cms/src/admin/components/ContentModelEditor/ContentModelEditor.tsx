@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-    makeDecoratable,
-    NavigationPrompt,
-    LeftPanel,
-    RightPanel,
-    SplitView
-} from "@webiny/app-admin";
+import { makeDecoratable, useDialogs, LeftPanel, RightPanel, SplitView } from "@webiny/app-admin";
+import { useRouter } from "@webiny/app";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Heading, OverlayLoader, Tabs, Text, TimeAgo } from "@webiny/admin-ui";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
@@ -33,6 +28,8 @@ interface OnChangeParams {
 
 export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
     const { data, setData, isPristine, contentModel } = useModelEditor();
+    const router = useRouter();
+    const dialogs = useDialogs();
 
     // Add a class to <body> to trigger global styles while this component is active
     useEffect(() => {
@@ -41,6 +38,25 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
         return () => {
             document.body.classList.remove("overflow-hidden");
         };
+    }, []);
+
+    const isPristineRef = React.useRef(isPristine);
+    isPristineRef.current = isPristine;
+
+    useEffect(() => {
+        return router.addTransitionGuard({
+            guard: () => !isPristineRef.current,
+            onBlocked: () => {
+                dialogs.showDialog({
+                    title: "Confirm Navigation",
+                    content: prompt,
+                    acceptLabel: "Yes!",
+                    cancelLabel: "No, stay here.",
+                    onAccept: () => router.confirmTransition(),
+                    onClose: () => router.cancelTransition()
+                });
+            }
+        });
     }, []);
 
     const [activeTab, setActiveTab] = useState<string>("edit");
@@ -57,7 +73,6 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
 
     return (
         <div className={"content-model-editor flex-1"}>
-            <NavigationPrompt when={!isPristine} message={prompt} />
             <Header />
             <div className={"w-full overflow-y-auto h-main-content"}>
                 <SplitView>

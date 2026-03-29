@@ -1,10 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-    CompositionScope,
-    DevToolsSection,
-    NavigationPrompt,
-    useSnackbar
-} from "@webiny/app-admin";
+import { DevToolsSection, useDialogs, useSnackbar } from "@webiny/app-admin";
+import { useRouter } from "@webiny/app";
 import type { FormAPI, FormInvalidFields, FormOnSubmit, FormValidation } from "@webiny/form";
 import { Form } from "@webiny/form";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
@@ -84,6 +80,29 @@ export const ContentEntryFormProvider = ({
     const [invalidFields, setInvalidFields] = useState<FormInvalidFields>({});
     const { showSnackbar } = useSnackbar();
     const saveOptionsRef = useRef<SaveEntryOptions>({ skipValidators: undefined });
+    const router = useRouter();
+    const dialogs = useDialogs();
+    const isPristineRef = useRef(true);
+
+    useEffect(() => {
+        if (!confirmNavigationIfDirty) {
+            return;
+        }
+
+        return router.addTransitionGuard({
+            guard: () => !isPristineRef.current,
+            onBlocked: () => {
+                dialogs.showDialog({
+                    title: "Confirm Navigation",
+                    content: promptMessage,
+                    acceptLabel: "Yes!",
+                    cancelLabel: "No, stay here.",
+                    onAccept: () => router.confirmTransition(),
+                    onClose: () => router.cancelTransition()
+                });
+            }
+        });
+    }, [confirmNavigationIfDirty]);
 
     const saveEntry = useCallback(async (options: SaveEntryOptions = {}) => {
         saveOptionsRef.current.skipValidators = options.skipValidators;
@@ -130,6 +149,8 @@ export const ContentEntryFormProvider = ({
             onAfterSubmitRef.current = onAfterCreate;
         }
 
+        router.unblockTransition();
+
         return entry;
     };
 
@@ -157,6 +178,8 @@ export const ContentEntryFormProvider = ({
             }}
         >
             {formProps => {
+                isPristineRef.current = formProps.form.isPristine;
+
                 const context: ContentEntryFormContext = {
                     entry: { ...initialEntry, values: formProps.data },
                     saveEntry,
@@ -170,14 +193,6 @@ export const ContentEntryFormProvider = ({
                             data={context.entry}
                             views={"raw"}
                         />
-                        {confirmNavigationIfDirty ? (
-                            <CompositionScope name={"cms.contentEntryForm"}>
-                                <NavigationPrompt
-                                    when={() => !formProps.form.isPristine}
-                                    message={promptMessage}
-                                />
-                            </CompositionScope>
-                        ) : null}
                         {children}
                     </ContentEntryFormContext.Provider>
                 );

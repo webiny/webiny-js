@@ -13,7 +13,7 @@ export interface IContentEntryLockerProps {
     entry: CmsContentEntry;
     model: CmsModel;
     onEntryUnlocked: () => void;
-    onDisablePrompt: (flag: boolean) => void;
+    onDisablePrompt: () => void;
     children: React.ReactElement;
 }
 
@@ -47,7 +47,7 @@ export const ContentEntryLocker = ({
             `recordLocking.entry.kickOut.${entryId}`,
             async incoming => {
                 const { user } = incoming.data;
-                onDisablePrompt(true);
+                onDisablePrompt();
                 removeEntryLock({
                     id: entryId,
                     $lockingType: model.modelId
