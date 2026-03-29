@@ -1,35 +1,21 @@
-import React, { useState } from "react";
-import { CompositionScope, createGenericContext, NavigationPrompt } from "@webiny/app-admin";
+import React from "react";
+import { useRouter } from "@webiny/app";
 import { ContentEntryEditorConfig, ContentEntryListConfig } from "@webiny/app-headless-cms";
 import { ContentEntryGuard } from "./ContentEntryGuard.js";
 import { ContentEntryLocker } from "./ContentEntryLocker.js";
 
 const { ContentEntry, SingletonContentEntry } = ContentEntryEditorConfig;
 
-const DisablePrompt = createGenericContext<{ disablePrompt: boolean }>("DisablePrompt");
-
-const PromptDecorator = NavigationPrompt.createDecorator(Original => {
-    return function Prompt(props) {
-        const { disablePrompt } = DisablePrompt.useHook();
-        const when = disablePrompt === true ? false : props.when;
-        return <Original message={props.message} when={when} />;
-    };
-});
-
 const ContentEntryDecorator = ContentEntry.createDecorator(Original => {
     return function RecordLockingContentEntry() {
-        const [disablePrompt, setDisablePrompt] = useState(false);
+        const router = useRouter();
         const { entry, contentModel, loading } = ContentEntry.useContentEntry();
         const { navigateTo } = ContentEntryListConfig.ContentEntries.useContentEntriesList();
         /**
          * New entry does not have ID yet.
          */
         if (!entry?.id) {
-            return (
-                <DisablePrompt.Provider disablePrompt={disablePrompt}>
-                    <Original />
-                </DisablePrompt.Provider>
-            );
+            return <Original />;
         }
         /**
          * Continue with existing entry.
@@ -40,12 +26,10 @@ const ContentEntryDecorator = ContentEntry.createDecorator(Original => {
             <ContentEntryGuard {...props} loading={loading}>
                 <ContentEntryLocker
                     {...props}
-                    onDisablePrompt={flag => setDisablePrompt(flag)}
+                    onDisablePrompt={() => router.unblockTransition()}
                     onEntryUnlocked={navigateTo}
                 >
-                    <DisablePrompt.Provider disablePrompt={disablePrompt}>
-                        <Original />
-                    </DisablePrompt.Provider>
+                    <Original />
                 </ContentEntryLocker>
             </ContentEntryGuard>
         );
@@ -54,7 +38,7 @@ const ContentEntryDecorator = ContentEntry.createDecorator(Original => {
 
 const SingletonContentEntryDecorator = SingletonContentEntry.createDecorator(Original => {
     return function RecordLockingSingletonContentEntry() {
-        const [disablePrompt, setDisablePrompt] = useState(false);
+        const router = useRouter();
         const { entry, contentModel, loading } = SingletonContentEntry.useSingletonContentEntry();
 
         const props = { entry, model: contentModel };
@@ -63,14 +47,12 @@ const SingletonContentEntryDecorator = SingletonContentEntry.createDecorator(Ori
             <ContentEntryGuard {...props} loading={loading}>
                 <ContentEntryLocker
                     {...props}
-                    onDisablePrompt={flag => setDisablePrompt(flag)}
+                    onDisablePrompt={() => router.unblockTransition()}
                     onEntryUnlocked={() => {
                         // There's nowhere to go, since singleton entry doesn't have a list view.
                     }}
                 >
-                    <DisablePrompt.Provider disablePrompt={disablePrompt}>
-                        <Original />
-                    </DisablePrompt.Provider>
+                    <Original />
                 </ContentEntryLocker>
             </ContentEntryGuard>
         );
@@ -82,9 +64,6 @@ export const HeadlessCmsContentEntry = () => {
         <>
             <ContentEntryDecorator />
             <SingletonContentEntryDecorator />
-            <CompositionScope name={"cms.contentEntryForm"}>
-                <PromptDecorator />
-            </CompositionScope>
         </>
     );
 };
