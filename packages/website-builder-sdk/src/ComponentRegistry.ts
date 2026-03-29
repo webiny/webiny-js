@@ -40,7 +40,6 @@ export class ComponentRegistry {
                 component.manifest.onDescendantChange
             );
         }
-
         this.registry.set(name, component);
         // notify subscribers
         this.listeners.forEach(fn => fn({ name, component }));
