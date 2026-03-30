@@ -10,12 +10,24 @@
   "exports": {
     ".": "./index.js"
   },
+  "dependencies": {
+    "p-map": "^7.0.4",
+    "p-retry": "^7.1.1"
+  },
   "author": "Webiny",
   "license": "MIT",
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "typescript": "5.9.3",
     "vitest": "^4.1.2"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "p-retry",
+        "p-map"
+      ]
+    }
   },
   "publishConfig": {
     "access": "public",
