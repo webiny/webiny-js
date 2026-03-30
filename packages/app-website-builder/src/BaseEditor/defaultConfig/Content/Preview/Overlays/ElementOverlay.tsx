@@ -29,7 +29,12 @@ export const ElementOverlay = React.memo(() => {
     }, []);
 
     const unsetHighlighted = useCallback((event: React.MouseEvent) => {
-        if ((event.relatedTarget as Element)?.closest('[data-role="element-overlay"]')) {
+        const relatedTarget = event.relatedTarget as Element;
+        if (
+            relatedTarget &&
+            typeof relatedTarget.closest === "function" &&
+            relatedTarget.closest('[data-role="element-overlay"]')
+        ) {
             return;
         }
         event.stopPropagation();

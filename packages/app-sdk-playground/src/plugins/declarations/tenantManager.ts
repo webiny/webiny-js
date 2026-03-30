@@ -29,7 +29,17 @@ interface SdkEnableTenantParams {
     tenantId: string;
 }
 
+interface SdkTenant {
+    /** Unique tenant identifier. */
+    id: string;
+    /** Tenant configuration values. */
+    values: Record<string, unknown>;
+}
+
 interface SdkTenantManager {
+    /** Return the current tenant for the authenticated context. */
+    getCurrentTenant(): Promise<SdkResult<SdkTenant, SdkError>>;
+
     /** Create a new tenant in the system. */
     createTenant(params: SdkCreateTenantParams): Promise<SdkResult<boolean, SdkError>>;
 

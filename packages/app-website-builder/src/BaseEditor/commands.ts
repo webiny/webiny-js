@@ -44,6 +44,8 @@ const PreviewPatchElement = createCommand<{ elementId: string; patch: any[] }>(
     "PREVIEW_PATCH_ELEMENT"
 );
 
+const SendPreviewMessage = createCommand<{ type: string; payload?: any }>("SEND_PREVIEW_MESSAGE");
+
 export const Commands = {
     CreateElement,
     DeleteElement,
@@ -53,5 +55,6 @@ export const Commands = {
     HighlightElement,
     RefreshPreview,
     PreviewPatchElement,
+    SendPreviewMessage,
     SetTheme
 };

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Grid, Select } from "@webiny/admin-ui";
 import { useBind } from "@webiny/form";
 import { validation } from "@webiny/validation";
@@ -79,12 +79,20 @@ const CreatePageWizard = () => {
         validators: [validation.create("required")]
     });
 
+    // Auto-select the first page type when the dialog opens.
+    useEffect(() => {
+        if (options.length > 0 && !pageTypeBind.value) {
+            pageTypeBind.onChange(options[0].value);
+        }
+    }, [options]);
+
     const pageType = pageTypes.find(type => type.name === pageTypeBind.value);
 
     return (
         <Grid>
             <Grid.Column span={12}>
                 <Select
+                    displayResetAction={false}
                     label={"Page Type"}
                     {...pageTypeBind}
                     value={pageTypeBind.value ?? ""}

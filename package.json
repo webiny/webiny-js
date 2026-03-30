@@ -250,6 +250,8 @@
   },
   "packageManager": "yarn@4.12.0",
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
     "@types/hoist-non-react-statics": "^3.3.7",
     "@webiny/di": "^0.2.3",
     "jwt-decode": "^4.0.0"

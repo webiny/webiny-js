@@ -120,6 +120,7 @@ export const Extensions = () => {
             {/* API */}
             {/*<MyIdpExtension />*/}
             <Cognito />
+            <Api.Extension src={"/extensions/funnelBuilder/api/TenantModelExtension.ts"} />
 
             {/* Security 👇 */}
             <Api.Extension src={"/extensions/MyApiKey.ts"} />

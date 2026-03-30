@@ -13,6 +13,7 @@ export { useCreateElement } from "@webiny/app-website-builder/BaseEditor/hooks/u
 export { useDeleteElement } from "@webiny/app-website-builder/BaseEditor/hooks/useDeleteElement.js";
 export { useUpdateElement } from "@webiny/app-website-builder/BaseEditor/hooks/useUpdateElement.js";
 export { useElementOverlay } from "@webiny/app-website-builder/BaseEditor/hooks/useElementOverlay.js";
+export { useElementComponentManifest } from "@webiny/app-website-builder/BaseEditor/defaultConfig/Content/Preview/useElementComponentManifest.js";
 export { ElementInputs } from "@webiny/app-website-builder/BaseEditor/defaultConfig/Sidebar/ElementSettings/ElementInputs.js";
 export { $selectElement } from "@webiny/app-website-builder/editorSdk/utils/index.js";
 export { $deselectElement } from "@webiny/app-website-builder/editorSdk/utils/index.js";
