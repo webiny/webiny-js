@@ -9,6 +9,9 @@ export interface IUpgradeCommandHandlerHandleParams {
     skipChecks: boolean;
     debug: boolean;
     version: UpgradeCommandPackageVersion;
+    packageManager?: string;
+    registry?: string;
+    skipDependencyGuard?: boolean;
 }
 
 export interface IUpgradeCommandHandler {
