@@ -1,10 +1,24 @@
 import { UpgradeCommandHandler as UpgradeCommandHandlerAbstraction } from "./abstraction.js";
-
 import chalk from "chalk";
 import execa from "execa";
 import { UiService } from "~/abstractions/index.js";
 
 const GITHUB_REPOSITORY_URL = "https://github.com/webiny/webiny-upgrades-v6";
+
+type LogType = "debug" | "success" | "warning" | "error" | "done";
+
+interface IUpgradeLine {
+    type: LogType;
+    message: string;
+    data?: {
+        stack?: string;
+        [key: string]: any;
+    };
+}
+
+interface IOutputOptions {
+    debug: boolean;
+}
 
 export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstraction.Interface {
     public constructor(private ui: UiService.Interface) {}
@@ -51,7 +65,8 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
             debug ? "--debug" : "",
             showLogs ? `--showLogs=${showLogs}` : "",
             showStackTrace ? `--showStackTrace=${showStackTrace}` : "",
-            logLevel ? `--logLevel=${logLevel}` : ""
+            logLevel ? `--logLevel=${logLevel}` : "",
+            "--json"
         ].filter(Boolean);
 
         const npx = execa("npx", command, {
@@ -75,19 +90,12 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
         npx.stdout.on("data", data => {
             const lines = data.toString().replace(/\n$/, "").split("\n") as string[];
             for (const line of lines) {
-                try {
-                    const json = JSON.parse(line);
-                    if (json.type === "error") {
-                        this.ui.error("An error occurred while performing the upgrade.");
-                        console.log(json.message);
-                        if (debug) {
-                            this.ui.debug(json.data.stack);
-                        }
-                    }
-                } catch {
-                    // Not JSON, let's just print the line then.
-                    console.log(line);
+                if (!line || !line.trim()) {
+                    continue;
                 }
+                this.output(line, {
+                    debug
+                });
             }
         });
 
@@ -99,6 +107,44 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
             await npx;
         } catch (ex) {
             this.ui.error(`Upgrade process failed: ${ex.message}`);
+        }
+    }
+
+    private output(line: string, options: IOutputOptions): void {
+        const { debug } = options;
+        try {
+            const json = JSON.parse(line) as IUpgradeLine;
+            switch (json.type) {
+                case "debug":
+                    if (!debug) {
+                        return;
+                    }
+                    this.ui.debug(json.message);
+                    if (!json.data?.stack) {
+                        return;
+                    }
+                    this.ui.debug(json.data?.stack);
+                    break;
+                case "success":
+                case "done":
+                    this.ui.success(json.message);
+                    break;
+                case "warning":
+                    this.ui.warning(json.message);
+                    break;
+                case "error":
+                    this.ui.error(json.message);
+                    if (!json.data?.stack) {
+                        return;
+                    }
+                    this.ui.debug(json.data?.stack);
+                    break;
+                default:
+                    console.log(json);
+            }
+        } catch {
+            // Not JSON, let's just print the line then.
+            console.log(line);
         }
     }
 }
