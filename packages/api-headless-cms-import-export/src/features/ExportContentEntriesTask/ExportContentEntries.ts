@@ -9,7 +9,10 @@ import type {
     IExportContentEntriesOutput
 } from "~/tasks/domain/abstractions/ExportContentEntries.js";
 import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/createCmsEntryFetcher.js";
-import type { IContentEntryTraverser } from "@webiny/api-headless-cms";
+import {
+    ContentEntryTraverserProvider,
+    type IContentEntryTraverser
+} from "@webiny/api-headless-cms";
 import { WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
@@ -27,8 +30,7 @@ export interface ICreateCmsEntryZipperConfig extends Pick<ICmsEntryZipperConfig,
 export class ExportContentEntries<
     I extends IExportContentEntriesInput = IExportContentEntriesInput,
     O extends IExportContentEntriesOutput = IExportContentEntriesOutput
-> implements IExportContentEntries<I, O>
-{
+> implements IExportContentEntries<I, O> {
     private readonly createCmsEntryZipper: (config: ICreateCmsEntryZipperConfig) => ICmsEntryZipper;
     private readonly context: Context;
 
@@ -75,7 +77,8 @@ export class ExportContentEntries<
 
         const filename = `${filenamePrefix}.${WEBINY_EXPORT_ENTRIES_EXTENSION}`;
 
-        const traverser = await this.context.cms.getEntryTraverser(model.modelId);
+        const traverserProvider = this.context.container.resolve(ContentEntryTraverserProvider);
+        const traverser = await traverserProvider.getTraverser(model.modelId);
 
         const entryZipper = this.createCmsEntryZipper({
             filename,

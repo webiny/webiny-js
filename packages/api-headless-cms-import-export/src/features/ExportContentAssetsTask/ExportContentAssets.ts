@@ -28,6 +28,7 @@ import { UniqueResolver } from "~/tasks/utils/uniqueResolver/UniqueResolver.js";
 import { WEBINY_EXPORT_ASSETS_EXTENSION } from "~/tasks/constants.js";
 import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { ContentEntryTraverserProvider } from "@webiny/api-headless-cms";
 
 export interface ICreateCmsAssetsZipperCallableConfig {
     filename: string;
@@ -59,8 +60,7 @@ export interface IExportContentAssetsParams {
 export class ExportContentAssets<
     I extends IExportContentAssetsInput = IExportContentAssetsInput,
     O extends IExportContentAssetsOutput = IExportContentAssetsOutput
-> implements IExportContentAssets<I, O>
-{
+> implements IExportContentAssets<I, O> {
     private readonly createCmsAssetsZipper: ICreateCmsAssetsZipperCallable;
     private context: Context;
 
@@ -85,7 +85,8 @@ export class ExportContentAssets<
             });
         }
 
-        const traverser = await this.context.cms.getEntryTraverser(model.modelId);
+        const traverserProvider = this.context.container.resolve(ContentEntryTraverserProvider);
+        const traverser = await traverserProvider.getTraverser(model.modelId);
 
         const entryFetcher = createCmsEntryFetcher(async after => {
             const input = {

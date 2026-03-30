@@ -15,6 +15,7 @@ import type { IContentEntryTraverser } from "@webiny/api-headless-cms";
 import type { IUniqueResolver } from "~/tasks/utils/uniqueResolver/abstractions/UniqueResolver";
 import type { IAsset } from "~/tasks/utils/entryAssets";
 import { createUniqueResolver } from "~tests/mocks/createUniqueResolver";
+import { ContentEntryTraverserProvider } from "@webiny/api-headless-cms";
 
 const defaultZipperExecuteParams: ICmsAssetsZipperExecuteParams = {
     isCloseToTimeout() {
@@ -34,7 +35,8 @@ describe("cms assets zipper", () => {
     beforeEach(async () => {
         const { createContext } = useHandler();
         context = await createContext();
-        traverser = await context.cms.getEntryTraverser(AUTHOR_MODEL_ID);
+        const traverserProvider = context.container.resolve(ContentEntryTraverserProvider);
+        traverser = await traverserProvider.getTraverser(AUTHOR_MODEL_ID);
         uniqueResolver = createUniqueResolver<IAsset>();
     });
 
