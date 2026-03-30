@@ -25,9 +25,7 @@ export const release = createWorkflow({
                 branch: {
                     description: "Branch to release from",
                     required: true,
-                    default: "next",
-                    type: "choice",
-                    options: ["next", "dev", "v5-dev"]
+                    default: "next"
                 },
                 tag: {
                     description: `NPM tag (in most cases, "beta" is what you need)`,
