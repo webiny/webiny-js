@@ -67,7 +67,7 @@ export const HOW_TO_USE: { pattern: string; items: string[] }[] = [
         pattern: "api/*",
         items: [
             "Find the abstraction you need below",
-            "Read the source file to get the exact interface and types",
+            "You MUST read the source file to get the exact interface and types!",
             'Import: `import { Name } from "<importPath>";`',
             "See `webiny-use-case-pattern` or `webiny-event-handler-pattern` skills for implementation patterns"
         ]
@@ -76,7 +76,7 @@ export const HOW_TO_USE: { pattern: string; items: string[] }[] = [
         pattern: "*",
         items: [
             "Find the abstraction you need below",
-            "Read the source file to get the exact interface and types",
+            "You MUST read the source file to get the exact interface and types!",
             'Import: `import { Name } from "<importPath>";`'
         ]
     }
