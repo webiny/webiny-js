@@ -89,36 +89,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  assignMilestone:
-    name: Assign milestone
-    needs: constants
-    if: >-
-      needs.constants.outputs.is-fork-pr != 'true' &&
-      github.event.pull_request.milestone == null
-    steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - uses: actions/checkout@v4
-      - name: Print latest Webiny version
-        run: echo ${{ needs.constants.outputs.latest-webiny-version }}
-      - id: get-milestone-to-assign
-        name: Get milestone to assign
-        run: >-
-          echo "milestone=$(node
-          .github/workflows/wac/utils/runNodeScripts/getMilestoneToAssign.js
-          '{"latestWebinyVersion":"${{
-          needs.constants.outputs.latest-webiny-version }}","baseBranch":"${{
-          github.base_ref }}"}')" >> "$GITHUB_OUTPUT"
-      - uses: zoispag/action-assign-milestone@v1
-        if: steps.get-milestone-to-assign.outputs.milestone
-        with:
-          repo-token: ${{ secrets.GH_TOKEN }}
-          milestone: ${{ steps.get-milestone-to-assign.outputs.milestone }}
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   build:
     name: Build
     needs: constants
