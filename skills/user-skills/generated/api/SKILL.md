@@ -16,23 +16,27 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `BaseError`
-**Import:** `webiny/api`
+**Import:** `import { BaseError } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
 
 ---
+
 **Name:** `createAbstraction`
-**Import:** `webiny/api`
+**Import:** `import { createAbstraction } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
 
 ---
+
 **Name:** `createFeature`
-**Import:** `webiny/api`
+**Import:** `import { createFeature } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
 
 ---
+
 **Name:** `Result`
-**Import:** `webiny/api`
+**Import:** `import { Result } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
 **Description:** A container type that represents either a successful result (`ok`) or a failure (`fail`).
 Inspired by functional programming constructs like `Either` or `Result` in other languages.

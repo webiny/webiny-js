@@ -20,104 +20,121 @@ Tenant lifecycle and installation event handlers and use cases.
 ## Abstractions
 
 ---
+
 **Name:** `AppInstaller`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { AppInstaller } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/InstallTenant/index.ts`
 **Description:** Install an application on a tenant with rollback support.
 
 ---
+
 **Name:** `CreateTenantRepository`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { CreateTenantRepository } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/CreateTenant/index.ts`
 **Description:** Persist a newly created tenant.
 
 ---
+
 **Name:** `CreateTenantUseCase`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { CreateTenantUseCase } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/CreateTenant/index.ts`
 **Description:** Create a new tenant.
 
 ---
+
 **Name:** `DeleteTenantRepository`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { DeleteTenantRepository } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/DeleteTenant/index.ts`
 **Description:** Persist tenant deletion.
 
 ---
+
 **Name:** `DeleteTenantUseCase`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { DeleteTenantUseCase } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/DeleteTenant/index.ts`
 **Description:** Delete a tenant.
 
 ---
+
 **Name:** `GetTenantByIdUseCase`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { GetTenantByIdUseCase } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/GetTenantById/index.ts`
 **Description:** Retrieve a tenant by its ID.
 
 ---
+
 **Name:** `InstallTenantUseCase`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { InstallTenantUseCase } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/InstallTenant/index.ts`
 **Description:** Run all app installers for a tenant.
 
 ---
+
 **Name:** `TenantAfterCreateEventHandler`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { TenantAfterCreateEventHandler } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/CreateTenant/index.ts`
 **Description:** Hook into tenant lifecycle after a tenant is created.
 
 ---
+
 **Name:** `TenantAfterDeleteEventHandler`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { TenantAfterDeleteEventHandler } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/DeleteTenant/index.ts`
 **Description:** Hook into tenant lifecycle after a tenant is deleted.
 
 ---
+
 **Name:** `TenantAfterUpdateEventHandler`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { TenantAfterUpdateEventHandler } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/UpdateTenant/index.ts`
 **Description:** Hook into tenant lifecycle after a tenant is updated.
 
 ---
+
 **Name:** `TenantBeforeCreateEventHandler`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { TenantBeforeCreateEventHandler } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/CreateTenant/index.ts`
 **Description:** Hook into tenant lifecycle before a tenant is created.
 
 ---
+
 **Name:** `TenantBeforeDeleteEventHandler`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { TenantBeforeDeleteEventHandler } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/DeleteTenant/index.ts`
 **Description:** Hook into tenant lifecycle before a tenant is deleted.
 
 ---
+
 **Name:** `TenantBeforeUpdateEventHandler`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { TenantBeforeUpdateEventHandler } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/UpdateTenant/index.ts`
 **Description:** Hook into tenant lifecycle before a tenant is updated.
 
 ---
+
 **Name:** `TenantContext`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { TenantContext } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/TenantContext/index.ts`
 **Description:** Provides access to the current tenant and tenant-scoped execution.
 
 ---
+
 **Name:** `TenantInstalledEventHandler`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { TenantInstalledEventHandler } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/InstallTenant/index.ts`
 **Description:** Hook into tenant lifecycle after a tenant is installed.
 
 ---
+
 **Name:** `UpdateTenantRepository`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { UpdateTenantRepository } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/UpdateTenant/index.ts`
 **Description:** Persist tenant updates.
 
 ---
+
 **Name:** `UpdateTenantUseCase`
-**Import:** `webiny/api/tenancy`
+**Import:** `import { UpdateTenantUseCase } from "webiny/api/tenancy"`
 **Source:** `@webiny/api-core/features/tenancy/UpdateTenant/index.ts`
 **Description:** Update an existing tenant.
 

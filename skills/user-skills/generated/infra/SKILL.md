@@ -19,172 +19,205 @@ Infrastructure extensions.
 ## Abstractions
 
 ---
+
 **Name:** `AdminAfterBuild`
-**Import:** `webiny/infra/admin`
+**Import:** `import { AdminAfterBuild } from "webiny/infra/admin"`
 **Source:** `@webiny/project/abstractions/features/hooks/AdminAfterBuild.ts`
 
 ---
+
 **Name:** `AdminAfterDeploy`
-**Import:** `webiny/infra/admin`
+**Import:** `import { AdminAfterDeploy } from "webiny/infra/admin"`
 **Source:** `@webiny/project/abstractions/features/hooks/AdminAfterDeploy.ts`
 
 ---
+
 **Name:** `AdminBeforeBuild`
-**Import:** `webiny/infra/admin`
+**Import:** `import { AdminBeforeBuild } from "webiny/infra/admin"`
 **Source:** `@webiny/project/abstractions/features/hooks/AdminBeforeBuild.ts`
 
 ---
+
 **Name:** `AdminBeforeDeploy`
-**Import:** `webiny/infra/admin`
+**Import:** `import { AdminBeforeDeploy } from "webiny/infra/admin"`
 **Source:** `@webiny/project/abstractions/features/hooks/AdminBeforeDeploy.ts`
 
 ---
+
 **Name:** `AdminBeforeWatch`
-**Import:** `webiny/infra/admin`
+**Import:** `import { AdminBeforeWatch } from "webiny/infra/admin"`
 **Source:** `@webiny/project/abstractions/features/hooks/AdminBeforeWatch.ts`
 
 ---
+
 **Name:** `AdminPulumi`
-**Import:** `webiny/infra/admin`
+**Import:** `import { AdminPulumi } from "webiny/infra/admin"`
 **Source:** `@webiny/project/abstractions/features/pulumi/AdminPulumi.ts`
 **Description:** Implement this abstraction to add custom Pulumi code to Admin.
 
 ---
+
 **Name:** `AdminStackOutputService`
-**Import:** `webiny/infra/admin`
+**Import:** `import { AdminStackOutputService } from "webiny/infra/admin"`
 **Source:** `@webiny/project-aws/abstractions/services/AdminStackOutputService.ts`
 
 ---
+
 **Name:** `AdminStackOutputService`
-**Import:** `webiny/infra`
+**Import:** `import { AdminStackOutputService } from "webiny/infra"`
 **Source:** `@webiny/project-aws/abstractions/index.ts`
 
 ---
+
 **Name:** `AfterBuild`
-**Import:** `webiny/infra`
+**Import:** `import { AfterBuild } from "webiny/infra"`
 **Source:** `@webiny/project/abstractions/features/hooks/AfterBuild.ts`
 
 ---
+
 **Name:** `AfterDeploy`
-**Import:** `webiny/infra`
+**Import:** `import { AfterDeploy } from "webiny/infra"`
 **Source:** `@webiny/project/abstractions/features/hooks/AfterDeploy.ts`
 
 ---
+
 **Name:** `ApiAfterBuild`
-**Import:** `webiny/infra/api`
+**Import:** `import { ApiAfterBuild } from "webiny/infra/api"`
 **Source:** `@webiny/project/abstractions/features/hooks/ApiAfterBuild.ts`
 
 ---
+
 **Name:** `ApiAfterDeploy`
-**Import:** `webiny/infra/api`
+**Import:** `import { ApiAfterDeploy } from "webiny/infra/api"`
 **Source:** `@webiny/project/abstractions/features/hooks/ApiAfterDeploy.ts`
 
 ---
+
 **Name:** `ApiBeforeBuild`
-**Import:** `webiny/infra/api`
+**Import:** `import { ApiBeforeBuild } from "webiny/infra/api"`
 **Source:** `@webiny/project/abstractions/features/hooks/ApiBeforeBuild.ts`
 
 ---
+
 **Name:** `ApiBeforeDeploy`
-**Import:** `webiny/infra/api`
+**Import:** `import { ApiBeforeDeploy } from "webiny/infra/api"`
 **Source:** `@webiny/project/abstractions/features/hooks/ApiBeforeDeploy.ts`
 
 ---
+
 **Name:** `ApiBeforeWatch`
-**Import:** `webiny/infra/api`
+**Import:** `import { ApiBeforeWatch } from "webiny/infra/api"`
 **Source:** `@webiny/project/abstractions/features/hooks/ApiBeforeWatch.ts`
 
 ---
+
 **Name:** `ApiGqlClient`
-**Import:** `webiny/infra`
+**Import:** `import { ApiGqlClient } from "webiny/infra"`
 **Source:** `@webiny/project-aws/abstractions/index.ts`
 
 ---
+
 **Name:** `ApiPulumi`
-**Import:** `webiny/infra/api`
+**Import:** `import { ApiPulumi } from "webiny/infra/api"`
 **Source:** `@webiny/project/abstractions/features/pulumi/ApiPulumi.ts`
 **Description:** Implement this abstraction to add custom Pulumi code to API.
 
 ---
+
 **Name:** `ApiStackOutputService`
-**Import:** `webiny/infra/api`
+**Import:** `import { ApiStackOutputService } from "webiny/infra/api"`
 **Source:** `@webiny/project-aws/abstractions/services/ApiStackOutputService.ts`
 
 ---
+
 **Name:** `ApiStackOutputService`
-**Import:** `webiny/infra`
+**Import:** `import { ApiStackOutputService } from "webiny/infra"`
 **Source:** `@webiny/project-aws/abstractions/index.ts`
 
 ---
+
 **Name:** `BeforeBuild`
-**Import:** `webiny/infra`
+**Import:** `import { BeforeBuild } from "webiny/infra"`
 **Source:** `@webiny/project/abstractions/features/hooks/BeforeBuild.ts`
 
 ---
+
 **Name:** `BeforeDeploy`
-**Import:** `webiny/infra`
+**Import:** `import { BeforeDeploy } from "webiny/infra"`
 **Source:** `@webiny/project/abstractions/features/hooks/BeforeDeploy.ts`
 
 ---
+
 **Name:** `BeforeWatch`
-**Import:** `webiny/infra`
+**Import:** `import { BeforeWatch } from "webiny/infra"`
 **Source:** `@webiny/project/abstractions/features/hooks/BeforeWatch.ts`
 
 ---
+
 **Name:** `CoreAfterBuild`
-**Import:** `webiny/infra/core`
+**Import:** `import { CoreAfterBuild } from "webiny/infra/core"`
 **Source:** `@webiny/project/abstractions/features/hooks/CoreAfterBuild.ts`
 
 ---
+
 **Name:** `CoreAfterDeploy`
-**Import:** `webiny/infra/core`
+**Import:** `import { CoreAfterDeploy } from "webiny/infra/core"`
 **Source:** `@webiny/project/abstractions/features/hooks/CoreAfterDeploy.ts`
 
 ---
+
 **Name:** `CoreBeforeBuild`
-**Import:** `webiny/infra/core`
+**Import:** `import { CoreBeforeBuild } from "webiny/infra/core"`
 **Source:** `@webiny/project/abstractions/features/hooks/CoreBeforeBuild.ts`
 
 ---
+
 **Name:** `CoreBeforeDeploy`
-**Import:** `webiny/infra/core`
+**Import:** `import { CoreBeforeDeploy } from "webiny/infra/core"`
 **Source:** `@webiny/project/abstractions/features/hooks/CoreBeforeDeploy.ts`
 
 ---
+
 **Name:** `CorePulumi`
-**Import:** `webiny/infra/core`
+**Import:** `import { CorePulumi } from "webiny/infra/core"`
 **Source:** `@webiny/project/abstractions/features/pulumi/CorePulumi.ts`
 **Description:** Implement this abstraction to add custom Pulumi code to Core.
 
 ---
+
 **Name:** `CoreStackOutputService`
-**Import:** `webiny/infra/core`
+**Import:** `import { CoreStackOutputService } from "webiny/infra/core"`
 **Source:** `@webiny/project-aws/abstractions/services/CoreStackOutputService.ts`
 
 ---
+
 **Name:** `CoreStackOutputService`
-**Import:** `webiny/infra`
+**Import:** `import { CoreStackOutputService } from "webiny/infra"`
 **Source:** `@webiny/project-aws/abstractions/index.ts`
 
 ---
+
 **Name:** `EnvVar`
-**Import:** `webiny/infra`
+**Import:** `import { EnvVar } from "webiny/infra"`
 **Source:** `@webiny/project/extensions/EnvVar.ts`
 **Description:** Define an environment variable in the project context.
 
 ---
+
 **Name:** `InvokeLambdaFunction`
-**Import:** `webiny/infra`
+**Import:** `import { InvokeLambdaFunction } from "webiny/infra"`
 **Source:** `@webiny/project-aws/abstractions/index.ts`
 
 ---
+
 **Name:** `LoggerService`
-**Import:** `webiny/infra`
+**Import:** `import { LoggerService } from "webiny/infra"`
 **Source:** `@webiny/project/abstractions/services/LoggerService.ts`
 
 ---
+
 **Name:** `UiService`
-**Import:** `webiny/infra`
+**Import:** `import { UiService } from "webiny/infra"`
 **Source:** `@webiny/project/abstractions/services/UiService.ts`
 
 ---

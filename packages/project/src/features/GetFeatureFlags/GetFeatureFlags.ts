@@ -1,7 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import { FeatureFlags } from "@webiny/feature-flags";
-import { GetFeatureFlags } from "~/abstractions/index.js";
-import { GetProjectConfig } from "~/abstractions/index.js";
+import { GetFeatureFlags, GetProjectConfig } from "~/abstractions/index.js";
 import { FeatureFlags as FeatureFlagsExtension } from "~/extensions/FeatureFlags.js";
 
 class DefaultGetFeatureFlags implements GetFeatureFlags.Interface {

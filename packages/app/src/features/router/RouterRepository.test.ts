@@ -67,15 +67,16 @@ describe("Router Repository", () => {
         expect(repository.getMatchedRoute()).toEqual(loginRoute);
     });
 
-    it("route guard should allow or prevent route transition", async () => {
+    it("transition guard should block route transition", async () => {
         const { repository, history } = createRepository();
         history.push("/login");
         await wait();
 
         // This guard should prevent the transition.
-        // The Repository should stay where it was, and the `history` should restore the previous URL.
-        repository.onRouteExit(({ cancel }) => {
-            cancel();
+        const onBlocked = vi.fn();
+        repository.addGuard({
+            guard: () => true,
+            onBlocked
         });
 
         // Trigger a history location change (imagine a click on "Back" button in the browser).
@@ -83,46 +84,62 @@ describe("Router Repository", () => {
         await wait();
 
         expect(repository.getMatchedRoute()).toEqual(loginRoute);
+        expect(onBlocked).toHaveBeenCalledTimes(1);
+    });
 
-        // This guard should allow the transition.
-        repository.onRouteExit(guard => {
-            guard.continue();
+    it("transition guard should allow route transition when guard returns false", async () => {
+        const { repository, history } = createRepository();
+        history.push("/login");
+        await wait();
+
+        repository.addGuard({
+            guard: () => false,
+            onBlocked: vi.fn()
         });
 
-        // Trigger a history location change (imagine a click on "Back" button in the browser).
+        // Trigger a history location change.
         history.push("/users/123");
         await wait();
 
         expect(repository.getMatchedRoute()).toEqual(userRoute("123"));
     });
 
-    it("route guard should be unset after route transition", async () => {
-        const guardSpy = vi.fn();
+    it("confirmTransition should allow a blocked transition to proceed", async () => {
         const { repository, history } = createRepository();
         history.push("/login");
         await wait();
 
-        // This guard should prevent the transition.
-        // The Repository should stay where it was, and the `history` should restore the previous URL.
-        repository.onRouteExit(guard => {
-            guardSpy();
-            guard.continue();
+        repository.addGuard({
+            guard: () => true,
+            onBlocked: () => {
+                repository.confirmTransition();
+            }
         });
 
-        // Trigger a history location change (imagine a click on "Back" button in the browser).
         history.push("/users/123");
         await wait();
 
         expect(repository.getMatchedRoute()).toEqual(userRoute("123"));
-        expect(guardSpy).toHaveBeenCalledTimes(1);
-        vi.resetAllMocks();
+    });
 
-        // Trigger a history location change (imagine a click on "Back" button in the browser).
+    it("guard disposer should remove the guard", async () => {
+        const { repository, history } = createRepository();
         history.push("/login");
         await wait();
 
-        expect(repository.getMatchedRoute()).toEqual(loginRoute);
-        expect(guardSpy).toHaveBeenCalledTimes(0);
+        const dispose = repository.addGuard({
+            guard: () => true,
+            onBlocked: vi.fn()
+        });
+
+        // Remove the guard.
+        dispose();
+
+        // Transition should now pass through.
+        history.push("/users/123");
+        await wait();
+
+        expect(repository.getMatchedRoute()).toEqual(userRoute("123"));
     });
 
     it("should go to the right route", async () => {

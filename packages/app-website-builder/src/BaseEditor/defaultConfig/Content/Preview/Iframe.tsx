@@ -62,7 +62,7 @@ export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
                 id={"preview-body"}
                 ref={previewBodyRef}
                 className={
-                    "outline outline-neutral-dimmed shadow-sm transition-[width] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] "
+                    "outline outline-neutral-dimmed shadow-sm transition-[width,min-height] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] "
                 }
                 style={{
                     position: "relative",

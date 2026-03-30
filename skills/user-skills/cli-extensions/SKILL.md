@@ -23,39 +23,36 @@ import { Ui } from "webiny/cli";
 import { CliCommandFactory } from "webiny/cli/command";
 
 export interface IMyCustomCommandParams {
-    name: string;
+  name: string;
 }
 
 class MyCustomCommandImpl implements CliCommandFactory.Interface<IMyCustomCommandParams> {
-    constructor(private ui: Ui.Interface) {}
+  constructor(private ui: Ui.Interface) {}
 
-    execute(): CliCommandFactory.CommandDefinition<IMyCustomCommandParams> {
-        return {
-            name: "my-custom-command",
-            description: "This is my custom command",
-            examples: [
-                "$0 my-custom-command test1",
-                "$0 my-custom-command test2"
-            ],
-            params: [
-                {
-                    name: "name",
-                    description: "Your name",
-                    type: "string"
-                }
-            ],
-            handler: async params => {
-                this.ui.info("Starting my custom command...");
-                this.ui.emptyLine();
-                this.ui.success(`Hello, ${params.name}! This is my custom command.`);
-            }
-        };
-    }
+  execute(): CliCommandFactory.CommandDefinition<IMyCustomCommandParams> {
+    return {
+      name: "my-custom-command",
+      description: "This is my custom command",
+      examples: ["$0 my-custom-command test1", "$0 my-custom-command test2"],
+      params: [
+        {
+          name: "name",
+          description: "Your name",
+          type: "string"
+        }
+      ],
+      handler: async params => {
+        this.ui.info("Starting my custom command...");
+        this.ui.emptyLine();
+        this.ui.success(`Hello, ${params.name}! This is my custom command.`);
+      }
+    };
+  }
 }
 
 export default CliCommandFactory.createImplementation({
-    implementation: MyCustomCommandImpl,
-    dependencies: [Ui]
+  implementation: MyCustomCommandImpl,
+  dependencies: [Ui]
 });
 ```
 
@@ -73,23 +70,23 @@ yarn webiny my-custom-command "World"
 
 ## Command Definition Properties
 
-| Property | Type | Description |
-|---|---|---|
-| `name` | `string` | The command name used on the CLI (e.g., `"my-custom-command"`) |
-| `description` | `string` | Help text shown when listing commands |
-| `examples` | `string[]` | Usage examples (`$0` is replaced with the CLI binary name) |
-| `params` | `ParamDefinition[]` | Positional parameters and options |
-| `handler` | `(params: TParams) => Promise<void>` | The function that executes the command |
+| Property      | Type                                 | Description                                                    |
+| ------------- | ------------------------------------ | -------------------------------------------------------------- |
+| `name`        | `string`                             | The command name used on the CLI (e.g., `"my-custom-command"`) |
+| `description` | `string`                             | Help text shown when listing commands                          |
+| `examples`    | `string[]`                           | Usage examples (`$0` is replaced with the CLI binary name)     |
+| `params`      | `ParamDefinition[]`                  | Positional parameters and options                              |
+| `handler`     | `(params: TParams) => Promise<void>` | The function that executes the command                         |
 
 ## Parameter Definition
 
 Each param in the `params` array:
 
-| Property | Type | Description |
-|---|---|---|
-| `name` | `string` | Parameter name (matches the key in your `TParams` interface) |
-| `description` | `string` | Help text for this parameter |
-| `type` | `"string" \| "number" \| "boolean"` | Parameter value type |
+| Property      | Type                                | Description                                                  |
+| ------------- | ----------------------------------- | ------------------------------------------------------------ |
+| `name`        | `string`                            | Parameter name (matches the key in your `TParams` interface) |
+| `description` | `string`                            | Help text for this parameter                                 |
+| `type`        | `"string" \| "number" \| "boolean"` | Parameter value type                                         |
 
 ## The `Ui` Service
 
@@ -99,13 +96,13 @@ Inject `Ui` for formatted terminal output:
 import { Ui } from "webiny/cli";
 ```
 
-| Method | Description |
-|---|---|
-| `this.ui.info("message")` | Print an info message (blue) |
-| `this.ui.success("message")` | Print a success message (green) |
+| Method                       | Description                      |
+| ---------------------------- | -------------------------------- |
+| `this.ui.info("message")`    | Print an info message (blue)     |
+| `this.ui.success("message")` | Print a success message (green)  |
 | `this.ui.warning("message")` | Print a warning message (yellow) |
-| `this.ui.error("message")` | Print an error message (red) |
-| `this.ui.emptyLine()` | Print a blank line for spacing |
+| `this.ui.error("message")`   | Print an error message (red)     |
+| `this.ui.emptyLine()`        | Print a blank line for spacing   |
 
 ## Use Cases
 
@@ -129,5 +126,6 @@ Run:             yarn webiny <command-name> [args]
 
 ## Related Skills
 
-- `dependency-injection` -- The `createImplementation` pattern and available injectable services
-- `project-structure` -- How to register CLI commands in `webiny.config.tsx`
+- `webiny-dependency-injection` -- The `createImplementation` pattern and available injectable services
+- `webiny-project-structure` -- How to register CLI commands in `webiny.config.tsx`
+- `webiny-full-stack-architect` -- Full-stack extensions that may include CLI commands alongside API and Admin

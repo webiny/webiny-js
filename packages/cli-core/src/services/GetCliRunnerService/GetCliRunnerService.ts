@@ -139,6 +139,16 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
             } = await command.execute();
 
             let yargsCommand = name;
+            const paramVersionExists = params.some(p => {
+                return p.name === "version";
+            });
+            if (paramVersionExists) {
+                ui.error(
+                    `The command "${name}" cannot have a parameter named "version" as it conflicts with the global --version option.`
+                );
+                process.exit();
+            }
+
             if (params.length > 0) {
                 yargsCommand +=
                     " " +

@@ -52,6 +52,7 @@ export const Compose = (props: ComposeProps) => {
             target={targetFn.original}
             decorators={decorators}
             scope={currentScope}
+            inherit={inherit}
         />
     );
 };
@@ -64,27 +65,42 @@ function ComposeEffects({
     store,
     target,
     decorators,
-    scope
+    scope,
+    inherit
 }: {
     store: ReturnType<typeof useCompositionStore>;
     target: any;
     decorators: Decorator<GenericComponent | GenericHook>[];
     scope: string;
+    inherit: boolean;
 }) {
     const prevRef = useRef<{
         decorators: Decorator<GenericComponent | GenericHook>[];
         scope: string;
     } | null>(null);
 
+    // Tracks the decorators currently live in the store as of the last render.
+    // Updated synchronously during render so it always reflects the most recently
+    // registered decorators, allowing the atomic swap below to remove the right ones.
+    const liveRef = useRef<Decorator<GenericComponent | GenericHook>[]>(decorators);
+
+    // On re-render with new decorators: atomically replace the old ones in the store
+    // during render (before React commits). This ensures the store never transiently
+    // holds both old and new HOCs — which would cause useSyncExternalStore subscribers
+    // to render with a doubly-wrapped component and mount inner components twice.
+    if (liveRef.current !== decorators) {
+        store.register(target, decorators, scope, inherit, true, liveRef.current);
+        liveRef.current = decorators;
+    }
+
     useEffect(() => {
         const prev = prevRef.current;
 
-        // On prop change: unregister old decorators.
+        // On prop change: the render-phase atomic swap already updated the store.
+        // Emit a non-silent notification now that effects have settled so subscribers
+        // re-render with the final, clean composition (old HOCs fully gone).
         if (prev && (prev.decorators !== decorators || prev.scope !== scope)) {
-            store.unregister(target, prev.decorators, prev.scope);
-            // Re-register new ones (they were already registered during render,
-            // but the idempotency check handles this).
-            store.register(target, decorators, scope);
+            store.notify();
         }
 
         prevRef.current = { decorators, scope };

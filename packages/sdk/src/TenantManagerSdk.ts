@@ -9,6 +9,8 @@ import { createTenant as createTenantFn } from "./methods/tenantManager/createTe
 import { installTenant as installTenantFn } from "./methods/tenantManager/installTenant.js";
 import { disableTenant as disableTenantFn } from "./methods/tenantManager/disableTenant.js";
 import { enableTenant as enableTenantFn } from "./methods/tenantManager/enableTenant.js";
+import { getCurrentTenant as getCurrentTenantFn } from "./methods/tenantManager/getCurrentTenant.js";
+import type { Tenant } from "./methods/tenantManager/getCurrentTenant.js";
 
 export class TenantManagerSdk {
     private config: WebinyConfig;
@@ -41,5 +43,9 @@ export class TenantManagerSdk {
         params: EnableTenantParams
     ): Promise<Result<boolean, HttpError | GraphQLError | NetworkError>> {
         return enableTenantFn(this.config, this.fetchFn, params);
+    }
+
+    async getCurrentTenant(): Promise<Result<Tenant, HttpError | GraphQLError | NetworkError>> {
+        return getCurrentTenantFn(this.config, this.fetchFn);
     }
 }

@@ -2,7 +2,7 @@
 name: webiny-admin-build-params-catalog
 context: webiny-api
 description: >
-  admin/build-params — 2 abstractions.
+  admin/build-params — 3 abstractions.
 ---
 
 # admin/build-params
@@ -16,13 +16,21 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `BuildParam`
-**Import:** `webiny/admin/build-params`
+**Import:** `import { BuildParam } from "webiny/admin/build-params"`
 **Source:** `@webiny/app-admin/features/buildParams/index.ts`
 
 ---
+
 **Name:** `BuildParams`
-**Import:** `webiny/admin/build-params`
+**Import:** `import { BuildParams } from "webiny/admin/build-params"`
 **Source:** `@webiny/app-admin/features/buildParams/index.ts`
+
+---
+
+**Name:** `useBuildParams`
+**Import:** `import { useBuildParams } from "webiny/admin/build-params"`
+**Source:** `@webiny/app-admin/presentation/buildParams/useBuildParams.ts`
 
 ---

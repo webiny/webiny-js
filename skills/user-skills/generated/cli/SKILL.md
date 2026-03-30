@@ -16,13 +16,15 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `LoggerService`
-**Import:** `webiny/cli`
+**Import:** `import { LoggerService } from "webiny/cli"`
 **Source:** `@webiny/cli-core/abstractions/services/LoggerService.ts`
 
 ---
+
 **Name:** `UiService`
-**Import:** `webiny/cli`
+**Import:** `import { UiService } from "webiny/cli"`
 **Source:** `@webiny/cli-core/abstractions/services/UiService.ts`
 
 ---

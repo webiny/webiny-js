@@ -22,7 +22,8 @@ export class CompositionStore {
         hocs: Decorator<GenericComponent | GenericHook>[],
         scope = "*",
         inherit = false,
-        silent = false
+        silent = false,
+        replaces: Decorator<GenericComponent | GenericHook>[] = []
     ): () => void {
         const scopeMap: ComposedComponents = this.scopes.get(scope) || new Map();
         const recipe = scopeMap.get(component) || {
@@ -32,11 +33,17 @@ export class CompositionStore {
 
         // Idempotent: skip if all HOCs are already registered (handles StrictMode double-render).
         const newHocs = hocs.filter(hoc => !recipe.hocs.includes(hoc));
-        if (newHocs.length === 0) {
+        if (newHocs.length === 0 && replaces.length === 0) {
             return () => this.unregister(component, hocs, scope);
         }
 
-        const existingHocs = [...recipe.hocs];
+        // Atomically remove the HOCs being replaced so the store never transiently
+        // holds both the old and new decorators at the same time. This prevents
+        // useSyncExternalStore subscribers from seeing a doubly-wrapped component
+        // in the window between a render-phase registration and its effect cleanup.
+        const existingHocs = replaces.length
+            ? recipe.hocs.filter(hoc => !replaces.includes(hoc))
+            : [...recipe.hocs];
         if (inherit && scope !== "*") {
             const globalScope = this.scopes.get("*") || new Map();
             const globalRecipe = globalScope.get(component) || {
@@ -122,6 +129,16 @@ export class CompositionStore {
             }
         }
         return undefined;
+    }
+
+    /**
+     * Bump version and notify listeners without changing store state.
+     * Used after a render-phase atomic swap (silent) to inform subscribers
+     * that the swap has settled and they should re-render with the final state.
+     */
+    notify(): void {
+        this.version++;
+        this.notifyListeners();
     }
 
     subscribe = (listener: Listener): (() => void) => {

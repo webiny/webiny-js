@@ -145,6 +145,12 @@ export type ConstraintContext = {
     slotChildCount: () => number;
     /** Count instances of a component type in the entire document */
     countInstances: (componentName: string) => number;
+    /** True if the component has any descendant element carrying the given tag */
+    hasDescendantWithTag: (tag: string) => boolean;
+    /** Returns the resolved inputs of the nearest ancestor matching componentName, or undefined */
+    getAncestorInputs: (componentName: string) => Record<string, any> | undefined;
+    /** Returns the resolved inputs of the element this constraint is evaluating */
+    getElementInputs: () => Record<string, any>;
     /** Debug logger — safe to call inside serialized constraints */
     log: (...args: any[]) => void;
     /** Block placement with an error message shown to the user */
@@ -187,22 +193,28 @@ export type ComponentChangeContext<TInputs = Record<string, any>> = {
     getAncestor: (componentName: string) => ManifestAncestorContext | undefined;
     getElement: (id: string) => OnChangeElementContext | undefined;
     createElement: (params: any) => any;
+    executeCommand: <T = unknown>(command: string, payload?: T) => void;
     breakpoint: string;
     log: (...args: any[]) => void;
     stop: () => Stop;
     continue: () => Continue;
 };
 
-export type DescendantChangeContext<TInputs = Record<string, any>> = {
+export type DescendantChangeContext<
+    TInputs = Record<string, any>,
+    TDescendantInputs = Record<string, any>
+> = {
     action: OnChangeAction;
     descendant: {
         component: ComponentManifest;
         id: string;
-        inputs: Record<string, any>;
+        inputs: TDescendantInputs;
+        updateInputs: (cb: (inputs: TDescendantInputs) => void) => void;
     };
     inputs: TInputs;
     updateInputs: (cb: (inputs: TInputs) => void) => void;
     getElement: (id: string) => OnChangeElementContext | undefined;
+    executeCommand: <T = unknown>(command: string, payload?: T) => void;
     breakpoint: string;
     log: (...args: any[]) => void;
     stop: () => Stop;
@@ -213,9 +225,10 @@ export type ComponentChangeHandler<TInputs = Record<string, any>> = (
     ctx: ComponentChangeContext<TInputs>
 ) => HandlerResult;
 
-export type DescendantChangeHandler<TInputs = Record<string, any>> = (
-    ctx: DescendantChangeContext<TInputs>
-) => HandlerResult;
+export type DescendantChangeHandler<
+    TInputs = Record<string, any>,
+    TDescendantInputs = Record<string, any>
+> = (ctx: DescendantChangeContext<TInputs, TDescendantInputs>) => HandlerResult;
 
 export type ComponentManifest = {
     name: string;

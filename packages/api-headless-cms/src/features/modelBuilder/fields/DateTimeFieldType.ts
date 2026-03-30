@@ -1,6 +1,6 @@
 import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import { DataFieldBuilder } from "./FieldBuilder.js";
-import { RequiredValidator, DateGteValidator, DateLteValidator } from "./validators.js";
+import { RequiredValidator, DateGteValidator, DateLteValidator } from "./fieldTypeValidator.js";
 
 export type DateTimeType = "date" | "time" | "dateTimeWithTimezone" | "dateTimeWithoutTimezone";
 

@@ -13,7 +13,7 @@ const ignored = [
     "preview.mouse.move",
     "preview.component.register",
     "preview.scroll",
-    // "preview.viewport",
+    "preview.viewport",
     "preview.viewport.change.start",
     "preview.viewport.change.end"
 ];

@@ -2,7 +2,7 @@
 name: webiny-admin-tenancy-catalog
 context: webiny-api
 description: >
-  admin/tenancy — 8 abstractions.
+  admin/tenancy — 9 abstractions.
 ---
 
 # admin/tenancy
@@ -16,43 +16,58 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `IsNotRootTenant`
-**Import:** `webiny/admin/tenancy`
+**Import:** `import { IsNotRootTenant } from "webiny/admin/tenancy"`
 **Source:** `@webiny/tenant-manager/admin/IsRootTenant.tsx`
 
 ---
+
 **Name:** `IsRootTenant`
-**Import:** `webiny/admin/tenancy`
+**Import:** `import { IsRootTenant } from "webiny/admin/tenancy"`
 **Source:** `@webiny/tenant-manager/admin/IsRootTenant.tsx`
 
 ---
+
 **Name:** `IsTenant`
-**Import:** `webiny/admin/tenancy`
+**Import:** `import { IsTenant } from "webiny/admin/tenancy"`
 **Source:** `@webiny/tenant-manager/admin/IsRootTenant.tsx`
 
 ---
+
 **Name:** `TenantContext`
-**Import:** `webiny/admin/tenancy`
+**Import:** `import { TenantContext } from "webiny/admin/tenancy"`
 **Source:** `@webiny/app-admin/features/tenancy/abstractions.ts`
 
 ---
+
+**Name:** `TenantEntry`
+**Kind:** type
+**Import:** `import type { TenantEntry } from "webiny/admin/tenancy"`
+**Source:** `@webiny/tenant-manager/admin/types.ts`
+
+---
+
 **Name:** `useCurrentTenant`
-**Import:** `webiny/admin/tenancy`
+**Import:** `import { useCurrentTenant } from "webiny/admin/tenancy"`
 **Source:** `@webiny/tenant-manager/admin/CurrentTenant/useCurrentTenant.ts`
 
 ---
+
 **Name:** `useDisableTenant`
-**Import:** `webiny/admin/tenancy`
+**Import:** `import { useDisableTenant } from "webiny/admin/tenancy"`
 **Source:** `@webiny/tenant-manager/admin/DisableTenant/index.ts`
 
 ---
+
 **Name:** `useEnableTenant`
-**Import:** `webiny/admin/tenancy`
+**Import:** `import { useEnableTenant } from "webiny/admin/tenancy"`
 **Source:** `@webiny/tenant-manager/admin/EnableTenant/index.ts`
 
 ---
+
 **Name:** `useTenantContext`
-**Import:** `webiny/admin/tenancy`
+**Import:** `import { useTenantContext } from "webiny/admin/tenancy"`
 **Source:** `@webiny/app-admin/presentation/tenancy/useTenantContext.ts`
 
 ---

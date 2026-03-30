@@ -1,5 +1,11 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import type { MatchedRoute, OnRouteExit, RouteDefinition } from "./abstractions.js";
+import type {
+    MatchedRoute,
+    RouteDefinition,
+    RouteTransitionGuardConfig,
+    GuardDisposer,
+    TransitionController
+} from "./abstractions.js";
 import * as Abstractions from "./abstractions.js";
 import { Route, RouteParamsDefinition, RouteParamsInfer } from "./Route.js";
 import { createImplementation } from "@webiny/di";
@@ -11,11 +17,19 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
     private gateway: Abstractions.RouterGateway.Interface;
     private currentRoute: MatchedRoute = INIT_ROUTE;
     private routes: Route<any>[] = [];
+    private guards = new Set<RouteTransitionGuardConfig>();
+    private pendingTransition: TransitionController | undefined;
+    private forceUnblocked = false;
 
     constructor(gateway: Abstractions.RouterGateway.Interface) {
         this.gateway = gateway;
+        this.installBlocker();
 
-        makeAutoObservable(this);
+        makeAutoObservable(this, {
+            guards: false,
+            pendingTransition: false,
+            forceUnblocked: false
+        } as any);
     }
 
     getMatchedRoute() {
@@ -47,12 +61,82 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
         this.gateway.goToRoute(route.name, params);
     }
 
-    onRouteExit(cb: OnRouteExit): void {
-        this.gateway.onRouteExit(cb);
+    addGuard(config: RouteTransitionGuardConfig): GuardDisposer {
+        this.guards.add(config);
+        return () => {
+            this.guards.delete(config);
+        };
+    }
+
+    isBlocked(): boolean {
+        return this.findBlockingGuard() !== undefined;
+    }
+
+    unblock(): void {
+        this.forceUnblocked = true;
+        if (this.pendingTransition) {
+            this.forceUnblocked = false;
+            const tx = this.pendingTransition;
+            this.pendingTransition = undefined;
+            tx.continue();
+            setTimeout(() => this.installBlocker(), 0);
+        } else {
+            // No pending transition — expire the flag after the current
+            // call stack so it only covers synchronous navigations that
+            // follow immediately (e.g. router.goToRoute on the next line).
+            setTimeout(() => {
+                this.forceUnblocked = false;
+            }, 0);
+        }
+    }
+
+    confirmTransition(): void {
+        const tx = this.pendingTransition;
+        this.pendingTransition = undefined;
+        if (tx) {
+            tx.continue();
+            setTimeout(() => this.installBlocker(), 0);
+        }
+    }
+
+    cancelTransition(): void {
+        if (this.pendingTransition) {
+            this.pendingTransition.cancel();
+            this.pendingTransition = undefined;
+        }
     }
 
     destroy() {
         this.gateway.destroy();
+    }
+
+    private installBlocker(): void {
+        this.gateway.onRouteExit(controller => {
+            if (this.forceUnblocked) {
+                this.forceUnblocked = false;
+                controller.continue();
+                setTimeout(() => this.installBlocker(), 0);
+                return;
+            }
+
+            const blockingGuard = this.findBlockingGuard();
+            if (blockingGuard) {
+                this.pendingTransition = controller;
+                blockingGuard.onBlocked();
+            } else {
+                controller.continue();
+                setTimeout(() => this.installBlocker(), 0);
+            }
+        });
+    }
+
+    private findBlockingGuard(): RouteTransitionGuardConfig | undefined {
+        for (const config of this.guards) {
+            if (config.guard()) {
+                return config;
+            }
+        }
+        return undefined;
     }
 
     private routeWithAction = (route: Route<any>) => {
