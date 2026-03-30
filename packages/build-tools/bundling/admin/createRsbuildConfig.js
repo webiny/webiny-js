@@ -33,11 +33,14 @@ export const createRsbuildConfig = ({ cwd }) => {
         },
         tools: {
             postcss: (_, { addPlugins }) => {
-                addPlugins(
+                addPlugins([
+                    createInjectTailwindSourcePlugin(
+                        path.join(paths.projectRootFolder, "extensions")
+                    ),
                     tailwindcss({
                         base: getTailwindBasePath(paths.projectRootFolder)
                     })
-                );
+                ]);
             },
             rspack: {
                 watchOptions: {
@@ -110,6 +113,17 @@ const getTailwindBasePath = projectRootFolderPath => {
 
     return path.join(projectRootFolderPath, "node_modules", "@webiny");
 };
+
+/*
+    Injects an `@source` directive into the Tailwind CSS AST at build time, pointing to the
+    given absolute path. https://tailwindcss.com/docs/functions-and-directives#source-directive
+*/
+const createInjectTailwindSourcePlugin = sourcePath => ({
+    postcssPlugin: "inject-tailwind-source",
+    Once(root) {
+        root.prepend(`@source "${sourcePath}";`);
+    }
+});
 
 const getEnvVars = () => {
     const raw = Object.keys(process.env)
