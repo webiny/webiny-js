@@ -5,7 +5,7 @@ import { UiService } from "~/abstractions/index.js";
 
 const GITHUB_REPOSITORY_URL = "https://github.com/webiny/webiny-upgrades-v6";
 
-type LogType = "debug" | "success" | "warning" | "error" | "done";
+type LogType = "debug" | "success" | "warning" | "error" | "done" | "info";
 
 interface IUpgradeLine {
     type: LogType;
@@ -18,6 +18,7 @@ interface IUpgradeLine {
 
 interface IOutputOptions {
     debug: boolean;
+    logLevel: string;
 }
 
 export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstraction.Interface {
@@ -77,29 +78,21 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
             },
             stdin: process.stdin
         });
-        if (!npx.stdout || !npx.stderr) {
-            try {
-                npx.disconnect();
-                npx.cancel();
-            } catch {
-                // Ignore any errors that may occur during cleanup.
-            }
-            throw new Error("Failed to execute the upgrade command.");
-        }
 
-        npx.stdout.on("data", data => {
+        npx.stdout!.on("data", data => {
             const lines = data.toString().replace(/\n$/, "").split("\n") as string[];
             for (const line of lines) {
                 if (!line || !line.trim()) {
                     continue;
                 }
                 this.output(line, {
-                    debug
+                    debug,
+                    logLevel
                 });
             }
         });
 
-        npx.stderr.on("data", data => {
+        npx.stderr!.on("data", data => {
             this.ui.error(data.toString());
         });
 
@@ -111,12 +104,12 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
     }
 
     private output(line: string, options: IOutputOptions): void {
-        const { debug } = options;
+        const { debug, logLevel } = options;
         try {
             const json = JSON.parse(line) as IUpgradeLine;
             switch (json.type) {
                 case "debug":
-                    if (!debug) {
+                    if (!debug && logLevel !== "debug") {
                         return;
                     }
                     this.ui.debug(json.message);
@@ -124,6 +117,9 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
                         return;
                     }
                     this.ui.debug(json.data?.stack);
+                    break;
+                case "info":
+                    this.ui.info(json.message);
                     break;
                 case "success":
                 case "done":
@@ -143,7 +139,10 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
                     console.log(json);
             }
         } catch {
-            // Not JSON, let's just print the line then.
+            // Not JSON, let's just print the line then, if its debug mode on.
+            if (!debug && logLevel !== "debug") {
+                return;
+            }
             console.log(line);
         }
     }
