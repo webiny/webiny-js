@@ -1,4 +1,3 @@
-import type { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
 import type {
     CmsDeleteEntryOptions,
     CmsEntry,
@@ -28,10 +27,6 @@ import type { GenericRecord } from "@webiny/api/types.js";
  * @category CmsEntry
  */
 export interface CmsEntryContext {
-    /**
-     * Get content entry traverser.
-     */
-    getEntryTraverser: (modelId: string) => Promise<ContentEntryTraverser>;
     /**
      * Get a single content entry for a model.
      */

@@ -2,7 +2,7 @@
 name: webiny-admin-website-builder-catalog
 context: webiny-api
 description: >
-  admin/website-builder — 57 abstractions.
+  admin/website-builder — 58 abstractions.
 ---
 
 # admin/website-builder
@@ -279,6 +279,12 @@ which can be mutated in place.
 **Name:** `useDocumentEditor`
 **Import:** `import { useDocumentEditor } from "webiny/admin/website-builder/page/editor"`
 **Source:** `@webiny/app-website-builder/DocumentEditor/index.ts`
+
+---
+
+**Name:** `useElementComponentManifest`
+**Import:** `import { useElementComponentManifest } from "webiny/admin/website-builder/page/editor"`
+**Source:** `@webiny/app-website-builder/BaseEditor/defaultConfig/Content/Preview/useElementComponentManifest.ts`
 
 ---
 

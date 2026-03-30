@@ -2,7 +2,7 @@
 name: webiny-api-website-builder-catalog
 context: webiny-api
 description: >
-  API — Website Builder — 52 abstractions.
+  API — Website Builder — 57 abstractions.
   Page and redirect event handlers and use cases.
 ---
 
@@ -70,6 +70,12 @@ Page and redirect event handlers and use cases.
 
 ---
 
+**Name:** `GetDeletedPageByIdUseCase`
+**Import:** `import { GetDeletedPageByIdUseCase } from "webiny/api/website-builder/page"`
+**Source:** `@webiny/api-website-builder/features/pages/GetDeletedPageById/abstractions.ts`
+
+---
+
 **Name:** `GetPageByIdUseCase`
 **Import:** `import { GetPageByIdUseCase } from "webiny/api/website-builder/page"`
 **Source:** `@webiny/api-website-builder/features/pages/GetPageById/abstractions.ts`
@@ -102,6 +108,12 @@ Page and redirect event handlers and use cases.
 **Import:** `import { InvalidateRedirectsCacheUseCase } from "webiny/api/website-builder/redirect"`
 **Source:** `@webiny/api-website-builder/features/redirects/InvalidateRedirectsCache/abstractions.ts`
 **Description:** Invalidate the redirects cache.
+
+---
+
+**Name:** `ListDeletedPagesUseCase`
+**Import:** `import { ListDeletedPagesUseCase } from "webiny/api/website-builder/page"`
+**Source:** `@webiny/api-website-builder/features/pages/ListDeletedPages/abstractions.ts`
 
 ---
 
@@ -182,6 +194,12 @@ Page and redirect event handlers and use cases.
 
 ---
 
+**Name:** `PageAfterRestoreEventHandler`
+**Import:** `import { PageAfterRestoreEventHandler } from "webiny/api/website-builder/page"`
+**Source:** `@webiny/api-website-builder/features/pages/RestorePage/abstractions.ts`
+
+---
+
 **Name:** `PageAfterTrashEventHandler`
 **Import:** `import { PageAfterTrashEventHandler } from "webiny/api/website-builder/page"`
 **Source:** `@webiny/api-website-builder/features/pages/TrashPage/abstractions.ts`
@@ -241,6 +259,12 @@ Page and redirect event handlers and use cases.
 **Import:** `import { PageBeforePublishEventHandler } from "webiny/api/website-builder/page"`
 **Source:** `@webiny/api-website-builder/features/pages/PublishPage/abstractions.ts`
 **Description:** Hook into page lifecycle before a page is published.
+
+---
+
+**Name:** `PageBeforeRestoreEventHandler`
+**Import:** `import { PageBeforeRestoreEventHandler } from "webiny/api/website-builder/page"`
+**Source:** `@webiny/api-website-builder/features/pages/RestorePage/abstractions.ts`
 
 ---
 
@@ -324,6 +348,12 @@ Page and redirect event handlers and use cases.
 **Import:** `import { RedirectBeforeUpdateEventHandler } from "webiny/api/website-builder/redirect"`
 **Source:** `@webiny/api-website-builder/features/redirects/UpdateRedirect/abstractions.ts`
 **Description:** Hook into redirect lifecycle before a redirect is updated.
+
+---
+
+**Name:** `RestorePageUseCase`
+**Import:** `import { RestorePageUseCase } from "webiny/api/website-builder/page"`
+**Source:** `@webiny/api-website-builder/features/pages/RestorePage/abstractions.ts`
 
 ---
 
