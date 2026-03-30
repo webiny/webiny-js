@@ -15,7 +15,6 @@ import type {
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
-import { ContentEntryTraverser } from "~/features/contentEntry/ContentEntryTraverser/ContentEntryTraverser.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "~/features/contentEntry/CreateEntryRevisionFrom/abstractions.js";
