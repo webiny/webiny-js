@@ -2,7 +2,6 @@ import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
-import { FunnelBuilder } from "@/extensions/funnelBuilder/FunnelBuilder.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
 export const Extensions = () => {
@@ -14,7 +13,6 @@ export const Extensions = () => {
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
             <Admin.Extension src={"@/extensions/LexicalPlugin.tsx"} />
-            <FunnelBuilder />
             <MyFeature />
 
             {/* Infra 👇 */}
@@ -120,7 +118,6 @@ export const Extensions = () => {
             {/* API */}
             {/*<MyIdpExtension />*/}
             <Cognito />
-            <Api.Extension src={"/extensions/funnelBuilder/api/TenantModelExtension.ts"} />
 
             {/* Security 👇 */}
             <Api.Extension src={"/extensions/MyApiKey.ts"} />
