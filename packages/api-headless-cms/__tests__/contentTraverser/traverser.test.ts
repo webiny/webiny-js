@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { pageModel } from "./mocks/page.model";
 import { pageEntry } from "./mocks/page.entry";
+import { ContentEntryTraverserProvider } from "~/features/contentEntry/ContentEntryTraverser/index.js";
 
 describe("Content Traverser", () => {
     it("should traverse model AST and build flat object with entry values", async () => {
@@ -17,13 +18,14 @@ describe("Content Traverser", () => {
             }
         });
 
-        const traverser = await context.cms.getEntryTraverser("page");
+        const traverserProvider = context.container.resolve(ContentEntryTraverserProvider);
+        const traverser = await traverserProvider.getTraverser("page");
 
         const output: Record<string, any> = {};
 
         const skipFieldTypes = ["object", "dynamicZone"];
 
-        await traverser.traverse(pageEntry.values, ({ field, value, path }) => {
+        await traverser.traverse(pageEntry.values, async ({ field, value, path }) => {
             /**
              * Most of the time you won't care about complex fields like "object" and "dynamicZone", but only their child fields.
              * The traverser will still go into the child fields, but this way you can control which fields you want to process.

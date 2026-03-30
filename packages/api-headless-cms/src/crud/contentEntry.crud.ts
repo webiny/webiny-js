@@ -15,7 +15,7 @@ import type {
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
-import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
+import { ContentEntryTraverser } from "~/features/contentEntry/ContentEntryTraverser/ContentEntryTraverser.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "~/features/contentEntry/CreateEntryRevisionFrom/abstractions.js";
@@ -271,19 +271,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         return result.value;
     };
 
-    const getEntryTraverser = async (modelId: string) => {
-        const modelAstConverter = context.cms.getModelToAstConverter();
-        const model = await context.cms.getModel(modelId);
-        if (!model) {
-            throw new Error(`Missing "${modelId}" model!`);
-        }
-
-        const modelAst = modelAstConverter.toAst(model);
-        return new ContentEntryTraverser(modelAst);
-    };
-
     return {
-        getEntryTraverser,
         /**
          * Get entries by exact revision IDs from the database.
          */

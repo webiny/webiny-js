@@ -7,7 +7,8 @@ description: >
   definitions, define fields and validators, set up reference fields between models,
   configure field layouts, or work with the ModelFactory builder API. Also covers field types
   (text, number, boolean, datetime, file, ref, object, richText) and validation (required,
-  unique, email, pattern, minLength, maxLength, gte, predefinedValues).
+  unique, email, pattern, minLength, maxLength, gte, predefinedValues),
+  single-entry (singleton) models via .singleEntry(), and model/field tags via .tags().
 ---
 
 # Creating Content Models via Code
@@ -66,6 +67,8 @@ Register in `webiny.config.tsx`:
 | `.descriptionFieldId("message")`              | Which field to use as the entry's description                                                                                         |
 | `.singularApiName("Product")`                 | Singular name for GraphQL queries (e.g., `getProduct`)                                                                                |
 | `.pluralApiName("Products")`                  | Plural name for GraphQL queries (e.g., `listProducts`)                                                                                |
+| `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                   |
+| `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                        |
 
 ## Field Types
 
@@ -103,6 +106,7 @@ Register in `webiny.config.tsx`:
 | `.help("Helper text")`          | Helper text shown below the field                  |
 | `.list()`                       | Make the field accept multiple values (arrays)     |
 | `.models([{ modelId: "..." }])` | For `ref()` fields: which models can be referenced |
+| `.tags(["tag1"])`               | Assign tags to a field (e.g., `"$bulk-edit"`)      |
 
 ## Full Examples
 

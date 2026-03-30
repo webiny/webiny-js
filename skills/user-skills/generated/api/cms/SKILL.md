@@ -2,7 +2,7 @@
 name: webiny-api-cms-catalog
 context: webiny-api
 description: >
-  API — Headless CMS — 101 abstractions.
+  API — Headless CMS — 102 abstractions.
   Entry, model, and group event handlers and use cases.
 ---
 
@@ -79,6 +79,13 @@ Entry, model, and group event handlers and use cases.
 **Import:** `import { CmsWhereMapper } from "webiny/api/cms/entry"`
 **Source:** `@webiny/api-headless-cms/features/whereMapper/abstractions.ts`
 **Description:** Map CMS filter conditions to storage queries.
+
+---
+
+**Name:** `ContentEntryTraverserProvider`
+**Import:** `import { ContentEntryTraverserProvider } from "webiny/api/cms/entry"`
+**Source:** `@webiny/api-headless-cms/features/contentEntry/ContentEntryTraverser/index.ts`
+**Description:** Traverse the given content entry data using the model's AST.
 
 ---
 

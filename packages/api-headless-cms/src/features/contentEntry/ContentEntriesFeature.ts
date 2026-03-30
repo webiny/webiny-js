@@ -25,6 +25,7 @@ import { UnpublishEntryFeature } from "./UnpublishEntry/feature.js";
 import { GetUniqueFieldValuesFeature } from "./GetUniqueFieldValues/feature.js";
 import { GetSingletonEntryFeature } from "./GetSingletonEntry/feature.js";
 import { UpdateSingletonEntryFeature } from "./UpdateSingletonEntry/feature.js";
+import { ContentEntryTraverserFeature } from "./ContentEntryTraverser/feature.js";
 
 export const ContentEntriesFeature = createFeature({
     name: "ContentEntries",
@@ -43,6 +44,9 @@ export const ContentEntriesFeature = createFeature({
         ListEntriesFeature.register(container);
         GetUniqueFieldValuesFeature.register(container);
         GetSingletonEntryFeature.register(container);
+
+        // Provider features
+        ContentEntryTraverserFeature.register(container);
 
         // Command features
         CreateEntryFeature.register(container);

@@ -135,8 +135,11 @@ export {
     ListDeletedEntriesUseCase
 } from "~/features/contentEntry/ListEntries/abstractions.js";
 
+export { ContentEntryTraverserProvider } from "~/features/contentEntry/ContentEntryTraverser/index.js";
+
 // ValidateEntry
 export { ValidateEntryUseCase } from "~/features/contentEntry/ValidateEntry/abstractions.js";
+
 /**
  * Mapper helpers for custom where and sort inputs.
  */
