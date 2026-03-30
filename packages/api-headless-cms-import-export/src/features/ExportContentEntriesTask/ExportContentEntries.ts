@@ -30,7 +30,8 @@ export interface ICreateCmsEntryZipperConfig extends Pick<ICmsEntryZipperConfig,
 export class ExportContentEntries<
     I extends IExportContentEntriesInput = IExportContentEntriesInput,
     O extends IExportContentEntriesOutput = IExportContentEntriesOutput
-> implements IExportContentEntries<I, O> {
+> implements IExportContentEntries<I, O>
+{
     private readonly createCmsEntryZipper: (config: ICreateCmsEntryZipperConfig) => ICmsEntryZipper;
     private readonly context: Context;
 
