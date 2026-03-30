@@ -11,6 +11,9 @@ interface UpgradeCommandParams {
     showLogs?: boolean;
     showStackTrace?: boolean;
     version?: string;
+    registry?: string;
+    packageManager?: string;
+    skipDependencyGuard?: boolean;
 }
 
 class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandParams> {
@@ -65,6 +68,25 @@ class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandPa
                     default: false,
                     description: `Show stack trace if the upgrade process executed by npx fails.`,
                     type: "boolean"
+                },
+                {
+                    name: "registry",
+                    type: "string",
+                    default: "",
+                    description: "registry URL"
+                },
+                {
+                    name: "package-manager",
+                    type: "string",
+                    default: "",
+                    description:
+                        "Package manager to use: yarn, pnpm, or npm (auto-detected from lock file if omitted)"
+                },
+                {
+                    name: "skip-dependency-guard",
+                    default: false,
+                    description: `Skip the dependency guard that checks for incompatible dependencies before performing the upgrade.`,
+                    type: "boolean"
                 }
             ],
             handler: async params => {
@@ -78,6 +100,9 @@ class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandPa
                     showStackTrace: params.showStackTrace || false,
                     skipChecks: params.skipChecks || false,
                     debug: params.debug || false,
+                    packageManager: params.packageManager || undefined,
+                    registry: params.registry || undefined,
+                    skipDependencyGuard: params.skipDependencyGuard || false,
                     version
                 });
             }
