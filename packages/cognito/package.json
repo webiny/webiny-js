@@ -9,7 +9,6 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@aws-amplify/auth": "^6.19.1",
     "@webiny/admin-ui": "*",
     "@webiny/api-core": "*",
     "@webiny/app": "*",
@@ -24,6 +23,7 @@
     "@webiny/project-aws": "*",
     "@webiny/ui": "*",
     "@webiny/validation": "*",
+    "aws-amplify": "^6.16.3",
     "graphql": "^16.13.2",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.3",

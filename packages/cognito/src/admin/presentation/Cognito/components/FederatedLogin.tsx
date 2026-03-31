@@ -1,9 +1,12 @@
 import React from "react";
-import { Auth } from "@aws-amplify/auth";
-import type { CognitoHostedUIIdentityProvider } from "@aws-amplify/auth/lib-esm/types/Auth.js";
+import { signInWithRedirect } from "aws-amplify/auth";
 import type { FederatedIdentityProvider } from "~/admin/federatedIdentityProviders.js";
 import { federatedIdentityProviders } from "~/admin/federatedIdentityProviders.js";
 import { FederatedProviders } from "./FederatedProviders.js";
+
+type AuthProvider = "Amazon" | "Apple" | "Facebook" | "Google";
+
+const builtInProviders = new Set<string>(["Amazon", "Apple", "Facebook", "Google"]);
 
 interface FederatedLoginProps {
     providers: FederatedIdentityProvider[];
@@ -14,16 +17,16 @@ export const FederatedLogin = ({ providers }: FederatedLoginProps) => {
         <FederatedProviders.Container>
             {providers.map(({ name, component: Component }) => {
                 const cognitoProviderName = federatedIdentityProviders[name] ?? name;
-                const isCustomProvider = !(name in federatedIdentityProviders);
+                const isBuiltIn = builtInProviders.has(cognitoProviderName);
 
                 const signIn = () => {
-                    if (isCustomProvider) {
-                        Auth.federatedSignIn({
-                            customProvider: cognitoProviderName
+                    if (isBuiltIn) {
+                        signInWithRedirect({
+                            provider: cognitoProviderName as AuthProvider
                         });
                     } else {
-                        Auth.federatedSignIn({
-                            provider: cognitoProviderName as CognitoHostedUIIdentityProvider
+                        signInWithRedirect({
+                            provider: { custom: cognitoProviderName }
                         });
                     }
                 };
