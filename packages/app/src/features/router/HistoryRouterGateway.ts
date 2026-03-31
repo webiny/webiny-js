@@ -10,6 +10,7 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
     private readonly router: Router;
     private stopListening: () => void;
     private unblock: (() => void) | undefined;
+    private onRouteExitCb: OnRouteExit | undefined;
 
     constructor(history: History, baseUrl: string) {
         this.history = history;
@@ -22,7 +23,8 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
     }
 
     onRouteExit(cb: OnRouteExit): void {
-        this.guardRouteExit(cb);
+        this.onRouteExitCb = cb;
+        this.installBlocker();
     }
 
     goToRoute(name: string, params: z.ZodTypeAny): void {
@@ -48,7 +50,11 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
 
     destroy(): void {
         this.stopListening();
-        this.unblock && this.unblock();
+        if (this.unblock) {
+            this.unblock();
+            this.unblock = undefined;
+        }
+        this.onRouteExitCb = undefined;
     }
 
     pushState(url: string): void {
@@ -66,36 +72,53 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
         onMatch(matchedRoute);
     }
 
-    private guardRouteExit(onRouteExit: OnRouteExit): void {
+    private installBlocker(): void {
         if (this.unblock) {
-            // Remove existing blocker before installing a new one.
             this.unblock();
         }
 
         this.unblock = this.history.block(tx => {
+            const onRouteExit = this.onRouteExitCb;
+            if (!onRouteExit) {
+                this.removeBlockerAndRetry(tx);
+                return;
+            }
+
             let resolved = false;
 
             onRouteExit({
                 continue: () => {
                     if (!resolved) {
                         resolved = true;
-                        // We need to unblock the transition before retying.
-                        if (this.unblock) {
-                            this.unblock();
-                            this.unblock = undefined;
-                        }
-                        // Perform transition.
-                        tx.retry();
+                        this.removeBlockerAndRetry(tx);
                     }
                 },
                 cancel: () => {
                     resolved = true;
-                    // Do nothing.
+                    // Do nothing — history v5 already reverted the URL.
                 }
             });
-
-            // Block the transition until `continue` is called.
-            return false;
         });
+    }
+
+    private removeBlockerAndRetry(tx: { retry: () => void }): void {
+        // We must remove the blocker before retrying because history v5's
+        // allowTx() always returns false when any blocker is registered.
+        if (this.unblock) {
+            this.unblock();
+            this.unblock = undefined;
+        }
+
+        // Listen for the next navigation to complete, then reinstall the
+        // blocker. This avoids the race condition where setTimeout-based
+        // reinstallation fires before an async popstate (back/forward)
+        // has settled, causing the blocker to catch its own retried
+        // navigation in an infinite loop.
+        const unlisten = this.history.listen(() => {
+            unlisten();
+            this.installBlocker();
+        });
+
+        tx.retry();
     }
 }

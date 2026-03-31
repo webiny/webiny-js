@@ -79,7 +79,6 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
             const tx = this.pendingTransition;
             this.pendingTransition = undefined;
             tx.continue();
-            setTimeout(() => this.installBlocker(), 0);
         } else {
             // No pending transition — expire the flag after the current
             // call stack so it only covers synchronous navigations that
@@ -95,7 +94,6 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
         this.pendingTransition = undefined;
         if (tx) {
             tx.continue();
-            setTimeout(() => this.installBlocker(), 0);
         }
     }
 
@@ -115,7 +113,6 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
             if (this.forceUnblocked) {
                 this.forceUnblocked = false;
                 controller.continue();
-                setTimeout(() => this.installBlocker(), 0);
                 return;
             }
 
@@ -125,7 +122,6 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
                 blockingGuard.onBlocked();
             } else {
                 controller.continue();
-                setTimeout(() => this.installBlocker(), 0);
             }
         });
     }
