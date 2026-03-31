@@ -5,7 +5,7 @@ import { UiService } from "~/abstractions/index.js";
 
 const GITHUB_REPOSITORY_URL = "https://github.com/webiny/webiny-upgrades-v6";
 
-type LogType = "debug" | "success" | "warning" | "error" | "done" | "info";
+type LogType = "debug" | "success" | "warning" | "warn" | "error" | "fatal" | "done" | "info";
 
 interface IUpgradeLine {
     type: LogType;
@@ -126,9 +126,11 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
                     this.ui.success(json.message);
                     break;
                 case "warning":
+                case "warn":
                     this.ui.warning(json.message);
                     break;
                 case "error":
+                case "fatal":
                     this.ui.error(json.message);
                     if (!json.data?.stack) {
                         return;
