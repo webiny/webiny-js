@@ -308,6 +308,193 @@ export const DashboardFeature = createFeature({
 
 > **Prefer the typical pattern.** Only use the one-off pattern when the business logic is truly presentation-specific and will never be reused by other features.
 
+## Observable Service Implementation
+
+For long-lived services that hold observable state (e.g., project config, feature flags):
+
+```ts
+import { makeAutoObservable, runInAction } from "mobx";
+import { WcpService as ServiceAbstraction, WcpGateway } from "./abstractions.js";
+
+class WcpServiceImpl implements ServiceAbstraction.Interface {
+    private project: ILicense | null = null;
+
+    constructor(private gateway: WcpGateway.Interface) {
+        makeAutoObservable(this);
+    }
+
+    getProject(): ILicense {
+        return this.project;
+    }
+
+    async loadProject(): Promise<void> {
+        const data = await this.gateway.fetchProject();
+        runInAction(() => {
+            this.project = data;
+        });
+    }
+}
+
+export const WcpService = ServiceAbstraction.createImplementation({
+    implementation: WcpServiceImpl,
+    dependencies: [WcpGateway]
+});
+```
+
+- Registered in **singleton scope** — long-lived, holds state
+- Use `makeAutoObservable(this)` in the constructor
+- Wrap async state mutations in `runInAction`
+
+## Repository Implementation
+
+Repositories own domain data and cache. They use MobX for reactivity:
+
+```ts
+import { makeAutoObservable, runInAction } from "mobx";
+import {
+    NextjsConfigRepository as RepositoryAbstraction,
+    NextjsConfigGateway,
+    NextjsConfig
+} from "./abstractions.js";
+
+class NextjsConfigRepositoryImpl implements RepositoryAbstraction.Interface {
+    private config: NextjsConfig | undefined = undefined;
+
+    constructor(private gateway: NextjsConfigGateway.Interface) {
+        makeAutoObservable(this);
+    }
+
+    getConfig(): NextjsConfig | undefined {
+        return this.config;
+    }
+
+    async loadConfig(): Promise<void> {
+        if (this.config) {
+            return; // Already loaded — cache hit
+        }
+
+        const config = await this.gateway.getConfig();
+        runInAction(() => {
+            this.config = config;
+        });
+    }
+}
+
+export const NextjsConfigRepository = RepositoryAbstraction.createImplementation({
+    implementation: NextjsConfigRepositoryImpl,
+    dependencies: [NextjsConfigGateway]
+});
+```
+
+## Gateway Implementation (GraphQL)
+
+Gateways handle external I/O. Use `GraphQLClient` for GraphQL calls:
+
+```ts
+import { NextjsConfigGateway as GatewayAbstraction } from "./abstractions.js";
+import { GraphQLClient } from "@webiny/app/features/graphqlClient";
+
+const GET_NEXTJS_CONFIG = /* GraphQL */ `
+    query GetNextjsConfig {
+        websiteBuilder {
+            getNextjsConfig {
+                data
+                error { code message data }
+            }
+        }
+    }
+`;
+
+type GetNextjsConfigResponse = {
+    websiteBuilder: {
+        getNextjsConfig:
+            | { data: string; error: null }
+            | { data: null; error: { code: string; message: string; data: any } };
+    };
+};
+
+class NextjsGraphQLGateway implements GatewayAbstraction.Interface {
+    constructor(private client: GraphQLClient.Interface) {}
+
+    async getConfig(): Promise<string> {
+        const response = await this.client.execute<GetNextjsConfigResponse>({
+            query: GET_NEXTJS_CONFIG
+        });
+
+        const envelope = response.websiteBuilder.getNextjsConfig;
+        if (envelope.error) {
+            throw new Error(envelope.error.message);
+        }
+
+        return envelope.data;
+    }
+}
+
+export const NextjsConfigGateway = GatewayAbstraction.createImplementation({
+    implementation: NextjsGraphQLGateway,
+    dependencies: [GraphQLClient]
+});
+```
+
+**Key points:**
+- Define the GraphQL query as a string constant with `/* GraphQL */` comment for syntax highlighting
+- Type the response shape explicitly
+- Handle the `data`/`error` envelope pattern
+- Inject `GraphQLClient` from `@webiny/app/features/graphqlClient`
+
+## Composite Features (Aggregating Child Features)
+
+When grouping related features, create a composite with no `resolve`:
+
+```ts
+import { createFeature } from "webiny/admin";
+
+export const FoldersFeature = createFeature({
+    name: "Folders",
+    register(container) {
+        CreateFolderFeature.register(container);
+        UpdateFolderFeature.register(container);
+        DeleteFolderFeature.register(container);
+    }
+});
+```
+
+## Extending Features (Decorators)
+
+Decorators add cross-cutting concerns without modifying the core implementation:
+
+```ts
+class ListFoldersUseCaseWithLoading implements UseCaseAbstraction.Interface {
+    constructor(
+        private loadingRepository: FoldersLoadingRepository.Interface,
+        private decoratee: UseCaseAbstraction.Interface  // decoratee is LAST
+    ) {}
+
+    async execute() {
+        await this.loadingRepository.runCallBack(
+            this.decoratee.execute(),
+            LoadingActionsEnum.list
+        );
+    }
+}
+```
+
+Register with `container.registerDecorator()`:
+
+```ts
+export const MyExtensionFeature = createFeature({
+    name: "MyExtension",
+    register(container) {
+        container.registerDecorator(MyPresenterDecorator);
+    }
+});
+```
+
+**Rules:**
+- Implements the same interface as the decorated abstraction
+- Constructor: extra dependencies first, `decoratee` **last**
+- The `dependencies` array does NOT include the decoratee
+
 ## Reading Admin BuildParams
 
 There are two ways to read build parameters on the Admin side:
@@ -384,6 +571,7 @@ Creates a feature definition for the admin runtime.
 
 ## Related Skills
 
+- **webiny-admin-permissions** — Admin permission UI registration (Security.Permissions schema, custom UIs)
 - **webiny-full-stack-architect** — Top-level component, shared domain layer, BuildParam declarations
 - **webiny-dependency-injection** — The `createImplementation` DI pattern and injectable services
 - **webiny-admin-ui-extensions** — Admin UI customization, decorators, theming, forms, and config

@@ -9,7 +9,15 @@
 
 import { join } from "path";
 import type { IUi } from "../ui.js";
+import type { AgentPreset } from "./types.js";
 import { writeMcpConfig, writeHintFile, webinyHintBlock, printDone } from "./shared.js";
+
+export const preset: AgentPreset = {
+    slug: "windsurf",
+    displayName: "Windsurf",
+    configFile: ".windsurf/mcp.json",
+    hintFile: ".windsurf/rules/*.md"
+};
 
 interface InitParams {
     ui: IUi;
