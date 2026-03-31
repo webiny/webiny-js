@@ -12,11 +12,9 @@ export class OpenSearchCatHealth {
 
     public async getHealth(): Promise<IOpenSearchCatHealthResponse> {
         try {
-            const response = await this.client.cat.health<unknown | [IOpenSearchCatHealthResponse]>(
-                {
-                    format: "json"
-                }
-            );
+            const response = await this.client.cat.health({
+                format: "json"
+            });
 
             if (!Array.isArray(response.body) || response.body.length === 0) {
                 throw new WebinyError({

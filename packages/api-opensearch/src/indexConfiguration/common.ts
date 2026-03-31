@@ -6,15 +6,12 @@ const getDefaultMappings = (): OpenSearchIndexRequestBodyMappingsDynamicTemplate
             ids: {
                 match: "^id|entryId$",
                 mapping: {
-                    type: "string",
-                    keyword: true
+                    type: "keyword"
                 }
             }
         },
         {
-            /**
-             * Update with the correct date fields.
-             */
+            /* Update with the correct date fields. */
             dates: {
                 match: "^createdOn|savedOn|publishedOn$",
                 mapping: {

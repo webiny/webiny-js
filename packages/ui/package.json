@@ -34,9 +34,9 @@
     "typescript": "5.9.3"
   },
   "peerDependencies": {
-    "minimatch": "^10.2.4",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "minimatch": "^10.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "publishConfig": {
     "access": "public",
