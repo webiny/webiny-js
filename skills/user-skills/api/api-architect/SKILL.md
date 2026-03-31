@@ -90,7 +90,7 @@ export interface ISyncProjectUseCase {
 
 ### ServiceProvider Pattern (Async Bootstrap)
 
-When a service requires async initialization (loading CMS settings, fetching remote config, API tokens), use a **ServiceProvider** — a provider abstraction with `async getService()` that lazily creates and caches the service.
+When a service requires async initialization (loading CMS settings, fetching remote config, API tokens), use a **ServiceProvider** — a provider abstraction with `async getService()` that lazily creates and caches the service. Both the provider and the service are part of the same feature. The provider is the primary abstraction exported from the feature. The service itself is not registered in the DI container.
 
 ```ts
 // abstractions.ts
@@ -217,19 +217,19 @@ features/lingotekService/
 
 ### What to inject based on what you're building
 
-| You're building a...  | It needs to...             | Inject                                     |
-| --------------------- | -------------------------- | ------------------------------------------ |
-| **Event Handler**     | Call external API           | Service                                    |
-| **Event Handler**     | Orchestrate CMS + external  | UseCase                                    |
-| **Event Handler**     | Just log/validate           | Logger (or nothing)                        |
-| **GraphQL Resolver**  | Simple read                 | Service or Repository directly             |
-| **GraphQL Resolver**  | Complex mutation            | UseCase                                    |
-| **GraphQL Resolver**  | Check permissions           | IdentityContext or Permissions abstraction  |
-| **UseCase**           | Call external API           | Service                                    |
-| **UseCase**           | Persist/read data           | Repository                                 |
-| **UseCase**           | Publish domain events       | EventPublisher                             |
-| **UseCase**           | Check permissions           | IdentityContext or Permissions abstraction  |
-| **Repository**        | Access CMS                  | GetModelUseCase, CreateEntryUseCase, etc.  |
+| You're building a... | It needs to...             | Inject                                     |
+| -------------------- | -------------------------- | ------------------------------------------ |
+| **Event Handler**    | Call external API          | Service                                    |
+| **Event Handler**    | Orchestrate CMS + external | UseCase                                    |
+| **Event Handler**    | Just log/validate          | Logger (or nothing)                        |
+| **GraphQL Resolver** | Simple read                | Service or Repository directly             |
+| **GraphQL Resolver** | Complex mutation           | UseCase                                    |
+| **GraphQL Resolver** | Check permissions          | IdentityContext or Permissions abstraction |
+| **UseCase**          | Call external API          | Service                                    |
+| **UseCase**          | Persist/read data          | Repository                                 |
+| **UseCase**          | Publish domain events      | EventPublisher                             |
+| **UseCase**          | Check permissions          | IdentityContext or Permissions abstraction |
+| **Repository**       | Access CMS                 | GetModelUseCase, CreateEntryUseCase, etc.  |
 
 ---
 
@@ -362,6 +362,7 @@ export const Extension = createFeature({
 ```
 
 **Rules:**
+
 - Register the CMS model first.
 - Register GraphQL schemas with `container.register()`.
 - Register features with `Feature.register(container)` (not `container.register(Feature)`).
@@ -405,7 +406,7 @@ import CreateEntityRepository from "./CreateEntityRepository.js";
 export const CreateEntityFeature = createFeature({
   name: "CreateEntity",
   register(container) {
-    container.register(CreateEntityUseCase);                    // transient (default)
+    container.register(CreateEntityUseCase); // transient (default)
     container.register(CreateEntityRepository).inSingletonScope(); // singleton
   }
 });
@@ -418,7 +419,7 @@ export const CreateEntityFeature = createFeature({
 | `container.register(Implementation)`                     | Register a class (created via `Abstraction.createImplementation`) |
 | `container.registerInstance(abstraction, instance)`      | Register a plain object that satisfies the interface              |
 | `container.registerFactory(abstraction, () => instance)` | Register a lazy factory                                           |
-| `container.registerDecorator(Decorator)`                | Register a decorator (wraps existing implementation)              |
+| `container.registerDecorator(Decorator)`                 | Register a decorator (wraps existing implementation)              |
 
 ## Reading API BuildParams
 
@@ -475,6 +476,7 @@ export class EntityPersistenceError extends BaseError<{ error: Error }> {
 ```
 
 **Rules:**
+
 - Extend `BaseError` from `@webiny/feature/api`
 - Use `override readonly code` with a namespaced string (`"Domain/ErrorType"`)
 - Use `as const` on the code for type narrowing
@@ -545,8 +547,12 @@ export class Entity {
     return new Entity(dto);
   }
 
-  get id() { return this.dto.id; }
-  get values() { return this.dto.values; }
+  get id() {
+    return this.dto.id;
+  }
+  get values() {
+    return this.dto.values;
+  }
 }
 ```
 
@@ -566,6 +572,7 @@ export {
 ```
 
 **Rules:**
+
 - Use `export { }` syntax, NOT `export *`
 - Do NOT export `feature.ts`, `events.ts`, or implementation files
 
@@ -573,31 +580,31 @@ export {
 
 ## Scoping Rules
 
-| Layer          | Scope                       | Rationale                          |
-| -------------- | --------------------------- | ---------------------------------- |
-| UseCase        | Transient (default)         | Fresh per invocation               |
-| Service        | `.inSingletonScope()`       | Stateful or expensive to create    |
-| Repository     | `.inSingletonScope()`       | One cache instance                 |
-| Gateway        | `.inSingletonScope()`       | Stateless but expensive to create  |
-| EventHandler   | Transient (default)         | Fresh per event                    |
-| CMS Model      | Register normally           | Registered once at boot            |
-| GraphQL Schema | Register normally           | Registered once at boot            |
+| Layer          | Scope                 | Rationale                         |
+| -------------- | --------------------- | --------------------------------- |
+| UseCase        | Transient (default)   | Fresh per invocation              |
+| Service        | `.inSingletonScope()` | Stateful or expensive to create   |
+| Repository     | `.inSingletonScope()` | One cache instance                |
+| Gateway        | `.inSingletonScope()` | Stateless but expensive to create |
+| EventHandler   | Transient (default)   | Fresh per event                   |
+| CMS Model      | Register normally     | Registered once at boot           |
+| GraphQL Schema | Register normally     | Registered once at boot           |
 
 ---
 
 ## Naming Conventions
 
-| Artifact       | Pattern                                       | Example                               |
-| -------------- | --------------------------------------------- | ------------------------------------- |
-| Feature dir    | `{businessCapability}` (camelCase)            | `syncToLingotek`, `createEntity`      |
-| UseCase        | `{Action}{Entity}UseCase`                     | `CreateTenantUseCase`                 |
-| Service        | `{Domain}Service`                             | `LingotekService`                     |
-| Repository     | `{Action}{Entity}Repository`                  | `CreateTenantRepository`              |
-| Event          | `{Entity}{Before\|After}{Action}Event`        | `TenantBeforeDisableEvent`            |
-| Handler        | `{Entity}{Before\|After}{Action}EventHandler` | `TenantBeforeDisableEventHandler`     |
-| Decorator      | `{Action}{Entity}With{Concern}`               | `GetEntityByIdWithAuthorization`      |
-| Mapper         | `EntryTo{Entity}Mapper`                       | `EntryToFolderMapper`                 |
-| Error          | `{Entity}{Problem}Error`                      | `EntityNotFoundError`                 |
+| Artifact    | Pattern                                       | Example                           |
+| ----------- | --------------------------------------------- | --------------------------------- |
+| Feature dir | `{businessCapability}` (camelCase)            | `syncToLingotek`, `createEntity`  |
+| UseCase     | `{Action}{Entity}UseCase`                     | `CreateTenantUseCase`             |
+| Service     | `{Domain}Service`                             | `LingotekService`                 |
+| Repository  | `{Action}{Entity}Repository`                  | `CreateTenantRepository`          |
+| Event       | `{Entity}{Before\|After}{Action}Event`        | `TenantBeforeDisableEvent`        |
+| Handler     | `{Entity}{Before\|After}{Action}EventHandler` | `TenantBeforeDisableEventHandler` |
+| Decorator   | `{Action}{Entity}With{Concern}`               | `GetEntityByIdWithAuthorization`  |
+| Mapper      | `EntryTo{Entity}Mapper`                       | `EntryToFolderMapper`             |
+| Error       | `{Entity}{Problem}Error`                      | `EntityNotFoundError`             |
 
 ---
 

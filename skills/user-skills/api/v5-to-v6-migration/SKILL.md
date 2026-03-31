@@ -152,10 +152,10 @@ export const SyncOnCreateFeature = createFeature({
 
 ```typescript
 export default () => [
-  new GraphQLSchemaPlugin({ ... }),
-  new ContextPlugin(async ctx => { ... }),
-  myModelPlugin,
-  eventSubscriptionPlugin
+    new GraphQLSchemaPlugin({ ... }),
+    new ContextPlugin(async ctx => { ... }),
+    myModelPlugin,
+    eventSubscriptionPlugin
 ];
 ```
 
@@ -183,6 +183,103 @@ export const Extension = createFeature({
 When a v5 service was initialized with async data (loading settings, fetching config), v6 uses the **ServiceProvider** pattern — a provider abstraction with `async getService()` that lazily creates and caches the service.
 
 See the **ServiceProvider Pattern** section in **webiny-api-architect** for the full pattern with abstractions, implementation, and consumer examples.
+
+---
+
+## Pattern 6: Permissions objects
+
+### v5
+
+```ts
+[
+  {
+    name: "content.i18n",
+    locales: ["en-US"]
+  },
+  {
+    name: "cms.endpoint.read"
+  },
+  {
+    name: "cms.endpoint.manage"
+  },
+  {
+    name: "cms.endpoint.preview"
+  },
+  {
+    name: "cms.contentModelGroup",
+    groups: {
+      "en-US": [LT_TRANSLATION_MODEL_GROUP_ID]
+    },
+    rwd: "rw",
+    own: false,
+    pw: ""
+  },
+  {
+    name: "cms.contentModel",
+    models: {
+      "en-US": [
+        LT_TRANSLATION_DOCUMENT_MODEL_ID,
+        LT_CONFIG_MODEL_ID,
+        LT_TRANSLATION_PROJECT_MODEL_ID
+      ]
+    },
+    rwd: "rwd",
+    own: false,
+    pw: ""
+  },
+  {
+    name: "cms.contentEntry",
+    rwd: "rwd",
+    own: false,
+    pw: ""
+  }
+];
+```
+
+### v6
+
+- `content.i18n` no longer exists
+- locale codes no longer exist
+- `models` is an array of `model.modelId` strings
+- `groups` is an array of `group.slug` strings
+
+```ts
+[
+  {
+    name: "cms.endpoint.read"
+  },
+  {
+    name: "cms.endpoint.manage"
+  },
+  {
+    name: "cms.endpoint.preview"
+  },
+  {
+    name: "cms.contentModelGroup",
+    groups: ["LT_TRANSLATION_MODEL_GROUP_ID"],
+    rwd: "rw",
+    own: false,
+    pw: ""
+  },
+  {
+    name: "cms.contentModel",
+    models: [
+      "LT_TRANSLATION_DOCUMENT_MODEL_ID",
+      "LT_CONFIG_MODEL_ID",
+      "LT_TRANSLATION_PROJECT_MODEL_ID"
+    ],
+    rwd: "rwd",
+    own: false,
+    pw: ""
+  },
+  {
+    name: "cms.contentEntry",
+    rwd: "rwd",
+    own: false,
+    pw: ""
+  }
+];
+```
 
 ---
 
