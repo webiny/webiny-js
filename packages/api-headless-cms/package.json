@@ -38,7 +38,7 @@
     "dot-prop-immutable": "^2.1.1",
     "graphql": "^16.13.2",
     "graphql-tag": "^2.12.6",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.0",
     "p-map": "^7.0.4",
     "p-reduce": "^3.0.0",
     "pluralize": "^8.0.0",

@@ -36,7 +36,7 @@
     "humanize-duration": "3.33.2",
     "jsdom": "^29.0.1",
     "load-json-file": "^7.0.1",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.0",
     "minimatch": "^10.2.5",
     "mqtt": "^5.15.1",
     "neverthrow": "^8.2.0",

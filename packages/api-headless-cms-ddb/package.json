@@ -33,7 +33,7 @@
     "dataloader": "^2.2.3",
     "dot-object": "^2.1.5",
     "dot-prop": "^10.1.0",
-    "lodash": "^4.17.23"
+    "lodash": "^4.18.0"
   },
   "devDependencies": {
     "@types/dot-object": "^2.1.6",

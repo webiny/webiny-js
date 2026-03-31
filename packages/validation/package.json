@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "isnumeric": "^0.3.3",
-    "lodash": "^4.17.23"
+    "lodash": "^4.18.0"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",
