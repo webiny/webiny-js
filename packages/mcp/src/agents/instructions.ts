@@ -3,9 +3,27 @@
  *
  * Prints a clear, copy-paste-friendly guide for wiring up the Webiny MCP
  * server in any agent not covered by the built-in adapters.
+ *
+ * The agent tables are auto-generated from preset metadata.
  */
 
-export function printInstructions(): void {
+import { discoverPresets } from "./discover.js";
+
+export async function printInstructions(): Promise<void> {
+    const presets = await discoverPresets();
+
+    const configRows = presets.map(p => {
+        const note = p.configNote ? `  (${p.configNote})` : "";
+        return formatRow(p.displayName, p.configFile + note);
+    });
+
+    const hintRows = presets
+        .filter(p => p.hintFile)
+        .map(p => formatRow(p.displayName, p.hintFile!));
+    presets
+        .filter(p => !p.hintFile && p.hintNote)
+        .forEach(p => hintRows.push(formatRow(p.displayName, p.hintNote!)));
+
     const lines = [
         "",
         "╔══════════════════════════════════════════════════════════════════╗",
@@ -28,15 +46,7 @@ export function printInstructions(): void {
         "",
         "  Agent              Config file",
         "  ─────────────────  ──────────────────────────────────────",
-        "  Claude Code        .mcp.json                (project root)",
-        "  Cursor             .cursor/mcp.json         (project root)",
-        "  Windsurf           .windsurf/mcp.json       (project root)",
-        "  Copilot/VS Code    .vscode/mcp.json         (note: uses 'servers', not 'mcpServers')",
-        "  Cline              .vscode/cline_mcp_settings.json",
-        "  OpenCode           opencode.json            (project root, uses 'mcp' not 'mcpServers')",
-        "  Zed                ~/.config/zed/settings.json  (under 'context_servers')",
-        "  Claude Desktop     ~/Library/Application Support/Claude/claude_desktop_config.json",
-        "                     or %APPDATA%\\Claude\\claude_desktop_config.json  (Windows)",
+        ...configRows,
         "",
         "Full example (the most common shape):",
         "",
@@ -65,13 +75,7 @@ export function printInstructions(): void {
         "",
         "  Agent              Instruction file",
         "  ─────────────────  ──────────────────────────────────────",
-        "  Claude Code        CLAUDE.md                (project root)",
-        "  OpenCode           AGENTS.md                (project root)",
-        "  Cursor             .cursor/rules/*.mdc",
-        "  Windsurf           .windsurf/rules/*.md",
-        "  Copilot/VS Code    .github/copilot-instructions.md",
-        "  Cline              system prompt in settings",
-        "  Zed                system prompt in settings",
+        ...hintRows,
         "",
         "── Step 3: Verify the server starts ──────────────────────────────",
         "",
@@ -92,4 +96,8 @@ export function printInstructions(): void {
     ];
 
     process.stdout.write(lines.join("\n") + "\n");
+}
+
+function formatRow(agent: string, path: string): string {
+    return `  ${agent.padEnd(17)}  ${path}`;
 }

@@ -11,7 +11,15 @@
 
 import { join } from "path";
 import type { IUi } from "../ui.js";
+import type { AgentPreset } from "./types.js";
 import { writeMcpConfig, printDone } from "./shared.js";
+
+export const preset: AgentPreset = {
+    slug: "cline",
+    displayName: "Cline",
+    configFile: ".vscode/cline_mcp_settings.json",
+    hintNote: "system prompt in settings"
+};
 
 interface InitParams {
     ui: IUi;

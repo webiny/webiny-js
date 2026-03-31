@@ -17,7 +17,16 @@
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join } from "path";
 import type { IUi } from "../ui.js";
+import type { AgentPreset } from "./types.js";
 import { writeHintFile, webinyHintBlock, printDone } from "./shared.js";
+
+export const preset: AgentPreset = {
+    slug: "opencode",
+    displayName: "OpenCode",
+    configFile: "opencode.json",
+    configNote: "uses 'mcp' not 'mcpServers'",
+    hintFile: "AGENTS.md"
+};
 
 interface InitParams {
     ui: IUi;

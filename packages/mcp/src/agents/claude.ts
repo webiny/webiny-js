@@ -9,7 +9,15 @@
 
 import { join } from "path";
 import type { IUi } from "../ui.js";
+import type { AgentPreset } from "./types.js";
 import { writeMcpConfig, writeHintFile, webinyHintBlock, printDone } from "./shared.js";
+
+export const preset: AgentPreset = {
+    slug: "claude",
+    displayName: "Claude Code",
+    configFile: ".mcp.json",
+    hintFile: "CLAUDE.md"
+};
 
 interface InitParams {
     ui: IUi;

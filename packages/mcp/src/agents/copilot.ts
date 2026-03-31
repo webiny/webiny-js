@@ -12,7 +12,16 @@
 import { join, dirname } from "path";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import type { IUi } from "../ui.js";
+import type { AgentPreset } from "./types.js";
 import { writeHintFile, webinyHintBlock, printDone } from "./shared.js";
+
+export const preset: AgentPreset = {
+    slug: "copilot",
+    displayName: "Copilot / VS Code",
+    configFile: ".vscode/mcp.json",
+    configNote: "uses 'servers', not 'mcpServers'",
+    hintFile: ".github/copilot-instructions.md"
+};
 
 interface InitParams {
     ui: IUi;
