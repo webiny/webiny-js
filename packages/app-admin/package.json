@@ -60,7 +60,8 @@
     "react-virtualized": "^9.22.6",
     "reset-css": "^5.0.2",
     "tinycolor2": "^1.6.0",
-    "unicode-emoji-json": "^0.8.0"
+    "unicode-emoji-json": "^0.8.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.13.5",
