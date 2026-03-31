@@ -15,6 +15,8 @@ description: >
 
 Admin extensions customize the Webiny Admin application. There are three main categories: **white-labeling** (logos, titles, theme colors), **custom data list columns** (adding columns to content entry tables), and **custom page-type forms** (custom form fields for Website Builder page types). All are React components registered via `<Admin.Extension>` in `webiny.config.tsx`.
 
+**YOU MUST include the full file path with the `.tsx` extension in every `src` prop.** For example, use `src={"/extensions/MyAdminExtension.tsx"}`, NOT `src={"/extensions/MyAdminExtension"}`. Omitting the file extension will cause a build failure.
+
 ## White-Labeling
 
 ### Theme Colors

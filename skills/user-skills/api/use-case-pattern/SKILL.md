@@ -77,6 +77,10 @@ export default SomeUseCase.createImplementation({
 
 ## Registration
 
+**YOU MUST include the full file path with the `.ts` extension in the `src` prop.** For example, use `src={"@/extensions/my-extension.ts"}`, NOT `src={"@/extensions/my-extension"}`. Omitting the file extension will cause a build failure.
+
+**YOU MUST use `export default` for the `createImplementation()` call** when the file is targeted directly by an Extension `src` prop. Using a named export (`export const Foo = SomeFactory.createImplementation(...)`) will cause a build failure. Named exports are only valid inside files registered via `createFeature`.
+
 ```tsx
 // In your app's configuration
 <Api.Extension src={"@/extensions/my-extension.ts"} />

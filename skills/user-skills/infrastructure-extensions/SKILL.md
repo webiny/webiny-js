@@ -41,7 +41,7 @@ export default CorePulumi.createImplementation({
 });
 ```
 
-Register:
+Register (**YOU MUST include the `.ts` file extension in the `src` prop** — omitting it will cause a build failure):
 
 ```tsx
 <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />

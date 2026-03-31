@@ -56,7 +56,7 @@ export default CliCommandFactory.createImplementation({
 });
 ```
 
-Register in `webiny.config.tsx`:
+Register in `webiny.config.tsx` (**YOU MUST include the `.ts` file extension in the `src` prop** — omitting it will cause a build failure):
 
 ```tsx
 <Cli.Command src={"/extensions/MyCustomCommand.ts"} />

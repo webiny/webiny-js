@@ -265,6 +265,10 @@ export default EntryAfterDeleteEventHandler.createImplementation({
 
 ## Registration
 
+**YOU MUST include the full file path with the `.ts` extension in the `src` prop.** For example, use `src={"@/extensions/my-handler.ts"}`, NOT `src={"@/extensions/my-handler"}`. Omitting the file extension will cause a build failure.
+
+**YOU MUST use `export default` for the `createImplementation()` call** when the file is targeted directly by an Extension `src` prop. Using a named export (`export const Foo = SomeFactory.createImplementation(...)`) will cause a build failure. Named exports are only valid inside files registered via `createFeature`.
+
 ```tsx
 <Api.Extension src={"@/extensions/my-handler.ts"} />
 ```

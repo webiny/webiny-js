@@ -43,7 +43,7 @@ class MyModelImpl implements ModelFactory.Interface {
   }
 }
 
-export const MyModel = ModelFactory.createImplementation({
+export default ModelFactory.createImplementation({
   implementation: MyModelImpl,
   dependencies: []
 });
@@ -54,6 +54,10 @@ Register in `webiny.config.tsx`:
 ```tsx
 <Api.Extension src={"/extensions/MyModel.ts"} />
 ```
+
+**YOU MUST include the full file path with the `.ts` extension in the `src` prop.** For example, use `src={"/extensions/MyModel.ts"}`, NOT `src={"/extensions/MyModel"}`. Omitting the file extension will cause a build failure.
+
+**YOU MUST use `export default` for the `createImplementation()` call** when the file is targeted directly by an Extension `src` prop. Using a named export (`export const MyModel = ...`) will cause a build failure. Named exports are only valid inside files registered via `createFeature`.
 
 ## Model Configuration Methods
 
@@ -154,7 +158,7 @@ class ProductCategoryModelImpl implements ModelFactory.Interface {
   }
 }
 
-export const ProductCategoryModel = ModelFactory.createImplementation({
+export default ModelFactory.createImplementation({
   implementation: ProductCategoryModelImpl,
   dependencies: []
 });
@@ -217,7 +221,7 @@ class ProductModelImpl implements ModelFactory.Interface {
   }
 }
 
-export const ProductModel = ModelFactory.createImplementation({
+export default ModelFactory.createImplementation({
   implementation: ProductModelImpl,
   dependencies: []
 });
@@ -284,7 +288,7 @@ class ContactSubmissionModelImpl implements ModelFactory.Interface {
   }
 }
 
-export const ContactSubmissionModel = ModelFactory.createImplementation({
+export default ModelFactory.createImplementation({
   implementation: ContactSubmissionModelImpl,
   dependencies: []
 });
@@ -296,7 +300,7 @@ export const ContactSubmissionModel = ModelFactory.createImplementation({
 Import:       import { ModelFactory } from "webiny/api/cms/model";
 Interface:    ModelFactory.Interface
 Builder:      ModelFactory.Builder
-Export:        ModelFactory.createImplementation({ implementation, dependencies })
+Export:       export default ModelFactory.createImplementation({ implementation, dependencies })
 Register:     <Api.Extension src={"/extensions/MyModel.ts"} />
 Deploy:       yarn webiny deploy api  (or use watch mode)
 ```

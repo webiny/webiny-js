@@ -22,6 +22,10 @@ The same rule applies to API extensions — they must go through `<Api.Extension
 
 These entry-point components are the **only** way to register code that runs inside the Admin app or the API runtime. They use the `src` prop to point to a file that will be loaded in the correct execution environment (browser for Admin, Lambda for API). Bypassing these entry points will fail at runtime because the Admin and API contexts (DI containers, routers, GraphQL registries, etc.) are not available outside their respective runtimes.
 
+**YOU MUST include the full file path with the `.ts` or `.tsx` extension in every `src` prop.** For example, use `src={"/extensions/lead/src/index.ts"}`, NOT `src={"/extensions/lead"}`. Omitting the file extension will cause a build failure.
+
+**YOU MUST use `export default` for the `createImplementation()` call** when the file is targeted directly by an Extension `src` prop. Using a named export (`export const Foo = SomeFactory.createImplementation(...)`) will cause a build failure. Named exports are only valid inside files registered via `createFeature`.
+
 ```tsx
 // CORRECT — always use entry-point components
 <Api.Extension src={import.meta.dirname + "/api/Extension.js"} />

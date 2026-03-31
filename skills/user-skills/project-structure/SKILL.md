@@ -99,6 +99,10 @@ export const Extensions = () => {
 | `<Cli.Command src="..." />`                 | Registers a custom CLI command                                                           | `.ts`     |
 | `<Security.ApiKey.AfterUpdate src="..." />` | Registers a security lifecycle hook                                                      | `.ts`     |
 
+**YOU MUST include the full file path with the `.ts` or `.tsx` extension in every `src` prop.** For example, use `src={"/extensions/MyModel.ts"}`, NOT `src={"/extensions/MyModel"}`. Omitting the file extension will cause a build failure.
+
+**YOU MUST use `export default` for the `createImplementation()` call** when the file is targeted directly by an Extension `src` prop. Using a named export (`export const Foo = SomeFactory.createImplementation(...)`) will cause a build failure. Named exports are only valid inside files registered via `createFeature`.
+
 ## Infrastructure Components
 
 Declarative components for configuring AWS infrastructure:

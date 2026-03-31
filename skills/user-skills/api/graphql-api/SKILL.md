@@ -16,6 +16,10 @@ description: >
 
 Add custom GraphQL queries and mutations using `GraphQLSchemaFactory`. Implement `GraphQLSchemaFactory.Interface`, use the schema builder to add type definitions and resolvers (with per-resolver DI), and export with `GraphQLSchemaFactory.createImplementation()`. Register as `<Api.Extension>`.
 
+**YOU MUST include the full file path with the `.ts` extension in every `src` prop.** For example, use `src={"/extensions/MySchema.ts"}`, NOT `src={"/extensions/MySchema"}`. Omitting the file extension will cause a build failure.
+
+**YOU MUST use `export default` for the `createImplementation()` call** when the file is targeted directly by an Extension `src` prop. Using a named export (`export const Foo = SomeFactory.createImplementation(...)`) will cause a build failure. Named exports are only valid inside files registered via `createFeature`.
+
 ## The GraphQLSchemaFactory Pattern
 
 The `execute` method receives a schema builder and returns it after adding type defs and resolvers.
