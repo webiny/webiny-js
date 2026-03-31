@@ -7,6 +7,7 @@ interface UpgradeCommandParams {
     disableSemver?: boolean;
     debug?: boolean;
     _: string[];
+    target?: string;
     logLevel?: string;
     showLogs?: boolean;
     showStackTrace?: boolean;
@@ -104,7 +105,7 @@ class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandPa
     }
 
     private getVersion(params: UpgradeCommandParams): UpgradeCommandHandler.Version {
-        const version = params._[1];
+        const version = semver.valid(params._[1]) ? params._[1] : params.target;
         if (!version || version === "latest") {
             return "latest";
         }
