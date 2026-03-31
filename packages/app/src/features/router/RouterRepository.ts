@@ -8,7 +8,6 @@ import type {
 } from "./abstractions.js";
 import * as Abstractions from "./abstractions.js";
 import { Route, RouteParamsDefinition, RouteParamsInfer } from "./Route.js";
-import { createImplementation } from "@webiny/di";
 import { RouteUrl } from "./RouteUrl.js";
 
 const INIT_ROUTE = { name: "__init__", path: "", pathname: "", params: {} };
@@ -17,16 +16,14 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
     private gateway: Abstractions.RouterGateway.Interface;
     private currentRoute: MatchedRoute = INIT_ROUTE;
     private routes: Route<any>[] = [];
-    private guards = new Set<RouteTransitionGuardConfig>();
     private pendingTransition: TransitionController | undefined;
     private forceUnblocked = false;
+    private guardDisposers = new Map<RouteTransitionGuardConfig, GuardDisposer>();
 
     constructor(gateway: Abstractions.RouterGateway.Interface) {
         this.gateway = gateway;
-        this.installBlocker();
 
         makeAutoObservable(this, {
-            guards: false,
             pendingTransition: false,
             forceUnblocked: false
         } as any);
@@ -62,14 +59,33 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
     }
 
     addGuard(config: RouteTransitionGuardConfig): GuardDisposer {
-        this.guards.add(config);
-        return () => {
-            this.guards.delete(config);
+        const gatewayGuard: RouteTransitionGuardConfig = {
+            guard: () => {
+                if (this.forceUnblocked) {
+                    this.forceUnblocked = false;
+                    return false;
+                }
+                return config.guard();
+            },
+            onBlocked: (controller: TransitionController) => {
+                this.pendingTransition = controller;
+                config.onBlocked(controller);
+            }
         };
+
+        const disposeGatewayGuard = this.gateway.addGuard(gatewayGuard);
+
+        const dispose = () => {
+            this.guardDisposers.delete(config);
+            disposeGatewayGuard();
+        };
+
+        this.guardDisposers.set(config, dispose);
+        return dispose;
     }
 
     isBlocked(): boolean {
-        return this.findBlockingGuard() !== undefined;
+        return this.pendingTransition !== undefined;
     }
 
     unblock(): void {
@@ -108,33 +124,6 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
         this.gateway.destroy();
     }
 
-    private installBlocker(): void {
-        this.gateway.onRouteExit(controller => {
-            if (this.forceUnblocked) {
-                this.forceUnblocked = false;
-                controller.continue();
-                return;
-            }
-
-            const blockingGuard = this.findBlockingGuard();
-            if (blockingGuard) {
-                this.pendingTransition = controller;
-                blockingGuard.onBlocked();
-            } else {
-                controller.continue();
-            }
-        });
-    }
-
-    private findBlockingGuard(): RouteTransitionGuardConfig | undefined {
-        for (const config of this.guards) {
-            if (config.guard()) {
-                return config;
-            }
-        }
-        return undefined;
-    }
-
     private routeWithAction = (route: Route<any>) => {
         return {
             name: route.name,
@@ -167,8 +156,7 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
     }
 }
 
-export const RouterRepository = createImplementation({
+export const RouterRepository = Abstractions.RouterRepository.createImplementation({
     implementation: RouterRepositoryImpl,
-    abstraction: Abstractions.RouterRepository,
     dependencies: [Abstractions.RouterGateway]
 });

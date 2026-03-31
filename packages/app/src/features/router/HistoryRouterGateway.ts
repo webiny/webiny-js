@@ -1,6 +1,6 @@
 import type { z } from "zod";
 import type { History } from "history";
-import type { RouteDefinition, OnRouteExit } from "./abstractions.js";
+import type { RouteDefinition, RouteTransitionGuardConfig, GuardDisposer } from "./abstractions.js";
 import { RouterGateway } from "./abstractions.js";
 import { RouteUrl } from "./RouteUrl.js";
 import { Router } from "./Router.js";
@@ -10,7 +10,7 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
     private readonly router: Router;
     private stopListening: () => void;
     private unblock: (() => void) | undefined;
-    private onRouteExitCb: OnRouteExit | undefined;
+    private guards = new Set<RouteTransitionGuardConfig>();
 
     constructor(history: History, baseUrl: string) {
         this.history = history;
@@ -22,9 +22,18 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
         });
     }
 
-    onRouteExit(cb: OnRouteExit): void {
-        this.onRouteExitCb = cb;
-        this.installBlocker();
+    addGuard(config: RouteTransitionGuardConfig): GuardDisposer {
+        const hadGuards = this.guards.size > 0;
+        this.guards.add(config);
+        if (!hadGuards) {
+            this.installBlocker();
+        }
+        return () => {
+            this.guards.delete(config);
+            if (this.guards.size === 0) {
+                this.removeBlocker();
+            }
+        };
     }
 
     goToRoute(name: string, params: z.ZodTypeAny): void {
@@ -50,11 +59,8 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
 
     destroy(): void {
         this.stopListening();
-        if (this.unblock) {
-            this.unblock();
-            this.unblock = undefined;
-        }
-        this.onRouteExitCb = undefined;
+        this.removeBlocker();
+        this.guards.clear();
     }
 
     pushState(url: string): void {
@@ -72,51 +78,62 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
         onMatch(matchedRoute);
     }
 
+    private findBlockingGuard(): RouteTransitionGuardConfig | undefined {
+        for (const config of this.guards) {
+            if (config.guard()) {
+                return config;
+            }
+        }
+        return undefined;
+    }
+
     private installBlocker(): void {
         if (this.unblock) {
             this.unblock();
         }
 
         this.unblock = this.history.block(tx => {
-            const onRouteExit = this.onRouteExitCb;
-            if (!onRouteExit) {
-                this.removeBlockerAndRetry(tx);
-                return;
-            }
+            const blockingGuard = this.findBlockingGuard();
+            if (blockingGuard) {
+                let resolved = false;
 
-            let resolved = false;
-
-            onRouteExit({
-                continue: () => {
-                    if (!resolved) {
+                blockingGuard.onBlocked({
+                    continue: () => {
+                        if (!resolved) {
+                            resolved = true;
+                            this.removeBlockerAndRetry(tx);
+                        }
+                    },
+                    cancel: () => {
                         resolved = true;
-                        this.removeBlockerAndRetry(tx);
+                        // Do nothing — history v5 already reverted the URL.
                     }
-                },
-                cancel: () => {
-                    resolved = true;
-                    // Do nothing — history v5 already reverted the URL.
-                }
-            });
+                });
+            } else {
+                this.removeBlockerAndRetry(tx);
+            }
         });
+    }
+
+    private removeBlocker(): void {
+        if (this.unblock) {
+            this.unblock();
+            this.unblock = undefined;
+        }
     }
 
     private removeBlockerAndRetry(tx: { retry: () => void }): void {
         // We must remove the blocker before retrying because history v5's
         // allowTx() always returns false when any blocker is registered.
-        if (this.unblock) {
-            this.unblock();
-            this.unblock = undefined;
-        }
+        this.removeBlocker();
 
         // Listen for the next navigation to complete, then reinstall the
-        // blocker. This avoids the race condition where setTimeout-based
-        // reinstallation fires before an async popstate (back/forward)
-        // has settled, causing the blocker to catch its own retried
-        // navigation in an infinite loop.
+        // blocker only if guards are still active.
         const unlisten = this.history.listen(() => {
             unlisten();
-            this.installBlocker();
+            if (this.guards.size > 0) {
+                this.installBlocker();
+            }
         });
 
         tx.retry();

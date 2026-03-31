@@ -53,7 +53,7 @@ export interface MatchedRoute<TParams = Record<string, any>> {
     params: TParams;
 }
 
-interface IRouterRepository {
+export interface IRouterRepository {
     getMatchedRoute(): MatchedRoute | undefined;
 
     getCurrentRoute(): Route<any> | undefined;
@@ -98,15 +98,11 @@ export type TransitionController = {
     cancel: () => void;
 };
 
-export interface OnRouteExit {
-    (controller: TransitionController): void;
-}
-
 interface IRouterGateway {
     setRoutes(routes: RouteDefinition[]): void;
     goToRoute(name: string, params?: { [k: string]: any }): void;
     pushState(url: string): void;
-    onRouteExit(cb: OnRouteExit): void;
+    addGuard(config: RouteTransitionGuardConfig): GuardDisposer;
     destroy(): void;
 }
 
@@ -124,5 +120,5 @@ export interface RouteTransitionGuardConfig {
     /** Return true to block the transition. */
     guard: () => boolean;
     /** Called when this guard blocks a transition. Show a confirmation dialog here. */
-    onBlocked: () => void;
+    onBlocked: (controller: TransitionController) => void;
 }
