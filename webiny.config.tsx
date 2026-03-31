@@ -18,7 +18,7 @@ export const Extensions = () => {
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
-            <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
+            <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler"} />
             <Infra.Vpc enabled={false} />
             <Infra.OpenSearch enabled={false} />
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
@@ -73,7 +73,7 @@ export const Extensions = () => {
                         "arn:aws:acm:us-east-1:636962863878:certificate/3baf9092-fb27-4efb-9409-XXXXXXXX",
                     sslSupportMethod: "sni-only",
                     domains: {
-                        api: ["api.bg.webiny.com"],
+                        aƒpi: ["api.bg.webiny.com"],
                         admin: ["admin.bg.webiny.com"],
                         website: ["website.bg.webiny.com"],
                         preview: ["preview.bg.webiny.com"]
