@@ -66,40 +66,11 @@ If any of the steps fail, and you fix anything, you must rerun all scripts from 
 - **Branch naming:** `claude/issue-<number>` for Claude-generated branches
 - **PR titles:** Mirror the commit style
 
-## Planning Guidelines (for `@claude plan`)
-
-When creating a plan on an issue, Claude should:
-1. Restate the goal in its own words to confirm understanding
-2. Break work into clearly scoped steps (one concern per step)
-3. Call out files to create or modify with the reason why
-4. Flag any ambiguities as open questions
-
-## Implementation Guidelines (for `@claude implement`)
-
-- Read **all** issue comments before writing a single line of code
-- Prefer editing existing files over creating new ones unless a new module is clearly needed
-- Run `npm test` (or equivalent) before committing; fix any failures
-- Keep PRs focused – one logical change per PR
-- Do **not** modify unrelated files or bump dependency versions unless the issue asks for it
-
-## PR Review Guidelines (for `@claude` on PRs)
-
-- When asked for a review, comment inline on specific lines where relevant
-- When asked to make a change, push a new commit to the existing branch (do not force-push)
-- Always explain *why* a change is being made, not just *what*
-
-## What Claude Should NOT Do
-
-- Merge PRs
-- Delete branches or tags
-- Modify `.github/workflows/` files
-- Change secrets or environment variable definitions
-- Install new dependencies without explaining the rationale in the PR description
-
 ## Webiny
 
 This project uses the Webiny framework.
 A `webiny` MCP server is available.
 When helping with Webiny-related tasks:
+
 1. Call `list_webiny_skills` to see available skills.
 2. Call `get_webiny_skill` with the relevant topic before writing code.
