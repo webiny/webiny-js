@@ -30,8 +30,7 @@ export async function executeGraphQL(
         response = await fetchFn(url, {
             method: "POST",
             headers,
-            body,
-            credentials: "include"
+            body
         });
     } catch (error) {
         return Result.fail(
