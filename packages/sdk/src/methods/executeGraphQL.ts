@@ -23,7 +23,8 @@ export async function executeGraphQL(
 
         // Only add Authorization header if token is provided and not already set in custom headers.
         if (config.token && !headers.Authorization) {
-            headers.Authorization = `Bearer ${config.token}`;
+            const token = typeof config.token === "function" ? await config.token() : config.token;
+            headers.Authorization = `Bearer ${token}`;
         }
 
         response = await fetchFn(url, {
