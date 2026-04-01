@@ -189,7 +189,12 @@ Status: ok
 
 ## get-yarn-workspaces
 Status: replace
-Last published 2018. Use yarn's built-in `yarn workspaces list --json`.
+Last published 2018. Use `find-workspaces` — supports yarn, npm, pnpm, lerna, and bolt. ESM + CJS, last updated Feb 2024.
+https://github.com/joshuajaco/find-workspaces
+```js
+import { findWorkspaces } from "find-workspaces";
+const workspaces = findWorkspaces();
+```
 
 ## github-actions-wac
 Status: ok
@@ -335,7 +340,7 @@ Babel macro, deprecated pattern. Use `fs.readFileSync` at build time or raw load
 
 ## regenerator-runtime
 Status: replace
-Node 22+ has native async/await and generators. Remove entirely.
+Polyfill that enables `async/await` and generator functions (`function*`) by transpiling them into state machines. Babel injects it via `@babel/preset-env` or `@babel/plugin-transform-runtime` when targeting older environments. Used in React (browser) code. All modern browsers and Node 22+ support async/await and generators natively, so it can be removed if browser targets are modern. Check Babel `targets` config to confirm it's not being auto-injected.
 
 ## replace-in-path
 Status: ok

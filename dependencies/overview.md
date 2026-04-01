@@ -18,12 +18,12 @@ See `common.md`, `react.md`, `node.md` for full details per package.
 - `react-custom-scrollbars` → `@radix-ui/react-scroll-area` (already in deps)
 - `classnames` → `clsx` (already in deps)
 - `prop-types` → remove (TypeScript handles it)
-- `regenerator-runtime` → remove (Node 22+ native)
+- `regenerator-runtime` → remove if modern browser targets (polyfills async/await and generators)
 - `invariant`, `ts-invariant`, `warning`, `boolean` → inline (no package needed)
 - `ttypescript` → `ts-patch` (maintained fork)
 - `eslint-plugin-node` → `eslint-plugin-n` (maintained fork)
 - `eslint-plugin-standard` → remove (rules in eslint core)
-- `get-yarn-workspaces` → `yarn workspaces list --json`
+- `get-yarn-workspaces` → `find-workspaces` (supports yarn/npm/pnpm/lerna/bolt)
 - `load-json-file`, `write-json-file` → one-liner with `node:fs`
 - `decompress` → `adm-zip` (already in deps) or `tar` (already in deps)
 - `fecha` → `date-fns` (already in deps)

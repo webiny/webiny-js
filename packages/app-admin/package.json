@@ -52,7 +52,6 @@
     "mobx": "^6.15.0",
     "mobx-react-lite": "^4.1.1",
     "monaco-editor": "0.53.0",
-    "prop-types": "^15.8.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-resizable-panels": "^4.8.0",
