@@ -1,17 +1,17 @@
 import { createImplementation } from "@webiny/di";
+import { AppName } from "@webiny/project";
+import { setTimeout } from "node:timers/promises";
+import open from "open";
+import ora from "ora";
 import {
     CliCommandFactory,
     GetProjectSdkService,
     StdioService,
     UiService
 } from "~/abstractions/index.js";
-import { DeployOutput } from "./deployOutputs/DeployOutput.js";
-import { AppName } from "@webiny/project";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
 import { createBaseAppOptions } from "~/features/common/index.js";
-import { setTimeout } from "node:timers/promises";
-import ora from "ora";
-import open from "open";
+import { DeployOutput } from "./deployOutputs/DeployOutput.js";
 
 // TODO: convert to a real service.
 import { PrintInfoForEnv } from "~/features/InfoCommand/PrintInfoForEnv.js";
@@ -97,6 +97,9 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
                 }
             ],
             handler: async (params: IDeployCommandParams) => {
+                ui.info(`You're using Webiny v${projectSdk.getProjectVersion()}`);
+                ui.emptyLine();
+
                 if (params.apps && params.apps.length > 0) {
                     // Deploy specified apps
                     for (const appName of params.apps) {
