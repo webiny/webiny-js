@@ -2,6 +2,7 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { Select } from "@webiny/admin-ui";
 import { useStyles } from "../../useStyles.js";
+import { InheritanceLabel } from "~/BaseEditor/defaultConfig/Sidebar/InheritanceLabel.js";
 
 const options = [
     { label: "None", value: "none" },
@@ -16,7 +17,7 @@ interface BorderStyleProps {
 }
 
 export const BorderStyle = observer(({ elementId }: BorderStyleProps) => {
-    const { styles, onChange } = useStyles(elementId);
+    const { styles, onChange, inheritanceMap } = useStyles(elementId);
 
     const onValueChange = (value: string) => {
         onChange(({ styles }) => {
@@ -24,9 +25,24 @@ export const BorderStyle = observer(({ elementId }: BorderStyleProps) => {
         });
     };
 
+    const onReset = () => {
+        onChange(({ styles }) => {
+            styles.unset("borderStyle");
+        });
+    };
+
+    const inheritance = inheritanceMap?.borderStyle ?? {};
+
     return (
         <Select
-            label={"Border style"}
+            label={
+                <InheritanceLabel
+                    onReset={onReset}
+                    isOverridden={inheritance?.overridden ?? false}
+                    inheritedFrom={inheritance?.inheritedFrom}
+                    text={"Border style"}
+                />
+            }
             description={"Select border style"}
             value={styles.borderStyle ?? "none"}
             displayResetAction={false}

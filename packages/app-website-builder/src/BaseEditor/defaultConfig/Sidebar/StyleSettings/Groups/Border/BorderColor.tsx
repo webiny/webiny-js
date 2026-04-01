@@ -1,46 +1,50 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { ColorPicker } from "@webiny/admin-ui";
 import { useStyles } from "../../useStyles.js";
+import { InheritanceLabel } from "~/BaseEditor/defaultConfig/Sidebar/InheritanceLabel.js";
 
 interface BorderColorProps {
     elementId: string;
 }
 
 export const BorderColor = observer(({ elementId }: BorderColorProps) => {
-    const { styles, onChange, onPreviewChange } = useStyles(elementId);
-    const [value, setValue] = useState(styles.borderColor ?? "transparent");
-    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const { styles, onChange, onPreviewChange, inheritanceMap } = useStyles(elementId);
 
-    useEffect(() => {
-        if (styles.borderColor !== value) {
-            setValue(styles.borderColor ?? "transparent");
-        }
-    }, [styles.borderColor]);
-
-    const handleChange = (value: string) => {
-        setValue(value);
+    const handleDrag = (value: string) => {
         onPreviewChange(({ styles }) => {
             styles.set("borderColor", value);
         });
-
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
-
-        timeoutRef.current = setTimeout(() => {
-            onChange(({ styles }) => {
-                styles.set("borderColor", value);
-            });
-        }, 300);
     };
+
+    const handleCommit = (value: string) => {
+        onChange(({ styles }) => {
+            styles.set("borderColor", value);
+        });
+    };
+
+    const onReset = () => {
+        onChange(({ styles }) => {
+            styles.unset("borderColor");
+        });
+    };
+
+    const inheritance = inheritanceMap?.borderColor ?? {};
 
     return (
         <ColorPicker
-            label={"Border color"}
+            label={
+                <InheritanceLabel
+                    onReset={onReset}
+                    isOverridden={inheritance?.overridden ?? false}
+                    inheritedFrom={inheritance?.inheritedFrom}
+                    text={"Border color"}
+                />
+            }
             description={"Select border color"}
-            value={value}
-            onChange={handleChange}
+            value={styles.borderColor ?? "transparent"}
+            onChange={handleDrag}
+            onChangeComplete={handleCommit}
         />
     );
 });
