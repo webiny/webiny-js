@@ -68,7 +68,6 @@
     "@vitest/coverage-v8": "^4.1.2",
     "@vitest/eslint-plugin": "^1.6.13",
     "adio": "^2.1.0",
-    "axios": "^1.13.6",
     "babel-loader": "^10.1.1",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "babel-plugin-macros": "^3.1.0",

@@ -16788,7 +16788,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.13.6, axios@npm:^1.6.0":
+"axios@npm:^1.6.0":
   version: 1.13.6
   resolution: "axios@npm:1.13.6"
   dependencies:
@@ -30359,7 +30359,6 @@ __metadata:
     "@vitest/eslint-plugin": "npm:^1.6.13"
     "@webiny/di": "npm:^0.2.3"
     adio: "npm:^2.1.0"
-    axios: "npm:^1.13.6"
     babel-loader: "npm:^10.1.1"
     babel-plugin-dynamic-import-node: "npm:^2.3.3"
     babel-plugin-macros: "npm:^3.1.0"

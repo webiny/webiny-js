@@ -5,7 +5,6 @@ import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import { Bind, type BindComponentRenderProp } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { ScheduleActionType } from "~/types.js";
-import type { CmsContentEntryStatusType } from "@webiny/app-headless-cms-common/types/index.js";
 import type { Validator } from "@webiny/validation/types.js";
 import ValidationError from "@webiny/validation/validationError.js";
 import { makeDecoratable } from "@webiny/react-composition";
@@ -17,7 +16,7 @@ import { SchedulerUnpublishGraphQLGateway } from "~/Gateways/SchedulerUnpublishG
 import { useGetScheduledAction } from "~/Presentation/components/ScheduleDialog/useGetScheduledAction.js";
 import { SchedulerGetGraphQLGateway } from "~/Gateways/SchedulerGetGraphQLGateway.js";
 
-export type ShowDialogParamsEntryStatus = CmsContentEntryStatusType;
+export type ShowDialogParamsEntryStatus = "published" | "unpublished" | "draft" | string;
 
 export interface IShowDialogParamsEntry {
     id: string;
