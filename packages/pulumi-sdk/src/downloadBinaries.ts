@@ -6,16 +6,17 @@ import path from "path";
 import decompress from "decompress";
 import semver from "semver";
 import { findUpSync } from "find-up";
-import readJsonSync from "read-json-sync";
+import { loadJsonFileSync } from "load-json-file";
 import { downloadFile } from "./downloadFile.js";
+import { PackageJson } from "type-fest";
 
 // We need to sanitize the package version because, occasionally, we've noticed that the Pulumi version
 // can look like the following: "2.25.2+dirty". We want to ensure only "2.25.2" is returned.
 // @see https://github.com/pulumi/pulumi/issues/6847
 const getPulumiVersion = () => {
     const pkgJsonPath = findUpSync("node_modules/@pulumi/pulumi/package.json");
-    const { version } = readJsonSync(pkgJsonPath!);
-    return semver.clean(version);
+    const { version } = loadJsonFileSync<PackageJson>(pkgJsonPath!);
+    return semver.clean(version!);
 };
 
 export default async (

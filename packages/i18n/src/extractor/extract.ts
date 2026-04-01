@@ -1,8 +1,4 @@
-/**
- * Package short-hash has no types.
- */
-// @ts-expect-error
-import hash from "short-hash";
+import { hash } from "~/hash.js";
 
 /**
  * Searches for all declared namespaces.

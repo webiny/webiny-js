@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CONCURRENCY = 20;
 
 function collectPackageJsonPaths() {
@@ -99,24 +100,88 @@ async function main() {
     );
     const results = await runPool(tasks, CONCURRENCY);
 
-    results.sort((a, b) => {
-        if (!a.date && !b.date) return 0;
-        if (!a.date) return 1;
-        if (!b.date) return -1;
-        return a.date - b.date;
-    });
+    // Build a lookup by package name.
+    const byName = new Map();
+    for (const r of results) {
+        byName.set(r.name, r);
+    }
 
-    const nameW = Math.max(4, ...results.map(r => r.name.length));
-    const verW = Math.max(7, ...results.map(r => r.version.length));
-    const header = `${"Name".padEnd(nameW)}  ${"Version".padEnd(verW)}  ${"Published".padEnd(10)}  Age`;
-    console.log(header);
-    console.log("-".repeat(header.length + 10));
+    // Convert @types/foo -> foo, @types/babel__core -> @babel/core.
+    function typesSourceName(typesName) {
+        const bare = typesName.slice("@types/".length);
+        if (bare.includes("__")) {
+            const [scope, rest] = bare.split("__", 2);
+            return `@${scope}/${rest}`;
+        }
+        return bare;
+    }
+
+    // Group: main package + optional @types child.
+    const groups = [];
+    const claimed = new Set();
 
     for (const r of results) {
+        if (r.name.startsWith("@types/")) continue;
+        const group = { main: r, types: null };
+        // Find matching @types.
+        const scopeMatch = r.name.startsWith("@")
+            ? `@types/${r.name.slice(1).replace("/", "__")}`
+            : `@types/${r.name}`;
+        if (byName.has(scopeMatch)) {
+            group.types = byName.get(scopeMatch);
+            claimed.add(scopeMatch);
+        }
+        groups.push(group);
+    }
+
+    // Standalone @types (no matching main package, e.g. @types/node).
+    for (const r of results) {
+        if (r.name.startsWith("@types/") && !claimed.has(r.name)) {
+            groups.push({ main: r, types: null });
+        }
+    }
+
+    // Sort groups by oldest entry in the group (main or types), oldest first.
+    function groupDate(g) {
+        const dates = [g.main.date, g.types?.date].filter(Boolean);
+        return dates.length ? Math.min(...dates.map(d => d.getTime())) : Infinity;
+    }
+    groups.sort((a, b) => groupDate(a) - groupDate(b));
+
+    // Flatten for display.
+    const rows = [];
+    for (const g of groups) {
+        rows.push({ ...g.main, indent: false });
+        if (g.types) {
+            rows.push({ ...g.types, indent: true });
+        }
+    }
+
+    const nameW = Math.max(4, ...rows.map(r => r.name.length + (r.indent ? 2 : 0)));
+    const verW = Math.max(7, ...rows.map(r => r.version.length));
+    const header = `${"Name".padEnd(nameW)}  ${"Version".padEnd(verW)}  ${"Published".padEnd(10)}  Age`;
+    const sep = "-".repeat(header.length + 10);
+
+    const lines = [header, sep];
+    for (const r of rows) {
+        const label = r.indent ? `  ${r.name}` : r.name;
         const dateStr = r.date ? r.date.toISOString().slice(0, 10) : "unknown";
         const age = r.date ? formatAge(r.date) : (r.error || "?");
-        console.log(`${r.name.padEnd(nameW)}  ${r.version.padEnd(verW)}  ${dateStr.padEnd(10)}  ${age}`);
+        lines.push(`${label.padEnd(nameW)}  ${r.version.padEnd(verW)}  ${dateStr.padEnd(10)}  ${age}`);
     }
+
+    const output = lines.join("\n") + "\n";
+
+    // Print to stdout.
+    process.stdout.write(output);
+
+    // Write to dependencies/packages.md.
+    const outDir = join(ROOT, "dependencies");
+    mkdirSync(outDir, { recursive: true });
+    const outPath = join(outDir, "packages.md");
+    const md = `# Dependencies by Age\n\nGenerated: ${new Date().toISOString().slice(0, 10)}\n\n\`\`\`\n${output}\`\`\`\n`;
+    writeFileSync(outPath, md);
+    console.log(`\nWritten to ${outPath}`);
 }
 
 main().catch(e => {

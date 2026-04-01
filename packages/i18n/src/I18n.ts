@@ -1,10 +1,5 @@
 import accounting from "accounting";
 import * as fecha from "fecha";
-/**
- * Package short-hash has no types.
- */
-// @ts-expect-error
-import hash from "short-hash";
 import lodashAssign from "lodash/assign.js";
 import lodashGet from "lodash/get.js";
 
@@ -20,6 +15,7 @@ import type {
     Translations,
     Translator
 } from "./types.js";
+import { hash } from "~/hash.js";
 
 export type Translated =
     | ((values: I18NDataValues) => ProcessorResult | null)

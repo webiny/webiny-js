@@ -15,7 +15,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "isnumeric": "^0.3.3",
     "lodash": "^4.17.23"
   },
   "devDependencies": {
