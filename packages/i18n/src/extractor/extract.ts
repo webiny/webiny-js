@@ -1,4 +1,4 @@
-import { hash } from "~/hash.js";
+import { hash } from "ohash";
 
 /**
  * Searches for all declared namespaces.

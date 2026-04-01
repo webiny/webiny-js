@@ -15,7 +15,7 @@ import type {
     Translations,
     Translator
 } from "./types.js";
-import { hash } from "~/hash.js";
+import { hash } from "ohash";
 
 export type Translated =
     | ((values: I18NDataValues) => ProcessorResult | null)
