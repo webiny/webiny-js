@@ -1,5 +1,6 @@
 import { type Abstraction, Metadata } from "@webiny/di";
 import { z } from "zod";
+import fs from "fs";
 import path from "path";
 import { type IProjectModel } from "~/abstractions/models/index.js";
 import { ProjectError } from "~/ProjectError.js";
@@ -42,6 +43,19 @@ export const zodSrcPath = (options: ZodSrcPathOptions) => {
                     code: z.ZodIssueCode.custom,
                     message: ProjectError.formatMessage(
                         `File not found: %s. Please check the path and try again.`,
+                        src
+                    )
+                });
+                return;
+            }
+
+            // Ensure the resolved path points to a file, not a directory.
+            const absolutePath = ExtensionSrcResolver.resolvePath(src, project);
+            if (fs.statSync(absolutePath).isDirectory()) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: ProjectError.formatMessage(
+                        `Expected a file but got a directory: %s. Please provide a path to a specific file.`,
                         src
                     )
                 });
