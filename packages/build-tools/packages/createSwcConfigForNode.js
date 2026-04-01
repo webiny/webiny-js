@@ -7,7 +7,8 @@ export default ({ path, esm }) => {
                 "@babel/preset-env",
                 {
                     targets: {
-                        node: "18"
+                        // nodejs - to easily find this with search. there is a lot of "node" in the code
+                        node: 24
                     },
                     modules: esm ? false : "auto",
                     exclude: [
