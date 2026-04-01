@@ -10,7 +10,7 @@ export const encodeCursor = (input?: PrimitiveValue[]): string | undefined => {
 
     const cursor = Array.isArray(input)
         ? input
-              .filter((item: PrimitiveValue): item is string | number | boolean => item !== null)
+              .filter((item: PrimitiveValue): item is string | number | boolean => item != null)
               .map(item => encodeURIComponent(item))
         : encodeURIComponent(input);
 

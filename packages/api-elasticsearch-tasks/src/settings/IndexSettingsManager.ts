@@ -15,11 +15,11 @@ export class IndexSettingsManager {
                 index
             });
 
-            const setting = response.body[index].settings.index;
+            const setting = response.body[index]?.settings?.index;
 
             return {
-                numberOfReplicas: setting.number_of_replicas,
-                refreshInterval: setting.refresh_interval
+                numberOfReplicas: parseInt(String(setting?.number_of_replicas ?? "0"), 10),
+                refreshInterval: setting?.refresh_interval ?? "1s"
             };
         } catch (ex) {
             throw new IndexSettingsGetError(ex, index);

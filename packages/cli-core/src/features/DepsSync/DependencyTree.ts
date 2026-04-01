@@ -88,6 +88,17 @@ export class DependencyTree implements IDependencyTree {
                         );
                     continue;
                 }
+                /**
+                 * Let's skip if version starts with >= or <=, as those are not exact versions and we can't be sure which version is actually used.
+                 */
+                if (version.startsWith(">=") || version.startsWith("<=")) {
+                    process.env.DEBUG === "true" &&
+                        console.debug(
+                            `${version} is not an exact version in ${file}, package ${name}. Skipping.`
+                        );
+                    continue;
+                }
+
                 version = version
                     .replace(/\^/g, "")
                     .replace(/~/g, "")

@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins";
-import type { MappingFieldType } from "@opensearch-project/opensearch/api/types";
+import type { FieldType as MappingFieldType } from "@opensearch-project/opensearch/api/_types/_common.mapping";
 import type { FieldSortOptions, SortOrder } from "~/types.js";
 
 export type UnmappedTypes = "date" | "long" | string;

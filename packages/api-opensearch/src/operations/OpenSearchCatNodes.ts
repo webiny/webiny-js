@@ -12,7 +12,7 @@ export class OpenSearchCatNodes {
 
     public async getNodes(): Promise<IOpenSearchCatNodesResponse> {
         try {
-            const response = await this.client.cat.nodes<IOpenSearchCatNodesResponse>({
+            const response = await this.client.cat.nodes({
                 format: "json"
             });
             if (!Array.isArray(response.body) || response.body.length === 0) {

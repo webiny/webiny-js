@@ -1,6 +1,13 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { Auth } from "@aws-amplify/auth";
-import { AuthOptions } from "@aws-amplify/auth/lib-esm/types/index.js";
+import { Amplify } from "aws-amplify";
+import {
+    signIn,
+    signOut,
+    confirmSignIn,
+    resetPassword,
+    confirmResetPassword,
+    fetchAuthSession
+} from "aws-amplify/auth";
 import {
     CognitoPresenter as CognitoPresenterAbstraction,
     AuthState,
@@ -18,7 +25,6 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
     private checkingSession = false;
     private isLoggingIn = false;
     private formLoading = false;
-    private cognitoUser: any = null;
     private initialized = false;
 
     constructor(
@@ -66,13 +72,14 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
             return;
         }
 
-        const authConfig: AuthOptions = {
-            region: params.region,
-            userPoolId: params.userPoolId,
-            userPoolWebClientId: params.clientId
-        };
-
-        Auth.configure(authConfig);
+        Amplify.configure({
+            Auth: {
+                Cognito: {
+                    userPoolId: params.userPoolId,
+                    userPoolClientId: params.clientId
+                }
+            }
+        });
         this.initialized = true;
 
         await this.checkUrl();
@@ -88,14 +95,14 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
         const usernameOrPassword = ["UserNotFoundException", "NotAuthorizedException"];
 
         try {
-            const user = await Auth.signIn(username, password);
+            const result = await signIn({ username, password });
+            const { nextStep } = result;
 
-            if (user.challengeName === "NEW_PASSWORD_REQUIRED") {
+            if (nextStep.signInStep === "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED") {
                 runInAction(() => {
-                    this.cognitoUser = user;
                     this.authState = "requireNewPassword";
                     this.authData = {
-                        requiredAttributes: user.challengeParam.requiredAttributes || []
+                        requiredAttributes: nextStep.missingAttributes || []
                     };
                     this.formLoading = false;
                 });
@@ -108,7 +115,7 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
         } catch (error) {
             let message = error.message;
 
-            if (usernameOrPassword.includes(error.code)) {
+            if (usernameOrPassword.includes(error.name)) {
                 message = "Incorrect username or password.";
             }
             runInAction(() => {
@@ -129,7 +136,10 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
         });
 
         try {
-            await Auth.completeNewPassword(this.cognitoUser, password, requiredAttributes);
+            await confirmSignIn({
+                challengeResponse: password,
+                options: { userAttributes: requiredAttributes }
+            });
             await this.handleSignedIn();
         } catch (error) {
             runInAction(() => {
@@ -153,7 +163,7 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
         });
 
         try {
-            await Auth.forgotPassword(username);
+            await resetPassword({ username });
         } catch {
             // We ignore errors and pretend that everything went fine.
             // Showing an error would give a potential attacker information about which usernames exist (or not).
@@ -195,7 +205,11 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
         });
 
         try {
-            await Auth.forgotPasswordSubmit(username, code, password);
+            await confirmResetPassword({
+                username,
+                confirmationCode: code,
+                newPassword: password
+            });
             runInAction(() => {
                 this.authState = "signIn";
                 this.message = {
@@ -244,11 +258,15 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
         try {
             await this.logInUseCase.execute({
                 idTokenProvider: async () => {
-                    const currentSession = await Auth.currentSession();
-                    return currentSession.getIdToken().getJwtToken();
+                    const session = await fetchAuthSession();
+                    const idToken = session.tokens?.idToken;
+                    if (!idToken) {
+                        throw new Error("No ID token available.");
+                    }
+                    return idToken.toString();
                 },
                 logoutCallback: () => {
-                    Auth.signOut();
+                    signOut();
                     runInAction(() => {
                         this.authState = "signIn";
                         this.authData = null;
@@ -291,8 +309,8 @@ class CognitoPresenterImpl implements CognitoPresenterAbstraction.Interface {
         });
 
         try {
-            const cognitoUser = await Auth.currentSession();
-            if (cognitoUser) {
+            const session = await fetchAuthSession();
+            if (session.tokens) {
                 // We don't need to `await`, we simply start a separate "branch" of execution.
                 this.handleSignedIn();
             }

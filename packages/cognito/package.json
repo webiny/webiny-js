@@ -9,7 +9,6 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@aws-amplify/auth": "^5.6.19",
     "@webiny/admin-ui": "*",
     "@webiny/api-core": "*",
     "@webiny/app": "*",
@@ -24,17 +23,18 @@
     "@webiny/project-aws": "*",
     "@webiny/ui": "*",
     "@webiny/validation": "*",
+    "aws-amplify": "^6.16.3",
     "graphql": "^16.13.2",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.23",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^4.1.1",
-    "react": "18.2.0",
+    "react": "18.3.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/react": "18.2.79",
+    "@types/react": "18.3.28",
     "@webiny/build-tools": "*",
     "@webiny/project-utils": "*",
     "@webiny/wcp": "*",

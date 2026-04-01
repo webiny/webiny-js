@@ -47,7 +47,7 @@ const getError = (item: BulkOperationsResponseBodyItem): string | null => {
     return reason;
 };
 
-const checkErrors = (result?: ApiResponse<BulkOperationsResponseBody>): void => {
+const checkErrors = (result?: ApiResponse): void => {
     if (!result || !result.body || !result.body.items) {
         return;
     }
@@ -141,7 +141,7 @@ export const execute = (params: IExecuteParams) => {
         }
 
         try {
-            const res = await context.opensearch.bulk<BulkOperationsResponseBody>({
+            const res = await context.opensearch.bulk({
                 body: operations.items
             });
             checkErrors(res);

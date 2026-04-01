@@ -4,14 +4,14 @@
     "@webiny/cli": "latest",
     "@webiny/cognito": "latest",
     "@webiny/mcp": "latest",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "webiny": "latest"
   },
   "devDependencies": {
     "@types/node": "^24.12.0",
-    "@types/react": "18.2.79",
-    "@types/react-dom": "18.2.25",
+    "@types/react": "18.3.28",
+    "@types/react-dom": "18.3.7",
     "typescript": "5.9.3"
   },
   "scripts": {},
