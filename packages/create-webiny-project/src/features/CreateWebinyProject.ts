@@ -1,6 +1,7 @@
 import execa from "execa";
 import fs from "fs-extra";
-import Listr from "listr";
+import type { ListrTask } from "listr2";
+import { Listr } from "listr2";
 import path from "path";
 import { rimrafSync } from "rimraf";
 import chalk from "chalk";
@@ -58,8 +59,7 @@ export class CreateWebinyProject {
         await analytics.track("start");
 
         try {
-            const tasks = new Listr();
-            tasks.add([
+            const taskItems: ListrTask[] = [
                 {
                     // Creates root package.json.
                     title: "Prepare project folder",
@@ -72,10 +72,10 @@ export class CreateWebinyProject {
                         await setupYarn.execute(cliArgs);
                     }
                 }
-            ]);
+            ];
 
             if (isGitAvailable) {
-                tasks.add({
+                taskItems.push({
                     title: `Initialize git`,
                     task: (_, task) => {
                         const initGit = new InitGit();
@@ -88,6 +88,7 @@ export class CreateWebinyProject {
                 });
             }
 
+            const tasks = new Listr(taskItems);
             await tasks.run();
 
             console.log();
