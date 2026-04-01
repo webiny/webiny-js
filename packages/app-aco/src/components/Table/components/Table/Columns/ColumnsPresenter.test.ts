@@ -13,6 +13,7 @@ describe("ColumnsPresenter", () => {
             hideable: true,
             name: "id",
             resizable: true,
+            truncate: true,
             size: 200,
             sortable: true,
             visible: true
@@ -24,6 +25,7 @@ describe("ColumnsPresenter", () => {
             hideable: false,
             name: "title",
             resizable: false,
+            truncate: true,
             size: 100,
             sortable: false,
             visible: false

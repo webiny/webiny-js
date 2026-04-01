@@ -36,6 +36,10 @@ interface DataTableColumn<T> {
      */
     size?: number;
     /*
+     * Should truncate?
+     */
+    truncate?: boolean;
+    /*
      * Column class names.
      */
     className?: string;
@@ -172,6 +176,7 @@ const defineColumns = <T,>(
                 enableResizing = true,
                 enableSorting = false,
                 header,
+                truncate = true,
                 id,
                 size = 100
             } = column;
@@ -193,7 +198,8 @@ const defineColumns = <T,>(
                 },
                 enableSorting,
                 meta: {
-                    className
+                    className,
+                    truncate
                 },
                 enableResizing,
                 size,
@@ -462,7 +468,12 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
                                                 onClick={header.column.getToggleSortingHandler()}
                                                 sortable={header.column.getCanSort()}
                                             >
-                                                <div className="w-full overflow-hidden whitespace-nowrap truncate">
+                                                <div
+                                                    className={cn({
+                                                        "w-full overflow-hidden whitespace-nowrap": true,
+                                                        truncate: !isLastCell
+                                                    })}
+                                                >
                                                     {flexRender(
                                                         header.column.columnDef.header,
                                                         header.getContext()
@@ -472,7 +483,7 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
                                                     direction={header.column.getIsSorted() || null}
                                                 />
                                                 {isLastCell && (
-                                                    <div className={"mr-xs h-md"}>
+                                                    <div className={"h-md"}>
                                                         <ColumnsVisibility
                                                             columns={table.getAllColumns()}
                                                         />

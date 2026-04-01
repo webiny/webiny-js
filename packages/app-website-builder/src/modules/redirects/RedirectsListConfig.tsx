@@ -78,7 +78,8 @@ export const RedirectsListConfig = () => {
                     size={56}
                     resizable={false}
                     hideable={false}
-                    className={"text-right"}
+                    truncate={false}
+                    className={"flex justify-center"}
                 />
             </RedirectListConfig>
         </>

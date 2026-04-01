@@ -53,7 +53,7 @@ export const PagesListConfig = () => {
                     <Browser.BulkAction name={"duplicatePages"} element={<BulkActionDuplicate />} />
                 </HasPermission>
                 <HasPermission entity={"page"} action={"delete"}>
-                    <Browser.Page.Action name={"delete"} element={<Delete />} />
+                    <Browser.Page.Action name={"delete"} element={<Delete />} after={"$last"} />
                     <Browser.BulkAction name={"deletePages"} element={<BulkActionDelete />} />
                 </HasPermission>
                 <HasPermission entity={"page"} action={"publish"}>
@@ -83,8 +83,18 @@ export const PagesListConfig = () => {
                     cell={<CellModified />}
                     sortable={true}
                 />
-                <Browser.Table.Column name={"status"} header={"Status"} cell={<CellStatus />} />
-                <Browser.Table.Column name={"live"} header={"Live"} cell={<CellLive />} />
+                <Browser.Table.Column
+                    name={"status"}
+                    header={"Status"}
+                    cell={<CellStatus />}
+                    truncate={false}
+                />
+                <Browser.Table.Column
+                    name={"live"}
+                    header={"Live"}
+                    cell={<CellLive />}
+                    truncate={false}
+                />
                 <Browser.Table.Column
                     name={"actions"}
                     header={""}
@@ -92,7 +102,8 @@ export const PagesListConfig = () => {
                     size={56}
                     resizable={false}
                     hideable={false}
-                    className={"text-right"}
+                    truncate={false}
+                    className={"flex justify-center"}
                 />
                 <Browser.Sidebar.Footer name={"trash-bin"} element={<TrashBin />} />
             </InternalPageListConfig>
