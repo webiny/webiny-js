@@ -97,9 +97,6 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
                 }
             ],
             handler: async (params: IDeployCommandParams) => {
-                ui.info(`You're using Webiny v${projectSdk.getProjectVersion()}`);
-                ui.emptyLine();
-
                 if (params.apps && params.apps.length > 0) {
                     // Deploy specified apps
                     for (const appName of params.apps) {
@@ -114,6 +111,9 @@ export class DeployCommand implements CliCommandFactory.Interface<IDeployCommand
                         ui.emptyLine();
                     }
                 } else {
+                    ui.info(`You're using Webiny v${projectSdk.getProjectVersion()}`);
+                    ui.emptyLine();
+
                     const isCi = projectSdk.isCi();
                     const coreStack = await projectSdk.getAppStackOutput("core");
 
