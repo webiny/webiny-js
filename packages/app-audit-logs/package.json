@@ -24,7 +24,7 @@
     "@webiny/ui": "0.0.0",
     "date-fns": "^4.1.0",
     "graphql-tag": "^2.12.6",
-    "lodash": "^4.18.0",
+    "lodash": "^4.17.23",
     "zod": "^4.3.6"
   },
   "peerDependencies": {

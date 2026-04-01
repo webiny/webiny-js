@@ -21,7 +21,7 @@
     "@webiny/react-properties": "0.0.0",
     "@webiny/ui": "0.0.0",
     "graphql": "^16.13.2",
-    "lodash": "^4.18.0",
+    "lodash": "^4.17.23",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^4.1.1",
     "react": "18.3.1",
