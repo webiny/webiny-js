@@ -4,6 +4,7 @@ import { IconButton, DropdownMenu } from "@webiny/admin-ui";
 import { OptionsMenuItemProvider } from "./useOptionsMenuItem.js";
 
 export interface OptionsMenuProps {
+    variant?: React.ComponentProps<typeof IconButton>["variant"];
     actions: {
         name: string;
         element: React.ReactElement;
@@ -20,9 +21,9 @@ export const OptionsMenu = (props: OptionsMenuProps) => {
     const trigger = props.trigger || (
         <IconButton
             icon={<MoreVerticalIcon />}
-            size={"sm"}
+            size={"md"}
             iconSize={"lg"}
-            variant={"ghost"}
+            variant={props.variant ?? "ghost"}
             data-testid={props["data-testid"] || "more-options-icon"}
         />
     );

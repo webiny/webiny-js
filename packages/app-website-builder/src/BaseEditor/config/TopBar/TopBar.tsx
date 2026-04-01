@@ -1,5 +1,6 @@
 import React from "react";
 import { makeDecoratable } from "@webiny/app-admin";
+import { OptionsMenuItem, OptionsMenuLink } from "@webiny/app-admin";
 import type { ElementProps as BaseElementProps } from "../Element.js";
 import { Element as BaseElement } from "../Element.js";
 import type { ElementsProps as BaseElementsProps } from "../Elements.js";
@@ -7,7 +8,6 @@ import { Elements as BaseElements } from "../Elements.js";
 import { Divider } from "./Divider.js";
 import { Layout } from "./Layout.js";
 import { createGetId } from "../createGetId.js";
-import { MenuItem } from "./MenuItem.js";
 
 const SCOPE = "topBar";
 
@@ -55,5 +55,8 @@ export const TopBar = Object.assign(BaseTopBar, {
     Layout,
     Divider,
     Action,
-    DropdownAction: Object.assign(BaseDropdownAction, { MenuItem })
+    DropdownAction: Object.assign(BaseDropdownAction, {
+        MenuItem: OptionsMenuItem,
+        MenuLink: OptionsMenuLink
+    })
 });

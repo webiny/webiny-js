@@ -24,6 +24,7 @@ export interface ElementsProps {
     group?: string;
     scope?: string;
     transform?: (elements: ElementConfig[]) => ElementConfig[];
+    render?: (elements: ElementConfig[]) => React.ReactNode;
 }
 
 const passthrough = () => true;
@@ -37,7 +38,20 @@ const byScope = (scope?: string) => {
 
 const defaultTransform = (elements: ElementConfig[]) => elements;
 
-export const Elements = ({ group, scope, transform = defaultTransform }: ElementsProps) => {
+const defaultRender = (elements: ElementConfig[]) => {
+    return elements.map(element => (
+        <wb-editor-ui-element key={element.name} data-name={element.name} class={"contents"}>
+            {element.element}
+        </wb-editor-ui-element>
+    ));
+};
+
+export const Elements = ({
+    group,
+    scope,
+    transform = defaultTransform,
+    render = defaultRender
+}: ElementsProps) => {
     const { elements } = useEditorConfig();
 
     const groupElements = useMemo(() => {
@@ -46,15 +60,7 @@ export const Elements = ({ group, scope, transform = defaultTransform }: Element
 
     return (
         <wb-editor-ui-elements data-scope={scope} data-group={group} class={"contents"}>
-            {transform(groupElements).map(element => (
-                <wb-editor-ui-element
-                    key={element.name}
-                    data-name={element.name}
-                    class={"contents"}
-                >
-                    {element.element}
-                </wb-editor-ui-element>
-            ))}
+            {render(transform(groupElements))}
         </wb-editor-ui-elements>
     );
 };

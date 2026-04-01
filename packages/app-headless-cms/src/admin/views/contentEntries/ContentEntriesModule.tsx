@@ -41,6 +41,8 @@ import { FullScreenContentEntry } from "~/admin/views/contentEntries/ContentEntr
 import { ShowRevisionList } from "~/admin/components/ContentEntryForm/Header/ShowRevisionsList/index.js";
 import { AdvancedSearchConfigs } from "@webiny/app-aco/components/AdvancedSearch/AdvancedSearchConfigs";
 import { IsModelPublishable } from "~/admin/components/IsModelPublishable.js";
+import { ContentFormOptionsMenu } from "~/admin/components/ContentEntryForm/Header/ContentFormOptionsMenu/index.js";
+import { RevisionSelector } from "~/admin/components/ContentEntryForm/Header/index.js";
 
 const { Browser } = InternalContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
@@ -129,6 +131,13 @@ export const ContentEntriesModule = () => {
                 <ShowConfirmationOnUnpublish />
                 <ShowConfirmationOnDelete />
                 <ShowConfirmationOnDeleteRevision />
+                <IsModelPublishable>
+                    <Actions.ButtonAction
+                        name={"revisionSelector"}
+                        element={<RevisionSelector />}
+                    />
+                </IsModelPublishable>
+                <Actions.ButtonAction name={"optionsMenu"} element={<ContentFormOptionsMenu />} />
                 <Actions.ButtonAction name={"save"} element={<SaveContentButton />} />
                 <IsModelPublishable>
                     <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
