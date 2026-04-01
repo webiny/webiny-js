@@ -24,12 +24,6 @@ export const BorderStyle = observer(({ elementId }: BorderStyleProps) => {
         });
     };
 
-    const onReset = () => {
-        onChange(({ styles }) => {
-            styles.unset("borderStyle");
-        });
-    };
-
     return (
         <Select
             label={"Border style"}
