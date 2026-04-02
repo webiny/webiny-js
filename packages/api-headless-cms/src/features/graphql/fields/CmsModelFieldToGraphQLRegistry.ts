@@ -1,6 +1,8 @@
 import { CmsModelFieldToGraphQLRegistry as CmsModelFieldToGraphQLRegistryAbstraction } from "./abstractions/CmsModelFieldToGraphQLRegistry.js";
 import { CmsModelFieldToGraphQL } from "./abstractions/CmsModelFieldToGraphQL.js";
 import type { CmsModelFieldType } from "~/types/modelField.js";
+import type { CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
+import { convertFromImplementationsToPlugins } from "~/features/graphql/fields/convertFromImplementationsToPlugins.js";
 
 class CmsModelFieldToGraphQLRegistryImpl
     implements CmsModelFieldToGraphQLRegistryAbstraction.Interface
@@ -15,6 +17,10 @@ class CmsModelFieldToGraphQLRegistryImpl
 
     public getAll(): CmsModelFieldToGraphQL.Interface[] {
         return this.fields;
+    }
+
+    public getAllAsPlugins(): CmsModelFieldToGraphQLPlugin[] {
+        return convertFromImplementationsToPlugins(this.fields);
     }
 }
 

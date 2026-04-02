@@ -1,13 +1,9 @@
-import type { Container } from "@webiny/di";
 import type { CmsModelFieldToGraphQLPlugin } from "~/types/plugins.js";
-import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
+import { type CmsModelFieldToGraphQL } from "~/features/graphql/index.js";
 
 export const convertFromImplementationsToPlugins = (
-    container: Container
+    implementations: CmsModelFieldToGraphQL.Interface[]
 ): CmsModelFieldToGraphQLPlugin[] => {
-    const registry = container.resolve(CmsModelFieldToGraphQLRegistry);
-    const implementations = registry.getAll();
-
     return implementations.map(impl => {
         const read = impl.getRead();
         const manage = impl.getManage();
