@@ -102,7 +102,7 @@ const createCypressJobs = (dbSetup: string) => {
             },
             {
                 name: "Create verdaccio-files artifact",
-                uses: "actions/upload-artifact@v4",
+                uses: "actions/upload-artifact@v6",
                 with: {
                     name: `verdaccio-files-${dbSetup}`,
                     "retention-days": 1,
@@ -137,7 +137,7 @@ const createCypressJobs = (dbSetup: string) => {
             },
             {
                 name: "Create project-files artifact",
-                uses: "actions/upload-artifact@v4",
+                uses: "actions/upload-artifact@v6",
                 with: {
                     name: `project-files-${dbSetup}`,
                     "retention-days": 1,
