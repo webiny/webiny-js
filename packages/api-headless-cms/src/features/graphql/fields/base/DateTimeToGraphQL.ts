@@ -47,7 +47,29 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
     }
 }
 
-class ManageApi extends ReadApi implements CmsModelFieldToGraphQL.ManageApi {
+class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
+    public createTypeField({ field }: CmsModelFieldToGraphQL.TypeFieldParams): string {
+        const gqlType = getFieldGraphQLType(field);
+        if (field.list) {
+            return `${field.fieldId}: [${gqlType}]`;
+        }
+        return `${field.fieldId}: ${gqlType}`;
+    }
+
+    public createListFilters({ field }: CmsModelFieldToGraphQL.ListFiltersParams): string {
+        const gqlType = getFieldGraphQLType(field);
+        return `
+            ${field.fieldId}: ${gqlType}
+            ${field.fieldId}_not: ${gqlType}
+            ${field.fieldId}_in: [${gqlType}]
+            ${field.fieldId}_not_in: [${gqlType}]
+            ${field.fieldId}_lt: ${gqlType}
+            ${field.fieldId}_lte: ${gqlType}
+            ${field.fieldId}_gt: ${gqlType}
+            ${field.fieldId}_gte: ${gqlType}
+        `;
+    }
+
     public createInputField({ field }: CmsModelFieldToGraphQL.TypeFieldParams): string {
         return createGraphQLInputField(field, getFieldGraphQLType(field));
     }

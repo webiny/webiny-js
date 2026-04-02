@@ -26,7 +26,18 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
     }
 }
 
-class ManageApi extends ReadApi implements CmsModelFieldToGraphQL.ManageApi {
+class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
+    public createTypeField({ field }: CmsModelFieldToGraphQL.TypeFieldParams): string {
+        if (field.list) {
+            return `${field.fieldId}: [Boolean]`;
+        }
+        return `${field.fieldId}: Boolean`;
+    }
+
+    public createListFilters({ field }: CmsModelFieldToGraphQL.ListFiltersParams): string {
+        return createListFilters(field.fieldId);
+    }
+
     public createInputField({ field }: CmsModelFieldToGraphQL.TypeFieldParams): string {
         return createGraphQLInputField(field, "Boolean");
     }

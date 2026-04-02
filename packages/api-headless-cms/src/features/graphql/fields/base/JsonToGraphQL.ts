@@ -15,7 +15,14 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
     }
 }
 
-class ManageApi extends ReadApi implements CmsModelFieldToGraphQL.ManageApi {
+class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
+    public createTypeField({ field }: CmsModelFieldToGraphQL.TypeFieldParams): string {
+        if (field.list) {
+            return `${field.fieldId}: [JSON]`;
+        }
+        return `${field.fieldId}: JSON`;
+    }
+
     public createInputField({ field }: CmsModelFieldToGraphQL.TypeFieldParams): string {
         return createGraphQLInputField(field, "JSON");
     }
