@@ -45,11 +45,17 @@ export class DefaultParseExportsFileService implements ParseExportsFileService.I
                     });
                 }
 
+                const fullText = exportDeclaration.getFullText();
+                const text = exportDeclaration.getText();
+                const leading = fullText.substring(0, fullText.lastIndexOf(text)).trim();
+                const jsdoc = leading.length > 0 ? leading : undefined;
+
                 exportStatements.push({
                     namedExports,
                     source: moduleSpecifier,
                     isWildcard: false,
-                    isTypeOnly: isExportTypeOnly
+                    isTypeOnly: isExportTypeOnly,
+                    jsdoc
                 });
             }
         }

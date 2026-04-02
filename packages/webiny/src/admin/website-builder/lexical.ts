@@ -1,5 +1,6 @@
 export { CompactEditorConfig } from "@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditorConfig.js";
 export { ExpandedEditorConfig } from "@webiny/app-website-builder/inputRenderers/LexicalInput/LexicalEditorConfig.js";
+// Re-export hooks and components from the base lexical package
 export { useLexicalEditorConfig } from "@webiny/lexical-editor/exports/admin/lexical.js";
 export { LexicalHtmlRenderer } from "@webiny/lexical-editor/exports/admin/lexical.js";
 export { getNodeFromSelection } from "@webiny/lexical-editor/exports/admin/lexical.js";

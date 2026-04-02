@@ -12,6 +12,7 @@ export class DefaultMergeExportsService implements MergeExportsServiceNamespace.
             source: string;
             isWildcard: boolean;
             isTypeOnly: boolean;
+            jsdoc?: string;
         }> = [];
 
         for (const input of inputs) {
@@ -35,13 +36,17 @@ export class DefaultMergeExportsService implements MergeExportsServiceNamespace.
                     namedExports: statement.namedExports,
                     source: sourceWithPackageName,
                     isWildcard: statement.isWildcard,
-                    isTypeOnly: statement.isTypeOnly
+                    isTypeOnly: statement.isTypeOnly,
+                    jsdoc: statement.jsdoc
                 });
             }
         }
 
         let output = "";
         for (const exportStatement of mergedExports) {
+            if (exportStatement.jsdoc) {
+                output += `${exportStatement.jsdoc}\n`;
+            }
             if (exportStatement.isWildcard) {
                 output += `export * from "${exportStatement.source}";\n`;
             } else {

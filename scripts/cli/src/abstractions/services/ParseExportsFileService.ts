@@ -11,6 +11,7 @@ export interface ExportStatement {
     source: string;
     isWildcard: boolean;
     isTypeOnly: boolean;
+    jsdoc?: string;
 }
 
 export interface IParseExportsFileService {
