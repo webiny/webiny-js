@@ -22,6 +22,16 @@ class CmsModelFieldToGraphQLRegistryImpl
     public getAllAsPlugins(): CmsModelFieldToGraphQLPlugin[] {
         return convertFromImplementationsToPlugins(this.fields);
     }
+
+    public getAllAsPluginRecords(): Record<string, CmsModelFieldToGraphQLPlugin> {
+        return this.getAllAsPlugins().reduce<Record<string, CmsModelFieldToGraphQLPlugin>>(
+            (acc, plugin) => {
+                acc[plugin.fieldType] = plugin;
+                return acc;
+            },
+            {}
+        );
+    }
 }
 
 export const CmsModelFieldToGraphQLRegistry =

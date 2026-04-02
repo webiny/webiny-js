@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { CmsGroup, CmsModel } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
@@ -47,7 +47,11 @@ describe("Endpoint access", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    name: "ico/ico",
+                    value: "ico/ico",
+                    type: "ico/ico"
+                },
                 description: "description"
             }
         });

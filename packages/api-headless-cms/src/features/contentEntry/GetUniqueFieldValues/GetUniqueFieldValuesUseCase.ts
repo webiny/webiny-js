@@ -66,7 +66,7 @@ class GetUniqueFieldValuesUseCaseImpl implements UseCaseAbstraction.Interface {
         // Verify the field is searchable
         const searchableFields = getSearchableFields({
             fields: model.fields,
-            plugins: this.cmsContext.plugins,
+            context: this.cmsContext,
             input: []
         });
 

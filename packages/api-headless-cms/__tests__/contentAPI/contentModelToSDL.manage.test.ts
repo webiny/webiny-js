@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import prettier from "prettier";
 import contentModels from "./mocks/contentModels.js";
-import { createGraphQLFields } from "~/graphqlFields/index.js";
 import categoryManage from "./snapshots/category.manage.js";
 import productManage from "./snapshots/product.manage.js";
 import reviewManage from "./snapshots/review.manage.js";
@@ -9,9 +8,10 @@ import type { CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
 import { createManageSDL } from "~/graphql/schema/createManageSDL.js";
 import { pageModel } from "./mocks/pageWithDynamicZonesModel.js";
 import pageManage from "./snapshots/page.manage.js";
+import { createFieldTypePlugins } from "~tests/__helpers/fields/fieldTypePlugins.js";
 
 describe("MANAGE - ContentModel to SDL", () => {
-    const fieldTypePlugins = createGraphQLFields().reduce<
+    const fieldTypePlugins = createFieldTypePlugins().reduce<
         Record<string, CmsModelFieldToGraphQLPlugin>
     >((acc, pl) => {
         acc[pl.fieldType] = pl;

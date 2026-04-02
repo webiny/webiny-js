@@ -7,10 +7,10 @@ import { createPreviewResolvers } from "./createPreviewResolvers.js";
 import { createGraphQLSchemaPluginFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { CmsGraphQLSchemaSorterPlugin, createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
-import { createFieldTypePluginRecords } from "./createFieldTypePluginRecords.js";
 import { CMS_MODEL_SINGLETON_TAG } from "~/constants.js";
 import { createSingularSDL } from "./createSingularSDL.js";
 import { createSingularResolvers } from "./createSingularResolvers.js";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
@@ -33,7 +33,9 @@ export const generateSchemaPlugins = async (
     }
 
     // Structure plugins for faster access
-    const fieldTypePlugins = createFieldTypePluginRecords(plugins);
+    const fieldTypePlugins = context.container
+        .resolve(CmsModelFieldToGraphQLRegistry)
+        .getAllAsPluginRecords();
 
     const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
         CmsGraphQLSchemaSorterPlugin.type

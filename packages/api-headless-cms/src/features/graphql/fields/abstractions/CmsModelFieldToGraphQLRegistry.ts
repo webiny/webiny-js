@@ -7,6 +7,7 @@ export interface ICmsModelFieldToGraphQLRegistry {
     get(fieldType: CmsModelFieldType): CmsModelFieldToGraphQL.Interface | undefined;
     getAll(): CmsModelFieldToGraphQL.Interface[];
     getAllAsPlugins(): CmsModelFieldToGraphQLPlugin[];
+    getAllAsPluginRecords(): Record<string, CmsModelFieldToGraphQLPlugin>;
 }
 
 export const CmsModelFieldToGraphQLRegistry = createAbstraction<ICmsModelFieldToGraphQLRegistry>(

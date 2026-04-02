@@ -1,5 +1,5 @@
-import type { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
-import type { PluginsContainer } from "@webiny/plugins";
+import type { CmsContext, CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface BuildParams {
     input: string[];
@@ -61,16 +61,14 @@ const buildSearchableFieldList = (params: BuildParams): string[] => {
 interface Params {
     input: string[];
     fields: CmsModelField[];
-    plugins: PluginsContainer;
+    context: Pick<CmsContext, "plugins" | "container">;
 }
 export const getSearchableFields = (params: Params): string[] => {
-    const { plugins, input, fields } = params;
-    const fieldPluginMap = plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce<Record<string, CmsModelFieldToGraphQLPlugin>>((collection, field) => {
-            collection[field.fieldType] = field;
-            return collection;
-        }, {});
+    const { context, input, fields } = params;
+
+    const registry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
+
+    const fieldPluginMap = registry.getAllAsPluginRecords();
 
     return buildSearchableFieldList({
         fields,

@@ -6,7 +6,7 @@ const requiredValidationName = "required";
  * Method creates single and multiple values fields.
  */
 export const createGraphQLInputField = (field: CmsModelField, graphQlType: string): string => {
-    const isRequired = field.validation.some(validation => {
+    const isRequired = (field.validation || []).some(validation => {
         return validation.name === requiredValidationName;
     });
     const singleRequired = isRequired ? "!" : "";

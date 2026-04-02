@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import prettier from "prettier";
-import { createGraphQLFields } from "~/graphqlFields/index.js";
 import { createReadSDL } from "~/graphql/schema/createReadSDL.js";
 import contentModels from "./mocks/contentModels.js";
 import categorySDL from "./snapshots/category.read.js";
@@ -10,6 +9,7 @@ import pageSDL from "./snapshots/page.read.js";
 import fruitSDL from "./snapshots/fruit.read.js";
 import type { CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
 import { pageModel } from "./mocks/pageWithDynamicZonesModel.js";
+import { createFieldTypePlugins } from "~tests/__helpers/fields/fieldTypePlugins.js";
 
 /**
  * Method createReadDSL expected model with filtered deleted fields.
@@ -27,7 +27,7 @@ const getModel = (modelId: string): CmsModel => {
 };
 
 describe("READ - ContentModel to SDL", () => {
-    const fieldTypePlugins = createGraphQLFields().reduce<
+    const fieldTypePlugins = createFieldTypePlugins().reduce<
         Record<string, CmsModelFieldToGraphQLPlugin>
     >((acc, pl) => {
         acc[pl.fieldType] = pl;

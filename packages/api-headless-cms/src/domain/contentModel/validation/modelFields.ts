@@ -19,6 +19,7 @@ import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { CmsGraphQLSchemaPlugin, CmsGraphQLSchemaSorterPlugin } from "~/plugins/index.js";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins.js";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema.js";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     const sdl = err.source?.body || "";
@@ -259,9 +260,9 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
      * Let's inspect the fields of the received content model. We prevent saving of a content model if it
      * contains a field for which a "cms-model-field-to-graphql" plugin does not exist on the backend.
      */
-    const fieldTypePlugins = plugins.byType<CmsModelFieldToGraphQLPlugin>(
-        "cms-model-field-to-graphql"
-    );
+    const fieldTypePlugins = context.container
+        .resolve(CmsModelFieldToGraphQLRegistry)
+        .getAllAsPlugins();
 
     validateFields({
         fields,

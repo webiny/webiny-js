@@ -79,6 +79,10 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             }
         };
 
+        // TODO figure out a better way. maybe this stuff should be on before handler?
+        // GraphQL fields must be loaded before anything else
+        GraphQLFeature.register(context.container);
+
         async function getExecutableSchema(type: ApiEndpoint) {
             const originalType = context.cms.type;
             setSchemaType(type);
@@ -99,9 +103,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         }
 
         context.plugins.register(
-            new StorageOperationsCmsModelPlugin(
-                createCmsModelFieldConvertersAttachFactory(context.plugins)
-            )
+            new StorageOperationsCmsModelPlugin(createCmsModelFieldConvertersAttachFactory(context))
         );
 
         await storageOperations.beforeInit(context);
@@ -156,7 +158,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         });
         context.container.registerInstance(SearchableFieldsProvider, params => {
             return getSearchableFields({
-                plugins: context.plugins,
+                context,
                 fields: params.fields,
                 input: []
             });
@@ -165,7 +167,6 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         // Register features
         CmsInstallerFeature.register(context.container);
         ContentEntriesFeature.register(context.container);
-        GraphQLFeature.register(context.container);
         ContentModelFeature.register(context.container);
         ContentModelGroupFeature.register(context.container);
         ModelBuilderFeature.register(context.container);

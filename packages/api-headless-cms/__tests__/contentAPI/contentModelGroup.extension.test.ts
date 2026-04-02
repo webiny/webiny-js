@@ -4,7 +4,7 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { ModelGroupFactory } from "~/features/contentModelGroup/shared/abstractions.js";
 
 class MyGroupsFactoryImpl implements ModelGroupFactory.Interface {
-    execute() {
+    public async execute() {
         return [
             {
                 slug: "my-group",
