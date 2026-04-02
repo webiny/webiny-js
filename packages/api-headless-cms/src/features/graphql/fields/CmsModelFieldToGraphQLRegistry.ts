@@ -11,7 +11,7 @@ class CmsModelFieldToGraphQLRegistryImpl
 
     public get(fieldType: CmsModelFieldType): CmsModelFieldToGraphQL.Interface | undefined {
         return this.fields.find(field => {
-            return field.getFieldType() === fieldType;
+            return field.fieldType === fieldType;
         });
     }
 

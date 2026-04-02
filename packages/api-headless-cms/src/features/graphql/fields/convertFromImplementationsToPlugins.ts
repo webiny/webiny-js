@@ -5,16 +5,16 @@ export const convertFromImplementationsToPlugins = (
     implementations: CmsModelFieldToGraphQL.Interface[]
 ): CmsModelFieldToGraphQLPlugin[] => {
     return implementations.map(impl => {
-        const read = impl.getRead();
-        const manage = impl.getManage();
+        const read = impl.getReadApi();
+        const manage = impl.getManageApi();
 
         const plugin: CmsModelFieldToGraphQLPlugin = {
-            name: `cms-model-field-to-graphql-${impl.getFieldType()}`,
+            name: `cms-model-field-to-graphql-${impl.fieldType}`,
             type: "cms-model-field-to-graphql",
-            fieldType: impl.getFieldType(),
-            isSearchable: impl.getIsSearchable(),
-            isSortable: impl.getIsSortable(),
-            fullTextSearch: impl.getIsFullTextSearchable(),
+            fieldType: impl.fieldType,
+            isSearchable: impl.isSearchable,
+            isSortable: impl.isSortable,
+            fullTextSearch: impl.isFullTextSearchable,
             read: {
                 createTypeField: params => read.createTypeField(params),
                 createGetFilters: read.createGetFilters

@@ -79,27 +79,16 @@ class DateTimeToGraphQL implements CmsModelFieldToGraphQL.Interface {
     private readonly read = new ReadApi();
     private readonly manage = new ManageApi();
 
-    public getFieldType(): CmsModelFieldType {
-        return "datetime";
-    }
+    public readonly fieldType: CmsModelFieldType = "datetime";
+    public readonly isSearchable: boolean = true;
+    public readonly isSortable: boolean = true;
+    public readonly isFullTextSearchable: boolean = false;
 
-    public getIsSearchable(): boolean {
-        return true;
-    }
-
-    public getIsSortable(): boolean {
-        return true;
-    }
-
-    public getIsFullTextSearchable(): boolean {
-        return false;
-    }
-
-    public getRead(): CmsModelFieldToGraphQL.ReadApi {
+    public getReadApi(): CmsModelFieldToGraphQL.ReadApi {
         return this.read;
     }
 
-    public getManage(): CmsModelFieldToGraphQL.ManageApi {
+    public getManageApi(): CmsModelFieldToGraphQL.ManageApi {
         return this.manage;
     }
 }

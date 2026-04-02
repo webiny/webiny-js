@@ -74,14 +74,14 @@ export interface ICmsFieldManageApi<TField extends CmsModelField = CmsModelField
 
 export interface ICmsModelFieldToGraphQL<TField extends CmsModelField = CmsModelField> {
     /* Metadata. */
-    getFieldType(): CmsModelFieldType;
-    getIsSearchable(): boolean;
-    getIsSortable(): boolean;
-    getIsFullTextSearchable(): boolean;
+    readonly fieldType: CmsModelFieldType;
+    readonly isSearchable: boolean;
+    readonly isSortable: boolean;
+    readonly isFullTextSearchable: boolean;
 
     /* API surfaces. */
-    getRead(): ICmsFieldReadApi<TField>;
-    getManage(): ICmsFieldManageApi<TField>;
+    getReadApi(): ICmsFieldReadApi<TField>;
+    getManageApi(): ICmsFieldManageApi<TField>;
 
     /* Validation & AST. */
     validateChildFields?: CmsModelFieldToGraphQLPluginValidateChildFields<TField>;
@@ -97,7 +97,6 @@ export namespace CmsModelFieldToGraphQL {
     export type ReadApi<TField extends CmsModelField = CmsModelField> = ICmsFieldReadApi<TField>;
     export type ManageApi<TField extends CmsModelField = CmsModelField> =
         ICmsFieldManageApi<TField>;
-
     export type TypeFieldParams<TField extends CmsModelField = CmsModelField> =
         CreateTypeFieldParams<TField>;
     export type GetFiltersParams<TField extends CmsModelField = CmsModelField> =
