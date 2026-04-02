@@ -12,24 +12,24 @@ import type { CmsContext } from "~/types/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { GetCmsModelFieldAst } from "~/types/modelAst.js";
 
-interface CreateTypeFieldParams<TField extends CmsModelField = CmsModelField> {
+export interface CreateTypeFieldParams<TField extends CmsModelField = CmsModelField> {
     models: CmsModel[];
     model: CmsModel;
     field: TField;
     fieldTypePlugins: CmsFieldTypePlugins;
 }
 
-interface CreateGetFiltersParams<TField extends CmsModelField = CmsModelField> {
+export interface CreateGetFiltersParams<TField extends CmsModelField = CmsModelField> {
     field: TField;
 }
 
-interface CreateListFiltersParams<TField extends CmsModelField = CmsModelField> {
+export interface CreateListFiltersParams<TField extends CmsModelField = CmsModelField> {
     model: Pick<CmsModel, "singularApiName">;
     field: TField;
     plugins: CmsFieldTypePlugins;
 }
 
-interface CreateResolverParams<TField extends CmsModelField = CmsModelField> {
+export interface CreateResolverParams<TField extends CmsModelField = CmsModelField> {
     models: CmsModel[];
     model: CmsModel;
     graphQLType: string;
@@ -38,7 +38,7 @@ interface CreateResolverParams<TField extends CmsModelField = CmsModelField> {
     fieldTypePlugins: CmsFieldTypePlugins;
 }
 
-type ResolverResult =
+export type ResolverResult =
     | GraphQLFieldResolver
     | {
           resolver: GraphQLFieldResolver | null;
@@ -46,22 +46,22 @@ type ResolverResult =
       }
     | false;
 
-interface CreateSchemaParams {
+export interface CreateSchemaParams {
     models: CmsModel[];
 }
 
-interface CreateStorageIdParams<TField extends CmsModelField = CmsModelField> {
+export interface CreateStorageIdParams<TField extends CmsModelField = CmsModelField> {
     model: CmsModel;
     field: Omit<TField, "storageId"> & Partial<Pick<TField, "storageId">>;
 }
 
-interface NormalizeInputParams<TField extends CmsModelField = CmsModelField> {
+export interface NormalizeInputParams<TField extends CmsModelField = CmsModelField> {
     model: CmsModel;
     field: TField;
     input: GenericRecord<string> | Array<GenericRecord<string>>;
 }
 
-interface ICmsFieldReadApi<TField extends CmsModelField = CmsModelField> {
+export interface ICmsFieldReadApi<TField extends CmsModelField = CmsModelField> {
     createTypeField(params: CreateTypeFieldParams<TField>): CmsModelFieldDefinition | string | null;
     createGetFilters?(params: CreateGetFiltersParams<TField>): string;
     createListFilters?(params: CreateListFiltersParams<TField>): string;
@@ -69,7 +69,7 @@ interface ICmsFieldReadApi<TField extends CmsModelField = CmsModelField> {
     createSchema?(params: CreateSchemaParams): GraphQLSchemaDefinition<CmsContext>;
 }
 
-interface ICmsFieldManageApi<TField extends CmsModelField = CmsModelField>
+export interface ICmsFieldManageApi<TField extends CmsModelField = CmsModelField>
     extends ICmsFieldReadApi<TField> {
     createInputField(
         params: CreateTypeFieldParams<TField>
@@ -77,7 +77,7 @@ interface ICmsFieldManageApi<TField extends CmsModelField = CmsModelField>
     normalizeInput?<T>(params: NormalizeInputParams<TField>): Promise<T>;
 }
 
-interface ICmsModelFieldToGraphQL<TField extends CmsModelField = CmsModelField> {
+export interface ICmsModelFieldToGraphQL<TField extends CmsModelField = CmsModelField> {
     /* Metadata. */
     getFieldType(): CmsModelFieldType;
     getIsSearchable(): boolean;
