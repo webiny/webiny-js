@@ -35,7 +35,7 @@ export const createJob = (params: CreateJobParams): NormalJob => {
 
         job.steps!.push({
             name: "Configure AWS Credentials",
-            uses: "aws-actions/configure-aws-credentials@v4",
+            uses: "aws-actions/configure-aws-credentials@v6.0.0",
             with: {
                 "role-to-assume": "arn:aws:iam::726952677045:role/GitHubActionsWebinyJs",
                 "aws-region": AWS_REGION
