@@ -18,3 +18,4 @@ export * from "./ResponseHeaders.js";
 
 export { Request } from "./abstractions/Request.js";
 export { Reply } from "./abstractions/Reply.js";
+export { Route } from "./abstractions/Route.js";
