@@ -57,13 +57,15 @@ export class IndexManager implements IIndexManager {
 
     public async list(): Promise<string[]> {
         try {
-            const response = await this.client.cat.indices<IListIndicesResponse[]>({
+            const response = await this.client.cat.indices({
                 format: "json"
             });
             if (!Array.isArray(response.body)) {
                 return [];
             }
-            return response.body.map(item => item.index).filter(filterIndex);
+            return response.body
+                .map(item => item.index)
+                .filter((index): index is string => filterIndex(index));
         } catch (ex) {
             console.error(
                 JSON.stringify({

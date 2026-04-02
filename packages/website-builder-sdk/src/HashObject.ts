@@ -1,4 +1,17 @@
 import stringify from "fast-json-stable-stringify";
+/*
+// TODO @pavel consider using this library instead of fast-json-stable-stringify as it is a bit newer
+import { configure } from 'safe-stable-stringify'
+
+const stringify = configure({
+    bigint: true,
+    circularValue: '[Circular]',
+    deterministic: true,
+    maximumDepth: Infinity,
+    maximumBreadth: Infinity,
+    strict: false,
+});
+*/
 
 class HashObject {
     hash(object: object) {

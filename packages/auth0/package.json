@@ -12,7 +12,7 @@
   "author": "Webiny Ltd.",
   "license": "Webiny Enterprise",
   "dependencies": {
-    "@auth0/auth0-spa-js": "^2.18.2",
+    "@auth0/auth0-spa-js": "^2.18.3",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/app": "0.0.0",
@@ -23,8 +23,8 @@
     "jsonwebtoken": "^9.0.3",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^4.1.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {

@@ -1,13 +1,20 @@
 import type { Client } from "@opensearch-project/opensearch";
 import type {
-    QueryDslQueryContainer,
-    QueryDslBoolQuery,
-    SearchFieldSort,
-    SearchSortOrder,
-    SearchSort,
-    SearchRequest
-} from "@opensearch-project/opensearch/api/types";
-import type { Context, GenericRecord } from "@webiny/api/types.js";
+    QueryContainer as QueryDslQueryContainer,
+    BoolQuery as QueryDslBoolQuery
+} from "@opensearch-project/opensearch/api/_types/_common.query_dsl";
+import type {
+    FieldSort as SearchFieldSort,
+    SortOrder as SearchSortOrder,
+    Sort as SearchSort
+} from "@opensearch-project/opensearch/api/_types/_common";
+import type {
+    Search_RequestBody as SearchRequestBody,
+    Search_Response
+} from "@opensearch-project/opensearch/api/_core/search";
+import type { Indices_Create_RequestBody } from "@opensearch-project/opensearch/api/indices/create";
+import type { DynamicTemplate } from "@opensearch-project/opensearch/api/_types/_common.mapping";
+import type { Context } from "@webiny/api/types.js";
 
 export type { ApiResponse } from "@opensearch-project/opensearch";
 
@@ -17,8 +24,8 @@ export type { Client };
 // Local type aliases replacing elastic-ts
 // ---------------------------------------------------------------------------
 
-/** Replaces elastic-ts PrimitiveValue */
-export type PrimitiveValue = null | number | string | boolean;
+/** Replaces elastic-ts PrimitiveValue. Aligns with opensearch FieldValue. */
+export type PrimitiveValue = boolean | undefined | number | string;
 
 /** Replaces elastic-ts Query */
 export type { QueryDslQueryContainer };
@@ -39,7 +46,7 @@ export type { SearchSort as Sort };
 export type SortType = Record<string, FieldSortOptions>;
 
 /** Replaces elastic-ts SearchBody. Overrides search_after to allow PrimitiveValue[] (null | boolean | string | number). */
-export type SearchBody = Omit<NonNullable<SearchRequest["body"]>, "search_after"> & {
+export type SearchBody = Omit<SearchRequestBody, "search_after"> & {
     search_after?: PrimitiveValue[];
 };
 
@@ -94,141 +101,43 @@ export interface OpenSearchQueryBuilderArgsPlugin {
 }
 
 // ---------------------------------------------------------------------------
-// Search response shapes
+// Search response shapes (aligned with @opensearch-project/opensearch v3)
 // ---------------------------------------------------------------------------
 
-export interface OpenSearchSearchResponseHit<T> {
-    _index: string;
-    _type: string;
-    _id: string;
-    _score: number | null;
-    _source: T;
-    sort: PrimitiveValue[];
-}
+export type OpenSearchSearchResponseHit = Search_Response["body"]["hits"]["hits"][number];
 
-export interface OpenSearchSearchResponseAggregationBucket<T> {
-    key: T;
+export interface OpenSearchSearchResponseAggregationBucket {
+    key: PrimitiveValue;
     doc_count: number;
 }
 
-export interface OpenSearchSearchResponseBodyHits<T> {
-    hits: OpenSearchSearchResponseHit<T>[];
-    total: {
-        value: number;
-    };
-}
+export type OpenSearchSearchResponseBodyHits = Search_Response["body"]["hits"];
 
-export interface OpenSearchSearchResponseBodyAggregations<T> {
-    [key: string]: {
-        buckets: OpenSearchSearchResponseAggregationBucket<T>[];
-    };
-}
+export type OpenSearchSearchResponseBody = Search_Response["body"];
 
-export interface OpenSearchSearchResponseBody<T> {
-    hits: OpenSearchSearchResponseBodyHits<T>;
-    aggregations: OpenSearchSearchResponseBodyAggregations<T>;
-}
+export type OpenSearchSearchResponse = Search_Response;
 
-export interface OpenSearchSearchResponse<T = GenericRecord> {
-    body: OpenSearchSearchResponseBody<T>;
-}
+/**
+ * Extract the total count from an opensearch hits response.
+ * Handles both `TotalHits` (object with `value`) and plain `number` formats.
+ */
+export const getTotalCount = (total: OpenSearchSearchResponseBodyHits["total"]): number => {
+    if (total === undefined || total === null) {
+        return 0;
+    }
+    if (typeof total === "number") {
+        return total;
+    }
+    return total.value;
+};
 
 // ---------------------------------------------------------------------------
-// Index request body shapes (our own definitions, not from opensearch package)
+// Index request body shapes (re-exported from opensearch package)
 // ---------------------------------------------------------------------------
 
-export interface OpenSearchIndexRequestBodyMappingsDynamicTemplate {
-    [key: string]: {
-        path_match?: string;
-        path_unmatch?: string;
-        match_mapping_type?: string;
-        match?: string;
-        unmatch?: string;
-        mapping?: {
-            numeric_detection?: boolean;
-            date_detection?: boolean;
-            type?: string;
-            search_analyzer?: string;
-            analyzer?: string;
-            fields?: {
-                [key: string]:
-                    | {
-                          type: string;
-                          search_analyzer?: string;
-                          analyzer?: string;
-                          ignore_above?: number;
-                          [key: string]: any;
-                      }
-                    | undefined;
-            };
-            [key: string]: any;
-        };
-        [key: string]: any;
-    };
-}
+export type OpenSearchIndexRequestBodyMappingsDynamicTemplate = Record<string, DynamicTemplate>;
 
-export interface OpenSearchIndexRequestBody {
-    settings?: {
-        index?: {
-            analysis?: { [key: string]: any };
-            number_of_shards?: number;
-            number_of_routing_shards?: number;
-            codec?: string;
-            soft_deletes?: { enabled?: boolean; retention_lease?: { period?: string } };
-            number_of_replicas?: number;
-            auto_expand_replicas?: string | "all" | false;
-            refresh_interval?: string;
-            max_result_window?: number;
-            max_inner_result_window?: number;
-            max_rescore_window?: number;
-            max_script_fields?: number;
-            max_ngram_diff?: number;
-            max_shingle_diff?: number;
-            max_terms_count?: number;
-            max_regex_length?: number;
-            routing?: {
-                allocation?: { enable?: "all" | "primaries" | "new_primaries" | "none" };
-                rebalance?: { enable?: "all" | "primaries" | "new_primaries" | "none" };
-            };
-            hidden?: boolean;
-            total_fields?: { limit?: number };
-            [key: string]: any;
-        };
-    };
-    mappings: {
-        numeric_detection?: boolean;
-        dynamic_templates?: OpenSearchIndexRequestBodyMappingsDynamicTemplate[];
-        properties?: {
-            [key: string]: {
-                analyzer?: string;
-                type?: string;
-                normalizer?: string;
-                index?: string;
-                fields?: {
-                    [key: string]: {
-                        type: string;
-                        ignore_above?: number;
-                        search_analyzer?: string;
-                        analyzer?: string;
-                        [key: string]: any;
-                    };
-                };
-                [key: string]: any;
-            };
-        };
-        [key: string]: any;
-    };
-    aliases?: {
-        [key: string]: {
-            filter?: { [key: string]: any };
-            index_routing?: string;
-            is_hidden?: boolean;
-            is_write_index?: boolean;
-            routing?: string;
-            search_routing?: string;
-        };
-    };
-}
+export type OpenSearchIndexRequestBody = Indices_Create_RequestBody;
 
 // Re-export SearchSortOrder for consumers that need it (including "_doc")
 export type { SearchSortOrder };

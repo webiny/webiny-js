@@ -41,6 +41,8 @@ import { FullScreenContentEntry } from "~/admin/views/contentEntries/ContentEntr
 import { ShowRevisionList } from "~/admin/components/ContentEntryForm/Header/ShowRevisionsList/index.js";
 import { AdvancedSearchConfigs } from "@webiny/app-aco/components/AdvancedSearch/AdvancedSearchConfigs";
 import { IsModelPublishable } from "~/admin/components/IsModelPublishable.js";
+import { ContentFormOptionsMenu } from "~/admin/components/ContentEntryForm/Header/ContentFormOptionsMenu/index.js";
+import { RevisionSelector } from "~/admin/components/ContentEntryForm/Header/index.js";
 
 const { Browser } = InternalContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
@@ -65,7 +67,7 @@ export const ContentEntriesModule = () => {
                     <Browser.Entry.Action name={"status"} element={<ChangeEntryStatus />} />
                 </IsModelPublishable>
                 <Browser.Entry.Action name={"move"} element={<MoveEntry />} />
-                <Browser.Entry.Action name={"delete"} element={<DeleteEntry />} />
+                <Browser.Entry.Action name={"delete"} element={<DeleteEntry />} after={"$last"} />
                 <Browser.Table.Column
                     name={"name"}
                     header={"Name"}
@@ -73,40 +75,32 @@ export const ContentEntriesModule = () => {
                     sortable={true}
                     hideable={false}
                     size={200}
-                    className={"cms-aco-list-title"}
                 />
-                <Browser.Table.Column
-                    name={"createdBy"}
-                    header={"Author"}
-                    cell={<CellAuthor />}
-                    className={"cms-aco-list-createdBy"}
-                />
+                <Browser.Table.Column name={"createdBy"} header={"Author"} cell={<CellAuthor />} />
                 <Browser.Table.Column
                     name={"createdOn"}
                     header={"Created"}
                     cell={<CellCreated />}
                     sortable={true}
-                    className={"cms-aco-list-createdOn"}
                 />
                 <Browser.Table.Column
                     name={"savedOn"}
                     header={"Modified"}
                     cell={<CellModified />}
                     sortable={true}
-                    className={"cms-aco-list-savedOn"}
                 />
                 <IsModelPublishable>
                     <Browser.Table.Column
                         name={"status"}
                         header={"Status"}
                         cell={<CellStatus />}
-                        className={"cms-aco-list-status"}
+                        truncate={false}
                     />
                     <Browser.Table.Column
                         name={"live"}
                         header={"Live"}
+                        truncate={false}
                         cell={<CellLive />}
-                        className={"cms-aco-list-live"}
                     />
                 </IsModelPublishable>
                 <Browser.Table.Column
@@ -116,7 +110,8 @@ export const ContentEntriesModule = () => {
                     size={56}
                     resizable={false}
                     hideable={false}
-                    className={"cms-aco-list-actions text-right"}
+                    truncate={false}
+                    className={"flex justify-center"}
                 />
                 <Browser.AdvancedSearch.FieldRenderer
                     name={"ref"}
@@ -129,6 +124,13 @@ export const ContentEntriesModule = () => {
                 <ShowConfirmationOnUnpublish />
                 <ShowConfirmationOnDelete />
                 <ShowConfirmationOnDeleteRevision />
+                <IsModelPublishable>
+                    <Actions.ButtonAction
+                        name={"revisionSelector"}
+                        element={<RevisionSelector />}
+                    />
+                </IsModelPublishable>
+                <Actions.ButtonAction name={"optionsMenu"} element={<ContentFormOptionsMenu />} />
                 <Actions.ButtonAction name={"save"} element={<SaveContentButton />} />
                 <IsModelPublishable>
                     <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />

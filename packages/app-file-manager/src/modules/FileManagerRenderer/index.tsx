@@ -84,7 +84,8 @@ export const FileManagerRendererModule = () => {
                     header={" "}
                     cell={<CellActions />}
                     size={56}
-                    className={"text-right"}
+                    truncate={false}
+                    className={"flex justify-center"}
                     hideable={false}
                     resizable={false}
                 />

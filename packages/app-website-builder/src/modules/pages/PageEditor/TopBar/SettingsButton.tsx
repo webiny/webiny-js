@@ -64,7 +64,7 @@ export const SettingsButton = () => {
 
     return (
         <div className={"flex gap-x-sm"}>
-            <IconButton variant="secondary" icon={<SettingsIcon />} onClick={openOverlay} />
+            <IconButton variant="ghost" icon={<SettingsIcon />} onClick={openOverlay} />
             {pageSettings.viewMode === "dialog" ? <PageSettingsDialog {...props} /> : null}
             {pageSettings.viewMode === "drawer" ? <PageSettingsDrawer {...props} /> : null}
         </div>

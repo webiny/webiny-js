@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "p-map": "^7.0.4",
-    "p-retry": "^7.1.1"
+    "p-retry": "^8.0.0"
   },
   "author": "Webiny",
   "license": "MIT",

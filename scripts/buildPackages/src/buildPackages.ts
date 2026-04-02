@@ -131,7 +131,20 @@ export const buildPackages = async () => {
             }),
             {
                 concurrent: false,
-                rendererOptions: { showTimer: true, collapse: true }
+                rendererOptions: {
+                    timer: {
+                        condition: true,
+                        field: duration => {
+                            return `${Math.round(duration / 1000)}s`;
+                        },
+                        format: () => {
+                            return time => {
+                                return time || "";
+                            };
+                        }
+                    },
+                    collapseSubtasks: true
+                }
             }
         );
 
@@ -139,14 +152,14 @@ export const buildPackages = async () => {
 
         const duration = (Date.now() - start) / 1000;
 
-        if (tasks.err.length) {
+        if (tasks.errors.length) {
             console.log();
             console.log(
-                `Error building ${red(tasks.err.length)} package(s). Check the logs below.`
+                `Error building ${red(tasks.errors.length)} package(s). Check the logs below.`
             );
             console.log();
 
-            tasks.err.forEach(listrError => {
+            tasks.errors.forEach(listrError => {
                 const pkgBuildError = listrError.error as PackageBuildError;
                 console.log(red("✖ " + pkgBuildError.getPackage().name));
                 console.log(pkgBuildError.getBuildError().message);

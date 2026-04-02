@@ -11,7 +11,7 @@
     "execa": "^5.1.1",
     "folder-hash": "^4.1.2",
     "fs-extra": "^11.3.4",
-    "listr2": "^5.0.8",
+    "listr2": "^10.2.1",
     "load-json-file": "^7.0.1",
     "serialize-error": "^13.0.1",
     "tsx": "^4.21.0",

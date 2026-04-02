@@ -15,9 +15,9 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.23.0",
+    "@pulumi/aws": "^7.24.0",
     "@pulumi/pulumi": "^3.228.0",
-    "@pulumi/random": "^4.19.1",
+    "@pulumi/random": "^4.19.2",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-layers": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
@@ -28,9 +28,9 @@
     "chalk": "^5.6.2",
     "find-up": "^8.0.0",
     "invariant": "^2.2.4",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "mime": "^4.1.0",
-    "react": "18.2.0",
+    "react": "18.3.1",
     "replace-in-path": "^1.1.0",
     "zod": "^4.3.6"
   },

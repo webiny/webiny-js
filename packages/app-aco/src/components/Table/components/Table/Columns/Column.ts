@@ -11,6 +11,7 @@ export interface ColumnDTO {
     resizable: boolean;
     size: number;
     sortable: boolean;
+    truncate: boolean;
     visible: boolean;
 }
 
@@ -24,6 +25,7 @@ export class Column {
     public resizable: boolean;
     public size: number;
     public sortable: boolean;
+    public truncate: boolean;
     public visible: boolean;
 
     static createFromConfig(config: ColumnConfig) {
@@ -39,6 +41,7 @@ export class Column {
         hideable?: boolean;
         path?: string;
         sortable?: boolean;
+        truncate?: boolean;
         resizable?: boolean;
         visible?: boolean;
     }) {
@@ -50,6 +53,7 @@ export class Column {
         this.hideable = data.hideable ?? true;
         this.path = data.path || "";
         this.sortable = data.sortable ?? false;
+        this.truncate = data.truncate ?? true;
         this.resizable = data.resizable ?? true;
         this.visible = data.visible ?? true;
     }

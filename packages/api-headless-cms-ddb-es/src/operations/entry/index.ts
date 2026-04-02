@@ -52,9 +52,10 @@ import {
     type IOpenSearchEntity as IElasticsearchEntity,
     type IOpenSearchEntityAttributes as IElasticsearchEntityAttributes
 } from "@webiny/api-opensearch";
-import type {
-    OpenSearchSearchResponse,
-    SearchBody as OpenSearchSearchBody
+import {
+    type OpenSearchSearchResponse,
+    type SearchBody as OpenSearchSearchBody,
+    getTotalCount
 } from "@webiny/api-opensearch/types.js";
 import type { CmsEntryStorageOperations, CmsIndexEntry } from "~/types.js";
 import { createElasticsearchBody } from "./elasticsearch/body.js";
@@ -1323,7 +1324,7 @@ export const createEntriesStorageOperations = (
             plugins
         });
 
-        let response: OpenSearchSearchResponse<CmsIndexEntry>;
+        let response: OpenSearchSearchResponse;
         try {
             response = await elasticsearch.search({
                 index,
@@ -1351,13 +1352,13 @@ export const createEntriesStorageOperations = (
             });
         }
 
-        const { hits, total } = response?.body?.hits || {};
+        const { hits, total } = response.body.hits;
 
         const items = extractEntriesFromIndex<T>({
             plugins,
             model,
             entries: hits.map(item => {
-                return item._source as unknown as CmsIndexEntry<T>;
+                return item._source as CmsIndexEntry<T>;
             })
         }).map(item => {
             return convertEntryKeysFromStorage<T>({
@@ -1380,7 +1381,7 @@ export const createEntriesStorageOperations = (
         const cursor = items.length > 0 ? encodeCursor(hits[items.length - 1].sort) || null : null;
         return {
             hasMoreItems,
-            totalCount: total.value,
+            totalCount: getTotalCount(total),
             cursor,
             items
         };
@@ -2047,7 +2048,7 @@ export const createEntriesStorageOperations = (
             }
         };
 
-        let response: OpenSearchSearchResponse<string> | undefined = undefined;
+        let response: OpenSearchSearchResponse | undefined = undefined;
 
         try {
             response = await elasticsearch.search({
@@ -2071,11 +2072,13 @@ export const createEntriesStorageOperations = (
             );
         }
 
-        const buckets = response.body.aggregations["getUniqueFieldValues"]?.buckets || [];
-        return buckets.map(file => {
+        const aggregations = response.body.aggregations || {};
+        const agg = aggregations["getUniqueFieldValues"];
+        const buckets = agg && "buckets" in agg && Array.isArray(agg.buckets) ? agg.buckets : [];
+        return buckets.map((bucket: { key: string; doc_count: number }) => {
             return {
-                value: file.key,
-                count: file.doc_count
+                value: bucket.key,
+                count: bucket.doc_count
             };
         });
     };

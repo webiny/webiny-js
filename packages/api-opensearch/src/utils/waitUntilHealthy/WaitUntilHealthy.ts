@@ -171,14 +171,15 @@ class WaitUntilHealthy {
             });
         }
 
-        const clusterHealthStatus = this.transformClusterHealthStatus(health.status);
+        const currentStatus = this.toClusterHealthStatus(health.status);
+        const clusterHealthStatus = this.transformClusterHealthStatus(currentStatus);
         const minClusterHealthStatus = this.transformClusterHealthStatus(
             this.options.minClusterHealthStatus
         );
         if (clusterHealthStatus > minClusterHealthStatus) {
             return createClusterHealthStatusReason({
                 minimum: this.options.minClusterHealthStatus,
-                current: health.status
+                current: currentStatus
             });
         }
 
@@ -208,16 +209,27 @@ class WaitUntilHealthy {
 
     private getProcessorPercent(nodes: IOpenSearchCatNodesResponse): number {
         const total = nodes.reduce<number>((total, node) => {
-            return total + parseFloat(node.cpu);
+            return total + parseFloat(node.cpu || "0");
         }, 0);
         return total / nodes.length;
     }
 
     private getRamPercent(nodes: IOpenSearchCatNodesResponse): number {
         const total = nodes.reduce<number>((total, node) => {
-            return total + parseFloat(node["ram.percent"]);
+            return total + parseFloat(node["ram.percent"] || "0");
         }, 0);
         return total / nodes.length;
+    }
+
+    private toClusterHealthStatus(status?: string): OpenSearchCatClusterHealthStatus {
+        switch (status) {
+            case "green":
+                return OpenSearchCatClusterHealthStatus.Green;
+            case "yellow":
+                return OpenSearchCatClusterHealthStatus.Yellow;
+            default:
+                return OpenSearchCatClusterHealthStatus.Red;
+        }
     }
 
     private transformClusterHealthStatus(status: OpenSearchCatClusterHealthStatus): number {

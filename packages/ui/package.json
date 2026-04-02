@@ -19,7 +19,7 @@
     "@webiny/admin-ui": "0.0.0",
     "@webiny/utils": "0.0.0",
     "classnames": "^2.5.1",
-    "lodash": "^4.17.23"
+    "lodash": "^4.18.1"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.13.5",
@@ -34,9 +34,9 @@
     "typescript": "5.9.3"
   },
   "peerDependencies": {
-    "minimatch": "^10.2.4",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "minimatch": "^10.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "publishConfig": {
     "access": "public",
