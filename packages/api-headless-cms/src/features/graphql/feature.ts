@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/api";
 import { CmsModelFieldToGraphQLRegistry } from "./fields/CmsModelFieldToGraphQLRegistry.js";
 import { BooleanFieldToGraphQL } from "./fields/base/BooleanToGraphQL.js";
 import { DateTimeFieldToGraphQL } from "./fields/base/DateTimeToGraphQL.js";
+import { DynamicZoneFieldToGraphQL } from "./fields/base/DynamicZoneToGraphQL.js";
 import { FileFieldToGraphQL } from "./fields/base/FileToGraphQL.js";
 import { JsonFieldToGraphQL } from "./fields/base/JsonToGraphQL.js";
 import { LongTextFieldToGraphQL } from "./fields/base/LongTextToGraphQL.js";
@@ -17,6 +18,7 @@ export const GraphQLFeature = createFeature({
     register: container => {
         container.register(BooleanFieldToGraphQL);
         container.register(DateTimeFieldToGraphQL);
+        container.register(DynamicZoneFieldToGraphQL);
         container.register(FileFieldToGraphQL);
         container.register(JsonFieldToGraphQL);
         container.register(LongTextFieldToGraphQL);
