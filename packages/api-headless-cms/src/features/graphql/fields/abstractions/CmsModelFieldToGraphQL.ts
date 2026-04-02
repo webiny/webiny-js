@@ -50,11 +50,6 @@ export interface CreateSchemaParams {
     models: CmsModel[];
 }
 
-export interface CreateStorageIdParams<TField extends CmsModelField = CmsModelField> {
-    model: CmsModel;
-    field: Omit<TField, "storageId"> & Partial<Pick<TField, "storageId">>;
-}
-
 export interface NormalizeInputParams<TField extends CmsModelField = CmsModelField> {
     model: CmsModel;
     field: TField;
@@ -84,9 +79,6 @@ export interface ICmsModelFieldToGraphQL<TField extends CmsModelField = CmsModel
     getIsSortable(): boolean;
     getIsFullTextSearchable(): boolean;
 
-    /* Storage. */
-    createStorageId?(params: CreateStorageIdParams<TField>): string | null | undefined;
-
     /* API surfaces. */
     getRead(): ICmsFieldReadApi<TField>;
     getManage(): ICmsFieldManageApi<TField>;
@@ -115,8 +107,6 @@ export namespace CmsModelFieldToGraphQL {
     export type ResolverParams<TField extends CmsModelField = CmsModelField> =
         CreateResolverParams<TField>;
     export type SchemaParams = CreateSchemaParams;
-    export type StorageIdParams<TField extends CmsModelField = CmsModelField> =
-        CreateStorageIdParams<TField>;
     export type InputNormalizeParams<TField extends CmsModelField = CmsModelField> =
         NormalizeInputParams<TField>;
     export type Resolver = ResolverResult;

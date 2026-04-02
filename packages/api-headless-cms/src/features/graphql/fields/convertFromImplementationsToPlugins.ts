@@ -46,10 +46,6 @@ export const convertFromImplementationsToPlugins = (
             }
         };
 
-        if (impl.createStorageId) {
-            plugin.createStorageId = params => impl.createStorageId!(params);
-        }
-
         if (impl.validateChildFields) {
             plugin.validateChildFields = params => impl.validateChildFields!(params);
         }
