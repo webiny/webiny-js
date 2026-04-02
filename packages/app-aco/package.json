@@ -29,12 +29,12 @@
     "dot-prop-immutable": "^2.1.1",
     "graphql": "^16.13.2",
     "graphql-tag": "^2.12.6",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^4.1.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "slugify": "^1.6.8",
+    "slugify": "^1.6.9",
     "zod": "^4.3.6"
   },
   "devDependencies": {
