@@ -1,11 +1,13 @@
-import { useCallback, useState } from "react";
-import type { MutableRefObject } from "react";
-import type { editor } from "monaco-editor";
 import { useSnackbar, useTenantContext } from "@webiny/app-admin";
+import { AuthenticationContextFeature } from "@webiny/app-admin/features/security/AuthenticationContext/feature.js";
+import { useFeature } from "@webiny/app";
 import { config as appConfig } from "@webiny/app/config.js";
 import { Webiny } from "@webiny/sdk";
-import type { ConsoleMessage } from "./types.js";
+import type { editor } from "monaco-editor";
+import type { MutableRefObject } from "react";
+import { useCallback, useState } from "react";
 import { createCustomConsole } from "./consoleCapture.js";
+import type { ConsoleMessage } from "./types.js";
 
 export function useCodeExecution(
     code: string,
@@ -15,6 +17,7 @@ export function useCodeExecution(
     const [isRunning, setIsRunning] = useState(false);
     const { showSnackbar } = useSnackbar();
     const { tenant } = useTenantContext();
+    const { authenticationContext } = useFeature(AuthenticationContextFeature);
 
     const handleRun = useCallback(async () => {
         const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL) as string;
@@ -33,17 +36,10 @@ export function useCodeExecution(
         const customConsole = createCustomConsole(messages, setOutput);
 
         try {
-            // Create SDK instance with current tenant and API endpoint.
-            // Note: The SDK will use cookie-based authentication (credentials: "include")
-            // when running in the browser, as the admin app sets up the necessary cookies.
             const sdk = new Webiny({
                 endpoint: apiUrl,
                 tenant: tenant || undefined,
-                headers: {
-                    // Add any additional headers if needed.
-                    // The Authorization header with Bearer token is handled via cookies
-                    // when running within the admin app context.
-                }
+                token: () => authenticationContext.getIdToken() as Promise<string>
             });
 
             // Wrap code in async function to allow top-level await.
@@ -73,7 +69,7 @@ export function useCodeExecution(
         } finally {
             setIsRunning(false);
         }
-    }, [code, editorRef, showSnackbar, tenant]);
+    }, [code, editorRef, showSnackbar, tenant, authenticationContext]);
 
     return {
         output,
