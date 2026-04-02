@@ -1,5 +1,4 @@
 import upperFirst from "lodash/upperFirst.js";
-import lodashUpperFirst from "lodash/upperFirst.js";
 import { CmsModelFieldToGraphQL } from "../abstractions/CmsModelFieldToGraphQL.js";
 import type {
     CmsFieldTypePlugins,
@@ -26,7 +25,7 @@ const createTypeName = (params: CreateTypeNameParams): string => {
         .concat([field.fieldId])
         .filter(Boolean)
         .map(id => {
-            return lodashUpperFirst(id);
+            return upperFirst(id);
         })
         .join("_");
 };
