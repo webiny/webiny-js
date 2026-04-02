@@ -1,0 +1,25 @@
+import { CmsModelFieldToGraphQLRegistry as CmsModelFieldToGraphQLRegistryAbstraction } from "./abstractions/CmsModelFieldToGraphQLRegistry.js";
+import { CmsModelFieldToGraphQL } from "./abstractions/CmsModelFieldToGraphQL.js";
+import type { CmsModelFieldType } from "~/types/modelField.js";
+
+class CmsModelFieldToGraphQLRegistryImpl
+    implements CmsModelFieldToGraphQLRegistryAbstraction.Interface
+{
+    public constructor(private readonly fields: CmsModelFieldToGraphQL.Interface[]) {}
+
+    public get(fieldType: CmsModelFieldType): CmsModelFieldToGraphQL.Interface | undefined {
+        return this.fields.find(field => {
+            return field.getFieldType() === fieldType;
+        });
+    }
+
+    public getAll(): CmsModelFieldToGraphQL.Interface[] {
+        return this.fields;
+    }
+}
+
+export const CmsModelFieldToGraphQLRegistry =
+    CmsModelFieldToGraphQLRegistryAbstraction.createImplementation({
+        implementation: CmsModelFieldToGraphQLRegistryImpl,
+        dependencies: [[CmsModelFieldToGraphQL, { multiple: true }]]
+    });
