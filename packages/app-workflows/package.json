@@ -22,10 +22,9 @@
     "@webiny/validation": "0.0.0",
     "apollo-client": "^2.6.10",
     "graphql-tag": "^2.12.6",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^4.1.1",
-    "prop-types": "^15.8.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-helmet": "^6.1.0"

@@ -57,6 +57,7 @@ describe("ColumnsPresenter", () => {
                     resizable: true,
                     size: 200,
                     sortable: true,
+                    truncate: true,
                     visible: true
                 },
                 {
@@ -69,6 +70,7 @@ describe("ColumnsPresenter", () => {
                     resizable: false,
                     size: 100,
                     sortable: false,
+                    truncate: true,
                     visible: false
                 }
             ]

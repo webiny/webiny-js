@@ -31,7 +31,6 @@ export default {
             "@svgr/webpack",
             "@types/react",
             "@webiny/cli",
-            "prop-types",
             "apollo-cache",
             "apollo-client",
             "apollo-link",

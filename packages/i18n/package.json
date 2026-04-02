@@ -17,8 +17,8 @@
     "accounting": "^0.4.1",
     "fast-glob": "^3.3.3",
     "fecha": "^4.2.3",
-    "lodash": "^4.17.23",
-    "short-hash": "^1.0.0",
+    "lodash": "^4.18.1",
+    "ohash": "^2.0.11",
     "yargs": "^18.0.0"
   },
   "peerDependencies": {

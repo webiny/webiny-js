@@ -1,9 +1,7 @@
 import ValidationError from "~/validationError.js";
-/**
- * Package isnumeric does not have types so we ignore it.
- */
-// @ts-expect-error
-import isNumeric from "isnumeric";
+const isNumeric = (value: unknown): boolean => {
+    return !isNaN(parseFloat(String(value))) && isFinite(Number(value));
+};
 
 /**
  * @function number
