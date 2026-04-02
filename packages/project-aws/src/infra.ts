@@ -26,6 +26,7 @@ import {
 
 import {
     AdminCustomDomains,
+    ApiCustomDomains,
     AwsTags,
     BlueGreenDeployments,
     Vpc
@@ -73,6 +74,7 @@ export const Infra = {
         AfterBuild: ApiAfterBuild,
         AfterDeploy: ApiAfterDeploy,
         Pulumi: ApiPulumi,
+        CustomDomains: ApiCustomDomains,
         StackOutputValue: ApiStackOutputValue,
         LambdaFunction: ApiLambdaFunction
     },
