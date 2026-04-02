@@ -88,21 +88,24 @@ export function useHotkeys(props: HookProps) {
     const prevPropsRef = useRef<HookProps | undefined>();
     const firstRenderRef = useRef(true);
 
-    useEffect(function () {
-        if (firstRenderRef.current || prevPropsRef.current?.disabled !== disabled) {
-            firstRenderRef.current = false;
-            if (disabled) {
-                unregisterZIndex(props);
-            } else {
-                registerZIndex(props);
+    useEffect(
+        function () {
+            if (firstRenderRef.current || prevPropsRef.current?.disabled !== disabled) {
+                firstRenderRef.current = false;
+                if (disabled) {
+                    unregisterZIndex(props);
+                } else {
+                    registerZIndex(props);
+                }
             }
-        }
 
-        if (!disabled && typeof keys === "object") {
-            Object.assign(state.handlers[zIndex], keys);
-        }
-        prevPropsRef.current = { ...props };
-    });
+            if (!disabled && typeof keys === "object") {
+                Object.assign(state.handlers[zIndex], keys);
+            }
+            prevPropsRef.current = { ...props };
+        },
+        [keys]
+    );
 
     useEffect(function () {
         return function () {

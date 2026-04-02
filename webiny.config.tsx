@@ -2,6 +2,7 @@ import React from "react";
 import { Admin, Api, Cli, Infra, Project } from "webiny/extensions";
 import { Cognito } from "@webiny/cognito";
 import { MyFeature } from "@/extensions/myFeature/Extension.js";
+import { CommandPalette } from "@/extensions/commandPalette/CommandPalette.js";
 // import { MyIdpExtension } from "./extensions/idp/okta/MyIdpExtension.js";
 
 export const Extensions = () => {
@@ -14,6 +15,7 @@ export const Extensions = () => {
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
             <Admin.Extension src={"@/extensions/LexicalPlugin.tsx"} />
             <MyFeature />
+            <CommandPalette />
 
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />

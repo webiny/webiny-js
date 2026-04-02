@@ -4,6 +4,7 @@ export { createProviderPlugin } from "@webiny/app/core/createProviderPlugin.js";
 export { createProvider } from "@webiny/app/core/createProvider.js";
 export { Provider } from "@webiny/app/core/Provider.js";
 export { Plugin } from "@webiny/app/core/Plugin.js";
+export { Command } from "@webiny/app-admin/presentation/commandPalette/index.js";
 export { DevToolsSection } from "@webiny/app-admin/components/index.js";
 export { createPermissionSchema } from "@webiny/app-admin/permissions/index.js";
 export { createHasPermission } from "@webiny/app-admin/permissions/index.js";

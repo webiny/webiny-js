@@ -47,6 +47,9 @@ export type { AaclPermission } from "./features/wcp/types.js";
 export type { Tenant } from "./features/tenancy/types.js";
 
 export { BuildParamsFeature } from "./features/buildParams/feature.js";
+export { CommandPaletteFeature } from "./presentation/commandPalette/feature.js";
+export { Command } from "./presentation/commandPalette/abstractions.js";
+export type { ICommand, CommandDetailProps } from "./presentation/commandPalette/abstractions.js";
 
 // Hooks
 export * from "./hooks/index.js";

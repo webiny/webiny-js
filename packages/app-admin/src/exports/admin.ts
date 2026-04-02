@@ -1,3 +1,4 @@
+export { Command } from "~/presentation/commandPalette/index.js";
 export { DevToolsSection } from "~/components/index.js";
 export { createPermissionSchema } from "~/permissions/index.js";
 export { createHasPermission } from "~/permissions/index.js";
