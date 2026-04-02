@@ -11,7 +11,7 @@ import type {
 import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
 import { createTypeName } from "~/utils/createTypeName.js";
 import { parseIdentifier } from "@webiny/utils";
-import { createGraphQLInputField } from "~/graphqlFields/helpers.js";
+import { createGraphQLInputField } from "./utils/createGraphQLInputField.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
 import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestEntriesByIds/index.js";

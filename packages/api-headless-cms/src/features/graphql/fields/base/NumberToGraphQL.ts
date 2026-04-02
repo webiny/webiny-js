@@ -1,6 +1,6 @@
 import { CmsModelFieldToGraphQL } from "../abstractions/CmsModelFieldToGraphQL.js";
 import type { CmsModelFieldType } from "~/types/modelField.js";
-import { createGraphQLInputField } from "~/graphqlFields/helpers.js";
+import { createGraphQLInputField } from "./utils/createGraphQLInputField.js";
 
 const createListFilters = (fieldId: string): string => {
     return `

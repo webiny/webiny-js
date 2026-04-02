@@ -1,6 +1,6 @@
 import { CmsModelFieldToGraphQL } from "../abstractions/CmsModelFieldToGraphQL.js";
 import type { CmsModelField, CmsModelFieldType } from "~/types/modelField.js";
-import { createGraphQLInputField } from "~/graphqlFields/helpers.js";
+import { createGraphQLInputField } from "./utils/createGraphQLInputField.js";
 
 const fieldGraphQLTypes = {
     time: "Time",
