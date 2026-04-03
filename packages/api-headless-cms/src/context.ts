@@ -118,6 +118,7 @@ export const createContextPlugin = () => {
         const storageOperationsFactory = context.container.resolve(StorageOperationsFactory);
 
         const storageOperations = await storageOperationsFactory.create(context);
+        await storageOperations.beforeInit(context);
 
         context.cms = {
             type,

@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { PluginsContainer } from "@webiny/plugins";
 import type { CmsContext } from "~/types";
 import {
     createTextField,
@@ -14,6 +13,7 @@ import { createObjectField } from "~tests/validations/fields/object";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { createTestModel as createModel } from "./models/test";
 import { validateModelFields } from "~/domain/contentModel/validation/modelFields";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface ErrorObject {
     message?: string;
@@ -70,7 +70,7 @@ describe("Validate model fields", () => {
         numberField = createNumberField();
     });
 
-    it.skip("should pass validation because there are no fields defined", async () => {
+    it("should pass validation because there are no fields defined", async () => {
         let error: ErrorObject | undefined = undefined;
 
         try {
@@ -85,7 +85,7 @@ describe("Validate model fields", () => {
         expect(error).toEqual(undefined);
     });
 
-    it.skip("should pass validation because everything is ok - new model", async () => {
+    it("should pass validation because everything is ok - new model", async () => {
         let error: ErrorObject | undefined = undefined;
 
         try {
@@ -101,7 +101,7 @@ describe("Validate model fields", () => {
         expect(error).toEqual(undefined);
     });
 
-    it.skip("should pass validation because everything is ok - updating model", async () => {
+    it("should pass validation because everything is ok - updating model", async () => {
         let error: ErrorObject | undefined = undefined;
         try {
             await validateModelFields({
@@ -125,7 +125,13 @@ describe("Validate model fields", () => {
     it("should throw an error if any of the fields type does not have the plugin equivalent", async () => {
         let error: ErrorObject | undefined = undefined;
         try {
-            context.plugins = new PluginsContainer();
+            
+            context.container.registerInstance(CmsModelFieldToGraphQLRegistry, {
+                get: () => undefined,
+                getAll: () => [],
+                getAllAsPlugins: () => [],
+                getAllAsPluginRecords: () => ({})
+            });
             await validateModelFields({
                 context,
                 models: [],
@@ -144,7 +150,7 @@ describe("Validate model fields", () => {
         });
     });
 
-    it.skip("should throw an error if any of the fields does not have a valid fieldId", async () => {
+    it("should throw an error if any of the fields does not have a valid fieldId", async () => {
         let error: ErrorObject | undefined = undefined;
         try {
             await validateModelFields({
@@ -169,7 +175,7 @@ describe("Validate model fields", () => {
         });
     });
 
-    it.skip("should throw an error when having two fields with the same id", async () => {
+    it("should throw an error when having two fields with the same id", async () => {
         let error: ErrorObject | undefined = undefined;
 
         try {
@@ -193,7 +199,7 @@ describe("Validate model fields", () => {
         });
     });
 
-    it.skip("should throw an error when having two fields with the same fieldId", async () => {
+    it("should throw an error when having two fields with the same fieldId", async () => {
         let error: ErrorObject | undefined = undefined;
         try {
             await validateModelFields({
@@ -213,7 +219,7 @@ describe("Validate model fields", () => {
         });
     });
 
-    it.skip("should throw an error when having two fields with the same storageId", async () => {
+    it("should throw an error when having two fields with the same storageId", async () => {
         let error: ErrorObject | undefined = undefined;
         try {
             await validateModelFields({
@@ -233,7 +239,7 @@ describe("Validate model fields", () => {
         });
     });
 
-    it.skip("should assign original field storageId to an updated one", async () => {
+    it("should assign original field storageId to an updated one", async () => {
         const field: any = {
             ...textField,
             storageId: null
@@ -254,7 +260,7 @@ describe("Validate model fields", () => {
         expect(field.storageId).toEqual(textField.storageId);
     });
 
-    it.skip("should assign a new storageId to field without the storageId", async () => {
+    it("should assign a new storageId to field without the storageId", async () => {
         const field: any = {
             ...textField,
             storageId: null
@@ -271,7 +277,7 @@ describe("Validate model fields", () => {
         expect(field.storageId).toEqual(`text@${field.id}`);
     });
 
-    it.skip("should validate children if the field has children - no error", async () => {
+    it("should validate children if the field has children - no error", async () => {
         const field = createObjectField();
         let error: ErrorObject | undefined = undefined;
 
@@ -291,7 +297,7 @@ describe("Validate model fields", () => {
         expect(error).toEqual(undefined);
     });
 
-    it.skip("should validate children if the field has children - error", async () => {
+    it("should validate children if the field has children - error", async () => {
         const field = createObjectField({
             settings: {
                 fields: [textField, textFieldWithDuplicatedFieldId],
