@@ -1,23 +1,30 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import models from "../contentAPI/mocks/contentModels";
 import { renderSortEnum } from "~/utils/renderSortEnum";
-import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsFieldTypePlugins, CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types";
+import { useHandler } from "~tests/testHelpers/useHandler";
+import type { CmsFieldTypePlugins, CmsModel } from "~/types";
 import { createCmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 const sortPlugin = createCmsGraphQLSchemaSorterPlugin(({ sorters }) => {
     return [...sorters, "testSorter_ASC", "testSorter_DESC"];
 });
 
 describe("Render GraphQL sort enum", () => {
-    const { plugins } = useGraphQLHandler();
+    let fieldTypePlugins: CmsFieldTypePlugins;
 
-    const fieldTypePlugins = plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce<CmsFieldTypePlugins>((collection, plugin) => {
-            collection[plugin.fieldType] = plugin;
-            return collection;
-        }, {});
+    beforeEach(async () => {
+        const { handler, tenant } = useHandler({});
+        const context = await handler({
+            path: "/cms/manage",
+            headers: {
+                "x-webiny-cms-endpoint": "manage",
+                "x-tenant": tenant.id
+            }
+        });
+        const registry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
+        fieldTypePlugins = registry.getAllAsPluginRecords();
+    });
 
     it("should render non-deleted fields sorts - read API", () => {
         const model = models.find(model => model.modelId === "product") as CmsModel;

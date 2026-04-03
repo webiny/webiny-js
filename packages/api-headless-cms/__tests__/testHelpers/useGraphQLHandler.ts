@@ -39,6 +39,7 @@ import { createHandlerCore } from "./plugins";
 import { acceptIncomingChanges } from "./acceptIncommingChanges";
 import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
+import { ContextPlugin } from "@webiny/api";
 import { createOutputBenchmarkLogs } from "~tests/testHelpers/outputBenchmarkLogs";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type {
@@ -84,8 +85,15 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
     );
     plugins.register(storageOperationsCmsModelPlugin);
 
+    let capturedContext: any = null;
+
     const handler = createHandler({
-        plugins: plugins.all(),
+        plugins: [
+            ...plugins.all(),
+            new ContextPlugin(async context => {
+                capturedContext = context;
+            })
+        ],
         debug: false
     });
 
@@ -123,6 +131,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         identity: identity || defaultIdentity,
         plugins,
         storageOperations: core.storageOperations,
+        getContext: () => capturedContext,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
         },
