@@ -61,16 +61,16 @@ fields: ["id", "entryId", "values.name", "values.price", "values.description"];
 fields: ["id", "values.title", "values.author.name", "values.author.email"];
 ```
 
-## Content vs Preview Mode
+## CMS: Read vs Preview Mode
 
-The SDK uses a single GraphQL endpoint. Access mode is controlled by the `preview` parameter:
+`webiny.cms.listEntries` and `webiny.cms.getEntry` accept a `preview` parameter to control which revisions are returned:
 
 | `preview`         | Returns                              | Use For                          |
 | ----------------- | ------------------------------------ | -------------------------------- |
 | `false` (default) | Published entries only               | Public-facing apps, SSG          |
 | `true`            | Latest revision (draft or published) | Content preview, editorial tools |
 
-Write operations (`createEntry`, `updateEntryRevision`, etc.) always operate on the manage API and are not affected by `preview`.
+Write operations (`createEntry`, `updateEntryRevision`, etc.) are not affected by `preview`.
 
 ## The Result Pattern
 
