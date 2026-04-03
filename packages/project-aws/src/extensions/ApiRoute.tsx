@@ -77,27 +77,36 @@ export const ApiRoute = defineExtension({
         // Ensure createContextPlugin import exists.
         const ctxPluginPath = "@webiny/api/plugins/ContextPlugin";
         if (!source.getImportDeclaration(ctxPluginPath)) {
-            const lastImportIndex =
+            const lastIdx =
                 source
                     .getImportDeclarations()
                     [source.getImportDeclarations().length - 1].getChildIndex() + 1;
-            source.insertImportDeclaration(lastImportIndex, {
+            source.insertImportDeclaration(lastIdx, {
                 namedImports: ["createContextPlugin"],
                 moduleSpecifier: ctxPluginPath
             });
         }
 
-        // Ensure createRoute import exists.
-        const createRoutePath = "@webiny/handler";
-        if (!source.getImportDeclaration(createRoutePath)) {
-            const lastImportIndex =
+        // Ensure createRoute and Route are imported from @webiny/handler.
+        const handlerImportPath = "@webiny/handler";
+        const existingHandlerImport = source.getImportDeclaration(handlerImportPath);
+        if (!existingHandlerImport) {
+            const lastIdx =
                 source
                     .getImportDeclarations()
                     [source.getImportDeclarations().length - 1].getChildIndex() + 1;
-            source.insertImportDeclaration(lastImportIndex, {
-                namedImports: ["createRoute"],
-                moduleSpecifier: createRoutePath
+            source.insertImportDeclaration(lastIdx, {
+                namedImports: ["createRoute", "Route"],
+                moduleSpecifier: handlerImportPath
             });
+        } else {
+            const present = existingHandlerImport.getNamedImports().map(i => i.getName());
+            if (!present.includes("createRoute")) {
+                existingHandlerImport.addNamedImport("createRoute");
+            }
+            if (!present.includes("Route")) {
+                existingHandlerImport.addNamedImport("Route");
+            }
         }
 
         const onMethod = METHOD_HANDLER[params.method];
@@ -113,10 +122,12 @@ export const ApiRoute = defineExtension({
         );
 
         // Register Fastify route with hardcoded path/method.
+        // We use resolveAll(Route) + instanceof to find the correct handler when multiple
+        // Api.Route extensions are registered.
         pluginsArray.addElement(
             `\ncreateRoute(({ ${onMethod}, context }) => {\n` +
                 `\t${onMethod}("${routePath}", async (request, reply) => {\n` +
-                `\t\tconst instance = context.container.resolve(${alias});\n` +
+                `\t\tconst instance = context.container.resolveAll(Route).find(i => i instanceof ${alias})!;\n` +
                 `\t\treturn instance.execute(request, reply);\n` +
                 `\t});\n` +
                 `})`

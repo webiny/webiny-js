@@ -116,6 +116,7 @@
     "./cli/command": "./cli/command.js",
     "./cli": "./cli.js",
     "./api": "./api.js",
+    "./api/route": "./api/route.js",
     "./admin/lexical": "./admin/lexical.js",
     "./infra/admin": "./infra/admin.js",
     "./infra/api": "./infra/api.js",
