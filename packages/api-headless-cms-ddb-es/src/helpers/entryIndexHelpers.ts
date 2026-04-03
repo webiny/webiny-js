@@ -1,17 +1,14 @@
 import WebinyError from "@webiny/error";
-import type {
-    CmsEntry,
-    CmsEntryValues,
-    CmsModel,
-    CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types/index.js";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { CmsIndexEntry, CmsModelFieldToElasticsearchPlugin } from "~/types.js";
-import type { PluginsContainer } from "@webiny/plugins";
 import { getFieldIdentifier, getFieldIdentifiers } from "~/helpers/fieldIdentifier.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
+import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import { PluginsContainer } from "@webiny/plugins";
 
 interface SetupEntriesIndexHelpersParams {
     plugins: PluginsContainer;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 interface ExtractEntriesFromIndexParams<T extends CmsEntryValues = CmsEntryValues>
@@ -30,9 +27,9 @@ interface PrepareElasticsearchDataParams<T extends CmsEntryValues = CmsEntryValu
 export const prepareEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
     params: PrepareElasticsearchDataParams<T>
 ): CmsIndexEntry<T> => {
-    const { plugins, storageEntry, entry, model } = params;
+    const { fieldRegistry, storageEntry, entry, model, plugins } = params;
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
-        setupEntriesIndexHelpers({ plugins });
+        setupEntriesIndexHelpers({ fieldRegistry, plugins });
 
     function getFieldIndexPlugin(type: string) {
         const fieldType = getBaseFieldType({
@@ -71,6 +68,7 @@ export const prepareEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
         }
 
         const { value, rawValue } = targetFieldPlugin.toIndex({
+            fieldRegistry,
             plugins,
             model,
             field,
@@ -96,6 +94,7 @@ export const prepareEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
 };
 
 const setupEntriesIndexHelpers = ({
+    fieldRegistry,
     plugins: pluginsContainer
 }: SetupEntriesIndexHelpersParams) => {
     const plugins = pluginsContainer.byType<CmsModelFieldToElasticsearchPlugin>(
@@ -113,9 +112,7 @@ const setupEntriesIndexHelpers = ({
     const defaultIndexFieldPlugin = plugins.find(plugin => plugin.fieldType === "*");
 
     // CmsModelFieldToGraphQLPlugin plugins
-    const fieldTypePlugins: Record<string, CmsModelFieldToGraphQLPlugin> = pluginsContainer
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce((plugins, plugin) => ({ ...plugins, [plugin.fieldType]: plugin }), {});
+    const fieldTypePlugins = fieldRegistry.getAllAsPluginRecords();
 
     return {
         fieldIndexPlugins,
@@ -125,12 +122,13 @@ const setupEntriesIndexHelpers = ({
 };
 
 export const extractEntriesFromIndex = <T extends CmsEntryValues = CmsEntryValues>({
+    fieldRegistry,
     plugins,
     entries,
     model
 }: ExtractEntriesFromIndexParams<T>): CmsEntry<T>[] => {
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
-        setupEntriesIndexHelpers({ plugins });
+        setupEntriesIndexHelpers({ plugins, fieldRegistry });
 
     function getFieldIndexPlugin(type: string) {
         const fieldType = getBaseFieldType({
@@ -177,6 +175,7 @@ export const extractEntriesFromIndex = <T extends CmsEntryValues = CmsEntryValue
                 const key = identifiers.valueIdentifier as keyof T;
                 const rawKey = identifiers.rawValueIdentifier as keyof T;
                 indexValues[key] = targetFieldPlugin.fromIndex({
+                    fieldRegistry,
                     plugins,
                     model,
                     field,

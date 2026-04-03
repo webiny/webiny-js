@@ -260,9 +260,8 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
      * Let's inspect the fields of the received content model. We prevent saving of a content model if it
      * contains a field for which a "cms-model-field-to-graphql" plugin does not exist on the backend.
      */
-    const fieldTypePlugins = context.container
-        .resolve(CmsModelFieldToGraphQLRegistry)
-        .getAllAsPlugins();
+    const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
+    const fieldTypePlugins = fieldRegistry.getAllAsPlugins();
 
     validateFields({
         fields,
@@ -280,10 +279,7 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
         const schema = createManageSDL({
             models,
             model,
-            fieldTypePlugins: fieldTypePlugins.reduce(
-                (acc, pl) => ({ ...acc, [pl.fieldType]: pl }),
-                {}
-            ),
+            fieldTypePlugins: fieldRegistry.getAllAsPluginRecords(),
             sorterPlugins
         });
 

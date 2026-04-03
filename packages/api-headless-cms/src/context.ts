@@ -1,4 +1,4 @@
-import type { ApiEndpoint, CmsContext, HeadlessCmsStorageOperations } from "~/types/index.js";
+import type { ApiEndpoint, CmsContext } from "~/types/index.js";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import type { GraphQLRequestBody } from "@webiny/handler-graphql/types.js";
@@ -19,7 +19,8 @@ import { ContentEntriesFeature } from "~/features/contentEntry/ContentEntriesFea
 import {
     AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
-    StorageOperations
+    StorageOperations,
+    StorageOperationsFactory
 } from "~/features/shared/abstractions.js";
 import {
     EntryFromStorageTransform,
@@ -48,11 +49,7 @@ const getParameters = async (context: CmsContext): Promise<CmsParametersPluginRe
     throw new WebinyError("Could not determine type of the CMS.", "CMS_TYPE_ERROR");
 };
 
-export interface CrudParams {
-    storageOperations: HeadlessCmsStorageOperations;
-}
-
-export const createContextPlugin = ({ storageOperations }: CrudParams) => {
+export const createContextPlugin = () => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
         const { type } = await getParameters(context);
 
@@ -106,8 +103,6 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             new StorageOperationsCmsModelPlugin(createCmsModelFieldConvertersAttachFactory(context))
         );
 
-        await storageOperations.beforeInit(context);
-
         const accessControl = new AccessControl({
             getIdentity: async () => context.security.getIdentity(),
             getGroupsPermissions: () => context.security.getPermissions("cms.contentModelGroup"),
@@ -119,6 +114,10 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 });
             }
         });
+
+        const storageOperationsFactory = context.container.resolve(StorageOperationsFactory);
+
+        const storageOperations = await storageOperationsFactory.create(context);
 
         context.cms = {
             type,
@@ -170,7 +169,6 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         ContentModelFeature.register(context.container);
         ContentModelGroupFeature.register(context.container);
         ModelBuilderFeature.register(context.container);
-
         CmsWhereMapperFeature.register(context.container);
         CmsSortMapperFeature.register(context.container);
 

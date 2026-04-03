@@ -3,13 +3,13 @@ import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js
 import { ContextPlugin } from "@webiny/handler";
 import type { Context, IListTaskLogParams, IListTaskParams, ITask, ITaskLog } from "~/types.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
-import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords.js";
 import { emptyResolver, resolve, resolveList } from "./utils.js";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { checkPermissions } from "./checkPermissions.js";
 import type { Plugin } from "@webiny/plugins/types.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 interface IGetTaskQueryParams {
     id: string;
@@ -53,13 +53,14 @@ const createGraphQL = () => {
         const logModel = await ctx.tasks.getLogModel();
 
         const listModels = ctx.container.resolve(ListModelsUseCase);
+        const fieldRegistry = ctx.container.resolve(CmsModelFieldToGraphQLRegistry);
 
         const models = await ctx.security.withoutAuthorization(async () => {
             const modelsResult = await listModels.execute({ includePrivate: false });
 
             return modelsResult.value.filter(model => model.fields.length > 0);
         });
-        const fieldTypePlugins = createFieldTypePluginRecords(ctx.plugins);
+        const fieldTypePlugins = fieldRegistry.getAllAsPluginRecords();
 
         const taskFields = renderFields({
             models,

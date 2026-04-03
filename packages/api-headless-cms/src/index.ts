@@ -6,7 +6,6 @@ import {
     createHeaderParameterPlugin,
     createPathParameterPlugin
 } from "~/parameters/index.js";
-import type { CrudParams } from "~/context.js";
 import { createContextPlugin } from "~/context.js";
 import {
     entryFieldFromStorageTransform,
@@ -41,13 +40,12 @@ export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams 
     ];
 };
 
-export type ContentContextParams = CrudParams;
-export const createHeadlessCmsContext = (params: ContentContextParams) => {
+export const createHeadlessCmsContext = () => {
     return [
         /**
          * Context for all Lambdas - everything is loaded now.
          */
-        createContextPlugin(params),
+        createContextPlugin(),
         createFieldConverters(),
         createValidators(),
         ...createStorageTransform()

@@ -1473,7 +1473,7 @@ export enum CONTENT_ENTRY_STATUS {
     UNPUBLISHED = "unpublished"
 }
 
-export interface HeadlessCmsStorageOperations<C = CmsContext> {
+export interface HeadlessCmsStorageOperations<C extends CmsContext = CmsContext> {
     name: string;
     groups: CmsGroupStorageOperations;
     models: CmsModelStorageOperations;

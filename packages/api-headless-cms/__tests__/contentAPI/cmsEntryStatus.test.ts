@@ -37,7 +37,11 @@ describe("cms entry status filtering", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    name: "ico/ico",
+                    type: "ico/ico",
+                    value: "ico/ico"
+                },
                 description: "description"
             }
         });
