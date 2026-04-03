@@ -62,6 +62,12 @@ export const Menus = React.memo(() => {
                 }
             />
 
+            <Menu
+                parent={"settings"}
+                name="settings.apps"
+                element={<Menu.Group text="Apps" collapsible={false} />}
+            />
+
             <Menu.Support
                 name={"docs"}
                 element={

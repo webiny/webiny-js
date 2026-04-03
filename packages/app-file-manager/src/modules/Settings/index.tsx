@@ -21,15 +21,14 @@ export const SettingsModule = () => {
                     }
                 />
                 <Menu
-                    parent={"settings"}
+                    parent={"settings.apps"}
                     name={"settings.fm"}
-                    element={<Menu.Group text={"File Manager"} />}
-                />
-                <Menu
-                    parent={"settings"}
-                    name={"settings.fm.general"}
                     element={
-                        <Menu.Link text={"General"} to={getLink(Routes.Settings)} pinnable={true} />
+                        <Menu.Link
+                            text={"File Manager"}
+                            to={getLink(Routes.Settings)}
+                            pinnable={true}
+                        />
                     }
                 />
             </HasPermission>

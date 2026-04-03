@@ -54,15 +54,15 @@ const AccessManagementExtension = () => {
 
                 <HasPermission any={[Permission.Roles, Permission.ApiKeys, Permission.Teams]}>
                     <Menu
-                        name={"security.settings"}
+                        name={"settings.security"}
                         parent={"settings"}
-                        element={<Menu.Group text={"Access Management"} />}
+                        element={<Menu.Group text={"Access Management"} collapsible={false}/>}
                     />
                 </HasPermission>
                 <HasPermission name={Permission.Roles}>
                     <Menu
                         name={"security.roles"}
-                        parent={"settings"}
+                        parent={"settings.security"}
                         element={
                             <Menu.Link
                                 text={"Roles"}
@@ -76,7 +76,7 @@ const AccessManagementExtension = () => {
                     <HasPermission name={Permission.Teams}>
                         <Menu
                             name={"security.teams"}
-                            parent={"settings"}
+                            parent={"settings.security"}
                             element={
                                 <Menu.Link
                                     text={"Teams"}
@@ -91,7 +91,7 @@ const AccessManagementExtension = () => {
                 <HasPermission name={Permission.ApiKeys}>
                     <Menu
                         name={"security.apiKeys"}
-                        parent={"settings"}
+                        parent={"settings.security"}
                         element={
                             <Menu.Link
                                 text={"API Keys"}
