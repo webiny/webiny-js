@@ -41,6 +41,7 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-db": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
+    "@webiny/languages": "0.0.0",
     "@webiny/project-aws": "*",
     "@webiny/tenant-manager": "*",
     "core-js": "3.49.0",

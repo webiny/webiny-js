@@ -21,7 +21,7 @@ export const SettingsModule = () => {
                     }
                 />
                 <Menu
-                    parent={"settings.apps"}
+                    parent={"settings.system"}
                     name={"settings.fm"}
                     element={
                         <Menu.Link

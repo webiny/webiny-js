@@ -48,7 +48,7 @@ const MailerSettings = () => {
                 />
                 <Menu
                     name={"mailer.settings"}
-                    parent={"settings.apps"}
+                    parent={"settings.system"}
                     element={
                         <Menu.Link
                             text={"Mailer"}
