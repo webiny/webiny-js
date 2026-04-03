@@ -90,22 +90,22 @@ export const ApiRoute = defineExtension({
         // Ensure createRoute and Route are imported from @webiny/handler.
         const handlerImportPath = "@webiny/handler";
         const existingHandlerImport = source.getImportDeclaration(handlerImportPath);
+        const requiredHandlerImports = ["createRoute", "Route"];
         if (!existingHandlerImport) {
             const lastIdx =
                 source
                     .getImportDeclarations()
                     [source.getImportDeclarations().length - 1].getChildIndex() + 1;
             source.insertImportDeclaration(lastIdx, {
-                namedImports: ["createRoute", "Route"],
+                namedImports: requiredHandlerImports,
                 moduleSpecifier: handlerImportPath
             });
         } else {
             const present = existingHandlerImport.getNamedImports().map(i => i.getName());
-            if (!present.includes("createRoute")) {
-                existingHandlerImport.addNamedImport("createRoute");
-            }
-            if (!present.includes("Route")) {
-                existingHandlerImport.addNamedImport("Route");
+            for (const name of requiredHandlerImports) {
+                if (!present.includes(name)) {
+                    existingHandlerImport.addNamedImport(name);
+                }
             }
         }
 
