@@ -1324,6 +1324,7 @@ export const createEntriesStorageOperations = (
 
         const body = createElasticsearchBody({
             model,
+            fieldRegistry,
             params: {
                 ...params,
                 limit,
@@ -2026,6 +2027,7 @@ export const createEntriesStorageOperations = (
 
         const initialBody = createElasticsearchBody({
             model,
+            fieldRegistry,
             params: {
                 limit: 1,
                 where

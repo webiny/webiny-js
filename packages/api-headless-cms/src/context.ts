@@ -35,7 +35,7 @@ import { ContentModelFeature } from "~/features/contentModel/ContentModelFeature
 import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
 import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
-import { GraphQLFeature } from "~/features/graphql/index.js";
+import { GraphQLFeature, CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -79,6 +79,12 @@ export const createContextPlugin = () => {
         // TODO figure out a better way. maybe this stuff should be on before handler?
         // GraphQL fields must be loaded before anything else
         GraphQLFeature.register(context.container);
+
+        /* Register field-to-graphql plugins into the plugins container so that
+         * legacy consumers (e.g. DDB-ES storage operations) can still discover
+         * them via plugins.byType("cms-model-field-to-graphql"). */
+        const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
+        context.plugins.register(fieldRegistry.getAllAsPlugins());
 
         async function getExecutableSchema(type: ApiEndpoint) {
             const originalType = context.cms.type;

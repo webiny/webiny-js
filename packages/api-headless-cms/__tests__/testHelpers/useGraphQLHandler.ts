@@ -54,6 +54,7 @@ import {
     CMS_VALIDATE_STRUCTURE_MUTATION
 } from "~tests/testHelpers/graphql/structure";
 import { defaultIdentity } from "~tests/testHelpers/tenancySecurity";
+import type { CmsContext } from "~/types/index.js";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
@@ -80,17 +81,19 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         core.plugins.concat([...createOutputBenchmarkLogs(), acceptIncomingChanges()])
     );
 
-    const storageOperationsCmsModelPlugin = new StorageOperationsCmsModelPlugin(
-        createCmsModelFieldConvertersAttachFactory(plugins)
-    );
+    const storageOperationsCmsModelPlugin = new ContextPlugin<CmsContext>(async context => {
+        context.plugins.register(
+            new StorageOperationsCmsModelPlugin(createCmsModelFieldConvertersAttachFactory(context))
+        );
+    });
     plugins.register(storageOperationsCmsModelPlugin);
 
-    let capturedContext: any = null;
+    let capturedContext: CmsContext;
 
     const handler = createHandler({
         plugins: [
             ...plugins.all(),
-            new ContextPlugin(async context => {
+            new ContextPlugin<CmsContext>(async context => {
                 capturedContext = context;
             })
         ],

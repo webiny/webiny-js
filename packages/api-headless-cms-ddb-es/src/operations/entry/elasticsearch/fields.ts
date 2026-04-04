@@ -1,10 +1,6 @@
 import WebinyError from "@webiny/error";
 import type { PluginsContainer } from "@webiny/plugins";
-import type {
-    CmsModel,
-    CmsModelField,
-    CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import type { CmsModelFieldToElasticsearchPlugin } from "~/types.js";
 import type { ModelFieldParent, ModelFields } from "./types.js";
 import { CmsElasticsearchModelFieldPlugin } from "~/plugins/index.js";
@@ -18,6 +14,7 @@ import { liveFields } from "./fields/live.js";
 import { createSystemField } from "./fields/createSystemField.js";
 import { stateFields } from "./fields/state.js";
 import { locationFields } from "./fields/location.js";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 
 const createSystemFields = (): ModelFields => {
     const onMetaFields = ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField).reduce(
@@ -270,12 +267,13 @@ const buildFieldsList = (params: BuildParams): ModelFields => {
     }, {});
 };
 
-interface Params {
+interface ICreateModelFieldsParams {
     plugins: PluginsContainer;
     model: CmsModel;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
-export const createModelFields = ({ plugins, model }: Params) => {
+export const createModelFields = ({ plugins, model, fieldRegistry }: ICreateModelFieldsParams) => {
     const fields = model.fields;
     const fieldDefinitionPlugins = plugins
         .byType<CmsElasticsearchModelFieldPlugin>(CmsElasticsearchModelFieldPlugin.type)
@@ -297,8 +295,8 @@ export const createModelFields = ({ plugins, model }: Params) => {
     /**
      * Collect all field types from the plugins.
      */
-    const fieldTypePlugins = plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
+    const fieldTypePlugins = fieldRegistry
+        .getAllAsPlugins()
         .reduce<FieldTypePlugins>((types, plugin) => {
             const { fieldType, fullTextSearch } = plugin;
             types[fieldType] = {

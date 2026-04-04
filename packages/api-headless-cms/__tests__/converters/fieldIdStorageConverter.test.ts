@@ -21,9 +21,7 @@ describe("field id storage converter", () => {
             }
         });
         plugins = context.plugins;
-        const { CmsModelFieldToGraphQLRegistry } = await import(
-            "~/features/graphql/index.js"
-        );
+        const { CmsModelFieldToGraphQLRegistry } = await import("~/features/graphql/index.js");
         fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
     });
 

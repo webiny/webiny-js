@@ -16,7 +16,7 @@ import {
     getOpenSearchOperators
 } from "@webiny/api-opensearch";
 
-if (typeof createOpenSearchStorageOperations !== "function") {
+if (typeof registerCmsOpenSearchStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
 

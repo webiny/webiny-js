@@ -125,7 +125,6 @@ describe("Validate model fields", () => {
     it("should throw an error if any of the fields type does not have the plugin equivalent", async () => {
         let error: ErrorObject | undefined = undefined;
         try {
-            
             context.container.registerInstance(CmsModelFieldToGraphQLRegistry, {
                 get: () => undefined,
                 getAll: () => [],
