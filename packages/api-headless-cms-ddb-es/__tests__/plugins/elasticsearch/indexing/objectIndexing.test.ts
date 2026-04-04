@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createGraphQLFields } from "@webiny/api-headless-cms";
+import { createFieldRegistry } from "~tests/helpers/createFieldRegistry.js";
 import defaultIndexingPlugin from "~/elasticsearch/indexing/defaultFieldIndexing.js";
 import objectIndexing from "~/elasticsearch/indexing/objectIndexing.js";
 import elasticsearchIndexingPlugins from "~/elasticsearch/indexing/index.js";
@@ -14,7 +14,7 @@ import type {
 } from "~/types.js";
 
 const indexingPlugins = elasticsearchIndexingPlugins();
-const fieldTypePlugins = createGraphQLFields();
+const fieldTypePlugins = createFieldRegistry().getAllAsPlugins();
 
 const getFieldIndexPlugin = (fieldType: string) => {
     return indexingPlugins.find(pl => pl.fieldType === fieldType) || defaultIndexingPlugin();

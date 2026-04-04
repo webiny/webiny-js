@@ -7,12 +7,13 @@ import {
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
 import elasticsearchIndexingPlugins from "~/elasticsearch/indexing";
-import { createGraphQLFields } from "@webiny/api-headless-cms";
+import { createFieldRegistry } from "~tests/helpers/createFieldRegistry.js";
 import defaultIndexingPlugin from "~/elasticsearch/indexing/defaultFieldIndexing";
 import { PluginsContainer } from "@webiny/plugins";
 
 const indexingPlugins = elasticsearchIndexingPlugins();
-const fieldTypePlugins = createGraphQLFields();
+const fieldRegistry = createFieldRegistry();
+const fieldTypePlugins = fieldRegistry.getAllAsPlugins();
 
 const plugins = new PluginsContainer([indexingPlugins, fieldTypePlugins]);
 
