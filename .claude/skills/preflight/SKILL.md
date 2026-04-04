@@ -1,0 +1,144 @@
+---
+name: preflight
+description: "Webiny-only. Run all checks required before packages are ready for publish: deps, build, lint, format, tests."
+---
+
+# Preflight
+
+Webiny-only skill. Run all checks required before packages are ready for publish.
+
+## Important
+
+- Run steps in order. If any step fails, stop and report the failure.
+- Never run tests in parallel. Run each package sequentially.
+- When a package has more than 64 test files, split into shards so each shard has at most 64 test files. Use `--shard=N/M` flag.
+- To count test files: `find packages/<name>/__tests__ -name '*.test.ts' | wc -l`
+- Suppress noisy output: redirect stdout to `/dev/null` or pipe through `tail` as needed.
+
+## Steps
+
+### 1. Install dependencies
+
+```bash
+yarn > /dev/null 2>&1
+```
+
+### 2. Sync dependency versions
+
+```bash
+yarn webiny sync-dependencies
+```
+
+### 3. Regenerate tsconfig files
+
+```bash
+node scripts/generateTsConfigsInPackages.js
+```
+
+### 4. Check package node_modules
+
+```bash
+node scripts/checkPackageNodeModules.js
+```
+
+### 5. Verify package.json dependencies match source imports
+
+```bash
+yarn adio
+```
+
+Must output "All dependencies in order!" to pass.
+
+### 6. Format code
+
+```bash
+yarn prettier:fix > /dev/null 2>&1
+```
+
+### 7. Lint
+
+```bash
+yarn eslint
+```
+
+### 8. Full clean build
+
+```bash
+yarn build --no-cache 2>&1 | tail -10
+```
+
+### 9. Check dist paths
+
+```bash
+node scripts/checkDistPaths.js
+```
+
+Verifies no `src/` paths remain in built output.
+
+### 10. Run DDB tests
+
+Run `yarn test` for each package below, sequentially. Shard if >64 test files.
+
+**Packages that need `yarn test`:**
+
+- `api-aco`
+- `api-audit-logs`
+- `api-file-manager`
+- `api-file-manager-aco`
+- `api-headless-cms`
+- `api-headless-cms-aco`
+- `api-headless-cms-bulk-actions`
+- `api-headless-cms-import-export`
+- `api-mailer`
+- `api-scheduler`
+- `api-workflows`
+- `tasks`
+
+```bash
+# Example without sharding
+yarn test packages/<name> 2>&1 | grep "Test Files"
+
+# Example with sharding (e.g. 290 test files -> 5 shards of ~58 each)
+yarn test packages/<name> --shard=1/5 2>&1 | grep "Test Files"
+yarn test packages/<name> --shard=2/5 2>&1 | grep "Test Files"
+# ... etc
+```
+
+### 11. Run OpenSearch tests
+
+Run `yarn test:os` for each package below, sequentially. Shard if >64 test files.
+
+**Packages that need BOTH `yarn test` (step 10) AND `yarn test:os`:**
+
+- `api-aco`
+- `api-audit-logs`
+- `api-file-manager`
+- `api-file-manager-aco`
+- `api-headless-cms`
+- `api-headless-cms-aco`
+- `api-headless-cms-bulk-actions`
+- `api-headless-cms-import-export`
+- `api-mailer`
+- `api-scheduler`
+- `api-workflows`
+- `tasks`
+
+**Packages that need ONLY `yarn test:os` (not in step 10):**
+
+- `api-dynamodb-to-elasticsearch`
+- `api-elasticsearch-tasks`
+- `api-headless-cms-ddb-es`
+- `api-headless-cms-es-tasks`
+- `api-opensearch`
+
+```bash
+yarn test:os packages/<name> 2>&1 | grep "Test Files"
+```
+
+### 12. Check for uncommitted changes
+
+```bash
+git status
+```
+
+Report any unexpected uncommitted changes from the steps above.
