@@ -5,7 +5,7 @@ import { createValueKeyToStorageConverter } from "~/utils/converters/valueKeyToS
 import type { CmsModelObjectField } from "~/types/index.js";
 import { useHandler } from "~tests/testHelpers/useHandler.js";
 import type { PluginsContainer } from "@webiny/plugins";
-import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 describe("field id storage converter", () => {
     let plugins: PluginsContainer;
@@ -21,7 +21,6 @@ describe("field id storage converter", () => {
             }
         });
         plugins = context.plugins;
-        const { CmsModelFieldToGraphQLRegistry } = await import("~/features/graphql/index.js");
         fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
     });
 
