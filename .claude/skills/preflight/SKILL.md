@@ -9,10 +9,12 @@ Webiny-only skill. Run all checks required before packages are ready for publish
 
 ## Important
 
-- Run steps in order. If any step fails, stop and report the failure.
+- Run steps in order.
+- If any step fails, diagnose and fix the issue, then restart from step 1.
 - Never run tests in parallel. Run each package sequentially.
-- When a package has more than 64 test files, split into shards so each shard has at most 64 test files. Use `--shard=N/M` flag.
-- To count test files: `find packages/<name>/__tests__ -name '*.test.ts' | wc -l`
+- Before running tests for each package, count active test cases and shard at 32 tests per shard.
+- To count active tests: `rg "^\s*(it|test|it\.each|test\.each)\s*\(" packages/<name>/__tests__ -t ts --count-matches | awk -F: '{s+=$2} END {print s}'`
+- Calculate shards: `shards = ceil(count / 32)`. If shards is 1, no `--shard` flag needed.
 - Suppress noisy output: redirect stdout to `/dev/null` or pipe through `tail` as needed.
 
 ## Steps
@@ -55,11 +57,15 @@ Must output "All dependencies in order!" to pass.
 yarn prettier:fix > /dev/null 2>&1
 ```
 
+This auto-fixes formatting issues. No manual intervention needed.
+
 ### 7. Lint
 
 ```bash
 yarn eslint
 ```
+
+This only checks — it does not auto-fix. If eslint reports errors, fix them manually, then restart from step 1.
 
 ### 8. Full clean build
 
@@ -77,7 +83,7 @@ Verifies no `src/` paths remain in built output.
 
 ### 10. Run DDB tests
 
-Run `yarn test` for each package below, sequentially. Shard if >64 test files.
+Run `yarn test` for each package below, sequentially. Count active tests first and shard at 32.
 
 **Packages that need `yarn test`:**
 
@@ -95,18 +101,22 @@ Run `yarn test` for each package below, sequentially. Shard if >64 test files.
 - `tasks`
 
 ```bash
-# Example without sharding
+# 1. Count active tests
+count=$(rg "^\s*(it|test|it\.each|test\.each)\s*\(" packages/<name>/__tests__ -t ts --count-matches | awk -F: '{s+=$2} END {print s}')
+shards=$(( (count + 31) / 32 ))
+
+# 2a. If shards <= 1, run without sharding
 yarn test packages/<name> 2>&1 | grep "Test Files"
 
-# Example with sharding (e.g. 290 test files -> 5 shards of ~58 each)
-yarn test packages/<name> --shard=1/5 2>&1 | grep "Test Files"
-yarn test packages/<name> --shard=2/5 2>&1 | grep "Test Files"
+# 2b. If shards > 1, run each shard sequentially
+yarn test packages/<name> --shard=1/$shards 2>&1 | grep "Test Files"
+yarn test packages/<name> --shard=2/$shards 2>&1 | grep "Test Files"
 # ... etc
 ```
 
 ### 11. Run OpenSearch tests
 
-Run `yarn test:os` for each package below, sequentially. Shard if >64 test files.
+Run `yarn test:os` for each package below, sequentially. Count active tests first and shard at 32.
 
 **Packages that need BOTH `yarn test` (step 10) AND `yarn test:os`:**
 
