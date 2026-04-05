@@ -10,10 +10,7 @@ import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter } from "~/operations/entry/filtering";
 import { getSearchableFields } from "@webiny/api-headless-cms/crud/contentEntry/searchableFields";
 import { Container } from "@webiny/di";
-import {
-    GraphQLFeature,
-    CmsModelFieldToGraphQLRegistry
-} from "@webiny/api-headless-cms/features/graphql/index.js";
+import { GraphQLFeature } from "@webiny/api-headless-cms/features/graphql/index.js";
 
 describe("filtering cms ddb", () => {
     let plugins: PluginsContainer;
