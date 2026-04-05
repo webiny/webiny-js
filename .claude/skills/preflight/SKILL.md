@@ -87,18 +87,42 @@ Run `yarn test` for each package below, sequentially. Count active tests first a
 
 **Packages that need `yarn test`:**
 
+- `api`
 - `api-aco`
 - `api-audit-logs`
+- `api-core`
 - `api-file-manager`
 - `api-file-manager-aco`
 - `api-headless-cms`
 - `api-headless-cms-aco`
 - `api-headless-cms-bulk-actions`
+- `api-headless-cms-ddb`
 - `api-headless-cms-import-export`
+- `api-headless-cms-scheduler`
+- `api-headless-cms-tasks`
+- `api-headless-cms-workflows`
 - `api-mailer`
+- `api-record-locking`
 - `api-scheduler`
+- `api-sync-system`
+- `api-website-builder`
+- `api-website-builder-scheduler`
+- `api-websockets`
 - `api-workflows`
+- `app-admin`
+- `cognito`
+- `db-dynamodb`
+- `form`
+- `handler`
+- `handler-aws`
+- `handler-graphql`
+- `lexical-converter`
+- `plugins`
+- `react-composition`
+- `react-properties`
+- `react-rich-text-lexical-renderer`
 - `tasks`
+- `utils`
 
 ```bash
 # 1. Count active tests
@@ -152,3 +176,18 @@ git status
 ```
 
 Report any unexpected uncommitted changes from the steps above.
+
+## Keeping the package lists up to date
+
+If the lists seem stale, re-derive them:
+
+```bash
+# All testable packages (have vitest.config.ts)
+find packages -maxdepth 2 -name "vitest.config.ts" | sed 's|packages/||;s|/vitest.config.ts||' | sort
+
+# Packages with ddb-os support
+grep -rl "ddb-os" --include="ci.config.json" packages/ | sed 's|packages/||;s|/ci.config.json||' | sort
+
+# Check if a package has standalone ddb tests too
+grep -o '"ddb"' packages/<name>/ci.config.json
+```
