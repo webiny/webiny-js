@@ -1,12 +1,8 @@
 import gql from "graphql-tag";
 import { generateAlphaNumericId } from "@webiny/utils";
 import WebinyError from "@webiny/error";
-import type {
-    CmsContext,
-    CmsModel,
-    CmsModelField,
-    CmsModelFieldToGraphQLPluginValidateChildFieldsValidate
-} from "~/types/index.js";
+import type { CmsContext, CmsModel, CmsModelField } from "~/types/index.js";
+import type { ValidateChildFieldsValidate } from "~/features/graphql/fields/abstractions/CmsModelFieldToGraphQL.js";
 import { createManageSDL } from "~/graphql/schema/createManageSDL.js";
 import { createFieldStorageId } from "../createFieldStorageId.js";
 import type { GraphQLError } from "graphql";
@@ -71,7 +67,7 @@ const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
 
 const createValidateChildFields = (
     registry: CmsModelFieldToGraphQLRegistry.Interface
-): CmsModelFieldToGraphQLPluginValidateChildFieldsValidate => {
+): ValidateChildFieldsValidate => {
     return ({ fields, originalFields }) => {
         if (fields.length === 0 && originalFields.length === 0) {
             return;

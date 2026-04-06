@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import richTextIndexingPlugin from "~/elasticsearch/indexing/richTextIndexing";
-import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import type { CmsModelField } from "@webiny/api-headless-cms/types";
 import { PluginsContainer } from "@webiny/plugins";
-import { CmsModelFieldToElasticsearchPlugin } from "~/types";
+import type { CmsModelFieldToElasticsearchPlugin } from "~/types";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 
 const mockValue = [
     {
@@ -32,12 +33,21 @@ const mockField: CmsModelField = {
     help: "text"
 };
 
-const getFieldType = (): CmsModelFieldToGraphQLPlugin => {
-    return null as unknown as CmsModelFieldToGraphQLPlugin;
+const getFieldType = () => {
+    return undefined;
 };
 
 const getFieldIndexPlugin = () => {
     return null as unknown as CmsModelFieldToElasticsearchPlugin;
+};
+
+const fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface = {
+    get: () => {
+        return undefined;
+    },
+    getAll: () => {
+        return [];
+    }
 };
 
 describe("richTextIndexing", () => {
@@ -51,10 +61,10 @@ describe("richTextIndexing", () => {
             model: mockModel,
             plugins: new PluginsContainer(),
             getFieldType,
-            getFieldIndexPlugin
+            getFieldIndexPlugin,
+            fieldRegistry
         });
 
-        // here we receive new values and rawValues objects that are populated, in rawValues case, and values being without given storageId
         expect(result).toEqual({
             rawValue: mockValue
         });
@@ -69,11 +79,10 @@ describe("richTextIndexing", () => {
             model: mockModel,
             plugins: new PluginsContainer(),
             getFieldType,
-            getFieldIndexPlugin
+            getFieldIndexPlugin,
+            fieldRegistry
         });
 
-        // we receive a bit different output than in toIndex since here we take field from rawValues and put it into values obj
-        // it is being merged into new entry after that
         expect(result).toEqual(mockValue);
     });
 });

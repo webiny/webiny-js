@@ -6,9 +6,9 @@ import type {
     CmsModelDynamicZoneField,
     CmsModelField,
     CmsModelFieldType,
-    CmsModelFieldDefinition,
-    CmsModelFieldToGraphQLPluginValidateChildFieldsParams
+    CmsModelFieldDefinition
 } from "~/types/index.js";
+import type { ValidateChildFieldsParams } from "../abstractions/CmsModelFieldToGraphQL.js";
 import type { CmsModelFieldAstNode, ICmsModelFieldToAst } from "~/types/modelAst.js";
 import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
@@ -278,9 +278,7 @@ class DynamicZoneToGraphQL implements CmsModelFieldToGraphQL.Interface {
         return this.manage;
     }
 
-    public validateChildFields(
-        params: CmsModelFieldToGraphQLPluginValidateChildFieldsParams<CmsModelField>
-    ): void {
+    public validateChildFields(params: ValidateChildFieldsParams<CmsModelField>): void {
         const field = params.field as CmsModelDynamicZoneField;
         const originalField = params.originalField as CmsModelDynamicZoneField | undefined;
 

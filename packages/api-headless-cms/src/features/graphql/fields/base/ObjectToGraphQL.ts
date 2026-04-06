@@ -6,9 +6,9 @@ import type {
     CmsModelField,
     CmsModelFieldType,
     CmsModelFieldDefinition,
-    CmsModelObjectField,
-    CmsModelFieldToGraphQLPluginValidateChildFieldsParams
+    CmsModelObjectField
 } from "~/types/index.js";
+import type { ValidateChildFieldsParams } from "../abstractions/CmsModelFieldToGraphQL.js";
 import type { CmsModelFieldAstNode, ICmsModelFieldToAst } from "~/types/modelAst.js";
 import { createTypeFromFields } from "~/utils/createTypeFromFields.js";
 
@@ -269,9 +269,7 @@ class ObjectToGraphQL implements CmsModelFieldToGraphQL.Interface {
         return this.manage;
     }
 
-    public validateChildFields(
-        params: CmsModelFieldToGraphQLPluginValidateChildFieldsParams<CmsModelField>
-    ): void {
+    public validateChildFields(params: ValidateChildFieldsParams<CmsModelField>): void {
         const field = params.field as CmsModelObjectField;
         const originalField = params.originalField as CmsModelObjectField | undefined;
         params.validate({

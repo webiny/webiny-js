@@ -1,35 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { CmsGroup, CmsModelFieldToGraphQLPlugin } from "~/types";
+import type { CmsGroup } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
-const customFieldPlugin = (): CmsModelFieldToGraphQLPlugin => ({
-    name: "cms-model-field-to-graphql-custom-test-field",
-    type: "cms-model-field-to-graphql",
-    fieldType: "custom-test-field",
-    isSortable: false,
-    isSearchable: false,
-    read: {
-        createTypeField({ field }) {
-            return `${field.fieldId}: String`;
-        },
-        createGetFilters({ field }) {
-            return `${field.fieldId}: String`;
-        }
-    },
-    manage: {
-        createTypeField({ field }) {
-            return `${field.fieldId}: String`;
-        },
-        createInputField({ field }) {
-            return `${field.fieldId}: String`;
-        }
-    }
-});
-
 describe("content model test no field plugin", () => {
-    const readHandlerOpts = { path: "read" };
     const manageHandlerOpts = { path: "manage" };
-    const previewHandlerOpts = { path: "preview" };
 
     const {
         createContentModelGroupMutation,
@@ -127,96 +101,5 @@ describe("content model test no field plugin", () => {
                 });
             });
         });
-    });
-
-    it("schema generation should not break if an old field type still exists", async () => {
-        const customField = customFieldPlugin();
-        const manageModelAPI = useGraphQLHandler({
-            ...manageHandlerOpts,
-            plugins: [customField]
-        });
-        const manageAPI = useGraphQLHandler(manageHandlerOpts);
-        const readAPI = useGraphQLHandler(readHandlerOpts);
-        const previewAPI = useGraphQLHandler(previewHandlerOpts);
-
-        await manageModelAPI.createContentModelMutation({
-            data: {
-                name: "Event",
-                modelId: "event",
-                singularApiName: "Event",
-                pluralApiName: "Events",
-                group: contentModelGroup.slug
-            }
-        });
-
-        await manageModelAPI.updateContentModelMutation({
-            modelId: "event",
-            data: {
-                layout: [["1234"], ["2345"], ["9999"]],
-                fields: [
-                    {
-                        id: "1234",
-                        list: false,
-                        description: "",
-                        label: "Title",
-                        type: "text",
-                        storageId: "title",
-                        validation: [],
-                        listValidation: [],
-                        placeholder: "placeholder text",
-                        renderer: {
-                            name: "renderer"
-                        }
-                    },
-                    {
-                        id: "2345",
-                        list: false,
-                        description: "",
-                        label: "Slug",
-                        type: "text",
-                        storageId: "slug",
-                        validation: [],
-                        listValidation: [],
-                        placeholder: "placeholder text",
-                        renderer: {
-                            name: "renderer"
-                        }
-                    },
-                    {
-                        id: "9999",
-                        list: false,
-                        description: "",
-                        label: "Test",
-                        type: "custom-test-field",
-                        storageId: "test",
-                        validation: [],
-                        listValidation: [],
-                        renderer: {
-                            name: "renderer"
-                        }
-                    }
-                ]
-            }
-        });
-
-        await manageAPI.createContentModelMutation({
-            data: {
-                name: "Bug",
-                modelId: "bug",
-                singularApiName: "Bug",
-                pluralApiName: "Bugs",
-                group: contentModelGroup.slug
-            }
-        });
-
-        const [manage] = await manageAPI.introspect();
-        const [read] = await readAPI.introspect();
-        const [preview] = await previewAPI.introspect();
-
-        expect(Array.isArray(manage.data.__schema.types)).toBe(true);
-
-        expect(Array.isArray(read.data.__schema.types)).toBe(true);
-
-        expect(Array.isArray(preview.data.__schema.types)).toBe(true);
     });
 });

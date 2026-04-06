@@ -36,7 +36,7 @@ const objectField: CmsModelField = {
                 id: "1",
                 label: "Title",
                 validation: [],
-                listValidation: [],
+                listValidation: []
             },
             {
                 fieldId: "number",
@@ -45,7 +45,7 @@ const objectField: CmsModelField = {
                 id: "2",
                 label: "Number",
                 validation: [],
-                listValidation: [],
+                listValidation: []
             },
             {
                 fieldId: "richText",
@@ -54,7 +54,7 @@ const objectField: CmsModelField = {
                 id: "3",
                 label: "Rich Text",
                 validation: [],
-                listValidation: [],
+                listValidation: []
             },
             {
                 fieldId: "settings",
@@ -69,7 +69,7 @@ const objectField: CmsModelField = {
                             id: "41",
                             label: "Settings title",
                             validation: [],
-                            listValidation: [],
+                            listValidation: []
                         },
                         {
                             fieldId: "snippet",
@@ -78,7 +78,7 @@ const objectField: CmsModelField = {
                             id: "42",
                             label: "Settings Rich Text",
                             validation: [],
-                            listValidation: [],
+                            listValidation: []
                         },
                         {
                             fieldId: "options",
@@ -94,7 +94,7 @@ const objectField: CmsModelField = {
                                         id: "431",
                                         label: "Options Title",
                                         validation: [],
-                                        listValidation: [],
+                                        listValidation: []
                                     },
                                     {
                                         fieldId: "price",
@@ -103,26 +103,26 @@ const objectField: CmsModelField = {
                                         id: "432",
                                         label: "Options Price",
                                         validation: [],
-                                        listValidation: [],
+                                        listValidation: []
                                     }
                                 ]
                             },
                             id: "43",
                             label: "Settings Object",
                             validation: [],
-                            listValidation: [],
+                            listValidation: []
                         }
                     ]
                 },
                 id: "4",
                 label: "Settings",
                 validation: [],
-                listValidation: [],
+                listValidation: []
             }
         ]
     },
     validation: [],
-    listValidation: [],
+    listValidation: []
 };
 
 const input = {

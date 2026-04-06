@@ -3,11 +3,27 @@ import type { GraphQLFieldResolver, Resolvers } from "@webiny/handler-graphql/ty
 import type { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types.js";
 import type { CmsModelField, CmsModelFieldType } from "~/types/modelField.js";
 import type { CmsModel } from "~/types/model.js";
-import type {
-    CmsModelFieldDefinition,
-    CmsModelFieldToGraphQLPluginValidateChildFields
-} from "~/types/types.js";
+import type { CmsModelFieldDefinition } from "~/types/types.js";
 import type { CmsContext } from "~/types/types.js";
+
+export interface ValidateChildFieldsValidateParams<TField extends CmsModelField = CmsModelField> {
+    fields: TField[];
+    originalFields: TField[];
+}
+
+export interface ValidateChildFieldsValidate {
+    (params: ValidateChildFieldsValidateParams): void;
+}
+
+export interface ValidateChildFieldsParams<TField extends CmsModelField = CmsModelField> {
+    field: TField;
+    originalField?: TField;
+    validate: ValidateChildFieldsValidate;
+}
+
+export interface ValidateChildFields<TField extends CmsModelField = CmsModelField> {
+    (params: ValidateChildFieldsParams<TField>): void;
+}
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { GetCmsModelFieldAst } from "~/types/modelAst.js";
 import type { CmsModelFieldToGraphQLRegistry } from "./CmsModelFieldToGraphQLRegistry.js";
@@ -86,7 +102,7 @@ export interface ICmsModelFieldToGraphQL<TField extends CmsModelField = CmsModel
     getManageApi(): ICmsFieldManageApi<TField>;
 
     /* Validation & AST. */
-    validateChildFields?: CmsModelFieldToGraphQLPluginValidateChildFields<TField>;
+    validateChildFields?: ValidateChildFields<TField>;
     getFieldAst?: GetCmsModelFieldAst<TField>;
 }
 
@@ -111,4 +127,9 @@ export namespace CmsModelFieldToGraphQL {
     export type InputNormalizeParams<TField extends CmsModelField = CmsModelField> =
         NormalizeInputParams<TField>;
     export type Resolver = ResolverResult;
+    export type ChildFieldsValidateParams<TField extends CmsModelField = CmsModelField> =
+        ValidateChildFieldsParams<TField>;
+    export type ChildFieldsValidate<TField extends CmsModelField = CmsModelField> =
+        ValidateChildFields<TField>;
+    export type ChildFieldsValidateValidate = ValidateChildFieldsValidate;
 }
