@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { CmsModelFieldValidatorValidateParams } from "~/types/types.js";
+import type { CmsModelFieldValidatorValidateParams } from "~/types/index.js";
 
 export interface ICmsModelFieldValidator {
     readonly name: string;
@@ -12,6 +12,8 @@ export const CmsModelFieldValidator = createAbstraction<ICmsModelFieldValidator>
 
 export namespace CmsModelFieldValidator {
     export type Interface = ICmsModelFieldValidator;
+    export type Params = CmsModelFieldValidatorValidateParams;
+    export type Response = Promise<boolean>;
 }
 
 export interface ICmsModelFieldValidatorRegistry {

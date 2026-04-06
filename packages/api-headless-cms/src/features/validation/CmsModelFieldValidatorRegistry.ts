@@ -7,7 +7,9 @@ class CmsModelFieldValidatorRegistryImpl implements RegistryAbstraction.Interfac
     public constructor(private readonly validators: CmsModelFieldValidator.Interface[]) {}
 
     public get(name: string): CmsModelFieldValidator.Interface | undefined {
-        return this.validators.find(v => v.name === name);
+        return this.validators.find(v => {
+            return v.name === name;
+        });
     }
 
     public getAll(): CmsModelFieldValidator.Interface[] {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createDateLteValidator } from "~/validators/dateLte";
-import { createDateGteValidator } from "~/validators/dateGte";
-import { CmsModel, CmsModelField, CmsModelFieldValidation } from "~/types";
+import { Container } from "@webiny/di";
+import type { CmsModel, CmsModelField, CmsModelFieldValidation } from "~/types";
+import { ValidationFeature, CmsModelFieldValidatorRegistry } from "~/features/validation/index.js";
 
 const createValidator = (args: Record<string, any>): CmsModelFieldValidation => {
     return {
@@ -16,8 +16,11 @@ const createValidator = (args: Record<string, any>): CmsModelFieldValidation => 
 
 describe("date validators", () => {
     const context: any = {};
-    const gtePlugin = createDateGteValidator();
-    const ltePlugin = createDateLteValidator();
+    const container = new Container();
+    ValidationFeature.register(container);
+    const registry = container.resolve(CmsModelFieldValidatorRegistry);
+    const gteImpl = registry.get("dateGte")!;
+    const lteImpl = registry.get("dateLte")!;
 
     const gteValidationDateCorrectValues = [
         ["2020-06-06T16:30:50Z", "2020-06-06T16:30:50Z"],
@@ -32,7 +35,7 @@ describe("date validators", () => {
                 value: gteValue
             });
 
-            const result = await gtePlugin.validator.validate({
+            const result = await gteImpl.validate({
                 value,
                 validator,
                 context,
@@ -56,7 +59,7 @@ describe("date validators", () => {
                 value: gteValue
             });
 
-            const result = await gtePlugin.validator.validate({
+            const result = await gteImpl.validate({
                 value,
                 validator,
                 context,
@@ -80,7 +83,7 @@ describe("date validators", () => {
                 value: lteValue
             });
 
-            const result = await ltePlugin.validator.validate({
+            const result = await lteImpl.validate({
                 value,
                 validator,
                 context,
@@ -104,7 +107,7 @@ describe("date validators", () => {
                 value: lteValue
             });
 
-            const result = await ltePlugin.validator.validate({
+            const result = await lteImpl.validate({
                 value,
                 validator,
                 context,
@@ -130,7 +133,7 @@ describe("date validators", () => {
                 type: "time"
             });
 
-            const result = await gtePlugin.validator.validate({
+            const result = await gteImpl.validate({
                 value,
                 validator,
                 context,
@@ -154,7 +157,7 @@ describe("date validators", () => {
                 type: "time"
             });
 
-            const result = await gtePlugin.validator.validate({
+            const result = await gteImpl.validate({
                 value,
                 validator,
                 context,
@@ -180,7 +183,7 @@ describe("date validators", () => {
                 type: "time"
             });
 
-            const result = await ltePlugin.validator.validate({
+            const result = await lteImpl.validate({
                 value,
                 validator,
                 context,
@@ -206,7 +209,7 @@ describe("date validators", () => {
                 type: "time"
             });
 
-            const result = await ltePlugin.validator.validate({
+            const result = await lteImpl.validate({
                 value,
                 validator,
                 context,

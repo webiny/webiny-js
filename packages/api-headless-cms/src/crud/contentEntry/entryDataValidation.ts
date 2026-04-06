@@ -5,8 +5,7 @@ import type {
     CmsEntryValues,
     CmsModel,
     CmsModelField,
-    CmsModelFieldValidation,
-    CmsModelFieldValidatorValidateParams
+    CmsModelFieldValidation
 } from "~/types/index.js";
 import camelCase from "lodash/camelCase.js";
 import { EntryValidationError } from "~/domain/contentEntry/errors.js";
@@ -15,7 +14,9 @@ import {
     CmsModelFieldValidatorRegistry
 } from "~/features/validation/index.js";
 
-type PluginValidationCallable = (params: CmsModelFieldValidatorValidateParams) => Promise<boolean>;
+type PluginValidationCallable = (
+    params: CmsModelFieldValidator.Params
+) => CmsModelFieldValidator.Response;
 type PluginValidationList = Record<string, PluginValidationCallable[]>;
 
 interface ExecuteValidationParams<TValues extends CmsEntryValues = CmsEntryValues> {
@@ -137,7 +138,7 @@ const runFieldValueValidations = async <TValues extends CmsEntryValues = CmsEntr
     params: ExecuteValidationParams<TValues>
 ): Promise<string | null> => {
     const { values, field } = params;
-    const value = values[field.fieldId as keyof TValues] as PossibleValue | null | undefined;
+    const value = values[field.fieldId as keyof TValues];
     const error = await validateValue(params, field.validation || [], value);
     if (error) {
         return error;
@@ -186,10 +187,14 @@ export const validateModelEntryData = async <TValues extends CmsEntryValues = Cm
         const isSkipped = isValidatorSkipped(validator);
         if (isSkipped) {
             skippedValidators.add(name);
+            validatorList[name].push(async () => {
+                return true;
+            });
+            continue;
         }
-        validatorList[name].push(
-            isSkipped ? async () => true : params => validator.validate(params)
-        );
+        validatorList[name].push(params => {
+            return validator.validate(params);
+        });
     }
     /**
      * No point in continuing if all validators are skipped.
