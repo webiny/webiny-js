@@ -1,0 +1,21 @@
+import {
+    CmsModelFieldValidator,
+    CmsModelFieldValidatorRegistry as RegistryAbstraction
+} from "./abstractions.js";
+
+class CmsModelFieldValidatorRegistryImpl implements RegistryAbstraction.Interface {
+    public constructor(private readonly validators: CmsModelFieldValidator.Interface[]) {}
+
+    public get(name: string): CmsModelFieldValidator.Interface | undefined {
+        return this.validators.find(v => v.name === name);
+    }
+
+    public getAll(): CmsModelFieldValidator.Interface[] {
+        return this.validators;
+    }
+}
+
+export const CmsModelFieldValidatorRegistry = RegistryAbstraction.createImplementation({
+    implementation: CmsModelFieldValidatorRegistryImpl,
+    dependencies: [[CmsModelFieldValidator, { multiple: true }]]
+});
