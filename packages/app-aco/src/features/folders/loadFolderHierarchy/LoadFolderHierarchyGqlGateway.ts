@@ -1,4 +1,4 @@
-import { GraphQLClient } from "@webiny/app/features/graphqlClient/index.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { RootFolder } from "~/domain/folder/RootFolder.js";
 import { FolderModelProvider } from "~/features/folders/abstractions.js";
@@ -44,7 +44,7 @@ export const LOAD_FOLDER_HIERARCHY = (FOLDER_FIELDS: string) => /* GraphQL*/ `
 
 class LoadFolderHierarchyGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
-        private client: GraphQLClient.Interface,
+        private client: MainGraphQLClient.Interface,
         private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
@@ -86,5 +86,5 @@ class LoadFolderHierarchyGqlGatewayImpl implements GatewayAbstraction.Interface 
 
 export const LoadFolderHierarchyGqlGateway = GatewayAbstraction.createImplementation({
     implementation: LoadFolderHierarchyGqlGatewayImpl,
-    dependencies: [GraphQLClient, FolderModelProvider]
+    dependencies: [MainGraphQLClient, FolderModelProvider]
 });
