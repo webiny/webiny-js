@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { GraphQLClient } from "@webiny/app/features/graphqlClient/index.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { RootFolder } from "~/domain/folder/RootFolder.js";
 import { FolderModelProvider } from "~/features/folders/abstractions.js";
@@ -39,7 +39,7 @@ export const LIST_FOLDERS = (FOLDER_FIELDS: string) => gql`
 
 class ListFoldersGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
-        private client: GraphQLClient.Interface,
+        private client: MainGraphQLClient.Interface,
         private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
@@ -66,5 +66,5 @@ class ListFoldersGqlGatewayImpl implements GatewayAbstraction.Interface {
 
 export const ListFoldersGqlGateway = GatewayAbstraction.createImplementation({
     implementation: ListFoldersGqlGatewayImpl,
-    dependencies: [GraphQLClient, FolderModelProvider]
+    dependencies: [MainGraphQLClient, FolderModelProvider]
 });

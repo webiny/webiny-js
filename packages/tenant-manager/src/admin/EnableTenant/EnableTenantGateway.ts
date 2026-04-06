@@ -1,4 +1,4 @@
-import { GraphQLClient } from "@webiny/app/features/graphqlClient/index.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import { EnableTenantGateway as GatewayAbstraction } from "./abstractions.js";
 
 const ENABLE_TENANT = /* GraphQL */ `
@@ -35,7 +35,7 @@ type EnableTenantResponse = {
 };
 
 class EnableTenantGraphQLGateway implements GatewayAbstraction.Interface {
-    constructor(private client: GraphQLClient.Interface) {}
+    constructor(private client: MainGraphQLClient.Interface) {}
 
     async enableTenant(tenantId: string): Promise<boolean> {
         const response = await this.client.execute<EnableTenantResponse>({
@@ -58,5 +58,5 @@ class EnableTenantGraphQLGateway implements GatewayAbstraction.Interface {
 
 export const EnableTenantGateway = GatewayAbstraction.createImplementation({
     implementation: EnableTenantGraphQLGateway,
-    dependencies: [GraphQLClient]
+    dependencies: [MainGraphQLClient]
 });

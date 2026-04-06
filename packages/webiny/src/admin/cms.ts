@@ -1,3 +1,4 @@
+export { CmsGraphQLClient } from "@webiny/app-headless-cms/features/cmsGraphQLClient/index.js";
 export { CmsContentFormRenderer } from "@webiny/app-headless-cms/legacyPluginAdapters/CmsContentFormRenderer.js";
 export { CmsModelFieldValidator } from "@webiny/app-headless-cms/legacyPluginAdapters/CmsModelFieldValidator.js";
 export { CmsModelFieldType } from "@webiny/app-headless-cms/legacyPluginAdapters/CmsModelFieldType.js";

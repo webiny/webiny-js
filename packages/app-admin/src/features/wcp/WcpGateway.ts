@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import { WcpGateway as WcpGatewayAbstraction } from "./abstractions.js";
-import { GraphQLClient } from "@webiny/app/features/graphqlClient";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import type { GetWcpProjectResponse, WcpProjectData } from "./types.js";
 
 const GET_WCP_PROJECT = /* GraphQL */ `
@@ -51,7 +51,7 @@ const GET_WCP_PROJECT = /* GraphQL */ `
 `;
 
 class WcpGraphQLGateway implements WcpGatewayAbstraction.Interface {
-    constructor(private client: GraphQLClient.Interface) {}
+    constructor(private client: MainGraphQLClient.Interface) {}
 
     async fetchProject(): Promise<WcpProjectData | null> {
         const response = await this.client.execute<GetWcpProjectResponse>({
@@ -72,5 +72,5 @@ class WcpGraphQLGateway implements WcpGatewayAbstraction.Interface {
 export const WcpGateway = createImplementation({
     abstraction: WcpGatewayAbstraction,
     implementation: WcpGraphQLGateway,
-    dependencies: [GraphQLClient]
+    dependencies: [MainGraphQLClient]
 });
