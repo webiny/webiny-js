@@ -32,7 +32,7 @@ const mockField: CmsModelField = {
     help: "text"
 };
 
-const getFieldTypePlugin = (): CmsModelFieldToGraphQLPlugin => {
+const getFieldType = (): CmsModelFieldToGraphQLPlugin => {
     return null as unknown as CmsModelFieldToGraphQLPlugin;
 };
 
@@ -50,7 +50,7 @@ describe("richTextIndexing", () => {
             field: mockField,
             model: mockModel,
             plugins: new PluginsContainer(),
-            getFieldTypePlugin,
+            getFieldType,
             getFieldIndexPlugin
         });
 
@@ -68,7 +68,7 @@ describe("richTextIndexing", () => {
             field: mockField,
             model: mockModel,
             plugins: new PluginsContainer(),
-            getFieldTypePlugin,
+            getFieldType,
             getFieldIndexPlugin
         });
 

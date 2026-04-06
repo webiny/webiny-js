@@ -18,8 +18,8 @@ class ManageApi extends ReadApi implements CmsModelFieldToGraphQL.ManageApi {
 }
 
 class FileToGraphQL implements CmsModelFieldToGraphQL.Interface {
-    private readonly read = new ReadApi();
-    private readonly manage = new ManageApi();
+    public readonly read = new ReadApi();
+    public readonly manage = new ManageApi();
 
     public readonly fieldType: CmsModelFieldType = "file";
     public readonly isSearchable: boolean = false;

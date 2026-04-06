@@ -1,12 +1,12 @@
 import type {
     ApiEndpoint,
     CmsDynamicZoneTemplate,
-    CmsFieldTypePlugins,
     CmsModel,
     CmsModelField
 } from "~/types/index.js";
 import { createTypeName } from "~/utils/createTypeName.js";
 import { createTypeFromFields } from "~/utils/createTypeFromFields.js";
+import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface CreateTypeDefsForTemplatesParams {
     models: CmsModel[];
@@ -15,7 +15,7 @@ interface CreateTypeDefsForTemplatesParams {
     type: ApiEndpoint;
     typeOfType: "type" | "input";
     templates: CmsDynamicZoneTemplate[];
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 export const createTypeDefsForTemplates = ({
@@ -25,7 +25,7 @@ export const createTypeDefsForTemplates = ({
     type,
     templates,
     typeOfType,
-    fieldTypePlugins
+    fieldRegistry
 }: CreateTypeDefsForTemplatesParams) => {
     const typeDefs: string[] = [];
     const templateTypes: string[] = [];
@@ -44,7 +44,7 @@ export const createTypeDefsForTemplates = ({
             type,
             typeNamePrefix: typeName,
             fields: template.fields,
-            fieldTypePlugins
+            fieldRegistry
         });
 
         if (!result) {

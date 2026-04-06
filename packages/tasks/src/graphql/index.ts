@@ -60,14 +60,12 @@ const createGraphQL = () => {
 
             return modelsResult.value.filter(model => model.fields.length > 0);
         });
-        const fieldTypePlugins = fieldRegistry.getAllAsPluginRecords();
-
         const taskFields = renderFields({
             models,
             model: taskModel,
             fields: taskModel.fields,
             type: "manage",
-            fieldTypePlugins
+            fieldRegistry
         });
 
         const logFields = renderFields({
@@ -75,14 +73,14 @@ const createGraphQL = () => {
             model: logModel,
             fields: logModel.fields.filter(field => field.fieldId !== "task"),
             type: "manage",
-            fieldTypePlugins
+            fieldRegistry
         });
 
         const listTasksFilterFieldsRender = renderListFilterFields({
             model: taskModel,
             fields: taskModel.fields,
             type: "manage",
-            fieldTypePlugins,
+            fieldRegistry,
             excludeFields: ["entryId"]
         });
 
@@ -90,21 +88,21 @@ const createGraphQL = () => {
             model: logModel,
             fields: logModel.fields,
             type: "manage",
-            fieldTypePlugins,
+            fieldRegistry,
             excludeFields: ["entryId"]
         });
 
         const sortTasksEnumRender = renderSortEnum({
             model: taskModel,
             fields: taskModel.fields,
-            fieldTypePlugins,
+            fieldRegistry,
             sorterPlugins: []
         });
 
         const sortLogsEnumRender = renderSortEnum({
             model: logModel,
             fields: logModel.fields,
-            fieldTypePlugins,
+            fieldRegistry,
             sorterPlugins: []
         });
 

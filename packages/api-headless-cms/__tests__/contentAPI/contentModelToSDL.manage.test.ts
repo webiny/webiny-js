@@ -4,25 +4,20 @@ import contentModels from "./mocks/contentModels.js";
 import categoryManage from "./snapshots/category.manage.js";
 import productManage from "./snapshots/product.manage.js";
 import reviewManage from "./snapshots/review.manage.js";
-import type { CmsModel, CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
+import type { CmsModel } from "~/types/index.js";
 import { createManageSDL } from "~/graphql/schema/createManageSDL.js";
 import { pageModel } from "./mocks/pageWithDynamicZonesModel.js";
 import pageManage from "./snapshots/page.manage.js";
-import { createFieldTypePlugins } from "~tests/__helpers/fields/fieldTypePlugins.js";
+import { createFieldTypePluginsRegistry } from "~tests/__helpers/fields/fieldTypePlugins.js";
 
 describe("MANAGE - ContentModel to SDL", () => {
-    const fieldTypePlugins = createFieldTypePlugins().reduce<
-        Record<string, CmsModelFieldToGraphQLPlugin>
-    >((acc, pl) => {
-        acc[pl.fieldType] = pl;
-        return acc;
-    }, {});
+    const fieldRegistry = createFieldTypePluginsRegistry();
 
     const models = [...contentModels];
 
     it("Category SDL", async () => {
         const model = contentModels.find(c => c.modelId === "category") as CmsModel;
-        const sdl = createManageSDL({ models, model, fieldTypePlugins, sorterPlugins: [] });
+        const sdl = createManageSDL({ models, model, fieldRegistry, sorterPlugins: [] });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(categoryManage.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -30,7 +25,7 @@ describe("MANAGE - ContentModel to SDL", () => {
 
     it("Product SDL", async () => {
         const model = contentModels.find(c => c.modelId === "product") as CmsModel;
-        const sdl = createManageSDL({ models, model, fieldTypePlugins, sorterPlugins: [] });
+        const sdl = createManageSDL({ models, model, fieldRegistry, sorterPlugins: [] });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(productManage.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -38,7 +33,7 @@ describe("MANAGE - ContentModel to SDL", () => {
 
     it("Review SDL", async () => {
         const model = contentModels.find(c => c.modelId === "review") as CmsModel;
-        const sdl = createManageSDL({ models, model, fieldTypePlugins, sorterPlugins: [] });
+        const sdl = createManageSDL({ models, model, fieldRegistry, sorterPlugins: [] });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(reviewManage.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -48,7 +43,7 @@ describe("MANAGE - ContentModel to SDL", () => {
         const sdl = createManageSDL({
             models,
             model: pageModel as CmsModel,
-            fieldTypePlugins,
+            fieldRegistry,
             sorterPlugins: []
         });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });

@@ -1,21 +1,18 @@
-import type { CmsContext, CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
+import type { CmsContext, CmsModelField } from "~/types/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface BuildParams {
     input: string[];
     fields: CmsModelField[];
-    plugins: Record<string, CmsModelFieldToGraphQLPlugin>;
+    registry: CmsModelFieldToGraphQLRegistry.Interface;
     parents: string[];
 }
 const buildSearchableFieldList = (params: BuildParams): string[] => {
-    const { input, plugins, fields, parents } = params;
+    const { input, registry, fields, parents } = params;
     return fields.reduce<string[]>(
         (result, field) => {
-            /**
-             * We need to check if the field is full text searchable, and for that we need a plugin for the field type.
-             */
-            const plugin = plugins[field.type];
-            if (!plugin) {
+            const fieldImpl = registry.get(field.type);
+            if (!fieldImpl) {
                 return result;
             }
             /**
@@ -23,13 +20,10 @@ const buildSearchableFieldList = (params: BuildParams): string[] => {
              */
             const childFields = field.settings?.fields || [];
             if (childFields.length > 0) {
-                /**
-                 * So we build a list of searchable child fields and push it into the main result set.
-                 */
                 const childResults = buildSearchableFieldList({
                     fields: childFields,
                     parents: [...parents, field.fieldId],
-                    plugins,
+                    registry,
                     input
                 });
 
@@ -39,7 +33,7 @@ const buildSearchableFieldList = (params: BuildParams): string[] => {
             /**
              * If not searchable, continue further.
              */
-            if (!plugin.fullTextSearch || field.settings?.disableFullTextSearch === true) {
+            if (!fieldImpl.isFullTextSearchable || field.settings?.disableFullTextSearch === true) {
                 return result;
             }
 
@@ -52,7 +46,7 @@ const buildSearchableFieldList = (params: BuildParams): string[] => {
             return result;
         },
         /**
-         * We always add id and entry id
+         * We always add id and entry id.
          */
         ["id", "entryId"]
     );
@@ -61,19 +55,17 @@ const buildSearchableFieldList = (params: BuildParams): string[] => {
 interface Params {
     input: string[];
     fields: CmsModelField[];
-    context: Pick<CmsContext, "plugins" | "container">;
+    context: Pick<CmsContext, "container">;
 }
 export const getSearchableFields = (params: Params): string[] => {
     const { context, input, fields } = params;
 
     const registry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
 
-    const fieldPluginMap = registry.getAllAsPluginRecords();
-
     return buildSearchableFieldList({
         fields,
         input,
-        plugins: fieldPluginMap,
+        registry,
         parents: ["values"]
     });
 };

@@ -87,14 +87,13 @@ export const createAcoGraphQL = () => {
         await context.security.withoutAuthorization(async () => {
             const model = (await context.cms.getModel(FOLDER_MODEL_ID)) as CmsModel;
             const models = await context.cms.listModels();
-            const fieldTypePlugins = fieldRegistry.getAllAsPluginRecords();
             /**
              * We need to register all plugins for all the CMS fields.
              */
             const plugins = createGraphQLSchemaPluginFromFieldPlugins({
                 models,
                 type: "manage",
-                fieldTypePlugins,
+                fieldRegistry,
                 createPlugin: ({ schema, type, fieldType }) => {
                     const plugin = new GraphQLSchemaPlugin(schema);
                     plugin.name = `aco.graphql.folder.schema.${type}.field.${fieldType}`;
@@ -105,7 +104,7 @@ export const createAcoGraphQL = () => {
             const graphQlPlugin = createFoldersSchema({
                 model,
                 models,
-                plugins: fieldTypePlugins
+                fieldRegistry
             });
 
             context.plugins.register([...plugins, graphQlPlugin]);

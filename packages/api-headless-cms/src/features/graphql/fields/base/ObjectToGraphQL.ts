@@ -1,7 +1,7 @@
 import upperFirst from "lodash/upperFirst.js";
 import { CmsModelFieldToGraphQL } from "../abstractions/CmsModelFieldToGraphQL.js";
+import type { CmsModelFieldToGraphQLRegistry } from "../abstractions/CmsModelFieldToGraphQLRegistry.js";
 import type {
-    CmsFieldTypePlugins,
     CmsModel,
     CmsModelField,
     CmsModelFieldType,
@@ -33,12 +33,12 @@ const createTypeName = (params: CreateTypeNameParams): string => {
 interface CreateChildTypeDefsParams {
     model: Pick<CmsModel, "singularApiName">;
     field: CmsModelField;
-    plugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     endpointType: "manage" | "read";
 }
 
 const createChildTypeDefs = (params: CreateChildTypeDefsParams): string => {
-    const { field, plugins, model, endpointType } = params;
+    const { field, fieldRegistry, model, endpointType } = params;
     const fields = field.settings?.fields || [];
 
     const typeName = createTypeName({
@@ -49,7 +49,12 @@ const createChildTypeDefs = (params: CreateChildTypeDefsParams): string => {
 
     const filters = fields
         .map(child => {
-            const createListFilters = plugins[child.type][endpointType].createListFilters;
+            const fieldImpl = fieldRegistry.get(child.type);
+            if (!fieldImpl) {
+                return null;
+            }
+            const api = endpointType === "manage" ? fieldImpl.manage : fieldImpl.read;
+            const createListFilters = api.createListFilters;
             if (!createListFilters) {
                 return null;
             }
@@ -63,7 +68,7 @@ const createChildTypeDefs = (params: CreateChildTypeDefsParams): string => {
                         parents: (child.settings?.parents || []).concat([field.fieldId])
                     }
                 },
-                plugins
+                fieldRegistry
             });
             if (!filters) {
                 return null;
@@ -94,7 +99,7 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
         field,
         models,
         model,
-        fieldTypePlugins
+        fieldRegistry
     }: CmsModelFieldToGraphQL.TypeFieldParams): CmsModelFieldDefinition | null {
         const result = createTypeFromFields({
             models,
@@ -107,7 +112,7 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
                 parents: field.settings?.parents
             }),
             fields: field.settings?.fields || [],
-            fieldTypePlugins
+            fieldRegistry
         });
 
         if (!result) {
@@ -118,7 +123,7 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
         const childTypeDefs = createChildTypeDefs({
             model,
             field,
-            plugins: fieldTypePlugins,
+            fieldRegistry,
             endpointType: "read"
         });
 
@@ -159,7 +164,7 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
         models,
         model,
         field,
-        fieldTypePlugins
+        fieldRegistry
     }: CmsModelFieldToGraphQL.TypeFieldParams): CmsModelFieldDefinition | null {
         const result = createTypeFromFields({
             typeOfType: "type",
@@ -172,7 +177,7 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
                 parents: field.settings?.parents
             }),
             fields: field.settings?.fields || [],
-            fieldTypePlugins
+            fieldRegistry
         });
 
         if (!result) {
@@ -183,7 +188,7 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
         const childTypeDefs = createChildTypeDefs({
             model,
             field,
-            plugins: fieldTypePlugins,
+            fieldRegistry,
             endpointType: "manage"
         });
 
@@ -197,7 +202,7 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
         models,
         model,
         field,
-        fieldTypePlugins
+        fieldRegistry
     }: CmsModelFieldToGraphQL.TypeFieldParams): CmsModelFieldDefinition | null {
         const result = createTypeFromFields({
             typeOfType: "input",
@@ -210,7 +215,7 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
                 parents: field.settings?.parents
             }),
             fields: field.settings?.fields || [],
-            fieldTypePlugins
+            fieldRegistry
         });
         if (!result) {
             return null;
@@ -248,8 +253,8 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
 }
 
 class ObjectToGraphQL implements CmsModelFieldToGraphQL.Interface {
-    private readonly read = new ReadApi();
-    private readonly manage = new ManageApi();
+    public readonly read = new ReadApi();
+    public readonly manage = new ManageApi();
 
     public readonly fieldType: CmsModelFieldType = "object";
     public readonly isSearchable: boolean = false;

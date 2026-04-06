@@ -3,10 +3,7 @@ import { createFieldRegistry } from "~tests/helpers/createFieldRegistry.js";
 import defaultIndexingPlugin from "~/elasticsearch/indexing/defaultFieldIndexing.js";
 import objectIndexing from "~/elasticsearch/indexing/objectIndexing.js";
 import elasticsearchIndexingPlugins from "~/elasticsearch/indexing/index.js";
-import type {
-    CmsModelField,
-    CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import type {
     CmsModelFieldToElasticsearchFromParams,
     CmsModelFieldToElasticsearchPlugin,
@@ -14,14 +11,14 @@ import type {
 } from "~/types.js";
 
 const indexingPlugins = elasticsearchIndexingPlugins();
-const fieldTypePlugins = createFieldRegistry().getAllAsPlugins();
+const fieldRegistry = createFieldRegistry();
 
 const getFieldIndexPlugin = (fieldType: string) => {
     return indexingPlugins.find(pl => pl.fieldType === fieldType) || defaultIndexingPlugin();
 };
 
-const getFieldTypePlugin = (fieldType: string) => {
-    return fieldTypePlugins.find(pl => pl.fieldType === fieldType) as CmsModelFieldToGraphQLPlugin;
+const getFieldType = (fieldType: string) => {
+    return fieldRegistry.get(fieldType)!;
 };
 
 const objectField: CmsModelField = {
@@ -37,21 +34,27 @@ const objectField: CmsModelField = {
                 storageId: "titleStorageId",
                 type: "text",
                 id: "1",
-                label: "Title"
+                label: "Title",
+                validation: [],
+                listValidation: [],
             },
             {
                 fieldId: "number",
                 storageId: "numberStorageId",
                 type: "number",
                 id: "2",
-                label: "Number"
+                label: "Number",
+                validation: [],
+                listValidation: [],
             },
             {
                 fieldId: "richText",
                 storageId: "richTextStorageId",
                 type: "rich-text",
                 id: "3",
-                label: "Rich Text"
+                label: "Rich Text",
+                validation: [],
+                listValidation: [],
             },
             {
                 fieldId: "settings",
@@ -64,14 +67,18 @@ const objectField: CmsModelField = {
                             storageId: "titleStorageId",
                             type: "text",
                             id: "41",
-                            label: "Settings title"
+                            label: "Settings title",
+                            validation: [],
+                            listValidation: [],
                         },
                         {
                             fieldId: "snippet",
                             storageId: "snippetStorageId",
                             type: "rich-text",
                             id: "42",
-                            label: "Settings Rich Text"
+                            label: "Settings Rich Text",
+                            validation: [],
+                            listValidation: [],
                         },
                         {
                             fieldId: "options",
@@ -85,27 +92,37 @@ const objectField: CmsModelField = {
                                         storageId: "titleStorageId",
                                         type: "text",
                                         id: "431",
-                                        label: "Options Title"
+                                        label: "Options Title",
+                                        validation: [],
+                                        listValidation: [],
                                     },
                                     {
                                         fieldId: "price",
                                         storageId: "price",
                                         type: "number",
                                         id: "432",
-                                        label: "Options Price"
+                                        label: "Options Price",
+                                        validation: [],
+                                        listValidation: [],
                                     }
                                 ]
                             },
                             id: "43",
-                            label: "Settings Object"
+                            label: "Settings Object",
+                            validation: [],
+                            listValidation: [],
                         }
                     ]
                 },
                 id: "4",
-                label: "Settings"
+                label: "Settings",
+                validation: [],
+                listValidation: [],
             }
         ]
-    }
+    },
+    validation: [],
+    listValidation: [],
 };
 
 const input = {
@@ -182,7 +199,7 @@ describe("objectIndexing", () => {
             rawValue: input,
             field: objectField,
             getFieldIndexPlugin,
-            getFieldTypePlugin,
+            getFieldType,
             plugins: {},
             model: {}
         } as CmsModelFieldToElasticsearchToParams);
@@ -198,7 +215,7 @@ describe("objectIndexing", () => {
             rawValue: expectedRawValue,
             field: objectField,
             getFieldIndexPlugin,
-            getFieldTypePlugin,
+            getFieldType,
             plugins: {},
             model: {}
         } as CmsModelFieldToElasticsearchFromParams);

@@ -16,7 +16,7 @@ class ModelToAstConverterImpl implements ConverterAbstraction.Interface {
     public constructor(private readonly registry: CmsModelFieldToGraphQLRegistry.Interface) {}
 
     toAst(model: CmsModel): CmsModelAst {
-        const fieldTypePlugins = this.registry.getAllAsPlugins();
+        const fieldTypePlugins = this.registry.getAll();
 
         const converter = new CmsModelToAstConverter(
             new CmsModelFieldToAstConverterFromPlugins(fieldTypePlugins)

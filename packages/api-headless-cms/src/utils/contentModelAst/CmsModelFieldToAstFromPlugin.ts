@@ -1,22 +1,18 @@
-import type {
-    CmsModelField,
-    CmsModelFieldAstNode,
-    CmsModelFieldToGraphQLPlugin,
-    ICmsModelFieldToAst
-} from "~/types/index.js";
+import type { CmsModelField, CmsModelFieldAstNode, ICmsModelFieldToAst } from "~/types/index.js";
+import type { CmsModelFieldToGraphQL } from "~/features/graphql/index.js";
 
 export class CmsModelFieldToAstFromPlugin implements ICmsModelFieldToAst {
     private readonly converter: ICmsModelFieldToAst;
-    private plugin: CmsModelFieldToGraphQLPlugin;
+    private field: CmsModelFieldToGraphQL.Interface;
 
-    constructor(plugin: CmsModelFieldToGraphQLPlugin, converter: ICmsModelFieldToAst) {
+    constructor(field: CmsModelFieldToGraphQL.Interface, converter: ICmsModelFieldToAst) {
         this.converter = converter;
-        this.plugin = plugin;
+        this.field = field;
     }
 
     toAst(field: CmsModelField): CmsModelFieldAstNode {
-        return this.plugin.getFieldAst
-            ? this.plugin.getFieldAst(field, this.converter)
+        return this.field.getFieldAst
+            ? this.field.getFieldAst(field, this.converter)
             : { type: "field", field, children: [] };
     }
 }

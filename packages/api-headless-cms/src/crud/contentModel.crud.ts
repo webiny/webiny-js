@@ -27,9 +27,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         listFilteredModelsCache.clear();
     };
 
-    const fieldTypePlugins = context.container
-        .resolve(CmsModelFieldToGraphQLRegistry)
-        .getAllAsPlugins();
+    const fieldTypePlugins = context.container.resolve(CmsModelFieldToGraphQLRegistry).getAll();
 
     const getModelToAstConverter = () => {
         return new CmsModelToAstConverter(

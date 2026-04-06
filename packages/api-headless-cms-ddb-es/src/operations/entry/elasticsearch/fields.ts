@@ -165,7 +165,7 @@ interface FieldTypePlugin {
     unmappedType?: (field: Pick<CmsModelField, "fieldId" | "type">) => string | undefined;
     searchable: boolean;
     sortable: boolean;
-    fullTextSearch?: boolean;
+    isFullTextSearchable?: boolean;
 }
 
 interface FieldTypePlugins {
@@ -198,7 +198,7 @@ const buildCustomFields = (params: BuildCustomFieldsParams) => {
                 type: field.fieldType
             }),
             unmappedType,
-            fullTextSearch: field.searchable ? typePlugin.fullTextSearch : false,
+            fullTextSearch: field.searchable ? typePlugin.isFullTextSearchable : false,
             searchable: field.searchable || typePlugin.searchable,
             sortable: field.sortable || typePlugin.sortable,
             systemField: false,
@@ -226,7 +226,7 @@ const buildFieldsList = (params: BuildParams): ModelFields => {
             throw new WebinyError(`There is no plugin for field type "${field.type}".`);
         }
 
-        const { searchable, sortable, unmappedType, fullTextSearch } = plugin;
+        const { searchable, sortable, unmappedType, isFullTextSearchable: fullTextSearch } = plugin;
         /**
          * If a field has child fields, go through them and add them to a result.
          */
@@ -295,18 +295,15 @@ export const createModelFields = ({ plugins, model, fieldRegistry }: ICreateMode
     /**
      * Collect all field types from the plugins.
      */
-    const fieldTypePlugins = fieldRegistry
-        .getAllAsPlugins()
-        .reduce<FieldTypePlugins>((types, plugin) => {
-            const { fieldType, fullTextSearch } = plugin;
-            types[fieldType] = {
-                unmappedType: unmappedTypes[fieldType],
-                searchable: plugin.isSearchable,
-                sortable: plugin.isSortable,
-                fullTextSearch
-            };
-            return types;
-        }, {});
+    const fieldTypePlugins = fieldRegistry.getAll().reduce<FieldTypePlugins>((types, field) => {
+        types[field.fieldType] = {
+            unmappedType: unmappedTypes[field.fieldType],
+            searchable: field.isSearchable,
+            sortable: field.isSortable,
+            isFullTextSearchable: field.isFullTextSearchable
+        };
+        return types;
+    }, {});
 
     return {
         ...createSystemFields(),

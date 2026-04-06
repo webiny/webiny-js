@@ -29,14 +29,13 @@ export const createGraphQLSchemaPlugin = () => {
                 const modelsResult = await listModels.execute();
                 const models = modelsResult.value;
 
-                const fieldPlugins = fieldRegistry.getAllAsPluginRecords();
                 /**
                  * We need to register all plugins for all the CMS fields.
                  */
                 const plugins = createGraphQLSchemaPluginFromFieldPlugins({
                     models,
                     type: "manage",
-                    fieldTypePlugins: fieldPlugins,
+                    fieldRegistry,
                     createPlugin: ({ schema, type, fieldType }) => {
                         const plugin = new GraphQLSchemaPlugin(schema);
                         plugin.name = `fm.graphql.schema.${type}.field.${fieldType}`;
@@ -47,7 +46,7 @@ export const createGraphQLSchemaPlugin = () => {
                 const graphQlPlugin = createFilesSchema({
                     model: fileModel,
                     models,
-                    plugins: fieldPlugins
+                    fieldRegistry
                 });
 
                 context.plugins.register([...plugins, graphQlPlugin, getFileByUrl()]);

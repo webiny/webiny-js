@@ -127,9 +127,7 @@ describe("Validate model fields", () => {
         try {
             context.container.registerInstance(CmsModelFieldToGraphQLRegistry, {
                 get: () => undefined,
-                getAll: () => [],
-                getAllAsPlugins: () => [],
-                getAllAsPluginRecords: () => ({})
+                getAll: () => []
             });
             await validateModelFields({
                 context,

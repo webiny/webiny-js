@@ -36,8 +36,8 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
 }
 
 class RichTextToGraphQL implements CmsModelFieldToGraphQL.Interface {
-    private readonly read = new ReadApi();
-    private readonly manage = new ManageApi();
+    public readonly read = new ReadApi();
+    public readonly manage = new ManageApi();
 
     public readonly fieldType: CmsModelFieldType = "rich-text";
     public readonly isSearchable: boolean = false;

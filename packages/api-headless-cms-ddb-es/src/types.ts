@@ -6,7 +6,6 @@ import type {
     CmsEntryValues,
     CmsModel,
     CmsModelField,
-    CmsModelFieldToGraphQLPlugin,
     CmsModelFieldType,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
@@ -19,7 +18,10 @@ import type {
 import type { PluginsContainer } from "@webiny/plugins";
 import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
 import type { ITable } from "@webiny/db-dynamodb";
-import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import type {
+    CmsModelFieldToGraphQLRegistry,
+    CmsModelFieldToGraphQL
+} from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 export interface CmsContext extends BaseCmsContext, OpenSearchContext {}
 /**
@@ -59,7 +61,7 @@ export interface CmsModelFieldToElasticsearchToParams {
      */
     value: any;
     getFieldIndexPlugin(fieldType: string): CmsModelFieldToElasticsearchPlugin;
-    getFieldTypePlugin(fieldType: string): CmsModelFieldToGraphQLPlugin;
+    getFieldType(fieldType: string): CmsModelFieldToGraphQL.Interface | undefined;
 }
 
 /**
@@ -76,7 +78,7 @@ export interface CmsModelFieldToElasticsearchFromParams {
     value: any;
     rawValue: any;
     getFieldIndexPlugin(fieldType: string): CmsModelFieldToElasticsearchPlugin;
-    getFieldTypePlugin(fieldType: string): CmsModelFieldToGraphQLPlugin;
+    getFieldType(fieldType: string): CmsModelFieldToGraphQL.Interface | undefined;
 }
 
 interface ToIndexValue {

@@ -148,7 +148,7 @@ const mockIndexedEntry: Partial<CmsEntry> & Record<string, any> = {
 };
 
 const fieldRegistry = createFieldRegistry();
-const plugins = new PluginsContainer([...indexingPlugins(), ...fieldRegistry.getAllAsPlugins()]);
+const plugins = new PluginsContainer([...indexingPlugins()]);
 
 describe("entryIndexing", () => {
     it("should prepare entry for indexing", () => {

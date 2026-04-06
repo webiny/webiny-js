@@ -31,6 +31,8 @@ yarn > /dev/null 2>&1
 yarn webiny sync-dependencies
 ```
 
+Verify `packages/cli/files/duplicates.json` is an empty array (`[]`). If it contains entries, there are duplicate dependency versions that must be resolved before continuing.
+
 ### 3. Regenerate tsconfig files
 
 ```bash

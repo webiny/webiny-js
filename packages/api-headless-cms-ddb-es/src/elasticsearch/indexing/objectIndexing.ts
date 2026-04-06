@@ -9,11 +9,8 @@
  */
 
 import type { CmsModelFieldToElasticsearchPlugin } from "~/types.js";
-import type {
-    CmsModel,
-    CmsModelField,
-    CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModelFieldToGraphQL } from "@webiny/api-headless-cms/features/graphql/index.js";
 import type { PluginsContainer } from "@webiny/plugins";
 import { getFieldIdentifiers } from "~/helpers/index.js";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
@@ -24,7 +21,7 @@ interface ProcessToIndex {
         value: Record<string, any>;
         rawValue: Record<string, any>;
         getFieldIndexPlugin: (fieldType: string) => CmsModelFieldToElasticsearchPlugin;
-        getFieldTypePlugin: (fieldType: string) => CmsModelFieldToGraphQLPlugin;
+        getFieldType: (fieldType: string) => CmsModelFieldToGraphQL.Interface | undefined;
         plugins: PluginsContainer;
         fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
         model: CmsModel;
@@ -37,7 +34,7 @@ interface ProcessFromIndex {
         value: Record<string, any>;
         rawValue?: Record<string, any> | null;
         getFieldIndexPlugin: (fieldType: string) => CmsModelFieldToElasticsearchPlugin;
-        getFieldTypePlugin: (fieldType: string) => CmsModelFieldToGraphQLPlugin;
+        getFieldType: (fieldType: string) => CmsModelFieldToGraphQL.Interface | undefined;
         plugins: PluginsContainer;
         fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
         model: CmsModel;
@@ -58,7 +55,7 @@ const processToIndex: ProcessToIndex = ({
     value: sourceValue,
     rawValue: sourceRawValue,
     getFieldIndexPlugin,
-    getFieldTypePlugin,
+    getFieldType,
     plugins,
     fieldRegistry,
     model
@@ -80,7 +77,7 @@ const processToIndex: ProcessToIndex = ({
             value: sourceValue[identifiers.valueIdentifier || identifiers.rawValueIdentifier],
             rawValue: sourceRawValue[identifiers.rawValueIdentifier || identifiers.valueIdentifier],
             getFieldIndexPlugin,
-            getFieldTypePlugin,
+            getFieldType,
             fieldRegistry,
             plugins
         });
@@ -103,7 +100,7 @@ const processFromIndex: ProcessFromIndex = ({
     value: sourceValue,
     rawValue: sourceRawValue,
     getFieldIndexPlugin,
-    getFieldTypePlugin,
+    getFieldType,
     fieldRegistry,
     plugins,
     model
@@ -128,7 +125,7 @@ const processFromIndex: ProcessFromIndex = ({
                 ? sourceRawValue[identifiers.rawValueIdentifier || identifiers.valueIdentifier]
                 : null,
             getFieldIndexPlugin,
-            getFieldTypePlugin
+            getFieldType
         });
 
         if (value !== undefined) {
@@ -158,7 +155,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
         value: initialValue,
         rawValue: initialRawValue,
         getFieldIndexPlugin,
-        getFieldTypePlugin
+        getFieldType
     }) {
         if (!initialValue) {
             return {
@@ -182,7 +179,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
                     fieldRegistry,
                     rawValue: initialRawValue[key],
                     getFieldIndexPlugin,
-                    getFieldTypePlugin,
+                    getFieldType,
                     model,
                     plugins,
                     fields
@@ -202,7 +199,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
             value: initialValue,
             rawValue: initialRawValue,
             getFieldIndexPlugin,
-            getFieldTypePlugin,
+            getFieldType,
             model,
             plugins,
             fieldRegistry,
@@ -216,7 +213,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
         model,
         plugins,
         getFieldIndexPlugin,
-        getFieldTypePlugin,
+        getFieldType,
         fieldRegistry
     }) {
         if (!value) {
@@ -241,7 +238,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
                     value: value ? value[index] || {} : {},
                     rawValue: rawValue ? rawValue[index] || {} : {},
                     getFieldIndexPlugin,
-                    getFieldTypePlugin,
+                    getFieldType,
                     model,
                     plugins,
                     fieldRegistry,
@@ -254,7 +251,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
             value,
             rawValue,
             getFieldIndexPlugin,
-            getFieldTypePlugin,
+            getFieldType,
             model,
             plugins,
             fieldRegistry,

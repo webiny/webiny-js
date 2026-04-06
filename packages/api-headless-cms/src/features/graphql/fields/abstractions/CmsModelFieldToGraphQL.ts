@@ -5,18 +5,18 @@ import type { CmsModelField, CmsModelFieldType } from "~/types/modelField.js";
 import type { CmsModel } from "~/types/model.js";
 import type {
     CmsModelFieldDefinition,
-    CmsFieldTypePlugins,
     CmsModelFieldToGraphQLPluginValidateChildFields
 } from "~/types/types.js";
 import type { CmsContext } from "~/types/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { GetCmsModelFieldAst } from "~/types/modelAst.js";
+import type { CmsModelFieldToGraphQLRegistry } from "./CmsModelFieldToGraphQLRegistry.js";
 
 export interface CreateTypeFieldParams<TField extends CmsModelField = CmsModelField> {
     models: CmsModel[];
     model: CmsModel;
     field: TField;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 export interface CreateGetFiltersParams<TField extends CmsModelField = CmsModelField> {
@@ -26,7 +26,7 @@ export interface CreateGetFiltersParams<TField extends CmsModelField = CmsModelF
 export interface CreateListFiltersParams<TField extends CmsModelField = CmsModelField> {
     model: Pick<CmsModel, "singularApiName">;
     field: TField;
-    plugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 export interface CreateResolverParams<TField extends CmsModelField = CmsModelField> {
@@ -35,7 +35,7 @@ export interface CreateResolverParams<TField extends CmsModelField = CmsModelFie
     graphQLType: string;
     field: TField;
     createFieldResolvers: any;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 export type ResolverResult =
@@ -80,6 +80,8 @@ export interface ICmsModelFieldToGraphQL<TField extends CmsModelField = CmsModel
     readonly isFullTextSearchable: boolean;
 
     /* API surfaces. */
+    readonly read: ICmsFieldReadApi<TField>;
+    readonly manage: ICmsFieldManageApi<TField>;
     getReadApi(): ICmsFieldReadApi<TField>;
     getManageApi(): ICmsFieldManageApi<TField>;
 

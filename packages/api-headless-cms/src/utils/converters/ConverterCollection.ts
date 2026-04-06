@@ -29,7 +29,7 @@ export class ConverterCollection {
 
     public constructor(params: ConverterCollectionParams) {
         const { plugins, fieldRegistry } = params;
-        const fieldGraphQLPlugins = fieldRegistry.getAllAsPlugins();
+        const fieldGraphQLPlugins = fieldRegistry.getAll();
         const fieldConverterPlugins = plugins.byType<CmsModelFieldConverterPlugin>(
             CmsModelFieldConverterPlugin.type
         );

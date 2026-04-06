@@ -35,7 +35,7 @@ const remapTemplateValue = (value: any, typeName: string) => {
 const createDynamicZoneResolver = (
     endpointType: ApiEndpoint
 ): ((params: CmsModelFieldToGraphQL.ResolverParams) => CmsModelFieldToGraphQL.Resolver) => {
-    return ({ model, models, field, fieldTypePlugins, createFieldResolvers, graphQLType }) => {
+    return ({ model, models, field, fieldRegistry, createFieldResolvers, graphQLType }) => {
         const dzField = field as CmsModelDynamicZoneField;
         const templates = getFieldTemplates(dzField);
 
@@ -74,7 +74,7 @@ const createDynamicZoneResolver = (
             type: endpointType,
             typeOfType: "type",
             model,
-            fieldTypePlugins,
+            fieldRegistry,
             templates
         });
 
@@ -109,7 +109,7 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
         models,
         model,
         field,
-        fieldTypePlugins
+        fieldRegistry
     }: CmsModelFieldToGraphQL.TypeFieldParams): CmsModelFieldDefinition | null {
         const dzField = field as CmsModelDynamicZoneField;
         const templates = getFieldTemplates(dzField);
@@ -125,7 +125,7 @@ class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
             type: "read",
             typeOfType: "type",
             model,
-            fieldTypePlugins,
+            fieldRegistry,
             templates
         });
 
@@ -149,7 +149,7 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
         models,
         model,
         field,
-        fieldTypePlugins
+        fieldRegistry
     }: CmsModelFieldToGraphQL.TypeFieldParams): CmsModelFieldDefinition | null {
         const dzField = field as CmsModelDynamicZoneField;
         const templates = getFieldTemplates(dzField);
@@ -166,7 +166,7 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
             type: "manage",
             typeOfType: "type",
             model,
-            fieldTypePlugins,
+            fieldRegistry,
             templates
         });
 
@@ -190,7 +190,7 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
         models,
         model,
         field,
-        fieldTypePlugins
+        fieldRegistry
     }: CmsModelFieldToGraphQL.TypeFieldParams): CmsModelFieldDefinition | null {
         const dzField = field as CmsModelDynamicZoneField;
         const templates = getFieldTemplates(dzField);
@@ -205,7 +205,7 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
             type: "manage",
             typeOfType: "input",
             model,
-            fieldTypePlugins,
+            fieldRegistry,
             templates
         });
 
@@ -262,8 +262,8 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
 }
 
 class DynamicZoneToGraphQL implements CmsModelFieldToGraphQL.Interface {
-    private readonly read = new ReadApi();
-    private readonly manage = new ManageApi();
+    public readonly read = new ReadApi();
+    public readonly manage = new ManageApi();
 
     public readonly fieldType: CmsModelFieldType = "dynamicZone";
     public readonly isSearchable: boolean = false;

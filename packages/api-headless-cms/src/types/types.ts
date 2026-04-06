@@ -10,7 +10,8 @@ import type { CmsModelConverterCallable } from "~/utils/converters/ConverterColl
 import type { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import type { CmsModelToAstConverter } from "~/utils/contentModelAst/CmsModelToAstConverter.js";
-import type { CmsModelFieldToGraphQLPlugin } from "./plugins.js";
+import type { CmsModelFieldToGraphQL } from "~/features/graphql/fields/abstractions/CmsModelFieldToGraphQL.js";
+import type { ICmsModelFieldToGraphQLRegistry } from "~/features/graphql/fields/abstractions/CmsModelFieldToGraphQLRegistry.js";
 import type { CmsEntryContext } from "./context.js";
 import type { CmsModelField, CmsModelFieldValidation, CmsModelUpdateInput } from "./modelField.js";
 import type { CmsModel, CmsModelCreateFromInput, CmsModelCreateInput } from "./model.js";
@@ -220,10 +221,11 @@ export interface CmsModelFieldToGraphQLPluginValidateChildFields<
 }
 
 /**
+ * @deprecated Use CmsModelFieldToGraphQLRegistry.Interface instead.
  * @category ModelField
  */
 export interface CmsFieldTypePlugins {
-    [key: string]: CmsModelFieldToGraphQLPlugin;
+    [key: string]: CmsModelFieldToGraphQL.Interface;
 }
 
 /**
@@ -950,7 +952,7 @@ export interface CmsEntryValidateResponse {
  */
 interface CmsEntryResolverFactoryParams {
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: ICmsModelFieldToGraphQLRegistry;
 }
 
 /**

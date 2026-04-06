@@ -29,8 +29,8 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
 }
 
 class JsonToGraphQL implements CmsModelFieldToGraphQL.Interface {
-    private readonly read = new ReadApi();
-    private readonly manage = new ManageApi();
+    public readonly read = new ReadApi();
+    public readonly manage = new ManageApi();
 
     public readonly fieldType: CmsModelFieldType = "json";
     public readonly isSearchable: boolean = false;

@@ -54,8 +54,8 @@ class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
 }
 
 class NumberToGraphQL implements CmsModelFieldToGraphQL.Interface {
-    private readonly read = new ReadApi();
-    private readonly manage = new ManageApi();
+    public readonly read = new ReadApi();
+    public readonly manage = new ManageApi();
 
     public readonly fieldType: CmsModelFieldType = "number";
     public readonly isSearchable: boolean = true;

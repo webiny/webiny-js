@@ -1,12 +1,13 @@
-import type { CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/types/index.js";
+import type { CmsModel, CmsModelField } from "~/types/index.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 import type { CmsGraphQLSchemaSorterPlugin } from "~/plugins/CmsGraphQLSchemaSorterPlugin.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
+import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface RenderSortEnumParams {
     model: CmsModel;
     fields: CmsModelField[];
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     sorterPlugins?: CmsGraphQLSchemaSorterPlugin[];
 }
 
@@ -17,7 +18,7 @@ interface RenderSortEnum {
 export const renderSortEnum: RenderSortEnum = ({
     model,
     fields,
-    fieldTypePlugins,
+    fieldRegistry,
     sorterPlugins
 }): string => {
     const sorters: string[] = [
@@ -30,7 +31,7 @@ export const renderSortEnum: RenderSortEnum = ({
     ];
 
     for (const field of fields) {
-        const plugin = fieldTypePlugins[getBaseFieldType(field)];
+        const plugin = fieldRegistry.get(getBaseFieldType(field));
         if (!plugin?.isSortable) {
             continue;
         }

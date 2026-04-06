@@ -57,8 +57,6 @@ class CreateTenantSchema implements GraphQLSchemaFactory.Interface {
     }
 
     private async getExtensionsInput() {
-        const fieldTypePlugins = this.fieldRegistry.getAllAsPluginRecords();
-
         const modelsResult = await this.listModelsUseCase.execute({
             includePlugins: true,
             includePrivate: false
@@ -80,7 +78,7 @@ class CreateTenantSchema implements GraphQLSchemaFactory.Interface {
             models,
             model,
             fields: model.fields.filter(f => f.fieldId === "extensions"),
-            fieldTypePlugins
+            fieldRegistry: this.fieldRegistry
         });
 
         return inputCreateFields;

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import models from "../contentAPI/mocks/contentModels";
 import { renderSortEnum } from "~/utils/renderSortEnum";
 import { useHandler } from "~tests/testHelpers/useHandler";
-import type { CmsFieldTypePlugins, CmsModel } from "~/types";
+import type { CmsModel } from "~/types";
 import { createCmsGraphQLSchemaSorterPlugin } from "~/plugins";
 import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
@@ -11,7 +11,7 @@ const sortPlugin = createCmsGraphQLSchemaSorterPlugin(({ sorters }) => {
 });
 
 describe("Render GraphQL sort enum", () => {
-    let fieldTypePlugins: CmsFieldTypePlugins;
+    let fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 
     beforeEach(async () => {
         const { handler, tenant } = useHandler({});
@@ -22,8 +22,7 @@ describe("Render GraphQL sort enum", () => {
                 "x-tenant": tenant.id
             }
         });
-        const registry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
-        fieldTypePlugins = registry.getAllAsPluginRecords();
+        fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
     });
 
     it("should render non-deleted fields sorts - read API", () => {
@@ -32,7 +31,7 @@ describe("Render GraphQL sort enum", () => {
         const result = renderSortEnum({
             model,
             fields: model.fields,
-            fieldTypePlugins,
+            fieldRegistry,
             sorterPlugins: [sortPlugin]
         });
 
@@ -94,7 +93,7 @@ describe("Render GraphQL sort enum", () => {
         const result = renderSortEnum({
             model,
             fields: model.fields,
-            fieldTypePlugins,
+            fieldRegistry,
             sorterPlugins: [sortPlugin]
         });
 

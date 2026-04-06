@@ -54,7 +54,7 @@ const createContextPlugin = (params?: ICreateContextPluginParams) => {
         const graphQlPlugin = await createGraphQLSchema({
             model,
             models: publicModels,
-            fieldTypePlugins: fieldRegistry.getAllAsPluginRecords()
+            fieldRegistry
         });
 
         context.plugins.register(graphQlPlugin);

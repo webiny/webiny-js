@@ -28,8 +28,11 @@ export const prepareEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
     params: PrepareElasticsearchDataParams<T>
 ): CmsIndexEntry<T> => {
     const { fieldRegistry, storageEntry, entry, model, plugins } = params;
-    const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
-        setupEntriesIndexHelpers({ fieldRegistry, plugins });
+    const {
+        fieldIndexPlugins,
+        defaultIndexFieldPlugin,
+        fieldRegistry: registry
+    } = setupEntriesIndexHelpers({ fieldRegistry, plugins });
 
     function getFieldIndexPlugin(type: string) {
         const fieldType = getBaseFieldType({
@@ -38,13 +41,13 @@ export const prepareEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
         return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
     }
 
-    function getFieldTypePlugin(type: string) {
+    function getFieldType(type: string) {
         const fieldType = getBaseFieldType({
             type
         });
-        const pl = fieldTypePlugins[fieldType];
-        if (pl) {
-            return pl;
+        const impl = registry.get(fieldType);
+        if (impl) {
+            return impl;
         }
         throw new WebinyError(`Missing field type plugin "${fieldType}". Prepare entry for index.`);
     }
@@ -75,7 +78,7 @@ export const prepareEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
             rawValue: entry.values[identifier],
             value: storageEntry.values[identifier],
             getFieldIndexPlugin,
-            getFieldTypePlugin
+            getFieldType
         });
 
         if (typeof value !== "undefined") {
@@ -108,16 +111,12 @@ const setupEntriesIndexHelpers = ({
         }
         fieldIndexPlugins[plugin.fieldType] = plugin;
     }
-    // we will use this plugin if no targeted plugin found
     const defaultIndexFieldPlugin = plugins.find(plugin => plugin.fieldType === "*");
-
-    // CmsModelFieldToGraphQLPlugin plugins
-    const fieldTypePlugins = fieldRegistry.getAllAsPluginRecords();
 
     return {
         fieldIndexPlugins,
         defaultIndexFieldPlugin,
-        fieldTypePlugins
+        fieldRegistry
     };
 };
 
@@ -127,8 +126,11 @@ export const extractEntriesFromIndex = <T extends CmsEntryValues = CmsEntryValue
     entries,
     model
 }: ExtractEntriesFromIndexParams<T>): CmsEntry<T>[] => {
-    const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
-        setupEntriesIndexHelpers({ plugins, fieldRegistry });
+    const {
+        fieldIndexPlugins,
+        defaultIndexFieldPlugin,
+        fieldRegistry: registry
+    } = setupEntriesIndexHelpers({ plugins, fieldRegistry });
 
     function getFieldIndexPlugin(type: string) {
         const fieldType = getBaseFieldType({
@@ -137,11 +139,11 @@ export const extractEntriesFromIndex = <T extends CmsEntryValues = CmsEntryValue
         return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
     }
 
-    function getFieldTypePlugin(type: string) {
+    function getFieldType(type: string) {
         const fieldType = getBaseFieldType({
             type
         });
-        return fieldTypePlugins[fieldType];
+        return registry.get(fieldType);
     }
 
     const list: CmsEntry<T>[] = [];
@@ -152,7 +154,7 @@ export const extractEntriesFromIndex = <T extends CmsEntryValues = CmsEntryValue
 
         // We only consider fields that are present in the model
         for (const field of model.fields) {
-            const fieldTypePlugin = getFieldTypePlugin(field.type);
+            const fieldTypePlugin = getFieldType(field.type);
             if (!fieldTypePlugin) {
                 throw new WebinyError(
                     `Missing field type plugin "${field.type}". Extract entries from index.`
@@ -180,7 +182,7 @@ export const extractEntriesFromIndex = <T extends CmsEntryValues = CmsEntryValue
                     model,
                     field,
                     getFieldIndexPlugin,
-                    getFieldTypePlugin,
+                    getFieldType,
                     value: entry.values[key || rawKey],
                     /**
                      * Possibly no rawValues so we must check for the existence of the field.
