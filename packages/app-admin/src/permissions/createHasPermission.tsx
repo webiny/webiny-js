@@ -1,6 +1,7 @@
 import React from "react";
 import { createUsePermissions } from "./usePermissions.js";
-import type { HasPermissionProps, PermissionSchemaConfig } from "./types.js";
+import type { Abstraction } from "@webiny/di";
+import type { HasPermissionProps, PermissionSchemaConfig, UsePermissionsResult } from "./types.js";
 
 const BUILT_IN_ACTIONS: Record<string, string> = {
     read: "canRead",
@@ -11,10 +12,27 @@ const BUILT_IN_ACTIONS: Record<string, string> = {
     unpublish: "canUnpublish"
 };
 
+interface DiPermissions<S extends PermissionSchemaConfig> {
+    Abstraction: Abstraction<UsePermissionsResult<S>>;
+    schema: S;
+}
+
+/**
+ * @deprecated Pass `createPermissions(schema)` result instead of a raw schema.
+ */
 export function createHasPermission<const S extends PermissionSchemaConfig>(
     schema: S
+): React.FC<HasPermissionProps<S>>;
+
+export function createHasPermission<const S extends PermissionSchemaConfig>(
+    permissions: DiPermissions<S>
+): React.FC<HasPermissionProps<S>>;
+
+export function createHasPermission<const S extends PermissionSchemaConfig>(
+    schemaOrPermissions: S | DiPermissions<S>
 ): React.FC<HasPermissionProps<S>> {
-    const usePermissions = createUsePermissions(schema);
+    // TODO: temporary cast - this code will be refactored to only use DiPermissions
+    const usePermissions = createUsePermissions(schemaOrPermissions as any);
 
     return function HasPermission({ children, ...props }) {
         const permissions = usePermissions();
@@ -31,12 +49,8 @@ export function createHasPermission<const S extends PermissionSchemaConfig>(
             }
             const method = BUILT_IN_ACTIONS[singleAction] as keyof typeof permissions;
             if (method && typeof permissions[method] === "function") {
-                return permissions[method](entityId);
+                return (permissions[method] as (entityId: string) => boolean)(entityId);
             }
-            /**
-             * // TODO cant be typed properly because of the dynamic nature of custom actions.
-             */
-            // @ts-expect-error
             return permissions.canAction(singleAction, entityId);
         };
 

@@ -1,4 +1,5 @@
 export { createPermissionSchema } from "./createPermissionSchema.js";
+export { createPermissions } from "./createPermissions.js";
 export { createUsePermissions } from "./usePermissions.js";
 export {
     usePermissionForm,

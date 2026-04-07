@@ -1,4 +1,6 @@
 import { useIdentity } from "~/presentation/security/hooks/useIdentity.js";
+import { useContainer } from "@webiny/app";
+import type { Abstraction } from "@webiny/di";
 import type { Identity } from "~/domain/Identity.js";
 import type { PermissionSchemaConfig } from "./types.js";
 import type { OwnableItem } from "./types.js";
@@ -185,9 +187,40 @@ function buildResult<S extends PermissionSchemaConfig>(
     } as UsePermissionsResult<S>;
 }
 
+interface DiPermissions<S extends PermissionSchemaConfig> {
+    Abstraction: Abstraction<UsePermissionsResult<S>>;
+    schema: S;
+}
+
+function isDiPermissions<S extends PermissionSchemaConfig>(
+    arg: S | DiPermissions<S>
+): arg is DiPermissions<S> {
+    return "Abstraction" in arg;
+}
+
+/**
+ * @deprecated Pass `createPermissions(schema)` result instead of a raw schema.
+ */
 export function createUsePermissions<const S extends PermissionSchemaConfig>(
     schema: S
+): () => UsePermissionsResult<S>;
+
+export function createUsePermissions<const S extends PermissionSchemaConfig>(
+    permissions: DiPermissions<S>
+): () => UsePermissionsResult<S>;
+
+export function createUsePermissions<const S extends PermissionSchemaConfig>(
+    schemaOrPermissions: S | DiPermissions<S>
 ): () => UsePermissionsResult<S> {
+    if (isDiPermissions(schemaOrPermissions)) {
+        const abstraction = schemaOrPermissions.Abstraction;
+        return function usePermissions(): UsePermissionsResult<S> {
+            const container = useContainer();
+            return container.resolve(abstraction);
+        };
+    }
+
+    const schema = schemaOrPermissions;
     return function usePermissions(): UsePermissionsResult<S> {
         const { identity } = useIdentity();
 
