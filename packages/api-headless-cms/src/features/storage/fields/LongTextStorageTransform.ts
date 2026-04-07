@@ -8,7 +8,9 @@ interface StorageValue {
     isArray?: boolean;
 }
 
-class LongTextStorageTransformImpl implements StorageTransform.Interface<string | string[], StorageValue> {
+class LongTextStorageTransformImpl
+    implements StorageTransform.Interface<string | string[], StorageValue>
+{
     public readonly fieldType = "long-text";
 
     public constructor(private readonly compressionHandler: CompressionHandler.Interface) {}
@@ -16,7 +18,10 @@ class LongTextStorageTransformImpl implements StorageTransform.Interface<string 
     public async fromStorage({
         field,
         value: storageValue
-    }: StorageTransform.FromStorageParams<string | string[], StorageValue>): StorageTransform.FromStorageResponse<string | string[]> {
+    }: StorageTransform.FromStorageParams<
+        string | string[],
+        StorageValue
+    >): StorageTransform.FromStorageResponse<string | string[]> {
         const typeOf = typeof storageValue;
         if (
             !storageValue ||
@@ -47,7 +52,10 @@ class LongTextStorageTransformImpl implements StorageTransform.Interface<string 
 
     public async toStorage({
         value: initialValue
-    }: StorageTransform.ToStorageParams<string | string[], StorageValue>): StorageTransform.ToStorageResponse<StorageValue> {
+    }: StorageTransform.ToStorageParams<
+        string | string[],
+        StorageValue
+    >): StorageTransform.ToStorageResponse<StorageValue> {
         if (initialValue && (initialValue as unknown as StorageValue).compression) {
             return initialValue as unknown as StorageValue;
         }
