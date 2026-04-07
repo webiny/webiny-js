@@ -11,10 +11,13 @@ import { getContentModelTitleFieldId } from "./fields/titleField.js";
 import { getContentModelDescriptionFieldId } from "./fields/descriptionField.js";
 import { getContentModelImageFieldId } from "./fields/imageField.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
-import { CmsGraphQLSchemaPlugin, CmsGraphQLSchemaSorterPlugin } from "~/plugins/index.js";
+import { CmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins.js";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema.js";
-import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
+import {
+    CmsGraphQLSchemaSorter,
+    CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
 
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     const sdl = err.source?.body || "";
@@ -256,6 +259,7 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
      * contains a field for which a "cms-model-field-to-graphql" plugin does not exist on the backend.
      */
     const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
+    const sorters = context.container.resolveAll(CmsGraphQLSchemaSorter);
 
     validateFields({
         fields,
@@ -264,9 +268,6 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
     });
 
     if (fields.length) {
-        const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
-            CmsGraphQLSchemaSorterPlugin.type
-        );
         /**
          * Make sure that this model can be safely converted to a GraphQL SDL
          */
@@ -274,7 +275,7 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
             models,
             model,
             fieldRegistry,
-            sorterPlugins
+            sorters
         });
 
         try {

@@ -6,11 +6,14 @@ import { createReadResolvers } from "./createReadResolvers.js";
 import { createPreviewResolvers } from "./createPreviewResolvers.js";
 import { createGraphQLSchemaPluginFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
-import { CmsGraphQLSchemaSorterPlugin, createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
+import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { CMS_MODEL_SINGLETON_TAG } from "~/constants.js";
 import { createSingularSDL } from "./createSingularSDL.js";
 import { createSingularResolvers } from "./createSingularResolvers.js";
-import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
+import {
+    CmsGraphQLSchemaSorter,
+    CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
 
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
@@ -34,9 +37,7 @@ export const generateSchemaPlugins = async (
 
     const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
 
-    const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
-        CmsGraphQLSchemaSorterPlugin.type
-    );
+    const sorters = context.container.resolveAll(CmsGraphQLSchemaSorter);
 
     const schemaPlugins = createGraphQLSchemaPluginFromFieldPlugins({
         models,
@@ -76,7 +77,7 @@ export const generateSchemaPlugins = async (
                             models,
                             model,
                             fieldRegistry,
-                            sorterPlugins
+                            sorters
                         }),
                         resolvers: createManageResolvers({
                             models,
@@ -97,7 +98,7 @@ export const generateSchemaPlugins = async (
                             models,
                             model,
                             fieldRegistry,
-                            sorterPlugins
+                            sorters
                         }),
                         resolvers: cms.READ
                             ? createReadResolvers({

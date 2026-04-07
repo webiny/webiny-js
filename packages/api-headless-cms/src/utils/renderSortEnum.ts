@@ -1,14 +1,16 @@
 import type { CmsModel, CmsModelField } from "~/types/index.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
-import type { CmsGraphQLSchemaSorterPlugin } from "~/plugins/CmsGraphQLSchemaSorterPlugin.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
-import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
+import {
+    CmsGraphQLSchemaSorter,
+    type CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
 
 interface RenderSortEnumParams {
     model: CmsModel;
     fields: CmsModelField[];
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
-    sorterPlugins?: CmsGraphQLSchemaSorterPlugin[];
+    sorters: CmsGraphQLSchemaSorter.Interface[];
 }
 
 interface RenderSortEnum {
@@ -19,9 +21,9 @@ export const renderSortEnum: RenderSortEnum = ({
     model,
     fields,
     fieldRegistry,
-    sorterPlugins
+    sorters
 }): string => {
-    const sorters: string[] = [
+    const results: string[] = [
         `id_ASC`,
         `id_DESC`,
 
@@ -35,19 +37,19 @@ export const renderSortEnum: RenderSortEnum = ({
         if (!plugin?.isSortable) {
             continue;
         }
-        sorters.push(`values_${field.fieldId}_ASC`);
-        sorters.push(`values_${field.fieldId}_DESC`);
+        results.push(`values_${field.fieldId}_ASC`);
+        results.push(`values_${field.fieldId}_DESC`);
     }
-    if (!sorterPlugins) {
-        return sorters.join("\n");
+    if (sorters.length === 0) {
+        return results.join("\n");
     }
 
-    return sorterPlugins
-        .reduce((result, plugin) => {
-            return plugin.createSorter({
+    return sorters
+        .reduce((result, sorter) => {
+            return sorter.execute({
                 model,
                 sorters: result
             });
-        }, sorters)
+        }, results)
         .join("\n");
 };

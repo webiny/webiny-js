@@ -4,15 +4,17 @@ import { renderSortEnum } from "~/utils/renderSortEnum.js";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields.js";
 import { renderInputFields } from "~/utils/renderInputFields.js";
 import { renderFields } from "~/utils/renderFields.js";
-import type { CmsGraphQLSchemaSorterPlugin } from "~/plugins/index.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
-import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
+import {
+    CmsGraphQLSchemaSorter,
+    type CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
 
 interface CreateManageSDLParams {
     models: CmsModel[];
     model: CmsModel;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
-    sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
+    sorters: CmsGraphQLSchemaSorter.Interface[];
 }
 
 interface CreateManageSDL {
@@ -23,7 +25,7 @@ export const createManageSDL: CreateManageSDL = ({
     models,
     model,
     fieldRegistry,
-    sorterPlugins
+    sorters
 }): string => {
     const inputFields = renderInputFields({
         models,
@@ -43,7 +45,7 @@ export const createManageSDL: CreateManageSDL = ({
         model,
         fields: model.fields,
         fieldRegistry,
-        sorterPlugins
+        sorters
     });
     const getFilterFieldsRender = renderGetFilterFields({
         fields: model.fields,
