@@ -135,7 +135,7 @@ export const ApiRoute = defineExtension({
 
         await source.save();
     },
-    render(props) {
+    render() {
         return <ApiPulumi src={p("RegisterRoutesPulumi.js")} />;
     }
 });
