@@ -33,23 +33,23 @@ const { green, bold, cyan, gray, yellow } = chalk;
 /* Styled UI for MCP setup output — aligns visually with the rest of CWP output. */
 class CwpUi implements IUi {
     info(text: string, ...args: any[]): void {
-        console.log(gray(`  ${text}`), ...args);
+        console.log(gray(text), ...args);
     }
 
     success(text: string, ...args: any[]): void {
-        console.log(`  ${green("✔")} ${text}`, ...args);
+        console.log(`${green("✔")} ${text}`, ...args);
     }
 
     error(text: string, ...args: any[]): void {
-        console.error(`  ${chalk.red("✘")} ${text}`, ...args);
+        console.error(`${chalk.red("✘")} ${text}`, ...args);
     }
 
     warning(text: string, ...args: any[]): void {
-        console.warn(`  ${yellow("⚠")} ${text}`, ...args);
+        console.warn(`${yellow("⚠")} ${text}`, ...args);
     }
 
     text(text: string): void {
-        console.log(`  ${text}`);
+        console.log(text);
     }
 
     emptyLine(): void {
