@@ -6,7 +6,7 @@ import {
 import { UpdatePageUseCase as UseCaseAbstraction, UpdatePageRepository } from "./abstractions.js";
 import { PageBeforeUpdateEvent, PageAfterUpdateEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -67,10 +67,5 @@ class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdatePageUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdatePageUseCaseImpl,
-    dependencies: [
-        WbPermissions.Abstraction,
-        EventPublisher,
-        GetPageByIdUseCase,
-        UpdatePageRepository
-    ]
+    dependencies: [WbPermissions, EventPublisher, GetPageByIdUseCase, UpdatePageRepository]
 });

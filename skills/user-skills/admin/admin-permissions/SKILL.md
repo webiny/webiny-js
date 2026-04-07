@@ -21,49 +21,49 @@ Permissions follow three layers: **domain** (schema), **features** (DI artifacts
 Define the schema in `src/domain/permissionsSchema.ts`:
 
 ```ts
-import { createPermissionSchema } from "webiny/admin";
+import { createPermissionSchema } from "webiny/admin/security";
 
 export const SM_PERMISSIONS_SCHEMA = createPermissionSchema({
-    prefix: "sm",
-    fullAccess: true,
-    entities: [
-        {
-            id: "product",
-            title: "Products",
-            permission: "sm.product",
-            scopes: ["full", "own"],
-            actions: [
-                { name: "rwd" },
-                { name: "pw" },
-                { name: "import", label: "Import products" },
-                { name: "export", label: "Export products" }
-            ]
-        },
-        {
-            id: "category",
-            title: "Categories",
-            permission: "sm.category",
-            scopes: ["full"],
-            actions: [{ name: "rwd" }]
-        },
-        {
-            id: "settings",
-            title: "Settings",
-            permission: "sm.settings",
-            scopes: ["full"]
-        }
-    ]
+  prefix: "sm",
+  fullAccess: true,
+  entities: [
+    {
+      id: "product",
+      title: "Products",
+      permission: "sm.product",
+      scopes: ["full", "own"],
+      actions: [
+        { name: "rwd" },
+        { name: "pw" },
+        { name: "import", label: "Import products" },
+        { name: "export", label: "Export products" }
+      ]
+    },
+    {
+      id: "category",
+      title: "Categories",
+      permission: "sm.category",
+      scopes: ["full"],
+      actions: [{ name: "rwd" }]
+    },
+    {
+      id: "settings",
+      title: "Settings",
+      permission: "sm.settings",
+      scopes: ["full"]
+    }
+  ]
 });
 ```
 
 ### Schema Reference
 
-| Field        | Type                 | Required | Description                                                    |
-| ------------ | -------------------- | -------- | -------------------------------------------------------------- |
-| `prefix`     | `string`             | Yes      | Permission prefix (e.g., `"sm"`)                               |
-| `fullAccess` | `true \| object`     | Yes      | `true` for standard full access. Pass an object with custom boolean flags for full-access extras (e.g., `{ canForceUnlock: true }`). |
-| `readOnlyAccess` | `boolean`        | No       | Whether to show a "Read-only access" option                    |
-| `entities`   | `EntityDefinition[]` | No       | Entity definitions. Omit for binary full/no access.            |
+| Field            | Type                 | Required | Description                                                                                                                          |
+| ---------------- | -------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `prefix`         | `string`             | Yes      | Permission prefix (e.g., `"sm"`)                                                                                                     |
+| `fullAccess`     | `true \| object`     | Yes      | `true` for standard full access. Pass an object with custom boolean flags for full-access extras (e.g., `{ canForceUnlock: true }`). |
+| `readOnlyAccess` | `boolean`            | No       | Whether to show a "Read-only access" option                                                                                          |
+| `entities`       | `EntityDefinition[]` | No       | Entity definitions. Omit for binary full/no access.                                                                                  |
 
 ### Entity Definition
 
@@ -102,8 +102,8 @@ Omit `entities` for binary full/no access:
 
 ```ts
 export const MA_PERMISSIONS_SCHEMA = createPermissionSchema({
-    prefix: "ma",
-    fullAccess: true
+  prefix: "ma",
+  fullAccess: true
 });
 ```
 
@@ -114,28 +114,25 @@ export const MA_PERMISSIONS_SCHEMA = createPermissionSchema({
 ### Abstraction (`src/features/permissions/abstractions.ts`)
 
 ```ts
-import { createPermissionsAbstraction } from "webiny/admin";
-import type { Permissions } from "webiny/admin";
+import { createPermissionsAbstraction } from "webiny/admin/security";
+import type { Permissions } from "webiny/admin/security";
 import { SM_PERMISSIONS_SCHEMA } from "~/domain/permissionsSchema.js";
 
 export const SmPermissions = createPermissionsAbstraction(SM_PERMISSIONS_SCHEMA);
 
 export namespace SmPermissions {
-    export type Interface = Permissions<typeof SM_PERMISSIONS_SCHEMA>;
+  export type Interface = Permissions<typeof SM_PERMISSIONS_SCHEMA>;
 }
 ```
 
 ### Feature (`src/features/permissions/feature.ts`)
 
 ```ts
-import { createPermissionsFeature } from "webiny/admin";
+import { createPermissionsFeature } from "webiny/admin/security";
 import { SM_PERMISSIONS_SCHEMA } from "~/domain/permissionsSchema.js";
 import { SmPermissions } from "./abstractions.js";
 
-export const SmPermissionsFeature = createPermissionsFeature(
-    SM_PERMISSIONS_SCHEMA,
-    SmPermissions
-);
+export const SmPermissionsFeature = createPermissionsFeature(SM_PERMISSIONS_SCHEMA, SmPermissions);
 ```
 
 ### Extension Registration
@@ -143,7 +140,7 @@ export const SmPermissionsFeature = createPermissionsFeature(
 Register the feature and the permission UI in your extension component:
 
 ```tsx
-import { AdminConfig, RegisterFeature } from "webiny/admin";
+import { AdminConfig, RegisterFeature } from "webiny/admin/security";
 import { ReactComponent as Icon } from "@webiny/icons/shield.svg";
 import { SM_PERMISSIONS_SCHEMA } from "~/domain/permissionsSchema.js";
 import { SmPermissionsFeature } from "~/features/permissions/feature.js";
@@ -151,21 +148,21 @@ import { SmPermissionsFeature } from "~/features/permissions/feature.js";
 const { Security } = AdminConfig;
 
 export const Extension = () => {
-    return (
-        <>
-            <RegisterFeature feature={SmPermissionsFeature} />
-            <AdminConfig>
-                <Security.Permissions
-                    name="store-manager"
-                    title="Store Manager"
-                    description="Manage Store Manager permissions."
-                    icon={<Icon />}
-                    schema={SM_PERMISSIONS_SCHEMA}
-                />
-                {/* Routes, menus, etc. */}
-            </AdminConfig>
-        </>
-    );
+  return (
+    <>
+      <RegisterFeature feature={SmPermissionsFeature} />
+      <AdminConfig>
+        <Security.Permissions
+          name="store-manager"
+          title="Store Manager"
+          description="Manage Store Manager permissions."
+          icon={<Icon />}
+          schema={SM_PERMISSIONS_SCHEMA}
+        />
+        {/* Routes, menus, etc. */}
+      </AdminConfig>
+    </>
+  );
 };
 ```
 
@@ -177,7 +174,7 @@ export const Extension = () => {
 
 ```ts
 // src/presentation/security/usePermissions.ts
-import { createUsePermissions } from "webiny/admin";
+import { createUsePermissions } from "webiny/admin/security";
 import { SmPermissions } from "~/features/permissions/abstractions.js";
 
 export const usePermissions = createUsePermissions(SmPermissions);
@@ -188,13 +185,13 @@ Usage:
 ```ts
 const permissions = usePermissions();
 
-permissions.canAccess("product");     // has any access
-permissions.canRead("product");       // rwd includes "r"
-permissions.canCreate("product");     // rwd includes "w"
+permissions.canAccess("product"); // has any access
+permissions.canRead("product"); // rwd includes "r"
+permissions.canCreate("product"); // rwd includes "w"
 permissions.canEdit("product", item); // rwd includes "w", respects own scope
-permissions.canDelete("product");     // rwd includes "d"
-permissions.canPublish("product");    // pw includes "p"
-permissions.canUnpublish("product");  // pw includes "u"
+permissions.canDelete("product"); // rwd includes "d"
+permissions.canPublish("product"); // pw includes "p"
+permissions.canUnpublish("product"); // pw includes "u"
 permissions.canAction("import", "product"); // custom boolean flag
 ```
 
@@ -204,7 +201,7 @@ Entity IDs are fully typed — `canRead("bogus")` produces a type error.
 
 ```tsx
 // src/presentation/security/HasPermission.tsx
-import { createHasPermission } from "webiny/admin";
+import { createHasPermission } from "webiny/admin/security";
 import { SmPermissions } from "~/features/permissions/abstractions.js";
 import { SM_PERMISSIONS_SCHEMA } from "~/domain/permissionsSchema.js";
 
@@ -250,18 +247,18 @@ import type { SmPermissions } from "~/features/permissions/abstractions.js";
 import { SmPermissions as SmPermissionsAbstraction } from "~/features/permissions/abstractions.js";
 
 class SomeFeatureImpl {
-    constructor(private permissions: SmPermissions.Interface) {}
+  constructor(private permissions: SmPermissions.Interface) {}
 
-    doSomething() {
-        if (this.permissions.canEdit("product")) {
-            // ...
-        }
+  doSomething() {
+    if (this.permissions.canEdit("product")) {
+      // ...
     }
+  }
 }
 
 const SomeFeature = SomeAbstraction.createImplementation({
-    implementation: SomeFeatureImpl,
-    dependencies: [SmPermissionsAbstraction]
+  implementation: SomeFeatureImpl,
+  dependencies: [SmPermissionsAbstraction]
 });
 ```
 

@@ -1,5 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
+import { createFeature } from "@webiny/feature/api";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
+import type { Abstraction } from "@webiny/di";
 import type { PermissionSchemaConfig } from "./types.js";
 import type { OwnableItem } from "./types.js";
 import type { Permissions } from "./types.js";
@@ -34,228 +36,249 @@ function getEntity(entityMap: Map<string, EntityLookup>, entityId: string): Enti
     return entity;
 }
 
-export function createPermissions<const S extends PermissionSchemaConfig>(schema: S) {
-    const entityMap = buildEntityMap(schema);
-    const fullAccessName = `${schema.prefix}.*`;
+class SchemaPermissions<S extends PermissionSchemaConfig> {
+    private readonly entityMap: Map<string, EntityLookup>;
+    private readonly fullAccessName: string;
+    private readonly identityContext: IdentityContext.Interface;
 
-    class SchemaPermissions {
-        constructor(private identityContext: IdentityContext.Interface) {}
+    constructor(schema: S, identityContext: IdentityContext.Interface) {
+        this.entityMap = buildEntityMap(schema);
+        this.fullAccessName = `${schema.prefix}.*`;
+        this.identityContext = identityContext;
+    }
 
-        async canAccess(entityId: string, item?: OwnableItem): Promise<boolean> {
-            if (await this.identityContext.hasFullAccess()) {
-                return true;
-            }
-            if (await this.hasFullSchemaAccess()) {
-                return true;
-            }
-            const entity = getEntity(entityMap, entityId);
-            const permissions = await this.getEntityPermissions(entity.permission);
-            if (!permissions.length) {
-                return false;
-            }
-            // No item — just check entity-level access.
-            if (item === undefined) {
-                return true;
-            }
-            // Item provided — if all permissions require own, verify ownership.
-            const ownOnly = !permissions.some(p => !p.own);
-            if (!ownOnly) {
-                return true;
-            }
-            const identity = this.identityContext.getIdentity();
-            return item.createdBy?.id === identity.id;
+    async canAccess(entityId: string, item?: OwnableItem): Promise<boolean> {
+        if (await this.identityContext.hasFullAccess()) {
+            return true;
         }
-
-        async onlyOwnRecords(entityId: string): Promise<boolean> {
-            if (await this.identityContext.hasFullAccess()) {
-                return false;
-            }
-            if (await this.hasFullSchemaAccess()) {
-                return false;
-            }
-            const entity = getEntity(entityMap, entityId);
-            const permissions = await this.getEntityPermissions(entity.permission);
-            if (!permissions.length) {
-                return false;
-            }
-            return !permissions.some(p => !p.own);
+        if (await this.hasFullSchemaAccess()) {
+            return true;
         }
+        const entity = getEntity(this.entityMap, entityId);
+        const permissions = await this.getEntityPermissions(entity.permission);
+        if (!permissions.length) {
+            return false;
+        }
+        // No item — just check entity-level access.
+        if (item === undefined) {
+            return true;
+        }
+        // Item provided — if all permissions require own, verify ownership.
+        const ownOnly = !permissions.some(p => !p.own);
+        if (!ownOnly) {
+            return true;
+        }
+        const identity = this.identityContext.getIdentity();
+        return item.createdBy?.id === identity.id;
+    }
 
-        async canRead(entityId: string): Promise<boolean> {
-            if (await this.identityContext.hasFullAccess()) {
+    async onlyOwnRecords(entityId: string): Promise<boolean> {
+        if (await this.identityContext.hasFullAccess()) {
+            return false;
+        }
+        if (await this.hasFullSchemaAccess()) {
+            return false;
+        }
+        const entity = getEntity(this.entityMap, entityId);
+        const permissions = await this.getEntityPermissions(entity.permission);
+        if (!permissions.length) {
+            return false;
+        }
+        return !permissions.some(p => !p.own);
+    }
+
+    async canRead(entityId: string): Promise<boolean> {
+        if (await this.identityContext.hasFullAccess()) {
+            return true;
+        }
+        if (await this.hasFullSchemaAccess()) {
+            return true;
+        }
+        const entity = getEntity(this.entityMap, entityId);
+        const permissions = await this.getEntityPermissions(entity.permission);
+        if (!permissions.length) {
+            return false;
+        }
+        return permissions.some(permission => {
+            if (typeof permission.rwd !== "string") {
                 return true;
             }
-            if (await this.hasFullSchemaAccess()) {
+            return permission.rwd.includes("r");
+        });
+    }
+
+    async canCreate(entityId: string): Promise<boolean> {
+        if (await this.identityContext.hasFullAccess()) {
+            return true;
+        }
+        if (await this.hasFullSchemaAccess()) {
+            return true;
+        }
+        const entity = getEntity(this.entityMap, entityId);
+        const permissions = await this.getEntityPermissions(entity.permission);
+        if (!permissions.length) {
+            return false;
+        }
+        return permissions.some(permission => {
+            if (typeof permission.rwd !== "string") {
                 return true;
             }
-            const entity = getEntity(entityMap, entityId);
-            const permissions = await this.getEntityPermissions(entity.permission);
-            if (!permissions.length) {
-                return false;
-            }
-            return permissions.some(permission => {
-                if (typeof permission.rwd !== "string") {
+            return permission.rwd.includes("w");
+        });
+    }
+
+    async canEdit(entityId: string, item?: OwnableItem): Promise<boolean> {
+        if (await this.identityContext.hasFullAccess()) {
+            return true;
+        }
+        if (await this.hasFullSchemaAccess()) {
+            return true;
+        }
+        const entity = getEntity(this.entityMap, entityId);
+        const permissions = await this.getEntityPermissions(entity.permission);
+        if (!permissions.length) {
+            return false;
+        }
+        const identity = this.identityContext.getIdentity();
+        return permissions.some(permission => {
+            if (permission.own) {
+                // No item provided (new/unsaved) — allow access.
+                if (!item?.createdBy) {
                     return true;
                 }
-                return permission.rwd.includes("r");
-            });
+                return item.createdBy.id === identity.id;
+            }
+            if (typeof permission.rwd !== "string") {
+                return true;
+            }
+            return permission.rwd.includes("w");
+        });
+    }
+
+    async canDelete(entityId: string, item?: OwnableItem): Promise<boolean> {
+        if (await this.identityContext.hasFullAccess()) {
+            return true;
         }
-
-        async canCreate(entityId: string): Promise<boolean> {
-            if (await this.identityContext.hasFullAccess()) {
-                return true;
-            }
-            if (await this.hasFullSchemaAccess()) {
-                return true;
-            }
-            const entity = getEntity(entityMap, entityId);
-            const permissions = await this.getEntityPermissions(entity.permission);
-            if (!permissions.length) {
-                return false;
-            }
-            return permissions.some(permission => {
-                if (typeof permission.rwd !== "string") {
-                    return true;
-                }
-                return permission.rwd.includes("w");
-            });
+        if (await this.hasFullSchemaAccess()) {
+            return true;
         }
-
-        async canEdit(entityId: string, item?: OwnableItem): Promise<boolean> {
-            if (await this.identityContext.hasFullAccess()) {
-                return true;
-            }
-            if (await this.hasFullSchemaAccess()) {
-                return true;
-            }
-            const entity = getEntity(entityMap, entityId);
-            const permissions = await this.getEntityPermissions(entity.permission);
-            if (!permissions.length) {
-                return false;
-            }
-            const identity = this.identityContext.getIdentity();
-            return permissions.some(permission => {
-                if (permission.own) {
-                    // No item provided (new/unsaved) — allow access.
-                    if (!item?.createdBy) {
-                        return true;
-                    }
-                    return item.createdBy.id === identity.id;
-                }
-                if (typeof permission.rwd !== "string") {
-                    return true;
-                }
-                return permission.rwd.includes("w");
-            });
+        const entity = getEntity(this.entityMap, entityId);
+        const permissions = await this.getEntityPermissions(entity.permission);
+        if (!permissions.length) {
+            return false;
         }
+        const identity = this.identityContext.getIdentity();
+        return permissions.some(permission => {
+            if (permission.own) {
+                return item?.createdBy?.id === identity.id;
+            }
+            if (typeof permission.rwd !== "string") {
+                return true;
+            }
+            return permission.rwd.includes("d");
+        });
+    }
 
-        async canDelete(entityId: string, item?: OwnableItem): Promise<boolean> {
-            if (await this.identityContext.hasFullAccess()) {
-                return true;
-            }
-            if (await this.hasFullSchemaAccess()) {
-                return true;
-            }
-            const entity = getEntity(entityMap, entityId);
-            const permissions = await this.getEntityPermissions(entity.permission);
-            if (!permissions.length) {
-                return false;
-            }
-            const identity = this.identityContext.getIdentity();
-            return permissions.some(permission => {
-                if (permission.own) {
-                    return item?.createdBy?.id === identity.id;
-                }
-                if (typeof permission.rwd !== "string") {
-                    return true;
-                }
-                return permission.rwd.includes("d");
-            });
+    async canPublish(entityId: string): Promise<boolean> {
+        if (await this.identityContext.hasFullAccess()) {
+            return true;
         }
-
-        async canPublish(entityId: string): Promise<boolean> {
-            if (await this.identityContext.hasFullAccess()) {
-                return true;
-            }
-            if (await this.hasFullSchemaAccess()) {
-                return true;
-            }
-            const entity = getEntity(entityMap, entityId);
-            const permissions = await this.getEntityPermissions(entity.permission);
-            if (!permissions.length) {
-                return false;
-            }
-            return permissions.some(permission => {
-                return permission.pw?.includes("p");
-            });
+        if (await this.hasFullSchemaAccess()) {
+            return true;
         }
-
-        async canUnpublish(entityId: string): Promise<boolean> {
-            if (await this.identityContext.hasFullAccess()) {
-                return true;
-            }
-            if (await this.hasFullSchemaAccess()) {
-                return true;
-            }
-            const entity = getEntity(entityMap, entityId);
-            const permissions = await this.getEntityPermissions(entity.permission);
-            if (!permissions.length) {
-                return false;
-            }
-            return permissions.some(permission => {
-                return permission.pw?.includes("u");
-            });
+        const entity = getEntity(this.entityMap, entityId);
+        const permissions = await this.getEntityPermissions(entity.permission);
+        if (!permissions.length) {
+            return false;
         }
+        return permissions.some(permission => {
+            return permission.pw?.includes("p");
+        });
+    }
 
-        async canAction(action: string, entityId: string): Promise<boolean> {
-            if (await this.identityContext.hasFullAccess()) {
-                return true;
-            }
-            if (await this.hasFullSchemaAccess()) {
-                return true;
-            }
-            const entity = getEntity(entityMap, entityId);
-            const permissions = await this.getEntityPermissions(entity.permission);
-            if (!permissions.length) {
-                return false;
-            }
-            return permissions.some(permission => {
-                return permission[action] === true;
-            });
+    async canUnpublish(entityId: string): Promise<boolean> {
+        if (await this.identityContext.hasFullAccess()) {
+            return true;
         }
-
-        private async getEntityPermissions(entityPermission: string): Promise<any[]> {
-            const permissions = await this.identityContext.getPermissions(entityPermission);
-            if (permissions.length) {
-                return permissions;
-            }
-            // Fall back to the schema wildcard (e.g. "test.*") — its flags apply to all entities.
-            const wildcard = await this.identityContext.getPermission(fullAccessName);
-            return wildcard ? [wildcard] : [];
+        if (await this.hasFullSchemaAccess()) {
+            return true;
         }
+        const entity = getEntity(this.entityMap, entityId);
+        const permissions = await this.getEntityPermissions(entity.permission);
+        if (!permissions.length) {
+            return false;
+        }
+        return permissions.some(permission => {
+            return permission.pw?.includes("u");
+        });
+    }
 
-        private async hasFullSchemaAccess(): Promise<boolean> {
-            const permission = await this.identityContext.getPermission(fullAccessName);
-            if (!permission) {
-                return false;
-            }
-            // Only treat as full access if the permission has no `rwd` flag.
-            // A permission like { name: "wb.*", rwd: "r" } should NOT grant full access.
-            const keys = Object.keys(permission).filter(k => k !== "name");
+    async canAction(action: string, entityId: string): Promise<boolean> {
+        if (await this.identityContext.hasFullAccess()) {
+            return true;
+        }
+        if (await this.hasFullSchemaAccess()) {
+            return true;
+        }
+        const entity = getEntity(this.entityMap, entityId);
+        const permissions = await this.getEntityPermissions(entity.permission);
+        if (!permissions.length) {
+            return false;
+        }
+        return permissions.some(permission => {
+            return permission[action] === true;
+        });
+    }
 
-            const hasRwd = keys.includes("rwd");
+    private async getEntityPermissions(entityPermission: string): Promise<any[]> {
+        const permissions = await this.identityContext.getPermissions(entityPermission);
+        if (permissions.length) {
+            return permissions;
+        }
+        // Fall back to the schema wildcard (e.g. "test.*") — its flags apply to all entities.
+        const wildcard = await this.identityContext.getPermission(this.fullAccessName);
+        return wildcard ? [wildcard] : [];
+    }
 
-            // It's full-access only if there's no `rwd` flag.
-            return !hasRwd;
+    private async hasFullSchemaAccess(): Promise<boolean> {
+        const permission = await this.identityContext.getPermission(this.fullAccessName);
+        if (!permission) {
+            return false;
+        }
+        // Only treat as full access if the permission has no `rwd` flag.
+        // A permission like { name: "wb.*", rwd: "r" } should NOT grant full access.
+        const keys = Object.keys(permission).filter(k => k !== "name");
+
+        const hasRwd = keys.includes("rwd");
+
+        // It's full-access only if there's no `rwd` flag.
+        return !hasRwd;
+    }
+}
+
+export function createPermissionsAbstraction<const S extends PermissionSchemaConfig>(schema: S) {
+    return createAbstraction<Permissions<S>>(`${schema.prefix}:Permissions`);
+}
+
+export function createPermissionsFeature<const S extends PermissionSchemaConfig>(
+    schema: S,
+    abstraction: Abstraction<Permissions<S>>
+) {
+    class PermissionsImpl extends SchemaPermissions<S> {
+        constructor(identityContext: IdentityContext.Interface) {
+            super(schema, identityContext);
         }
     }
 
-    const Abstraction = createAbstraction<Permissions<S>>(`${schema.prefix}:Permissions`);
-
-    const Implementation = Abstraction.createImplementation({
-        implementation: SchemaPermissions,
+    const Implementation = abstraction.createImplementation({
+        implementation: PermissionsImpl,
         dependencies: [IdentityContext]
     } as any);
 
-    return { Abstraction, Implementation };
+    return createFeature({
+        name: `${schema.prefix}:Permissions`,
+        register(container) {
+            container.register(Implementation);
+        }
+    });
 }

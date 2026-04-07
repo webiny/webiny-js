@@ -34,5 +34,5 @@ class GetFileUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const GetFileUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetFileUseCaseImpl,
-    dependencies: [FmPermissions.Abstraction, GetFileRepository]
+    dependencies: [FmPermissions, GetFileRepository]
 });

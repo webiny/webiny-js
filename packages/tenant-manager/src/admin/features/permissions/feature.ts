@@ -1,4 +1,4 @@
-import { createPermissionsFeature } from "@webiny/app-admin/exports/admin.js";
+import { createPermissionsFeature } from "@webiny/app-admin/exports/admin/security.js";
 import { TM_PERMISSIONS_SCHEMA } from "~/admin/domain/permissionsSchema.js";
 import { TmPermissions } from "./abstractions.js";
 

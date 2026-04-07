@@ -1,4 +1,4 @@
-import { createPermissionsFeature } from "@webiny/app-admin/exports/admin.js";
+import { createPermissionsFeature } from "@webiny/app-admin/exports/admin/security.js";
 import { CognitoPermissions } from "./abstractions.js";
 import { COGNITO_PERMISSIONS_SCHEMA } from "~/admin/domain/permissionsSchema.js";
 

@@ -9,7 +9,7 @@ import {
 } from "./abstractions.js";
 import { RedirectBeforeMoveEvent, RedirectAfterMoveEvent } from "./events.js";
 import { GetRedirectByIdUseCase } from "~/features/redirects/GetRedirectById/index.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { RedirectNotAuthorizedError } from "~/domain/redirect/errors.js";
 
 class MoveRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -71,10 +71,5 @@ class MoveRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
 export const MoveRedirectUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: MoveRedirectUseCaseImpl,
-    dependencies: [
-        WbPermissions.Abstraction,
-        EventPublisher,
-        GetRedirectByIdUseCase,
-        MoveRedirectRepository
-    ]
+    dependencies: [WbPermissions, EventPublisher, GetRedirectByIdUseCase, MoveRedirectRepository]
 });

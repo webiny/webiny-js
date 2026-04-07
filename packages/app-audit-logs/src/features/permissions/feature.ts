@@ -1,4 +1,4 @@
-import { createPermissionsFeature } from "@webiny/app-admin/exports/admin.js";
+import { createPermissionsFeature } from "@webiny/app-admin/exports/admin/security.js";
 import { AL_PERMISSIONS_SCHEMA } from "~/domain/permissionsSchema.js";
 import { AuditLogsPermissions } from "./abstractions.js";
 

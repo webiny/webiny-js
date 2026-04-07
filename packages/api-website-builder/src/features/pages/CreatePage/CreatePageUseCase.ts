@@ -5,7 +5,7 @@ import {
 } from "@webiny/api-core/features/EventPublisher";
 import { CreatePageUseCase as UseCaseAbstraction, CreatePageRepository } from "./abstractions.js";
 import { PageBeforeCreateEvent, PageAfterCreateEvent } from "./events.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class CreatePageUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -46,5 +46,5 @@ class CreatePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const CreatePageUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreatePageUseCaseImpl,
-    dependencies: [WbPermissions.Abstraction, EventPublisher, CreatePageRepository]
+    dependencies: [WbPermissions, EventPublisher, CreatePageRepository]
 });

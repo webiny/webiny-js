@@ -85,7 +85,7 @@ export const UpdateFileUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateFileUseCaseImpl,
     dependencies: [
         IdentityContext,
-        FmPermissions.Abstraction,
+        FmPermissions,
         GetFileUseCase,
         UpdateFileRepository,
         EventPublisher
