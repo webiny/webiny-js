@@ -2,9 +2,7 @@ import { CmsModelFieldPatternValidator } from "./abstractions/CmsModelFieldPatte
 import { CmsModelFieldPatternValidatorRegistry as RegistryAbstraction } from "./abstractions/CmsModelFieldPatternValidatorRegistry.js";
 
 class CmsModelFieldPatternValidatorRegistryImpl implements RegistryAbstraction.Interface {
-    public constructor(
-        private readonly validators: CmsModelFieldPatternValidator.Interface[]
-    ) {}
+    public constructor(private readonly validators: CmsModelFieldPatternValidator.Interface[]) {}
 
     public get(name: string): CmsModelFieldPatternValidator.Interface | undefined {
         return this.validators.find(v => v.pattern.name === name);

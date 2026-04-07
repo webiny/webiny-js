@@ -9,7 +9,10 @@ class PatternValidatorImpl implements CmsModelFieldValidator.Interface {
         private readonly patternRegistry: CmsModelFieldPatternValidatorRegistry.Interface
     ) {}
 
-    public async validate({ value, validator }: CmsModelFieldValidatorValidateParams): Promise<boolean> {
+    public async validate({
+        value,
+        validator
+    }: CmsModelFieldValidatorValidateParams): Promise<boolean> {
         if (typeof value !== "string" || !value) {
             return true;
         }

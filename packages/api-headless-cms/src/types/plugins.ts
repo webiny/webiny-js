@@ -31,4 +31,3 @@ export interface CmsModelFieldValidatorPlugin extends Plugin {
         validate: CmsModelFieldValidatorPluginValidateCb;
     };
 }
-
