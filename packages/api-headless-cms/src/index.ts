@@ -1,6 +1,5 @@
 import type { CreateGraphQLParams } from "~/graphql/index.js";
 import { createGraphQL as baseCreateGraphQL } from "~/graphql/index.js";
-import { createValidators } from "~/validators/index.js";
 import {
     createContextParameterPlugin,
     createHeaderParameterPlugin,
@@ -47,7 +46,6 @@ export const createHeadlessCmsContext = () => {
          */
         createContextPlugin(),
         createFieldConverters(),
-        createValidators(),
         ...createStorageTransform()
     ];
 };

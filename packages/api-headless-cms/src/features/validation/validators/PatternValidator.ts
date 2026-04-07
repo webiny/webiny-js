@@ -1,15 +1,15 @@
 import { CmsModelFieldValidator } from "../abstractions/CmsModelFieldValidator.js";
+import { CmsModelFieldPatternValidatorRegistry } from "../abstractions/CmsModelFieldPatternValidatorRegistry.js";
 import type { CmsModelFieldValidatorValidateParams } from "~/types/types.js";
-import type { CmsModelFieldPatternValidatorPlugin } from "~/types/plugins.js";
 
 class PatternValidatorImpl implements CmsModelFieldValidator.Interface {
     public readonly name = "pattern";
 
-    public async validate({
-        value,
-        validator,
-        context
-    }: CmsModelFieldValidatorValidateParams): Promise<boolean> {
+    public constructor(
+        private readonly patternRegistry: CmsModelFieldPatternValidatorRegistry.Interface
+    ) {}
+
+    public async validate({ value, validator }: CmsModelFieldValidatorValidateParams): Promise<boolean> {
         if (typeof value !== "string" || !value) {
             return true;
         }
@@ -19,13 +19,10 @@ class PatternValidatorImpl implements CmsModelFieldValidator.Interface {
         let pattern;
         if (settings?.preset === "custom") {
             pattern = settings;
-        } else {
-            const patternPlugin = context.plugins
-                .byType<CmsModelFieldPatternValidatorPlugin>("cms-model-field-validator-pattern")
-                .find(item => item.pattern.name === settings?.preset);
-
-            if (patternPlugin) {
-                pattern = patternPlugin.pattern;
+        } else if (settings?.preset) {
+            const patternValidator = this.patternRegistry.get(settings.preset);
+            if (patternValidator) {
+                pattern = patternValidator.pattern;
             }
         }
 
@@ -39,5 +36,5 @@ class PatternValidatorImpl implements CmsModelFieldValidator.Interface {
 
 export const PatternValidator = CmsModelFieldValidator.createImplementation({
     implementation: PatternValidatorImpl,
-    dependencies: []
+    dependencies: [CmsModelFieldPatternValidatorRegistry]
 });
