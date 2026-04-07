@@ -6,7 +6,7 @@ import {
 import { TrashPageUseCase as UseCaseAbstraction, TrashPageRepository } from "./abstractions.js";
 import { PageBeforeTrashEvent, PageAfterTrashEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class TrashPageUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -59,10 +59,5 @@ class TrashPageUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const TrashPageUseCase = UseCaseAbstraction.createImplementation({
     implementation: TrashPageUseCaseImpl,
-    dependencies: [
-        WbPermissions.Abstraction,
-        EventPublisher,
-        GetPageByIdUseCase,
-        TrashPageRepository
-    ]
+    dependencies: [WbPermissions, EventPublisher, GetPageByIdUseCase, TrashPageRepository]
 });

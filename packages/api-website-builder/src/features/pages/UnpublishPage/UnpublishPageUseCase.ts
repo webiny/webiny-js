@@ -9,7 +9,7 @@ import {
 } from "./abstractions.js";
 import { PageBeforeUnpublishEvent, PageAfterUnpublishEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class UnpublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -67,10 +67,5 @@ class UnpublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UnpublishPageUseCase = UseCaseAbstraction.createImplementation({
     implementation: UnpublishPageUseCaseImpl,
-    dependencies: [
-        WbPermissions.Abstraction,
-        EventPublisher,
-        GetPageByIdUseCase,
-        UnpublishPageRepository
-    ]
+    dependencies: [WbPermissions, EventPublisher, GetPageByIdUseCase, UnpublishPageRepository]
 });

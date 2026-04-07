@@ -3,7 +3,7 @@ import {
     GetDeletedPageByIdUseCase as UseCaseAbstraction,
     GetDeletedPageByIdRepository
 } from "./abstractions.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class GetDeletedPageByIdUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -35,5 +35,5 @@ class GetDeletedPageByIdUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const GetDeletedPageByIdUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetDeletedPageByIdUseCaseImpl,
-    dependencies: [WbPermissions.Abstraction, GetDeletedPageByIdRepository]
+    dependencies: [WbPermissions, GetDeletedPageByIdRepository]
 });

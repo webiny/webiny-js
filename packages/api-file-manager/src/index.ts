@@ -3,7 +3,7 @@ import { ContextPlugin } from "@webiny/api";
 import { setupAssetDelivery } from "./delivery/setupAssetDelivery.js";
 import { createGraphQLSchemaPlugin } from "./graphql/index.js";
 import { FileManagerFeature } from "~/features/FileManagerFeature.js";
-import { FmPermissions } from "~/permissions/schema.js";
+import { FmPermissionsFeature } from "~/features/permissions/feature.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FileModel as FileModelAbstraction } from "~/domain/file/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -28,7 +28,7 @@ export const createFileManagerContext = () => {
             context.container.registerInstance(FileModelAbstraction, fileModel.value);
         });
 
-        context.container.register(FmPermissions.Implementation);
+        FmPermissionsFeature.register(context.container);
 
         FileManagerFeature.register(context.container);
     });

@@ -52,5 +52,5 @@ class ListFilesUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const ListFilesUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListFilesUseCaseImpl,
-    dependencies: [FmPermissions.Abstraction, IdentityContext, ListFilesRepository]
+    dependencies: [FmPermissions, IdentityContext, ListFilesRepository]
 });

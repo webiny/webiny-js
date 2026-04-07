@@ -6,7 +6,7 @@ import {
 import { MovePageUseCase as UseCaseAbstraction, MovePageRepository } from "./abstractions.js";
 import { PageBeforeMoveEvent, PageAfterMoveEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class MovePageUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -68,10 +68,5 @@ class MovePageUseCaseImpl implements UseCaseAbstraction.Interface {
 export const MovePageUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: MovePageUseCaseImpl,
-    dependencies: [
-        WbPermissions.Abstraction,
-        EventPublisher,
-        GetPageByIdUseCase,
-        MovePageRepository
-    ]
+    dependencies: [WbPermissions, EventPublisher, GetPageByIdUseCase, MovePageRepository]
 });

@@ -10,31 +10,27 @@ description: >
 ## How to Use
 
 1. Find the abstraction you need below
-2. Read the source file to get the exact interface and types
+2. You MUST read the source file to get the exact interface and types!
 3. Import: `import { Name } from "<importPath>";`
 
 ## Abstractions
 
 ---
-
 **Name:** `BaseError`
 **Import:** `import { BaseError } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
 
 ---
-
 **Name:** `createAbstraction`
 **Import:** `import { createAbstraction } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
 
 ---
-
 **Name:** `createFeature`
 **Import:** `import { createFeature } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`
 
 ---
-
 **Name:** `Result`
 **Import:** `import { Result } from "webiny/api"`
 **Source:** `@webiny/feature/api/index.ts`

@@ -5,7 +5,7 @@ import {
 } from "@webiny/api-core/features/EventPublisher";
 import { DeletePageRepository, DeletePageUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { PageAfterDeleteEvent, PageBeforeDeleteEvent } from "./events.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 import { GetDeletedPageByIdUseCase } from "~/features/pages/GetDeletedPageById/index.js";
 
@@ -59,10 +59,5 @@ class DeletePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const DeletePageUseCase = UseCaseAbstraction.createImplementation({
     implementation: DeletePageUseCaseImpl,
-    dependencies: [
-        WbPermissions.Abstraction,
-        EventPublisher,
-        GetDeletedPageByIdUseCase,
-        DeletePageRepository
-    ]
+    dependencies: [WbPermissions, EventPublisher, GetDeletedPageByIdUseCase, DeletePageRepository]
 });

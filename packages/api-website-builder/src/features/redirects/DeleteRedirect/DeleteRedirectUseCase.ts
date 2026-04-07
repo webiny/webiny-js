@@ -9,7 +9,7 @@ import {
 } from "./abstractions.js";
 import { RedirectBeforeDeleteEvent, RedirectAfterDeleteEvent } from "./events.js";
 import { GetRedirectByIdUseCase } from "~/features/redirects/GetRedirectById/index.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { RedirectNotAuthorizedError } from "~/domain/redirect/errors.js";
 
 class DeleteRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -63,10 +63,5 @@ class DeleteRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
 export const DeleteRedirectUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: DeleteRedirectUseCaseImpl,
-    dependencies: [
-        WbPermissions.Abstraction,
-        EventPublisher,
-        GetRedirectByIdUseCase,
-        DeleteRedirectRepository
-    ]
+    dependencies: [WbPermissions, EventPublisher, GetRedirectByIdUseCase, DeleteRedirectRepository]
 });

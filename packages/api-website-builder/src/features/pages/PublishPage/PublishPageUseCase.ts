@@ -6,7 +6,7 @@ import {
 import { PublishPageUseCase as UseCaseAbstraction, PublishPageRepository } from "./abstractions.js";
 import { PageBeforePublishEvent, PageAfterPublishEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class PublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -65,10 +65,5 @@ class PublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
 export const PublishPageUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: PublishPageUseCaseImpl,
-    dependencies: [
-        WbPermissions.Abstraction,
-        EventPublisher,
-        GetPageByIdUseCase,
-        PublishPageRepository
-    ]
+    dependencies: [WbPermissions, EventPublisher, GetPageByIdUseCase, PublishPageRepository]
 });

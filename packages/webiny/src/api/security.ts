@@ -1,3 +1,6 @@
+export { createPermissionSchema } from "@webiny/api-core/features/security/permissions/index.js";
+export { createPermissionsFeature } from "@webiny/api-core/features/security/permissions/index.js";
+export { createPermissionsAbstraction } from "@webiny/api-core/features/security/permissions/index.js";
 export {
     IdentityContext,
     Identity

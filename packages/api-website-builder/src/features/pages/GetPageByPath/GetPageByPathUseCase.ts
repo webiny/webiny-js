@@ -3,7 +3,7 @@ import {
     GetPageByPathUseCase as UseCaseAbstraction,
     GetPageByPathRepository
 } from "./abstractions.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class GetPageByPathUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -35,5 +35,5 @@ class GetPageByPathUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const GetPageByPathUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetPageByPathUseCaseImpl,
-    dependencies: [WbPermissions.Abstraction, GetPageByPathRepository]
+    dependencies: [WbPermissions, GetPageByPathRepository]
 });

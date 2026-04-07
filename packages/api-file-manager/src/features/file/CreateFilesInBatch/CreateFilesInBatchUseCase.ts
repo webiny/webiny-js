@@ -102,10 +102,5 @@ class CreateFilesInBatchUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const CreateFilesInBatchUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateFilesInBatchUseCaseImpl,
-    dependencies: [
-        FmPermissions.Abstraction,
-        CreateFilesInBatchRepository,
-        GetSettingsUseCase,
-        EventPublisher
-    ]
+    dependencies: [FmPermissions, CreateFilesInBatchRepository, GetSettingsUseCase, EventPublisher]
 });

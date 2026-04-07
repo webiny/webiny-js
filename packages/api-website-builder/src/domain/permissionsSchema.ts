@@ -1,7 +1,6 @@
-import { createPermissions } from "@webiny/api-core/features/security/permissions/index.js";
-import type { Permissions } from "@webiny/api-core/features/security/permissions/index.js";
+import { createPermissionSchema } from "@webiny/api-core/exports/api/security.js";
 
-const schema = {
+export const WB_PERMISSIONS_SCHEMA = createPermissionSchema({
     prefix: "wb",
     fullAccess: true,
     entities: [
@@ -28,12 +27,4 @@ const schema = {
             scopes: ["full"]
         }
     ]
-} as const;
-
-type WbSchema = typeof schema;
-
-export const WbPermissions = createPermissions(schema);
-
-export namespace WbPermissions {
-    export type Interface = Permissions<WbSchema>;
-}
+});
