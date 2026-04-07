@@ -41,7 +41,6 @@ const convertValueToStorage = (field: CmsModelField, value: Date | string | unkn
     });
 };
 
-
 class DateStorageTransformImpl implements StorageTransform.Interface {
     public readonly fieldType = "datetime";
 
@@ -109,8 +108,7 @@ class DateStorageTransformImpl implements StorageTransform.Interface {
     }
 }
 
-
 export const DateStorageTransform = StorageTransform.createImplementation({
     implementation: DateStorageTransformImpl,
-    dependencies: [],
-})
+    dependencies: []
+});

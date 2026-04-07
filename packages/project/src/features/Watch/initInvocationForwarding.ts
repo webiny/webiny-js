@@ -1,8 +1,8 @@
 import path from "path";
 import { Worker } from "worker_threads";
-import { compress, decompress } from "@webiny/utils/compression/gzip.js";
+import { compress, decompress } from "@webiny/utils/features/compression/legacy/gzip.js";
 import mqtt from "mqtt";
-import { type ListAppLambdaFunctionsService } from "~/abstractions/index.js";
+import type { ListAppLambdaFunctionsService } from "~/abstractions/index.js";
 
 const WEBINY_WATCH_FN_INVOCATION_EVENT = "webiny.watch.functionInvocation";
 const WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT = "webiny.watch.functionInvocationResult";

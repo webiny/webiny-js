@@ -3,7 +3,9 @@ import { StorageTransform } from "./StorageTransform.js";
 import type { CmsModelField } from "~/types/index.js";
 
 export interface IStorageTransformRegistry {
-    get<T = any, R = any, F extends CmsModelField = CmsModelField>(fieldType: string): StorageTransform.Interface<T, R, F> | undefined;
+    get<T = any, R = any, F extends CmsModelField = CmsModelField>(
+        fieldType: string
+    ): StorageTransform.Interface<T, R, F> | undefined;
     getAll(): StorageTransform.Interface[];
 }
 

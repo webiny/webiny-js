@@ -1,5 +1,5 @@
 import { CompressionPlugin, type ICompressedValue } from "../CompressionPlugin.js";
-import { compress as gzip, decompress as ungzip } from "~/compression/gzip.js";
+import { compress as gzip, decompress as ungzip } from "../gzip.js";
 
 const GZIP = "gzip";
 const TO_STORAGE_ENCODING = "base64";

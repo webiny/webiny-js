@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { compress, decompress } from "~/compression/jsonpack";
+import { compress, decompress } from "~/features/compression/legacy/jsonpack";
 
 const testingData = Object.freeze({
     name: "John Doe",

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { compress, decompress } from "~/compression/gzip";
+import { compress, decompress } from "~/features/compression/legacy/gzip";
 
 const testingData = Object.freeze({
     name: "John Doe",

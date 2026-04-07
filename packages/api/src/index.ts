@@ -1,5 +1,4 @@
 export * from "./Context.js";
-export * from "./plugins/CompressorPlugin.js";
 export * from "./decorateContext.js";
 export * from "./createConditionalPluginFactory.js";
 export * from "./ServiceDiscovery.js";
