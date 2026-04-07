@@ -1,4 +1,4 @@
-import { createAbstraction } from "@webiny/feature/api";
+import { createAbstraction } from "@webiny/feature/createAbstraction.js";
 import type { CmsModelFieldValidatorValidateParams } from "~/types/index.js";
 
 export interface ICmsModelFieldValidator {
@@ -14,17 +14,4 @@ export namespace CmsModelFieldValidator {
     export type Interface = ICmsModelFieldValidator;
     export type Params = CmsModelFieldValidatorValidateParams;
     export type Response = Promise<boolean>;
-}
-
-export interface ICmsModelFieldValidatorRegistry {
-    get(name: string): CmsModelFieldValidator.Interface | undefined;
-    getAll(): CmsModelFieldValidator.Interface[];
-}
-
-export const CmsModelFieldValidatorRegistry = createAbstraction<ICmsModelFieldValidatorRegistry>(
-    "Cms/Model/Field/Validator/Registry"
-);
-
-export namespace CmsModelFieldValidatorRegistry {
-    export type Interface = ICmsModelFieldValidatorRegistry;
 }

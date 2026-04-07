@@ -16,7 +16,11 @@ describe("content model test reserved model ids", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    name: "ico/ico",
+                    value: "ico/ico",
+                    type: "ico/ico"
+                },
                 description: "description"
             }
         });

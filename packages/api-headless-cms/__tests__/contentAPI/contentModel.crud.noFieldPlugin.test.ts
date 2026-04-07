@@ -18,7 +18,11 @@ describe("content model test no field plugin", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    type: "ico/ico",
+                    name: "ico/ico",
+                    value: "ico/ico"
+                },
                 description: "description"
             }
         });

@@ -1,4 +1,4 @@
-import { CmsModelFieldValidator } from "../abstractions.js";
+import { CmsModelFieldValidator } from "../abstractions/CmsModelFieldValidator.js";
 import type { CmsModelFieldValidatorValidateParams } from "~/types/types.js";
 import type { CmsModelFieldPatternValidatorPlugin } from "~/types/plugins.js";
 

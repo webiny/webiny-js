@@ -1,5 +1,5 @@
 import { validation } from "@webiny/validation";
-import { CmsModelFieldValidator } from "../abstractions.js";
+import { CmsModelFieldValidator } from "../abstractions/CmsModelFieldValidator.js";
 import type { CmsModelFieldValidatorValidateParams } from "~/types/types.js";
 
 class TimeLteValidatorImpl implements CmsModelFieldValidator.Interface {

@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { CmsModelFieldValidator } from "../abstractions.js";
+import { CmsModelFieldValidator } from "../abstractions/CmsModelFieldValidator.js";
 import type { CmsModelFieldValidatorValidateParams } from "~/types/types.js";
 import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
 

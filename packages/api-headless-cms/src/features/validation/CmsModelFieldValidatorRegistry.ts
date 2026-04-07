@@ -1,7 +1,5 @@
-import {
-    CmsModelFieldValidator,
-    CmsModelFieldValidatorRegistry as RegistryAbstraction
-} from "./abstractions.js";
+import { CmsModelFieldValidator } from "./abstractions/CmsModelFieldValidator.js";
+import { CmsModelFieldValidatorRegistry as RegistryAbstraction } from "./abstractions/CmsModelFieldValidatorRegistry.js";
 
 class CmsModelFieldValidatorRegistryImpl implements RegistryAbstraction.Interface {
     public constructor(private readonly validators: CmsModelFieldValidator.Interface[]) {}
