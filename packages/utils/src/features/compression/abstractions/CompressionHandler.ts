@@ -9,7 +9,7 @@ export interface ICompressionHandler {
     /**
      * Compresses the given data using the first plugin that can compress it.
      */
-    compress<T = unknown>(data: T): Promise<T | ICompressedValue>;
+    compress<T = unknown>(data: T): Promise<ICompressedValue>;
     /**
      * Decompresses the given data using the first plugin that can decompress it.
      */
@@ -21,7 +21,7 @@ export const CompressionHandler = createAbstraction<ICompressionHandler>("Api/Co
 export namespace CompressionHandler {
     export type Interface = ICompressionHandler;
     export type CompressParams<T = unknown> = T;
-    export type CompressResponse<T = unknown> = Promise<T | ICompressedValue>;
+    export type CompressResponse = Promise<ICompressedValue>;
     export type DecompressParams = ICompressedValue | unknown;
     export type DecompressResponse<T = unknown> = Promise<T>;
 }

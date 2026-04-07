@@ -1,58 +1,36 @@
 import { StorageTransform } from "../abstractions/StorageTransform.js";
-import { Compressor } from "@webiny/api";
 import { WebinyError } from "@webiny/error";
+import { CompressionHandler } from "@webiny/utils/exports/api.js";
 
 class JsonStorageTransformImpl implements StorageTransform.Interface {
     public fieldType = "json";
 
+    public constructor(private readonly compressorHandler: CompressionHandler.Interface) {}
+
     public async fromStorage({
         field,
-        value: storageValue,
-        plugins
+        value
     }: StorageTransform.FromStorageParams): StorageTransform.FromStorageResponse {
-        if (!storageValue) {
-            return storageValue;
-        } else if (typeof storageValue !== "object") {
+        if (!value) {
+            return value;
+        } else if (typeof value !== "object") {
             throw new WebinyError(
                 `JSON value received in "fromStorage" function is not an object in field "${field.storageId}" - ${field.fieldId}.`
             );
         }
 
-        let compressor: CompressorPlugin;
-
-        try {
-            compressor = plugins.oneByType<CompressorPlugin>(CompressorPlugin.type);
-        } catch {
-            return storageValue;
-        }
-
-        try {
-            return await compressor.getCompressor().decompress(storageValue);
-        } catch {
-            return storageValue;
-        }
+        return await this.compressorHandler.decompress(value);
     }
 
     public async toStorage({
         value,
-        plugins
     }: StorageTransform.ToStorageParams): StorageTransform.ToStorageResponse {
-        let compressor: CompressorPlugin;
-
-        try {
-            compressor = plugins.oneByType<CompressorPlugin>(CompressorPlugin.type);
-        } catch {
-            return value;
-        }
-        try {
-            return await compressor.getCompressor().compress(value);
-        } catch {
-            return value;
-        }
+        return await this.compressorHandler.compress(value);
+        
     }
 }
 
 export const JsonStorageTransform = StorageTransform.createImplementation({
     implementation: JsonStorageTransformImpl,
-    dependencies: []
+    dependencies: [CompressionHandler]
 });
