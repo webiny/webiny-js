@@ -14734,7 +14734,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/mcp@workspace:packages/mcp":
+"@webiny/mcp@npm:0.0.0, @webiny/mcp@workspace:packages/mcp":
   version: 0.0.0-use.local
   resolution: "@webiny/mcp@workspace:packages/mcp"
   dependencies:
@@ -18319,6 +18319,7 @@ __metadata:
     "@types/js-yaml": "npm:^4.0.9"
     "@types/validate-npm-package-name": "npm:^4.0.2"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/mcp": "npm:0.0.0"
     "@webiny/system-requirements": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
     chalk: "npm:^5.6.2"
