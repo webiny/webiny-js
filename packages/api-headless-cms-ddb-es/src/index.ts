@@ -3,7 +3,7 @@ import elasticsearchPlugins from "./elasticsearch/index.js";
 import dynamoDbPlugins from "./dynamoDb/index.js";
 import { createModelsStorageOperations } from "./operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
-import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storageOperations.js";
+import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import type { StorageOperationsFactory as IStorageOperationsFactory } from "~/types.js";
 import { type CmsContext, ENTITIES } from "~/types.js";
 import { createGroupEntity } from "~/definitions/group.js";
