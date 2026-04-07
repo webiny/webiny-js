@@ -1,6 +1,7 @@
 export { DevToolsSection } from "~/components/index.js";
 export { createPermissionSchema } from "~/permissions/index.js";
-export { createPermissionsAbstraction, createPermissionsFeature } from "~/permissions/index.js";
+export { createPermissionsAbstraction } from "~/permissions/index.js";
+export { createPermissionsFeature } from "~/permissions/index.js";
 export { createHasPermission } from "~/permissions/index.js";
 export { createUsePermissions } from "~/permissions/index.js";
 export type { Permissions } from "~/permissions/types.js";

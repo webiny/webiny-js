@@ -1,5 +1,5 @@
 import React, { Fragment, memo } from "react";
-import { useRouter, AdminConfig, AdminLayout, Wcp } from "@webiny/app-admin";
+import { useRouter, AdminConfig, AdminLayout, Wcp, RegisterFeature } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-admin";
 import { Permission } from "~/constants.js";
 import { Roles } from "~/ui/views/Roles/index.js";
@@ -7,6 +7,7 @@ import { Teams } from "~/ui/views/Teams/index.js";
 import { ApiKeys } from "~/ui/views/ApiKeys/index.js";
 import { Routes } from "~/routes.js";
 import { SecurityPermissions } from "./SecurityPermissions.js";
+import { SecurityPermissionsFeature } from "~/features/permissions/feature.js";
 
 const { Menu, Route } = AdminConfig;
 
@@ -15,6 +16,7 @@ const AccessManagementExtension = () => {
 
     return (
         <Fragment>
+            <RegisterFeature feature={SecurityPermissionsFeature} />
             <SecurityPermissions />
             <AdminConfig>
                 <HasPermission name={Permission.Roles}>

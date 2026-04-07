@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { useContainer } from "@webiny/app";
 import type { FeatureDefinition } from "@webiny/feature/admin";
 
@@ -29,4 +29,6 @@ const RegisterFeatureImpl = <TParams extends any[]>({
     return null;
 };
 
-export const RegisterFeature = React.memo(RegisterFeatureImpl);
+export const RegisterFeature = RegisterFeatureImpl as <TParams extends any[]>(
+    props: RegisterFeatureProps<TParams>
+) => null;

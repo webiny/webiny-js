@@ -7,10 +7,8 @@ export { Provider } from "@webiny/app/core/Provider.js";
 export { Plugin } from "@webiny/app/core/Plugin.js";
 export { DevToolsSection } from "@webiny/app-admin/components/index.js";
 export { createPermissionSchema } from "@webiny/app-admin/permissions/index.js";
-export {
-    createPermissionsAbstraction,
-    createPermissionsFeature
-} from "@webiny/app-admin/permissions/index.js";
+export { createPermissionsAbstraction } from "@webiny/app-admin/permissions/index.js";
+export { createPermissionsFeature } from "@webiny/app-admin/permissions/index.js";
 export { createHasPermission } from "@webiny/app-admin/permissions/index.js";
 export { createUsePermissions } from "@webiny/app-admin/permissions/index.js";
 export type { Permissions } from "@webiny/app-admin/permissions/types.js";
