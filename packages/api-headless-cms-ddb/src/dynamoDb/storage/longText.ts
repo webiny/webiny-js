@@ -3,8 +3,7 @@
  */
 
 import WebinyError from "@webiny/error";
-import { compress as gzip, decompress as ungzip } from "@webiny/utils/compression/gzip.js";
-import { StorageTransformPlugin } from "@webiny/api-headless-cms";
+import { compress as gzip, decompress as ungzip } from "@webiny/utils/features/compression/legacy/gzip.js";
 
 const GZIP = "gzip";
 const TO_STORAGE_ENCODING = "base64";

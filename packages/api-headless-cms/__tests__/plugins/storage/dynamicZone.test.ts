@@ -3,7 +3,7 @@ import { pageModel } from "../../contentAPI/mocks/pageWithDynamicZonesModel";
 import { CmsModel, CmsModelDynamicZoneField } from "~/types";
 import { createDynamicZoneStorageTransform } from "~/storage/dynamicZone";
 import { createStorageTransform } from "~/storage/index";
-import { getStoragePluginFactory } from "~/utils/entryStorage";
+import { getStorageTransformFactory } from "~/utils/entryStorage";
 import { PluginsContainer } from "@webiny/plugins";
 
 const field = pageModel.fields.find(f => f.id === "peeeyhtc") as CmsModelDynamicZoneField;
@@ -220,7 +220,7 @@ const expectedToStorageValue = [
 describe("dynamic zone storage transform", () => {
     const plugins = new PluginsContainer(createStorageTransform());
     const plugin = createDynamicZoneStorageTransform();
-    const getStoragePlugin = getStoragePluginFactory({
+    const getStoragePlugin = getStorageTransformFactory({
         plugins
     });
 

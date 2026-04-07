@@ -18,6 +18,7 @@
   "dependencies": {
     "@noble/hashes": "^2.0.1",
     "@webiny/error": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "bson-objectid": "^2.0.4",
     "jsonpack": "^1.1.5",

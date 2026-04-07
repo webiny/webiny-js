@@ -23,10 +23,9 @@ class JsonStorageTransformImpl implements StorageTransform.Interface {
     }
 
     public async toStorage({
-        value,
+        value
     }: StorageTransform.ToStorageParams): StorageTransform.ToStorageResponse {
         return await this.compressorHandler.compress(value);
-        
     }
 }
 

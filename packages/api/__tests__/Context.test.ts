@@ -22,7 +22,7 @@ describe("Context", () => {
         });
 
         expect(context.plugins).toBeInstanceOf(PluginsContainer);
-        
+
         expect(context.plugins.all()[0].name).toEqual(new BenchmarkPlugin(context.benchmark).name);
 
         expect(context.plugins.all()).toHaveLength(1);
