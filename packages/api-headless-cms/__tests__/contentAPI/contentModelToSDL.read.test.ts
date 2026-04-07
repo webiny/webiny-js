@@ -34,7 +34,7 @@ describe("READ - ContentModel to SDL", () => {
     it("Fruit SDL", async () => {
         const model = getModel("fruit");
 
-        const sdl = createReadSDL({ models, model, fieldRegistry, sorterPlugins: [] });
+        const sdl = createReadSDL({ models, model, fieldRegistry, sorters: [] });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(fruitSDL.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -43,7 +43,7 @@ describe("READ - ContentModel to SDL", () => {
     it("Category SDL", async () => {
         const model = getModel("category");
 
-        const sdl = createReadSDL({ models, model, fieldRegistry, sorterPlugins: [] });
+        const sdl = createReadSDL({ models, model, fieldRegistry, sorters: [] });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(categorySDL.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -52,7 +52,7 @@ describe("READ - ContentModel to SDL", () => {
     it("Product SDL", async () => {
         const model = getModel("product");
 
-        const sdl = createReadSDL({ models, model, fieldRegistry, sorterPlugins: [] });
+        const sdl = createReadSDL({ models, model, fieldRegistry, sorters: [] });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(productSDL.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -61,7 +61,7 @@ describe("READ - ContentModel to SDL", () => {
     it("Review SDL", async () => {
         const model = getModel("review");
 
-        const sdl = createReadSDL({ models, model, fieldRegistry, sorterPlugins: [] });
+        const sdl = createReadSDL({ models, model, fieldRegistry, sorters: [] });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(reviewSDL.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -72,7 +72,7 @@ describe("READ - ContentModel to SDL", () => {
             models,
             model: pageModel as CmsModel,
             fieldRegistry,
-            sorterPlugins: []
+            sorters: []
         });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(pageSDL.trim(), { parser: "graphql" });

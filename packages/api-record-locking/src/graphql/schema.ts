@@ -54,7 +54,7 @@ export const createGraphQLSchema = async (
         model,
         fields: model.fields,
         fieldRegistry,
-        sorterPlugins: []
+        sorters: []
     });
 
     const plugin = createGraphQLSchemaPlugin<ApiCoreContext>({

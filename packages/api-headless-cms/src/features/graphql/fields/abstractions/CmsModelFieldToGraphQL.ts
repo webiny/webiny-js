@@ -107,7 +107,7 @@ export interface ICmsModelFieldToGraphQL<TField extends CmsModelField = CmsModel
 }
 
 export const CmsModelFieldToGraphQL = createAbstraction<ICmsModelFieldToGraphQL>(
-    "Cms/Model/Field/ToGraphQL"
+    "Cms/GraphQL/Schema/ModelField"
 );
 
 export namespace CmsModelFieldToGraphQL {
