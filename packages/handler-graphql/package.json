@@ -16,7 +16,7 @@
   ],
   "dependencies": {
     "@graphql-tools/merge": "^9.1.7",
-    "@graphql-tools/resolvers-composition": "^7.0.28",
+    "@graphql-tools/resolvers-composition": "^7.0.29",
     "@graphql-tools/schema": "^10.0.31",
     "@graphql-tools/utils": "^11.0.0",
     "@webiny/api": "0.0.0",
