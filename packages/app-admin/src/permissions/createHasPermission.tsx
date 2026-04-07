@@ -1,7 +1,7 @@
 import React from "react";
-import { createUsePermissions } from "./usePermissions.js";
 import type { Abstraction } from "@webiny/di";
 import type { HasPermissionProps, PermissionSchemaConfig, UsePermissionsResult } from "./types.js";
+import { useContainer } from "@webiny/app";
 
 const BUILT_IN_ACTIONS: Record<string, string> = {
     read: "canRead",
@@ -12,30 +12,13 @@ const BUILT_IN_ACTIONS: Record<string, string> = {
     unpublish: "canUnpublish"
 };
 
-interface DiPermissions<S extends PermissionSchemaConfig> {
-    Abstraction: Abstraction<UsePermissionsResult<S>>;
-    schema: S;
-}
-
-/**
- * @deprecated Pass `createPermissions(schema)` result instead of a raw schema.
- */
 export function createHasPermission<const S extends PermissionSchemaConfig>(
+    abstraction: Abstraction<UsePermissionsResult<S>>,
     schema: S
-): React.FC<HasPermissionProps<S>>;
-
-export function createHasPermission<const S extends PermissionSchemaConfig>(
-    permissions: DiPermissions<S>
-): React.FC<HasPermissionProps<S>>;
-
-export function createHasPermission<const S extends PermissionSchemaConfig>(
-    schemaOrPermissions: S | DiPermissions<S>
 ): React.FC<HasPermissionProps<S>> {
-    // TODO: temporary cast - this code will be refactored to only use DiPermissions
-    const usePermissions = createUsePermissions(schemaOrPermissions as any);
-
     return function HasPermission({ children, ...props }) {
-        const permissions = usePermissions();
+        const container = useContainer();
+        const permissions = container.resolve(abstraction);
 
         const action = props.action as string | undefined;
         const someActions = props.someActions as string[] | undefined;
@@ -51,7 +34,10 @@ export function createHasPermission<const S extends PermissionSchemaConfig>(
             if (method && typeof permissions[method] === "function") {
                 return (permissions[method] as (entityId: string) => boolean)(entityId);
             }
-            return permissions.canAction(singleAction, entityId);
+            return (permissions.canAction as (action: string, entityId: string) => boolean)(
+                singleAction,
+                entityId
+            );
         };
 
         const check = (entityId: string): boolean => {

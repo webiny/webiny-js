@@ -3,6 +3,7 @@ import { createFeature } from "@webiny/feature/admin";
 import { IdentityContext } from "~/features/security/IdentityContext/abstractions.js";
 import type { IIdentityContext } from "~/features/security/IdentityContext/abstractions.js";
 import type { Identity } from "~/domain/Identity.js";
+import type { Abstraction } from "@webiny/di";
 import type { PermissionSchemaConfig, OwnableItem, UsePermissionsResult } from "./types.js";
 
 interface EntityLookup {
@@ -71,15 +72,15 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
         return hasFullSchemaAccess(this.identity, this.schema.prefix);
     }
 
-    canAccess(entityId: string): boolean {
+    canAccess = (entityId: string): boolean => {
         if (this.fullAccess) {
             return true;
         }
         const entity = getEntity(this.entityMap, entityId);
         return this.identity.getPermissions(entity.permission).length > 0;
-    }
+    };
 
-    canRead(entityId: string): boolean {
+    canRead = (entityId: string): boolean => {
         if (this.fullAccess) {
             return true;
         }
@@ -94,9 +95,9 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             }
             return permission.rwd.includes("r");
         });
-    }
+    };
 
-    canCreate(entityId: string): boolean {
+    canCreate = (entityId: string): boolean => {
         if (this.fullAccess) {
             return true;
         }
@@ -111,9 +112,9 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             }
             return permission.rwd.includes("w");
         });
-    }
+    };
 
-    canEdit(entityId: string, item?: OwnableItem): boolean {
+    canEdit = (entityId: string, item?: OwnableItem): boolean => {
         if (this.fullAccess) {
             return true;
         }
@@ -134,9 +135,9 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             }
             return permission.rwd.includes("w");
         });
-    }
+    };
 
-    canDelete(entityId: string, item?: OwnableItem): boolean {
+    canDelete = (entityId: string, item?: OwnableItem): boolean => {
         if (this.fullAccess) {
             return true;
         }
@@ -154,9 +155,9 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
             }
             return permission.rwd.includes("d");
         });
-    }
+    };
 
-    canPublish(entityId: string): boolean {
+    canPublish = (entityId: string): boolean => {
         if (this.fullAccess) {
             return true;
         }
@@ -168,9 +169,9 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
         return permissions.some(permission => {
             return permission.pw?.includes("p");
         });
-    }
+    };
 
-    canUnpublish(entityId: string): boolean {
+    canUnpublish = (entityId: string): boolean => {
         if (this.fullAccess) {
             return true;
         }
@@ -182,9 +183,9 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
         return permissions.some(permission => {
             return permission.pw?.includes("u");
         });
-    }
+    };
 
-    canAction(action: string, entityId: string): boolean {
+    canAction = (action: string, entityId: string): boolean => {
         if (this.fullAccess) {
             return true;
         }
@@ -196,32 +197,35 @@ class SchemaPermissions<S extends PermissionSchemaConfig> {
         return permissions.some(permission => {
             return permission[action] === true;
         });
-    }
+    };
 }
 
-export function createPermissions<const S extends PermissionSchemaConfig>(schema: S) {
-    const Permissions = createAbstraction<UsePermissionsResult<S>>(`${schema.prefix}:Permissions`);
+export function createPermissionsAbstraction<const S extends PermissionSchemaConfig>(schema: S) {
+    return createAbstraction<UsePermissionsResult<S>>(`${schema.prefix}:Permissions`);
+}
 
+export function createPermissionsFeature<const S extends PermissionSchemaConfig>(
+    schema: S,
+    abstraction: Abstraction<UsePermissionsResult<S>>
+) {
     class PermissionsImpl extends SchemaPermissions<S> {
         constructor(identityContext: IIdentityContext) {
             super(schema, identityContext);
         }
     }
 
-    const Implementation = Permissions.createImplementation({
+    const Implementation = abstraction.createImplementation({
         implementation: PermissionsImpl,
         dependencies: [IdentityContext]
     });
 
-    const Feature = createFeature({
+    return createFeature({
         name: `${schema.prefix}:Permissions`,
         register(container) {
             container.register(Implementation).inSingletonScope();
         },
         resolve(container) {
-            return { permissions: container.resolve(Permissions) };
+            return { permissions: container.resolve(abstraction) };
         }
     });
-
-    return { Abstraction: Permissions, Feature, schema };
 }
