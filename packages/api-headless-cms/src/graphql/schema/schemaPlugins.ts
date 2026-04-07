@@ -24,7 +24,7 @@ export const generateSchemaPlugins = async (
     params: GenerateSchemaPluginsParams
 ): Promise<ICmsGraphQLSchemaPlugin[]> => {
     const { context, models } = params;
-    const { plugins, cms } = context;
+    const { cms } = context;
 
     /**
      * If type does not exist, we are not generating schema plugins for models.

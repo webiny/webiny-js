@@ -3,15 +3,23 @@ import models from "../contentAPI/mocks/contentModels";
 import { renderSortEnum } from "~/utils/renderSortEnum";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import type { CmsModel } from "~/types";
-import { createCmsGraphQLSchemaSorterPlugin } from "~/plugins";
-import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
+import {
+    CmsGraphQLSchemaSorter,
+    CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
 
-const sortPlugin = createCmsGraphQLSchemaSorterPlugin(({ sorters }) => {
-    return [...sorters, "testSorter_ASC", "testSorter_DESC"];
+const testSorter = CmsGraphQLSchemaSorter.createImplementation({
+    implementation: class TestSorter implements CmsGraphQLSchemaSorter.Interface {
+        execute({ sorters }: CmsGraphQLSchemaSorter.Params) {
+            return [...sorters, `testSorter_ASC`, `testSorter_DESC`];
+        }
+    },
+    dependencies: []
 });
 
 describe("Render GraphQL sort enum", () => {
     let fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    let sorters: CmsGraphQLSchemaSorter.Interface[];
 
     beforeEach(async () => {
         const { handler, tenant } = useHandler({});
@@ -22,7 +30,9 @@ describe("Render GraphQL sort enum", () => {
                 "x-tenant": tenant.id
             }
         });
+        context.container.register(testSorter);
         fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
+        sorters = context.container.resolveAll(CmsGraphQLSchemaSorter);
     });
 
     it("should render non-deleted fields sorts - read API", () => {
@@ -32,7 +42,7 @@ describe("Render GraphQL sort enum", () => {
             model,
             fields: model.fields,
             fieldRegistry,
-            sorterPlugins: [sortPlugin]
+            sorters
         });
 
         expect(result).toEqual(
@@ -94,7 +104,7 @@ describe("Render GraphQL sort enum", () => {
             model,
             fields: model.fields,
             fieldRegistry,
-            sorterPlugins: [sortPlugin]
+            sorters
         });
 
         expect(result).toEqual(

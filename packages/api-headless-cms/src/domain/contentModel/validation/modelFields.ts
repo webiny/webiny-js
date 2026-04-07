@@ -247,7 +247,6 @@ interface ValidateModelFieldsParams {
 export const validateModelFields = async (params: ValidateModelFieldsParams): Promise<void> => {
     const { models, model, original, context } = params;
     const { titleFieldId, descriptionFieldId, imageFieldId } = model;
-    const { plugins } = context;
 
     /**
      * There should be fields/locked fields in either model or data to be updated.
