@@ -14853,6 +14853,7 @@ __metadata:
     mime: "npm:^4.1.0"
     react: "npm:18.3.1"
     replace-in-path: "npm:^1.1.0"
+    ts-morph: "npm:^27.0.2"
     typescript: "npm:5.9.3"
     zod: "npm:^4.3.6"
   languageName: unknown
@@ -33132,6 +33133,7 @@ __metadata:
     "@webiny/cli-core": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
