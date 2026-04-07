@@ -17,7 +17,7 @@ describe("MANAGE - ContentModel to SDL", () => {
 
     it("Category SDL", async () => {
         const model = contentModels.find(c => c.modelId === "category") as CmsModel;
-        const sdl = createManageSDL({ models, model, fieldRegistry, sorterPlugins: [] });
+        const sdl = createManageSDL({ models, model, fieldRegistry, sorters: [] });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(categoryManage.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -25,7 +25,7 @@ describe("MANAGE - ContentModel to SDL", () => {
 
     it("Product SDL", async () => {
         const model = contentModels.find(c => c.modelId === "product") as CmsModel;
-        const sdl = createManageSDL({ models, model, fieldRegistry, sorterPlugins: [] });
+        const sdl = createManageSDL({ models, model, fieldRegistry, sorters: [] });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(productManage.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -33,7 +33,7 @@ describe("MANAGE - ContentModel to SDL", () => {
 
     it("Review SDL", async () => {
         const model = contentModels.find(c => c.modelId === "review") as CmsModel;
-        const sdl = createManageSDL({ models, model, fieldRegistry, sorterPlugins: [] });
+        const sdl = createManageSDL({ models, model, fieldRegistry, sorters: [] });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(reviewManage.trim(), { parser: "graphql" });
         expect(prettyGql).toBe(prettySnapshot);
@@ -44,7 +44,7 @@ describe("MANAGE - ContentModel to SDL", () => {
             models,
             model: pageModel as CmsModel,
             fieldRegistry,
-            sorterPlugins: []
+            sorters: []
         });
         const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
         const prettySnapshot = await prettier.format(pageManage.trim(), { parser: "graphql" });
