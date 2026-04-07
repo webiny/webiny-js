@@ -8,7 +8,7 @@ export interface ICmsModelFieldToGraphQLRegistry {
 }
 
 export const CmsModelFieldToGraphQLRegistry = createAbstraction<ICmsModelFieldToGraphQLRegistry>(
-    "Cms/Model/Field/ToGraphQL/Registry"
+    "Cms/GraphQL/Schema/ModelFieldRegistry"
 );
 
 export namespace CmsModelFieldToGraphQLRegistry {
