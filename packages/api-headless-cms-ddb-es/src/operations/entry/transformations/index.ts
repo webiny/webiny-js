@@ -16,10 +16,12 @@ import {
     createPublishedRecordType
 } from "~/operations/entry/recordType.js";
 import WebinyError from "@webiny/error";
+import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 
 interface BaseTransformerParams<T extends CmsEntryValues = CmsEntryValues> {
     plugins: PluginsContainer;
     model: StorageOperationsCmsModel<T>;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 interface EntryTransformerParams<T extends CmsEntryValues = CmsEntryValues>
@@ -59,6 +61,7 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
     const {
         plugins,
         model,
+        fieldRegistry,
         entry: baseEntry,
         storageEntry: baseStorageEntry,
         transformedToIndex: initialTransformedEntryToIndex = undefined
@@ -151,7 +154,8 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
                 plugins,
                 model,
                 entry,
-                storageEntry
+                storageEntry,
+                fieldRegistry
             }));
         },
         getElasticsearchLatestEntryData: async function () {

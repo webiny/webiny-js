@@ -10,7 +10,7 @@ import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createFileManagerS3, createAssetDelivery } from "@webiny/api-file-manager-s3";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb";
+import { registerDynamoDbStorageOperations } from "@webiny/api-headless-cms-ddb";
 import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
 import { createAco } from "@webiny/api-aco";
 import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
@@ -48,9 +48,8 @@ export const handler = createHandler({
         }),
         securityPlugins(),
         createWebsockets(),
-        createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({ documentClient })
-        }),
+        registerDynamoDbStorageOperations(),
+        createHeadlessCmsContext(),
         createHeadlessCmsGraphQL(),
         createMailerContext(),
         createMailerGraphQL(),

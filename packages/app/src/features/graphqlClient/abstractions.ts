@@ -4,6 +4,7 @@ import type { DocumentNode } from "graphql";
 type IHeaders = Record<string, string | number | undefined>;
 
 type GraphQLRequest<TVariables = any> = {
+    endpoint: string;
     query: DocumentNode | string;
     variables?: TVariables;
     headers?: IHeaders;

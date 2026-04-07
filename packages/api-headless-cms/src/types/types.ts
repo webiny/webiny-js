@@ -1,16 +1,12 @@
 import type { Context, GenericRecord } from "@webiny/api/types.js";
-import type {
-    GraphQLFieldResolver,
-    GraphQLRequestBody,
-    Resolvers
-} from "@webiny/handler-graphql/types.js";
+import type { GraphQLFieldResolver, GraphQLRequestBody } from "@webiny/handler-graphql/types.js";
 import type { processRequestBody } from "@webiny/handler-graphql";
 import type { DbContext } from "@webiny/handler-db/types.js";
 import type { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection.js";
 import type { HeadlessCmsExport, HeadlessCmsImport } from "~/export/types.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import type { CmsModelToAstConverter } from "~/utils/contentModelAst/CmsModelToAstConverter.js";
-import type { CmsModelFieldToGraphQLPlugin } from "./plugins.js";
+import type { ICmsModelFieldToGraphQLRegistry } from "~/features/graphql/fields/abstractions/CmsModelFieldToGraphQLRegistry.js";
 import type { CmsEntryContext } from "./context.js";
 import type { CmsModelField, CmsModelFieldValidation, CmsModelUpdateInput } from "./modelField.js";
 import type { CmsModel, CmsModelCreateFromInput, CmsModelCreateInput } from "./model.js";
@@ -167,63 +163,6 @@ export interface StorageOperationsCmsModel<T extends CmsEntryValues = CmsEntryVa
 export interface CmsModelFieldDefinition {
     fields: string;
     typeDefs?: string;
-}
-
-export interface CmsModelFieldToGraphQLNormalizeInputParams<TField> {
-    model: CmsModel;
-    field: TField;
-    input: GenericRecord<string> | Array<GenericRecord<string>>;
-}
-
-interface CmsModelFieldToGraphQLCreateResolverParams<TField> {
-    models: CmsModel[];
-    model: CmsModel;
-    graphQLType: string;
-    field: TField;
-    createFieldResolvers: any;
-    fieldTypePlugins: CmsFieldTypePlugins;
-}
-
-export interface CmsModelFieldToGraphQLCreateResolver<TField = CmsModelField> {
-    (params: CmsModelFieldToGraphQLCreateResolverParams<TField>):
-        | GraphQLFieldResolver
-        | {
-              resolver: GraphQLFieldResolver | null;
-              typeResolvers: Resolvers<CmsContext>;
-          }
-        | false;
-}
-
-export interface CmsModelFieldToGraphQLPluginValidateChildFieldsValidateParams<
-    TField extends CmsModelField = CmsModelField
-> {
-    fields: TField[];
-    originalFields: TField[];
-}
-
-export interface CmsModelFieldToGraphQLPluginValidateChildFieldsValidate {
-    (params: CmsModelFieldToGraphQLPluginValidateChildFieldsValidateParams): void;
-}
-
-export interface CmsModelFieldToGraphQLPluginValidateChildFieldsParams<
-    TField extends CmsModelField = CmsModelField
-> {
-    field: TField;
-    originalField?: TField;
-    validate: CmsModelFieldToGraphQLPluginValidateChildFieldsValidate;
-}
-
-export interface CmsModelFieldToGraphQLPluginValidateChildFields<
-    TField extends CmsModelField = CmsModelField
-> {
-    (params: CmsModelFieldToGraphQLPluginValidateChildFieldsParams<TField>): void;
-}
-
-/**
- * @category ModelField
- */
-export interface CmsFieldTypePlugins {
-    [key: string]: CmsModelFieldToGraphQLPlugin;
 }
 
 /**
@@ -950,7 +889,7 @@ export interface CmsEntryValidateResponse {
  */
 interface CmsEntryResolverFactoryParams {
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: ICmsModelFieldToGraphQLRegistry;
 }
 
 /**
@@ -1473,7 +1412,7 @@ export enum CONTENT_ENTRY_STATUS {
     UNPUBLISHED = "unpublished"
 }
 
-export interface HeadlessCmsStorageOperations<C = CmsContext> {
+export interface HeadlessCmsStorageOperations<C extends CmsContext = CmsContext> {
     name: string;
     groups: CmsGroupStorageOperations;
     models: CmsModelStorageOperations;

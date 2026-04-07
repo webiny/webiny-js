@@ -1,9 +1,10 @@
-import type { CmsFieldTypePlugins, CmsModelField } from "~/types/index.js";
+import type { CmsModelField } from "~/types/index.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
+import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface RenderGetFilterFieldsParams {
     fields: CmsModelField[];
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 interface RenderGetFilterFieldsResponse {
     baseFilters: string[];
@@ -19,7 +20,7 @@ interface RenderGetFilterFields {
 
 export const renderGetFilterFields: RenderGetFilterFields = ({
     fields,
-    fieldTypePlugins
+    fieldRegistry
 }): RenderGetFilterFieldsResponse => {
     const baseFilters: string[] = ["id: ID", "entryId: String"];
 
@@ -32,7 +33,7 @@ export const renderGetFilterFields: RenderGetFilterFields = ({
         // that contains a field, for which we don't have a plugin registered on the backend. For example, user
         // could've just removed the plugin from the backend.
         const baseType = getBaseFieldType(field);
-        const plugin = fieldTypePlugins[baseType];
+        const plugin = fieldRegistry.get(baseType);
         if (!plugin?.isSearchable) {
             continue;
         }

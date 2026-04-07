@@ -3,45 +3,32 @@ import elasticsearchPlugins from "./elasticsearch/index.js";
 import dynamoDbPlugins from "./dynamoDb/index.js";
 import { createModelsStorageOperations } from "./operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
-import type { StorageOperationsFactory } from "~/types.js";
-import { ENTITIES } from "~/types.js";
+import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storageOperations.js";
+import type { StorageOperationsFactory as IStorageOperationsFactory } from "~/types.js";
+import { type CmsContext, ENTITIES } from "~/types.js";
 import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex.js";
-import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
-import {
-    createOpenSearchEntity,
-    createOpenSearchTable,
-    OpenSearchQueryBuilderOperatorPlugin
-} from "@webiny/api-opensearch";
+import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
 import { elasticsearchIndexPlugins } from "./elasticsearch/indices/index.js";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex.js";
-import {
-    CmsElasticsearchModelFieldPlugin,
-    CmsEntryElasticsearchBodyModifierPlugin,
-    CmsEntryElasticsearchFullTextSearchPlugin,
-    CmsEntryElasticsearchIndexPlugin,
-    CmsEntryElasticsearchQueryBuilderValueSearchPlugin,
-    CmsEntryElasticsearchQueryModifierPlugin,
-    CmsEntryElasticsearchSortModifierPlugin,
-    CmsEntryElasticsearchValuesModifier
-} from "~/plugins/index.js";
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins/index.js";
-import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin.js";
-import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
 import { createCreateIndexTask } from "~/tasks/createIndexTaskPlugin.js";
-import { CompressorPlugin } from "@webiny/api";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 import { createTable } from "@webiny/db-dynamodb";
+import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { createFeature } from "@webiny/feature/api/index.js";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 export * from "./plugins/index.js";
 
-export const createStorageOperations: StorageOperationsFactory = params => {
-    const { table, esTable, documentClient, elasticsearch, plugins: userPlugins } = params;
+export const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
+    const { table, esTable, documentClient, elasticsearch, plugins, getContainer } = params;
 
     const tableInstance = createTable({
         name: table || (process.env.DB_TABLE as string),
@@ -71,7 +58,7 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         })
     };
 
-    const plugins = new PluginsContainer([
+    plugins.register([
         /**
          * DynamoDB filter plugins for the where conditions.
          */
@@ -91,23 +78,25 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Filter plugins used to apply filtering from where conditions to Elasticsearch query.
          */
-        createFilterPlugins(),
+        createFilterPlugins()
         /**
          * User defined custom plugins.
          * They are at the end because we can then override existing plugins.
          */
-        ...(userPlugins || [])
     ]);
+
+    const fieldRegistry = getContainer().resolve(CmsModelFieldToGraphQLRegistry);
 
     const entries = createEntriesStorageOperations({
         entity: entities.entries,
         esEntity: entities.entriesEs,
         plugins,
-        elasticsearch
+        elasticsearch,
+        fieldRegistry
     });
 
     return {
-        name: "dynamodb:elasticsearch",
+        name: "dynamodb:opensearch",
         beforeInit: async context => {
             context.db.registry.register({
                 item: entities.entries,
@@ -119,46 +108,10 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                 app: "cms",
                 tags: ["es", entities.entriesEs.name]
             });
-            /**
-             * Attach the elasticsearch into context if it is not already attached.
-             */
-            if (!context.opensearch) {
-                context.opensearch = elasticsearch;
-            }
-
-            /**
-             * This registers the task implementation
-             */
+            // TODO we know that context is ok, but types are missing elasticsearch/opensearch
+            // @ts-expect-error
             createCreateIndexTask(context);
 
-            /**
-             * Pass the plugins to the parent context.
-             */
-            context.plugins.register([dynamoDbPlugins(), elasticsearchIndexPlugins()]);
-            /**
-             * We need to fetch all the plugin types in the list from the main container.
-             * This way we do not need to register plugins in the storage plugins contains.
-             */
-            const types: string[] = [
-                OpenSearchQueryBuilderOperatorPlugin.type,
-                // Headless CMS
-                "cms-model-field-to-graphql",
-                CmsEntryFilterPlugin.type,
-                CmsEntryElasticsearchBodyModifierPlugin.type,
-                CmsEntryElasticsearchFullTextSearchPlugin.type,
-                CmsEntryElasticsearchIndexPlugin.type,
-                CmsEntryElasticsearchQueryBuilderValueSearchPlugin.type,
-                CmsEntryElasticsearchQueryModifierPlugin.type,
-                CmsEntryElasticsearchSortModifierPlugin.type,
-                CmsElasticsearchModelFieldPlugin.type,
-                StorageOperationsCmsModelPlugin.type,
-                StorageTransformPlugin.type,
-                CmsEntryElasticsearchValuesModifier.type,
-                CompressorPlugin.type
-            ];
-            for (const type of types) {
-                plugins.mergeByType(context.plugins, type);
-            }
             entries.dataLoaders.clearAll();
         },
         init: async context => {
@@ -211,4 +164,39 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         }),
         entries
     };
+};
+
+class OpenSearchStorageOperationsFactoryImpl
+    implements StorageOperationsFactoryAbstraction.Interface
+{
+    public async create(context: CmsContext) {
+        return createOpenSearchStorageOperations({
+            documentClient: context.db.driver.getClient() as DynamoDBDocument,
+            elasticsearch: context.opensearch,
+            plugins: context.plugins,
+            getContainer: () => {
+                return context.container;
+            }
+        });
+    }
+}
+
+const OpenSearchStorageOperationsFactory = StorageOperationsFactoryAbstraction.createImplementation(
+    {
+        implementation: OpenSearchStorageOperationsFactoryImpl,
+        dependencies: []
+    }
+);
+
+const storageOperationsFeature = createFeature({
+    name: "cms.storageOperations.openSearch",
+    register: container => {
+        container.register(OpenSearchStorageOperationsFactory).inSingletonScope();
+    }
+});
+
+export const registerCmsOpenSearchStorageOperations = () => {
+    return createRegisterExtensionPlugin(context => {
+        return storageOperationsFeature.register(context.container);
+    });
 };
