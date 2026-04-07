@@ -1,13 +1,10 @@
 import type { CreateGraphQLParams } from "~/graphql/index.js";
 import { createGraphQL as baseCreateGraphQL } from "~/graphql/index.js";
-import { createGraphQLFields } from "~/graphqlFields/index.js";
-import { createValidators } from "~/validators/index.js";
 import {
     createContextParameterPlugin,
     createHeaderParameterPlugin,
     createPathParameterPlugin
 } from "~/parameters/index.js";
-import type { CrudParams } from "~/context.js";
 import { createContextPlugin } from "~/context.js";
 import {
     entryFieldFromStorageTransform,
@@ -42,20 +39,16 @@ export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams 
     ];
 };
 
-export type ContentContextParams = CrudParams;
-export const createHeadlessCmsContext = (params: ContentContextParams) => {
+export const createHeadlessCmsContext = () => {
     return [
         /**
          * Context for all Lambdas - everything is loaded now.
          */
-        createContextPlugin(params),
-        createGraphQLFields(),
+        createContextPlugin(),
         createFieldConverters(),
-        createValidators(),
         ...createStorageTransform()
     ];
 };
-export * from "~/graphqlFields/index.js";
 export * from "~/plugins/index.js";
 export * from "~/utils/incrementEntryIdVersion.js";
 export * from "./graphql/handleRequest.js";

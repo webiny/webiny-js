@@ -7,9 +7,9 @@ import { RecordLockingModel, RECORD_LOCKING_MODEL_ID } from "~/domain/RecordLock
 import { getTimeout } from "~/utils/getTimeout.js";
 import { RecordLockingFeature } from "~/features/RecordLockingFeature.js";
 import { createGraphQLSchema } from "~/graphql/schema.js";
-import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 export interface ICreateContextPluginParams {
     /**
@@ -48,11 +48,13 @@ const createContextPlugin = (params?: ICreateContextPluginParams) => {
             return [model.value, publicModels.value];
         });
 
+        const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
+
         // Register GraphQL schema plugin
         const graphQlPlugin = await createGraphQLSchema({
             model,
             models: publicModels,
-            fieldTypePlugins: createFieldTypePluginRecords(context.plugins)
+            fieldRegistry
         });
 
         context.plugins.register(graphQlPlugin);

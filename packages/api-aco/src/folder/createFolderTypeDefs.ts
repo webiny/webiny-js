@@ -1,15 +1,12 @@
-import type {
-    CmsFieldTypePlugins,
-    CmsModel,
-    CmsModelField
-} from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields.js";
+import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 export interface CreateFolderTypeDefsParams {
     model: CmsModel;
     models: CmsModel[];
-    plugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 const removeFieldRequiredValidation = (field: CmsModelField) => {
@@ -30,7 +27,7 @@ const createUpdateFields = (fields: CmsModelField[]): CmsModelField[] => {
 };
 
 export const createFolderTypeDefs = (params: CreateFolderTypeDefsParams): string => {
-    const { model, models, plugins: fieldTypePlugins } = params;
+    const { model, models, fieldRegistry } = params;
     const { fields } = model;
 
     const fieldTypes = renderFields({
@@ -38,19 +35,19 @@ export const createFolderTypeDefs = (params: CreateFolderTypeDefsParams): string
         model,
         fields,
         type: "manage",
-        fieldTypePlugins
+        fieldRegistry
     });
     const inputCreateFields = renderInputFields({
         models,
         model,
         fields,
-        fieldTypePlugins
+        fieldRegistry
     });
     const inputUpdateFields = renderInputFields({
         models,
         model,
         fields: createUpdateFields(fields),
-        fieldTypePlugins
+        fieldRegistry
     });
 
     return /* GraphQL */ `

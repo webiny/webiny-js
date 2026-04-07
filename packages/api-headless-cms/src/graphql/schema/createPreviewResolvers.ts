@@ -1,12 +1,13 @@
-import type { CmsFieldTypePlugins, CmsModel } from "~/types/index.js";
+import type { CmsModel } from "~/types/index.js";
 import { resolveGet } from "./resolvers/preview/resolveGet.js";
 import { resolveList } from "./resolvers/preview/resolveList.js";
 import { createFieldResolversFactory } from "./createFieldResolvers.js";
+import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface CreateReadResolversParams {
     models: CmsModel[];
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 export interface CreateReadResolvers {
@@ -14,16 +15,12 @@ export interface CreateReadResolvers {
     (params: CreateReadResolversParams): any;
 }
 
-export const createPreviewResolvers: CreateReadResolvers = ({
-    models,
-    model,
-    fieldTypePlugins
-}) => {
+export const createPreviewResolvers: CreateReadResolvers = ({ models, model, fieldRegistry }) => {
     const createFieldResolvers = createFieldResolversFactory({
         endpointType: "read",
         models,
         model,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const fieldResolvers = createFieldResolvers({
@@ -34,8 +31,8 @@ export const createPreviewResolvers: CreateReadResolvers = ({
 
     return {
         Query: {
-            [`get${model.singularApiName}`]: resolveGet({ model, fieldTypePlugins }),
-            [`list${model.pluralApiName}`]: resolveList({ model, fieldTypePlugins })
+            [`get${model.singularApiName}`]: resolveGet({ model, fieldRegistry }),
+            [`list${model.pluralApiName}`]: resolveList({ model, fieldRegistry })
         },
         ...fieldResolvers
     };

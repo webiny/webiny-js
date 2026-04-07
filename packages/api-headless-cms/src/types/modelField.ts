@@ -145,7 +145,7 @@ export interface CmsModelFieldInput {
     id: string;
     /**
      * Type of the field. A plugin for the field must be defined.
-     * @see CmsModelFieldToGraphQLPlugin
+     * @see CmsModelFieldToGraphQL
      */
     type: string;
     /**

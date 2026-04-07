@@ -1,12 +1,13 @@
-import type { ApiEndpoint, CmsFieldTypePlugins, CmsModel } from "~/types/index.js";
+import type { ApiEndpoint, CmsModel } from "~/types/index.js";
 import { renderInputFields } from "~/utils/renderInputFields.js";
 import { renderFields } from "~/utils/renderFields.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
+import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface CreateSingularSDLParams {
     models: CmsModel[];
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     type: ApiEndpoint;
 }
 
@@ -17,14 +18,14 @@ interface CreateSingularSDL {
 export const createSingularSDL: CreateSingularSDL = ({
     models,
     model,
-    fieldTypePlugins,
+    fieldRegistry,
     type
 }): string => {
     const inputFields = renderInputFields({
         models,
         model,
         fields: model.fields,
-        fieldTypePlugins
+        fieldRegistry
     });
     if (inputFields.length === 0) {
         return "";
@@ -35,7 +36,7 @@ export const createSingularSDL: CreateSingularSDL = ({
         model,
         fields: model.fields,
         type,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const { singularApiName: singularName } = model;

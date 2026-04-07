@@ -31,6 +31,15 @@ import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
 import { extractEntriesFromIndex } from "~/helpers/index.js";
 import { configurations } from "~/configurations.js";
 import type { Client } from "@webiny/api-opensearch";
+import {
+    compress,
+    createLimit,
+    decodeCursor,
+    decompress,
+    encodeCursor,
+    type IOpenSearchEntity as IElasticsearchEntity,
+    type IOpenSearchEntityAttributes as IElasticsearchEntityAttributes
+} from "@webiny/api-opensearch";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { IEntityQueryAllParams } from "@webiny/db-dynamodb";
 import { DataLoadersHandler } from "./dataLoaders.js";
@@ -44,18 +53,9 @@ import {
     createRevisionSortKey
 } from "./keys.js";
 import {
-    compress,
-    createLimit,
-    decodeCursor,
-    decompress,
-    encodeCursor,
-    type IOpenSearchEntity as IElasticsearchEntity,
-    type IOpenSearchEntityAttributes as IElasticsearchEntityAttributes
-} from "@webiny/api-opensearch";
-import {
+    getTotalCount,
     type OpenSearchSearchResponse,
-    type SearchBody as OpenSearchSearchBody,
-    getTotalCount
+    type SearchBody as OpenSearchSearchBody
 } from "@webiny/api-opensearch/types.js";
 import type { CmsEntryStorageOperations, CmsIndexEntry } from "~/types.js";
 import { createElasticsearchBody } from "./elasticsearch/body.js";
@@ -70,12 +70,14 @@ import {
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
 import type { IEntryEntity, IEntryEntityAttributes } from "~/definitions/types.js";
+import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
     esEntity: IElasticsearchEntity;
     elasticsearch: Client;
     plugins: PluginsContainer;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -101,7 +103,7 @@ const convertToStorageEntry = <T extends CmsEntryValues = CmsEntryValues>(
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
-    const { entity, esEntity, elasticsearch, plugins } = params;
+    const { entity, esEntity, elasticsearch, plugins, fieldRegistry } = params;
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
     const getStorageOperationsCmsModelPlugin = () => {
@@ -140,6 +142,7 @@ export const createEntriesStorageOperations = (
         initialStorageEntry.locked = locked;
 
         const transformer = createTransformer<T>({
+            fieldRegistry,
             plugins,
             model,
             entry: initialEntry,
@@ -253,7 +256,8 @@ export const createEntriesStorageOperations = (
             plugins,
             model,
             entry: initialEntry,
-            storageEntry: initialStorageEntry
+            storageEntry: initialStorageEntry,
+            fieldRegistry
         });
         const { entry, storageEntry } = transformer.transformEntryKeys();
 
@@ -375,7 +379,8 @@ export const createEntriesStorageOperations = (
             plugins,
             model,
             entry: initialEntry,
-            storageEntry: initialStorageEntry
+            storageEntry: initialStorageEntry,
+            fieldRegistry
         });
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
@@ -699,7 +704,8 @@ export const createEntriesStorageOperations = (
             plugins,
             model,
             entry: initialEntry,
-            storageEntry: initialStorageEntry
+            storageEntry: initialStorageEntry,
+            fieldRegistry
         });
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
@@ -867,7 +873,8 @@ export const createEntriesStorageOperations = (
             plugins,
             model,
             entry: initialEntry,
-            storageEntry: initialStorageEntry
+            storageEntry: initialStorageEntry,
+            fieldRegistry
         });
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
@@ -1177,7 +1184,8 @@ export const createEntriesStorageOperations = (
                 plugins,
                 model,
                 entry: latestEntry,
-                storageEntry: initialLatestStorageEntry
+                storageEntry: initialLatestStorageEntry,
+                fieldRegistry
             });
 
             const esLatestData = await latestTransformer.getElasticsearchLatestEntryData();
@@ -1316,6 +1324,7 @@ export const createEntriesStorageOperations = (
 
         const body = createElasticsearchBody({
             model,
+            fieldRegistry,
             params: {
                 ...params,
                 limit,
@@ -1355,6 +1364,7 @@ export const createEntriesStorageOperations = (
         const { hits, total } = response.body.hits;
 
         const items = extractEntriesFromIndex<T>({
+            fieldRegistry,
             plugins,
             model,
             entries: hits.map(item => {
@@ -1411,7 +1421,8 @@ export const createEntriesStorageOperations = (
             plugins,
             model,
             entry: initialEntry,
-            storageEntry: initialStorageEntry
+            storageEntry: initialStorageEntry,
+            fieldRegistry
         });
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
@@ -1612,7 +1623,8 @@ export const createEntriesStorageOperations = (
                     status: CONTENT_ENTRY_STATUS.PUBLISHED,
                     locked: true,
                     ...updatedMetaFields
-                }
+                },
+                fieldRegistry
             });
 
             const esEntryLatestKeys = createEntryLatestKeys(latestEsEntryDataDecompressed);
@@ -1710,7 +1722,8 @@ export const createEntriesStorageOperations = (
             plugins,
             model,
             entry: initialEntry,
-            storageEntry: initialStorageEntry
+            storageEntry: initialStorageEntry,
+            fieldRegistry
         });
         const { entry, storageEntry } = await transformer.transformEntryKeys();
 
@@ -2014,6 +2027,7 @@ export const createEntriesStorageOperations = (
 
         const initialBody = createElasticsearchBody({
             model,
+            fieldRegistry,
             params: {
                 limit: 1,
                 where

@@ -1,10 +1,10 @@
 import { ModelToAstConverter as ConverterAbstraction } from "./abstractions.js";
 import {
-    CmsModelToAstConverter,
-    CmsModelFieldToAstConverterFromPlugins
+    CmsModelFieldToAstConverterFromPlugins,
+    CmsModelToAstConverter
 } from "~/utils/contentModelAst/index.js";
-import type { CmsModel, CmsModelAst, CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
-import { PluginsContainer } from "~/legacy/abstractions.js";
+import type { CmsModel, CmsModelAst } from "~/types/index.js";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 /**
  * ModelToAstConverter implementation
@@ -13,12 +13,10 @@ import { PluginsContainer } from "~/legacy/abstractions.js";
  * for converting models to AST representation (used for GraphQL schema generation)
  */
 class ModelToAstConverterImpl implements ConverterAbstraction.Interface {
-    public constructor(private pluginsContainer: PluginsContainer.Interface) {}
+    public constructor(private readonly registry: CmsModelFieldToGraphQLRegistry.Interface) {}
 
     toAst(model: CmsModel): CmsModelAst {
-        const fieldTypePlugins = this.pluginsContainer.byType<CmsModelFieldToGraphQLPlugin>(
-            "cms-model-field-to-graphql"
-        );
+        const fieldTypePlugins = this.registry.getAll();
 
         const converter = new CmsModelToAstConverter(
             new CmsModelFieldToAstConverterFromPlugins(fieldTypePlugins)
@@ -30,5 +28,5 @@ class ModelToAstConverterImpl implements ConverterAbstraction.Interface {
 
 export const ModelToAstConverter = ConverterAbstraction.createImplementation({
     implementation: ModelToAstConverterImpl,
-    dependencies: [PluginsContainer]
+    dependencies: [CmsModelFieldToGraphQLRegistry]
 });

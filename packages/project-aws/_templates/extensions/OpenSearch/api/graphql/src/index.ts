@@ -11,7 +11,7 @@ import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAssetDelivery, createFileManagerS3 } from "@webiny/api-file-manager-s3";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { createStorageOperations as createHeadlessCmsStorageOperations } from "@webiny/api-headless-cms-ddb-es";
+import { registerCmsOpenSearchStorageOperations } from "@webiny/api-headless-cms-ddb-es";
 import { createHcmsTasks } from "@webiny/api-headless-cms-tasks-ddb-es";
 import { createAco } from "@webiny/api-aco";
 import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
@@ -54,13 +54,8 @@ export const handler = createHandler({
         }),
         securityPlugins(),
         createWebsockets(),
-        createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient,
-                elasticsearch: openSearchClient,
-                plugins: []
-            })
-        }),
+        registerCmsOpenSearchStorageOperations(),
+        createHeadlessCmsContext(),
         createHeadlessCmsGraphQL(),
         createMailerContext(),
         createMailerGraphQL(),
