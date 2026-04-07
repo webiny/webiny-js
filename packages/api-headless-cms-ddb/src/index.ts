@@ -10,7 +10,7 @@ import { createModelsStorageOperations } from "~/operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
 import { createFilterCreatePlugins } from "~/operations/entry/filtering/plugins/index.js";
 import { createTable } from "~/definitions/table.js";
-import { createRegisterFeaturePlugin } from "@webiny/handler";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storageOperations.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
@@ -105,5 +105,7 @@ const storageOperationsFeature = createFeature({
 });
 
 export const registerDynamoDbStorageOperations = () => {
-    return createRegisterFeaturePlugin(storageOperationsFeature);
+    return createRegisterExtensionPlugin(context => {
+        return storageOperationsFeature.register(context.container);
+    });
 };

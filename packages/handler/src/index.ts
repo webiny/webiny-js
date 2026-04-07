@@ -15,9 +15,9 @@ export * from "~/plugins/ModifyResponseHeadersPlugin.js";
 export * from "~/plugins/OnRequestResponseSendPlugin.js";
 export * from "~/plugins/OnRequestTimeoutPlugin.js";
 export {
-    RegisterFeaturePlugin,
-    createRegisterFeaturePlugin
-} from "~/plugins/RegisterFeaturePlugin.js";
+    RegisterExtensionPlugin,
+    createRegisterExtensionPlugin
+} from "~/plugins/RegisterExtensionPlugin.js";
 export * from "./ResponseHeaders.js";
 
 export { Request } from "./abstractions/Request.js";

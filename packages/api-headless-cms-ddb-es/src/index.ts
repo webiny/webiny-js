@@ -21,7 +21,7 @@ import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/featu
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 import { createTable } from "@webiny/db-dynamodb";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { createRegisterFeaturePlugin } from "@webiny/handler";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
@@ -196,5 +196,7 @@ const storageOperationsFeature = createFeature({
 });
 
 export const registerCmsOpenSearchStorageOperations = () => {
-    return createRegisterFeaturePlugin(storageOperationsFeature);
+    return createRegisterExtensionPlugin(context => {
+        return storageOperationsFeature.register(context.container);
+    });
 };
