@@ -9,15 +9,20 @@ import { createModel } from "../../helpers/createModel";
 import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter } from "~/operations/entry/filtering";
 import { getSearchableFields } from "@webiny/api-headless-cms/crud/contentEntry/searchableFields";
+import { Container } from "@webiny/di";
+import { GraphQLFeature } from "@webiny/api-headless-cms/features/graphql/index.js";
 
 describe("filtering cms ddb", () => {
     let plugins: PluginsContainer;
     let model: CmsModel;
     let fields: Record<string, Field>;
+    let container: Container;
 
     beforeEach(() => {
         plugins = createPluginsContainer();
         model = createModel();
+        container = new Container();
+        GraphQLFeature.register(container);
         fields = createFields({
             plugins,
             fields: model.fields
@@ -374,7 +379,7 @@ describe("filtering cms ddb", () => {
         const searchableFields = getSearchableFields({
             fields: model.fields,
             input: [],
-            plugins
+            context: { plugins, container }
         });
         /**
          * Find yellow color items.

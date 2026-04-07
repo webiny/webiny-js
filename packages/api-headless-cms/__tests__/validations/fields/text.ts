@@ -9,6 +9,8 @@ const createFieldFactory: FieldFactory = base => {
             storageId: "text@textFieldId",
             fieldId: "textField",
             list: false,
+            validation: [],
+            listValidation: [],
             ...base,
             ...field
         };

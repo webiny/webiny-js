@@ -6,6 +6,7 @@ import { RouterFeature } from "@webiny/app/features/router/feature.js";
 import { HistoryRouterGateway } from "@webiny/app/features/router/HistoryRouterGateway.js";
 import { EnvConfigFeature } from "@webiny/app/features/envConfig/feature.js";
 import { GraphQLClientFeature } from "@webiny/app/features/graphqlClient/feature.js";
+import { MainGraphQLClientFeature } from "@webiny/app/features/mainGraphQLClient/feature.js";
 import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
 import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
 import { WcpFeature } from "~/features/wcp/feature.js";
@@ -46,6 +47,8 @@ export function createRootContainer() {
     EventPublisherFeature.register(container);
 
     GraphQLClientFeature.register(container, { batching: true, retry: true });
+
+    MainGraphQLClientFeature.register(container);
 
     LocalStorageFeature.register(container, { prefix: `webiny/${deploymentId}` });
 

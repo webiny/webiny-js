@@ -14,9 +14,7 @@ const domainsSchema = z.object({
     sslSupportMethod: z.enum(["sni-only", "vip"]),
     domains: z.object({
         api: nonEmptyStringArray,
-        admin: nonEmptyStringArray,
-        website: nonEmptyStringArray,
-        preview: nonEmptyStringArray
+        admin: nonEmptyStringArray
     })
 });
 

@@ -5,14 +5,18 @@ import type {
     CmsEntryValues,
     CmsModel,
     CmsModelField,
-    CmsModelFieldValidation,
-    CmsModelFieldValidatorPlugin,
-    CmsModelFieldValidatorValidateParams
+    CmsModelFieldValidation
 } from "~/types/index.js";
 import camelCase from "lodash/camelCase.js";
 import { EntryValidationError } from "~/domain/contentEntry/errors.js";
+import {
+    type CmsModelFieldValidator,
+    CmsModelFieldValidatorRegistry
+} from "~/features/validation/index.js";
 
-type PluginValidationCallable = (params: CmsModelFieldValidatorValidateParams) => Promise<boolean>;
+type PluginValidationCallable = (
+    params: CmsModelFieldValidator.Params
+) => CmsModelFieldValidator.Response;
 type PluginValidationList = Record<string, PluginValidationCallable[]>;
 
 interface ExecuteValidationParams<TValues extends CmsEntryValues = CmsEntryValues> {
@@ -134,7 +138,7 @@ const runFieldValueValidations = async <TValues extends CmsEntryValues = CmsEntr
     params: ExecuteValidationParams<TValues>
 ): Promise<string | null> => {
     const { values, field } = params;
-    const value = values[field.fieldId as keyof TValues] as PossibleValue | null | undefined;
+    const value = values[field.fieldId as keyof TValues];
     const error = await validateValue(params, field.validation || [], value);
     if (error) {
         return error;
@@ -159,37 +163,38 @@ interface IValidateModelEntryDataParams<TValues extends CmsEntryValues = CmsEntr
 }
 
 export const validateModelEntryData = async <TValues extends CmsEntryValues = CmsEntryValues>(
-    params: IValidateModelEntryDataParams
+    params: IValidateModelEntryDataParams<TValues>
 ) => {
     const { context, model, entry, values, skipValidators } = params;
 
-    const isValidatorSkipped = (plugin: CmsModelFieldValidatorPlugin) => {
+    const isValidatorSkipped = (validator: CmsModelFieldValidator.Interface) => {
         if (!skipValidators) {
             return false;
         }
-        return skipValidators.includes(camelCase(plugin.validator.name));
+        return skipValidators.includes(camelCase(validator.name));
     };
 
     const skippedValidators = new Set<string>();
 
-    /**
-     * To later simplify searching for the validations we map them to a name.
-     * @see CmsModelFieldValidatorPlugin.validator.validate
-     */
     const validatorList: PluginValidationList = {};
-    const validators = context.plugins.byType<CmsModelFieldValidatorPlugin>(
-        "cms-model-field-validator"
-    );
-    for (const plugin of validators) {
-        const name = plugin.validator.name;
+    const registry = context.container.resolve(CmsModelFieldValidatorRegistry);
+    const validators = registry.getAll();
+    for (const validator of validators) {
+        const name = validator.name;
         if (!validatorList[name]) {
             validatorList[name] = [];
         }
-        const isSkipped = isValidatorSkipped(plugin);
+        const isSkipped = isValidatorSkipped(validator);
         if (isSkipped) {
             skippedValidators.add(name);
+            validatorList[name].push(async () => {
+                return true;
+            });
+            continue;
         }
-        validatorList[name].push(isSkipped ? async () => true : plugin.validator.validate);
+        validatorList[name].push(params => {
+            return validator.validate(params);
+        });
     }
     /**
      * No point in continuing if all validators are skipped.
@@ -203,11 +208,11 @@ export const validateModelEntryData = async <TValues extends CmsEntryValues = Cm
         validatorList,
         context,
         model,
-        entry: entry as CmsEntry<TValues>,
+        entry,
         parents: [],
         fields: model.fields,
         values: {
-            ...(entry?.values as TValues),
+            ...entry?.values,
             ...values
         }
     });

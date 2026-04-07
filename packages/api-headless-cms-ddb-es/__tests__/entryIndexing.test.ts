@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { PluginsContainer } from "@webiny/plugins";
 import indexingPlugins from "~/elasticsearch/indexing/index.js";
-import { createGraphQLFields } from "@webiny/api-headless-cms";
+import { createFieldRegistry } from "./helpers/createFieldRegistry.js";
 import type { CmsEntry, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import { extractEntriesFromIndex, prepareEntryToIndex } from "~/helpers/index.js";
 import type { CmsIndexEntry } from "~/types.js";
@@ -147,7 +147,8 @@ const mockIndexedEntry: Partial<CmsEntry> & Record<string, any> = {
     }
 };
 
-const plugins = new PluginsContainer([...indexingPlugins(), ...createGraphQLFields()]);
+const fieldRegistry = createFieldRegistry();
+const plugins = new PluginsContainer([...indexingPlugins()]);
 
 describe("entryIndexing", () => {
     it("should prepare entry for indexing", () => {
@@ -155,7 +156,8 @@ describe("entryIndexing", () => {
             entry: mockInputEntry as CmsEntry,
             storageEntry: mockInputEntry as CmsEntry,
             model: mockModel as unknown as CmsModel,
-            plugins
+            plugins,
+            fieldRegistry
         });
 
         expect(entryToIndex).toEqual(mockIndexedEntry);
@@ -165,6 +167,7 @@ describe("entryIndexing", () => {
         const [entryFromIndex] = extractEntriesFromIndex({
             model: mockModel as unknown as CmsModel,
             plugins,
+            fieldRegistry,
             entries: [mockIndexedEntry as CmsIndexEntry]
         });
 

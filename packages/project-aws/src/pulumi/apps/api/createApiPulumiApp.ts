@@ -25,6 +25,8 @@ import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfig
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import { ApiPulumi } from "@webiny/project/abstractions/index.js";
+import { ApiCustomDomains as apiCustomDomainsExt } from "~/pulumi/extensions/ApiCustomDomains.js";
+import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -227,10 +229,15 @@ export const createApiPulumiApp = () => {
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const scheduler = app.addModule(ApiScheduler);
 
-            // const domains = app.getParam(projectAppParams.domains);
-            // if (domains) {
-            //     applyCustomDomain(cloudfront, domains);
-            // }
+            const [apiCustomDomains] = projectConfig.extensionsByType(apiCustomDomainsExt);
+            if (apiCustomDomains) {
+                const { domains, sslMethod, certificateArn } = apiCustomDomains.params;
+                applyCustomDomain(cloudfront, {
+                    domains,
+                    sslSupportMethod: sslMethod,
+                    acmCertificateArn: certificateArn
+                });
+            }
 
             app.addOutputs({
                 awsAccountId: getAwsAccountId(app),

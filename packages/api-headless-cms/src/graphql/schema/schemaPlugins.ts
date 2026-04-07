@@ -7,10 +7,10 @@ import { createPreviewResolvers } from "./createPreviewResolvers.js";
 import { createGraphQLSchemaPluginFromFieldPlugins } from "~/utils/getSchemaFromFieldPlugins.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { CmsGraphQLSchemaSorterPlugin, createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
-import { createFieldTypePluginRecords } from "./createFieldTypePluginRecords.js";
 import { CMS_MODEL_SINGLETON_TAG } from "~/constants.js";
 import { createSingularSDL } from "./createSingularSDL.js";
 import { createSingularResolvers } from "./createSingularResolvers.js";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface GenerateSchemaPluginsParams {
     context: CmsContext;
@@ -32,8 +32,7 @@ export const generateSchemaPlugins = async (
         return [];
     }
 
-    // Structure plugins for faster access
-    const fieldTypePlugins = createFieldTypePluginRecords(plugins);
+    const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
 
     const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
         CmsGraphQLSchemaSorterPlugin.type
@@ -41,7 +40,7 @@ export const generateSchemaPlugins = async (
 
     const schemaPlugins = createGraphQLSchemaPluginFromFieldPlugins({
         models,
-        fieldTypePlugins,
+        fieldRegistry,
         type
     });
 
@@ -55,13 +54,13 @@ export const generateSchemaPlugins = async (
                 typeDefs: createSingularSDL({
                     models,
                     model,
-                    fieldTypePlugins,
+                    fieldRegistry,
                     type: singularType
                 }),
                 resolvers: createSingularResolvers({
                     models,
                     model,
-                    fieldTypePlugins,
+                    fieldRegistry,
                     type: singularType
                 })
             });
@@ -76,13 +75,13 @@ export const generateSchemaPlugins = async (
                         typeDefs: createManageSDL({
                             models,
                             model,
-                            fieldTypePlugins,
+                            fieldRegistry,
                             sorterPlugins
                         }),
                         resolvers: createManageResolvers({
                             models,
                             model,
-                            fieldTypePlugins
+                            fieldRegistry
                         })
                     });
                     plugin.name = `headless-cms.graphql.schema.manage.${model.modelId}`;
@@ -97,19 +96,19 @@ export const generateSchemaPlugins = async (
                         typeDefs: createReadSDL({
                             models,
                             model,
-                            fieldTypePlugins,
+                            fieldRegistry,
                             sorterPlugins
                         }),
                         resolvers: cms.READ
                             ? createReadResolvers({
                                   models,
                                   model,
-                                  fieldTypePlugins
+                                  fieldRegistry
                               })
                             : createPreviewResolvers({
                                   models,
                                   model,
-                                  fieldTypePlugins
+                                  fieldRegistry
                               })
                     });
                     plugin.name = `headless-cms.graphql.schema.${type}.${model.modelId}`;

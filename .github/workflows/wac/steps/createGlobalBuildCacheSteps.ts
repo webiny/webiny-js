@@ -5,7 +5,7 @@ interface CreateGlobalBuildCacheStepsParams {
 export const createGlobalBuildCacheSteps = (params: CreateGlobalBuildCacheStepsParams) => {
     return [
         {
-            uses: "actions/cache@v4",
+            uses: "actions/cache@v5",
             with: {
                 path: [params.workingDirectory, ".webiny/cached-packages"]
                     .filter(Boolean)

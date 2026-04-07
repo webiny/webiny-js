@@ -5,7 +5,7 @@ interface CreateYarnCacheStepsParams {
 export const createYarnCacheSteps = (params: CreateYarnCacheStepsParams) => {
     return [
         {
-            uses: "actions/cache@v4",
+            uses: "actions/cache@v5",
             with: {
                 path: [params.workingDirectory, ".yarn/cache"].filter(Boolean).join("/"),
                 key: "yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}"

@@ -21,10 +21,10 @@ jobs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -45,18 +45,18 @@ jobs:
     needs: constants
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
@@ -66,7 +66,7 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: ${{ github.event.inputs.branch }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -85,19 +85,19 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       BETA_VERSION: ${{ vars.BETA_VERSION }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
           fetch-depth: 0
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -133,19 +133,19 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       LATEST_VERSION: ${{ vars.LATEST_VERSION }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
           fetch-depth: 0
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}

@@ -11,7 +11,7 @@ export const createJob = (params: CreateJobParams): NormalJob => {
     const { awsAuth, checkout, setupNode, ...jobParams } = params;
 
     let setupNodeStep: Record<string, any> = {
-        uses: "actions/setup-node@v4",
+        uses: "actions/setup-node@v5",
         with: { "node-version": NODE_VERSION }
     };
 
@@ -35,7 +35,7 @@ export const createJob = (params: CreateJobParams): NormalJob => {
 
         job.steps!.push({
             name: "Configure AWS Credentials",
-            uses: "aws-actions/configure-aws-credentials@v4",
+            uses: "aws-actions/configure-aws-credentials@v6.0.0",
             with: {
                 "role-to-assume": "arn:aws:iam::726952677045:role/GitHubActionsWebinyJs",
                 "aws-region": AWS_REGION
@@ -45,9 +45,9 @@ export const createJob = (params: CreateJobParams): NormalJob => {
 
     if (checkout !== false) {
         if (typeof checkout === "object") {
-            job.steps!.push({ uses: "actions/checkout@v4", with: checkout });
+            job.steps!.push({ uses: "actions/checkout@v5", with: checkout });
         } else {
-            job.steps!.push({ uses: "actions/checkout@v4" });
+            job.steps!.push({ uses: "actions/checkout@v5" });
         }
     }
 

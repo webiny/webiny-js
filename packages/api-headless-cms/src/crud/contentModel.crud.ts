@@ -1,11 +1,5 @@
 import WebinyError from "@webiny/error";
-import type {
-    CmsContext,
-    CmsModel,
-    CmsModelContext,
-    CmsModelFieldToGraphQLPlugin,
-    ICmsModelListParams
-} from "~/types/index.js";
+import type { CmsContext, CmsModel, CmsModelContext, ICmsModelListParams } from "~/types/index.js";
 import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js";
 import { CreateModelFromUseCase } from "~/features/contentModel/CreateModelFrom/index.js";
 import { UpdateModelUseCase } from "~/features/contentModel/UpdateModel/index.js";
@@ -17,6 +11,7 @@ import {
     CmsModelFieldToAstConverterFromPlugins,
     CmsModelToAstConverter
 } from "~/utils/contentModelAst/index.js";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 export interface CreateModelsCrudParams {
     context: CmsContext;
@@ -32,9 +27,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         listFilteredModelsCache.clear();
     };
 
-    const fieldTypePlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
-        "cms-model-field-to-graphql"
-    );
+    const fieldTypePlugins = context.container.resolve(CmsModelFieldToGraphQLRegistry).getAll();
 
     const getModelToAstConverter = () => {
         return new CmsModelToAstConverter(

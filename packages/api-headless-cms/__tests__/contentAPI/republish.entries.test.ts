@@ -4,7 +4,6 @@ import type { CmsEntry, CmsModel } from "~/types";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
-import { createStorageOperationsContext } from "~tests/storageOperations/context";
 import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
 interface CreateEntryResult {
@@ -255,13 +254,8 @@ describe("Republish entries", () => {
     it("storage operations - should republish entries without changing them", async () => {
         const { applePublished, bananaPublished } = await createPublishedCategories();
         const { publishProduct, republishProduct } = useProductManageHandler(manageOpts);
-        const { storageOperations, plugins } = categoryManager;
-
-        await storageOperations.beforeInit(
-            await createStorageOperationsContext({
-                plugins
-            })
-        );
+        const context = categoryManager.getContext();
+        const storageOperations = context.cms.storageOperations;
 
         const { entry: galaEntry } = createEntry(productModel, {
             title: "Gala",

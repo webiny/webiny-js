@@ -1,14 +1,30 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { createModel, createRawEntry, createStoredEntry } from "./mocks/fieldIdStorageConverter.js";
 import { createValueKeyFromStorageConverter } from "~/utils/converters/valueKeyFromStorageConverter.js";
 import { createValueKeyToStorageConverter } from "~/utils/converters/valueKeyToStorageConverter.js";
 import type { CmsModelObjectField } from "~/types/index.js";
-import { usePlugins } from "~tests/testHelpers/usePlugins.js";
+import { useHandler } from "~tests/testHelpers/useHandler.js";
+import type { PluginsContainer } from "@webiny/plugins";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 describe("field id storage converter", () => {
-    it("should convert field value paths to storage ones", async () => {
-        const plugins = usePlugins();
+    let plugins: PluginsContainer;
+    let fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 
+    beforeEach(async () => {
+        const { handler, tenant } = useHandler({});
+        const context = await handler({
+            path: "/cms/manage",
+            headers: {
+                "x-webiny-cms-endpoint": "manage",
+                "x-tenant": tenant.id
+            }
+        });
+        plugins = context.plugins;
+        fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
+    });
+
+    it("should convert field value paths to storage ones", async () => {
         const model = createModel();
 
         const entry = createRawEntry();
@@ -25,7 +41,8 @@ describe("field id storage converter", () => {
 
         const convertToStorage = createValueKeyToStorageConverter({
             model,
-            plugins
+            plugins,
+            fieldRegistry
         });
 
         const result = convertToStorage({
@@ -78,7 +95,8 @@ describe("field id storage converter", () => {
          */
         const convertFromStorage = createValueKeyFromStorageConverter({
             model,
-            plugins
+            plugins,
+            fieldRegistry
         });
 
         const fromStorageResult = convertFromStorage({
@@ -90,8 +108,6 @@ describe("field id storage converter", () => {
     });
 
     it("should convert field value paths from storage ones", async () => {
-        const plugins = usePlugins();
-
         const model = createModel();
 
         const entry = createStoredEntry();
@@ -109,7 +125,8 @@ describe("field id storage converter", () => {
 
         const convert = createValueKeyFromStorageConverter({
             model,
-            plugins
+            plugins,
+            fieldRegistry
         });
 
         const result = convert({
@@ -124,8 +141,6 @@ describe("field id storage converter", () => {
     });
 
     it("should convert object + dynamic zone + rich text", async () => {
-        const plugins = usePlugins();
-
         const baseModel = createModel();
 
         /**
@@ -164,7 +179,8 @@ describe("field id storage converter", () => {
 
         const convertToStorage = createValueKeyToStorageConverter({
             model,
-            plugins
+            plugins,
+            fieldRegistry
         });
 
         const result = convertToStorage({
