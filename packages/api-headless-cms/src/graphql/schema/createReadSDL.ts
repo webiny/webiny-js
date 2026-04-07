@@ -1,28 +1,26 @@
-import type { ApiEndpoint, CmsFieldTypePlugins, CmsModel } from "~/types/index.js";
+import type { ApiEndpoint, CmsModel } from "~/types/index.js";
 import { renderListFilterFields } from "~/utils/renderListFilterFields.js";
 import { renderSortEnum } from "~/utils/renderSortEnum.js";
 import { renderFields } from "~/utils/renderFields.js";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields.js";
-import type { CmsGraphQLSchemaSorterPlugin } from "~/plugins/index.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
+import type {
+    CmsModelFieldToGraphQLRegistry,
+    CmsGraphQLSchemaSorter
+} from "~/features/graphql/index.js";
 
 interface CreateReadSDLParams {
     models: CmsModel[];
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
-    sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    sorters: CmsGraphQLSchemaSorter.Interface[];
 }
 
 interface CreateReadSDL {
     (params: CreateReadSDLParams): string;
 }
 
-export const createReadSDL: CreateReadSDL = ({
-    models,
-    model,
-    fieldTypePlugins,
-    sorterPlugins
-}): string => {
+export const createReadSDL: CreateReadSDL = ({ models, model, fieldRegistry, sorters }): string => {
     const type: ApiEndpoint = "read";
 
     const fieldsRender = renderFields({
@@ -30,24 +28,24 @@ export const createReadSDL: CreateReadSDL = ({
         model,
         fields: model.fields,
         type,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const listFilterFieldsRender = renderListFilterFields({
         model,
         fields: model.fields,
         type,
-        fieldTypePlugins
+        fieldRegistry
     });
     const sortEnumRender = renderSortEnum({
         model,
         fields: model.fields,
-        fieldTypePlugins,
-        sorterPlugins
+        fieldRegistry,
+        sorters
     });
     const getFilterFieldsRender = renderGetFilterFields({
         fields: model.fields,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const hasModelIdField = model.fields.some(f => f.fieldId === "modelId");

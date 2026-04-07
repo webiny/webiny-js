@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createTimeLteValidator } from "~/validators/timeLte";
-import { createTimeGteValidator } from "~/validators/timeGte";
-import { CmsModel, CmsModelField, CmsModelFieldValidation } from "~/types";
+import { Container } from "@webiny/di";
+import type { CmsModel, CmsModelField, CmsModelFieldValidation } from "~/types";
+import { ValidationFeature, CmsModelFieldValidatorRegistry } from "~/features/validation/index.js";
 
 const createValidator = (args: Record<string, any>): CmsModelFieldValidation => {
     return {
@@ -15,8 +15,11 @@ const createValidator = (args: Record<string, any>): CmsModelFieldValidation => 
 
 describe("time validators", () => {
     const context: any = {};
-    const gtePlugin = createTimeGteValidator();
-    const ltePlugin = createTimeLteValidator();
+    const container = new Container();
+    ValidationFeature.register(container);
+    const registry = container.resolve(CmsModelFieldValidatorRegistry);
+    const gteImpl = registry.get("timeGte")!;
+    const lteImpl = registry.get("timeLte")!;
 
     const gteValidationCorrectValues = [
         ["11:22:33", "11:22:33"],
@@ -35,7 +38,7 @@ describe("time validators", () => {
                 value: gteValue
             });
 
-            const result = await gtePlugin.validator.validate({
+            const result = await gteImpl.validate({
                 value,
                 validator,
                 context,
@@ -61,7 +64,7 @@ describe("time validators", () => {
                 value: gteValue
             });
 
-            const result = await gtePlugin.validator.validate({
+            const result = await gteImpl.validate({
                 value,
                 validator,
                 context,
@@ -88,7 +91,7 @@ describe("time validators", () => {
                 value: lteValue
             });
 
-            const result = await ltePlugin.validator.validate({
+            const result = await lteImpl.validate({
                 value,
                 validator,
                 context,
@@ -113,7 +116,7 @@ describe("time validators", () => {
                 value: lteValue
             });
 
-            const result = await ltePlugin.validator.validate({
+            const result = await lteImpl.validate({
                 value,
                 validator,
                 context,
@@ -131,14 +134,14 @@ describe("time validators", () => {
     ];
 
     const validate = async ({ value, lteValidator, gteValidator }: any) => {
-        const lteValid = await ltePlugin.validator.validate({
+        const lteValid = await lteImpl.validate({
             value,
             validator: lteValidator,
             context,
             field: {} as CmsModelField,
             model: {} as CmsModel
         });
-        const gteValid = await gtePlugin.validator.validate({
+        const gteValid = await gteImpl.validate({
             value,
             validator: gteValidator,
             context,

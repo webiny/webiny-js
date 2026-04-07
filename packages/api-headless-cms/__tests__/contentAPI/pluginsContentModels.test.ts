@@ -141,11 +141,19 @@ const GET_PRODUCT = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">)
 };
 
 describe("content model plugins", () => {
-    const { storageOperations } = useGraphQLHandler({
+    const handler = useGraphQLHandler({
         path: "manage"
     });
 
+    const getStorageOperations = async () => {
+        if (!handler.getContext()) {
+            await handler.isInstalledQuery();
+        }
+        return handler.getContext().cms.storageOperations;
+    };
+
     beforeEach(async () => {
+        const storageOperations = await getStorageOperations();
         await storageOperations.models.delete({
             model: {
                 ...(contentModelPlugin.contentModel as CmsModel)
@@ -153,6 +161,7 @@ describe("content model plugins", () => {
         });
     });
     afterEach(async () => {
+        const storageOperations = await getStorageOperations();
         await storageOperations.models.delete({
             model: {
                 ...(contentModelPlugin.contentModel as CmsModel)

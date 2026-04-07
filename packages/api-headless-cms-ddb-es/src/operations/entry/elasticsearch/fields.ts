@@ -1,10 +1,6 @@
 import WebinyError from "@webiny/error";
 import type { PluginsContainer } from "@webiny/plugins";
-import type {
-    CmsModel,
-    CmsModelField,
-    CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import type { CmsModelFieldToElasticsearchPlugin } from "~/types.js";
 import type { ModelFieldParent, ModelFields } from "./types.js";
 import { CmsElasticsearchModelFieldPlugin } from "~/plugins/index.js";
@@ -18,6 +14,7 @@ import { liveFields } from "./fields/live.js";
 import { createSystemField } from "./fields/createSystemField.js";
 import { stateFields } from "./fields/state.js";
 import { locationFields } from "./fields/location.js";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 
 const createSystemFields = (): ModelFields => {
     const onMetaFields = ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField).reduce(
@@ -168,7 +165,7 @@ interface FieldTypePlugin {
     unmappedType?: (field: Pick<CmsModelField, "fieldId" | "type">) => string | undefined;
     searchable: boolean;
     sortable: boolean;
-    fullTextSearch?: boolean;
+    isFullTextSearchable?: boolean;
 }
 
 interface FieldTypePlugins {
@@ -201,7 +198,7 @@ const buildCustomFields = (params: BuildCustomFieldsParams) => {
                 type: field.fieldType
             }),
             unmappedType,
-            fullTextSearch: field.searchable ? typePlugin.fullTextSearch : false,
+            fullTextSearch: field.searchable ? typePlugin.isFullTextSearchable : false,
             searchable: field.searchable || typePlugin.searchable,
             sortable: field.sortable || typePlugin.sortable,
             systemField: false,
@@ -229,7 +226,7 @@ const buildFieldsList = (params: BuildParams): ModelFields => {
             throw new WebinyError(`There is no plugin for field type "${field.type}".`);
         }
 
-        const { searchable, sortable, unmappedType, fullTextSearch } = plugin;
+        const { searchable, sortable, unmappedType, isFullTextSearchable: fullTextSearch } = plugin;
         /**
          * If a field has child fields, go through them and add them to a result.
          */
@@ -270,12 +267,13 @@ const buildFieldsList = (params: BuildParams): ModelFields => {
     }, {});
 };
 
-interface Params {
+interface ICreateModelFieldsParams {
     plugins: PluginsContainer;
     model: CmsModel;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
-export const createModelFields = ({ plugins, model }: Params) => {
+export const createModelFields = ({ plugins, model, fieldRegistry }: ICreateModelFieldsParams) => {
     const fields = model.fields;
     const fieldDefinitionPlugins = plugins
         .byType<CmsElasticsearchModelFieldPlugin>(CmsElasticsearchModelFieldPlugin.type)
@@ -297,18 +295,15 @@ export const createModelFields = ({ plugins, model }: Params) => {
     /**
      * Collect all field types from the plugins.
      */
-    const fieldTypePlugins = plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce<FieldTypePlugins>((types, plugin) => {
-            const { fieldType, fullTextSearch } = plugin;
-            types[fieldType] = {
-                unmappedType: unmappedTypes[fieldType],
-                searchable: plugin.isSearchable,
-                sortable: plugin.isSortable,
-                fullTextSearch
-            };
-            return types;
-        }, {});
+    const fieldTypePlugins = fieldRegistry.getAll().reduce<FieldTypePlugins>((types, field) => {
+        types[field.fieldType] = {
+            unmappedType: unmappedTypes[field.fieldType],
+            searchable: field.isSearchable,
+            sortable: field.isSortable,
+            isFullTextSearchable: field.isFullTextSearchable
+        };
+        return types;
+    }, {});
 
     return {
         ...createSystemFields(),

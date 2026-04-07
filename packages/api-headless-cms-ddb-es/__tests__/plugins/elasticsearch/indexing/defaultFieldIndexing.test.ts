@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import defaultFieldIndexPlugin from "~/elasticsearch/indexing/defaultFieldIndexing";
-import { createGraphQLFields } from "@webiny/api-headless-cms";
-import { CmsEntry, CmsModel, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { PluginsContainer } from "@webiny/plugins/PluginsContainer";
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
+import { createFieldRegistry } from "~tests/helpers/createFieldRegistry.js";
 
 const mockRichTextValue = [
     {
@@ -59,10 +59,10 @@ const getFieldIndexPlugin = () => {
     return defaultFieldIndexPlugin();
 };
 
-const fieldTypePlugins = createGraphQLFields();
+const fieldRegistry = createFieldRegistry();
 
-const getFieldTypePlugin = (fieldType: string) => {
-    return fieldTypePlugins.find(pl => pl.fieldType === fieldType) as CmsModelFieldToGraphQLPlugin;
+const getFieldType = (fieldType: string) => {
+    return fieldRegistry.get(fieldType)!;
 };
 
 describe("defaultFieldIndexPlugin", () => {
@@ -76,7 +76,7 @@ describe("defaultFieldIndexPlugin", () => {
                     value: mockInputEntry.values[field.storageId],
                     plugins: new PluginsContainer(),
                     getFieldIndexPlugin,
-                    getFieldTypePlugin,
+                    getFieldType,
                     model: mockModel,
                     field
                 });
@@ -104,7 +104,7 @@ describe("defaultFieldIndexPlugin", () => {
                 value: mockIndexedEntry.values[field.storageId],
                 rawValue: mockIndexedEntry.rawValues[field.storageId],
                 getFieldIndexPlugin,
-                getFieldTypePlugin,
+                getFieldType,
                 plugins: new PluginsContainer(),
                 model: mockModel,
                 field

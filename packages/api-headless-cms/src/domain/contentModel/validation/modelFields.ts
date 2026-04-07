@@ -1,13 +1,8 @@
 import gql from "graphql-tag";
 import { generateAlphaNumericId } from "@webiny/utils";
 import WebinyError from "@webiny/error";
-import type {
-    CmsContext,
-    CmsModel,
-    CmsModelField,
-    CmsModelFieldToGraphQLPlugin,
-    CmsModelFieldToGraphQLPluginValidateChildFieldsValidate
-} from "~/types/index.js";
+import type { CmsContext, CmsModel, CmsModelField } from "~/types/index.js";
+import type { ValidateChildFieldsValidate } from "~/features/graphql/fields/abstractions/CmsModelFieldToGraphQL.js";
 import { createManageSDL } from "~/graphql/schema/createManageSDL.js";
 import { createFieldStorageId } from "../createFieldStorageId.js";
 import type { GraphQLError } from "graphql";
@@ -16,9 +11,13 @@ import { getContentModelTitleFieldId } from "./fields/titleField.js";
 import { getContentModelDescriptionFieldId } from "./fields/descriptionField.js";
 import { getContentModelImageFieldId } from "./fields/imageField.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
-import { CmsGraphQLSchemaPlugin, CmsGraphQLSchemaSorterPlugin } from "~/plugins/index.js";
+import { CmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { buildSchemaPlugins } from "~/graphql/buildSchemaPlugins.js";
 import { createExecutableSchema } from "~/graphql/createExecutableSchema.js";
+import {
+    CmsGraphQLSchemaSorter,
+    CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
 
 const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
     const sdl = err.source?.body || "";
@@ -70,8 +69,8 @@ const extractInvalidField = (model: CmsModel, err: GraphQLError) => {
 };
 
 const createValidateChildFields = (
-    plugins: CmsModelFieldToGraphQLPlugin[]
-): CmsModelFieldToGraphQLPluginValidateChildFieldsValidate => {
+    registry: CmsModelFieldToGraphQLRegistry.Interface
+): ValidateChildFieldsValidate => {
     return ({ fields, originalFields }) => {
         if (fields.length === 0 && originalFields.length === 0) {
             return;
@@ -79,19 +78,19 @@ const createValidateChildFields = (
         validateFields({
             fields,
             originalFields,
-            plugins
+            registry
         });
     };
 };
 
 interface ValidateFieldsParams {
-    plugins: CmsModelFieldToGraphQLPlugin[];
+    registry: CmsModelFieldToGraphQLRegistry.Interface;
     fields: CmsModelField[];
     originalFields: CmsModelField[];
 }
 
 const validateFields = (params: ValidateFieldsParams) => {
-    const { plugins, fields, originalFields } = params;
+    const { registry, fields, originalFields } = params;
 
     const idList: string[] = [];
     const fieldIdList: string[] = [];
@@ -99,9 +98,9 @@ const validateFields = (params: ValidateFieldsParams) => {
 
     for (const field of fields) {
         const baseType = getBaseFieldType(field);
-        const plugin = plugins.find(plugin => plugin.fieldType === baseType);
+        const fieldImpl = registry.get(baseType);
 
-        if (!plugin) {
+        if (!fieldImpl) {
             throw new Error(
                 `Cannot update content model because of the unknown "${baseType}" field.`
             );
@@ -175,11 +174,11 @@ const validateFields = (params: ValidateFieldsParams) => {
          * There might be some plugins which allow child fields.
          * We use this method to validate them as well.
          */
-        if (!plugin.validateChildFields) {
+        if (!fieldImpl.validateChildFields) {
             continue;
         }
-        const validateChildFields = createValidateChildFields(plugins);
-        plugin.validateChildFields({
+        const validateChildFields = createValidateChildFields(registry);
+        fieldImpl.validateChildFields({
             field,
             originalField,
             validate: validateChildFields
@@ -248,7 +247,6 @@ interface ValidateModelFieldsParams {
 export const validateModelFields = async (params: ValidateModelFieldsParams): Promise<void> => {
     const { models, model, original, context } = params;
     const { titleFieldId, descriptionFieldId, imageFieldId } = model;
-    const { plugins } = context;
 
     /**
      * There should be fields/locked fields in either model or data to be updated.
@@ -259,31 +257,24 @@ export const validateModelFields = async (params: ValidateModelFieldsParams): Pr
      * Let's inspect the fields of the received content model. We prevent saving of a content model if it
      * contains a field for which a "cms-model-field-to-graphql" plugin does not exist on the backend.
      */
-    const fieldTypePlugins = plugins.byType<CmsModelFieldToGraphQLPlugin>(
-        "cms-model-field-to-graphql"
-    );
+    const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
+    const sorters = context.container.resolveAll(CmsGraphQLSchemaSorter);
 
     validateFields({
         fields,
         originalFields: original?.fields || [],
-        plugins: fieldTypePlugins
+        registry: fieldRegistry
     });
 
     if (fields.length) {
-        const sorterPlugins = plugins.byType<CmsGraphQLSchemaSorterPlugin>(
-            CmsGraphQLSchemaSorterPlugin.type
-        );
         /**
          * Make sure that this model can be safely converted to a GraphQL SDL
          */
         const schema = createManageSDL({
             models,
             model,
-            fieldTypePlugins: fieldTypePlugins.reduce(
-                (acc, pl) => ({ ...acc, [pl.fieldType]: pl }),
-                {}
-            ),
-            sorterPlugins
+            fieldRegistry,
+            sorters
         });
 
         try {

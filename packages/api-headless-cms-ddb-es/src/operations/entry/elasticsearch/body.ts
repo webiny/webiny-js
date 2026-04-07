@@ -19,23 +19,31 @@ import type {
 } from "@webiny/api-opensearch/types.js";
 import { createExecFiltering } from "./filtering/index.js";
 import { assignMinimumShouldMatchToQuery } from "./assignMinimumShouldMatchToQuery.js";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 
-interface Params {
+interface ICreateElasticsearchBodyParams {
     plugins: PluginsContainer;
     model: CmsModel;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
         after?: PrimitiveValue[];
     };
 }
-export const createElasticsearchBody = ({ plugins, model, params }: Params): SearchBody => {
+export const createElasticsearchBody = ({
+    plugins,
+    model,
+    params,
+    fieldRegistry
+}: ICreateElasticsearchBodyParams): SearchBody => {
     const { fields, search: term, where, sort: initialSort, after, limit } = params;
     /**
      * We need the model fields constructed as a key -> field value, so we do not need to iterate through array when we require some field.
      */
     const modelFields = createModelFields({
         plugins,
-        model
+        model,
+        fieldRegistry
     });
 
     /**

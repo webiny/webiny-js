@@ -4,5 +4,4 @@ export * from "./StorageTransformPlugin.js";
 export * from "./CmsParametersPlugin.js";
 export * from "./CmsModelFieldConverterPlugin.js";
 export * from "./CmsGraphQLSchemaPlugin/index.js";
-export * from "./CmsGraphQLSchemaSorterPlugin.js";
 export * from "./StorageOperationsCmsModelPlugin.js";

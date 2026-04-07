@@ -53,7 +53,6 @@ describe("entry pagination", () => {
     const manageOpts = { path: "manage" };
 
     const manager = useFruitManageHandler(manageOpts);
-    const { storageOperations } = manager;
     /**
      * We need to create N fruit entries
      */
@@ -62,6 +61,7 @@ describe("entry pagination", () => {
             manager,
             models: ["fruit"]
         });
+        const storageOperations = manager.getContext().cms.storageOperations;
         const model = (await storageOperations.models.get({
             tenant: "root",
             modelId: "fruit"
