@@ -35,6 +35,13 @@ jobs:
         run: >-
           git checkout -b release/${{ github.event.inputs.version }} && git push
           origin release/${{ github.event.inputs.version }}
+      - name: Open pull request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: >-
+          gh pr create --title "Release ${{ github.event.inputs.version }}"
+          --body "Release ${{ github.event.inputs.version }}" --base next --head
+          release/${{ github.event.inputs.version }}
     runs-on: ubuntu-latest
   createDocsBranch:
     name: Create release branch + generate changelog (docs.webiny.com)
@@ -73,4 +80,12 @@ jobs:
           github.event.inputs.version }}"
 
           git push origin release/${{ github.event.inputs.version }}
+      - name: Open pull request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: >-
+          gh pr create --repo webiny/docs.webiny.com --title "Release ${{
+          github.event.inputs.version }}" --body "Release ${{
+          github.event.inputs.version }}" --base master --head release/${{
+          github.event.inputs.version }}
     runs-on: ubuntu-latest

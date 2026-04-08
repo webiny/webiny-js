@@ -44,6 +44,11 @@ export const fullRelease = createWorkflow({
                 {
                     name: `Create and push release branch`,
                     run: `git checkout -b release/${VERSION} && git push origin release/${VERSION}`
+                },
+                {
+                    name: "Open pull request",
+                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    run: `gh pr create --title "Release ${VERSION}" --body "Release ${VERSION}" --base next --head release/${VERSION}`
                 }
             ]
         }),
@@ -88,6 +93,11 @@ export const fullRelease = createWorkflow({
                         `git commit -m "chore: generate changelog for ${VERSION}"`,
                         `git push origin release/${VERSION}`
                     ].join("\n")
+                },
+                {
+                    name: "Open pull request",
+                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    run: `gh pr create --repo webiny/docs.webiny.com --title "Release ${VERSION}" --body "Release ${VERSION}" --base master --head release/${VERSION}`
                 }
             ]
         })

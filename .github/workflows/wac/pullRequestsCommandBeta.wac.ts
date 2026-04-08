@@ -1,0 +1,138 @@
+import { createWorkflow } from "github-actions-wac";
+import { BUILD_PACKAGES_RUNNER } from "./utils/index.js";
+import { createJob } from "./jobs/index.js";
+import {
+    createGlobalBuildCacheSteps,
+    createInstallBuildSteps,
+    createRunBuildCacheSteps,
+    createYarnCacheSteps,
+    withCommonParams
+} from "./steps/index.js";
+
+// The HEAD branch of the PR (e.g. "release/6.3.0") — used as checkout path and working dir.
+const PR_BRANCH = "${{ needs.prBranch.outputs.pr-branch }}";
+
+const installBuildSteps = createInstallBuildSteps({ workingDirectory: PR_BRANCH });
+const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: PR_BRANCH });
+const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: PR_BRANCH });
+const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: PR_BRANCH });
+
+export const pullRequestsCommandBeta = createWorkflow({
+    name: "Pull Requests Command - Beta Release",
+    on: "issue_comment",
+    jobs: {
+        checkComment: createJob({
+            name: "Check comment for /beta",
+            if: "${{ github.event.issue.pull_request }}",
+            checkout: false,
+            steps: [
+                {
+                    name: "Check for Command",
+                    id: "command",
+                    uses: "xt0rted/slash-command-action@v2",
+                    with: {
+                        "repo-token": "${{ secrets.GITHUB_TOKEN }}",
+                        command: "beta",
+                        reaction: "true",
+                        "reaction-type": "eyes",
+                        "allow-edits": "false",
+                        "permission-level": "write"
+                    }
+                },
+                {
+                    name: "Create comment",
+                    uses: "peter-evans/create-or-update-comment@v2",
+                    with: {
+                        "issue-number": "${{ github.event.issue.number }}",
+                        body: "Beta release has been initiated (for more information, click [here](https://github.com/webiny/webiny-js/actions/runs/${{ github.run_id }})). :sparkles:"
+                    }
+                }
+            ]
+        }),
+        prBranch: createJob({
+            needs: "checkComment",
+            name: "Get PR branch",
+            checkout: false,
+            outputs: {
+                "pr-branch": "${{ steps.pr-branch.outputs.pr-branch }}"
+            },
+            steps: [
+                {
+                    name: "Get PR branch",
+                    id: "pr-branch",
+                    env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
+                    run: 'echo "pr-branch=$(gh pr view ${{ github.event.issue.number }} --json headRefName -q .headRefName)" >> $GITHUB_OUTPUT'
+                }
+            ]
+        }),
+        constants: createJob({
+            needs: ["checkComment", "prBranch"],
+            name: "Create constants",
+            checkout: false,
+            outputs: {
+                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
+                "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
+            },
+            steps: [
+                {
+                    name: "Create global cache key",
+                    id: "global-cache-key",
+                    run: `echo "global-cache-key=${PR_BRANCH}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
+                },
+                {
+                    name: "Create workflow run cache key",
+                    id: "run-cache-key",
+                    run: 'echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT'
+                }
+            ]
+        }),
+        build: createJob({
+            name: "Build",
+            needs: ["prBranch", "constants"],
+            checkout: { path: PR_BRANCH, ref: PR_BRANCH },
+            "runs-on": BUILD_PACKAGES_RUNNER,
+            steps: [
+                ...yarnCacheSteps,
+                ...globalBuildCacheSteps,
+                ...installBuildSteps,
+                ...runBuildCacheSteps
+            ]
+        }),
+        npmReleaseBeta: createJob({
+            needs: ["prBranch", "constants", "build"],
+            name: 'NPM release ("beta" tag)',
+            env: {
+                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
+                NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
+                BETA_VERSION: "${{ vars.BETA_VERSION }}"
+            },
+            checkout: { path: PR_BRANCH, ref: PR_BRANCH, "fetch-depth": 0 },
+            steps: [
+                ...yarnCacheSteps,
+                ...runBuildCacheSteps,
+                ...installBuildSteps,
+                ...withCommonParams(
+                    [
+                        {
+                            name: 'Create ".npmrc" file in the project root',
+                            run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
+                        },
+                        {
+                            name: "Set git email",
+                            run: 'git config --global user.email "webiny-bot@webiny.com"'
+                        },
+                        {
+                            name: "Set git username",
+                            run: 'git config --global user.name "webiny-bot"'
+                        },
+                        {
+                            name: 'Version and publish "beta" tag to NPM',
+                            run: "yarn release --type=beta --tag=beta"
+                        }
+                    ],
+                    { "working-directory": PR_BRANCH }
+                )
+            ]
+        })
+    }
+});
