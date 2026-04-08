@@ -21,8 +21,23 @@ export interface IDuplicateWbPageParams {
 // Repository Abstraction
 // ============================================================================
 
+export type DuplicatePageData = Pick<
+    WbPage,
+    "bindings" | "elements" | "location" | "properties" | "metadata" | "extensions"
+>;
+
+export interface DuplicatePageCallbackParams {
+    original: WbPage;
+    duplicate: DuplicatePageData;
+}
+
+export type DuplicatePageCallback = (params: DuplicatePageCallbackParams) => Promise<void> | void;
+
 export interface IDuplicatePageRepository {
-    execute(params: IDuplicateWbPageParams): Promise<Result<WbPage, RepositoryError>>;
+    execute(
+        params: IDuplicateWbPageParams,
+        callback?: DuplicatePageCallback
+    ): Promise<Result<WbPage, RepositoryError>>;
 }
 
 export interface IDuplicatePageRepositoryErrors {
