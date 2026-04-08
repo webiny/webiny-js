@@ -50,9 +50,7 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
             permissions: createPermissions(),
             identity: createIdentity()
         }),
-        createHeadlessCmsContext({
-            storageOperations: cmsStorage.storageOperations
-        }),
+        createHeadlessCmsContext(),
         createHeadlessCmsGraphQL(),
         createBackgroundTaskContext(),
         createHeadlessCmsImportExport(),

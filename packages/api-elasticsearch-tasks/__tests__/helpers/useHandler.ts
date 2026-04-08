@@ -46,9 +46,7 @@ export const useHandler = (params?: UseHandlerParams) => {
                 permissions: createPermissions(),
                 identity: createIdentity()
             }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             graphQLHandlerPlugins(),
             ...createBackgroundTaskContext(),

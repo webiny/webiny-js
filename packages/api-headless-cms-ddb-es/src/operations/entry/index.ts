@@ -32,10 +32,8 @@ import { extractEntriesFromIndex } from "~/helpers/index.js";
 import { configurations } from "~/configurations.js";
 import type { Client } from "@webiny/api-opensearch";
 import {
-    compress,
     createLimit,
     decodeCursor,
-    decompress,
     encodeCursor,
     type IOpenSearchEntity as IElasticsearchEntity,
     type IOpenSearchEntityAttributes as IElasticsearchEntityAttributes
@@ -71,6 +69,7 @@ import {
 } from "@webiny/api-headless-cms/constants.js";
 import type { IEntryEntity, IEntryEntityAttributes } from "~/definitions/types.js";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
@@ -78,6 +77,7 @@ export interface CreateEntriesStorageOperationsParams {
     elasticsearch: Client;
     plugins: PluginsContainer;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    compressionHandler: CompressionHandler.Interface;
 }
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -103,7 +103,7 @@ const convertToStorageEntry = <T extends CmsEntryValues = CmsEntryValues>(
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
-    const { entity, esEntity, elasticsearch, plugins, fieldRegistry } = params;
+    const { entity, esEntity, elasticsearch, plugins, fieldRegistry, compressionHandler } = params;
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
     const getStorageOperationsCmsModelPlugin = () => {
@@ -146,7 +146,8 @@ export const createEntriesStorageOperations = (
             plugins,
             model,
             entry: initialEntry,
-            storageEntry: initialStorageEntry
+            storageEntry: initialStorageEntry,
+            compressionHandler
         });
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
@@ -257,7 +258,8 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry
+            fieldRegistry,
+            compressionHandler
         });
         const { entry, storageEntry } = transformer.transformEntryKeys();
 
@@ -380,7 +382,8 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry
+            fieldRegistry,
+            compressionHandler
         });
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
@@ -499,12 +502,11 @@ export const createEntriesStorageOperations = (
                 const latestEsEntry = await esEntity.getClean(latestKeys);
 
                 if (latestEsEntry) {
-                    const latestEsEntryDataDecompressed = (await decompress(
-                        plugins,
+                    const latestEsEntryDataDecompressed = (await compressionHandler.decompress(
                         latestEsEntry.data
                     )) as CmsIndexEntry;
 
-                    const updatedLatestEntry = await compress(plugins, {
+                    const updatedLatestEntry = await compressionHandler.compress({
                         ...latestEsEntryDataDecompressed,
                         ...updatedEntryLevelMetaFields
                     });
@@ -653,7 +655,7 @@ export const createEntriesStorageOperations = (
                     }
                     return {
                         ...record,
-                        data: await decompress(plugins, record.data)
+                        data: await compressionHandler.decompress(record.data)
                     };
                 })
             )
@@ -669,7 +671,7 @@ export const createEntriesStorageOperations = (
                     esItems.map(async item => {
                         return {
                             ...item,
-                            data: await compress(plugins, {
+                            data: await compressionHandler.compress({
                                 ...item.data,
                                 location: {
                                     ...item.data?.location,
@@ -705,7 +707,8 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry
+            fieldRegistry,
+            compressionHandler
         });
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
@@ -815,7 +818,7 @@ export const createEntriesStorageOperations = (
                     }
                     return {
                         ...record,
-                        data: await decompress(plugins, record.data)
+                        data: await compressionHandler.decompress(record.data)
                     };
                 })
             )
@@ -833,7 +836,7 @@ export const createEntriesStorageOperations = (
         for (const item of esItems) {
             elasticsearchEntityBatch.put({
                 ...item,
-                data: await compress(plugins, {
+                data: await compressionHandler.compress({
                     ...item.data,
                     ...updatedEntryMetaFields,
                     wbyDeleted: entry.wbyDeleted,
@@ -874,7 +877,8 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry
+            fieldRegistry,
+            compressionHandler
         });
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
@@ -981,7 +985,7 @@ export const createEntriesStorageOperations = (
                     }
                     return {
                         ...record,
-                        data: await decompress(plugins, record.data)
+                        data: await compressionHandler.decompress(record.data)
                     };
                 })
             )
@@ -998,7 +1002,7 @@ export const createEntriesStorageOperations = (
         for (const item of esItems) {
             elasticsearchEntityBatch.put({
                 ...item,
-                data: await compress(plugins, {
+                data: await compressionHandler.compress({
                     ...item.data,
                     ...updatedEntryMetaFields,
                     wbyDeleted: entry.wbyDeleted,
@@ -1185,7 +1189,8 @@ export const createEntriesStorageOperations = (
                 model,
                 entry: latestEntry,
                 storageEntry: initialLatestStorageEntry,
-                fieldRegistry
+                fieldRegistry,
+                compressionHandler
             });
 
             const esLatestData = await latestTransformer.getElasticsearchLatestEntryData();
@@ -1422,7 +1427,8 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry
+            fieldRegistry,
+            compressionHandler
         });
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
@@ -1607,8 +1613,7 @@ export const createEntriesStorageOperations = (
          * No need to transform it for the storage because it was fetched
          * directly from the Elasticsearch table, where it sits transformed.
          */
-        const latestEsEntryDataDecompressed = (await decompress(
-            plugins,
+        const latestEsEntryDataDecompressed = (await compressionHandler.decompress(
             latestEsEntry.data
         )) as CmsIndexEntry;
 
@@ -1624,7 +1629,8 @@ export const createEntriesStorageOperations = (
                     locked: true,
                     ...updatedMetaFields
                 },
-                fieldRegistry
+                fieldRegistry,
+                compressionHandler
             });
 
             const esEntryLatestKeys = createEntryLatestKeys(latestEsEntryDataDecompressed);
@@ -1645,8 +1651,7 @@ export const createEntriesStorageOperations = (
             const latestEsEntry = await esEntity.getClean(latestKeys);
 
             if (latestEsEntry) {
-                const latestEsEntryDataDecompressed = (await decompress(
-                    plugins,
+                const latestEsEntryDataDecompressed = (await compressionHandler.decompress(
                     latestEsEntry.data
                 )) as CmsIndexEntry;
 
@@ -1655,7 +1660,7 @@ export const createEntriesStorageOperations = (
                     latestRevisionStatus = CONTENT_ENTRY_STATUS.UNPUBLISHED;
                 }
 
-                const updatedLatestEntry = await compress(plugins, {
+                const updatedLatestEntry = await compressionHandler.compress({
                     ...latestEsEntryDataDecompressed,
                     ...updatedEntryLevelMetaFields,
                     status: latestRevisionStatus
@@ -1723,7 +1728,8 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            fieldRegistry
+            fieldRegistry,
+            compressionHandler
         });
         const { entry, storageEntry } = await transformer.transformEntryKeys();
 

@@ -18,7 +18,7 @@ import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js"
 export * from "./plugins/index.js";
 
 const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
-    const { table, documentClient, plugins } = params;
+    const { table, documentClient, plugins, getContainer } = params;
 
     const tableInstance = createTable({
         name: table,
@@ -57,6 +57,7 @@ const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
 
     const entries = createEntriesStorageOperations({
         entity: entities.entries,
+        container: getContainer(),
         plugins
     });
 
