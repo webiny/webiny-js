@@ -18,7 +18,7 @@ description: >
 
 ---
 **Name:** `Logger`
-**Import:** `import { Logger } from "webiny/api/logger"`
+**Import:** `import { Logger } from "webiny/api"`
 **Source:** `@webiny/api-core/features/logger/index.ts`
 **Description:** Structured logging with multiple log levels.
 
