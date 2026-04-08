@@ -22,6 +22,7 @@ import { PublishPageUseCase } from "~/features/pages/PublishPage/index.js";
 import { UnpublishPageUseCase } from "~/features/pages/UnpublishPage/index.js";
 import { MovePageUseCase } from "~/features/pages/MovePage/index.js";
 import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
+import { TranslatePageUseCase } from "~/features/pages/TranslatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
@@ -193,6 +194,23 @@ export const createPagesSchema = () => {
                         ensureAuthentication(context);
                         const duplicatePage = context.container.resolve(DuplicatePageUseCase);
                         const result = await duplicatePage.execute({ id });
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return result.value;
+                    });
+                },
+                translatePage: async (_, { pageId, languageCode, folderId }, context) => {
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const translatePage = context.container.resolve(TranslatePageUseCase);
+                        const result = await translatePage.execute({
+                            pageId,
+                            languageCode,
+                            folderId
+                        });
 
                         if (result.isFail()) {
                             throw new Error(result.error.message);
