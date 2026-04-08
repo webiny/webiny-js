@@ -1,35 +1,35 @@
-import type { CmsContext, CmsModelFieldValidatorPlugin } from "~/types/index.js";
+import type { CmsContext } from "~/types/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import type { PluginsContainer } from "@webiny/plugins";
 import { ContextPlugin } from "@webiny/api";
 import camelCase from "lodash/camelCase.js";
+import { CmsModelFieldValidatorRegistry } from "~/features/validation/index.js";
+import type { Container } from "@webiny/di";
 
-const createSkipValidatorEnum = (plugins: PluginsContainer) => {
-    const validators = plugins
-        .byType<CmsModelFieldValidatorPlugin>("cms-model-field-validator")
-        .reduce<string[]>((collection, validator) => {
-            const name = camelCase(validator.validator.name);
-            if (collection.includes(name)) {
-                return collection;
-            }
-            collection.push(name);
+const createSkipValidatorEnum = (container: Container) => {
+    const registry = container.resolve(CmsModelFieldValidatorRegistry);
+    const names = registry.getAll().reduce<string[]>((collection, validator) => {
+        const name = camelCase(validator.name);
+        if (collection.includes(name)) {
             return collection;
-        }, []);
+        }
+        collection.push(name);
+        return collection;
+    }, []);
 
-    if (validators.length === 0) {
-        validators.push("_empty");
+    if (names.length === 0) {
+        names.push("_empty");
     }
     return /* GraphQL */ `
         enum SkipValidatorEnum {
-           ${validators.join("\n")}
+           ${names.join("\n")}
         }
     `;
 };
 
-const createSchema = (plugins: PluginsContainer): IGraphQLSchemaPlugin<CmsContext>[] => {
-    const skipValidatorEnum = createSkipValidatorEnum(plugins);
+const createSchema = (context: CmsContext): IGraphQLSchemaPlugin<CmsContext>[] => {
+    const skipValidatorEnum = createSkipValidatorEnum(context.container);
 
     const cmsPlugin = createCmsGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
@@ -170,8 +170,8 @@ const createSchema = (plugins: PluginsContainer): IGraphQLSchemaPlugin<CmsContex
 };
 
 export const createBaseSchema = () => {
-    const plugin = new ContextPlugin(async context => {
-        context.plugins.register(...createSchema(context.plugins));
+    const plugin = new ContextPlugin<CmsContext>(async context => {
+        context.plugins.register(...createSchema(context));
     });
 
     plugin.name = "headless-cms.graphql.createBaseSchema";

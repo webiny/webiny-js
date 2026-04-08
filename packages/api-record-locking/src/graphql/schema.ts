@@ -16,49 +16,45 @@ import { UnlockEntryUseCase } from "~/features/UnlockEntry/abstractions.js";
 import { UnlockEntryRequestUseCase } from "~/features/UnlockEntryRequest/abstractions.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { CmsModel } from "@webiny/api-headless-cms/types/model.js";
-import type { CmsFieldTypePlugins } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 interface Params {
-    // Record locking model
     model: CmsModel;
-    // All public models
     models: CmsModel[];
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 export const createGraphQLSchema = async (
     params: Params
 ): Promise<IGraphQLSchemaPlugin<ApiCoreContext>> => {
-    // Record locking model
     const model = params.model;
 
-    // Other public models that have at least one field
     const models = params.models.filter(model => {
         return model.fields.length > 0;
     });
 
-    const fieldTypePlugins = params.fieldTypePlugins;
+    const fieldRegistry = params.fieldRegistry;
 
     const recordLockingFields = renderFields({
         models,
         model,
         fields: model.fields,
         type: "manage",
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const listFilterFieldsRender = renderListFilterFields({
         model,
         fields: model.fields,
         type: "manage",
-        fieldTypePlugins,
+        fieldRegistry,
         excludeFields: ["entryId"]
     });
 
     const sortEnumRender = renderSortEnum({
         model,
         fields: model.fields,
-        fieldTypePlugins,
-        sorterPlugins: []
+        fieldRegistry,
+        sorters: []
     });
 
     const plugin = createGraphQLSchemaPlugin<ApiCoreContext>({

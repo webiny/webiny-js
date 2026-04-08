@@ -3,72 +3,127 @@ name: webiny-api-permissions
 context: webiny-api
 description: >
   Schema-based permission system for API features. Use this skill when implementing
-  authorization in use cases, defining permission schemas with createPermissions,
+  authorization in use cases, defining permission schemas with createPermissionSchema,
+  creating injectable permissions via createPermissionsAbstraction/createPermissionsFeature,
   checking read/write/delete/publish permissions, handling own-record scoping,
   or testing permission scenarios. Covers the full pattern from schema definition
   to use case integration to test matrices.
 ---
 
-# Schema-Based Permissions
+# API Permissions
 
 ## Overview
 
-Webiny uses a **schema-based permission system** defined via `createPermissions`. Each package declares a permission schema and gets a typed `Permissions` abstraction injectable into use cases via DI. This replaces manual `identityContext.getPermission()` calls with high-level methods like `canRead`, `canEdit`, `canDelete`, `canPublish`, `onlyOwnRecords`, etc.
+Permissions follow two layers: **domain** (schema) and **features** (DI abstractions + feature registration). Each package declares a permission schema and gets a typed `Permissions` abstraction injectable into use cases via DI. Methods like `canRead`, `canEdit`, `canDelete`, `canPublish`, `onlyOwnRecords` replace manual `identityContext.getPermission()` calls.
 
-## Permission Schema Definition
+## Layer 1: Domain — Permission Schema
+
+Define the schema in `src/domain/permissionsSchema.ts`:
 
 ```ts
-// domain/permissions.ts (or permissions/schema.ts)
-import { createPermissions } from "@webiny/api-core/features/security/permissions/index.js";
-import type { Permissions } from "@webiny/api-core/features/security/permissions/index.js";
+import { createPermissionSchema } from "webiny/api/security";
 
-const schema = {
-  prefix: "wb", // Permission prefix
-  fullAccess: { name: "wb.*" }, // Wildcard = full access to all entities
+export const SM_PERMISSIONS_SCHEMA = createPermissionSchema({
+  prefix: "sm",
+  fullAccess: true,
   entities: [
     {
-      id: "page", // Entity identifier (used in method calls)
-      permission: "wb.page", // Permission name stored on the identity
-      scopes: ["full", "own"], // Access scopes: "full" = all records, "own" = only own
-      actions: [
-        { name: "rwd" }, // Read/Write/Delete (chars: "r", "w", "d")
-        { name: "pw" } // Publish/Unpublish (chars: "p", "u")
-      ]
+      id: "product",
+      permission: "sm.product",
+      scopes: ["full", "own"],
+      actions: [{ name: "rwd" }, { name: "pw" }]
     },
     {
       id: "settings",
-      permission: "wb.settings",
-      scopes: ["full"] // No "own" — no ownership concept for settings
+      permission: "sm.settings",
+      scopes: ["full"]
     }
   ]
-} as const; // MUST use `as const` for type narrowing
-
-type MySchema = typeof schema;
-
-export const MyPermissions = createPermissions(schema);
-
-export namespace MyPermissions {
-  export type Interface = Permissions<MySchema>;
-}
+});
 ```
 
-`createPermissions` returns `{ Abstraction, Implementation }`. Register the Implementation in your feature.
+The schema MUST use `as const` inference (handled by `createPermissionSchema`) for TypeScript to narrow entity IDs in method signatures.
 
 ### Schema Fields
 
-| Field                   | Description                                                           |
-| ----------------------- | --------------------------------------------------------------------- |
-| `prefix`                | Namespaces the DI abstraction: `${prefix}:Permissions`                |
-| `fullAccess.name`       | Wildcard permission (e.g. `"wb.*"`) — grants all entity access        |
-| `entities[].id`         | Entity identifier used in method calls: `canRead("page")`             |
-| `entities[].permission` | Permission name matched against identity permissions                  |
-| `entities[].scopes`     | `["full"]` or `["full", "own"]` — determines if own-scope supported   |
-| `entities[].actions`    | Action definitions — built-in: `"rwd"`, `"pw"`; custom: boolean flags |
+| Field                   | Description                                                                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `prefix`                | Namespaces the DI abstraction: `${prefix}:Permissions`                                                                               |
+| `fullAccess`            | `true` for standard full access. Pass an object with custom boolean flags for full-access extras (e.g., `{ canForceUnlock: true }`). |
+| `entities[].id`         | Entity identifier used in method calls: `canRead("product")`                                                                         |
+| `entities[].permission` | Permission name matched against identity permissions                                                                                 |
+| `entities[].scopes`     | `["full"]` or `["full", "own"]` — determines if own-scope supported                                                                  |
+| `entities[].actions`    | Action definitions — built-in: `"rwd"`, `"pw"`; custom: boolean flags                                                                |
 
 ### Scopes
 
 - **`"full"`** — User can access all records (default when no `own` flag on permission object)
 - **`"own"`** — User can only access records where `createdBy.id === identity.id`
+
+### Simple Apps (No Entities)
+
+Omit `entities` for binary full/no access:
+
+```ts
+export const MA_PERMISSIONS_SCHEMA = createPermissionSchema({
+  prefix: "ma",
+  fullAccess: true
+});
+```
+
+---
+
+## Layer 2: Features — DI Artifacts + Registration
+
+### Abstraction (`src/features/permissions/abstractions.ts`)
+
+```ts
+import { createPermissionsAbstraction } from "webiny/api/security";
+import type { Permissions } from "webiny/api/security";
+import { SM_PERMISSIONS_SCHEMA } from "~/domain/permissionsSchema.js";
+
+export const SmPermissions = createPermissionsAbstraction(SM_PERMISSIONS_SCHEMA);
+
+export namespace SmPermissions {
+  export type Interface = Permissions<typeof SM_PERMISSIONS_SCHEMA>;
+}
+```
+
+### Feature (`src/features/permissions/feature.ts`)
+
+```ts
+import { createPermissionsFeature } from "webiny/api/security";
+import { SM_PERMISSIONS_SCHEMA } from "~/domain/permissionsSchema.js";
+import { SmPermissions } from "./abstractions.js";
+
+export const SmPermissionsFeature = createPermissionsFeature(SM_PERMISSIONS_SCHEMA, SmPermissions);
+```
+
+### Registration
+
+Register the feature in your context plugin:
+
+```ts
+import { SmPermissionsFeature } from "~/features/permissions/feature.js";
+
+// In createContext:
+SmPermissionsFeature.register(container);
+```
+
+---
+
+## File Structure
+
+```
+src/
+├── domain/
+│   └── permissionsSchema.ts              # createPermissionSchema()
+├── features/
+│   └── permissions/
+│       ├── abstractions.ts               # createPermissionsAbstraction() + namespace type
+│       └── feature.ts                    # createPermissionsFeature()
+└── index.ts                              # SmPermissionsFeature.register(container)
+```
 
 ---
 
@@ -77,7 +132,7 @@ export namespace MyPermissions {
 All methods follow a 3-tier bypass:
 
 1. `identityContext.hasFullAccess()` → `name: "*"` permission (super admin)
-2. `hasFullSchemaAccess()` → wildcard permission (e.g. `"wb.*"`)
+2. `hasFullSchemaAccess()` → wildcard permission (e.g. `"sm.*"`)
 3. Entity-level permission check
 
 ### Method Reference
@@ -94,7 +149,7 @@ All methods follow a 3-tier bypass:
 | `canUnpublish(entity)`      | Unpublish permission  | No         | Checks `pw` includes `"u"`                                                                    |
 | `canAction(action, entity)` | Custom boolean action | No         | Checks `permission[action] === true`                                                          |
 
-All return `Promise<boolean>`.
+All return `Promise<boolean>`. Entity IDs are fully typed — `canRead("bogus")` produces a type error.
 
 ### OwnableItem Interface
 
@@ -113,20 +168,20 @@ interface OwnableItem {
 The Get use case is the **central ownership gate** — mutation use cases that delegate to GetById inherit ownership enforcement automatically.
 
 ```ts
-import { Result } from "@webiny/feature/api";
+import { Result } from "webiny/api";
 import { GetByIdUseCase as UseCaseAbstraction, GetByIdRepository } from "./abstractions.js";
-import { MyPermissions } from "~/domain/permissions.js";
+import { SmPermissions } from "~/features/permissions/abstractions.js";
 import { NotAuthorizedError } from "~/domain/errors.js";
 
 class GetByIdUseCaseImpl implements UseCaseAbstraction.Interface {
   constructor(
-    private permissions: MyPermissions.Interface,
+    private permissions: SmPermissions.Interface,
     private repository: GetByIdRepository.Interface
   ) {}
 
   async execute(id: string): UseCaseAbstraction.Return {
     // 1. Entity-level read check
-    if (!(await this.permissions.canRead("entity"))) {
+    if (!(await this.permissions.canRead("product"))) {
       return Result.fail(new NotAuthorizedError());
     }
 
@@ -137,7 +192,7 @@ class GetByIdUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 
     // 3. Item-level ownership check
-    if (!(await this.permissions.canAccess("entity", result.value))) {
+    if (!(await this.permissions.canAccess("product", result.value))) {
       return Result.fail(new NotAuthorizedError());
     }
 
@@ -147,31 +202,31 @@ class GetByIdUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const GetByIdUseCase = UseCaseAbstraction.createImplementation({
   implementation: GetByIdUseCaseImpl,
-  dependencies: [MyPermissions.Abstraction, GetByIdRepository]
+  dependencies: [SmPermissions, GetByIdRepository]
 });
 ```
 
 ### List Use Case (Read + Own Records Filter)
 
 ```ts
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { IdentityContext } from "webiny/api/security";
 
 class ListUseCaseImpl implements UseCaseAbstraction.Interface {
   constructor(
-    private permissions: MyPermissions.Interface,
+    private permissions: SmPermissions.Interface,
     private identityContext: IdentityContext.Interface,
     private repository: ListRepository.Interface
   ) {}
 
   async execute(params: UseCaseAbstraction.Params): UseCaseAbstraction.Return {
-    if (!(await this.permissions.canRead("entity"))) {
+    if (!(await this.permissions.canRead("product"))) {
       return Result.fail(new NotAuthorizedError());
     }
 
     const where = { ...params.where };
 
     // Filter to own records if needed
-    if (await this.permissions.onlyOwnRecords("entity")) {
+    if (await this.permissions.onlyOwnRecords("product")) {
       const identity = this.identityContext.getIdentity();
       where.createdBy = identity.id;
     }
@@ -181,7 +236,7 @@ class ListUseCaseImpl implements UseCaseAbstraction.Interface {
 }
 
 // Dependencies must include IdentityContext
-dependencies: [MyPermissions.Abstraction, IdentityContext, ListRepository];
+dependencies: [SmPermissions, IdentityContext, ListRepository];
 ```
 
 **Important:** The list `where` type must include `createdBy?: string`. For CMS-based entities, `CmsEntryListWhere` already has this.
@@ -191,14 +246,14 @@ dependencies: [MyPermissions.Abstraction, IdentityContext, ListRepository];
 ```ts
 class UpdateUseCaseImpl implements UseCaseAbstraction.Interface {
   constructor(
-    private permissions: MyPermissions.Interface,
-    private getById: GetByIdUseCase.Interface, // Delegates ownership gate
+    private permissions: SmPermissions.Interface,
+    private getById: GetByIdUseCase.Interface,
     private repository: UpdateRepository.Interface
   ) {}
 
   async execute(id: string, data: UpdateData): UseCaseAbstraction.Return {
     // 1. Entity-level edit check (no item yet)
-    if (!(await this.permissions.canEdit("entity"))) {
+    if (!(await this.permissions.canEdit("product"))) {
       return Result.fail(new NotAuthorizedError());
     }
 
@@ -211,7 +266,7 @@ class UpdateUseCaseImpl implements UseCaseAbstraction.Interface {
     const original = getResult.value;
 
     // 3. Item-level edit check (defense in depth)
-    if (!(await this.permissions.canEdit("entity", original))) {
+    if (!(await this.permissions.canEdit("product", original))) {
       return Result.fail(new NotAuthorizedError());
     }
 
@@ -238,7 +293,7 @@ class DeleteUseCaseImpl implements UseCaseAbstraction.Interface {
     const item = getResult.value;
 
     // Item-level delete check — MUST pass the item
-    if (!(await this.permissions.canDelete("entity", item))) {
+    if (!(await this.permissions.canDelete("product", item))) {
       return Result.fail(new NotAuthorizedError());
     }
 
@@ -253,7 +308,7 @@ class DeleteUseCaseImpl implements UseCaseAbstraction.Interface {
 class PublishUseCaseImpl {
   async execute(params: Params): UseCaseAbstraction.Return {
     // 1. Entity-level publish check
-    if (!(await this.permissions.canPublish("entity"))) {
+    if (!(await this.permissions.canPublish("product"))) {
       return Result.fail(new NotAuthorizedError());
     }
 
@@ -264,7 +319,7 @@ class PublishUseCaseImpl {
     }
 
     // 3. Item-level ownership check (defense in depth)
-    if (!(await this.permissions.canAccess("entity", getResult.value))) {
+    if (!(await this.permissions.canAccess("product", getResult.value))) {
       return Result.fail(new NotAuthorizedError());
     }
 
@@ -275,17 +330,44 @@ class PublishUseCaseImpl {
 
 ---
 
+## DI Injection
+
+The permissions abstraction is passed directly as a dependency — it IS the DI key:
+
+```ts
+export const MyUseCase = UseCaseAbstraction.createImplementation({
+  implementation: MyUseCaseImpl,
+  dependencies: [SmPermissions, OtherDep]
+});
+```
+
+**Note:** Use `SmPermissions` directly (not `SmPermissions.Abstraction`). The abstraction returned by `createPermissionsAbstraction` is the DI key itself.
+
+---
+
 ## Gotchas
 
 1. **`canDelete` without item + `own: true` = `false`** — Always pass the item to `canDelete`. Fetch first, then check.
 2. **`canEdit` without item + `own: true` = `true`** — Intentional: allows editing new/unsaved records.
 3. **`canAccess` without item = `true`** — Only checks entity-level access, not ownership.
 4. **List where type** — Ensure the `where` interface includes `createdBy?: string` for own-scope filtering.
-5. **`as const`** — The schema MUST use `as const` for TypeScript to narrow entity IDs in method signatures.
-6. **Dependencies order** — DI constructor params must match the `dependencies` array order exactly.
+5. **Dependencies order** — DI constructor params must match the `dependencies` array order exactly.
+6. **Abstraction is the DI key** — Use `SmPermissions` directly in dependencies, not `SmPermissions.Abstraction`.
+
+## Matching Admin-Side Permissions
+
+The API schema and the admin-side `createPermissionSchema` should use the **same prefix, entity IDs, and action names**. This ensures the permissions emitted by the admin UI are correctly evaluated by the API.
+
+```
+API:    createPermissionSchema({ prefix: "sm", entities: [{ id: "product", permission: "sm.product", ... }] })
+Admin:  createPermissionSchema({ prefix: "sm", entities: [{ id: "product", permission: "sm.product", ... }] })
+```
+
+See **webiny-admin-permissions** for the admin-side implementation.
 
 ## Related Skills
 
+- **webiny-admin-permissions** — Admin-side permission UI and DI-backed permission checking
 - **webiny-api-architect** — Architecture overview, Services vs UseCases, feature structure
 - **webiny-use-case-pattern** — UseCase implementation, Result handling, decorators
 - **webiny-dependency-injection** — Injectable services catalog

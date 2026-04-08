@@ -5,7 +5,7 @@ import {
 } from "@webiny/api-core/features/EventPublisher";
 import { RestorePageRepository, RestorePageUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { PageAfterRestoreEvent, PageBeforeRestoreEvent } from "./events.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 import { GetDeletedPageByIdUseCase } from "~/features/pages/GetDeletedPageById/index.js";
 
@@ -59,10 +59,5 @@ class RestorePageUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const RestorePageUseCase = UseCaseAbstraction.createImplementation({
     implementation: RestorePageUseCaseImpl,
-    dependencies: [
-        WbPermissions.Abstraction,
-        EventPublisher,
-        GetDeletedPageByIdUseCase,
-        RestorePageRepository
-    ]
+    dependencies: [WbPermissions, EventPublisher, GetDeletedPageByIdUseCase, RestorePageRepository]
 });

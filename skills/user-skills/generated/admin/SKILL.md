@@ -2,7 +2,7 @@
 name: webiny-admin-catalog
 context: webiny-api
 description: >
-  admin — 18 abstractions.
+  admin — 16 abstractions.
 ---
 
 # admin
@@ -10,7 +10,7 @@ description: >
 ## How to Use
 
 1. Find the abstraction you need below
-2. Read the source file to get the exact interface and types
+2. You MUST read the source file to get the exact interface and types!
 3. Import: `import { Name } from "<importPath>";`
 
 ## Abstractions
@@ -53,18 +53,6 @@ description: >
 
 ---
 
-**Name:** `createHasPermission`
-**Import:** `import { createHasPermission } from "webiny/admin"`
-**Source:** `@webiny/app-admin/permissions/index.ts`
-
----
-
-**Name:** `createPermissionSchema`
-**Import:** `import { createPermissionSchema } from "webiny/admin"`
-**Source:** `@webiny/app-admin/permissions/index.ts`
-
----
-
 **Name:** `createProvider`
 **Import:** `import { createProvider } from "webiny/admin"`
 **Source:** `@webiny/app/core/createProvider.tsx`
@@ -82,12 +70,6 @@ For more information, visit https://www.webiny.com/docs/admin-area/basics/framew
 
 ---
 
-**Name:** `createUsePermissions`
-**Import:** `import { createUsePermissions } from "webiny/admin"`
-**Source:** `@webiny/app-admin/permissions/index.ts`
-
----
-
 **Name:** `DevToolsSection`
 **Import:** `import { DevToolsSection } from "webiny/admin"`
 **Source:** `@webiny/app-admin/components/index.ts`
@@ -96,6 +78,12 @@ Renders nothing — purely a data registration side-effect.
 
 When the component unmounts (e.g., route change), the section
 is automatically removed from DevTools.
+
+---
+
+**Name:** `MainGraphQLClient`
+**Import:** `import { MainGraphQLClient } from "webiny/admin"`
+**Source:** `@webiny/app/features/mainGraphQLClient/index.ts`
 
 ---
 

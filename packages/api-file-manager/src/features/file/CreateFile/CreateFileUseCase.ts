@@ -109,7 +109,7 @@ export const CreateFileUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateFileUseCaseImpl,
     dependencies: [
         IdentityContext,
-        FmPermissions.Abstraction,
+        FmPermissions,
         CreateFileRepository,
         GetSettingsUseCase,
         EventPublisher

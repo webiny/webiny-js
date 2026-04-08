@@ -38,7 +38,7 @@ const createMetaData = () => {
 describe("Content Entry Meta Field", () => {
     const manager = useCategoryManageHandler(manageOpts);
 
-    const { listCategories, getCategory, storageOperations } = manager;
+    const { listCategories, getCategory } = manager;
 
     let model: CmsModel;
 
@@ -51,6 +51,7 @@ describe("Content Entry Meta Field", () => {
     });
 
     it("storage operations - should have meta field data in the retrieved record", async () => {
+        const storageOperations = manager.getContext().cms.storageOperations;
         const entryId = generateAlphaNumericLowerCaseId(8);
         const entry = createMockCmsEntry({
             id: `${entryId}#0001`,

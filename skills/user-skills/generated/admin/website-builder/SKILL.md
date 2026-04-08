@@ -2,7 +2,7 @@
 name: webiny-admin-website-builder-catalog
 context: webiny-api
 description: >
-  admin/website-builder — 58 abstractions.
+  admin/website-builder — 59 abstractions.
 ---
 
 # admin/website-builder
@@ -10,7 +10,7 @@ description: >
 ## How to Use
 
 1. Find the abstraction you need below
-2. Read the source file to get the exact interface and types
+2. You MUST read the source file to get the exact interface and types!
 3. Import: `import { Name } from "<importPath>";`
 
 ## Abstractions
@@ -181,6 +181,12 @@ which can be mutated in place.
 **Name:** `getNodeFromSelection`
 **Import:** `import { getNodeFromSelection } from "webiny/admin/website-builder/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
+
+---
+
+**Name:** `HasPermission`
+**Import:** `import { HasPermission } from "webiny/admin/website-builder"`
+**Source:** `@webiny/app-website-builder/presentation/security/HasPermission.tsx`
 
 ---
 

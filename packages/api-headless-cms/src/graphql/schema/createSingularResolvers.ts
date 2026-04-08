@@ -1,13 +1,14 @@
-import type { ApiEndpoint, CmsFieldTypePlugins, CmsModel } from "~/types/index.js";
+import type { ApiEndpoint, CmsModel } from "~/types/index.js";
 import { resolveGet } from "./resolvers/singular/resolveGet.js";
 import { resolveUpdate } from "./resolvers/singular/resolveUpdate.js";
 import { normalizeGraphQlInput } from "./resolvers/manage/normalizeGraphQlInput.js";
 import { createFieldResolversFactory } from "./createFieldResolvers.js";
+import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface CreateSingularResolversParams {
     models: CmsModel[];
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     type: ApiEndpoint;
 }
 
@@ -19,7 +20,7 @@ interface CreateSingularResolvers {
 export const createSingularResolvers: CreateSingularResolvers = ({
     models,
     model,
-    fieldTypePlugins,
+    fieldRegistry,
     type
 }) => {
     if (model.fields.length === 0) {
@@ -33,7 +34,7 @@ export const createSingularResolvers: CreateSingularResolvers = ({
         endpointType: type,
         models,
         model,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const fieldResolvers = createFieldResolvers({
@@ -42,7 +43,7 @@ export const createSingularResolvers: CreateSingularResolvers = ({
         isRoot: true
     });
 
-    const resolverFactoryParams = { model, fieldTypePlugins };
+    const resolverFactoryParams = { model, fieldRegistry };
 
     const result = {
         Query: {

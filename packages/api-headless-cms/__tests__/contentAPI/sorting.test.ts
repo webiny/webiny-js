@@ -4,7 +4,8 @@ import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 import { setupGroupAndModels } from "../testHelpers/setup";
 import { useFruitReadHandler } from "../testHelpers/useFruitReadHandler";
 import { Fruit } from "./mocks/contentModels";
-import { createCmsGraphQLSchemaSorterPlugin } from "~/plugins";
+import { CmsGraphQLSchemaSorter } from "~/features/graphql/index.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 const appleData: Fruit = {
     values: {
@@ -248,15 +249,24 @@ describe("sorting + cursor", () => {
     it("should sort via custom sort", async () => {
         const { apple, graham, banana, strawberry } = await setupFruits();
 
-        const handler = useFruitReadHandler({
-            ...readOpts,
-            plugins: [
-                createCmsGraphQLSchemaSorterPlugin(params => {
+        const testSorter = CmsGraphQLSchemaSorter.createImplementation({
+            implementation: class TestSorter implements CmsGraphQLSchemaSorter.Interface {
+                public execute(params: CmsGraphQLSchemaSorter.Params): string[] {
                     const { model, sorters } = params;
                     if (model.modelId !== "fruit") {
                         return sorters;
                     }
                     return [...sorters, "customSorter_ASC", "customSorter_DESC"];
+                }
+            },
+            dependencies: []
+        });
+
+        const handler = useFruitReadHandler({
+            ...readOpts,
+            plugins: [
+                createRegisterExtensionPlugin(({ container }) => {
+                    container.register(testSorter);
                 })
             ]
         });

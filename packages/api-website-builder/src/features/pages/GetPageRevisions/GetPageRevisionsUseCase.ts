@@ -3,7 +3,7 @@ import {
     GetPageRevisionsUseCase as UseCaseAbstraction,
     GetPageRevisionsRepository
 } from "./abstractions.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class GetPageRevisionsUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -38,5 +38,5 @@ class GetPageRevisionsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const GetPageRevisionsUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetPageRevisionsUseCaseImpl,
-    dependencies: [WbPermissions.Abstraction, GetPageRevisionsRepository]
+    dependencies: [WbPermissions, GetPageRevisionsRepository]
 });

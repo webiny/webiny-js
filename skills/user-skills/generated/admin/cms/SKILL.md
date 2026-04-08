@@ -2,7 +2,7 @@
 name: webiny-admin-cms-catalog
 context: webiny-api
 description: >
-  admin/cms — 62 abstractions.
+  admin/cms — 63 abstractions.
 ---
 
 # admin/cms
@@ -10,7 +10,7 @@ description: >
 ## How to Use
 
 1. Find the abstraction you need below
-2. Read the source file to get the exact interface and types
+2. You MUST read the source file to get the exact interface and types!
 3. Import: `import { Name } from "<importPath>";`
 
 ## Abstractions
@@ -27,6 +27,12 @@ description: >
 **Name:** `CmsContentFormRenderer`
 **Import:** `import { CmsContentFormRenderer } from "webiny/admin/cms"`
 **Source:** `@webiny/app-headless-cms/legacyPluginAdapters/CmsContentFormRenderer.tsx`
+
+---
+
+**Name:** `CmsGraphQLClient`
+**Import:** `import { CmsGraphQLClient } from "webiny/admin/cms"`
+**Source:** `@webiny/app-headless-cms/features/graphQLClient/index.ts`
 
 ---
 

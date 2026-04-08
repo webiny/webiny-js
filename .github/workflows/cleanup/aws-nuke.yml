@@ -44,7 +44,7 @@ accounts:
           value: "arn:aws:iam::726952677045:oidc-provider/token.actions.githubusercontent.com"
       Route53HostedZone:
         - property: Name
-          value: "e2e.webiny.com."
+          value: "ci.webiny.com."
       OSDomain:
         - property: DomainName
           value: "webiny-e2e-os-3"

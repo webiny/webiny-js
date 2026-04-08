@@ -3,7 +3,7 @@ import {
     GetRedirectByIdUseCase as UseCaseAbstraction,
     GetRedirectByIdRepository
 } from "./abstractions.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { RedirectNotAuthorizedError } from "~/domain/redirect/errors.js";
 
 class GetRedirectByIdUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -36,5 +36,5 @@ class GetRedirectByIdUseCaseImpl implements UseCaseAbstraction.Interface {
 export const GetRedirectByIdUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: GetRedirectByIdUseCaseImpl,
-    dependencies: [WbPermissions.Abstraction, GetRedirectByIdRepository]
+    dependencies: [WbPermissions, GetRedirectByIdRepository]
 });

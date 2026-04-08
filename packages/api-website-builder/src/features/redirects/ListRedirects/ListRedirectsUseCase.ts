@@ -3,7 +3,7 @@ import {
     ListRedirectsUseCase as UseCaseAbstraction,
     ListRedirectsRepository
 } from "./abstractions.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { RedirectNotAuthorizedError } from "~/domain/redirect/errors.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
@@ -34,5 +34,5 @@ class ListRedirectsUseCaseImpl implements UseCaseAbstraction.Interface {
 export const ListRedirectsUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: ListRedirectsUseCaseImpl,
-    dependencies: [WbPermissions.Abstraction, IdentityContext, ListRedirectsRepository]
+    dependencies: [WbPermissions, IdentityContext, ListRedirectsRepository]
 });

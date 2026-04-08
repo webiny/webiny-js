@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useMemo } from "react";
 import { useContainer } from "@webiny/app";
 import type { FeatureDefinition } from "@webiny/feature/admin";
 
@@ -12,12 +12,12 @@ type RegisterFeatureProps<TParams extends any[]> = {
     feature: FeatureDefinition<any, TParams>;
 } & (TParams extends [] ? { options?: never } : { options: ExtractOptions<TParams> });
 
-function RegisterFeatureImpl<TParams extends any[]>({
+const RegisterFeatureImpl = <TParams extends any[]>({
     feature,
     options
-}: RegisterFeatureProps<TParams>) {
+}: RegisterFeatureProps<TParams>) => {
     const container = useContainer();
-    useEffect(() => {
+    useMemo(() => {
         // Cast feature.register to accept ...any[] to avoid type narrowing issues
         const register = feature.register as (container: any, ...args: any[]) => void;
         if (options !== undefined) {
@@ -27,7 +27,7 @@ function RegisterFeatureImpl<TParams extends any[]>({
         }
     }, [container, feature, options]);
     return null;
-}
+};
 
 export const RegisterFeature = RegisterFeatureImpl as <TParams extends any[]>(
     props: RegisterFeatureProps<TParams>

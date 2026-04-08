@@ -195,6 +195,12 @@ export type CustomActionNames<S extends PermissionSchemaConfig> = Exclude<
 export type UsePermissionsResult<S extends PermissionSchemaConfig> =
     string extends AllEntityIds<S> ? UsePermissionsResultUntyped : UsePermissionsResultTyped<S>;
 
+/**
+ * Canonical type for DI-resolved permissions.
+ * Same underlying type as `UsePermissionsResult<S>`.
+ */
+export type Permissions<S extends PermissionSchemaConfig> = UsePermissionsResult<S>;
+
 export interface UsePermissionsResultUntyped {
     canAccess: (entityId: string) => boolean;
     canRead: (entityId: string) => boolean;

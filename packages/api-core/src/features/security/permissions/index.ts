@@ -1,4 +1,5 @@
-export { createPermissions } from "./createPermissions.js";
+export { createPermissionSchema } from "./createPermissionSchema.js";
+export { createPermissionsAbstraction, createPermissionsFeature } from "./createPermissions.js";
 export type {
     ActionDefinition,
     EntityDefinition,

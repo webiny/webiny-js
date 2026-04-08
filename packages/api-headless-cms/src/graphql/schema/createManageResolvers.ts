@@ -1,4 +1,5 @@
-import type { CmsContext, CmsEntry, CmsFieldTypePlugins, CmsModel } from "~/types/index.js";
+import type { CmsContext, CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 import { resolveGet } from "./resolvers/manage/resolveGet.js";
 import { resolveList } from "./resolvers/manage/resolveList.js";
 import { resolveListDeleted } from "./resolvers/manage/resolveListDeleted.js";
@@ -24,7 +25,7 @@ import { entryFieldFromStorageTransform } from "~/utils/entryStorage.js";
 interface CreateManageResolversParams {
     models: CmsModel[];
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 interface CreateManageResolvers {
@@ -32,16 +33,12 @@ interface CreateManageResolvers {
     (params: CreateManageResolversParams): any;
 }
 
-export const createManageResolvers: CreateManageResolvers = ({
-    models,
-    model,
-    fieldTypePlugins
-}) => {
+export const createManageResolvers: CreateManageResolvers = ({ models, model, fieldRegistry }) => {
     const createFieldResolvers = createFieldResolversFactory({
         endpointType: "manage",
         models,
         model,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const fieldResolvers = createFieldResolvers({
@@ -62,7 +59,7 @@ export const createManageResolvers: CreateManageResolvers = ({
         }
     });
 
-    const resolverFactoryParams = { model, fieldTypePlugins };
+    const resolverFactoryParams = { model, fieldRegistry };
 
     return {
         Query: {

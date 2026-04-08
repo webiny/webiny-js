@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { ListPagesUseCase as UseCaseAbstraction, ListPagesRepository } from "./abstractions.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
@@ -30,5 +30,5 @@ class ListPagesUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const ListPagesUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListPagesUseCaseImpl,
-    dependencies: [WbPermissions.Abstraction, IdentityContext, ListPagesRepository]
+    dependencies: [WbPermissions, IdentityContext, ListPagesRepository]
 });

@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { PluginsContainer } from "@webiny/plugins";
 import type { CmsContext } from "~/types";
 import {
     createTextField,
@@ -14,6 +13,7 @@ import { createObjectField } from "~tests/validations/fields/object";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { createTestModel as createModel } from "./models/test";
 import { validateModelFields } from "~/domain/contentModel/validation/modelFields";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface ErrorObject {
     message?: string;
@@ -125,7 +125,10 @@ describe("Validate model fields", () => {
     it("should throw an error if any of the fields type does not have the plugin equivalent", async () => {
         let error: ErrorObject | undefined = undefined;
         try {
-            context.plugins = new PluginsContainer();
+            context.container.registerInstance(CmsModelFieldToGraphQLRegistry, {
+                get: () => undefined,
+                getAll: () => []
+            });
             await validateModelFields({
                 context,
                 models: [],

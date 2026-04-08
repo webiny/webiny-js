@@ -44,5 +44,5 @@ class DeleteFileUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const DeleteFileUseCase = UseCaseAbstraction.createImplementation({
     implementation: DeleteFileUseCaseImpl,
-    dependencies: [FmPermissions.Abstraction, GetFileUseCase, DeleteFileRepository, EventPublisher]
+    dependencies: [FmPermissions, GetFileUseCase, DeleteFileRepository, EventPublisher]
 });

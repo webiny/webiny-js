@@ -37,6 +37,8 @@ import { OnRequestTimeoutPlugin } from "~/plugins/OnRequestTimeoutPlugin.js";
 import { OnRequestResponseSendPlugin } from "~/plugins/OnRequestResponseSendPlugin.js";
 import { Request } from "./abstractions/Request.js";
 import { Reply } from "./abstractions/Reply.js";
+import { RegisterExtensionPlugin } from "~/plugins/RegisterExtensionPlugin.js";
+import { RegisterExtensions } from "~/PreHandler/RegisterExtensions.js";
 
 const modifyResponseHeaders = (
     app: FastifyInstance,
@@ -325,7 +327,12 @@ export const createHandler = (params: CreateHandlerParams) => {
             ModifyResponseHeadersPlugin.type
         );
 
+        const registerExtensionPlugins = app.webiny.plugins.byType<RegisterExtensionPlugin>(
+            RegisterExtensionPlugin.type
+        );
+
         const preHandler = new PreHandler([
+            new RegisterExtensions(registerExtensionPlugins),
             new SetDefaultHeaders(definedRoutes),
             new ProcessHandlerOnRequestPlugins(handlerOnRequestPlugins),
             new IfNotOptionsRequest([

@@ -3,7 +3,7 @@ import {
     ListDeletedPagesUseCase as UseCaseAbstraction,
     ListDeletedPagesRepository
 } from "./abstractions.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
@@ -33,5 +33,5 @@ class ListDeletedPagesUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const ListDeletedPagesUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListDeletedPagesUseCaseImpl,
-    dependencies: [WbPermissions.Abstraction, IdentityContext, ListDeletedPagesRepository]
+    dependencies: [WbPermissions, IdentityContext, ListDeletedPagesRepository]
 });

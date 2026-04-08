@@ -122,6 +122,7 @@ export const buildPackages = async () => {
                         const batchTasks = task.newListr(subtasks, {
                             concurrent: buildInParallel,
                             exitOnError: false,
+                            collectErrors: "minimal",
                             rendererOptions: { showErrorMessage: false }
                         });
 
@@ -131,6 +132,7 @@ export const buildPackages = async () => {
             }),
             {
                 concurrent: false,
+                collectErrors: "minimal",
                 rendererOptions: {
                     timer: {
                         condition: true,

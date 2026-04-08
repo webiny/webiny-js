@@ -1,5 +1,6 @@
-import type { Plugin } from "@webiny/plugins/types.js";
+import { type Plugin, PluginsContainer } from "@webiny/plugins/types.js";
 import type {
+    CmsContext,
     CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
     CmsModel,
     CmsModelField,
@@ -8,6 +9,8 @@ import type {
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
 import type { ITable } from "@webiny/db-dynamodb";
+
+export type { CmsContext };
 
 export type { IGroupEntity, IModelEntity, IEntryEntity };
 
@@ -44,7 +47,8 @@ export enum ENTITIES {
 export interface StorageOperationsFactoryParams {
     documentClient: DynamoDBDocument;
     table?: string;
-    plugins?: Plugin[] | Plugin[][];
+    plugins: PluginsContainer;
+    getContainer: () => CmsContext["container"];
 }
 
 export interface IHeadlessCmsStorageOperationsGetEntitiesResult {

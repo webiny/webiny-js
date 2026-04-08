@@ -1,17 +1,20 @@
-import type { CmsFieldTypePlugins, CmsModel } from "~/types/index.js";
+import type { CmsModel } from "~/types/index.js";
 import { renderListFilterFields } from "~/utils/renderListFilterFields.js";
 import { renderSortEnum } from "~/utils/renderSortEnum.js";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields.js";
 import { renderInputFields } from "~/utils/renderInputFields.js";
 import { renderFields } from "~/utils/renderFields.js";
-import type { CmsGraphQLSchemaSorterPlugin } from "~/plugins/index.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
+import {
+    CmsGraphQLSchemaSorter,
+    type CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
 
 interface CreateManageSDLParams {
     models: CmsModel[];
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
-    sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    sorters: CmsGraphQLSchemaSorter.Interface[];
 }
 
 interface CreateManageSDL {
@@ -21,32 +24,32 @@ interface CreateManageSDL {
 export const createManageSDL: CreateManageSDL = ({
     models,
     model,
-    fieldTypePlugins,
-    sorterPlugins
+    fieldRegistry,
+    sorters
 }): string => {
     const inputFields = renderInputFields({
         models,
         model,
         fields: model.fields,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const listFilterFieldsRender = renderListFilterFields({
         model,
         fields: model.fields,
         type: "manage",
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const sortEnumRender = renderSortEnum({
         model,
         fields: model.fields,
-        fieldTypePlugins,
-        sorterPlugins
+        fieldRegistry,
+        sorters
     });
     const getFilterFieldsRender = renderGetFilterFields({
         fields: model.fields,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const fields = renderFields({
@@ -54,7 +57,7 @@ export const createManageSDL: CreateManageSDL = ({
         model,
         fields: model.fields,
         type: "manage",
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const { singularApiName: singularName, pluralApiName: pluralName } = model;
