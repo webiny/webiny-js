@@ -5,9 +5,4 @@ export {
     GlobalKeyValueStore,
     KeyValueStore
 } from "@webiny/api-core/features/keyValueStore/index.js";
-export { DomainEvent, EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
-export {
-    GlobalKeyValueStore,
-    KeyValueStore
-} from "@webiny/api-core/features/keyValueStore/index.js";
 export { createFeature, createAbstraction, Result, BaseError } from "@webiny/feature/api/index.js";
