@@ -3,7 +3,7 @@ import {
     LockEntryUseCase as UseCaseAbstraction,
     LockEntryUseCase
 } from "./abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { ILockRecord } from "~/domain/index.js";
 import { Result } from "@webiny/feature/api/index.js";
 import { EntryAfterLockEvent, EntryBeforeLockEvent, EntryLockErrorEvent } from "./events.js";

@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { UnlockEntryRequestRepository as RepositoryAbstraction } from "./abstractions.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { RecordLockingModel } from "~/domain/abstractions.js";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types";

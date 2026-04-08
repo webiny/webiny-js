@@ -1,5 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListWorkflowStatesUseCase } from "../ListWorkflowStates/index.js";
 import { ListOwnWorkflowStatesUseCase as UseCase } from "./abstractions.js";
 

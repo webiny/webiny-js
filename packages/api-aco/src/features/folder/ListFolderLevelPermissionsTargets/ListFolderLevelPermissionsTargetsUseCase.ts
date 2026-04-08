@@ -1,8 +1,8 @@
 import { Result } from "@webiny/feature/api";
 import { ListFolderLevelPermissionsTargetsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { validation } from "@webiny/validation";
-import { ListUsersUseCase } from "@webiny/api-core/features/ListUsers";
-import { ListTeamsUseCase } from "@webiny/api-core/features/ListTeams";
+import { ListUsersUseCase } from "@webiny/api-core/features/users/ListUsers/index.js";
+import { ListTeamsUseCase } from "@webiny/api-core/features/security/teams/ListTeams/index.js";
 
 class ListFolderLevelPermissionsTargetsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

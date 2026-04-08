@@ -3,7 +3,7 @@ import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import type { CmsContext } from "~/types";
 import { SecurityPermission } from "@webiny/api-core/types/security";
-import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Tenant } from "@webiny/api-core/types/tenancy";
 
 interface Config {

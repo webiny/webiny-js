@@ -42,6 +42,19 @@ export class PageValidationError extends BaseError {
     }
 }
 
+export class PageTranslationError extends BaseError<{ languageCode: string }> {
+    override readonly code = "WebsiteBuilder/Page/TranslationError" as const;
+
+    constructor(languageCode: string) {
+        super({
+            message: `Language "${languageCode}" was not found.`,
+            data: {
+                languageCode
+            }
+        });
+    }
+}
+
 export class PageNotAuthorizedError extends BaseError {
     override readonly code = "WebsiteBuilder/Page/NotAuthorized" as const;
 

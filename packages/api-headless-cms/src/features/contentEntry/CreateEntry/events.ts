@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
+import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { CmsEntry, CmsModel, CreateCmsEntryInput } from "~/types/index.js";
 
 /**

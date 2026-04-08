@@ -2,7 +2,7 @@ import { Result, createImplementation } from "@webiny/feature/api";
 import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
-} from "@webiny/api-core/features/EventPublisher";
+} from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     DeleteRedirectUseCase as UseCaseAbstraction,
     DeleteRedirectRepository

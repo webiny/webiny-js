@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ListEntriesUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ListEntriesRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
 
 const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };

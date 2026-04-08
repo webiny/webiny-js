@@ -1,6 +1,6 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
+import type { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { WbRedirect } from "~/domain/redirect/abstractions.js";
 import type { WbLocation } from "~/domain/shared/abstractions.js";
 import {

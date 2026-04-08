@@ -1,4 +1,4 @@
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 

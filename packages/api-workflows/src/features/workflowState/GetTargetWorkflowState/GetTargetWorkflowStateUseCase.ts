@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetUserTeamsUseCase } from "~/features/internal/GetUserTeams/index.js";
 import {
     GetTargetWorkflowStateRepository,

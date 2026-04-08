@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
-} from "@webiny/api-core/features/EventPublisher";
+} from "@webiny/api-core/features/eventPublisher/index.js";
 import { CreatePageUseCase as UseCaseAbstraction, CreatePageRepository } from "./abstractions.js";
 import { PageBeforeCreateEvent, PageAfterCreateEvent } from "./events.js";
 import { WbPermissions } from "~/features/permissions/abstractions.js";

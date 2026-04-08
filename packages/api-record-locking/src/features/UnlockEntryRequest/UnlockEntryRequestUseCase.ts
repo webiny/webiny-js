@@ -5,7 +5,7 @@ import {
     UnlockEntryRequestInput
 } from "./abstractions.js";
 import { GetLockRecordUseCase } from "../GetLockRecord/abstractions.js";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import {
     EntryNotLockedError,

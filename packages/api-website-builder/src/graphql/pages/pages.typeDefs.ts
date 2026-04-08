@@ -244,6 +244,7 @@ export const pagesTypeDefs = /* GraphQL */ `
         publishPage(id: ID!): WbPageResponse
         unpublishPage(id: ID!): WbPageResponse
         duplicatePage(id: ID!): WbPageResponse
+        translatePage(pageId: ID!, languageCode: String!, folderId: ID!): WbPageResponse
         movePage(id: ID!, folderId: ID!): WbBooleanResponse
         createPageRevisionFrom(id: ID!): WbPageResponse
         deletePage(id: ID!, permanently: Boolean): WbBooleanResponse

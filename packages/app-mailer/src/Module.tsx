@@ -48,15 +48,10 @@ const MailerSettings = () => {
                 />
                 <Menu
                     name={"mailer.settings"}
-                    parent={"settings"}
-                    element={<Menu.Group text={"Mailer"} />}
-                />
-                <Menu
-                    name={"mailer.settings.general"}
-                    parent={"settings"}
+                    parent={"settings.system"}
                     element={
                         <Menu.Link
-                            text={"Settings"}
+                            text={"Mailer"}
                             to={router.getLink(Routes.Settings)}
                             pinnable={true}
                         />

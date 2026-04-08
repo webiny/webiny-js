@@ -9,7 +9,7 @@ import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { enableBenchmarkOnEnvironmentVariable } from "./enableBenchmarkOnEnvironmentVariable";
 import type { HeadlessCmsStorageOperations } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";

@@ -1,6 +1,6 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
+import type { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { WbPage } from "~/domain/page/abstractions.js";
 import {
     PageValidationError,
@@ -21,8 +21,23 @@ export interface IDuplicateWbPageParams {
 // Repository Abstraction
 // ============================================================================
 
+export type DuplicatePageData = Pick<
+    WbPage,
+    "bindings" | "elements" | "location" | "properties" | "metadata" | "extensions"
+>;
+
+export interface DuplicatePageCallbackParams {
+    original: WbPage;
+    duplicate: DuplicatePageData;
+}
+
+export type DuplicatePageCallback = (params: DuplicatePageCallbackParams) => Promise<void> | void;
+
 export interface IDuplicatePageRepository {
-    execute(params: IDuplicateWbPageParams): Promise<Result<WbPage, RepositoryError>>;
+    execute(
+        params: IDuplicateWbPageParams,
+        callback?: DuplicatePageCallback
+    ): Promise<Result<WbPage, RepositoryError>>;
 }
 
 export interface IDuplicatePageRepositoryErrors {

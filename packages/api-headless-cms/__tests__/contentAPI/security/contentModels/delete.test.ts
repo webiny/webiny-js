@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
-import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CmsTestPermissions, expectNotAuthorized } from "../utils";
 
 const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };

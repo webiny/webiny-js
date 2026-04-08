@@ -1,4 +1,4 @@
-import type { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { IGetDefaultPermissions } from "./IGetDefaultPermissions.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
 import { DefaultPermissionsMerger } from "./DefaultPermissionsMerger.js";

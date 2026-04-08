@@ -1,6 +1,6 @@
 import { ServiceDiscovery } from "@webiny/api";
 import { createImplementation } from "@webiny/feature/api";
-import { AppInstaller } from "@webiny/api-core/features/InstallTenant";
+import { AppInstaller } from "@webiny/api-core/features/tenancy/InstallTenant/index.js";
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";

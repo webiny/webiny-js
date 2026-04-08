@@ -1,5 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import { KickOutCurrentUserUseCase as UseCaseAbstraction } from "./abstractions.js";
