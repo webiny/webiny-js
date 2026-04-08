@@ -107,7 +107,7 @@ interface CreatePersonEntriesParams {
     amount: number;
     storageOperations: HeadlessCmsStorageOperations;
     maxRevisions?: number;
-    plugins: PluginsContainer;
+    plugins?: PluginsContainer;
 }
 
 export interface PersonEntriesResult {

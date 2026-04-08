@@ -1,6 +1,7 @@
 import { renderField } from "~/utils/renderFields.js";
 import { renderInputField } from "~/utils/renderInputFields.js";
-import type { ApiEndpoint, CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/types/index.js";
+import type { ApiEndpoint, CmsModel, CmsModelField } from "~/types/index.js";
+import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface TypeFromFieldParams {
     typeOfType: "type" | "input";
@@ -9,7 +10,7 @@ interface TypeFromFieldParams {
     type: ApiEndpoint;
     typeNamePrefix: string;
     fields: CmsModelField[];
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 interface TypeFromFieldResponse {
@@ -18,7 +19,7 @@ interface TypeFromFieldResponse {
 }
 
 export const createTypeFromFields = (params: TypeFromFieldParams): TypeFromFieldResponse | null => {
-    const { typeOfType, model, models, type, typeNamePrefix, fields, fieldTypePlugins } = params;
+    const { typeOfType, model, models, type, typeNamePrefix, fields, fieldRegistry } = params;
     const typeSuffix = typeOfType === "input" ? "Input" : "";
     const mTypeName = model.singularApiName;
 
@@ -35,8 +36,8 @@ export const createTypeFromFields = (params: TypeFromFieldParams): TypeFromField
     for (const field of fields) {
         const result =
             typeOfType === "type"
-                ? renderField({ field, type, models, model, fieldTypePlugins })
-                : renderInputField({ field, models, model, fieldTypePlugins });
+                ? renderField({ field, type, models, model, fieldRegistry })
+                : renderInputField({ field, models, model, fieldRegistry });
 
         if (!result) {
             continue;

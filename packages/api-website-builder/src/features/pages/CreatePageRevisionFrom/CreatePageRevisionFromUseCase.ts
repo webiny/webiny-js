@@ -9,7 +9,7 @@ import {
 } from "./abstractions.js";
 import { PageBeforeCreateRevisionFromEvent, PageAfterCreateRevisionFromEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -62,7 +62,7 @@ class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface 
 export const CreatePageRevisionFromUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreatePageRevisionFromUseCaseImpl,
     dependencies: [
-        WbPermissions.Abstraction,
+        WbPermissions,
         EventPublisher,
         GetPageByIdUseCase,
         CreatePageRevisionFromRepository

@@ -8,7 +8,7 @@ import {
     CreateRedirectRepository
 } from "./abstractions.js";
 import { RedirectBeforeCreateEvent, RedirectAfterCreateEvent } from "./events.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { RedirectNotAuthorizedError } from "~/domain/redirect/errors.js";
 
 class CreateRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -46,5 +46,5 @@ class CreateRedirectUseCaseImpl implements UseCaseAbstraction.Interface {
 export const CreateRedirectUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: CreateRedirectUseCaseImpl,
-    dependencies: [WbPermissions.Abstraction, EventPublisher, CreateRedirectRepository]
+    dependencies: [WbPermissions, EventPublisher, CreateRedirectRepository]
 });

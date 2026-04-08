@@ -1,4 +1,4 @@
-import { GraphQLClient } from "@webiny/app/features/graphqlClient/index.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import { LogInGateway as Abstraction, LogInRepository } from "./abstractions.js";
 import { createLoginMutation } from "./createLoginMutation.js";
 
@@ -14,7 +14,7 @@ interface LoginMutationResponse {
 }
 
 class LogInGatewayImpl implements Abstraction.Interface {
-    constructor(private graphqlClient: GraphQLClient.Interface) {}
+    constructor(private graphqlClient: MainGraphQLClient.Interface) {}
 
     async execute(): Promise<LogInRepository.IdentityDTO> {
         const response = await this.graphqlClient.execute<LoginMutationResponse>({
@@ -33,5 +33,5 @@ class LogInGatewayImpl implements Abstraction.Interface {
 
 export const LogInGateway = Abstraction.createImplementation({
     implementation: LogInGatewayImpl,
-    dependencies: [GraphQLClient]
+    dependencies: [MainGraphQLClient]
 });

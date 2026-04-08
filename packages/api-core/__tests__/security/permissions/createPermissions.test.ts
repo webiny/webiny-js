@@ -1,7 +1,13 @@
 import { describe, test, expect } from "vitest";
-import { createPermissions } from "~/features/security/permissions/createPermissions.js";
+import { Container } from "@webiny/di";
+import {
+    createPermissionsAbstraction,
+    createPermissionsFeature
+} from "~/features/security/permissions/createPermissions.js";
+import { IdentityContext } from "~/features/security/IdentityContext/abstractions.js";
 import type { IIdentityContext } from "~/features/security/IdentityContext/abstractions.js";
 import type { SecurityPermission } from "~/types/security.js";
+import type { Permissions } from "~/features/security/permissions/types.js";
 
 const schema = {
     prefix: "test",
@@ -15,6 +21,8 @@ const schema = {
         }
     ]
 } as const;
+
+type TestSchema = typeof schema;
 
 function createMockIdentityContext(permissions: SecurityPermission[]): IIdentityContext {
     return {
@@ -34,12 +42,19 @@ function createMockIdentityContext(permissions: SecurityPermission[]): IIdentity
     } as unknown as IIdentityContext;
 }
 
-const { Implementation } = createPermissions(schema);
+const Abstraction = createPermissionsAbstraction(schema);
+const Feature = createPermissionsFeature(schema, Abstraction);
+
+function resolvePermissions(mockIdentityContext: IIdentityContext): Permissions<TestSchema> {
+    const container = new Container();
+    container.registerInstance(IdentityContext, mockIdentityContext);
+    Feature.register(container);
+    return container.resolve(Abstraction);
+}
 
 describe("createPermissions", () => {
     describe("full access", () => {
-        const identityContext = createMockIdentityContext([{ name: "test.*" }]);
-        const permissions = new (Implementation as any)(identityContext);
+        const permissions = resolvePermissions(createMockIdentityContext([{ name: "test.*" }]));
 
         test("canAccess returns true", async () => {
             expect(await permissions.canAccess("entry")).toBe(true);
@@ -79,8 +94,7 @@ describe("createPermissions", () => {
     });
 
     describe("no access", () => {
-        const identityContext = createMockIdentityContext([]);
-        const permissions = new (Implementation as any)(identityContext);
+        const permissions = resolvePermissions(createMockIdentityContext([]));
 
         test("canAccess returns false", async () => {
             expect(await permissions.canAccess("entry")).toBe(false);
@@ -120,12 +134,12 @@ describe("createPermissions", () => {
     });
 
     describe("entity-level read-only permissions", () => {
-        // The $-prefixed marker is inert on the backend; entity permissions are self-enforcing.
-        const identityContext = createMockIdentityContext([
-            { name: "$test.readonly" },
-            { name: "test.entry", rwd: "r" }
-        ]);
-        const permissions = new (Implementation as any)(identityContext);
+        const permissions = resolvePermissions(
+            createMockIdentityContext([
+                { name: "$test.readonly" },
+                { name: "test.entry", rwd: "r" }
+            ])
+        );
 
         test("canAccess returns true", async () => {
             expect(await permissions.canAccess("entry")).toBe(true);
@@ -157,10 +171,9 @@ describe("createPermissions", () => {
     });
 
     describe("wildcard with rwd flag is NOT full access", () => {
-        // { name: "test.*", rwd: "r" } has extra flags, so hasFullSchemaAccess returns false.
-        // It falls through to entity-level checks where the entity permission enforces rwd: "r".
-        const identityContext = createMockIdentityContext([{ name: "test.*", rwd: "r" }]);
-        const permissions = new (Implementation as any)(identityContext);
+        const permissions = resolvePermissions(
+            createMockIdentityContext([{ name: "test.*", rwd: "r" }])
+        );
 
         test("canAccess returns true", async () => {
             expect(await permissions.canAccess("entry")).toBe(true);
@@ -184,9 +197,9 @@ describe("createPermissions", () => {
     });
 
     describe("exact entity permissions checks", () => {
-        // It falls through to entity-level checks where the entity permission enforces rwd: "r".
-        const identityContext = createMockIdentityContext([{ name: "test.entry", rwd: "r" }]);
-        const permissions = new (Implementation as any)(identityContext);
+        const permissions = resolvePermissions(
+            createMockIdentityContext([{ name: "test.entry", rwd: "r" }])
+        );
 
         test("canAccess returns true", async () => {
             expect(await permissions.canAccess("entry")).toBe(true);

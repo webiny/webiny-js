@@ -44,6 +44,10 @@ export class RequestValue {
         return this._request.headers;
     }
 
+    get endpoint() {
+        return this._request.endpoint;
+    }
+
     get operationName() {
         return this._operationName;
     }

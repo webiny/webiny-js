@@ -1,16 +1,12 @@
-import type {
-    CmsFieldTypePlugins,
-    CmsModel,
-    CmsModelField,
-    CmsModelFieldDefinition
-} from "~/types/index.js";
+import type { CmsModel, CmsModelField, CmsModelFieldDefinition } from "~/types/index.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
+import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface RenderInputFieldsParams {
     models: CmsModel[];
     model: CmsModel;
     fields: CmsModelField[];
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 interface RenderInputFieldParams extends Omit<RenderInputFieldsParams, "fields"> {
@@ -25,10 +21,10 @@ export const renderInputFields: RenderInputFields = ({
     models,
     model,
     fields,
-    fieldTypePlugins
+    fieldRegistry
 }): CmsModelFieldDefinition[] => {
     return fields.reduce<CmsModelFieldDefinition[]>((result, field) => {
-        const input = renderInputField({ models, model, field, fieldTypePlugins });
+        const input = renderInputField({ models, model, field, fieldRegistry });
         if (!input) {
             return result;
         }
@@ -41,17 +37,11 @@ export const renderInputField = ({
     models,
     model,
     field,
-    fieldTypePlugins
+    fieldRegistry
 }: RenderInputFieldParams): CmsModelFieldDefinition | null => {
-    // Every time a client updates content model's fields, we check the type of each field. If a field plugin
-    // for a particular "field.type" doesn't exist on the backend yet, we throw an error. But still, we also
-    // want to be careful when accessing the field plugin here too. It is still possible to have a content model
-    // that contains a field, for which we don't have a plugin registered on the backend. For example, user
-    // could've just removed the plugin from the backend.
-    const plugin = fieldTypePlugins[getBaseFieldType(field)];
+    const plugin = fieldRegistry.get(getBaseFieldType(field));
 
     if (!plugin) {
-        // Let's not render the field if it does not exist in the field plugins.
         return null;
     }
 
@@ -59,7 +49,7 @@ export const renderInputField = ({
         models,
         model,
         field,
-        fieldTypePlugins
+        fieldRegistry
     });
     if (typeof def === "string") {
         return {

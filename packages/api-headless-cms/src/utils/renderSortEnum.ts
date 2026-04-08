@@ -1,13 +1,16 @@
-import type { CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/types/index.js";
+import type { CmsModel, CmsModelField } from "~/types/index.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
-import type { CmsGraphQLSchemaSorterPlugin } from "~/plugins/CmsGraphQLSchemaSorterPlugin.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
+import {
+    CmsGraphQLSchemaSorter,
+    type CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
 
 interface RenderSortEnumParams {
     model: CmsModel;
     fields: CmsModelField[];
-    fieldTypePlugins: CmsFieldTypePlugins;
-    sorterPlugins?: CmsGraphQLSchemaSorterPlugin[];
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    sorters: CmsGraphQLSchemaSorter.Interface[];
 }
 
 interface RenderSortEnum {
@@ -17,10 +20,10 @@ interface RenderSortEnum {
 export const renderSortEnum: RenderSortEnum = ({
     model,
     fields,
-    fieldTypePlugins,
-    sorterPlugins
+    fieldRegistry,
+    sorters
 }): string => {
-    const sorters: string[] = [
+    const results: string[] = [
         `id_ASC`,
         `id_DESC`,
 
@@ -30,23 +33,23 @@ export const renderSortEnum: RenderSortEnum = ({
     ];
 
     for (const field of fields) {
-        const plugin = fieldTypePlugins[getBaseFieldType(field)];
+        const plugin = fieldRegistry.get(getBaseFieldType(field));
         if (!plugin?.isSortable) {
             continue;
         }
-        sorters.push(`values_${field.fieldId}_ASC`);
-        sorters.push(`values_${field.fieldId}_DESC`);
+        results.push(`values_${field.fieldId}_ASC`);
+        results.push(`values_${field.fieldId}_DESC`);
     }
-    if (!sorterPlugins) {
-        return sorters.join("\n");
+    if (sorters.length === 0) {
+        return results.join("\n");
     }
 
-    return sorterPlugins
-        .reduce((result, plugin) => {
-            return plugin.createSorter({
+    return sorters
+        .reduce((result, sorter) => {
+            return sorter.execute({
                 model,
                 sorters: result
             });
-        }, sorters)
+        }, results)
         .join("\n");
 };

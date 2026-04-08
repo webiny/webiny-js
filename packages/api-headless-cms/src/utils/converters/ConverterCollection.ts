@@ -1,9 +1,10 @@
 import WebinyError from "@webiny/error";
 import { Converter } from "./Converter.js";
-import type { CmsEntryValues, CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
+import type { CmsEntryValues, CmsModelField } from "~/types/index.js";
 import { CmsModelFieldConverterPlugin } from "~/plugins/index.js";
 import type { PluginsContainer } from "@webiny/plugins";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
+import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 export interface CmsModelFieldsWithParent extends CmsModelField {
     parent?: CmsModelField | null;
@@ -20,16 +21,15 @@ export interface ConverterCollectionConvertParams<T extends CmsEntryValues = Cms
 
 export interface ConverterCollectionParams {
     plugins: PluginsContainer;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 export class ConverterCollection {
     private readonly converters: Map<string, Converter> = new Map();
 
     public constructor(params: ConverterCollectionParams) {
-        const { plugins } = params;
-        const fieldGraphQLPlugins = plugins.byType<CmsModelFieldToGraphQLPlugin>(
-            "cms-model-field-to-graphql"
-        );
+        const { plugins, fieldRegistry } = params;
+        const fieldGraphQLPlugins = fieldRegistry.getAll();
         const fieldConverterPlugins = plugins.byType<CmsModelFieldConverterPlugin>(
             CmsModelFieldConverterPlugin.type
         );

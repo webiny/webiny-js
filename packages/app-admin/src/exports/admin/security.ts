@@ -1,3 +1,9 @@
+export { createPermissionSchema } from "~/permissions/index.js";
+export { createPermissionsAbstraction } from "~/permissions/index.js";
+export { createPermissionsFeature } from "~/permissions/index.js";
+export { createHasPermission } from "~/permissions/index.js";
+export { createUsePermissions } from "~/permissions/index.js";
+export type { Permissions } from "~/permissions/types.js";
 export { LogInUseCase } from "~/features/security/LogIn/index.js";
 export { LogOutUseCase } from "~/features/security/LogOut/index.js";
 export { AuthenticationContext } from "~/features/security/AuthenticationContext/index.js";

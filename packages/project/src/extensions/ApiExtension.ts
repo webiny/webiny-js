@@ -86,7 +86,7 @@ export const ApiExtension = defineExtension({
         ) as ArrayLiteralExpression;
 
         pluginsArray.addElement(
-            `\ncreateContextPlugin(ctx => {\n\tregisterExtension(ctx.container, ${exportNameAlias});\n})`
+            `\ncreateRegisterExtensionPlugin(ctx => {\n\tregisterExtension(ctx.container, ${exportNameAlias});\n})`
         );
 
         {
@@ -98,13 +98,15 @@ export const ApiExtension = defineExtension({
                 index = last.getChildIndex() + 1;
             }
 
-            const contextPluginImportPath = "@webiny/api/plugins/ContextPlugin";
-            const existingContextPluginImport =
-                source.getImportDeclaration(contextPluginImportPath);
+            const registerExtensionPluginImportPath =
+                "@webiny/handler/plugins/RegisterExtensionPlugin";
+            const existingContextPluginImport = source.getImportDeclaration(
+                registerExtensionPluginImportPath
+            );
             if (!existingContextPluginImport) {
                 source.insertImportDeclaration(index, {
-                    namedImports: ["createContextPlugin"],
-                    moduleSpecifier: contextPluginImportPath
+                    namedImports: ["createRegisterExtensionPlugin"],
+                    moduleSpecifier: registerExtensionPluginImportPath
                 });
             }
         }

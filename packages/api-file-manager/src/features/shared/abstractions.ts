@@ -1,1 +1,1 @@
-export { FmPermissions } from "~/permissions/schema.js";
+export { FmPermissions } from "~/features/permissions/abstractions.js";

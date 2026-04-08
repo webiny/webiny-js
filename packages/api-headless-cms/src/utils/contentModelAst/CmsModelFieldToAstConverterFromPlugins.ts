@@ -1,8 +1,5 @@
-import type {
-    CmsModelField,
-    CmsModelFieldToGraphQLPlugin,
-    ICmsModelFieldToAst
-} from "~/types/index.js";
+import type { CmsModelField, ICmsModelFieldToAst } from "~/types/index.js";
+import type { CmsModelFieldToGraphQL } from "~/features/graphql/index.js";
 import { CmsModelFieldToAstFromPlugin } from "./CmsModelFieldToAstFromPlugin.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 
@@ -11,11 +8,11 @@ type FieldToAstConverters = Record<string, ICmsModelFieldToAst>;
 export class CmsModelFieldToAstConverterFromPlugins implements ICmsModelFieldToAst {
     private readonly converters: FieldToAstConverters;
 
-    public constructor(plugins: CmsModelFieldToGraphQLPlugin[]) {
-        this.converters = plugins.reduce<FieldToAstConverters>((converters, plugin) => {
+    public constructor(fields: CmsModelFieldToGraphQL.Interface[]) {
+        this.converters = fields.reduce<FieldToAstConverters>((converters, field) => {
             return {
                 ...converters,
-                [plugin.fieldType]: new CmsModelFieldToAstFromPlugin(plugin, this)
+                [field.fieldType]: new CmsModelFieldToAstFromPlugin(field, this)
             };
         }, {});
     }

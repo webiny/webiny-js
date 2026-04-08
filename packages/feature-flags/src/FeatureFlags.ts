@@ -61,6 +61,16 @@ export class FeatureFlags {
         return this.flags.recordLocking !== false;
     }
 
+    isHcmsFieldPermissionsEnabled(): boolean {
+        if (this.flags.advancedAccessControlLayer === false) {
+            return false;
+        }
+        if (typeof this.flags.advancedAccessControlLayer === "object") {
+            return this.flags.advancedAccessControlLayer.hcmsFieldPermissions !== false;
+        }
+        return true;
+    }
+
     isFileManagerThreatDetectionEnabled(): boolean {
         return this.flags.fileManager?.threatDetection !== false;
     }

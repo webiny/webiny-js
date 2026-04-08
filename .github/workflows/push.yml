@@ -15,10 +15,10 @@ jobs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -39,17 +39,17 @@ jobs:
     needs: constants
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: v6
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
@@ -59,7 +59,7 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: v6
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -72,17 +72,17 @@ jobs:
       - constants
       - build
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: v6
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -114,17 +114,17 @@ jobs:
       - build
     name: Static code analysis (verify dependencies)
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: v6
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -145,13 +145,13 @@ jobs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: v6
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -171,10 +171,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: v6
       - id: list-vitest-test-commands
@@ -207,17 +207,17 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: v6
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -237,10 +237,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: v6
       - id: list-vitest-test-commands
@@ -276,22 +276,22 @@ jobs:
       AWS_REGION: eu-central-1
       WEBINY_STORAGE: ddb
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6.0.0
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: v6
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -313,10 +313,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: v6
       - id: list-vitest-test-commands
@@ -356,22 +356,22 @@ jobs:
       OPENSEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_3_ENDPOINT }}
       OPENSEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6.0.0
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: v6
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -394,10 +394,10 @@ jobs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: >-
@@ -430,23 +430,23 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2eTests-ddb-constants.outputs.pulumi-backend-url }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6.0.0
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           path: v6
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -474,7 +474,7 @@ jobs:
         run: yarn release --type=verdaccio
         working-directory: v6
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: verdaccio-files-ddb
           retention-days: 1
@@ -496,7 +496,7 @@ jobs:
         working-directory: new-webiny-project
         run: yarn webiny --version
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: project-files-ddb
           retention-days: 1
@@ -539,10 +539,10 @@ jobs:
       cypress-folders: ${{ steps.list-cypress-folders.outputs.cypress-folders }}
       pulumi-backend-url: ${{ steps.pulumi-backend-url.outputs.pulumi-backend-url }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: List Cypress tests folders
         id: list-cypress-folders
         run: >-
@@ -578,23 +578,23 @@ jobs:
       OPENSEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_3_ENDPOINT }}
       OPENSEARCH_INDEX_PREFIX: ${{ github.run_id }}_
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6.0.0
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           path: v6
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -622,7 +622,7 @@ jobs:
         run: yarn release --type=verdaccio
         working-directory: v6
       - name: Create verdaccio-files artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: verdaccio-files-ddb-os
           retention-days: 1
@@ -651,7 +651,7 @@ jobs:
         working-directory: new-webiny-project
         run: yarn webiny --version
       - name: Create project-files artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: project-files-ddb-os
           retention-days: 1

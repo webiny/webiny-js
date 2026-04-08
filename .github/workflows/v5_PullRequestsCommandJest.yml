@@ -12,7 +12,7 @@ jobs:
     name: Check comment for /v5_jest
     if: ${{ github.event.issue.pull_request }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
       - name: Check for Command
@@ -43,10 +43,10 @@ jobs:
     outputs:
       base-branch: ${{ steps.base-branch.outputs.base-branch }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Get base branch
         id: base-branch
         env:
@@ -65,7 +65,7 @@ jobs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
       - name: Create global cache key
@@ -90,10 +90,10 @@ jobs:
       - constants
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -101,11 +101,11 @@ jobs:
         run: gh pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
@@ -115,7 +115,7 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -144,10 +144,10 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -155,11 +155,11 @@ jobs:
         run: gh pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -214,10 +214,10 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -225,11 +225,11 @@ jobs:
         run: gh pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -258,7 +258,8 @@ jobs:
           ${{ fromJson('[{"cmd":"packages/api-aco
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-aco","id":"e4b1b5ebc172f2657485e41c35ad1cd7"},{"cmd":"packages/api-audit-logs
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-audit-logs","id":"b36aac5f0e34dc4583e5422ae589f1ed"},{"cmd":"packages/api-dynamodb-to-elasticsearch
-          --storage=ddb-os,ddb","storage":["ddb-os"],"packageName":"api-dynamodb-to-elasticsearch","id":"6e0b282c3d135703e52b2c55822d4fb0"},{"cmd":"packages/api-elasticsearch-tasks
+          --storage=ddb-os,ddb","storage":["ddb-os"],"packageName":"api-dynamodb-to-elasticsearch","id":"6e0b282c3d135703e52b2c55822d4fb0"},{"cmd":"packages/api-elasticsearch
+          --storage=ddb-os,ddb","storage":["ddb-os"],"packageName":"api-elasticsearch","id":"b0f477d6b209f654714809b318be888e"},{"cmd":"packages/api-elasticsearch-tasks
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-elasticsearch-tasks","id":"580a9577fdbd4a241034a42e1a47dee5"},{"cmd":"packages/api-file-manager
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-file-manager","id":"346430a79981d3e214c87254a08e31b2"},{"cmd":"packages/api-file-manager-aco
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-file-manager-aco","id":"7f0fc2925264603db145f99b41162da1"},{"cmd":"packages/api-headless-cms
@@ -279,7 +280,8 @@ jobs:
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-headless-cms-ddb-es","id":"23bea783bb40390ae069dfa4985f97d2"},{"cmd":"packages/api-headless-cms-es-tasks
           --storage=ddb-os,ddb","storage":["ddb-os"],"packageName":"api-headless-cms-es-tasks","id":"ee446fd78ad6294bbfb3c0689ff2602e"},{"cmd":"packages/api-headless-cms-import-export
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-headless-cms-import-export","id":"6059cf3e78f93525c8ed72ad83b7de1a"},{"cmd":"packages/api-mailer
-          --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-mailer","id":"0ede859b604febdfa78018cdd1067a77"},{"cmd":"packages/tasks
+          --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-mailer","id":"0ede859b604febdfa78018cdd1067a77"},{"cmd":"packages/migrations
+          --storage=ddb-os,ddb","storage":["ddb-os"],"packageName":"migrations","id":"3f8965830bbe44499a4bc97baf27e090"},{"cmd":"packages/tasks
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"tasks","id":"5eadfa5cc14ec4e8ba87ac3dfb112580"}]')
           }}
     runs-on: ${{ matrix.os }}
@@ -291,15 +293,15 @@ jobs:
       OPENSEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       OPENSEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6.0.0
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Checkout Pull Request
@@ -307,11 +309,11 @@ jobs:
         run: gh pr checkout ${{ github.event.issue.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}

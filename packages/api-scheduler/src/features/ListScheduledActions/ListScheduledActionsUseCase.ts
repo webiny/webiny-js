@@ -10,7 +10,7 @@ import { ScheduledActionModel } from "~/shared/abstractions.js";
 import { NotAuthorizedError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { CmsSortMapper, CmsWhereMapper } from "@webiny/api-headless-cms";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { SchedulerPermissions } from "~/domain/permissions.js";
+import { SchedulerPermissions } from "~/features/permissions/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 
@@ -90,7 +90,7 @@ export const ListScheduledActionsUseCase = UseCaseAbstraction.createImplementati
         ScheduledActionModel,
         CmsWhereMapper,
         CmsSortMapper,
-        SchedulerPermissions.Abstraction,
+        SchedulerPermissions,
         IdentityContext
     ]
 });
