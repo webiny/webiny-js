@@ -18,7 +18,7 @@ class StorageTransformRegistryImpl implements StorageTransformRegistryAbstractio
     }
 
     public getAll(): StorageTransform.Interface[] {
-        return [];
+        return this.transforms;
     }
 }
 
