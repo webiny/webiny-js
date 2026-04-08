@@ -1,5 +1,5 @@
 import { ContextPlugin } from "@webiny/api";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { AuditLogsContext } from "~/types.js";
 import { createAuditLogsContextValue } from "./AuditLogsContextValue.js";

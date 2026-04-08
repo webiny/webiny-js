@@ -21,6 +21,7 @@ import { UpdatePageFeature } from "./features/pages/UpdatePage/feature.js";
 import { PublishPageFeature } from "./features/pages/PublishPage/feature.js";
 import { UnpublishPageFeature } from "./features/pages/UnpublishPage/feature.js";
 import { DuplicatePageFeature } from "./features/pages/DuplicatePage/feature.js";
+import { TranslatePageFeature } from "./features/pages/TranslatePage/feature.js";
 import { MovePageFeature } from "./features/pages/MovePage/feature.js";
 import { createPageModel, PAGE_MODEL_ID } from "~/domain/page/page.model.js";
 import { createRedirectModel, REDIRECT_MODEL_ID } from "~/domain/redirect/redirect.model.js";
@@ -88,6 +89,7 @@ const createContext = () => {
             PublishPageFeature.register(container);
             UnpublishPageFeature.register(container);
             DuplicatePageFeature.register(container);
+            TranslatePageFeature.register(container);
             MovePageFeature.register(container);
             ApiKeyInstallerFeature.register(container);
             NextjsFeature.register(container);

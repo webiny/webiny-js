@@ -6,8 +6,8 @@ import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstra
 import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
 import { filterAsync } from "~/utils/filterAsync.js";
 import { createCacheKey } from "~/utils/index.js";

@@ -5,7 +5,7 @@ import {
 } from "~/features/contentModel/shared/abstractions.js";
 import { PluginModelsProvider } from "~/features/contentModel/shared/abstractions.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { ModelNotFoundError, ModelPersistenceError } from "~/domain/contentModel/errors.js";
 import { createCacheKey } from "~/utils/index.js";
 import { ensureTypeTag } from "~/domain/contentModel/ensureTypeTag.js";

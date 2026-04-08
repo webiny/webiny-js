@@ -18,13 +18,13 @@ description: >
 
 ---
 **Name:** `BuildParam`
-**Import:** `import { BuildParam } from "webiny/api"`
+**Import:** `import { BuildParam } from "webiny/api/build-params"`
 **Source:** `@webiny/api-core/features/buildParams/index.ts`
 **Description:** A single build-time configuration parameter.
 
 ---
 **Name:** `BuildParams`
-**Import:** `import { BuildParams } from "webiny/api"`
+**Import:** `import { BuildParams } from "webiny/api/build-params"`
 **Source:** `@webiny/api-core/features/buildParams/index.ts`
 **Description:** Access build-time configuration parameters.
 

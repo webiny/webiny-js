@@ -1,4 +1,4 @@
-import type { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 interface RecordLockingSecurityPermission extends SecurityPermission {

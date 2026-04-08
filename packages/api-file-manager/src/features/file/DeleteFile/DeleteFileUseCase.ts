@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { DeleteFileUseCase as UseCaseAbstraction, DeleteFileRepository } from "./abstractions.js";
 import { GetFileUseCase } from "../GetFile/abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { FileNotAuthorizedError } from "~/domain/file/errors.js";
 import { FileBeforeDeleteEvent, FileAfterDeleteEvent } from "./events.js";
 import { FmPermissions } from "~/features/shared/abstractions.js";

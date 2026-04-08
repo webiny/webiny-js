@@ -1,7 +1,7 @@
 import { createImplementation, Result } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     CreateEntryRevisionFromRepository,
     CreateEntryRevisionFromUseCase as UseCaseAbstraction

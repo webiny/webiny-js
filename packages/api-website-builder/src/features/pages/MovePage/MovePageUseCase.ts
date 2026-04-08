@@ -2,7 +2,7 @@ import { Result, createImplementation } from "@webiny/feature/api";
 import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
-} from "@webiny/api-core/features/EventPublisher";
+} from "@webiny/api-core/features/eventPublisher/index.js";
 import { MovePageUseCase as UseCaseAbstraction, MovePageRepository } from "./abstractions.js";
 import { PageBeforeMoveEvent, PageAfterMoveEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";

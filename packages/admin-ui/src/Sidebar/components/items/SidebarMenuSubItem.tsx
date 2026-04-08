@@ -18,6 +18,7 @@ const SidebarMenuSubItem = ({
     className,
     pinnable,
     action,
+    collapsible = true,
     ...buttonProps
 }: SidebarMenuItemProps) => {
     const { currentLevel, parentIcon } = useSidebarMenu();
@@ -158,6 +159,18 @@ const SidebarMenuSubItem = ({
             chevron
         );
 
+        if (!collapsible) {
+            return (
+                <div className={"flex items-center"}>
+                    <SidebarMenuSubItemIndentation
+                        lvl={currentLevel}
+                        variant={buttonProps.variant}
+                    />
+                    <SidebarMenuSubButton {...buttonProps} />
+                </div>
+            );
+        }
+
         return (
             <Collapsible.Root
                 className="w-full group/menu-sub-item-collapsible"
@@ -197,12 +210,15 @@ const SidebarMenuSubItem = ({
     ]);
 
     return (
-        <li
-            data-sidebar="menu-sub-item"
-            className={cn("group/menu-sub-item relative flex", className)}
-        >
-            {sidebarMenuSubButton}
-        </li>
+        <>
+            <li
+                data-sidebar="menu-sub-item"
+                className={cn("group/menu-sub-item relative flex", className)}
+            >
+                {sidebarMenuSubButton}
+            </li>
+            {children && !collapsible ? children : null}
+        </>
     );
 };
 

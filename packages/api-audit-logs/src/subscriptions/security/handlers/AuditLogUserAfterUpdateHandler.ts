@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { UserAfterUpdateEventHandler } from "@webiny/api-core/features/UpdateUser";
+import { UserAfterUpdateEventHandler } from "@webiny/api-core/features/users/UpdateUser/index.js";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";

@@ -5,7 +5,7 @@ import {
     UpdateFileRepository
 } from "./abstractions.js";
 import { GetFileUseCase } from "../GetFile/abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { File } from "~/domain/file/types.js";
 import { FileNotAuthorizedError } from "~/domain/file/errors.js";
 import { FileBeforeUpdateEvent, FileAfterUpdateEvent } from "./events.js";

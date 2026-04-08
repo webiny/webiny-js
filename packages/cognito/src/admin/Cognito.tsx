@@ -44,8 +44,8 @@ const CognitoIdP = (props: CognitoAdminProps) => {
 
                     <Menu
                         name={"cognito.settings.adminUsers"}
-                        parent={"settings"}
-                        after={"security.settings"}
+                        parent={"settings.security"}
+                        before={"$first"}
                         element={
                             <Menu.Link
                                 text={"Users"}

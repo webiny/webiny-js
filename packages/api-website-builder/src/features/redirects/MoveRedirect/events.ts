@@ -1,4 +1,4 @@
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import { RedirectBeforeMoveEventHandler, RedirectAfterMoveEventHandler } from "./abstractions.js";
 import type { RedirectBeforeMovePayload, RedirectAfterMovePayload } from "./abstractions.js";
 

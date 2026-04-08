@@ -1,4 +1,4 @@
-import { AppInstaller } from "@webiny/api-core/features/InstallTenant";
+import { AppInstaller } from "@webiny/api-core/features/tenancy/InstallTenant/index.js";
 import { CreateApiKeyUseCase } from "@webiny/api-core/features/security/apiKeys/CreateApiKey/index.js";
 import { DeleteApiKeyUseCase } from "@webiny/api-core/features/security/apiKeys/DeleteApiKey/index.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";

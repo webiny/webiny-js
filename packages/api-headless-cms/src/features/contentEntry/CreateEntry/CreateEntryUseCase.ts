@@ -1,6 +1,6 @@
 import { createImplementation, Result } from "@webiny/feature/api";
 import { CreateEntryRepository, CreateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { EntryAfterCreateEvent, EntryBeforeCreateEvent } from "./events.js";
 import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
 import type {
@@ -12,8 +12,8 @@ import type {
 } from "~/types/index.js";
 import { EntryNotAuthorizedError, EntryValidationError } from "~/domain/contentEntry/errors.js";
 import { createEntryData } from "~/crud/contentEntry/entryDataFactories/createEntryData.js";
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 /**
  * CreateEntryUseCase - Orchestrates entry creation.

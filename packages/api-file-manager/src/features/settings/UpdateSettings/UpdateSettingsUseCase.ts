@@ -7,7 +7,7 @@ import type { UpdateSettingsInput } from "~/domain/settings/types.js";
 import { SettingsUpdateError } from "~/domain/settings/errors.js";
 import { SettingsValidationError } from "~/domain/settings/errors.js";
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { SettingsBeforeUpdateEvent, SettingsAfterUpdateEvent } from "./events.js";
 import { updateSettingsValidation } from "~/domain/settings/validation.js";
 import { createZodError } from "@webiny/utils";

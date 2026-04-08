@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { DeleteMultipleEntriesUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { DeleteMultipleEntriesRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";

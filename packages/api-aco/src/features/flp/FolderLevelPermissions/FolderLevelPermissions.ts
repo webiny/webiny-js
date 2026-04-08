@@ -1,7 +1,7 @@
 import { createImplementation } from "@webiny/di";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
-import { WcpContext } from "@webiny/api-core/features/WcpContext";
-import { ListUserTeamsUseCase } from "@webiny/api-core/features/ListUserTeams";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
+import { ListUserTeamsUseCase } from "@webiny/api-core/features/users/ListUserTeams/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 import {
     CanAccessFolder,

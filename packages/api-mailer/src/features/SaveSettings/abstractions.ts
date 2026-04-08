@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { TransportSettings } from "~/types.js";
 import {
     SettingsValidationError,

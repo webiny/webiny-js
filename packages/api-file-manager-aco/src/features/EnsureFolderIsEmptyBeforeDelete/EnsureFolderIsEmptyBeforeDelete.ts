@@ -1,7 +1,7 @@
 import { WebinyError } from "@webiny/error";
-import { FolderBeforeDeleteEventHandler } from "@webiny/api-aco/features/folder/DeleteFolder";
+import { FolderBeforeDeleteEventHandler } from "@webiny/api-aco/features/folder/DeleteFolder/index.js";
 import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/index.js";
-import { EnsureFolderIsEmpty } from "@webiny/api-aco/features/folder/EnsureFolderIsEmpty";
+import { EnsureFolderIsEmpty } from "@webiny/api-aco/features/folder/EnsureFolderIsEmpty/index.js";
 
 class EnsureFolderIsEmptyBeforeDeleteImpl implements FolderBeforeDeleteEventHandler.Interface {
     constructor(

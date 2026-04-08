@@ -13,6 +13,7 @@ import { InvalidateCloudfrontCacheTaskDefinition } from "@webiny/api-file-manage
 import { createTenancyAndSecurity } from "./tenancySecurity.js";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createWebsiteBuilder } from "~/index.js";
+import { Extension as LanguagesExtension } from "@webiny/languages/api/Extension.js";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createIdentity } from "./identity.js";
 import { createBackgroundTasks } from "~tests/mocks/mockBackgroundTasks.js";
@@ -43,14 +44,13 @@ export const useHandler = (params: UseHandlerParams = {}) => {
                 permissions,
                 identity: identity === undefined ? createIdentity() : identity
             }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createBackgroundTasks(),
             createHeadlessCmsGraphQL(),
             createWebsiteBuilder(),
             createContextPlugin(context => {
                 context.container.register(InvalidateCloudfrontCacheTaskDefinition);
+                LanguagesExtension.register(context.container);
             }),
             createEventHandler<any, ApiCoreContext, ApiCoreContext>(async ({ context }) => {
                 return context;

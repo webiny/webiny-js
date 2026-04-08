@@ -2,7 +2,7 @@ import zod from "zod";
 import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
-} from "@webiny/api-core/features/EventPublisher";
+} from "@webiny/api-core/features/eventPublisher/index.js";
 import { SendMailUseCase } from "./abstractions.js";
 import { MailBeforeSendEvent, MailAfterSendEvent, MailSendErrorEvent } from "./events.js";
 import { MailerService } from "~/domain/MailerService/abstractions.js";

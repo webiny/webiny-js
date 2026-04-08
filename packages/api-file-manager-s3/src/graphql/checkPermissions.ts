@@ -1,6 +1,6 @@
 import type { FilePermission } from "@webiny/api-file-manager/types.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export const checkPermissions = async (
     identityContext: IdentityContext.Interface,

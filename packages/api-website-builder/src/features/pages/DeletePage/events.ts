@@ -1,4 +1,4 @@
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import { PageBeforeDeleteEventHandler, PageAfterDeleteEventHandler } from "./abstractions.js";
 import type { PageBeforeDeletePayload, PageAfterDeletePayload } from "./abstractions.js";
 

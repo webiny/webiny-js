@@ -13311,6 +13311,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/languages": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
@@ -14647,6 +14648,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/languages@npm:0.0.0, @webiny/languages@workspace:packages/languages":
+  version: 0.0.0-use.local
+  resolution: "@webiny/languages@workspace:packages/languages"
+  dependencies:
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/app-headless-cms": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-aws": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/icons": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
+    react: "npm:18.3.1"
+    react-dom: "npm:18.3.1"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:5.9.3"
+    vitest: "npm:^4.1.2"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/lexical-converter@npm:0.0.0, @webiny/lexical-converter@workspace:packages/lexical-converter":
   version: 0.0.0-use.local
   resolution: "@webiny/lexical-converter@workspace:packages/lexical-converter"
@@ -14837,6 +14866,7 @@ __metadata:
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/languages": "npm:0.0.0"
     "@webiny/project-aws": "npm:*"
     "@webiny/tenant-manager": "npm:*"
     core-js: "npm:3.49.0"
@@ -33109,6 +33139,7 @@ __metadata:
     "@webiny/form": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/languages": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
