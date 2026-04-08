@@ -37,5 +37,5 @@ class ListTagsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const ListTagsUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListTagsUseCaseImpl,
-    dependencies: [FmPermissions.Abstraction, ListTagsRepository]
+    dependencies: [FmPermissions, ListTagsRepository]
 });

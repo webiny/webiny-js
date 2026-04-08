@@ -9,7 +9,7 @@ import {
 } from "./abstractions.js";
 import { PageBeforeDuplicateEvent, PageAfterDuplicateEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class DuplicatePageUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -64,10 +64,5 @@ class DuplicatePageUseCaseImpl implements UseCaseAbstraction.Interface {
 export const DuplicatePageUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: DuplicatePageUseCaseImpl,
-    dependencies: [
-        WbPermissions.Abstraction,
-        EventPublisher,
-        GetPageByIdUseCase,
-        DuplicatePageRepository
-    ]
+    dependencies: [WbPermissions, EventPublisher, GetPageByIdUseCase, DuplicatePageRepository]
 });

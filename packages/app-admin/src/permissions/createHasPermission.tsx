@@ -1,6 +1,7 @@
 import React from "react";
-import { createUsePermissions } from "./usePermissions.js";
-import type { HasPermissionProps, PermissionSchemaConfig } from "./types.js";
+import type { Abstraction } from "@webiny/di";
+import type { HasPermissionProps, PermissionSchemaConfig, UsePermissionsResult } from "./types.js";
+import { useContainer } from "@webiny/app";
 
 const BUILT_IN_ACTIONS: Record<string, string> = {
     read: "canRead",
@@ -12,12 +13,12 @@ const BUILT_IN_ACTIONS: Record<string, string> = {
 };
 
 export function createHasPermission<const S extends PermissionSchemaConfig>(
+    abstraction: Abstraction<UsePermissionsResult<S>>,
     schema: S
 ): React.FC<HasPermissionProps<S>> {
-    const usePermissions = createUsePermissions(schema);
-
     return function HasPermission({ children, ...props }) {
-        const permissions = usePermissions();
+        const container = useContainer();
+        const permissions = container.resolve(abstraction);
 
         const action = props.action as string | undefined;
         const someActions = props.someActions as string[] | undefined;
@@ -31,13 +32,12 @@ export function createHasPermission<const S extends PermissionSchemaConfig>(
             }
             const method = BUILT_IN_ACTIONS[singleAction] as keyof typeof permissions;
             if (method && typeof permissions[method] === "function") {
-                return permissions[method](entityId);
+                return (permissions[method] as (entityId: string) => boolean)(entityId);
             }
-            /**
-             * // TODO cant be typed properly because of the dynamic nature of custom actions.
-             */
-            // @ts-expect-error
-            return permissions.canAction(singleAction, entityId);
+            return (permissions.canAction as (action: string, entityId: string) => boolean)(
+                singleAction,
+                entityId
+            );
         };
 
         const check = (entityId: string): boolean => {

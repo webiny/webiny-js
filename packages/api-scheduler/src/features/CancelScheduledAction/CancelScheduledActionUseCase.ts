@@ -10,7 +10,7 @@ import {
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 import { EntryNotFoundError } from "@webiny/api-headless-cms/domain/contentEntry/errors.js";
-import { SchedulerPermissions } from "~/domain/permissions.js";
+import { SchedulerPermissions } from "~/features/permissions/abstractions.js";
 
 /**
  * Cancels a scheduled action
@@ -99,6 +99,6 @@ export const CancelScheduledActionUseCase = UseCaseAbstraction.createImplementat
         SchedulerService,
         DeleteEntryUseCase,
         ScheduledActionModel,
-        SchedulerPermissions.Abstraction
+        SchedulerPermissions
     ]
 });

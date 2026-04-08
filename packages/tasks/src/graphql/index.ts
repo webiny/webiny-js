@@ -96,14 +96,14 @@ const createGraphQL = () => {
             model: taskModel,
             fields: taskModel.fields,
             fieldRegistry,
-            sorterPlugins: []
+            sorters: []
         });
 
         const sortLogsEnumRender = renderSortEnum({
             model: logModel,
             fields: logModel.fields,
             fieldRegistry,
-            sorterPlugins: []
+            sorters: []
         });
 
         const taskDefinitions = ctx.tasks.listDefinitions();

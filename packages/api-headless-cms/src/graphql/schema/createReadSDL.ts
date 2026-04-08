@@ -3,27 +3,24 @@ import { renderListFilterFields } from "~/utils/renderListFilterFields.js";
 import { renderSortEnum } from "~/utils/renderSortEnum.js";
 import { renderFields } from "~/utils/renderFields.js";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields.js";
-import type { CmsGraphQLSchemaSorterPlugin } from "~/plugins/index.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
-import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
+import type {
+    CmsModelFieldToGraphQLRegistry,
+    CmsGraphQLSchemaSorter
+} from "~/features/graphql/index.js";
 
 interface CreateReadSDLParams {
     models: CmsModel[];
     model: CmsModel;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
-    sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
+    sorters: CmsGraphQLSchemaSorter.Interface[];
 }
 
 interface CreateReadSDL {
     (params: CreateReadSDLParams): string;
 }
 
-export const createReadSDL: CreateReadSDL = ({
-    models,
-    model,
-    fieldRegistry,
-    sorterPlugins
-}): string => {
+export const createReadSDL: CreateReadSDL = ({ models, model, fieldRegistry, sorters }): string => {
     const type: ApiEndpoint = "read";
 
     const fieldsRender = renderFields({
@@ -44,7 +41,7 @@ export const createReadSDL: CreateReadSDL = ({
         model,
         fields: model.fields,
         fieldRegistry,
-        sorterPlugins
+        sorters
     });
     const getFilterFieldsRender = renderGetFilterFields({
         fields: model.fields,

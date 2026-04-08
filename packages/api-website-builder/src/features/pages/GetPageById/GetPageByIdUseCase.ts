@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { GetPageByIdUseCase as UseCaseAbstraction, GetPageByIdRepository } from "./abstractions.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissions } from "~/features/permissions/abstractions.js";
 import { PageNotAuthorizedError } from "~/domain/page/errors.js";
 
 class GetPageByIdUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -32,5 +32,5 @@ class GetPageByIdUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const GetPageByIdUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetPageByIdUseCaseImpl,
-    dependencies: [WbPermissions.Abstraction, GetPageByIdRepository]
+    dependencies: [WbPermissions, GetPageByIdRepository]
 });

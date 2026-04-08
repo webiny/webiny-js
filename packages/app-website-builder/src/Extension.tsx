@@ -16,6 +16,7 @@ import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
 import { Extension as NavigationExtension } from "./presentation/navigation/Extension.js";
 import { NextjsConfigFeature } from "~/presentation/navigation/NextjsConfig/feature.js";
 import { WB_PERMISSIONS_SCHEMA } from "~/constants.js";
+import { WbPermissionsFeature } from "~/features/permissions/feature.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
@@ -31,6 +32,7 @@ export const Extension = () => {
     return (
         <>
             <RegisterFeature feature={NextjsConfigFeature} />
+            <RegisterFeature feature={WbPermissionsFeature} />
             <AdminConfig>
                 <Security.Permissions
                     name="website-builder"
