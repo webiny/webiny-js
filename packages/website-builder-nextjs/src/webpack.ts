@@ -12,6 +12,7 @@ const buildThemeCss = async (entry: string) => {
     const raw = fs.readFileSync(entry, "utf8");
 
     // Inline local imports.
+    // @ts-expect-error postcssImport() response is not compatible with postcss input. we can do "as postcss.Plugin", but its better like this - it will get fixed and expect error can then be removed
     const result = await postcss([postcssImport()]).process(raw, { from: entry });
 
     return result.css;
