@@ -1,6 +1,9 @@
 import { createAbstraction } from "webiny/admin";
 import type { PageGatewayDto } from "~/features/pages/getPage/PageGatewayDto.js";
-import type { Page } from "~/domain/Page/index.js";
+
+export interface TranslatedPageDto {
+    id: string;
+}
 
 //
 // Params
@@ -15,10 +18,12 @@ export interface TranslatePageParams {
 // UseCase
 //
 export interface ITranslatePageUseCase {
-    execute(params: TranslatePageParams): Promise<Page>;
+    execute(params: TranslatePageParams): Promise<TranslatedPageDto>;
 }
 
-export const TranslatePageUseCase = createAbstraction<ITranslatePageUseCase>("WebsiteBuilder/TranslatePageUseCase");
+export const TranslatePageUseCase = createAbstraction<ITranslatePageUseCase>(
+    "WebsiteBuilder/TranslatePageUseCase"
+);
 
 export namespace TranslatePageUseCase {
     export type Interface = ITranslatePageUseCase;
@@ -28,37 +33,45 @@ export namespace TranslatePageUseCase {
 //
 // Repository
 //
-export interface TranslatePageRepositoryParams {
+export interface ITranslatePageRepositoryParams {
     pageId: string;
     languageCode: string;
     folderId: string;
 }
 
 export interface ITranslatePageRepository {
-    execute(params: TranslatePageRepositoryParams): Promise<Page>;
+    execute(params: ITranslatePageRepositoryParams): Promise<TranslatedPageDto>;
 }
 
-export const TranslatePageRepository = createAbstraction<ITranslatePageRepository>("WebsiteBuilder/TranslatePageRepository");
+export const TranslatePageRepository = createAbstraction<ITranslatePageRepository>(
+    "WebsiteBuilder/TranslatePageRepository"
+);
 
 export namespace TranslatePageRepository {
     export type Interface = ITranslatePageRepository;
+    export type Params = ITranslatePageRepositoryParams;
+    export type Return = Promise<TranslatedPageDto>;
 }
 
 //
 // Gateway
 //
-export interface TranslatePageGatewayParams {
+export interface ITranslatePageGatewayParams {
     pageId: string;
     languageCode: string;
     folderId: string;
 }
 
 export interface ITranslatePageGateway {
-    execute(params: TranslatePageGatewayParams): Promise<PageGatewayDto>;
+    execute(params: ITranslatePageGatewayParams): Promise<TranslatedPageDto>;
 }
 
-export const TranslatePageGateway = createAbstraction<ITranslatePageGateway>("WebsiteBuilder/TranslatePageGateway");
+export const TranslatePageGateway = createAbstraction<ITranslatePageGateway>(
+    "WebsiteBuilder/TranslatePageGateway"
+);
 
 export namespace TranslatePageGateway {
     export type Interface = ITranslatePageGateway;
+    export type Params = ITranslatePageGatewayParams;
+    export type Return = Promise<TranslatedPageDto>;
 }

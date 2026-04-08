@@ -1,5 +1,7 @@
 # Translate Page Feature - Implementation Plan
 
+IMPORTANT: use "webiny" MCP server to discover patterns and best practices before modifying any code.
+
 ## Overview
 Build a complete translate page feature following Webiny Admin Architecture patterns:
 1. **Headless ListLanguages feature** in `packages/languages/src/admin/features/` (reusable business logic)
