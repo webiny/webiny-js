@@ -8,6 +8,7 @@ name: Push
     branches:
       - dev
       - next
+      - release/*
 jobs:
   constants:
     name: Create constants
