@@ -56,7 +56,7 @@ const AccessManagementExtension = () => {
                     <Menu
                         name={"settings.security"}
                         parent={"settings"}
-                        element={<Menu.Group text={"Access Management"} collapsible={false}/>}
+                        element={<Menu.Group text={"Access Management"} collapsible={false} />}
                     />
                 </HasPermission>
                 <HasPermission name={Permission.Roles}>
