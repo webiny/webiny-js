@@ -1,4 +1,4 @@
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import type { File } from "@webiny/api-file-manager/domain/file/types.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 

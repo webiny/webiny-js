@@ -1,6 +1,6 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
+import type { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { WbPage } from "~/domain/page/abstractions.js";
 import type {
     PageNotFoundError,

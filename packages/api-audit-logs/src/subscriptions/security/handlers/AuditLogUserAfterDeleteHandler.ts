@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { UserAfterDeleteEventHandler } from "@webiny/api-core/features/DeleteUser";
+import { UserAfterDeleteEventHandler } from "@webiny/api-core/features/users/DeleteUser/index.js";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";

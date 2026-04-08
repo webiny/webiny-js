@@ -5,7 +5,7 @@ import {
     ListLockRecordsRepository,
     ListLockRecordsUseCase as UseCaseAbstraction
 } from "./abstractions.js";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { RecordLockingConfig } from "~/domain/abstractions.js";
 
 class ListLockRecordsUseCaseImpl implements UseCaseAbstraction.Interface {

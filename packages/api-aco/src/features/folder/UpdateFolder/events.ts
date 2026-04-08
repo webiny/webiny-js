@@ -1,4 +1,4 @@
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import { FolderBeforeUpdateEventHandler, FolderAfterUpdateEventHandler } from "./abstractions.js";
 import type { FolderBeforeUpdatePayload, FolderAfterUpdatePayload } from "./abstractions.js";
 

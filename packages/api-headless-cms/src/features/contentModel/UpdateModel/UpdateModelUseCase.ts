@@ -1,12 +1,12 @@
 import { Result } from "@webiny/feature/api";
 import { UpdateModelUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { UpdateModelRepository } from "./abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { ModelBeforeUpdateEvent } from "./events.js";
 import { ModelAfterUpdateEvent } from "./events.js";
 import { ModelUpdateErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { ModelNotAuthorizedError, ModelValidationError } from "~/domain/contentModel/errors.js";
 import { createZodError } from "@webiny/utils";
 import { removeUndefinedValues } from "@webiny/utils";

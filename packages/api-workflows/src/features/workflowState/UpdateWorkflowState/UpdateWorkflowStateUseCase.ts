@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetUserTeamsUseCase } from "~/features/internal/GetUserTeams/index.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
 import { GetWorkflowStateUseCase } from "../GetWorkflowState/index.js";
 import {

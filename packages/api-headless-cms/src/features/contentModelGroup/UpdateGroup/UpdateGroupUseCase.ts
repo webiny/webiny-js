@@ -3,12 +3,12 @@ import { createImplementation } from "@webiny/feature/api";
 import { UpdateGroupUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { UpdateGroupRepository } from "./abstractions.js";
 import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { GroupBeforeUpdateEvent } from "./events.js";
 import { GroupAfterUpdateEvent } from "./events.js";
 import { GroupUpdateErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import {
     GroupNotAuthorizedError,
     GroupValidationError

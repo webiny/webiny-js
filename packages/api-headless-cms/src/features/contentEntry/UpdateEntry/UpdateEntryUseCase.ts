@@ -2,12 +2,12 @@ import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { UpdateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { UpdateEntryRepository } from "./abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { EntryBeforeUpdateEvent, EntryAfterUpdateEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/abstractions.js";
 import type {
     CmsEntry,

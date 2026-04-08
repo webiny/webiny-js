@@ -3,7 +3,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { DeleteGroupUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { DeleteGroupRepository } from "./abstractions.js";
 import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { GroupBeforeDeleteEvent } from "./events.js";
 import { GroupAfterDeleteEvent } from "./events.js";
 import { GroupDeleteErrorEvent } from "./events.js";

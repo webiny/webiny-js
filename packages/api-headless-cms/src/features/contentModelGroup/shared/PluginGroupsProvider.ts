@@ -1,8 +1,8 @@
 import { createImplementation } from "@webiny/feature/api";
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ModelGroupFactory, PluginGroupsProvider as ProviderAbstraction } from "./abstractions.js";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin.js";
 import { filterAsync } from "~/utils/filterAsync.js";

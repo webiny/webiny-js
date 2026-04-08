@@ -1,4 +1,4 @@
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 import type { Context, WebsocketsPermission } from "~/types.js";
 

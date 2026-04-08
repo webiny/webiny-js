@@ -10,7 +10,7 @@ import type { IAuditLog, IAuditLogCreatedBy } from "~/storage/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
 import type { IStorage, IStorageListParams } from "~/storage/abstractions/Storage.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
-import type { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import type { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     AuditLogBeforeCreateEvent,
     AuditLogAfterCreateEvent,

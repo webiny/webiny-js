@@ -1,4 +1,4 @@
-import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { beforeEach, describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
 import type { IManageListTestEntryVariables } from "~tests/testHelpers/useTestModelHandler/manageGql.js";

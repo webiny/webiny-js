@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
+import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { WorkflowStateAfterUpdatePayload } from "./abstractions.js";
 
 export class WorkflowStateAfterUpdateEvent extends DomainEvent<WorkflowStateAfterUpdatePayload> {

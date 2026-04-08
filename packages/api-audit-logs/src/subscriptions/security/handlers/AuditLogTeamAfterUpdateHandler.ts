@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { TeamAfterUpdateEventHandler } from "@webiny/api-core/features/UpdateTeam";
+import { TeamAfterUpdateEventHandler } from "@webiny/api-core/features/security/teams/UpdateTeam/index.js";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";

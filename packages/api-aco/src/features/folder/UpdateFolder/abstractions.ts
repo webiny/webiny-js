@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { Folder, UpdateFolderParams } from "~/folder/folder.types.js";
 import {
     FolderCannotMoveToNewParent,

@@ -1,4 +1,4 @@
-import { AppInstaller } from "@webiny/api-core/features/InstallTenant";
+import { AppInstaller } from "@webiny/api-core/features/tenancy/InstallTenant/index.js";
 import type { CmsModelGroup } from "~/types/index.js";
 import { CreateGroupUseCase, DeleteGroupUseCase } from "~/exports/api/cms/group.js";
 

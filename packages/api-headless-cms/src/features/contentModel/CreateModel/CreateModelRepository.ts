@@ -8,7 +8,7 @@ import { ModelAlreadyExistsError } from "~/domain/contentModel/errors.js";
 import { ModelPersistenceError } from "~/domain/contentModel/errors.js";
 import { ModelValidationError } from "~/domain/contentModel/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
 import {
     validateExistingModelId,

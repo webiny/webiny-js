@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
-} from "@webiny/api-core/features/EventPublisher";
+} from "@webiny/api-core/features/eventPublisher/index.js";
 import { TrashPageUseCase as UseCaseAbstraction, TrashPageRepository } from "./abstractions.js";
 import { PageBeforeTrashEvent, PageAfterTrashEvent } from "./events.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";

@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
+import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { File } from "~/domain/file/types.js";
 import type { UpdateFileInput } from "./abstractions.js";
 

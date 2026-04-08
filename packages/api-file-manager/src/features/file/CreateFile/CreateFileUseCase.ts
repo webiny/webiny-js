@@ -5,7 +5,7 @@ import {
     CreateFileRepository
 } from "./abstractions.js";
 import { GetSettingsUseCase } from "../../settings/GetSettings/abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { File, FileInput } from "~/domain/file/types.js";
 import { FileNotAuthorizedError, InvalidFileSizeError } from "~/domain/file/errors.js";
 import { FileBeforeCreateEvent, FileAfterCreateEvent } from "./events.js";

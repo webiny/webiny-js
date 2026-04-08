@@ -7,7 +7,7 @@ import { createBaseSchema } from "~/graphql/baseSchema.js";
 import { createFilesSchema } from "~/graphql/filesSchema.js";
 import { getFileByUrl } from "~/graphql/getFileByUrl.js";
 import { FileModel } from "~/domain/file/abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 export const createGraphQLSchemaPlugin = () => {

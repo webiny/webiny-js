@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { TransportSendData, TransportSendResponse } from "~/types.js";
 import type { MailerService } from "~/domain/MailerService/abstractions.js";
 import { MailValidationError } from "~/domain/errors.js";

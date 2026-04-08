@@ -1,5 +1,5 @@
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { parseIdentifier } from "@webiny/utils";

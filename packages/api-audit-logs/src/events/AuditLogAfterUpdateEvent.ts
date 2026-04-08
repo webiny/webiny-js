@@ -1,4 +1,4 @@
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import { AuditLogAfterUpdateHandler, AuditLogAfterUpdatePayload } from "./abstractions.js";
 
 export class AuditLogAfterUpdateEvent extends DomainEvent<AuditLogAfterUpdatePayload> {
