@@ -1,10 +1,12 @@
 import React from "react";
 import { Provider } from "@webiny/app";
+import { RegisterFeature } from "@webiny/app-admin";
 import { RecordLockingProvider as RecordLockingProviderComponent } from "~/components/RecordLockingProvider.js";
 import { HeadlessCmsActionsAcoCell } from "~/components/HeadlessCmsActionsAcoCell.js";
 import { HeadlessCmsContentEntry } from "~/components/HeadlessCmsContentEntry/index.js";
 import { useWcp } from "@webiny/app-admin";
 import { SecurityPermissions } from "~/components/SecurityPermissions.js";
+import { RecordLockingPermissionsFeature } from "~/features/permissions/feature.js";
 
 export * from "~/components/RecordLockingProvider.js";
 export * from "~/hooks/index.js";
@@ -32,6 +34,7 @@ export const RecordLocking = () => {
 
     return (
         <>
+            <RegisterFeature feature={RecordLockingPermissionsFeature} />
             <SecurityPermissions />
             <Provider hoc={RecordLockingHoc} />
             <HeadlessCmsActionsAcoCell />

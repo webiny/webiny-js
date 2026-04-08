@@ -100,7 +100,7 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             ),
             {
                 name: "Create verdaccio-files artifact",
-                uses: "actions/upload-artifact@v4",
+                uses: "actions/upload-artifact@v6",
                 with: {
                     name: `verdaccio-files-${storageOps.shortId}`,
                     "retention-days": 1,
@@ -135,7 +135,7 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             },
             {
                 name: "Create project-files artifact",
-                uses: "actions/upload-artifact@v4",
+                uses: "actions/upload-artifact@v6",
                 with: {
                     name: `project-files-${storageOps.shortId}`,
                     "retention-days": 1,

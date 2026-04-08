@@ -4,20 +4,21 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { ContextPlugin } from "@webiny/api";
 import {
-    createStorageOperations,
-    createCmsEntryElasticsearchBodyModifierPlugin
+    createCmsEntryElasticsearchBodyModifierPlugin,
+    registerCmsOpenSearchStorageOperations
 } from "../../src/index";
 import { configurations } from "../../src/configurations";
 import { base as baseIndexConfigurationPlugin } from "../../src/elasticsearch/indices/base";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
-import { getOpenSearchOperators } from "@webiny/api-opensearch";
+import {
+    getOpenSearchIndexPrefix as getOpenSearchIndexPrefix,
+    getOpenSearchOperators
+} from "@webiny/api-opensearch";
 
-if (typeof createStorageOperations !== "function") {
+if (typeof registerCmsOpenSearchStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
-
-import { getOpenSearchIndexPrefix as getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 
 const prefix = getOpenSearchIndexPrefix();
 if (!prefix.includes("api-")) {
@@ -80,31 +81,30 @@ setStorageOps("cms", () => {
         "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";
 
     return {
-        storageOperations: createStorageOperations({
-            documentClient,
-            elasticsearch: elasticsearchClient,
-            plugins: [
-                ...initializedDbPlugins,
-                getOpenSearchOperators(),
-                createCmsEntryElasticsearchBodyModifierPlugin({
-                    modifyBody: ({ body }) => {
-                        if (!body.sort.customSorter) {
-                            return;
-                        }
-                        const order = body.sort.customSorter.order;
-                        delete body.sort.customSorter;
+        storageOperations: {},
+        plugins: [
+            registerCmsOpenSearchStorageOperations(),
+            ...plugins,
+            ...initializedDbPlugins,
+            createOrRefreshIndexSubscription,
+            getOpenSearchOperators(),
+            createCmsEntryElasticsearchBodyModifierPlugin({
+                modifyBody: ({ body }) => {
+                    if (!body.sort.customSorter) {
+                        return;
+                    }
+                    const order = body.sort.customSorter.order;
+                    delete body.sort.customSorter;
 
-                        body.sort = {
-                            createdOn: {
-                                order,
-                                unmapped_type: "date"
-                            }
-                        };
-                    },
-                    model: "fruit"
-                })
-            ]
-        }),
-        plugins: [...plugins, ...initializedDbPlugins, createOrRefreshIndexSubscription]
+                    body.sort = {
+                        createdOn: {
+                            order,
+                            unmapped_type: "date"
+                        }
+                    };
+                },
+                model: "fruit"
+            })
+        ]
     };
 });

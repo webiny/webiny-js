@@ -1,6 +1,5 @@
 import { createDecorator } from "@webiny/di";
 import { GraphQLClient } from "./abstractions.js";
-import { EnvConfig } from "~/features/envConfig/index.js";
 import { RequestValue } from "~/features/graphqlClient/RequestValue.js";
 
 interface BatchedRequest {
@@ -21,10 +20,7 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
     private readonly batchWindowMs: number;
     private readonly maxBatchSize: number;
 
-    constructor(
-        private envConfig: EnvConfig.Interface,
-        private decoratee: GraphQLClient.Interface
-    ) {
+    constructor(private decoratee: GraphQLClient.Interface) {
         // Default: 10ms window, max 10 operations per batch
         this.batchWindowMs = 10;
         this.maxBatchSize = 10;
@@ -73,18 +69,19 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
             return;
         }
 
-        // Group requests by headers (only batch requests with identical headers)
-        const groupedByHeaders = new Map<string, BatchedRequest[]>();
+        // Group requests by endpoint + headers (only batch requests with identical target)
+        const grouped = new Map<string, BatchedRequest[]>();
         for (const item of batch) {
-            const headersKey = this.serializeHeaders(item.request.headers);
-            if (!groupedByHeaders.has(headersKey)) {
-                groupedByHeaders.set(headersKey, []);
+            const groupKey =
+                item.request.endpoint + "|" + this.serializeHeaders(item.request.headers);
+            if (!grouped.has(groupKey)) {
+                grouped.set(groupKey, []);
             }
-            groupedByHeaders.get(headersKey)!.push(item);
+            grouped.get(groupKey)!.push(item);
         }
 
         // Process each group separately
-        const batchPromises = Array.from(groupedByHeaders.entries()).map(requests => {
+        const batchPromises = Array.from(grouped.entries()).map(requests => {
             const group = requests[1];
 
             if (group.length === 1) {
@@ -109,10 +106,11 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
             };
         });
 
+        const endpoint = group[0].request.endpoint;
         const headers = group[0].request.headers;
 
         try {
-            const results = await this.executeBatch(batchedOperations, headers);
+            const results = await this.executeBatch(endpoint, batchedOperations, headers);
             group.forEach(({ resolve }, index) => {
                 resolve(results[index]);
             });
@@ -137,13 +135,14 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
     }
 
     private async executeBatch(
+        endpoint: string,
         operations: BatchOperation[],
         headers?: GraphQLClient.Headers
     ): Promise<any[]> {
         let response: Response;
 
         try {
-            response = await fetch(this.envConfig.get("graphqlApiUrl"), {
+            response = await fetch(endpoint, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -181,5 +180,5 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
 export const BatchingGraphQLClient = createDecorator({
     abstraction: GraphQLClient,
     decorator: BatchingGraphQLClientImpl,
-    dependencies: [EnvConfig]
+    dependencies: []
 });

@@ -1,4 +1,4 @@
-import type { ApiEndpoint, CmsContext, HeadlessCmsStorageOperations } from "~/types/index.js";
+import type { ApiEndpoint, CmsContext } from "~/types/index.js";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import type { GraphQLRequestBody } from "@webiny/handler-graphql/types.js";
@@ -19,7 +19,8 @@ import { ContentEntriesFeature } from "~/features/contentEntry/ContentEntriesFea
 import {
     AccessControl as AccessControlAbstraction,
     CmsContext as CmsContextAbstraction,
-    StorageOperations
+    StorageOperations,
+    StorageOperationsFactory
 } from "~/features/shared/abstractions.js";
 import {
     EntryFromStorageTransform,
@@ -34,6 +35,8 @@ import { ContentModelFeature } from "~/features/contentModel/ContentModelFeature
 import { ModelBuilderFeature } from "~/features/modelBuilder/index.js";
 import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
+import { GraphQLFeature } from "~/features/graphql/index.js";
+import { ValidationFeature } from "~/features/validation/index.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -47,11 +50,7 @@ const getParameters = async (context: CmsContext): Promise<CmsParametersPluginRe
     throw new WebinyError("Could not determine type of the CMS.", "CMS_TYPE_ERROR");
 };
 
-export interface CrudParams {
-    storageOperations: HeadlessCmsStorageOperations;
-}
-
-export const createContextPlugin = ({ storageOperations }: CrudParams) => {
+export const createContextPlugin = () => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
         const { type } = await getParameters(context);
 
@@ -78,6 +77,11 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             }
         };
 
+        // TODO figure out a better way. maybe this stuff should be on before handler?
+        // GraphQL fields must be loaded before anything else
+        GraphQLFeature.register(context.container);
+        ValidationFeature.register(context.container);
+
         async function getExecutableSchema(type: ApiEndpoint) {
             const originalType = context.cms.type;
             setSchemaType(type);
@@ -98,12 +102,8 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         }
 
         context.plugins.register(
-            new StorageOperationsCmsModelPlugin(
-                createCmsModelFieldConvertersAttachFactory(context.plugins)
-            )
+            new StorageOperationsCmsModelPlugin(createCmsModelFieldConvertersAttachFactory(context))
         );
-
-        await storageOperations.beforeInit(context);
 
         const accessControl = new AccessControl({
             getIdentity: async () => context.security.getIdentity(),
@@ -116,6 +116,11 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 });
             }
         });
+
+        const storageOperationsFactory = context.container.resolve(StorageOperationsFactory);
+
+        const storageOperations = await storageOperationsFactory.create(context);
+        await storageOperations.beforeInit(context);
 
         context.cms = {
             type,
@@ -155,7 +160,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         });
         context.container.registerInstance(SearchableFieldsProvider, params => {
             return getSearchableFields({
-                plugins: context.plugins,
+                context,
                 fields: params.fields,
                 input: []
             });
@@ -167,7 +172,6 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         ContentModelFeature.register(context.container);
         ContentModelGroupFeature.register(context.container);
         ModelBuilderFeature.register(context.container);
-
         CmsWhereMapperFeature.register(context.container);
         CmsSortMapperFeature.register(context.container);
 

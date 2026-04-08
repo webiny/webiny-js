@@ -1,3 +1,4 @@
+export { CmsGraphQLClient } from "~/features/graphQLClient/index.js";
 export { CmsContentFormRenderer } from "~/legacyPluginAdapters/CmsContentFormRenderer.js";
 export { CmsModelFieldValidator } from "~/legacyPluginAdapters/CmsModelFieldValidator.js";
 export { CmsModelFieldType } from "~/legacyPluginAdapters/CmsModelFieldType.js";

@@ -2,13 +2,12 @@ import React, { Fragment, memo } from "react";
 import { AdminConfig, AdminLayout } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
-import { Permission } from "./plugins/constants.js";
 import { UsersView } from "./ui/views/Users/UsersView.js";
 import { UserAccountForm } from "./ui/views/Account/index.js";
-import { AccountDetails } from "./plugins/userMenu/AccountDetails.js";
 import { SecurityPermission } from "./SecurityPermission.js";
 import { CognitoLogin, type CognitoLoginProps } from "./CognitoLogin.js";
 import { Routes } from "./routes.js";
+import { AccountDetails } from "~/admin/presentation/userMenu/AccountDetails.js";
 
 const { Route, Menu } = AdminConfig;
 
@@ -24,7 +23,7 @@ const CognitoIdP = (props: CognitoAdminProps) => {
             <SecurityPermission />
             <CognitoLogin {...props.login} />
             <AdminConfig>
-                <HasPermission name={Permission.Users}>
+                <HasPermission name={"adminUsers.user"}>
                     <Route
                         route={Routes.Users.List}
                         element={

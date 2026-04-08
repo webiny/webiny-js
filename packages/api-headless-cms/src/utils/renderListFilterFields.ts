@@ -1,18 +1,16 @@
-import type {
-    ApiEndpoint,
-    CmsFieldTypePlugins,
-    CmsModel,
-    CmsModelField,
-    CmsModelFieldToGraphQLPlugin
-} from "~/types/index.js";
+import type { ApiEndpoint, CmsModel, CmsModelField } from "~/types/index.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
+import type {
+    CmsModelFieldToGraphQL,
+    CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
 
 interface RenderListFilterFieldsParams {
     model: CmsModel;
     fields: CmsModelField[];
     type: ApiEndpoint;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     excludeFields?: string[];
 }
 
@@ -28,14 +26,12 @@ interface RenderListFilterFields {
     (params: RenderListFilterFieldsParams): RenderListFilterFieldsResponse;
 }
 
-type CreateListFiltersType =
-    | CmsModelFieldToGraphQLPlugin["read"]["createListFilters"]
-    | CmsModelFieldToGraphQLPlugin["manage"]["createListFilters"];
+type CreateListFiltersType = CmsModelFieldToGraphQL.ReadApi["createListFilters"];
 
 export const renderListFilterFields: RenderListFilterFields = (
     params
 ): RenderListFilterFieldsResponse => {
-    const { model, fields, type, fieldTypePlugins, excludeFields = [] } = params;
+    const { model, fields, type, fieldRegistry, excludeFields = [] } = params;
     const baseFilters: string[] = [
         "id: ID",
         "id_not: ID",
@@ -98,12 +94,13 @@ export const renderListFilterFields: RenderListFilterFields = (
         // that contains a field, for which we don't have a plugin registered on the backend. For example, user
         // could've just removed the plugin from the backend.
         const baseType = getBaseFieldType(field);
-        const createListFilters: CreateListFiltersType | undefined =
-            fieldTypePlugins[baseType]?.[type]?.createListFilters;
+        const fieldImpl = fieldRegistry.get(baseType);
+        const api = fieldImpl ? (type === "manage" ? fieldImpl.manage : fieldImpl.read) : undefined;
+        const createListFilters: CreateListFiltersType | undefined = api?.createListFilters;
         if (typeof createListFilters !== "function") {
             continue;
         }
-        fieldFilters.push(createListFilters({ model, field, plugins: fieldTypePlugins }));
+        fieldFilters.push(createListFilters({ model, field, fieldRegistry }));
     }
 
     return {

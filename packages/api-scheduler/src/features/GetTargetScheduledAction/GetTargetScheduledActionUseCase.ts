@@ -9,7 +9,7 @@ import {
 } from "~/domain/errors.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { SchedulerPermissions } from "~/domain/permissions.js";
+import { SchedulerPermissions } from "~/features/permissions/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { ScheduledActionMapper } from "~/domain/ScheduledActionMapper.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
@@ -97,10 +97,5 @@ class GetTargetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interfac
 
 export const GetTargetScheduledActionUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetTargetScheduledActionUseCaseImpl,
-    dependencies: [
-        GetEntryByIdUseCase,
-        ScheduledActionModel,
-        SchedulerPermissions.Abstraction,
-        IdentityContext
-    ]
+    dependencies: [GetEntryByIdUseCase, ScheduledActionModel, SchedulerPermissions, IdentityContext]
 });

@@ -1,3 +1,7 @@
+export { createPermissionSchema } from "~/features/security/permissions/index.js";
+export { createPermissionsFeature } from "~/features/security/permissions/index.js";
+export { createPermissionsAbstraction } from "~/features/security/permissions/index.js";
+export type { Permissions } from "~/features/security/permissions/index.js";
 export { IdentityContext, Identity } from "~/features/security/IdentityContext/index.js";
 export { ApiKeyFactory } from "~/features/security/apiKeys/shared/abstractions.js";
 export { RoleFactory } from "~/features/security/roles/shared/abstractions.js";

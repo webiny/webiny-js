@@ -1,5 +1,7 @@
+export type TokenProvider = string | (() => string | Promise<string>);
+
 export interface WebinyConfig {
-    token?: string;
+    token?: TokenProvider;
     endpoint: string;
     tenant?: string;
     headers?: Record<string, string>;

@@ -5,7 +5,7 @@ interface CreateRunBuildCacheStepsParams {
 export const createRunBuildCacheSteps = (params: CreateRunBuildCacheStepsParams) => {
     return [
         {
-            uses: "actions/cache@v4",
+            uses: "actions/cache@v5",
             with: {
                 path: [params.workingDirectory, ".webiny/cached-packages"]
                     .filter(Boolean)

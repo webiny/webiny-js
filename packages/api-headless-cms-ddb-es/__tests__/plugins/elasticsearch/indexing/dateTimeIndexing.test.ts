@@ -1,27 +1,23 @@
 import { describe, expect, it } from "vitest";
 import dateTimeIndexing from "~/elasticsearch/indexing/dateTimeIndexing";
 import { CmsModelFieldToElasticsearchPlugin } from "~/types";
-import {
-    CmsModel,
-    CmsModelDateTimeField,
-    CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types";
+import { CmsModel, CmsModelDateTimeField } from "@webiny/api-headless-cms/types";
 import elasticsearchIndexingPlugins from "~/elasticsearch/indexing";
-import { createGraphQLFields } from "@webiny/api-headless-cms";
+import { createFieldRegistry } from "~tests/helpers/createFieldRegistry.js";
 import defaultIndexingPlugin from "~/elasticsearch/indexing/defaultFieldIndexing";
 import { PluginsContainer } from "@webiny/plugins";
 
 const indexingPlugins = elasticsearchIndexingPlugins();
-const fieldTypePlugins = createGraphQLFields();
+const fieldRegistry = createFieldRegistry();
 
-const plugins = new PluginsContainer([indexingPlugins, fieldTypePlugins]);
+const plugins = new PluginsContainer([indexingPlugins]);
 
 const getFieldIndexPlugin = (fieldType: string) => {
     return indexingPlugins.find(pl => pl.fieldType === fieldType) || defaultIndexingPlugin();
 };
 
-const getFieldTypePlugin = (fieldType: string) => {
-    return fieldTypePlugins.find(pl => pl.fieldType === fieldType) as CmsModelFieldToGraphQLPlugin;
+const getFieldType = (fieldType: string) => {
+    return fieldRegistry.get(fieldType)!;
 };
 
 const createField = (type: CmsModelDateTimeField["settings"]["type"]): CmsModelDateTimeField => {
@@ -72,7 +68,7 @@ describe("Date time indexing plugin", () => {
             const toIndexResult = getPlugin().toIndex({
                 field: createField("date"),
                 getFieldIndexPlugin,
-                getFieldTypePlugin,
+                getFieldType,
                 plugins,
                 model,
                 value,
@@ -87,7 +83,7 @@ describe("Date time indexing plugin", () => {
             const fromIndexResult = getPlugin().fromIndex({
                 field: createField("date"),
                 getFieldIndexPlugin,
-                getFieldTypePlugin,
+                getFieldType,
                 plugins,
                 model,
                 value: toIndexResult.value,
@@ -111,7 +107,7 @@ describe("Date time indexing plugin", () => {
             const toIndexResult = getPlugin().toIndex({
                 field: createField("dateTimeWithTimezone"),
                 getFieldIndexPlugin,
-                getFieldTypePlugin,
+                getFieldType,
                 plugins,
                 model,
                 value,
@@ -126,7 +122,7 @@ describe("Date time indexing plugin", () => {
             const fromIndexResult = getPlugin().fromIndex({
                 field: createField("dateTimeWithTimezone"),
                 getFieldIndexPlugin,
-                getFieldTypePlugin,
+                getFieldType,
                 plugins,
                 model,
                 value: toIndexResult.value,
@@ -154,7 +150,7 @@ describe("Date time indexing plugin", () => {
             const toIndexResult = getPlugin().toIndex({
                 field: createField("time"),
                 getFieldIndexPlugin,
-                getFieldTypePlugin,
+                getFieldType,
                 plugins,
                 model,
                 value,
@@ -169,7 +165,7 @@ describe("Date time indexing plugin", () => {
             const fromIndexResult = getPlugin().fromIndex({
                 field: createField("time"),
                 getFieldIndexPlugin,
-                getFieldTypePlugin,
+                getFieldType,
                 plugins,
                 model,
                 value: toIndexResult.value,

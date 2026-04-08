@@ -2,7 +2,7 @@
 name: webiny-api-security-catalog
 context: webiny-api
 description: >
-  API — Security & Auth — 49 abstractions.
+  API — Security & Auth — 52 abstractions.
   Authentication, API keys, roles, users, teams event handlers and use cases.
 ---
 
@@ -13,7 +13,7 @@ Authentication, API keys, roles, users, teams event handlers and use cases.
 ## How to Use
 
 1. Find the abstraction you need below
-2. Read the source file to get the exact interface and types
+2. You MUST read the source file to get the exact interface and types!
 3. Import: `import { Name } from "<importPath>";`
 4. See `webiny-use-case-pattern` or `webiny-event-handler-pattern` skills for implementation patterns
 
@@ -116,6 +116,24 @@ Authentication, API keys, roles, users, teams event handlers and use cases.
 **Import:** `import { CreateApiKeyUseCase } from "webiny/api/security/api-key"`
 **Source:** `@webiny/api-core/features/security/apiKeys/CreateApiKey/index.ts`
 **Description:** Create a new API key.
+
+---
+
+**Name:** `createPermissionsAbstraction`
+**Import:** `import { createPermissionsAbstraction } from "webiny/api/security"`
+**Source:** `@webiny/api-core/features/security/permissions/index.ts`
+
+---
+
+**Name:** `createPermissionSchema`
+**Import:** `import { createPermissionSchema } from "webiny/api/security"`
+**Source:** `@webiny/api-core/features/security/permissions/index.ts`
+
+---
+
+**Name:** `createPermissionsFeature`
+**Import:** `import { createPermissionsFeature } from "webiny/api/security"`
+**Source:** `@webiny/api-core/features/security/permissions/index.ts`
 
 ---
 

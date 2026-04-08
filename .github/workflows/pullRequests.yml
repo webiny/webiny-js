@@ -12,10 +12,10 @@ jobs:
     name: Validate commit messages
     if: github.base_ref != 'dev'
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: webiny/action-conventional-commits@v1.3.1
     runs-on: ubuntu-latest
     env:
@@ -25,10 +25,10 @@ jobs:
     name: Validate commit messages (dev branch, 'feat' commits not allowed)
     if: github.base_ref == 'dev'
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: webiny/action-conventional-commits@v1.3.1
         with:
           allowed-commit-types: fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip
@@ -45,10 +45,10 @@ jobs:
       changed-packages: ${{ steps.detect-changed-packages.outputs.changed-packages }}
       latest-webiny-version: ${{ steps.latest-webiny-version.outputs.latest-webiny-version }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -94,17 +94,17 @@ jobs:
     needs: constants
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
@@ -114,7 +114,7 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: ${{ github.base_ref }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -126,17 +126,17 @@ jobs:
       - constants
     name: Static code analysis
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -168,17 +168,17 @@ jobs:
       - build
     name: Static code analysis (verify dependencies)
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -199,13 +199,13 @@ jobs:
     name: Static code analysis (TypeScript)
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -226,10 +226,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -270,17 +270,17 @@ jobs:
       AWS_REGION: eu-central-1
     if: needs.vitest-constants.outputs.vitest-test-commands != '[]'
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -301,10 +301,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -348,22 +348,22 @@ jobs:
       WEBINY_STORAGE: ddb
     if: needs.vitest-ddb-constants.outputs.vitest-test-commands != '[]'
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6.0.0
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -386,10 +386,10 @@ jobs:
     outputs:
       vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.base_ref }}
       - id: list-vitest-test-commands
@@ -439,22 +439,22 @@ jobs:
       needs.vitest-ddb-os-constants.outputs.vitest-test-commands != '[]' &&
       needs.constants.outputs.is-fork-pr != 'true'
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6.0.0
         with:
           role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
           aws-region: eu-central-1
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.base_ref }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}

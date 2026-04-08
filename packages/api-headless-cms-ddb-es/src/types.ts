@@ -1,4 +1,4 @@
-import type { Plugin, PluginCollection } from "@webiny/plugins/types.js";
+import type { Plugin } from "@webiny/plugins/types.js";
 import type {
     CmsContext as BaseCmsContext,
     CmsEntry,
@@ -6,17 +6,24 @@ import type {
     CmsEntryValues,
     CmsModel,
     CmsModelField,
-    CmsModelFieldToGraphQLPlugin,
     CmsModelFieldType,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { Client } from "@webiny/api-opensearch";
+import type {
+    Client,
+    IOpenSearchEntity as IElasticsearchEntity,
+    OpenSearchContext
+} from "@webiny/api-opensearch";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
-import type { IOpenSearchEntity as IElasticsearchEntity } from "@webiny/api-opensearch";
 import type { ITable } from "@webiny/db-dynamodb";
+import type {
+    CmsModelFieldToGraphQLRegistry,
+    CmsModelFieldToGraphQL
+} from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
+export interface CmsContext extends BaseCmsContext, OpenSearchContext {}
 /**
  * A definition of the entry that is being prepared for the Elasticsearch.
  *
@@ -42,6 +49,7 @@ export interface CmsIndexEntry<T extends CmsEntryValues = CmsEntryValues> extend
  */
 export interface CmsModelFieldToElasticsearchToParams {
     plugins: PluginsContainer;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     model: CmsModel;
     field: CmsModelField;
     /**
@@ -53,7 +61,7 @@ export interface CmsModelFieldToElasticsearchToParams {
      */
     value: any;
     getFieldIndexPlugin(fieldType: string): CmsModelFieldToElasticsearchPlugin;
-    getFieldTypePlugin(fieldType: string): CmsModelFieldToGraphQLPlugin;
+    getFieldType(fieldType: string): CmsModelFieldToGraphQL.Interface | undefined;
 }
 
 /**
@@ -64,12 +72,13 @@ export interface CmsModelFieldToElasticsearchToParams {
  */
 export interface CmsModelFieldToElasticsearchFromParams {
     plugins: PluginsContainer;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     model: CmsModel;
     field: CmsModelField;
     value: any;
     rawValue: any;
     getFieldIndexPlugin(fieldType: string): CmsModelFieldToElasticsearchPlugin;
-    getFieldTypePlugin(fieldType: string): CmsModelFieldToGraphQLPlugin;
+    getFieldType(fieldType: string): CmsModelFieldToGraphQL.Interface | undefined;
 }
 
 interface ToIndexValue {
@@ -152,11 +161,8 @@ export interface StorageOperationsFactoryParams {
     elasticsearch: Client;
     table?: string;
     esTable?: string;
-    plugins?: PluginCollection;
-}
-
-export interface CmsContext extends BaseCmsContext {
-    [key: string]: any;
+    plugins: PluginsContainer;
+    getContainer: () => CmsContext["container"];
 }
 
 export interface IGetEntitiesResponse {
@@ -166,7 +172,7 @@ export interface IGetEntitiesResponse {
     entriesEs: IElasticsearchEntity;
 }
 
-export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations<CmsContext> {
+export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
     getTable: () => ITable;
     getEsTable: () => ITable;
     getEntities: () => IGetEntitiesResponse;

@@ -39,6 +39,7 @@ import { createHandlerCore } from "./plugins";
 import { acceptIncomingChanges } from "./acceptIncommingChanges";
 import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
+import { ContextPlugin } from "@webiny/api";
 import { createOutputBenchmarkLogs } from "~tests/testHelpers/outputBenchmarkLogs";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type {
@@ -53,6 +54,7 @@ import {
     CMS_VALIDATE_STRUCTURE_MUTATION
 } from "~tests/testHelpers/graphql/structure";
 import { defaultIdentity } from "~tests/testHelpers/tenancySecurity";
+import type { CmsContext } from "~/types/index.js";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
@@ -79,13 +81,22 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         core.plugins.concat([...createOutputBenchmarkLogs(), acceptIncomingChanges()])
     );
 
-    const storageOperationsCmsModelPlugin = new StorageOperationsCmsModelPlugin(
-        createCmsModelFieldConvertersAttachFactory(plugins)
-    );
+    const storageOperationsCmsModelPlugin = new ContextPlugin<CmsContext>(async context => {
+        context.plugins.register(
+            new StorageOperationsCmsModelPlugin(createCmsModelFieldConvertersAttachFactory(context))
+        );
+    });
     plugins.register(storageOperationsCmsModelPlugin);
 
+    let capturedContext: CmsContext;
+
     const handler = createHandler({
-        plugins: plugins.all(),
+        plugins: [
+            ...plugins.all(),
+            new ContextPlugin<CmsContext>(async context => {
+                capturedContext = context;
+            })
+        ],
         debug: false
     });
 
@@ -123,6 +134,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         identity: identity || defaultIdentity,
         plugins,
         storageOperations: core.storageOperations,
+        getContext: () => capturedContext,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
         },

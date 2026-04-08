@@ -27,7 +27,7 @@ import { createRedirectModel, REDIRECT_MODEL_ID } from "~/domain/redirect/redire
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { PageModel } from "~/domain/page/abstractions.js";
 import { RedirectModel } from "~/domain/redirect/abstractions.js";
-import { WbPermissions } from "~/domain/permissions.js";
+import { WbPermissionsFeature } from "~/features/permissions/feature.js";
 import { ApiKeyInstallerFeature } from "~/features/installer/feature.js";
 import { NextjsGraphQLSchema } from "~/graphql/nextjs/NextjsGraphQLSchema.js";
 import { NextjsFeature } from "~/features/nextjs/feature.js";
@@ -62,7 +62,7 @@ const createContext = () => {
             });
 
             // Register permissions
-            container.register(WbPermissions.Implementation);
+            WbPermissionsFeature.register(container);
 
             // Register features
             GetRedirectByIdFeature.register(container);

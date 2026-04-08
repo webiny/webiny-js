@@ -73,7 +73,7 @@ export const Extensions = () => {
                         "arn:aws:acm:us-east-1:636962863878:certificate/3baf9092-fb27-4efb-9409-XXXXXXXX",
                     sslSupportMethod: "sni-only",
                     domains: {
-                        aƒpi: ["api.bg.webiny.com"],
+                        api: ["api.bg.webiny.com"],
                         admin: ["admin.bg.webiny.com"],
                         website: ["website.bg.webiny.com"],
                         preview: ["preview.bg.webiny.com"]

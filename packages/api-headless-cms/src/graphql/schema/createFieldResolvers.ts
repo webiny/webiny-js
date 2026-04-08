@@ -1,15 +1,13 @@
 import set from "lodash/set.js";
 import type { Resolvers } from "@webiny/handler-graphql/types.js";
 import WebinyError from "@webiny/error";
-import type {
-    ApiEndpoint,
-    CmsContext,
-    CmsFieldTypePlugins,
-    CmsModel,
-    CmsModelField
-} from "~/types/index.js";
+import type { ApiEndpoint, CmsContext, CmsModel, CmsModelField } from "~/types/index.js";
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
+import type {
+    CmsModelFieldToGraphQL,
+    CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
 
 interface CreateFieldResolvers {
     graphQLType: string;
@@ -22,7 +20,7 @@ interface CreateFieldResolversFactoryParams {
     endpointType: ApiEndpoint;
     models: CmsModel[];
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 /**
@@ -30,7 +28,7 @@ interface CreateFieldResolversFactoryParams {
  * This way they will always be in the function scope, and we can only pass "fields".
  */
 export const createFieldResolversFactory = (factoryParams: CreateFieldResolversFactoryParams) => {
-    const { endpointType, models, model, fieldTypePlugins } = factoryParams;
+    const { endpointType, models, model, fieldRegistry } = factoryParams;
     return function createFieldResolvers(params: CreateFieldResolvers) {
         const { graphQLType, fields, isRoot = false, extraResolvers = {} } = params;
 
@@ -38,7 +36,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
         const typeResolvers = {};
 
         for (const field of fields) {
-            const plugin = fieldTypePlugins[getBaseFieldType(field)];
+            const plugin = fieldRegistry.get(getBaseFieldType(field));
             if (!plugin) {
                 continue;
             }
@@ -55,7 +53,9 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                 );
             }
 
-            const createResolver = plugin[endpointType]?.createResolver || null;
+            const api: CmsModelFieldToGraphQL.ReadApi | CmsModelFieldToGraphQL.ManageApi =
+                endpointType === "manage" ? plugin.manage : plugin.read;
+            const createResolver = api?.createResolver || null;
 
             let resolver: any;
             const fieldResolver = createResolver
@@ -65,7 +65,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                       model,
                       field,
                       createFieldResolvers,
-                      fieldTypePlugins
+                      fieldRegistry
                   })
                 : null;
 

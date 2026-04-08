@@ -42,6 +42,7 @@ describe("GraphQLClient Feature", () => {
 
             const client = container.resolve(GraphQLClient);
             const result = await client.execute({
+                endpoint: "https://api.example.com/graphql",
                 query: "query GetUser { user { id name } }"
             });
 
@@ -67,6 +68,7 @@ describe("GraphQLClient Feature", () => {
 
             const client = container.resolve(GraphQLClient);
             const result = await client.execute({
+                endpoint: "https://api.example.com/graphql",
                 query: "mutation CreateUser($name: String!) { createUser(name: $name) { id name } }",
                 variables: { name: "Jane" }
             });
@@ -84,6 +86,7 @@ describe("GraphQLClient Feature", () => {
 
             const client = container.resolve(GraphQLClient);
             await client.execute({
+                endpoint: "https://api.example.com/graphql",
                 query: "query GetUser { user { id } }",
                 headers: { "x-tenant": "root", Authorization: "Bearer token" }
             });
@@ -105,9 +108,12 @@ describe("GraphQLClient Feature", () => {
 
             const client = container.resolve(GraphQLClient);
 
-            await expect(client.execute({ query: "query { user { id } }" })).rejects.toThrow(
-                "Network error: Network failure"
-            );
+            await expect(
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { user { id } }"
+                })
+            ).rejects.toThrow("Network error: Network failure");
         });
 
         it("should throw on GraphQL errors", async () => {
@@ -123,9 +129,12 @@ describe("GraphQLClient Feature", () => {
 
             const client = container.resolve(GraphQLClient);
 
-            await expect(client.execute({ query: "query { user { id } }" })).rejects.toThrow(
-                "GraphQL errors"
-            );
+            await expect(
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { user { id } }"
+                })
+            ).rejects.toThrow("GraphQL errors");
         });
 
         it("should throw on invalid JSON response", async () => {
@@ -137,9 +146,12 @@ describe("GraphQLClient Feature", () => {
 
             const client = container.resolve(GraphQLClient);
 
-            await expect(client.execute({ query: "query { user { id } }" })).rejects.toThrow(
-                "Failed to parse GraphQL response as JSON"
-            );
+            await expect(
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { user { id } }"
+                })
+            ).rejects.toThrow("Failed to parse GraphQL response as JSON");
         });
     });
 
@@ -162,8 +174,14 @@ describe("GraphQLClient Feature", () => {
             const client = container.resolve(GraphQLClient);
 
             const [result1, result2] = await Promise.all([
-                client.execute({ query: "query GetUser { user { id name } }" }),
-                client.execute({ query: "query GetPost { post { id title } }" })
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query GetUser { user { id name } }"
+                }),
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query GetPost { post { id title } }"
+                })
             ]);
 
             expect(result1).toEqual(mockResponse[0].data);
@@ -186,6 +204,7 @@ describe("GraphQLClient Feature", () => {
 
             const client = container.resolve(GraphQLClient);
             const result = await client.execute({
+                endpoint: "https://api.example.com/graphql",
                 query: "query GetUser { user { id name } }"
             });
 
@@ -211,8 +230,14 @@ describe("GraphQLClient Feature", () => {
             const client = container.resolve(GraphQLClient);
 
             await Promise.all([
-                client.execute({ query: "query { user { id } }" }),
-                client.execute({ query: "mutation { createPost { id } }" })
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { user { id } }"
+                }),
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "mutation { createPost { id } }"
+                })
             ]);
 
             expect(global.fetch).toHaveBeenCalledTimes(1);
@@ -227,8 +252,14 @@ describe("GraphQLClient Feature", () => {
             const client = container.resolve(GraphQLClient);
 
             const promises = [
-                client.execute({ query: "query { user { id } }" }),
-                client.execute({ query: "query { post { id } }" })
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { user { id } }"
+                }),
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { post { id } }"
+                })
             ];
 
             await expect(Promise.all(promises)).rejects.toThrow("Network error");
@@ -247,8 +278,14 @@ describe("GraphQLClient Feature", () => {
             const client = container.resolve(GraphQLClient);
 
             const promises = [
-                client.execute({ query: "query { user { id } }" }),
-                client.execute({ query: "query { post { id } }" })
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { user { id } }"
+                }),
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { post { id } }"
+                })
             ];
 
             await expect(Promise.all(promises)).rejects.toThrow("GraphQL errors in operation 1");
@@ -274,7 +311,10 @@ describe("GraphQLClient Feature", () => {
                 });
 
             const client = container.resolve(GraphQLClient);
-            const result = await client.execute({ query: "query { user { id } }" });
+            const result = await client.execute({
+                endpoint: "https://api.example.com/graphql",
+                query: "query { user { id } }"
+            });
 
             expect(result).toEqual(mockResponse.data);
             expect(global.fetch).toHaveBeenCalledTimes(3);
@@ -293,9 +333,12 @@ describe("GraphQLClient Feature", () => {
 
             const client = container.resolve(GraphQLClient);
 
-            await expect(client.execute({ query: "query { user { id } }" })).rejects.toThrow(
-                "GraphQL errors"
-            );
+            await expect(
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { user { id } }"
+                })
+            ).rejects.toThrow("GraphQL errors");
 
             expect(global.fetch).toHaveBeenCalledTimes(1);
         });
@@ -305,9 +348,12 @@ describe("GraphQLClient Feature", () => {
 
             const client = container.resolve(GraphQLClient);
 
-            await expect(client.execute({ query: "query { user { id } }" })).rejects.toThrow(
-                "Network error"
-            );
+            await expect(
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { user { id } }"
+                })
+            ).rejects.toThrow("Network error");
 
             // Should try 4 times: initial + 3 retries
             expect(global.fetch).toHaveBeenCalledTimes(4);
@@ -335,8 +381,14 @@ describe("GraphQLClient Feature", () => {
             const client = container.resolve(GraphQLClient);
 
             const [result1, result2] = await Promise.all([
-                client.execute({ query: "query { user { id } }" }),
-                client.execute({ query: "query { post { id } }" })
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { user { id } }"
+                }),
+                client.execute({
+                    endpoint: "https://api.example.com/graphql",
+                    query: "query { post { id } }"
+                })
             ]);
 
             expect(result1).toEqual(mockResponse[0].data);

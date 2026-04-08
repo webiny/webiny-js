@@ -54,9 +54,10 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                                 ? project.package.features.advancedAccessControlLayer.options
                                       .folderLevelPermissions
                                 : false,
-                            hcmsFieldPermissions:
-                                project.package.features.advancedAccessControlLayer.options
-                                    .hcmsFieldPermissions
+                            hcmsFieldPermissions: flags.isHcmsFieldPermissionsEnabled()
+                                ? project.package.features.advancedAccessControlLayer.options
+                                      .hcmsFieldPermissions
+                                : false
                         }
                     },
                     auditLogs: {
@@ -140,7 +141,10 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
     }
 
     canUseHcmsFieldPermissions() {
-        return this.decoratee.canUseHcmsFieldPermissions();
+        return (
+            this.decoratee.canUseHcmsFieldPermissions() &&
+            this.featureFlags.get().isHcmsFieldPermissionsEnabled()
+        );
     }
 
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL) {
