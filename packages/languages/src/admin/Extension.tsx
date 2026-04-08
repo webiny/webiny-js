@@ -1,10 +1,11 @@
 import React from "react";
-import { AdminConfig, HasPermission } from "@webiny/app-admin";
+import { AdminConfig, HasPermission, RegisterFeature } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app-admin";
 import { Routes } from "@webiny/app-headless-cms";
 import { LANGUAGE_MODEL_ID } from "~/shared/constants.js";
 import { SecurityPermission } from "./SecurityPermission.js";
 import { LanguageEntryList } from "~/admin/LanguageEntryList.js";
+import { ListLanguagesFeature } from "./features/listLanguages/index.js";
 
 const { Menu } = AdminConfig;
 
@@ -15,6 +16,7 @@ export const Extension = () => {
 
     return (
         <>
+            <RegisterFeature feature={ListLanguagesFeature} />
             <SecurityPermission />
             <AdminConfig>
                 <HasPermission name={"languages"}>
