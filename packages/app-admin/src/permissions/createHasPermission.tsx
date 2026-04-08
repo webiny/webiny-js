@@ -13,9 +13,7 @@ const BUILT_IN_ACTIONS: Record<string, string> = {
 };
 
 export function createHasPermission<const S extends PermissionSchemaConfig>(
-    abstraction: Abstraction<UsePermissionsResult<S>>,
-    // eslint-disable-next-line
-    schema: S
+    abstraction: Abstraction<UsePermissionsResult<S>>
 ): React.FC<HasPermissionProps<S>> {
     return function HasPermission({ children, ...props }) {
         const container = useContainer();
