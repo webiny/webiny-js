@@ -20,8 +20,7 @@ Every Webiny extension type uses the same DI pattern: define a class implementin
 
 ```typescript
 import { SomeFactory } from "webiny/some/path";
-import { Logger } from "webiny/api/logger";
-import { BuildParams } from "webiny/api/build-params";
+import { Logger, BuildParams } from "webiny/api";
 
 class MyImplementation implements SomeFactory.Interface {
   constructor(

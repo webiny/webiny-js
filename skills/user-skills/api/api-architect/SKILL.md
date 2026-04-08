@@ -426,7 +426,7 @@ export const CreateEntityFeature = createFeature({
 A deployed API must **NEVER** use `process.env` to read configuration. All configuration flows through `BuildParams` via DI:
 
 ```ts
-import { BuildParams } from "webiny/api/build-params";
+import { BuildParams } from "webiny/api";
 
 class MyServiceImpl implements MyService.Interface {
   constructor(private buildParams: BuildParams.Interface) {}
