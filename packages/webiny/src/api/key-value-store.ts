@@ -1,3 +1,4 @@
+/** @deprecated Import from "webiny/api" instead. */
 export {
     GlobalKeyValueStore,
     KeyValueStore
