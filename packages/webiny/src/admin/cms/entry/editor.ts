@@ -10,6 +10,5 @@ export {
     ContentEntryFormMeta,
     ContentEntryFormTitle
 } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/FullScreenContentEntryHeaderLeft.js";
-// Single entry editor
 export { SingletonContentEntry as SingleEntryContentEntryEditor } from "@webiny/app-headless-cms/admin/views/contentEntries/ContentEntry/SingletonContentEntry.js";
 export { useSingletonContentEntry as useSingleEntryContentEntry } from "@webiny/app-headless-cms/admin/views/contentEntries/hooks/useSingletonContentEntry.js";

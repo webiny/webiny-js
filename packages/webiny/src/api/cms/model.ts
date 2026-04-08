@@ -1,4 +1,3 @@
-// ModelBuilder
 export { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/abstractions.js";
 export { ModelBuilder } from "@webiny/api-headless-cms/features/modelBuilder/models/ModelBuilder.js";
 export { DataFieldBuilder } from "@webiny/api-headless-cms/features/modelBuilder/fields/FieldBuilder.js";
@@ -10,31 +9,25 @@ export { LayoutBuilder } from "@webiny/api-headless-cms/features/modelBuilder/La
 export type { FieldTypeValidator } from "@webiny/api-headless-cms/features/modelBuilder/fields/fieldTypeValidator.js";
 export type { CmsModel } from "@webiny/api-headless-cms/types/model.js";
 export type { CmsModelField } from "@webiny/api-headless-cms/types/modelField.js";
-// CreateModel
 export { CreateModelUseCase } from "@webiny/api-headless-cms/features/contentModel/CreateModel/abstractions.js";
 export {
     ModelBeforeCreateEventHandler,
     ModelAfterCreateEventHandler
 } from "@webiny/api-headless-cms/features/contentModel/CreateModel/events.js";
-// CreateModelFrom
 export { CreateModelFromUseCase } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/abstractions.js";
 export {
     ModelBeforeCreateFromEventHandler,
     ModelAfterCreateFromEventHandler
 } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
-// UpdateModel
 export { UpdateModelUseCase } from "@webiny/api-headless-cms/features/contentModel/UpdateModel/abstractions.js";
 export {
     ModelBeforeUpdateEventHandler,
     ModelAfterUpdateEventHandler
 } from "@webiny/api-headless-cms/features/contentModel/UpdateModel/events.js";
-// DeleteModel
 export { DeleteModelUseCase } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/abstractions.js";
 export {
     ModelBeforeDeleteEventHandler,
     ModelAfterDeleteEventHandler
 } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
-// GetModel
 export { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/abstractions.js";
-// ListModels
 export { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/abstractions.js";

@@ -48,7 +48,7 @@ export class DefaultParseExportsFileService implements ParseExportsFileService.I
                 const fullText = exportDeclaration.getFullText();
                 const text = exportDeclaration.getText();
                 const leading = fullText.substring(0, fullText.lastIndexOf(text)).trim();
-                const jsdoc = leading.length > 0 ? leading : undefined;
+                const jsdoc = leading.includes("@deprecated") ? leading : undefined;
 
                 exportStatements.push({
                     namedExports,
