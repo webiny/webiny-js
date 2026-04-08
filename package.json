@@ -93,7 +93,6 @@
     "jest-extended": "^7.0.0",
     "lerna": "8.1.2",
     "lexical": "^0.42.0",
-    "lint-staged": "^16.4.0",
     "load-json-file": "^7.0.1",
     "lodash": "^4.18.1",
     "minimatch": "^10.2.5",
@@ -145,7 +144,6 @@
     "eslint:fix": "yarn eslint --fix",
     "format:oxfmt": "npx oxfmt@latest",
     "link-workspaces": "node ./scripts/linkWorkspaces.js",
-    "lint-staged": "lint-staged",
     "lint:fix": "yarn eslint:fix && yarn prettier:fix",
     "mdx-from-folder": "tsx scripts/mdxFromFolder",
     "open": "yarn webiny open",
@@ -183,21 +181,6 @@
     "webiny-scripts": "tsx ./scripts/cli/src/bin.ts",
     "webiny-versions": "node ./scripts/webinyVersions.js",
     "generate-skills": "tsx ./scripts/generateSkills/src/bin.ts"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn && git add yarn.lock && yarn lint-staged && yarn adio && yarn check-ts-configs",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
-  "lint-staged": {
-    "**/*.{js,ts,tsx}": [
-      "prettier --write",
-      "eslint --max-warnings=0 --no-ignore"
-    ],
-    "**/package.json": [
-      "yarn webiny verify-dependencies"
-    ]
   },
   "yargs": {
     "populate--": true
