@@ -26,6 +26,7 @@ import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
+import { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
 import { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
 
 export * from "./plugins/index.js";
@@ -88,6 +89,7 @@ export const createOpenSearchStorageOperations: IStorageOperationsFactory = para
     const compressionHandler = getContainer().resolve(CompressionHandler);
     const bodyModifiers = getContainer().resolveAll(CmsEntryOpenSearchBodyModifier);
     const sortModifiers = getContainer().resolveAll(CmsEntryOpenSearchSortModifier);
+    const queryModifiers = getContainer().resolveAll(CmsEntryOpenSearchQueryModifier);
     const valuesModifiers = getContainer().resolveAll(CmsEntryOpenSearchValuesModifier);
 
     const entries = createEntriesStorageOperations({
@@ -99,6 +101,7 @@ export const createOpenSearchStorageOperations: IStorageOperationsFactory = para
         compressionHandler,
         bodyModifiers,
         sortModifiers,
+        queryModifiers,
         valuesModifiers
     });
 

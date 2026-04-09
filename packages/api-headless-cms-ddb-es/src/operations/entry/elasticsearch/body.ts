@@ -8,9 +8,9 @@ import { createModelFields } from "./fields.js";
 import { createFullTextSearchFields } from "./fullTextSearchFields.js";
 import { createInitialQuery } from "./initialQuery.js";
 import { applyFullTextSearch } from "./fullTextSearch.js";
-import { createQueryModifierPluginList } from "./plugins/queryModifier.js";
 import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
 import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
+import type { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
 import { createElasticsearchSort } from "./sort.js";
 import type {
     PrimitiveValue,
@@ -27,6 +27,7 @@ interface ICreateElasticsearchBodyParams {
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
     sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
+    queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
         after?: PrimitiveValue[];
@@ -38,7 +39,8 @@ export const createElasticsearchBody = ({
     params,
     fieldRegistry,
     bodyModifiers,
-    sortModifiers
+    sortModifiers,
+    queryModifiers
 }: ICreateElasticsearchBodyParams): SearchBody => {
     const { fields, search: term, where, sort: initialSort, after, limit } = params;
     /**
@@ -51,11 +53,10 @@ export const createElasticsearchBody = ({
     });
 
     /**
-     * We need the query modifier plugins.
+     * Filter query modifiers applicable to this model.
      */
-    const queryModifierPlugins = createQueryModifierPluginList({
-        plugins,
-        model
+    const applicableQueryModifiers = queryModifiers.filter(m => {
+        return !m.modelId || m.modelId === model.modelId;
     });
     /**
      * Filter sort modifiers applicable to this model.
@@ -107,8 +108,8 @@ export const createElasticsearchBody = ({
         query
     });
 
-    for (const pl of queryModifierPlugins) {
-        pl.modifyQuery({ query, model, where });
+    for (const modifier of applicableQueryModifiers) {
+        modifier.modifyQuery({ query, model, where });
     }
 
     const sort = createElasticsearchSort({

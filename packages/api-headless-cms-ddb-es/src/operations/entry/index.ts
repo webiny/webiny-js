@@ -73,6 +73,7 @@ import { CompressionHandler } from "@webiny/utils/features/compression/abstracti
 import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
 import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
 import type { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
+import type { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
@@ -83,6 +84,7 @@ export interface CreateEntriesStorageOperationsParams {
     compressionHandler: CompressionHandler.Interface;
     bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
     sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
+    queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
     valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
 }
 
@@ -118,6 +120,7 @@ export const createEntriesStorageOperations = (
         compressionHandler,
         bodyModifiers,
         sortModifiers,
+        queryModifiers,
         valuesModifiers
     } = params;
 
@@ -1354,6 +1357,7 @@ export const createEntriesStorageOperations = (
             fieldRegistry,
             bodyModifiers,
             sortModifiers,
+            queryModifiers,
             params: {
                 ...params,
                 limit,
@@ -2063,6 +2067,7 @@ export const createEntriesStorageOperations = (
             fieldRegistry,
             bodyModifiers,
             sortModifiers,
+            queryModifiers,
             params: {
                 limit: 1,
                 where
