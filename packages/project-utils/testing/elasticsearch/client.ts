@@ -11,8 +11,8 @@ const esEndpoint: string | undefined = process.env.OPENSEARCH_ENDPOINT;
 const defaultOptions: Partial<OpenSearchClientOptions> = {
     node: `http://localhost:${OPENSEARCH_PORT}`,
     auth: {
-        username: "",
-        password: ""
+        username: process.env.OPENSEARCH_USERNAME || "",
+        password: process.env.OPENSEARCH_PASSWORD || ""
     },
     maxRetries: 10,
     pingTimeout: 500

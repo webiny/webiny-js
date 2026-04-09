@@ -3,7 +3,11 @@ import { createOpenSearchClient, createOpenSearchContext } from "@webiny/api-ope
 import { createEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 
 const client = createOpenSearchClient({
-    endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
+    endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`,
+    auth: {
+        username: process.env.OPENSEARCH_USERNAME || "",
+        password: process.env.OPENSEARCH_PASSWORD || ""
+    }
 });
 
 export const handler = createHandler({
