@@ -28,7 +28,7 @@ interface UseDialogResponse {
     showDialog: (message: React.ReactNode, options?: UseDialogResponseShowDialogOptions) => void;
     hideDialog: () => void;
 }
-const useDialog = (): UseDialogResponse => {
+const test = (): UseDialogResponse => {
     const ui = useUi();
     return {
         showDialog: (message, options) => {
@@ -44,4 +44,4 @@ const useDialog = (): UseDialogResponse => {
     };
 };
 
-export { useDialog };
+export const useDialog = null

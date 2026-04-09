@@ -1,12 +1,12 @@
 import React from "react";
 import { ReactComponent as TranslateIcon } from "@webiny/icons/language.svg";
 import { useDialogs } from "@webiny/app-admin";
-import { Select } from "@webiny/admin-ui";
+import { Grid, Select } from "@webiny/admin-ui";
 import { Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { useFeature } from "@webiny/app";
+import { FolderPicker } from "@webiny/app-aco";
 import { ListLanguagesFeature } from "@webiny/languages/admin/features/listLanguages/index.js";
-import { FolderTree } from "@webiny/app-aco";
 import { usePage } from "~/modules/pages/PagesList/hooks/usePage.js";
 import { PageListConfig } from "~/modules/pages/configs/index.js";
 import { useTranslatePage } from "~/presentation/pages/TranslatePage/hooks/useTranslatePage.js";
@@ -65,27 +65,32 @@ interface TranslatePageFormProps {
 
 const TranslatePageForm = ({ languages, currentFolderId }: TranslatePageFormProps) => {
     return (
-        <>
-            <Bind name="languageCode" validators={[validation.create("required")]}>
-                <Select
-                    label="Target Language"
-                    placeholder="Select a language"
-                    options={languages.map(lang => ({
-                        value: lang.code,
-                        label: lang.name
-                    }))}
-                />
-            </Bind>
-
-            <Bind name={"folderId"} defaultValue={currentFolderId}>
-                {({ value, onChange }) => (
-                    <FolderTree
-                        focusedFolderId={value}
-                        onFolderClick={folder => onChange(folder.id)}
-                        enableCreate={true}
+        <Grid>
+            <Grid.Column span={12}>
+                <Bind name="languageCode" validators={[validation.create("required")]}>
+                    <Select
+                        label="Target Language"
+                        placeholder="Select a language"
+                        options={languages.map(lang => ({
+                            value: lang.code,
+                            label: lang.name
+                        }))}
                     />
-                )}
-            </Bind>
-        </>
+                </Bind>
+            </Grid.Column>
+
+            <Grid.Column span={12}>
+                <Bind name={"folderId"} defaultValue={currentFolderId}>
+                    {({ value, onChange }) => (
+                        <FolderPicker
+                            label={"Destination Folder"}
+                            value={value}
+                            onChange={onChange}
+                            enableCreate={true}
+                        />
+                    )}
+                </Bind>
+            </Grid.Column>
+        </Grid>
     );
 };
