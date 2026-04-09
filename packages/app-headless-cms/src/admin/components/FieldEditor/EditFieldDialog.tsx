@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import cloneDeep from "lodash/cloneDeep.js";
 import type { FormOnSubmit } from "@webiny/form";
 import { Form } from "@webiny/form";
 import { i18n } from "@webiny/app/i18n/index.js";
@@ -14,7 +13,7 @@ import { EditFieldDrawerContainer } from "./EditFieldDrawerContainer.js";
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
 function setupState(field: CmsModelField, contentModel: CmsEditorContentModel): EditFieldState {
-    const clonedField = cloneDeep(field);
+    const clonedField = structuredClone(field);
 
     if (!clonedField.renderer || !clonedField.renderer.name) {
         const [renderPlugin] = useRendererPlugins();

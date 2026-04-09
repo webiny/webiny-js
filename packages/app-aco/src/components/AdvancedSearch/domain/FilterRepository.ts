@@ -1,4 +1,3 @@
-import cloneDeep from "lodash/cloneDeep.js";
 import { makeAutoObservable, runInAction } from "mobx";
 import { mdbid } from "@webiny/utils";
 
@@ -22,7 +21,7 @@ export class FilterRepository {
     }
 
     getFilters() {
-        return cloneDeep(this.filters);
+        return structuredClone(this.filters);
     }
 
     getLoading() {
@@ -66,7 +65,7 @@ export class FilterRepository {
         const filterInCache = this.filters.find(filter => filter.id === id);
 
         if (filterInCache) {
-            return cloneDeep(filterInCache);
+            return structuredClone(filterInCache);
         }
 
         const response = await this.runWithLoading<FilterDTO>(this.gateway.get(id));
@@ -80,7 +79,7 @@ export class FilterRepository {
             this.filters = this.sorter.sort([filterDTO, ...this.filters]);
         });
 
-        return cloneDeep(filterDTO);
+        return structuredClone(filterDTO);
     }
 
     async createFilter(filter: FilterDTO) {
@@ -102,7 +101,7 @@ export class FilterRepository {
             this.filters = this.sorter.sort([filterDTO, ...this.filters]);
         });
 
-        return cloneDeep(filterDTO);
+        return structuredClone(filterDTO);
     }
 
     async updateFilter(filter: FilterDTO) {
