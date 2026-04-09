@@ -1,24 +1,40 @@
 import { describe, expect, it } from "vitest";
-import { createObjectStorageTransform } from "~/storage/object";
-import { createStoragePluginsContainer } from "./container";
-import { StorageTransformPlugin } from "~/plugins";
+import { Container } from "@webiny/di";
+import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
+import { StorageFeature } from "~/features/storage/feature.js";
+import { StorageTransformRegistry } from "~/features/storage/abstractions/StorageTransformRegistry.js";
 import { createObjectMockModel } from "./object/model";
-import { CmsModelField } from "~/types";
+import type { CmsModelField } from "~/types";
 import { entryToStorageTransform } from "~/utils/entryStorage";
 
-const container = createStoragePluginsContainer();
-const plugins = container.byType<StorageTransformPlugin>(StorageTransformPlugin.type);
+import { StorageTransform } from "~/features/storage/abstractions/StorageTransform.js";
 
-const defaultPlugin = plugins.find(p => p.fieldType === "*");
+class TextWithDefaultTransform implements StorageTransform.Interface {
+    public readonly fieldType = "text-with-default";
 
-const getStoragePlugin = (fieldType: string) => {
-    const plugin = plugins.find(p => p.fieldType === fieldType);
-    if (plugin) {
-        return plugin;
-    } else if (defaultPlugin) {
-        return defaultPlugin;
+    public async toStorage({ value, field }: StorageTransform.ToStorageParams) {
+        return value || field.settings?.defaultValue || "default value";
     }
-    throw new Error(`Missing plugin for type "${fieldType}".`);
+
+    public async fromStorage({ value, field }: StorageTransform.FromStorageParams) {
+        return value || field.settings?.defaultValue || "default value";
+    }
+}
+
+const TextWithDefaultStorageTransform = StorageTransform.createImplementation({
+    implementation: TextWithDefaultTransform,
+    dependencies: []
+});
+
+const diContainer = new Container();
+CompressionFeature.register(diContainer);
+StorageFeature.register(diContainer);
+diContainer.register(TextWithDefaultStorageTransform);
+const registry = diContainer.resolve(StorageTransformRegistry);
+const objectTransform = registry.get("object")!;
+
+const getStorageTransform = (fieldType: string) => {
+    return registry.get(fieldType) || registry.get("*")!;
 };
 
 describe("object storage transform", () => {
@@ -36,13 +52,7 @@ describe("object storage transform", () => {
                 }
             }
         };
-        const entryResult = await entryToStorageTransform(
-            {
-                plugins: container
-            },
-            model,
-            entry
-        );
+        const entryResult = await entryToStorageTransform({ container: diContainer }, model, entry);
         expect(entryResult).toEqual({
             values: {
                 textWithDefaultFieldId: "field with default value",
@@ -56,20 +66,18 @@ describe("object storage transform", () => {
             }
         });
 
-        const plugin = createObjectStorageTransform();
         const field = model.fields.find(f => f.fieldId === "objectFieldId") as CmsModelField;
 
-        const result = await plugin.toStorage({
+        const result = await objectTransform.toStorage({
             value: {
                 titleFieldId: "Some title",
                 dateFieldId: "2022-09-01",
                 dateMultipleFieldId: ["2022-09-02", "2022-09-03", "2022-09-04"],
                 nestedTextWithDefaultFieldId: ""
             },
-            plugins: container,
             field,
             model,
-            getStoragePlugin
+            getStorageTransform
         });
 
         expect(result).toEqual({

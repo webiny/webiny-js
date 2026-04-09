@@ -1,9 +1,8 @@
 import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters/index.js";
 import elasticsearchPlugins from "./elasticsearch/index.js";
-import dynamoDbPlugins from "./dynamoDb/index.js";
 import { createModelsStorageOperations } from "./operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
-import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storageOperations.js";
+import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import type { StorageOperationsFactory as IStorageOperationsFactory } from "~/types.js";
 import { type CmsContext, ENTITIES } from "~/types.js";
 import { createGroupEntity } from "~/definitions/group.js";
@@ -24,6 +23,7 @@ import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js"
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import { CompressionHandler } from "@webiny/utils/exports/api.js";
 
 export * from "./plugins/index.js";
 
@@ -64,10 +64,6 @@ export const createOpenSearchStorageOperations: IStorageOperationsFactory = para
          */
         dynamoDbValueFilters(),
         /**
-         * Field plugins for DynamoDB.
-         */
-        dynamoDbPlugins(),
-        /**
          * Field plugins for Elasticsearch.
          */
         elasticsearchPlugins(),
@@ -86,13 +82,15 @@ export const createOpenSearchStorageOperations: IStorageOperationsFactory = para
     ]);
 
     const fieldRegistry = getContainer().resolve(CmsModelFieldToGraphQLRegistry);
+    const compressionHandler = getContainer().resolve(CompressionHandler);
 
     const entries = createEntriesStorageOperations({
         entity: entities.entries,
         esEntity: entities.entriesEs,
         plugins,
         elasticsearch,
-        fieldRegistry
+        fieldRegistry,
+        compressionHandler
     });
 
     return {

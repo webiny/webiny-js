@@ -1,14 +1,22 @@
-import { describe, it, expect } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { OperationsBuilder } from "~/OperationsBuilder";
-import { createDefaultCompressor } from "@webiny/utils/compression";
 import { DynamoDBRecord } from "@webiny/handler-aws/types";
 import { marshall } from "~/marshall";
 import { OperationType } from "~/Operations";
-import { PluginsContainer } from "@webiny/plugins";
+import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient.js";
+import type { OpenSearchContext } from "@webiny/api-opensearch";
+import { createMockContext } from "~tests/mocks/context.js";
+import { CompressionHandler } from "@webiny/utils/exports/api.js";
 
 describe("OperationsBuilder", () => {
-    const compressor = createDefaultCompressor({
-        plugins: new PluginsContainer()
+    let context: OpenSearchContext;
+    let compressor: CompressionHandler.Interface;
+
+    beforeEach(async () => {
+        context = createMockContext({
+            elasticsearch: createElasticsearchClient()
+        });
+        compressor = context.container.resolve(CompressionHandler);
     });
 
     it("should build an insert operation", async () => {

@@ -25,7 +25,7 @@ export const generateCacheKey = async (params: GenerateCacheKeyParams): Promise<
     }
     const key = keys.join("#");
 
-    const hash = crypto.createHash("sha1");
+    const hash = crypto.createHash("sha256");
     hash.update(key);
     return hash.digest("hex");
 };

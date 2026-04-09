@@ -5,7 +5,10 @@ const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;
 const esEndpoint = process.env.OPENSEARCH_ENDPOINT;
 const defaultOptions = {
     node: `http://localhost:${OPENSEARCH_PORT}`,
-    auth: {},
+    auth: {
+        username: process.env.OPENSEARCH_USERNAME || "",
+        password: process.env.OPENSEARCH_PASSWORD || ""
+    },
     maxRetries: 10,
     pingTimeout: 500
 };

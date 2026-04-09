@@ -9,14 +9,14 @@ import type {
     IStorageStoreParams,
     IStorageStoreResult
 } from "~/storage/abstractions/Storage.js";
-import type { ICompressor } from "@webiny/utils/compression/index.js";
 import { Converter } from "~/storage/Converter.js";
 import { createAccessPatterns } from "~/storage/accessPatterns/index.js";
 import { AccessPatternHandler } from "~/storage/AccessPatternHandler.js";
 import { ListSuccessResult } from "~/storage/results/index.js";
+import { CompressionHandler } from "@webiny/utils/exports/api.js";
 
 export interface IStorageParams {
-    compressor: ICompressor;
+    compressionHandler: CompressionHandler.Interface;
     client: DynamoDBDocument;
     tableName: string | undefined;
 }
@@ -43,7 +43,7 @@ export class Storage implements IStorage {
         });
 
         this.converter = new Converter({
-            compressor: params.compressor,
+            compressionHandler: params.compressionHandler,
             patternHandler: this.patternHandler
         });
     }

@@ -41,9 +41,5 @@ export interface Field
 }
 
 export interface FilterItemFromStorage {
-    <T = any>(
-        field: Partial<CmsModelField> &
-            Pick<CmsModelField, "fieldId" | "storageId" | "id" | "settings" | "type">,
-        value: any
-    ): Promise<T>;
+    <T = any>(field: CmsModelField, value: any): Promise<T>;
 }

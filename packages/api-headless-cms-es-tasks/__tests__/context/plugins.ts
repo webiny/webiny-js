@@ -76,7 +76,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
                         return {
                             id: apiKey,
                             name: apiKey,
-                            tenant: tenant.id,
+                            slug: tenant.id,
                             permissions: identity?.permissions || [],
                             token,
                             createdBy: {
@@ -92,9 +92,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
             } as ContextPlugin<Context>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createBackgroundTaskContext(),
             createHeadlessCmsGraphQL(),
             plugins,

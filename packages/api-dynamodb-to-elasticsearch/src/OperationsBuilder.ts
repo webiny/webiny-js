@@ -1,7 +1,7 @@
 import type { IOperations, IOperationsBuilder, IOperationsBuilderBuildParams } from "./types.js";
 import { Operations, OperationType } from "~/Operations.js";
 import { unmarshall } from "~/marshall.js";
-import type { ICompressor } from "@webiny/utils/compression/Compressor.js";
+import type { CompressionHandler } from "@webiny/utils/exports/api.js";
 
 interface RecordDynamoDbImage {
     data: {
@@ -18,11 +18,11 @@ interface RecordDynamoDbKeys {
 }
 
 export interface IOperationsBuilderParams {
-    compressor: ICompressor;
+    compressor: CompressionHandler.Interface;
 }
 
 export class OperationsBuilder implements IOperationsBuilder {
-    private readonly compressor: ICompressor;
+    private readonly compressor: CompressionHandler.Interface;
 
     public constructor(params: IOperationsBuilderParams) {
         this.compressor = params.compressor;

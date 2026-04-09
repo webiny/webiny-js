@@ -40,8 +40,10 @@ const createJestTestsJob = (storage: string | null) => {
         if (storage === "ddb-os") {
             // We still use the same environment variables as for "ddb-es" setup, it's
             // just that the values are read from different secrets.
-            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
-            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
+            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.V5_OPENSEARCH_DOMAIN_NAME }}";
+            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.V5_OPENSEARCH_ENDPOINT }}";
+            env["OPENSEARCH_USERNAME"] = "${{ secrets.V5_OPENSEARCH_USERNAME }}";
+            env["OPENSEARCH_PASSWORD"] = "${{ secrets.V5_OPENSEARCH_PASSWORD }}";
             env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
         }
     }

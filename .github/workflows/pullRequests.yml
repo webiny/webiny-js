@@ -432,8 +432,10 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
       WEBINY_STORAGE: ddb-os,ddb
-      AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME}}
-      OPENSEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_3_ENDPOINT }}
+      AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.OPENSEARCH_DOMAIN_NAME }}
+      OPENSEARCH_ENDPOINT: ${{ secrets.OPENSEARCH_ENDPOINT }}
+      OPENSEARCH_USERNAME: ${{ secrets.OPENSEARCH_USERNAME }}
+      OPENSEARCH_PASSWORD: ${{ secrets.OPENSEARCH_PASSWORD }}
       OPENSEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
     if: >-
       needs.vitest-ddb-os-constants.outputs.vitest-test-commands != '[]' &&

@@ -61,9 +61,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             graphQLHandlerPlugins(),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             createRecordLocking(),
             plugins,

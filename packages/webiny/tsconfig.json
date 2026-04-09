@@ -28,6 +28,7 @@
     { "path": "../project-aws" },
     { "path": "../tasks" },
     { "path": "../tenant-manager" },
+    { "path": "../utils" },
     { "path": "../validation" },
     { "path": "../website-builder-sdk" }
   ],
@@ -92,6 +93,8 @@
       "@webiny/tasks": ["../tasks/src"],
       "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
       "@webiny/tenant-manager": ["../tenant-manager/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],

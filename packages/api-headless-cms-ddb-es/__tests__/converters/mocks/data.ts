@@ -1,4 +1,4 @@
-import { compress } from "~tests/mocks/compressor";
+import { getCompressionHandler } from "~tests/mocks/compressor.js";
 
 export const bodies = {
     body: [
@@ -67,6 +67,8 @@ export const createEntryExpectedTransformedDatesData = () => {
 };
 
 export const createElasticsearchEntryConvertedData = async () => {
+    const compressionHandler = getCompressionHandler();
+
     return {
         values: {
             "text@titleFieldIdWithSomeValue": "Title level 0",
@@ -90,20 +92,14 @@ export const createElasticsearchEntryConvertedData = async () => {
             }
         },
         rawValues: {
-            "rich-text@bodyFieldIdWithSomeValue": {
-                compression: "gzip",
-                value: await compress(bodies.body)
-            },
+            "rich-text@bodyFieldIdWithSomeValue": await compressionHandler.compress(bodies.body),
             "object@informationFieldIdWithSomeValue": {
-                "rich-text@subBodyFieldIdWithSomeValue": {
-                    compression: "gzip",
-                    value: await compress(bodies.subBody)
-                },
+                "rich-text@subBodyFieldIdWithSomeValue": await compressionHandler.compress(
+                    bodies.subBody
+                ),
                 "object@subInformationFieldIdWithSomeValue": {
-                    "rich-text@subSecondSubBodyFieldIdWithSomeValue": {
-                        compression: "gzip",
-                        value: await compress(bodies.subSecondSubBody)
-                    }
+                    "rich-text@subSecondSubBodyFieldIdWithSomeValue":
+                        await compressionHandler.compress(bodies.subSecondSubBody)
                 }
             }
         }

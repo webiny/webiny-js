@@ -33,9 +33,7 @@ export const useRawHandler = <C extends Context = Context>(params?: UseHandlerPa
                 permissions: createPermissions(),
                 identity: createIdentity()
             }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             graphQLHandlerPlugins(),
             createBackgroundTaskContext(),
