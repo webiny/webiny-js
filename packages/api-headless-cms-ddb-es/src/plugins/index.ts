@@ -1,1 +1,1 @@
-export * from "./CmsEntryElasticsearchIndexPlugin.js";
+export * from "./CmsEntryFilterPlugin.js";

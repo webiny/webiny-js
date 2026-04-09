@@ -3,4 +3,5 @@ export { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSor
 export { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
 export { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 export { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
+export { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex/index.js";
 export { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";

@@ -1,6 +1,6 @@
 import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
-export class RefSearch implements CmsEntryOpenSearchValueSearch.Interface {
+export class RefSearchImpl implements CmsEntryOpenSearchValueSearch.Interface {
     public readonly fieldType = "ref";
 
     public transform(params: CmsEntryOpenSearchValueSearch.Transform): any {

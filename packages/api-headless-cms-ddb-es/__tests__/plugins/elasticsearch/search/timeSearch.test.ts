@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TimeSearch } from "~/elasticsearch/search/timeSearch";
+import { TimeSearchImpl } from "~/elasticsearch/search/timeSearch";
 import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch";
 
 const timeField = {
@@ -15,7 +15,7 @@ const notTimeField = {
 };
 
 describe("timeSearch", () => {
-    const search = new TimeSearch();
+    const search = new TimeSearchImpl();
 
     const correctValues = [
         ["01:02:03", 3723],

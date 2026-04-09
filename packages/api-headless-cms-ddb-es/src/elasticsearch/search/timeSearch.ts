@@ -1,6 +1,6 @@
 import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
-export class TimeSearch implements CmsEntryOpenSearchValueSearch.Interface {
+export class TimeSearchImpl implements CmsEntryOpenSearchValueSearch.Interface {
     public readonly fieldType = "datetime";
 
     public transform(params: CmsEntryOpenSearchValueSearch.Transform): any {

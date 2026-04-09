@@ -4,7 +4,7 @@ import {
 } from "~/operations/entry/elasticsearch/filtering";
 import { createFields, createModel } from "./fields";
 import type { PluginsContainer } from "@webiny/plugins";
-import { TimeSearch, RefSearch, SearchableJsonSearch } from "~/elasticsearch/search";
+import { TimeSearchImpl, RefSearchImpl, SearchableJsonSearchImpl } from "~/elasticsearch/search";
 
 export { CreateExecFilteringResponse };
 
@@ -16,6 +16,6 @@ export const createExecFiltering = (params: Params) => {
         ...params,
         fields: createFields(),
         model: createModel(),
-        valueSearches: [new TimeSearch(), new RefSearch(), new SearchableJsonSearch()]
+        valueSearches: [new TimeSearchImpl(), new RefSearchImpl(), new SearchableJsonSearchImpl()]
     });
 };
