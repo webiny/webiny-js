@@ -72,6 +72,7 @@ import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/ex
 import { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
 import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
 import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
+import type { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
@@ -82,6 +83,7 @@ export interface CreateEntriesStorageOperationsParams {
     compressionHandler: CompressionHandler.Interface;
     bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
     sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
+    valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
 }
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -115,7 +117,8 @@ export const createEntriesStorageOperations = (
         fieldRegistry,
         compressionHandler,
         bodyModifiers,
-        sortModifiers
+        sortModifiers,
+        valuesModifiers
     } = params;
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
@@ -160,7 +163,8 @@ export const createEntriesStorageOperations = (
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            compressionHandler
+            compressionHandler,
+            valuesModifiers
         });
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
@@ -272,7 +276,8 @@ export const createEntriesStorageOperations = (
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
-            compressionHandler
+            compressionHandler,
+            valuesModifiers
         });
         const { entry, storageEntry } = transformer.transformEntryKeys();
 
@@ -391,6 +396,7 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel(initialModel);
 
         const transformer = createTransformer({
+            valuesModifiers,
             plugins,
             model,
             entry: initialEntry,
@@ -716,6 +722,7 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel(initialModel);
 
         const transformer = createTransformer({
+            valuesModifiers,
             plugins,
             model,
             entry: initialEntry,
@@ -886,6 +893,7 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel(initialModel);
 
         const transformer = createTransformer({
+            valuesModifiers,
             plugins,
             model,
             entry: initialEntry,
@@ -1198,6 +1206,7 @@ export const createEntriesStorageOperations = (
             });
 
             const latestTransformer = createTransformer({
+                valuesModifiers,
                 plugins,
                 model,
                 entry: latestEntry,
@@ -1438,6 +1447,7 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel(initialModel);
 
         const transformer = createTransformer({
+            valuesModifiers,
             plugins,
             model,
             entry: initialEntry,
@@ -1636,6 +1646,7 @@ export const createEntriesStorageOperations = (
             const updatedMetaFields = pickEntryMetaFields(entry);
 
             const latestTransformer = createTransformer({
+                valuesModifiers,
                 plugins,
                 model,
                 transformedToIndex: {
@@ -1739,6 +1750,7 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel<T>(initialModel);
 
         const transformer = createTransformer({
+            valuesModifiers,
             plugins,
             model,
             entry: initialEntry,

@@ -60,7 +60,9 @@ export const createElasticsearchBody = ({
     /**
      * Filter sort modifiers applicable to this model.
      */
-    const applicableSortModifiers = sortModifiers.filter(m => !m.modelId || m.modelId === model.modelId);
+    const applicableSortModifiers = sortModifiers.filter(
+        m => !m.modelId || m.modelId === model.modelId
+    );
     /**
      * Filter body modifiers applicable to this model.
      */

@@ -1,4 +1,5 @@
-import { CmsEntryElasticsearchValuesModifier } from "~/plugins";
+import { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 
 interface ModifierParams {
     inherit?: boolean;
@@ -11,19 +12,25 @@ export const createGlobalModifierValues = () => {
     };
 };
 export const createGlobalModifierPlugin = (params?: ModifierParams) => {
-    const plugin = new CmsEntryElasticsearchValuesModifier(({ setValues }) => {
-        setValues(prev => {
-            if (params?.inherit) {
-                return {
-                    ...prev,
-                    ...createGlobalModifierValues()
-                };
-            }
-            return createGlobalModifierValues();
-        });
+    return createRegisterExtensionPlugin(({ container }) => {
+        container.register(
+            CmsEntryOpenSearchValuesModifier.createImplementation({
+                implementation: class {
+                    canModify() {
+                        return true;
+                    }
+                    modify({ values: initialValues }) {
+                        const values = structuredClone(initialValues);
+                        if (params?.inherit) {
+                            return { ...values, ...createGlobalModifierValues() };
+                        }
+                        return createGlobalModifierValues();
+                    }
+                },
+                dependencies: []
+            })
+        );
     });
-    plugin.name = "headlessCms.test.global.elasticsearchValueModifier";
-    return plugin;
 };
 
 export const createTargetedModifierValues = () => {
@@ -32,22 +39,25 @@ export const createTargetedModifierValues = () => {
     };
 };
 export const createTargetedModifierPlugin = (params?: ModifierParams) => {
-    const plugin = new CmsEntryElasticsearchValuesModifier({
-        models: ["converter"],
-        modifier: ({ setValues }) => {
-            setValues(prev => {
-                if (params?.inherit) {
-                    return {
-                        ...prev,
-                        ...createTargetedModifierValues()
-                    };
-                }
-                return createTargetedModifierValues();
-            });
-        }
+    return createRegisterExtensionPlugin(({ container }) => {
+        container.register(
+            CmsEntryOpenSearchValuesModifier.createImplementation({
+                implementation: class {
+                    canModify(modelId) {
+                        return modelId === "converter";
+                    }
+                    modify({ values: initialValues }) {
+                        const values = structuredClone(initialValues);
+                        if (params?.inherit) {
+                            return { ...values, ...createTargetedModifierValues() };
+                        }
+                        return createTargetedModifierValues();
+                    }
+                },
+                dependencies: []
+            })
+        );
     });
-    plugin.name = "headlessCms.test.targeted.elasticsearchValueModifier";
-    return plugin;
 };
 
 export const createNotApplicableModifierValues = () => {
@@ -56,21 +66,23 @@ export const createNotApplicableModifierValues = () => {
     };
 };
 export const createNotApplicableModifierPlugin = (params?: ModifierParams) => {
-    const plugin = new CmsEntryElasticsearchValuesModifier({
-        models: ["converterNonExisting"],
-        modifier: ({ setValues }) => {
-            setValues(prev => {
-                if (params?.inherit) {
-                    return {
-                        ...prev,
-                        ...createNotApplicableModifierValues()
-                    };
-                }
-                return createNotApplicableModifierValues();
-            });
-        }
+    return createRegisterExtensionPlugin(({ container }) => {
+        container.register(
+            CmsEntryOpenSearchValuesModifier.createImplementation({
+                implementation: class {
+                    canModify(modelId) {
+                        return modelId === "converterNonExisting";
+                    }
+                    modify({ values: initialValues }) {
+                        const values = structuredClone(initialValues);
+                        if (params?.inherit) {
+                            return { ...values, ...createNotApplicableModifierValues() };
+                        }
+                        return createNotApplicableModifierValues();
+                    }
+                },
+                dependencies: []
+            })
+        );
     });
-
-    plugin.name = "headlessCms.test.notApplicable.elasticsearchValueModifier";
-    return plugin;
 };
