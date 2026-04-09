@@ -412,8 +412,9 @@ jobs:
         run: >-
           sed -i 's|<Infra.OpenSearch enabled={true} />|<Infra.OpenSearch
           enabled={true} domainName={process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME
-          \|\| ""} indexPrefix={process.env.ELASTIC_SEARCH_INDEX_PREFIX \|\| ""}
-          />|g' webiny.config.tsx
+          \|\| "webiny-e2e-os"}
+          indexPrefix={process.env.ELASTIC_SEARCH_INDEX_PREFIX \|\| ""} />|g'
+          webiny.config.tsx
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
