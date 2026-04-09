@@ -21,7 +21,12 @@ class ListLanguagesRepositoryImpl implements RepositoryAbstraction.Interface {
         const model = modelResult.value;
 
         const listResult = await this.listLatestEntries.execute(model, {
-            limit: 1000
+            limit: 1000,
+            where: {
+                values: {
+                    enabled: true
+                }
+            }
         });
 
         if (listResult.isFail()) {
