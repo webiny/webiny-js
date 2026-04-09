@@ -36,7 +36,7 @@ const getKey = (params: IGetKeyParams): string => {
     return keys[0];
 };
 
-class SearchableJsonSearchImpl implements CmsEntryOpenSearchValueSearch.Interface {
+export class SearchableJsonSearchImpl implements CmsEntryOpenSearchValueSearch.Interface {
     public readonly fieldType = "searchable-json";
 
     public transform(params: CmsEntryOpenSearchValueSearch.Transform): any {

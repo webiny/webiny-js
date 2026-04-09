@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TimeSearchImpl } from "~/elasticsearch/search/timeSearch";
+import { TimeSearchImpl } from "~/features/CmsEntryOpenSearchValueSearch/fields/TimeSearch.js";
 import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch";
 
 const timeField = {

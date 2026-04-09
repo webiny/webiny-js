@@ -1,3 +1,4 @@
+import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters/index.js";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import type { CmsContext, StorageOperationsFactory as IStorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
@@ -71,6 +72,10 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     };
 
     plugins.register([
+        /**
+         * DynamoDB filter plugins for the where conditions.
+         */
+        dynamoDbValueFilters(),
         /**
          * Filter plugins used to apply filtering from where conditions to Elasticsearch query.
          */
