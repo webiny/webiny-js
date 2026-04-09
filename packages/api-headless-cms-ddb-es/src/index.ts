@@ -25,6 +25,7 @@ import { createFeature } from "@webiny/feature/api/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
+import { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
 
 export * from "./plugins/index.js";
 
@@ -85,6 +86,7 @@ export const createOpenSearchStorageOperations: IStorageOperationsFactory = para
     const fieldRegistry = getContainer().resolve(CmsModelFieldToGraphQLRegistry);
     const compressionHandler = getContainer().resolve(CompressionHandler);
     const bodyModifiers = getContainer().resolveAll(CmsEntryOpenSearchBodyModifier);
+    const sortModifiers = getContainer().resolveAll(CmsEntryOpenSearchSortModifier);
 
     const entries = createEntriesStorageOperations({
         entity: entities.entries,
@@ -93,7 +95,8 @@ export const createOpenSearchStorageOperations: IStorageOperationsFactory = para
         elasticsearch,
         fieldRegistry,
         compressionHandler,
-        bodyModifiers
+        bodyModifiers,
+        sortModifiers
     });
 
     return {

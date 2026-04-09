@@ -9,8 +9,8 @@ import { createFullTextSearchFields } from "./fullTextSearchFields.js";
 import { createInitialQuery } from "./initialQuery.js";
 import { applyFullTextSearch } from "./fullTextSearch.js";
 import { createQueryModifierPluginList } from "./plugins/queryModifier.js";
-import { createSortModifierPluginList } from "./plugins/sortModifier.js";
 import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
+import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
 import { createElasticsearchSort } from "./sort.js";
 import type {
     PrimitiveValue,
@@ -26,6 +26,7 @@ interface ICreateElasticsearchBodyParams {
     model: CmsModel;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
+    sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
         after?: PrimitiveValue[];
@@ -36,7 +37,8 @@ export const createElasticsearchBody = ({
     model,
     params,
     fieldRegistry,
-    bodyModifiers
+    bodyModifiers,
+    sortModifiers
 }: ICreateElasticsearchBodyParams): SearchBody => {
     const { fields, search: term, where, sort: initialSort, after, limit } = params;
     /**
@@ -56,12 +58,9 @@ export const createElasticsearchBody = ({
         model
     });
     /**
-     * We need the sort modifier plugins.
+     * Filter sort modifiers applicable to this model.
      */
-    const sortModifierPlugins = createSortModifierPluginList({
-        plugins,
-        model
-    });
+    const applicableSortModifiers = sortModifiers.filter(m => !m.modelId || m.modelId === model.modelId);
     /**
      * Filter body modifiers applicable to this model.
      */
@@ -117,8 +116,8 @@ export const createElasticsearchBody = ({
         model
     });
 
-    for (const pl of sortModifierPlugins) {
-        pl.modifySort({
+    for (const modifier of applicableSortModifiers) {
+        modifier.modifySort({
             sort,
             model
         });

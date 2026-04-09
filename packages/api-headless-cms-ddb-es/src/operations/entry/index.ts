@@ -71,6 +71,7 @@ import type { IEntryEntity, IEntryEntityAttributes } from "~/definitions/types.j
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
 import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
+import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
@@ -80,6 +81,7 @@ export interface CreateEntriesStorageOperationsParams {
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     compressionHandler: CompressionHandler.Interface;
     bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
+    sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
 }
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -112,7 +114,8 @@ export const createEntriesStorageOperations = (
         plugins,
         fieldRegistry,
         compressionHandler,
-        bodyModifiers
+        bodyModifiers,
+        sortModifiers
     } = params;
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
@@ -1341,6 +1344,7 @@ export const createEntriesStorageOperations = (
             model,
             fieldRegistry,
             bodyModifiers,
+            sortModifiers,
             params: {
                 ...params,
                 limit,
@@ -2046,6 +2050,7 @@ export const createEntriesStorageOperations = (
             model,
             fieldRegistry,
             bodyModifiers,
+            sortModifiers,
             params: {
                 limit: 1,
                 where
