@@ -22,11 +22,13 @@ import type {
 import { createExecFiltering } from "./filtering/index.js";
 import { assignMinimumShouldMatchToQuery } from "./assignMinimumShouldMatchToQuery.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 interface ICreateElasticsearchBodyParams {
     plugins: PluginsContainer;
     model: CmsModel;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
     bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
     sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
     queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
@@ -42,6 +44,7 @@ export const createElasticsearchBody = ({
     model,
     params,
     fieldRegistry,
+    fieldIndexRegistry,
     bodyModifiers,
     sortModifiers,
     queryModifiers,
@@ -53,9 +56,9 @@ export const createElasticsearchBody = ({
      * We need the model fields constructed as a key -> field value, so we do not need to iterate through array when we require some field.
      */
     const modelFields = createModelFields({
-        plugins,
         model,
-        fieldRegistry
+        fieldRegistry,
+        fieldIndexRegistry
     });
 
     /**

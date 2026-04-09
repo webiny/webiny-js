@@ -3,6 +3,7 @@ import type { CmsEntryOpenSearchFieldIndex } from "./CmsEntryOpenSearchFieldInde
 
 export interface ICmsEntryOpenSearchFieldIndexRegistry {
     get(fieldType: string): CmsEntryOpenSearchFieldIndex.Interface | undefined;
+    getDefault(): CmsEntryOpenSearchFieldIndex.Interface;
     getAll(): CmsEntryOpenSearchFieldIndex.Interface[];
 }
 
@@ -13,4 +14,5 @@ export const CmsEntryOpenSearchFieldIndexRegistry =
 
 export namespace CmsEntryOpenSearchFieldIndexRegistry {
     export type Interface = ICmsEntryOpenSearchFieldIndexRegistry;
+    export type FieldIndex = CmsEntryOpenSearchFieldIndex.Interface;
 }

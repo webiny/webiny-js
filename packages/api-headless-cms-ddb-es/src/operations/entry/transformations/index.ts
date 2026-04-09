@@ -1,4 +1,3 @@
-import type { PluginsContainer } from "@webiny/plugins";
 import type {
     CmsEntry,
     CmsEntryValues,
@@ -17,11 +16,12 @@ import {
 import WebinyError from "@webiny/error";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 import { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 interface BaseTransformerParams<T extends CmsEntryValues = CmsEntryValues> {
-    plugins: PluginsContainer;
     model: StorageOperationsCmsModel<T>;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
     compressionHandler: Pick<CompressionHandler.Interface, "compress">;
     valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
 }
@@ -61,9 +61,9 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
     params: EntryTransformerParams<T> | TransformedEntryTransformerParams<T>
 ): TransformerResult<T> => {
     const {
-        plugins,
         model,
         fieldRegistry,
+        fieldIndexRegistry,
         entry: baseEntry,
         storageEntry: baseStorageEntry,
         transformedToIndex: initialTransformedEntryToIndex = undefined,
@@ -153,11 +153,11 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
                 storageEntry = result.storageEntry;
             }
             return (transformedEntryToIndex = transformEntryToIndex<T>({
-                plugins,
                 model,
                 entry,
                 storageEntry,
-                fieldRegistry
+                fieldRegistry,
+                fieldIndexRegistry
             }));
         },
         getElasticsearchLatestEntryData: async function () {

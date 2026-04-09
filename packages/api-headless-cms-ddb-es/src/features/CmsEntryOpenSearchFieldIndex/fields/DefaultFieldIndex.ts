@@ -1,7 +1,8 @@
 import { CmsEntryOpenSearchFieldIndex } from "../abstractions/CmsEntryOpenSearchFieldIndex.js";
+import { FIELD_INDEXING_DEFAULT } from "../constants.js";
 
 class DefaultFieldIndexImpl implements CmsEntryOpenSearchFieldIndex.Interface {
-    public readonly fieldType = "*";
+    public readonly fieldType = FIELD_INDEXING_DEFAULT;
 
     public toIndex({
         field,

@@ -12,8 +12,6 @@ import {
     CmsEntryOpenSearchIndex,
     CmsEntryOpenSearchIndexFeature
 } from "~/features/CmsEntryOpenSearchIndex/index.js";
-import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters/index.js";
-import elasticsearchPlugins from "./elasticsearch/index.js";
 import { createModelsStorageOperations } from "./operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
 import { createGroupEntity } from "~/definitions/group.js";
@@ -36,7 +34,10 @@ import { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSor
 import { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
 import { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
 import { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
-import { CmsEntryOpenSearchFieldIndexFeature } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
+import {
+    CmsEntryOpenSearchFieldIndexFeature,
+    CmsEntryOpenSearchFieldIndexRegistry
+} from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const { table, esTable, documentClient, elasticsearch, plugins, getContainer } = params;
@@ -71,24 +72,13 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
 
     plugins.register([
         /**
-         * DynamoDB filter plugins for the where conditions.
-         */
-        dynamoDbValueFilters(),
-        /**
-         * Field plugins for Elasticsearch.
-         */
-        elasticsearchPlugins(),
-        /**
          * Filter plugins used to apply filtering from where conditions to Elasticsearch query.
          */
         createFilterPlugins()
-        /**
-         * User defined custom plugins.
-         * They are at the end because we can then override existing plugins.
-         */
     ]);
 
     const fieldRegistry = getContainer().resolve(CmsModelFieldToGraphQLRegistry);
+    const fieldIndexRegistry = getContainer().resolve(CmsEntryOpenSearchFieldIndexRegistry);
     const compressionHandler = getContainer().resolve(CompressionHandler);
     const bodyModifiers = getContainer().resolveAll(CmsEntryOpenSearchBodyModifier);
     const sortModifiers = getContainer().resolveAll(CmsEntryOpenSearchSortModifier);
@@ -103,6 +93,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         plugins,
         elasticsearch,
         fieldRegistry,
+        fieldIndexRegistry,
         compressionHandler,
         bodyModifiers,
         sortModifiers,

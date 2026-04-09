@@ -1,7 +1,5 @@
 import WebinyError from "@webiny/error";
-import type { PluginsContainer } from "@webiny/plugins";
 import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import type { CmsModelFieldToElasticsearchPlugin } from "~/types.js";
 import type { ModelFieldParent, ModelFields } from "./types.js";
 import {
     ENTRY_META_FIELDS,
@@ -14,6 +12,7 @@ import { createSystemField } from "./fields/createSystemField.js";
 import { stateFields } from "./fields/state.js";
 import { locationFields } from "./fields/location.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 const createSystemFields = (): ModelFields => {
     const onMetaFields = ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField).reduce(
@@ -229,23 +228,27 @@ const buildFieldsList = (params: BuildParams): ModelFields => {
 };
 
 interface ICreateModelFieldsParams {
-    plugins: PluginsContainer;
     model: CmsModel;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
 }
 
-export const createModelFields = ({ plugins, model, fieldRegistry }: ICreateModelFieldsParams) => {
+export const createModelFields = ({
+    model,
+    fieldRegistry,
+    fieldIndexRegistry
+}: ICreateModelFieldsParams) => {
     const fields = model.fields;
     /**
-     * Collect all unmappedType from elastic plugins.
+     * Collect all unmappedType from field index registry.
      */
-    const unmappedTypes = plugins
-        .byType<CmsModelFieldToElasticsearchPlugin>("cms-model-field-to-elastic-search")
-        .reduce<UnmappedFieldTypes>((acc, plugin) => {
-            if (!plugin.unmappedType) {
+    const unmappedTypes = fieldIndexRegistry
+        .getAll()
+        .reduce<UnmappedFieldTypes>((acc, fieldIndex) => {
+            if (!fieldIndex.unmappedType) {
                 return acc;
             }
-            acc[plugin.fieldType] = plugin.unmappedType;
+            acc[fieldIndex.fieldType] = fieldIndex.unmappedType;
             return acc;
         }, {});
     /**

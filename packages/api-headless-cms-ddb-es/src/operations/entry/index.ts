@@ -1,4 +1,4 @@
-import WebinyError from "@webiny/error";
+import { WebinyError } from "@webiny/error";
 import type {
     CmsEntry,
     CmsEntryStorageOperationsCreateParams,
@@ -76,6 +76,7 @@ import type { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSe
 import type { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
 import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import type { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
+import type { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
@@ -83,6 +84,7 @@ export interface CreateEntriesStorageOperationsParams {
     elasticsearch: Client;
     plugins: PluginsContainer;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
     compressionHandler: CompressionHandler.Interface;
     bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
     sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
@@ -121,6 +123,7 @@ export const createEntriesStorageOperations = (
         elasticsearch,
         plugins,
         fieldRegistry,
+        fieldIndexRegistry,
         compressionHandler,
         bodyModifiers,
         sortModifiers,
@@ -168,7 +171,7 @@ export const createEntriesStorageOperations = (
 
         const transformer = createTransformer<T>({
             fieldRegistry,
-            plugins,
+            fieldIndexRegistry,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
@@ -280,11 +283,11 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel<T>(initialModel);
 
         const transformer = createTransformer<T>({
-            plugins,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
+            fieldIndexRegistry,
             compressionHandler,
             valuesModifiers
         });
@@ -406,11 +409,11 @@ export const createEntriesStorageOperations = (
 
         const transformer = createTransformer({
             valuesModifiers,
-            plugins,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
+            fieldIndexRegistry,
             compressionHandler
         });
 
@@ -732,11 +735,11 @@ export const createEntriesStorageOperations = (
 
         const transformer = createTransformer({
             valuesModifiers,
-            plugins,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
+            fieldIndexRegistry,
             compressionHandler
         });
 
@@ -903,11 +906,11 @@ export const createEntriesStorageOperations = (
 
         const transformer = createTransformer({
             valuesModifiers,
-            plugins,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
+            fieldIndexRegistry,
             compressionHandler
         });
 
@@ -1216,11 +1219,11 @@ export const createEntriesStorageOperations = (
 
             const latestTransformer = createTransformer({
                 valuesModifiers,
-                plugins,
                 model,
                 entry: latestEntry,
                 storageEntry: initialLatestStorageEntry,
                 fieldRegistry,
+                fieldIndexRegistry,
                 compressionHandler
             });
 
@@ -1361,6 +1364,7 @@ export const createEntriesStorageOperations = (
         const body = createElasticsearchBody({
             model,
             fieldRegistry,
+            fieldIndexRegistry,
             bodyModifiers,
             sortModifiers,
             queryModifiers,
@@ -1406,7 +1410,7 @@ export const createEntriesStorageOperations = (
 
         const items = extractEntriesFromIndex<T>({
             fieldRegistry,
-            plugins,
+            fieldIndexRegistry,
             model,
             entries: hits.map(item => {
                 return item._source as CmsIndexEntry<T>;
@@ -1460,11 +1464,11 @@ export const createEntriesStorageOperations = (
 
         const transformer = createTransformer({
             valuesModifiers,
-            plugins,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
+            fieldIndexRegistry,
             compressionHandler
         });
 
@@ -1659,7 +1663,6 @@ export const createEntriesStorageOperations = (
 
             const latestTransformer = createTransformer({
                 valuesModifiers,
-                plugins,
                 model,
                 transformedToIndex: {
                     ...latestEsEntryDataDecompressed,
@@ -1668,6 +1671,7 @@ export const createEntriesStorageOperations = (
                     ...updatedMetaFields
                 },
                 fieldRegistry,
+                fieldIndexRegistry,
                 compressionHandler
             });
 
@@ -1763,11 +1767,11 @@ export const createEntriesStorageOperations = (
 
         const transformer = createTransformer({
             valuesModifiers,
-            plugins,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
+            fieldIndexRegistry,
             compressionHandler
         });
         const { entry, storageEntry } = await transformer.transformEntryKeys();
@@ -2073,6 +2077,7 @@ export const createEntriesStorageOperations = (
         const initialBody = createElasticsearchBody({
             model,
             fieldRegistry,
+            fieldIndexRegistry,
             bodyModifiers,
             sortModifiers,
             queryModifiers,
