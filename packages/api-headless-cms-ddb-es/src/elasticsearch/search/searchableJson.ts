@@ -1,7 +1,7 @@
-import { CmsEntryElasticsearchQueryBuilderValueSearchPlugin } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin.js";
 import { WebinyError } from "@webiny/error";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import { NoValueContainer } from "~/values/NoValueContainer.js";
+import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
 interface IGetKeyParams {
     field: CmsModelField;
@@ -36,33 +36,32 @@ const getKey = (params: IGetKeyParams): string => {
     return keys[0];
 };
 
-export const createSearchableJsonSearchPlugin =
-    (): CmsEntryElasticsearchQueryBuilderValueSearchPlugin => {
-        return new CmsEntryElasticsearchQueryBuilderValueSearchPlugin({
-            fieldType: "searchable-json",
-            transform: params => {
-                const { value } = params;
+export class SearchableJsonSearch implements CmsEntryOpenSearchValueSearch.Interface {
+    public readonly fieldType = "searchable-json";
 
-                if (NoValueContainer.is(value)) {
-                    return null;
-                }
+    public transform(params: CmsEntryOpenSearchValueSearch.Transform): any {
+        const { value } = params;
 
-                const key = getKey(params);
-                return value[key] || null;
-            },
-            path: params => {
-                const { field } = params;
+        if (NoValueContainer.is(value)) {
+            return null;
+        }
 
-                if (NoValueContainer.is(params.originalValue)) {
-                    return `${field.storageId}.unknown`;
-                }
+        const key = getKey(params);
+        return value[key] || null;
+    }
 
-                const key = getKey({
-                    field,
-                    value: params.originalValue
-                });
+    public createPath(params: CmsEntryOpenSearchValueSearch.CreatePath): string | null {
+        const { field } = params;
 
-                return `${field.storageId}.${key}`;
-            }
+        if (NoValueContainer.is(params.originalValue)) {
+            return `${field.storageId}.unknown`;
+        }
+
+        const key = getKey({
+            field,
+            value: params.originalValue
         });
-    };
+
+        return `${field.storageId}.${key}`;
+    }
+}

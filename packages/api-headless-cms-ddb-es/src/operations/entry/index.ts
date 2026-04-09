@@ -74,6 +74,7 @@ import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSear
 import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
 import type { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
 import type { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
+import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
@@ -85,6 +86,7 @@ export interface CreateEntriesStorageOperationsParams {
     bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
     sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
     queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
+    valueSearches: CmsEntryOpenSearchValueSearch.Interface[];
     valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
 }
 
@@ -121,6 +123,7 @@ export const createEntriesStorageOperations = (
         bodyModifiers,
         sortModifiers,
         queryModifiers,
+        valueSearches,
         valuesModifiers
     } = params;
 
@@ -1358,6 +1361,7 @@ export const createEntriesStorageOperations = (
             bodyModifiers,
             sortModifiers,
             queryModifiers,
+            valueSearches,
             params: {
                 ...params,
                 limit,
@@ -2068,6 +2072,7 @@ export const createEntriesStorageOperations = (
             bodyModifiers,
             sortModifiers,
             queryModifiers,
+            valueSearches,
             params: {
                 limit: 1,
                 where

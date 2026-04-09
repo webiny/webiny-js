@@ -1,18 +1,18 @@
-import type { TransformCallable } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin.js";
-import { CmsEntryElasticsearchQueryBuilderValueSearchPlugin } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin.js";
+import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
-const transform: TransformCallable = params => {
-    const { field, value } = params;
-    if (!value || field.settings?.type !== "time") {
-        return value;
+export class TimeSearch implements CmsEntryOpenSearchValueSearch.Interface {
+    public readonly fieldType = "datetime";
+
+    public transform(params: CmsEntryOpenSearchValueSearch.Transform): any {
+        const { field, value } = params;
+        if (!value || field.settings?.type !== "time") {
+            return value;
+        }
+        const [hours, minutes, seconds = 0] = value.split(":").map(Number);
+        return hours * 60 * 60 + minutes * 60 + seconds;
     }
-    const [hours, minutes, seconds = 0] = value.split(":").map(Number);
-    return hours * 60 * 60 + minutes * 60 + seconds;
-};
 
-export const createTimeSearchPlugin = (): CmsEntryElasticsearchQueryBuilderValueSearchPlugin => {
-    return new CmsEntryElasticsearchQueryBuilderValueSearchPlugin({
-        fieldType: "datetime",
-        transform
-    });
-};
+    public createPath(): string | null {
+        return null;
+    }
+}

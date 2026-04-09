@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createTimeSearchPlugin } from "~/elasticsearch/search/timeSearch";
-import { TransformCallableParams } from "~/plugins";
+import { TimeSearch } from "~/elasticsearch/search/timeSearch";
+import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch";
 
 const timeField = {
     settings: {
@@ -15,7 +15,7 @@ const notTimeField = {
 };
 
 describe("timeSearch", () => {
-    const plugin = createTimeSearchPlugin();
+    const search = new TimeSearch();
 
     const correctValues = [
         ["01:02:03", 3723],
@@ -23,24 +23,24 @@ describe("timeSearch", () => {
         ["23:59:59", 86399]
     ];
     it.each(correctValues)("should transform value correctly", (value, expected) => {
-        const result = plugin.transform({
+        const result = search.transform({
             field: timeField,
             value
-        } as TransformCallableParams);
+        } as CmsEntryOpenSearchValueSearch.Transform);
 
         expect(result).toEqual(expected);
     });
 
     it("should return passed value as it is not time field", () => {
-        const result = plugin.transform({
+        const result = search.transform({
             field: notTimeField,
             value: "someValue"
-        } as TransformCallableParams);
+        } as CmsEntryOpenSearchValueSearch.Transform);
 
         expect(result).toEqual("someValue");
     });
 
     it("should be targeting datetime field", () => {
-        expect(plugin.fieldType).toEqual("datetime");
+        expect(search.fieldType).toEqual("datetime");
     });
 });

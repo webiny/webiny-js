@@ -8,6 +8,7 @@ import type {
 } from "@webiny/api-opensearch/types.js";
 import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search.js";
 import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator.js";
+import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import { createBaseQuery } from "~/operations/entry/elasticsearch/initialQuery.js";
 import { parseWhereKey } from "@webiny/api-opensearch";
 import { getWhereValues } from "./values.js";
@@ -21,6 +22,7 @@ export interface CreateExecParams {
     model: CmsModel;
     fields: ModelFields;
     plugins: PluginsContainer;
+    valueSearches: CmsEntryOpenSearchValueSearch.Interface[];
 }
 export interface IExecParams {
     where: CmsEntryListWhere;
@@ -31,13 +33,13 @@ export interface CreateExecFilteringResponse {
     (params: IExecParams): void;
 }
 export const createExecFiltering = (params: CreateExecParams): CreateExecFilteringResponse => {
-    const { fields, plugins, model } = params;
+    const { fields, plugins, model, valueSearches } = params;
 
     /**
      * We need the search plugins as key -> plugin value, so it is easy to find plugin we need, without iterating through array.
      */
     const searchPlugins = createSearchPluginList({
-        plugins
+        valueSearches
     });
     /**
      * We need the operator plugins, which we execute on our where conditions.

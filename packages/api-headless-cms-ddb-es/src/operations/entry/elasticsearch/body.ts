@@ -11,6 +11,7 @@ import { applyFullTextSearch } from "./fullTextSearch.js";
 import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
 import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
 import type { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
+import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import { createElasticsearchSort } from "./sort.js";
 import type {
     PrimitiveValue,
@@ -28,6 +29,7 @@ interface ICreateElasticsearchBodyParams {
     bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
     sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
     queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
+    valueSearches: CmsEntryOpenSearchValueSearch.Interface[];
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
         after?: PrimitiveValue[];
@@ -40,7 +42,8 @@ export const createElasticsearchBody = ({
     fieldRegistry,
     bodyModifiers,
     sortModifiers,
-    queryModifiers
+    queryModifiers,
+    valueSearches
 }: ICreateElasticsearchBodyParams): SearchBody => {
     const { fields, search: term, where, sort: initialSort, after, limit } = params;
     /**
@@ -100,7 +103,8 @@ export const createElasticsearchBody = ({
     const execFiltering = createExecFiltering({
         model,
         fields: modelFields,
-        plugins
+        plugins,
+        valueSearches
     });
 
     execFiltering({
@@ -113,10 +117,10 @@ export const createElasticsearchBody = ({
     }
 
     const sort = createElasticsearchSort({
-        plugins,
         sort: initialSort,
         modelFields,
-        model
+        model,
+        valueSearches
     });
 
     for (const modifier of applicableSortModifiers) {

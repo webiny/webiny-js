@@ -8,6 +8,7 @@ import type {
 } from "~/operations/entry/elasticsearch/types";
 import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search";
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
+import { TimeSearch, RefSearch, SearchableJsonSearch } from "~/elasticsearch/search";
 
 export const createPluginsContainer = (plugins: Plugin[] = []) => {
     return new PluginsContainer([getOpenSearchOperators(), createFilterPlugins(), ...plugins]);
@@ -19,11 +20,9 @@ export const buildElasticsearchOperatorPlugins = (container?: PluginsContainer) 
     });
 };
 
-export const buildElasticsearchSearchPlugins = (
-    container?: PluginsContainer
-): OpenSearchQuerySearchValuePlugins => {
+export const buildElasticsearchSearchPlugins = (): OpenSearchQuerySearchValuePlugins => {
     return createSearchPluginList({
-        plugins: container || createPluginsContainer()
+        valueSearches: [new TimeSearch(), new RefSearch(), new SearchableJsonSearch()]
     });
 };
 
@@ -37,6 +36,6 @@ export const createPlugins = (): Plugins => {
     return {
         container,
         operators: buildElasticsearchOperatorPlugins(container),
-        search: buildElasticsearchSearchPlugins(container)
+        search: buildElasticsearchSearchPlugins()
     };
 };

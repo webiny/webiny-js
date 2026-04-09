@@ -1,24 +1,17 @@
-import type {
-    CreatePathCallable,
-    TransformCallable
-} from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin.js";
-import { CmsEntryElasticsearchQueryBuilderValueSearchPlugin } from "~/plugins/CmsEntryElasticsearchQueryBuilderValueSearchPlugin.js";
+import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
-const createPath: CreatePathCallable<string> = ({ field, key }) => {
-    if (key && key.match("entryId") === null) {
-        return `${field.storageId}.id`;
+export class RefSearch implements CmsEntryOpenSearchValueSearch.Interface {
+    public readonly fieldType = "ref";
+
+    public transform(params: CmsEntryOpenSearchValueSearch.Transform): any {
+        return params.value;
     }
-    return `${field.storageId}.entryId`;
-};
 
-const transform: TransformCallable = ({ value }) => {
-    return value;
-};
-
-export const createRefSearchPlugin = (): CmsEntryElasticsearchQueryBuilderValueSearchPlugin => {
-    return new CmsEntryElasticsearchQueryBuilderValueSearchPlugin({
-        fieldType: "ref",
-        path: createPath,
-        transform
-    });
-};
+    public createPath(params: CmsEntryOpenSearchValueSearch.CreatePath): string | null {
+        const { field, key } = params;
+        if (key && key.match("entryId") === null) {
+            return `${field.storageId}.id`;
+        }
+        return `${field.storageId}.entryId`;
+    }
+}

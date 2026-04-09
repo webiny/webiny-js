@@ -1,12 +1,12 @@
 import type { Sort as OpenSearchSort } from "@webiny/api-opensearch/types.js";
 import { createSort, OpenSearchFieldPlugin } from "@webiny/api-opensearch";
-import type { PluginsContainer } from "@webiny/plugins";
 import type { CmsEntryListSort, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { ModelFields } from "./types.js";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword.js";
 import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search.js";
 import { createFieldPathFactory } from "~/operations/entry/elasticsearch/filtering/path.js";
 import { NoValueContainer } from "~/values/NoValueContainer.js";
+import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
 interface IMatchFieldResponse {
     fieldId: string;
@@ -37,14 +37,14 @@ const matchField = (input: string): IMatchFieldResponse | null => {
 };
 
 interface Params {
-    plugins: PluginsContainer;
     sort?: CmsEntryListSort;
     modelFields: ModelFields;
     model: CmsModel;
+    valueSearches: CmsEntryOpenSearchValueSearch.Interface[];
 }
 
 export const createElasticsearchSort = (params: Params): OpenSearchSort => {
-    const { sort, modelFields, plugins } = params;
+    const { sort, modelFields, valueSearches } = params;
 
     if (!sort || sort.length === 0) {
         return [
@@ -57,7 +57,7 @@ export const createElasticsearchSort = (params: Params): OpenSearchSort => {
     }
 
     const searchPlugins = createSearchPluginList({
-        plugins
+        valueSearches
     });
 
     const createFieldPath = createFieldPathFactory({

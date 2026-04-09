@@ -27,7 +27,9 @@ import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
 import { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
+import { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
+import { TimeSearch, RefSearch, SearchableJsonSearch } from "~/elasticsearch/search/index.js";
 
 export * from "./plugins/index.js";
 
@@ -90,6 +92,7 @@ export const createOpenSearchStorageOperations: IStorageOperationsFactory = para
     const bodyModifiers = getContainer().resolveAll(CmsEntryOpenSearchBodyModifier);
     const sortModifiers = getContainer().resolveAll(CmsEntryOpenSearchSortModifier);
     const queryModifiers = getContainer().resolveAll(CmsEntryOpenSearchQueryModifier);
+    const valueSearches = getContainer().resolveAll(CmsEntryOpenSearchValueSearch);
     const valuesModifiers = getContainer().resolveAll(CmsEntryOpenSearchValuesModifier);
 
     const entries = createEntriesStorageOperations({
@@ -102,6 +105,7 @@ export const createOpenSearchStorageOperations: IStorageOperationsFactory = para
         bodyModifiers,
         sortModifiers,
         queryModifiers,
+        valueSearches,
         valuesModifiers
     });
 
@@ -198,10 +202,28 @@ const OpenSearchStorageOperationsFactory = StorageOperationsFactoryAbstraction.c
     }
 );
 
+const TimeSearchImpl = CmsEntryOpenSearchValueSearch.createImplementation({
+    implementation: TimeSearch,
+    dependencies: []
+});
+
+const RefSearchImpl = CmsEntryOpenSearchValueSearch.createImplementation({
+    implementation: RefSearch,
+    dependencies: []
+});
+
+const SearchableJsonSearchImpl = CmsEntryOpenSearchValueSearch.createImplementation({
+    implementation: SearchableJsonSearch,
+    dependencies: []
+});
+
 const storageOperationsFeature = createFeature({
     name: "cms.storageOperations.openSearch",
     register: container => {
         container.register(OpenSearchStorageOperationsFactory).inSingletonScope();
+        container.register(TimeSearchImpl);
+        container.register(RefSearchImpl);
+        container.register(SearchableJsonSearchImpl);
     }
 });
 
