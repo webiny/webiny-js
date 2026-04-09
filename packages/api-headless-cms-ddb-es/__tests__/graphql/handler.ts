@@ -62,7 +62,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
                 })
             }),
             createSecurity(),
-            createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
+            createHeadlessCmsContext(),
             createRawEventHandler(async ({ context }) => {
                 return context;
             }),

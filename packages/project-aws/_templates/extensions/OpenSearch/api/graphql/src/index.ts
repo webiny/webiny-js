@@ -37,7 +37,11 @@ const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
 
 const openSearchClient = createOpenSearchClient({
-    endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
+    endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`,
+    auth: {
+        username: process.env.OPENSEARCH_USERNAME || "",
+        password: process.env.OPENSEARCH_PASSWORD || ""
+    }
 });
 
 export const handler = createHandler({

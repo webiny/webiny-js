@@ -10,18 +10,19 @@ import type { CmsIndexEntry } from "~/types.js";
 import { transformEntryToIndex } from "~/operations/entry/transformations/transformEntryToIndex.js";
 import { CmsEntryElasticsearchValuesModifier } from "~/plugins/index.js";
 import { modifyEntryValues as modifyEntryValuesCallable } from "~/operations/entry/transformations/modifyEntryValues.js";
-import { compress } from "@webiny/api-opensearch";
 import {
     createLatestRecordType,
     createPublishedRecordType
 } from "~/operations/entry/recordType.js";
 import WebinyError from "@webiny/error";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
+import { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
 
 interface BaseTransformerParams<T extends CmsEntryValues = CmsEntryValues> {
     plugins: PluginsContainer;
     model: StorageOperationsCmsModel<T>;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    compressionHandler: Pick<CompressionHandler.Interface, "compress">;
 }
 
 interface EntryTransformerParams<T extends CmsEntryValues = CmsEntryValues>
@@ -64,7 +65,8 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
         fieldRegistry,
         entry: baseEntry,
         storageEntry: baseStorageEntry,
-        transformedToIndex: initialTransformedEntryToIndex = undefined
+        transformedToIndex: initialTransformedEntryToIndex = undefined,
+        compressionHandler
     } = params;
 
     let transformedEntryKeys: TransformedKeysEntry<T> | undefined = undefined;
@@ -164,7 +166,7 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
             }
             const entry = this.transformToIndex();
 
-            return (elasticsearchLatestEntry = await compress(plugins, {
+            return (elasticsearchLatestEntry = await compressionHandler.compress({
                 ...entry,
                 latest: true,
                 TYPE: createLatestRecordType(),
@@ -177,7 +179,7 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
             }
             const entry = this.transformToIndex();
 
-            return (elasticsearchPublishedEntry = await compress(plugins, {
+            return (elasticsearchPublishedEntry = await compressionHandler.compress({
                 ...entry,
                 published: true,
                 TYPE: createPublishedRecordType(),

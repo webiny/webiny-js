@@ -37,6 +37,7 @@ import { CmsWhereMapperFeature } from "~/features/whereMapper/feature.js";
 import { CmsSortMapperFeature } from "~/features/sortMapper/feature.js";
 import { GraphQLFeature } from "~/features/graphql/index.js";
 import { ValidationFeature } from "~/features/validation/index.js";
+import { StorageFeature } from "~/features/storage/index.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -81,6 +82,7 @@ export const createContextPlugin = () => {
         // GraphQL fields must be loaded before anything else
         GraphQLFeature.register(context.container);
         ValidationFeature.register(context.container);
+        StorageFeature.register(context.container);
 
         async function getExecutableSchema(type: ApiEndpoint) {
             const originalType = context.cms.type;

@@ -113,7 +113,7 @@ describe("storage field path converters enabled", () => {
         const expectedElasticsearchRecord = {
             ...(await createElasticsearchEntryConvertedData()).values
         };
-        expect(source.values).toEqual(expectedElasticsearchRecord);
+        expect(source!.values).toEqual(expectedElasticsearchRecord);
         /**
          * Load the DynamoDB record directly and check the structure.
          */

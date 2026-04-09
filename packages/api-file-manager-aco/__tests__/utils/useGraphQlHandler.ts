@@ -71,7 +71,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                     type: "manage"
                 };
             }),
-            createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             createAco({ documentClient }),
             createFileManagerContext(),

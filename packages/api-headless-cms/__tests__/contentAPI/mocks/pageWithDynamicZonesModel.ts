@@ -19,12 +19,14 @@ interface CmsModel extends Omit<BaseCmsModel, "fields"> {
 export const pageModel: CmsModel = {
     tenant: "root",
     name: "Page",
-    group: {
-        id: "62f39c13ebe1d800091bf33c",
-        name: "Ungrouped"
-    },
+    group: "62f39c13ebe1d800091bf33c",
     description: "Page",
     modelId: "page",
+    icon: {
+        name: "fa/fas",
+        value: "fa/fas",
+        type: "fa/fas"
+    },
     singularApiName: "PageModelApiName",
     pluralApiName: "PagesModelApiName",
     savedOn: "2022-12-19T19:10:02.731Z",
@@ -777,10 +779,14 @@ export const pageModel: CmsModel = {
                         label: "Dynamic zone without templates",
                         settings: {
                             templates: []
-                        }
+                        },
+                        listValidation: [],
+                        validation: []
                     }
                 ]
-            }
+            },
+            listValidation: [],
+            validation: []
         }
     ]
 };

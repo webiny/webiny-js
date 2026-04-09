@@ -1,32 +1,20 @@
-import { createDefaultCompressor } from "@webiny/utils/compression";
 import { PluginsContainer } from "@webiny/plugins";
 import { Context } from "@webiny/api";
-
-const compressor = createDefaultCompressor({
-    plugins: new PluginsContainer()
-});
-
-compressor.disable("jsonpack");
-
-export const compress = async (data: unknown): Promise<string> => {
-    const result = await compressor.compress(data);
-    if (!result || typeof result !== "object") {
-        throw new Error("Failed to compress data.");
-    }
-    // @ts-expect-error
-    return result.value as string;
-};
-
-export const decompress = async (data: string): Promise<unknown> => {
-    return await compressor.decompress({
-        compression: "gzip",
-        value: data
-    });
-};
+import { CompressionHandler } from "@webiny/utils/exports/api.js";
 
 export const getContextWithCompressor = () => {
     return new Context({
         plugins: new PluginsContainer(),
         WEBINY_VERSION: "0.0.0"
     });
+};
+
+export const getCompressionHandler = () => {
+    const context = getContextWithCompressor();
+
+    const compressionHandler = context.container.resolve(CompressionHandler);
+    if (!compressionHandler) {
+        throw new Error("There is no CompressionHandler on context.");
+    }
+    return compressionHandler;
 };

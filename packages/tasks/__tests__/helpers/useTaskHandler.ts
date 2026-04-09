@@ -34,9 +34,7 @@ export const useTaskHandler = (params?: UseTaskHandlerParams) => {
                 permissions: createPermissions(),
                 identity: createIdentity()
             }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             graphQLHandlerPlugins(),
             createBackgroundTaskContext(),
