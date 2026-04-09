@@ -13,7 +13,6 @@ import {
 } from "./utils/entryStorage.js";
 import { createFieldConverters } from "~/fieldConverters/index.js";
 import { createExportGraphQL } from "~/export/index.js";
-import { createStorageTransform } from "~/storage/index.js";
 import { createRevisionIdScalarPlugin } from "~/graphql/scalars/RevisionIdScalarPlugin.js";
 import type { Plugin } from "@webiny/plugins/types.js";
 
@@ -45,8 +44,7 @@ export const createHeadlessCmsContext = () => {
          * Context for all Lambdas - everything is loaded now.
          */
         createContextPlugin(),
-        createFieldConverters(),
-        ...createStorageTransform()
+        createFieldConverters()
     ];
 };
 export * from "~/plugins/index.js";

@@ -13,7 +13,6 @@ import { createAuditLogs } from "~/index";
 import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createMailerContext } from "@webiny/api-mailer";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { createAuditLogsContext } from "~/context/index.js";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
@@ -83,7 +82,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
                         return {
                             id: apiKey,
                             name: apiKey,
-                            tenant: tenant.id,
+                            slug: tenant.id,
                             permissions: createPermissions(permissions),
                             token,
                             createdBy: {
@@ -99,14 +98,13 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
             } as ContextPlugin<AuditLogsContext>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
+            createHeadlessCmsContext(),
             createMailerContext(),
             createFileManagerContext(),
             createHeadlessCmsGraphQL(),
             createWebsiteBuilder(),
             createAco({ documentClient }),
             createAuditLogs(),
-            createAuditLogsContext(),
             plugins,
             graphQLHandlerPlugins(),
             bottomPlugins

@@ -37,9 +37,7 @@ export const createPlugins = (params?: Params): PluginsContainer => {
             identity: createIdentity()
         }),
         createWebsockets(),
-        createHeadlessCmsContext({
-            storageOperations: cmsStorage.storageOperations
-        }),
+        createHeadlessCmsContext(),
         createHeadlessCmsGraphQL(),
         graphQLHandlerPlugins(),
 

@@ -42,7 +42,7 @@ export const handlerPlugins = (params: HandlerParams) => {
                 type: "manage"
             };
         }),
-        createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
+        createHeadlessCmsContext(),
         createHeadlessCmsGraphQL(),
         createFileManagerContext(),
         createFileManagerGraphQL(),

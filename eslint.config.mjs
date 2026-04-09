@@ -113,7 +113,7 @@ export default defineConfig([
     },
     settings: {
       react: {
-        version: "18.2.0"
+        version: "18.3.1"
       }
     }
   },

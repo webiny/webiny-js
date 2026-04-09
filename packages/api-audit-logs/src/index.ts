@@ -23,7 +23,6 @@ export const createAuditLogs = (params?: ICreateAuditLogsParams) => {
     });
 
     subscriptionsPlugin.name = "auditLogs.context.subscriptions";
-
     return [
         subscriptionsPlugin,
         createGraphQLSchema(),

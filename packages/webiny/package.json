@@ -37,6 +37,7 @@
     "@webiny/project-aws-template": "0.0.0",
     "@webiny/tasks": "0.0.0",
     "@webiny/tenant-manager": "0.0.0",
+    "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0",
     "react": "18.3.1"
@@ -86,7 +87,7 @@
     "./api/cms/graphql": "./api/cms/graphql.js",
     "./api/cms/group": "./api/cms/group.js",
     "./api/cms/model": "./api/cms/model.js",
-    "./api/cms/storageOperations": "./api/cms/storageOperations.js",
+    "./api/cms/storage": "./api/cms/storage.js",
     "./api/cms/validation": "./api/cms/validation.js",
     "./api/cms/scheduler": "./api/cms/scheduler.js",
     "./api/opensearch": "./api/opensearch.js",
