@@ -38,6 +38,7 @@ import { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSor
 import { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
 import { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
 import { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
+import { CmsEntryOpenSearchFieldIndexFeature } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const { table, esTable, documentClient, elasticsearch, plugins, getContainer } = params;
@@ -209,11 +210,13 @@ const OpenSearchStorageOperationsFactory = StorageOperationsFactoryAbstraction.c
 const storageOperationsFeature = createFeature({
     name: "cms.storageOperations.openSearch",
     register: container => {
-        container.register(OpenSearchStorageOperationsFactory).inSingletonScope();
+        
+        CmsEntryOpenSearchFieldIndexFeature.register(container);
         container.register(TimeSearch);
         container.register(RefSearch);
         container.register(SearchableJsonSearch);
         container.register(BaseOpenSearchIndex);
+        container.register(OpenSearchStorageOperationsFactory).inSingletonScope();
     }
 });
 
