@@ -12,6 +12,7 @@ import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSear
 import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
 import type { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
 import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
+import type { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
 import { createElasticsearchSort } from "./sort.js";
 import type {
     PrimitiveValue,
@@ -30,6 +31,7 @@ interface ICreateElasticsearchBodyParams {
     sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
     queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
     valueSearches: CmsEntryOpenSearchValueSearch.Interface[];
+    fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
         after?: PrimitiveValue[];
@@ -43,7 +45,8 @@ export const createElasticsearchBody = ({
     bodyModifiers,
     sortModifiers,
     queryModifiers,
-    valueSearches
+    valueSearches,
+    fullTextSearches
 }: ICreateElasticsearchBodyParams): SearchBody => {
     const { fields, search: term, where, sort: initialSort, after, limit } = params;
     /**
@@ -94,7 +97,7 @@ export const createElasticsearchBody = ({
      */
     applyFullTextSearch({
         model,
-        plugins,
+        fullTextSearches,
         query,
         term,
         fields: fullTextSearchFields

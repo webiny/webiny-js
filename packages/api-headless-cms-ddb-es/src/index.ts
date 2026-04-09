@@ -28,6 +28,7 @@ import { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBod
 import { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
 import { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
 import { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
+import { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
 import { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
 import { TimeSearch, RefSearch, SearchableJsonSearch } from "~/elasticsearch/search/index.js";
 
@@ -93,6 +94,7 @@ export const createOpenSearchStorageOperations: IStorageOperationsFactory = para
     const sortModifiers = getContainer().resolveAll(CmsEntryOpenSearchSortModifier);
     const queryModifiers = getContainer().resolveAll(CmsEntryOpenSearchQueryModifier);
     const valueSearches = getContainer().resolveAll(CmsEntryOpenSearchValueSearch);
+    const fullTextSearches = getContainer().resolveAll(CmsEntryOpenSearchFullTextSearch);
     const valuesModifiers = getContainer().resolveAll(CmsEntryOpenSearchValuesModifier);
 
     const entries = createEntriesStorageOperations({
@@ -106,6 +108,7 @@ export const createOpenSearchStorageOperations: IStorageOperationsFactory = para
         sortModifiers,
         queryModifiers,
         valueSearches,
+        fullTextSearches,
         valuesModifiers
     });
 
