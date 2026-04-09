@@ -17,7 +17,6 @@ export interface IRouteReply {
 }
 
 export interface IRoute {
-    // TODO: add zodSrcPath abstraction validation support for this abstraction.
     execute(request: IRouteRequest, reply: IRouteReply): Promise<void>;
 }
 
