@@ -1,6 +1,5 @@
 import type { OpenSearchQueryBuilderOperatorPlugin } from "@webiny/api-opensearch";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
 /**
  * ./fields
@@ -36,10 +35,4 @@ export interface ModelFields {
  */
 export interface OpenSearchQueryBuilderOperatorPlugins {
     [key: string]: OpenSearchQueryBuilderOperatorPlugin;
-}
-/**
- * ./plugins/search
- */
-export interface OpenSearchQuerySearchValuePlugins {
-    [fieldType: string]: CmsEntryOpenSearchValueSearch.Interface;
 }

@@ -1,6 +1,6 @@
-import { CmsEntryOpenSearchValueSearch } from "../abstractions.js";
+import { CmsEntryOpenSearchValueSearch } from "../abstractions/CmsEntryOpenSearchValueSearch.js";
 
-export class TimeSearchImpl implements CmsEntryOpenSearchValueSearch.Interface {
+class TimeSearchImpl implements CmsEntryOpenSearchValueSearch.Interface {
     public readonly fieldType = "datetime";
 
     public transform(params: CmsEntryOpenSearchValueSearch.Transform): any {

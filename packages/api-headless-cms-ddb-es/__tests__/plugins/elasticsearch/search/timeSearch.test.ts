@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { TimeSearchImpl } from "~/features/CmsEntryOpenSearchValueSearch/fields/TimeSearch.js";
+import { createTestContainer } from "~tests/helpers/createTestContainer";
+import { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch";
 import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch";
+
+const container = createTestContainer();
+const registry = container.resolve(CmsEntryOpenSearchValueSearchRegistry);
 
 const timeField = {
     settings: {
@@ -15,7 +19,7 @@ const notTimeField = {
 };
 
 describe("timeSearch", () => {
-    const search = new TimeSearchImpl();
+    const search = registry.get("datetime")!;
 
     const correctValues = [
         ["01:02:03", 3723],

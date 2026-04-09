@@ -6,7 +6,7 @@ import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js"
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import {
-    CmsEntryOpenSearchValueSearch,
+    CmsEntryOpenSearchValueSearchRegistry,
     CmsEntryOpenSearchValueSearchFeature
 } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import {
@@ -88,7 +88,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const bodyModifiers = getContainer().resolveAll(CmsEntryOpenSearchBodyModifier);
     const sortModifiers = getContainer().resolveAll(CmsEntryOpenSearchSortModifier);
     const queryModifiers = getContainer().resolveAll(CmsEntryOpenSearchQueryModifier);
-    const valueSearches = getContainer().resolveAll(CmsEntryOpenSearchValueSearch);
+    const valueSearchRegistry = getContainer().resolve(CmsEntryOpenSearchValueSearchRegistry);
     const fullTextSearches = getContainer().resolveAll(CmsEntryOpenSearchFullTextSearch);
     const valuesModifiers = getContainer().resolveAll(CmsEntryOpenSearchValuesModifier);
 
@@ -103,7 +103,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         bodyModifiers,
         sortModifiers,
         queryModifiers,
-        valueSearches,
+        valueSearchRegistry,
         fullTextSearches,
         valuesModifiers
     });

@@ -74,7 +74,7 @@ import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSear
 import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
 import type { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
 import type { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
-import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
+import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import type { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
 import type { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
@@ -89,7 +89,7 @@ export interface CreateEntriesStorageOperationsParams {
     bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
     sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
     queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
-    valueSearches: CmsEntryOpenSearchValueSearch.Interface[];
+    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
     fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
     valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
 }
@@ -128,7 +128,7 @@ export const createEntriesStorageOperations = (
         bodyModifiers,
         sortModifiers,
         queryModifiers,
-        valueSearches,
+        valueSearchRegistry,
         fullTextSearches,
         valuesModifiers
     } = params;
@@ -1368,7 +1368,7 @@ export const createEntriesStorageOperations = (
             bodyModifiers,
             sortModifiers,
             queryModifiers,
-            valueSearches,
+            valueSearchRegistry,
             fullTextSearches,
             params: {
                 ...params,
@@ -2081,7 +2081,7 @@ export const createEntriesStorageOperations = (
             bodyModifiers,
             sortModifiers,
             queryModifiers,
-            valueSearches,
+            valueSearchRegistry,
             fullTextSearches,
             params: {
                 limit: 1,

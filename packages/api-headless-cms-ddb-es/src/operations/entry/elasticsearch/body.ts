@@ -11,7 +11,7 @@ import { applyFullTextSearch } from "./fullTextSearch.js";
 import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
 import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
 import type { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
-import type { CmsEntryOpenSearchValueSearch } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
+import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import type { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
 import { createElasticsearchSort } from "./sort.js";
 import type {
@@ -32,7 +32,7 @@ interface ICreateElasticsearchBodyParams {
     bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
     sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
     queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
-    valueSearches: CmsEntryOpenSearchValueSearch.Interface[];
+    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
     fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
@@ -48,7 +48,7 @@ export const createElasticsearchBody = ({
     bodyModifiers,
     sortModifiers,
     queryModifiers,
-    valueSearches,
+    valueSearchRegistry,
     fullTextSearches
 }: ICreateElasticsearchBodyParams): SearchBody => {
     const { fields, search: term, where, sort: initialSort, after, limit } = params;
@@ -110,7 +110,7 @@ export const createElasticsearchBody = ({
         model,
         fields: modelFields,
         plugins,
-        valueSearches
+        valueSearchRegistry
     });
 
     execFiltering({
@@ -126,7 +126,7 @@ export const createElasticsearchBody = ({
         sort: initialSort,
         modelFields,
         model,
-        valueSearches
+        valueSearchRegistry
     });
 
     for (const modifier of applicableSortModifiers) {

@@ -1,24 +1,22 @@
 import WebinyError from "@webiny/error";
 import { transformValueForSearch } from "~/operations/entry/elasticsearch/transformValueForSearch.js";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword.js";
-import type {
-    OpenSearchQueryBuilderOperatorPlugins,
-    OpenSearchQuerySearchValuePlugins
-} from "~/operations/entry/elasticsearch/types.js";
+import type { OpenSearchQueryBuilderOperatorPlugins } from "~/operations/entry/elasticsearch/types.js";
 import { createFieldPathFactory } from "~/operations/entry/elasticsearch/filtering/path.js";
 import type { ApplyFilteringCb } from "~/plugins/CmsEntryFilterPlugin.js";
+import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
 interface CreateParams {
     operatorPlugins: OpenSearchQueryBuilderOperatorPlugins;
-    searchPlugins: OpenSearchQuerySearchValuePlugins;
+    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
 }
 
 export const createApplyFiltering = ({
     operatorPlugins,
-    searchPlugins
+    valueSearchRegistry
 }: CreateParams): ApplyFilteringCb => {
     const createFieldPath = createFieldPathFactory({
-        plugins: searchPlugins
+        valueSearchRegistry
     });
 
     return params => {
@@ -36,7 +34,7 @@ export const createApplyFiltering = ({
         }
 
         const value = transformValueForSearch({
-            plugins: searchPlugins,
+            valueSearchRegistry,
             field: field.field,
             value: initialValue
         });

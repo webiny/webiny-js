@@ -1,6 +1,6 @@
-import { CmsEntryOpenSearchValueSearch } from "../abstractions.js";
+import { CmsEntryOpenSearchValueSearch } from "../abstractions/CmsEntryOpenSearchValueSearch.js";
 
-export class RefSearchImpl implements CmsEntryOpenSearchValueSearch.Interface {
+class RefSearchImpl implements CmsEntryOpenSearchValueSearch.Interface {
     public readonly fieldType = "ref";
 
     public transform(params: CmsEntryOpenSearchValueSearch.Transform): any {

@@ -1,5 +1,5 @@
 import { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import { CmsEntryOpenSearchValueSearch } from "../abstractions.js";
+import { CmsEntryOpenSearchValueSearch } from "../abstractions/CmsEntryOpenSearchValueSearch.js";
 import { WebinyError } from "@webiny/error";
 import { NoValueContainer } from "~/values/NoValueContainer.js";
 
@@ -36,7 +36,7 @@ const getKey = (params: IGetKeyParams): string => {
     return keys[0];
 };
 
-export class SearchableJsonSearchImpl implements CmsEntryOpenSearchValueSearch.Interface {
+class SearchableJsonSearchImpl implements CmsEntryOpenSearchValueSearch.Interface {
     public readonly fieldType = "searchable-json";
 
     public transform(params: CmsEntryOpenSearchValueSearch.Transform): any {
