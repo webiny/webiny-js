@@ -6,7 +6,7 @@ import type { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-ddb-es/ex
 
 export interface ICreateIndexParams {
     client: Client;
-    model: Pick<CmsModel, "modelId" | "tenant">;
+    model: Pick<CmsModel, "modelId" | "tenant" | "group">;
     indexConfigs: CmsEntryOpenSearchIndex.Interface[];
 }
 
@@ -24,7 +24,7 @@ export const createIndex = async (params: ICreateIndexParams): Promise<void> => 
         return;
     }
 
-    const usable = indexConfigs.filter(c => c.canUse());
+    const usable = indexConfigs.filter(c => c.canUse({ model }));
     if (usable.length === 0) {
         throw new WebinyError(
             "Could not find a single usable CmsEntryOpenSearchIndex.",

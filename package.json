@@ -62,7 +62,7 @@
     "@types/react-dom": "18.3.7",
     "@typescript-eslint/eslint-plugin": "^8.58.1",
     "@typescript-eslint/parser": "^8.58.1",
-    "@vitest/coverage-v8": "^4.1.3",
+    "@vitest/coverage-v8": "^4.1.4",
     "@vitest/eslint-plugin": "^1.6.15",
     "adio": "^2.1.0",
     "babel-loader": "^10.1.1",
@@ -108,7 +108,7 @@
     "typescript": "5.9.3",
     "validator": "^13.15.35",
     "verdaccio": "^6.4.0",
-    "vitest": "^4.1.3",
+    "vitest": "^4.1.4",
     "write-json-file": "^7.0.0",
     "yargs": "^18.0.0"
   },

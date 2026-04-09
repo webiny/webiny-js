@@ -1,5 +1,6 @@
 import fs from "fs";
 import type { WebpackPluginInstance } from "webpack";
+import type { AcceptedPlugin } from "postcss";
 import postcss from "postcss";
 import postcssImport from "postcss-import";
 import type { NextConfig } from "next";
@@ -12,8 +13,9 @@ const buildThemeCss = async (entry: string) => {
     const raw = fs.readFileSync(entry, "utf8");
 
     // Inline local imports.
-    // @ts-expect-error TS claims postcssImport() return value is not a valid parameter.
-    const result = await postcss([postcssImport()]).process(raw, { from: entry });
+    const result = await postcss([postcssImport() as AcceptedPlugin]).process(raw, {
+        from: entry
+    });
 
     return result.css;
 };
