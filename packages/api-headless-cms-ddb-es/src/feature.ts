@@ -6,13 +6,11 @@ import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import {
     CmsEntryOpenSearchValueSearch,
-    RefSearch,
-    SearchableJsonSearch,
-    TimeSearch
+    CmsEntryOpenSearchValueSearchFeature
 } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import {
-    BaseOpenSearchIndex,
-    CmsEntryOpenSearchIndex
+    CmsEntryOpenSearchIndex,
+    CmsEntryOpenSearchIndexFeature
 } from "~/features/CmsEntryOpenSearchIndex/index.js";
 import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters/index.js";
 import elasticsearchPlugins from "./elasticsearch/index.js";
@@ -210,12 +208,9 @@ const OpenSearchStorageOperationsFactory = StorageOperationsFactoryAbstraction.c
 const storageOperationsFeature = createFeature({
     name: "cms.storageOperations.openSearch",
     register: container => {
-        
         CmsEntryOpenSearchFieldIndexFeature.register(container);
-        container.register(TimeSearch);
-        container.register(RefSearch);
-        container.register(SearchableJsonSearch);
-        container.register(BaseOpenSearchIndex);
+        CmsEntryOpenSearchIndexFeature.register(container);
+        CmsEntryOpenSearchValueSearchFeature.register(container);
         container.register(OpenSearchStorageOperationsFactory).inSingletonScope();
     }
 });

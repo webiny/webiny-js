@@ -1,5 +1,5 @@
 import { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import { CmsEntryOpenSearchValueSearch } from "./abstractions.js";
+import { CmsEntryOpenSearchValueSearch } from "../abstractions.js";
 import { WebinyError } from "@webiny/error";
 import { NoValueContainer } from "~/values/NoValueContainer.js";
 

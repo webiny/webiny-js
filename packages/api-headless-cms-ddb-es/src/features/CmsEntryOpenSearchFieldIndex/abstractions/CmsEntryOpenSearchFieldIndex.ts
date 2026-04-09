@@ -32,8 +32,9 @@ export interface ICmsEntryOpenSearchFieldIndex {
     fromIndex(params: FromIndexParams): any;
 }
 
-export const CmsEntryOpenSearchFieldIndex =
-    createAbstraction<ICmsEntryOpenSearchFieldIndex>("Cms/Entry/OpenSearch/FieldIndex");
+export const CmsEntryOpenSearchFieldIndex = createAbstraction<ICmsEntryOpenSearchFieldIndex>(
+    "Cms/Entry/OpenSearch/FieldIndex"
+);
 
 export namespace CmsEntryOpenSearchFieldIndex {
     export type Interface = ICmsEntryOpenSearchFieldIndex;
