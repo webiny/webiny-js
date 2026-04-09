@@ -12,6 +12,7 @@ const buildThemeCss = async (entry: string) => {
     const raw = fs.readFileSync(entry, "utf8");
 
     // Inline local imports.
+    // @ts-expect-error TS claims postcssImport() return value is not a valid parameter.
     const result = await postcss([postcssImport()]).process(raw, { from: entry });
 
     return result.css;

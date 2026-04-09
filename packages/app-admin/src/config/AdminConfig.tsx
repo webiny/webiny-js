@@ -14,6 +14,8 @@ import type { PermissionRendererConfig } from "../permissions/types.js";
 import { LexicalTheme } from "./AdminConfig/LexicalTheme.js";
 import { Title } from "./AdminConfig/Title.js";
 import { Logo } from "./AdminConfig/Logo.js";
+import { Dialog } from "./AdminConfig/Dialog.js";
+import type { DialogConfig } from "./AdminConfig/Dialog.js";
 import { createAdminConfig } from "./createAdminConfig.js";
 import type { EditorTheme } from "@webiny/lexical-theme";
 import { createLexicalTokens } from "@webiny/lexical-theme/createLexicalEditorTokens.js";
@@ -35,6 +37,7 @@ interface AdminConfig {
     widgets: WidgetConfig[];
     permissionRenderers: PermissionRendererConfig[];
     lexicalTheme: EditorTheme;
+    dialogs: DialogConfig[];
 }
 
 /* Once the app fully renders (after the LoginScreen), apply protected configs. */
@@ -73,7 +76,8 @@ export const useAdminConfig = () => {
         },
         widgets: baseConfig.widgets ?? [],
         permissionRenderers: baseConfig.permissionRenderers ?? [],
-        lexicalTheme
+        lexicalTheme,
+        dialogs: baseConfig.dialogs ?? []
     };
 };
 
@@ -104,5 +108,6 @@ export const AdminConfig = Object.assign(Private, {
     Dashboard,
     Security,
     LexicalTheme,
+    Dialog,
     useAdminConfig
 });

@@ -17,15 +17,17 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `GetLanguageByCodeUseCase`
 **Import:** `import { GetLanguageByCodeUseCase } from "webiny/api/languages"`
-**Source:** `packages/languages/dist/api/features/getLanguageByCode/index.d.ts`
+**Source:** `@webiny/languages/api/features/getLanguageByCode/index.ts`
 **Description:** Get a language entry by its code.
 
 ---
+
 **Name:** `ListLanguagesUseCase`
 **Import:** `import { ListLanguagesUseCase } from "webiny/api/languages"`
-**Source:** `packages/languages/dist/api/features/listLanguages/index.d.ts`
+**Source:** `@webiny/languages/api/features/listLanguages/index.ts`
 **Description:** List all language entries.
 
 ---

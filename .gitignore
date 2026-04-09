@@ -4,6 +4,8 @@
 .artifacts
 .env*
 .npmrc
+.kiro
+.vscode
 htpasswd
 lerna-debug.log
 npm-debug.log

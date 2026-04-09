@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
 import React, { useState } from "react";
 import type { GenericFormData } from "@webiny/form";
-import { useSnackbar } from "~/hooks/index.js";
-import { Dialog, type DialogProps } from "./Dialog.js";
 import { createProvider } from "@webiny/app";
 import { generateId } from "@webiny/utils";
+import { useSnackbar } from "~/hooks/index.js";
+import { Dialog, type DialogProps } from "./Dialog.js";
+import { DialogParamsContext } from "./DialogParamsContext.js";
+import { useAdminConfig } from "~/config/AdminConfig.js";
 
 interface ShowDialogParams {
     title: ReactNode;
@@ -27,6 +29,8 @@ interface ShowDialogParams {
 export interface DialogsContext {
     showDialog: (params: ShowDialogParams) => () => void;
     closeAllDialogs: () => void;
+    openNamedDialog: (name: string, params: Record<string, unknown>) => void;
+    closeNamedDialog: () => void;
 }
 
 interface DialogsProviderProps {
@@ -63,9 +67,16 @@ export const initializeState = (params: Partial<DialogState> = {}): DialogState 
 
 export const DialogsContext = React.createContext<DialogsContext | undefined>(undefined);
 
+interface NamedDialogIntent {
+    name: string;
+    params: Record<string, unknown>;
+}
+
 export const DialogsProvider = ({ children }: DialogsProviderProps) => {
     const { showSnackbar } = useSnackbar();
     const [dialogs, setDialogs] = useState<Map<string, DialogState>>(new Map());
+    const [namedDialogIntent, setNamedDialogIntent] = useState<NamedDialogIntent | null>(null);
+    const { dialogs: registeredDialogs } = useAdminConfig();
 
     const showDialog = (params: ShowDialogParams) => {
         const newDialog = initializeState({ ...params, open: true });
@@ -95,6 +106,14 @@ export const DialogsProvider = ({ children }: DialogsProviderProps) => {
 
     const closeAllDialogs = () => {
         setDialogs(new Map());
+    };
+
+    const openNamedDialog = (name: string, params: Record<string, unknown>) => {
+        setNamedDialogIntent({ name, params });
+    };
+
+    const closeNamedDialog = () => {
+        setNamedDialogIntent(null);
     };
 
     const onSubmit = async (id: string, data: GenericFormData) => {
@@ -128,7 +147,9 @@ export const DialogsProvider = ({ children }: DialogsProviderProps) => {
     const context = {
         showDialog,
         closeDialog,
-        closeAllDialogs
+        closeAllDialogs,
+        openNamedDialog,
+        closeNamedDialog
     };
 
     return (
@@ -158,6 +179,25 @@ export const DialogsProvider = ({ children }: DialogsProviderProps) => {
                     size={dialog.size}
                 />
             ))}
+            {namedDialogIntent &&
+                (() => {
+                    const registration = registeredDialogs.find(
+                        d => d.name === namedDialogIntent.name
+                    );
+                    if (!registration) {
+                        return null;
+                    }
+                    return (
+                        <DialogParamsContext.Provider
+                            value={{
+                                params: namedDialogIntent.params,
+                                closeDialog: closeNamedDialog
+                            }}
+                        >
+                            {registration.element}
+                        </DialogParamsContext.Provider>
+                    );
+                })()}
         </DialogsContext.Provider>
     );
 };
