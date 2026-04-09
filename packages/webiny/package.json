@@ -102,7 +102,6 @@
     "./admin/security": "./admin/security.js",
     "./admin": "./admin.js",
     "./admin/aco": "./admin/aco.js",
-    "./ui": "./ui.js",
     "./admin/build-params": "./admin/build-params.js",
     "./admin/configs": "./admin/configs.js",
     "./admin/form": "./admin/form.js",
