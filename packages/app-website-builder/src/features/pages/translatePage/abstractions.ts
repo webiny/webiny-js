@@ -1,4 +1,4 @@
-import { createAbstraction } from "webiny/admin";
+import { createAbstraction } from "@webiny/feature/admin";
 
 export interface TranslatedPageDto {
     id: string;

@@ -14543,6 +14543,7 @@ __metadata:
     "@webiny/feature": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    "@webiny/languages": "npm:0.0.0"
     "@webiny/lexical-converter": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/lexical-nodes": "npm:0.0.0"
@@ -14577,6 +14578,7 @@ __metadata:
     slugify: "npm:^1.6.9"
     typescript: "npm:5.9.3"
     vitest: "npm:^4.1.3"
+    zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
 
@@ -15131,6 +15133,7 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -15143,6 +15146,7 @@ __metadata:
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
+    mobx: "npm:^6.15.0"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"

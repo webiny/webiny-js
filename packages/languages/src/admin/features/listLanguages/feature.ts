@@ -1,4 +1,4 @@
-import { createFeature } from "webiny/admin";
+import { createFeature } from "@webiny/feature/admin";
 import {
     ListLanguagesUseCase as UseCaseAbstraction,
     ListLanguagesRepository as RepositoryAbstraction

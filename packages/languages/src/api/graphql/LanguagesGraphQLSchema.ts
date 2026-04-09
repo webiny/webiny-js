@@ -1,11 +1,11 @@
-import { GraphQLSchemaFactory } from "webiny/api/graphql";
 import { Response, ErrorResponse } from "@webiny/handler-graphql";
 import { ListLanguagesUseCase } from "~/api/features/listLanguages/index.js";
+import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
 
-class LanguagesGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface {
+class LanguagesGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
     async execute(
-        builder: GraphQLSchemaFactory.SchemaBuilder
-    ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
+        builder: CoreGraphQLSchemaFactory.SchemaBuilder
+    ): Promise<CoreGraphQLSchemaFactory.SchemaBuilder> {
         builder.addTypeDefs(/* GraphQL */ `
             type LanguagesQuery {
                 listLanguages: LanguagesListResponse!
@@ -65,7 +65,7 @@ class LanguagesGraphQLSchemaImpl implements GraphQLSchemaFactory.Interface {
     }
 }
 
-export const LanguagesGraphQLSchema = GraphQLSchemaFactory.createImplementation({
+export const LanguagesGraphQLSchema = CoreGraphQLSchemaFactory.createImplementation({
     implementation: LanguagesGraphQLSchemaImpl,
     dependencies: []
 });

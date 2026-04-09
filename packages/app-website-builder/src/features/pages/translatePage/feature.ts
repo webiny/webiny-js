@@ -1,4 +1,4 @@
-import { createFeature } from "webiny/admin";
+import { createFeature } from "@webiny/feature/admin";
 import { TranslatePageUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { TranslatePageUseCase } from "./TranslatePageUseCase.js";
 import { TranslatePageRepository } from "./TranslatePageRepository.js";
