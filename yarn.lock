@@ -13519,6 +13519,7 @@ __metadata:
     typescript: "npm:5.9.3"
     unicode-emoji-json: "npm:^0.8.0"
     vitest: "npm:^4.1.2"
+    zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
 

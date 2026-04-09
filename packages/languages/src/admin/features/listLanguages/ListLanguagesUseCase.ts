@@ -1,4 +1,8 @@
-import { ListLanguagesUseCase as UseCaseAbstraction, ListLanguagesRepository, LanguageDto } from "./abstractions.js";
+import {
+    ListLanguagesUseCase as UseCaseAbstraction,
+    ListLanguagesRepository,
+    LanguageDto
+} from "./abstractions.js";
 
 class ListLanguagesUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: ListLanguagesRepository.Interface) {}

@@ -2,15 +2,8 @@
   "mcpServers": {
     "webiny": {
       "command": "npx",
-      "args": [
-        "webiny-mcp",
-        "serve",
-        "--skills=./skills/user-skills"
-      ],
-      "autoApprove": [
-        "list_webiny_skills",
-        "get_webiny_skill"
-      ]
+      "args": ["webiny-mcp", "serve", "--skills=./skills/user-skills"],
+      "autoApprove": ["list_webiny_skills", "get_webiny_skill"]
     }
   }
 }

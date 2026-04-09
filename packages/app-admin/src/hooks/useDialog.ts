@@ -1,47 +1,20 @@
-import type React from "react";
-import { useUi } from "@webiny/app/hooks/useUi.js";
+import { useMemo } from "react";
+import type { z } from "zod";
+import { useDialogParamsContext } from "~/components/Dialogs/DialogParamsContext.js";
 
-interface AcceptAction {
-    label: string;
-    onClick?: () => void;
-}
-interface CancelAction {
-    label: string;
-    onClick?: () => void;
-}
+export function useDialog<T extends z.ZodTypeAny>(
+    schema: T
+): { params: z.infer<T>; closeDialog: () => void };
+export function useDialog(): { params: Record<string, unknown>; closeDialog: () => void };
+export function useDialog(schema?: z.ZodTypeAny) {
+    const { params: rawParams, closeDialog } = useDialogParamsContext();
 
-export interface UseDialogResponseShowDialogOptions {
-    dataTestId?: string;
-    title: string;
-    loading?: boolean;
-    actions?: {
-        accept?: AcceptAction;
-        cancel?: CancelAction;
-    };
-    style?: {
-        [key: string]: any;
-    };
-    onClose?: () => void;
-    [key: string]: any;
-}
-interface UseDialogResponse {
-    showDialog: (message: React.ReactNode, options?: UseDialogResponseShowDialogOptions) => void;
-    hideDialog: () => void;
-}
-const test = (): UseDialogResponse => {
-    const ui = useUi();
-    return {
-        showDialog: (message, options) => {
-            ui.setState(ui => {
-                return { ...ui, dialog: { message, options } };
-            });
-        },
-        hideDialog: () => {
-            ui.setState(ui => {
-                return { ...ui, dialog: null };
-            });
+    const params = useMemo(() => {
+        if (schema) {
+            return schema.parse(rawParams);
         }
-    };
-};
+        return rawParams;
+    }, [rawParams, schema]);
 
-export const useDialog = null
+    return { params, closeDialog };
+}

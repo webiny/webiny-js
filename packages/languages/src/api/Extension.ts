@@ -14,8 +14,8 @@ export const Extension = createFeature({
         EnsureSingleDefaultLanguageFeature.register(container);
         GetLanguageByCodeFeature.register(container);
         ListLanguagesFeature.register(container);
-        
+
         // GraphQL
-        container.register(LanguagesGraphQLSchema)
+        container.register(LanguagesGraphQLSchema);
     }
 });

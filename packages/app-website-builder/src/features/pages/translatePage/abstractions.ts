@@ -1,5 +1,4 @@
 import { createAbstraction } from "webiny/admin";
-import type { PageGatewayDto } from "~/features/pages/getPage/PageGatewayDto.js";
 
 export interface TranslatedPageDto {
     id: string;

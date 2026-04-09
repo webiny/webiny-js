@@ -19,7 +19,7 @@ import { WB_PERMISSIONS_SCHEMA } from "~/constants.js";
 import { WbPermissionsFeature } from "~/features/permissions/feature.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { TranslatePageFeature } from "~/features/pages/translatePage/index.js";
-import { TranslatePageConfig } from "./modules/pages/TranslatePageConfig.js";
+import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 

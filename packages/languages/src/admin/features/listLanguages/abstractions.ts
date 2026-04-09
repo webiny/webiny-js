@@ -19,7 +19,9 @@ export interface IListLanguagesUseCase {
     execute(): Promise<LanguageDto[]>;
 }
 
-export const ListLanguagesUseCase = createAbstraction<IListLanguagesUseCase>("Languages/ListLanguagesUseCase");
+export const ListLanguagesUseCase = createAbstraction<IListLanguagesUseCase>(
+    "Languages/ListLanguagesUseCase"
+);
 
 export namespace ListLanguagesUseCase {
     export type Interface = IListLanguagesUseCase;
@@ -33,7 +35,9 @@ export interface IListLanguagesRepository {
     getLanguages(): LanguageDto[];
 }
 
-export const ListLanguagesRepository = createAbstraction<IListLanguagesRepository>("Languages/ListLanguagesRepository");
+export const ListLanguagesRepository = createAbstraction<IListLanguagesRepository>(
+    "Languages/ListLanguagesRepository"
+);
 
 export namespace ListLanguagesRepository {
     export type Interface = IListLanguagesRepository;
@@ -46,7 +50,9 @@ export interface IListLanguagesGateway {
     execute(): Promise<LanguageDto[]>;
 }
 
-export const ListLanguagesGateway = createAbstraction<IListLanguagesGateway>("Languages/ListLanguagesGateway");
+export const ListLanguagesGateway = createAbstraction<IListLanguagesGateway>(
+    "Languages/ListLanguagesGateway"
+);
 
 export namespace ListLanguagesGateway {
     export type Interface = IListLanguagesGateway;

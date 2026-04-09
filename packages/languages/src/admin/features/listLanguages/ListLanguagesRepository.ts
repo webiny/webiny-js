@@ -25,7 +25,7 @@ class ListLanguagesRepositoryImpl implements RepositoryAbstraction.Interface {
         runInAction(() => {
             this.languages = languages;
         });
-        
+
         return this.languages;
     }
 }
