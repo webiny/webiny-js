@@ -1,18 +1,18 @@
 ---
-name: webiny-rest-route
+name: webiny-http-route
 context: webiny-extensions
 description: >
-  Adding custom REST routes to the API using Api.Route and Route.Interface.
+  Adding custom HTTP routes to the API using Api.Route and Route.Interface.
   Use this skill when the developer wants to expose a custom HTTP endpoint (GET, POST, PUT, etc.)
   on the API Gateway alongside the GraphQL handler, implement Route.Interface with full DI support,
-  or register a custom REST handler in webiny.config.tsx.
+  or register a custom HTTP handler in webiny.config.tsx.
 ---
 
-# Custom REST Routes
+# Custom HTTP Routes
 
 ## TL;DR
 
-Add a custom REST route by implementing `Route.Interface` and registering it with `<Api.Route>` in `webiny.config.tsx`. The `path` and `method` props configure API Gateway and Fastify route registration. Your handler receives a framework-agnostic `Route.Request` and `Route.Reply` and supports full DI (Logger, BuildParams, UseCases, etc.).
+Add a custom HTTP route by implementing `Route.Interface` and registering it with `<Api.Route>` in `webiny.config.tsx`. The `path` and `method` props configure API Gateway and Fastify route registration. Your handler receives a framework-agnostic `Route.Request` and `Route.Reply` and supports full DI (Logger, BuildParams, UseCases, etc.).
 
 **YOU MUST include the full file path with the `.ts` extension in the `src` prop.** For example, use `src={"/extensions/MyRoute.ts"}`, NOT `src={"/extensions/MyRoute"}`. Omitting the file extension will cause a build failure.
 
@@ -171,6 +171,6 @@ Deploy:            yarn webiny deploy api --env=dev
 ## Related Skills
 
 - **webiny-api-architect** — DI patterns, Services, UseCases, feature organization
-- **webiny-custom-graphql-api** — Custom GraphQL endpoints (alternative to REST)
+- **webiny-custom-graphql-api** — Custom GraphQL endpoints (alternative to HTTP)
 - **webiny-dependency-injection** — Injectable services catalog (Logger, BuildParams, etc.)
 - **webiny-infrastructure-extensions** — Pulumi-level infrastructure customization
