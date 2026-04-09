@@ -672,6 +672,7 @@ Creates a feature definition that the framework loads as an extension.
 - **webiny-api-permissions** — Schema-based permissions, CRUD authorization patterns, own-record scoping, testing
 - **webiny-event-handler-pattern** — EventHandler lifecycle, domain event definition and publishing, handler abstractions
 - **webiny-custom-graphql-api** — GraphQL schema creation, dynamic inputs, namespaced mutations
+- **webiny-http-route** — Custom HTTP endpoints via `Api.Route` and `Route.Interface`
 - **webiny-v5-to-v6-migration** — Side-by-side migration patterns for AI agents
 - **webiny-full-stack-architect** — Top-level component, shared domain layer, BuildParam declarations
 - **webiny-dependency-injection** — The `createImplementation` DI pattern and injectable services

@@ -3,7 +3,7 @@
   "mcp": {
     "webiny": {
       "type": "local",
-      "command": ["npx", "webiny", "mcp-server"],
+      "command": ["npx", "webiny-mcp", "serve", "--additional-skills=./my-skills"],
       "enabled": true
     }
   }
