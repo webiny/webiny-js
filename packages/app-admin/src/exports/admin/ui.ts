@@ -1,3 +1,5 @@
+export { useDialog } from "~/hooks/index.js";
+export { useOpenDialog } from "~/hooks/index.js";
 export { useHotkeys } from "~/hooks/useHotkeys.js";
 export { useDialogs } from "~/components/Dialogs/useDialogs.js";
 export { Logo } from "~/base/ui/Logo.js";

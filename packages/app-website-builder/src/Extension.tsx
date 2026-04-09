@@ -18,6 +18,8 @@ import { NextjsConfigFeature } from "~/presentation/navigation/NextjsConfig/feat
 import { WB_PERMISSIONS_SCHEMA } from "~/constants.js";
 import { WbPermissionsFeature } from "~/features/permissions/feature.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
+import { TranslatePageFeature } from "~/features/pages/translatePage/index.js";
+import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -33,6 +35,7 @@ export const Extension = () => {
         <>
             <RegisterFeature feature={NextjsConfigFeature} />
             <RegisterFeature feature={WbPermissionsFeature} />
+            <RegisterFeature feature={TranslatePageFeature} />
             <AdminConfig>
                 <Security.Permissions
                     name="website-builder"
@@ -99,6 +102,7 @@ export const Extension = () => {
             </AdminConfig>
             <PagesListConfig />
             <RedirectsListConfig />
+            <TranslatePageConfig />
         </>
     );
 };

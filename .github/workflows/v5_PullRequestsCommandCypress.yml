@@ -400,8 +400,10 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.pulumi-backend-url }}
-      AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
-      OPENSEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
+      AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.V5_OPENSEARCH_DOMAIN_NAME }}
+      OPENSEARCH_ENDPOINT: ${{ secrets.V5_OPENSEARCH_ENDPOINT }}
+      OPENSEARCH_USERNAME: ${{ secrets.V5_OPENSEARCH_USERNAME }}
+      OPENSEARCH_PASSWORD: ${{ secrets.V5_OPENSEARCH_PASSWORD }}
       OPENSEARCH_INDEX_PREFIX: ${{ github.run_id }}_
     steps:
       - uses: actions/setup-node@v5
@@ -542,8 +544,10 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       WEBINY_PULUMI_BACKEND: ${{ needs.e2e-wby-cms-ddb-os-constants.outputs.pulumi-backend-url }}
-      AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
-      OPENSEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
+      AWS_OPENSEARCH_DOMAIN_NAME: ${{ secrets.V5_OPENSEARCH_DOMAIN_NAME }}
+      OPENSEARCH_ENDPOINT: ${{ secrets.V5_OPENSEARCH_ENDPOINT }}
+      OPENSEARCH_USERNAME: ${{ secrets.V5_OPENSEARCH_USERNAME }}
+      OPENSEARCH_PASSWORD: ${{ secrets.V5_OPENSEARCH_PASSWORD }}
       OPENSEARCH_INDEX_PREFIX: ${{ github.run_id }}_
     steps:
       - uses: actions/setup-node@v5
