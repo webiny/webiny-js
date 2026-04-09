@@ -13,8 +13,8 @@ import { createSortModifierPluginList } from "./plugins/sortModifier.js";
 import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createElasticsearchSort } from "./sort.js";
 import type {
-    QueryDslBoolQuery as BoolQueryConfig,
     PrimitiveValue,
+    QueryDslBoolQuery as BoolQueryConfig,
     SearchBody
 } from "@webiny/api-opensearch/types.js";
 import { createExecFiltering } from "./filtering/index.js";
@@ -65,7 +65,9 @@ export const createElasticsearchBody = ({
     /**
      * Filter body modifiers applicable to this model.
      */
-    const applicableBodyModifiers = bodyModifiers.filter(m => !m.modelId || m.modelId === model.modelId);
+    const applicableBodyModifiers = bodyModifiers.filter(m => {
+        return !m.modelId || m.modelId === model.modelId;
+    });
     /**
      * We need the fields which we can search through via the full text search.
      *

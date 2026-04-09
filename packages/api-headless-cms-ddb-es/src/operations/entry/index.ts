@@ -105,7 +105,15 @@ const convertToStorageEntry = <T extends CmsEntryValues = CmsEntryValues>(
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
-    const { entity, esEntity, elasticsearch, plugins, fieldRegistry, compressionHandler, bodyModifiers } = params;
+    const {
+        entity,
+        esEntity,
+        elasticsearch,
+        plugins,
+        fieldRegistry,
+        compressionHandler,
+        bodyModifiers
+    } = params;
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
     const getStorageOperationsCmsModelPlugin = () => {

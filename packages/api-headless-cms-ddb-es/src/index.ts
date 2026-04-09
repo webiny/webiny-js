@@ -84,12 +84,7 @@ export const createOpenSearchStorageOperations: IStorageOperationsFactory = para
 
     const fieldRegistry = getContainer().resolve(CmsModelFieldToGraphQLRegistry);
     const compressionHandler = getContainer().resolve(CompressionHandler);
-    let bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[] = [];
-    try {
-        bodyModifiers = getContainer().resolveAll(CmsEntryOpenSearchBodyModifier);
-    } catch {
-        /* No body modifiers registered. */
-    }
+    const bodyModifiers = getContainer().resolveAll(CmsEntryOpenSearchBodyModifier);
 
     const entries = createEntriesStorageOperations({
         entity: entities.entries,

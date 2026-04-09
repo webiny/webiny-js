@@ -1,1 +1,1 @@
-export {CmsEntryOpenSearchBodyModifier} from "./abstractions.js";
+export { CmsEntryOpenSearchBodyModifier } from "./abstractions.js";

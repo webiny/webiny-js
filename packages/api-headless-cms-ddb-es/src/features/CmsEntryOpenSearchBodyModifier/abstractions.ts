@@ -13,8 +13,9 @@ export interface ICmsEntryOpenSearchBodyModifier {
     modifyBody(params: ModifyBodyParams): void;
 }
 
-export const CmsEntryOpenSearchBodyModifier =
-    createAbstraction<ICmsEntryOpenSearchBodyModifier>("Cms/Entry/OpenSearch/BodyModifier");
+export const CmsEntryOpenSearchBodyModifier = createAbstraction<ICmsEntryOpenSearchBodyModifier>(
+    "Cms/Entry/OpenSearch/BodyModifier"
+);
 
 export namespace CmsEntryOpenSearchBodyModifier {
     export type Interface = ICmsEntryOpenSearchBodyModifier;
