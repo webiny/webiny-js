@@ -3,7 +3,6 @@ import type { PluginsContainer } from "@webiny/plugins";
 import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import type { CmsModelFieldToElasticsearchPlugin } from "~/types.js";
 import type { ModelFieldParent, ModelFields } from "./types.js";
-import { CmsElasticsearchModelFieldPlugin } from "~/plugins/index.js";
 import {
     ENTRY_META_FIELDS,
     isDateTimeEntryMetaField,
@@ -172,44 +171,6 @@ interface FieldTypePlugins {
     [key: string]: FieldTypePlugin;
 }
 
-interface BuildCustomFieldsParams {
-    fields: CmsElasticsearchModelFieldPlugin[];
-    fieldTypePlugins: FieldTypePlugins;
-}
-
-const buildCustomFields = (params: BuildCustomFieldsParams) => {
-    const { fields, fieldTypePlugins } = params;
-
-    return fields.reduce<ModelFields>((collection, field) => {
-        const typePlugin = fieldTypePlugins[field.fieldType];
-        if (!typePlugin) {
-            return collection;
-        }
-        let unmappedType: string | undefined = undefined;
-        if (typePlugin.unmappedType) {
-            unmappedType = typePlugin.unmappedType(field);
-        }
-
-        collection[field.fieldId] = {
-            type: field.fieldType,
-            field: createSystemField({
-                storageId: field.fieldId,
-                fieldId: field.fieldId,
-                type: field.fieldType
-            }),
-            unmappedType,
-            fullTextSearch: field.searchable ? typePlugin.isFullTextSearchable : false,
-            searchable: field.searchable || typePlugin.searchable,
-            sortable: field.sortable || typePlugin.sortable,
-            systemField: false,
-            path: field.path,
-            parents: []
-        };
-
-        return collection;
-    }, {});
-};
-
 interface BuildParams {
     plugins: FieldTypePlugins;
     fields: CmsModelField[];
@@ -275,11 +236,6 @@ interface ICreateModelFieldsParams {
 
 export const createModelFields = ({ plugins, model, fieldRegistry }: ICreateModelFieldsParams) => {
     const fields = model.fields;
-    const fieldDefinitionPlugins = plugins
-        .byType<CmsElasticsearchModelFieldPlugin>(CmsElasticsearchModelFieldPlugin.type)
-        .filter(plugin => {
-            return plugin.canBeApplied(model.modelId);
-        });
     /**
      * Collect all unmappedType from elastic plugins.
      */
@@ -307,10 +263,6 @@ export const createModelFields = ({ plugins, model, fieldRegistry }: ICreateMode
 
     return {
         ...createSystemFields(),
-        ...buildCustomFields({
-            fields: fieldDefinitionPlugins,
-            fieldTypePlugins
-        }),
         ...buildFieldsList({
             fields,
             plugins: fieldTypePlugins,

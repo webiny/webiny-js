@@ -46,12 +46,11 @@ const getFullTextSearch = (
          */
         if (models.includes(model.modelId)) {
             return item;
-        }
-        /**
-         * Then we set the first possible implementation, which has no models defined, as the default one.
-         * It is important not to set the one which has models defined as they are specifically for the targeted model.
-         */
-        else if (!fallback && models.length === 0) {
+        } else if (!fallback && models.length === 0) {
+            /**
+             * Then we set the first possible implementation, which has no models defined, as the default one.
+             * It is important not to set the one which has models defined as they are specifically for the targeted model.
+             */
             fallback = item;
         }
     }

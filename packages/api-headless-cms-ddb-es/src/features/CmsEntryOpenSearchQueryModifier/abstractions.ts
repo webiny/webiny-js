@@ -13,8 +13,9 @@ export interface ICmsEntryOpenSearchQueryModifier {
     modifyQuery(params: ModifyQueryParams): void;
 }
 
-export const CmsEntryOpenSearchQueryModifier =
-    createAbstraction<ICmsEntryOpenSearchQueryModifier>("Cms/Entry/OpenSearch/QueryModifier");
+export const CmsEntryOpenSearchQueryModifier = createAbstraction<ICmsEntryOpenSearchQueryModifier>(
+    "Cms/Entry/OpenSearch/QueryModifier"
+);
 
 export namespace CmsEntryOpenSearchQueryModifier {
     export type Interface = ICmsEntryOpenSearchQueryModifier;

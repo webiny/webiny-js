@@ -5,7 +5,9 @@ import type { OpenSearchQuerySearchValuePlugins } from "../types.js";
 interface Params {
     valueSearches: CmsEntryOpenSearchValueSearch.Interface[];
 }
-export const createSearchPluginList = ({ valueSearches }: Params): OpenSearchQuerySearchValuePlugins => {
+export const createSearchPluginList = ({
+    valueSearches
+}: Params): OpenSearchQuerySearchValuePlugins => {
     return valueSearches.reduce<OpenSearchQuerySearchValuePlugins>((result, item) => {
         if (result[item.fieldType]) {
             throw new WebinyError(

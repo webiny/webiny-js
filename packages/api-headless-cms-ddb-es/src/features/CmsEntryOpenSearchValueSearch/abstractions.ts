@@ -19,8 +19,9 @@ export interface ICmsEntryOpenSearchValueSearch {
     createPath(params: CreatePathParams): string | null;
 }
 
-export const CmsEntryOpenSearchValueSearch =
-    createAbstraction<ICmsEntryOpenSearchValueSearch>("Cms/Entry/OpenSearch/ValueSearch");
+export const CmsEntryOpenSearchValueSearch = createAbstraction<ICmsEntryOpenSearchValueSearch>(
+    "Cms/Entry/OpenSearch/ValueSearch"
+);
 
 export namespace CmsEntryOpenSearchValueSearch {
     export type Interface = ICmsEntryOpenSearchValueSearch;
