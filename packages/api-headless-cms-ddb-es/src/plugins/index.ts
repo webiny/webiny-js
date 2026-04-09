@@ -1,4 +1,3 @@
-export * from "./CmsEntryElasticsearchBodyModifierPlugin.js";
 export * from "./CmsEntryElasticsearchIndexPlugin.js";
 export * from "./CmsEntryElasticsearchQueryBuilderValueSearchPlugin.js";
 export * from "./CmsEntryElasticsearchQueryModifierPlugin.js";

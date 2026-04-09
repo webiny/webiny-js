@@ -70,6 +70,7 @@ import {
 import type { IEntryEntity, IEntryEntityAttributes } from "~/definitions/types.js";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
+import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
@@ -78,6 +79,7 @@ export interface CreateEntriesStorageOperationsParams {
     plugins: PluginsContainer;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
     compressionHandler: CompressionHandler.Interface;
+    bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
 }
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -103,7 +105,7 @@ const convertToStorageEntry = <T extends CmsEntryValues = CmsEntryValues>(
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
-    const { entity, esEntity, elasticsearch, plugins, fieldRegistry, compressionHandler } = params;
+    const { entity, esEntity, elasticsearch, plugins, fieldRegistry, compressionHandler, bodyModifiers } = params;
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
     const getStorageOperationsCmsModelPlugin = () => {
@@ -1330,6 +1332,7 @@ export const createEntriesStorageOperations = (
         const body = createElasticsearchBody({
             model,
             fieldRegistry,
+            bodyModifiers,
             params: {
                 ...params,
                 limit,
@@ -2034,6 +2037,7 @@ export const createEntriesStorageOperations = (
         const initialBody = createElasticsearchBody({
             model,
             fieldRegistry,
+            bodyModifiers,
             params: {
                 limit: 1,
                 where

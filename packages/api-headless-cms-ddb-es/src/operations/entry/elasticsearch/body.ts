@@ -10,7 +10,7 @@ import { createInitialQuery } from "./initialQuery.js";
 import { applyFullTextSearch } from "./fullTextSearch.js";
 import { createQueryModifierPluginList } from "./plugins/queryModifier.js";
 import { createSortModifierPluginList } from "./plugins/sortModifier.js";
-import { createBodyModifierPluginList } from "./plugins/bodyModifier.js";
+import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
 import { createElasticsearchSort } from "./sort.js";
 import type {
     QueryDslBoolQuery as BoolQueryConfig,
@@ -25,6 +25,7 @@ interface ICreateElasticsearchBodyParams {
     plugins: PluginsContainer;
     model: CmsModel;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
         after?: PrimitiveValue[];
@@ -34,7 +35,8 @@ export const createElasticsearchBody = ({
     plugins,
     model,
     params,
-    fieldRegistry
+    fieldRegistry,
+    bodyModifiers
 }: ICreateElasticsearchBodyParams): SearchBody => {
     const { fields, search: term, where, sort: initialSort, after, limit } = params;
     /**
@@ -61,12 +63,9 @@ export const createElasticsearchBody = ({
         model
     });
     /**
-     * We need the body modifier plugins.
+     * Filter body modifiers applicable to this model.
      */
-    const bodyModifierPlugins = createBodyModifierPluginList({
-        plugins,
-        model
-    });
+    const applicableBodyModifiers = bodyModifiers.filter(m => !m.modelId || m.modelId === model.modelId);
     /**
      * We need the fields which we can search through via the full text search.
      *
@@ -144,8 +143,8 @@ export const createElasticsearchBody = ({
         track_total_hits: true
     };
 
-    for (const pl of bodyModifierPlugins) {
-        pl.modifyBody({
+    for (const modifier of applicableBodyModifiers) {
+        modifier.modifyBody({
             body,
             model,
             where
