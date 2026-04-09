@@ -5,6 +5,7 @@ import { JsonFieldIndex } from "./fields/JsonFieldIndex.js";
 import { LongTextFieldIndex } from "./fields/LongTextFieldIndex.js";
 import { NumberFieldIndex } from "./fields/NumberFieldIndex.js";
 import { DefaultFieldIndex } from "./fields/DefaultFieldIndex.js";
+import { DateTimeFieldIndex } from "./fields/DateTimeFieldIndex.js";
 
 export const CmsEntryOpenSearchFieldIndexFeature = createFeature({
     name: "Cms/Entry/OpenSearch/FieldIndexFeature",
@@ -14,6 +15,7 @@ export const CmsEntryOpenSearchFieldIndexFeature = createFeature({
         container.register(LongTextFieldIndex);
         container.register(NumberFieldIndex);
         container.register(DefaultFieldIndex);
+        container.register(DateTimeFieldIndex);
         container.register(CmsEntryOpenSearchFieldIndexRegistry);
     }
 });
