@@ -8,7 +8,7 @@ class CmsEntryOpenSearchValueSearchRegistryImpl implements Abstraction.Interface
     public get(type: string): Abstraction.SearchValue | undefined {
         const fieldType = getBaseFieldType({ type });
         return this.searches.find(s => {
-            return s.fieldType === type;
+            return s.fieldType === fieldType;
         });
     }
 
