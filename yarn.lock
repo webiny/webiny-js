@@ -12946,6 +12946,7 @@ __metadata:
     "@webiny/api-headless-cms-ddb-es": "npm:0.0.0"
     "@webiny/api-opensearch": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"

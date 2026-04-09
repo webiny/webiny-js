@@ -1,5 +1,5 @@
 import type { Client } from "@webiny/api-opensearch";
-import WebinyError from "@webiny/error";
+import { WebinyError } from "@webiny/error";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { configurations } from "@webiny/api-headless-cms-ddb-es/configurations.js";
 import type { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-ddb-es/exports/api/cms/opensearch.js";
@@ -26,6 +26,9 @@ export const createIndex = async (params: ICreateIndexParams): Promise<void> => 
 
     const usable = indexConfigs.filter(c => c.canUse({ model }));
     if (usable.length === 0) {
+        /**
+         * Should not happen in production as we have a default index configuration, but it can happen in tests if the test setup is not correct.
+         */
         throw new WebinyError(
             "Could not find a single usable CmsEntryOpenSearchIndex.",
             "OPENSEARCH_INDEX_TEMPLATE_ERROR"
