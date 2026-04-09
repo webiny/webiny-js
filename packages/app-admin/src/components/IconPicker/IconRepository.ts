@@ -37,11 +37,13 @@ export class IconRepository {
     }
 
     getIcons() {
-        return structuredClone(this.icons);
+        return this.icons.map(icon => {
+            return structuredClone(icon);
+        });
     }
 
     addIcon(icon: Icon) {
-        this.icons = [...this.icons, icon];
+        this.icons.push(icon);
     }
 
     getIconTypes() {

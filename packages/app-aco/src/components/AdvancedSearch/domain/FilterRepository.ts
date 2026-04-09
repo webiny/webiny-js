@@ -21,7 +21,9 @@ export class FilterRepository {
     }
 
     getFilters() {
-        return structuredClone(this.filters);
+        return this.filters.map(filter => {
+            return structuredClone(filter);
+        });
     }
 
     getLoading() {

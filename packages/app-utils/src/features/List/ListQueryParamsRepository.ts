@@ -75,7 +75,7 @@ export class ListQueryParamsRepositoryImpl<TParams extends BaseListParams>
     }
 
     private clone(value: TParams): TParams {
-        return structuredClone ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+        return structuredClone(value);
     }
 }
 
