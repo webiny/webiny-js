@@ -11,7 +11,8 @@ import { TagIcon } from "./TagIcon.js";
 const tagVariants = cva(
     [
         "inline-flex items-center gap-xxs rounded-sm text-sm text-regular transition-colors overflow-hidden",
-        "focus:outline-none"
+        "focus:outline-none",
+        "h-[20px]"
     ],
     {
         variants: {
@@ -101,7 +102,8 @@ const tagVariants = cva(
 );
 
 export interface TagProps
-    extends Omit<React.HTMLAttributes<HTMLSpanElement>, "children" | "content">,
+    extends
+        Omit<React.HTMLAttributes<HTMLSpanElement>, "children" | "content">,
         VariantProps<typeof tagVariants> {
     content: React.ReactNode;
     onDismiss?: (event: React.SyntheticEvent<HTMLSpanElement>) => void;

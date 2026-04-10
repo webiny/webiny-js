@@ -7,17 +7,21 @@ import { Header } from "~/modules/pages/PagesList/components/Header/index.js";
 import { BottomInfoBar } from "~/modules/pages/PagesList/components/BottomInfoBar/index.js";
 import { Table } from "~/modules/pages/PagesList/components/Table/index.js";
 import { Empty } from "~/modules/pages/PagesList/components/Empty/index.js";
-import { useCreatePageDialog } from "./CreatePage/CreatePage.js";
 import { useLoadMorePages } from "~/features/pages/index.js";
 import { BulkActions } from "../BulkActions/index.js";
 import { Filters } from "~/modules/pages/PagesList/components/Filters/index.js";
+import { useCreatePageDialog } from "~/presentation/pages/CreatePage/CreatePageDialog.js";
 
 const Main = () => {
     const { vm } = useDocumentList();
     const { loadMorePages } = useLoadMorePages();
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
+    const openCreatePageDialog = useCreatePageDialog();
 
-    const { showCreatePageDialog } = useCreatePageDialog(vm.folderId);
+    const showCreatePageDialog = useCallback(() => {
+        openCreatePageDialog(vm.folderId);
+    }, [openCreatePageDialog, vm.folderId]);
+
     const { getFolderLevelPermission: canManageContent } =
         useGetFolderLevelPermission("canManageContent");
 

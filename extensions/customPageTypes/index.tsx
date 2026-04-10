@@ -1,22 +1,35 @@
 import React from "react";
 import { PageListConfig } from "webiny/admin/website-builder/page/list";
-import { RetailPageForm } from "./RetailPageForm";
+
+const { PageType } = PageListConfig;
 
 export default () => {
     return (
         <PageListConfig>
             {/*<PageListConfig.PageType name={"static"} remove={true} />*/}
 
-            <PageListConfig.PageType
+            <PageType
                 name={"retailPage"}
                 label={"Retail Page"}
-                element={<RetailPageForm />}
+                element={
+                    <>
+                        <PageType.Language />
+                        <PageType.Title />
+                        <PageType.Path />
+                    </>
+                }
             />
 
             <PageListConfig.PageType
                 name={"restaurantPage"}
                 label={"Restaurant Page"}
-                element={<RetailPageForm />}
+                element={
+                    <>
+                        <PageType.Language />
+                        <PageType.Title />
+                        <PageType.Path />
+                    </>
+                }
             />
         </PageListConfig>
     );

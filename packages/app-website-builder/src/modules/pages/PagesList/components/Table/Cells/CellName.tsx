@@ -5,6 +5,7 @@ import { PageListConfig } from "~/modules/pages/configs/index.js";
 import { useEditPageUrl } from "~/modules/pages/PagesList/hooks/useEditPageUrl.js";
 import { FolderCellName } from "~/modules/shared/FolderCellName.js";
 import type { PageDto } from "~/domain/Page/index.js";
+import { LanguageCodeTag } from "~/presentation/components/LanguageCodeTag.js";
 
 interface PageCellRowTitleProps {
     page: PageDto;
@@ -21,6 +22,7 @@ const PageCellRowTitle = ({ page }: PageCellRowTitleProps) => {
                     icon={<File />}
                     label={`Page - ${page.properties.title}`}
                 />
+                <LanguageCodeTag code={page.properties.language} className={"mr-1"} />
                 <Text as={"div"} className={"truncate min-w-0 shrink"}>
                     {page.properties.title}
                 </Text>
