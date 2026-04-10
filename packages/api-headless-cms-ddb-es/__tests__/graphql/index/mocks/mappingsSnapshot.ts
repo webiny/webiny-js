@@ -22,6 +22,12 @@ export const createMappingsSnapshot = () => {
                     numbers: {
                         match: "number@*",
                         mapping: {
+                            fields: {
+                                keyword: {
+                                    ignore_above: 256,
+                                    type: "keyword"
+                                }
+                            },
                             scaling_factor: 10000,
                             type: "scaled_float"
                         }
@@ -46,6 +52,14 @@ export const createMappingsSnapshot = () => {
                                 }
                             },
                             type: "text"
+                        }
+                    }
+                },
+                {
+                    bytes: {
+                        match: "byte@*",
+                        mapping: {
+                            type: "byte"
                         }
                     }
                 }

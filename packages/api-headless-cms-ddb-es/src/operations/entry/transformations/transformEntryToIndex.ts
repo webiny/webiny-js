@@ -1,4 +1,3 @@
-import type { PluginsContainer } from "@webiny/plugins";
 import type {
     CmsEntry,
     CmsEntryValues,
@@ -7,25 +6,26 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import { prepareEntryToIndex } from "~/helpers/index.js";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
+import type { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 interface TransformEntryToIndexParams<T extends CmsEntryValues = CmsEntryValues> {
-    plugins: PluginsContainer;
     model: StorageOperationsCmsModel<T>;
     entry: CmsEntry<T>;
     storageEntry: CmsStorageEntry<T>;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
 }
 
 export const transformEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
     params: TransformEntryToIndexParams<T>
 ) => {
-    const { plugins, model, entry, storageEntry, fieldRegistry } = params;
+    const { model, entry, storageEntry, fieldRegistry, fieldIndexRegistry } = params;
     const result = prepareEntryToIndex<T>({
-        plugins,
         model,
         entry: structuredClone(entry),
         storageEntry: structuredClone(storageEntry),
-        fieldRegistry
+        fieldRegistry,
+        fieldIndexRegistry
     });
 
     delete result["PK"];

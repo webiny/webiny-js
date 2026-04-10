@@ -3,7 +3,7 @@ import { configurations } from "~/configurations";
 import { getOpenSearchIndexPrefix } from "@webiny/api-opensearch";
 
 describe("Elasticsearch index", () => {
-    const tenants = [["root"], ["admin"]];
+    const tenants = [["root"], ["admin"], ["unknown"]];
 
     it.each(tenants)("should create index with tenant id as part of the name", async tenant => {
         const prefix = getOpenSearchIndexPrefix();
