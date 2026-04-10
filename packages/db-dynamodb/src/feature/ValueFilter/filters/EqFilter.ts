@@ -1,7 +1,7 @@
 import { ValueFilter } from "../abstractions/ValueFilter.js";
 
 class EqFilterImpl implements ValueFilter.Interface {
-    private readonly operation = "eq";
+    public readonly operation = "eq";
 
     public canUse({ operation }: ValueFilter.CanUseParams): boolean {
         return this.operation === operation;

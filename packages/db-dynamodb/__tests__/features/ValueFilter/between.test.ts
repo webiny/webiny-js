@@ -1,11 +1,11 @@
 import { describe, test, expect } from "vitest";
-import { createRegistry } from "./registry";
+import { createValueFilterRegistry } from "~tests/__mocks/registry";
 
 describe("between filter", () => {
-    const registry = createRegistry();
+    const registry = createValueFilterRegistry();
 
     const getFilter = () => {
-        const filter = registry.get({ operation: "between", value: null, compareValue: null });
+        const filter = registry.get({ operation: "between" });
         expect(filter).toBeDefined();
         return filter!;
     };

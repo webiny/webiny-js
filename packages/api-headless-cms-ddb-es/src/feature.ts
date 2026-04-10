@@ -1,4 +1,4 @@
-import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters/index.js";
+import { registerExtension as registerDynamoDbExtension } from "@webiny/db-dynamodb";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import type { CmsContext, StorageOperationsFactory as IStorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
@@ -200,13 +200,10 @@ const storageOperationsFeature = createFeature({
 });
 
 export const registerCmsOpenSearchStorageOperations = () => {
-    return createRegisterExtensionPlugin(context => {
-        context.plugins.register([
-            /**
-             * DynamoDB filter plugins for the where conditions.
-             */
-            dynamoDbValueFilters()
-        ]);
-        return storageOperationsFeature.register(context.container);
-    });
+    return [
+        registerDynamoDbExtension(),
+        createRegisterExtensionPlugin(context => {
+            return storageOperationsFeature.register(context.container);
+        }),
+    ];
 };

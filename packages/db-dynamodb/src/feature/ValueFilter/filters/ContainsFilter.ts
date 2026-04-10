@@ -47,7 +47,7 @@ const createCompareValues = (value: string) => {
 };
 
 class ContainsFilterImpl implements ValueFilter.Interface {
-    private readonly operation = "contains";
+    public readonly operation = "contains";
 
     public canUse({ operation }: ValueFilter.CanUseParams): boolean {
         return this.operation === operation;

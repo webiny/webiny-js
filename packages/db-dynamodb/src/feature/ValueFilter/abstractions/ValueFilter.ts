@@ -1,8 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 
-export interface IValueFilterCanUseParams<TValue = any, TCompareValue = any> {
-    value: TValue;
-    compareValue: TCompareValue;
+export interface IValueFilterCanUseParams {
     operation: string;
 }
 
@@ -14,7 +12,8 @@ export interface IValueFilterMatchesParams<TValue = any, TCompareValue = any> {
 export type IValueFilterMatchesResult = boolean;
 
 export interface IValueFilter<TValue = any, TCompareValue = any> {
-    canUse(params: IValueFilterCanUseParams<TValue, TCompareValue>): boolean;
+    readonly operation: string;
+    canUse(params: IValueFilterCanUseParams): boolean;
     matches(params: IValueFilterMatchesParams<TValue, TCompareValue>): IValueFilterMatchesResult;
 }
 

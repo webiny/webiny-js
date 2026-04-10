@@ -2,7 +2,7 @@ import { WebinyError } from "@webiny/error";
 import { ValueFilter } from "../abstractions/ValueFilter.js";
 
 class InFilterImpl implements ValueFilter.Interface {
-    private readonly operation = "in";
+    public readonly operation = "in";
 
     public canUse({ operation }: ValueFilter.CanUseParams): boolean {
         return this.operation === operation;

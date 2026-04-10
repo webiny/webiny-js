@@ -2,7 +2,7 @@ import { WebinyError } from "@webiny/error";
 import { ValueFilter } from "../abstractions/ValueFilter.js";
 
 class BetweenFilterImpl implements ValueFilter.Interface {
-    private readonly operation = "between";
+    public readonly operation = "between";
 
     public canUse({ operation }: ValueFilter.CanUseParams): boolean {
         return this.operation === operation;

@@ -1,14 +1,12 @@
-import { describe, test, expect } from "vitest";
-import { createRegistry } from "./registry";
+import { describe, expect, test } from "vitest";
+import { createValueFilterRegistry } from "~tests/__mocks/registry";
 
 describe("startsWith filter", () => {
-    const registry = createRegistry();
+    const registry = createValueFilterRegistry();
 
-    const getFilter = (compareValue: any = "x") => {
+    const getFilter = () => {
         const filter = registry.get({
-            operation: "startsWith",
-            value: null,
-            compareValue
+            operation: "startsWith"
         });
         expect(filter).toBeDefined();
         return filter!;
@@ -21,7 +19,7 @@ describe("startsWith filter", () => {
     test.each(startsWithList)(
         "value should startsWith - %s starts with %s",
         (value, compareValue) => {
-            const filter = getFilter(compareValue);
+            const filter = getFilter();
 
             const result = filter.matches({ value, compareValue });
 
@@ -36,7 +34,7 @@ describe("startsWith filter", () => {
     test.each(notStartsWith)(
         "value should not startsWith - %s does not start with %s",
         (value, compareValue) => {
-            const filter = getFilter(compareValue);
+            const filter = getFilter();
 
             const result = filter.matches({ value, compareValue });
 
@@ -45,20 +43,18 @@ describe("startsWith filter", () => {
     );
 
     test("canUse returns false for empty compareValue", () => {
-        const filter = registry.get({ operation: "startsWith", value: null, compareValue: "" });
+        const filter = registry.get({ operation: "startsWith" });
         expect(filter).toBeUndefined();
     });
 
     test("canUse returns false for null compareValue", () => {
-        const filter = registry.get({ operation: "startsWith", value: null, compareValue: null });
+        const filter = registry.get({ operation: "startsWith" });
         expect(filter).toBeUndefined();
     });
 
     test("canUse returns false for undefined compareValue", () => {
         const filter = registry.get({
             operation: "startsWith",
-            value: null,
-            compareValue: undefined
         });
         expect(filter).toBeUndefined();
     });

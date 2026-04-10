@@ -1,11 +1,11 @@
 import { describe, test, expect } from "vitest";
-import { createRegistry } from "./registry";
+import { createValueFilterRegistry } from "~tests/__mocks/registry";
 
 describe("gt filter", () => {
-    const registry = createRegistry();
+    const registry = createValueFilterRegistry();
 
     const getFilter = () => {
-        const filter = registry.get({ operation: "gt", value: null, compareValue: null });
+        const filter = registry.get({ operation: "gt" });
         expect(filter).toBeDefined();
         return filter!;
     };

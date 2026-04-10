@@ -1,9 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { IValueFilter, IValueFilterCanUseParams } from "./ValueFilter.js";
+import type { ValueFilter } from "./ValueFilter.js";
 
 export interface IValueFilterRegistry {
-    get(params: IValueFilterCanUseParams): IValueFilter | undefined;
-    getAll(): IValueFilter[];
+    get(params: ValueFilter.CanUseParams): ValueFilter.Interface | undefined;
+    getAll(): ValueFilter.Interface[];
 }
 
 export const ValueFilterRegistry = createAbstraction<IValueFilterRegistry>(
@@ -12,5 +12,5 @@ export const ValueFilterRegistry = createAbstraction<IValueFilterRegistry>(
 
 export namespace ValueFilterRegistry {
     export type Interface = IValueFilterRegistry;
-    export type Filter = IValueFilter;
+    export type Filter = ValueFilter.Interface;
 }

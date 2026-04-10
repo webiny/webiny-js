@@ -1,18 +1,22 @@
 import { ValueFilter } from "../abstractions/ValueFilter.js";
 
 class StartsWithFilterImpl implements ValueFilter.Interface {
-    private readonly operation = "startsWith";
+    public readonly operation = "startsWith";
 
-    public canUse({ operation, compareValue }: ValueFilter.CanUseParams): boolean {
-        if (this.operation !== operation) {
-            return false;
-        } else if (compareValue === "" || compareValue === null || compareValue === undefined) {
-            return false;
-        }
-        return true;
+    public canUse({ operation }: ValueFilter.CanUseParams): boolean {
+        return this.operation === operation;
     }
 
     public matches({ value, compareValue }: ValueFilter.MatchesParams): ValueFilter.Result {
+        /**
+         * Match null/undefined values.
+         */
+        if (
+            (value === null && compareValue === null) ||
+            (value === undefined && compareValue === undefined)
+        ) {
+            return true;
+        }
         /**
          * We do "case-insensitive" comparison.
          */

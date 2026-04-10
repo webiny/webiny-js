@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { filterItems } from "~/utils/filter";
-import filters from "~/plugins/filters";
-import { PluginsContainer } from "@webiny/plugins";
 import { FieldPlugin } from "~/plugins/definitions/FieldPlugin";
+import { ValueFilterRegistry } from "~/feature/ValueFilter/index.js";
+import { createValueFilterRegistry } from "~tests/__mocks/registry.js";
 
 const itemJohn = {
     id: 1,
@@ -46,10 +46,12 @@ const fields = [
 ];
 
 describe("filtering util test", () => {
-    let plugins: PluginsContainer;
+    
+    let filterRegistry: ValueFilterRegistry.Interface;
+
 
     beforeEach(() => {
-        plugins = new PluginsContainer(filters());
+        filterRegistry = createValueFilterRegistry();
     });
 
     it("should filter by equal id", () => {
@@ -57,7 +59,7 @@ describe("filtering util test", () => {
             id: 1
         };
 
-        const response = filterItems({ items, where, plugins, fields });
+        const response = filterItems({ items, where, filterRegistry, fields });
 
         expect(response).toEqual([itemJohn]);
     });
@@ -66,7 +68,7 @@ describe("filtering util test", () => {
         const where = {
             text_contains: "j"
         };
-        const response = filterItems({ items, where, plugins, fields });
+        const response = filterItems({ items, where, filterRegistry, fields });
 
         expect(response).toEqual([itemJohn, itemJane]);
     });
@@ -75,14 +77,14 @@ describe("filtering util test", () => {
         const whereFalse = {
             private: false
         };
-        const responseFalse = filterItems({ items, where: whereFalse, plugins, fields });
+        const responseFalse = filterItems({ items, where: whereFalse, filterRegistry, fields });
 
         expect(responseFalse).toEqual([itemWebiny]);
 
         const whereTrue = {
             private: true
         };
-        const responseTrue = filterItems({ items, where: whereTrue, plugins, fields });
+        const responseTrue = filterItems({ items, where: whereTrue, filterRegistry, fields });
 
         expect(responseTrue).toEqual([itemJohn, itemJane]);
     });

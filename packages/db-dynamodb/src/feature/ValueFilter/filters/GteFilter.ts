@@ -1,7 +1,7 @@
 import { ValueFilter } from "../abstractions/ValueFilter.js";
 
 class GteFilterImpl implements ValueFilter.Interface {
-    private readonly operation = "gte";
+    public readonly operation = "gte";
 
     public canUse({ operation }: ValueFilter.CanUseParams): boolean {
         return this.operation === operation;

@@ -1,14 +1,14 @@
 import * as dotProp from "dot-prop";
-import WebinyError from "@webiny/error";
+import { WebinyError } from "@webiny/error";
 import type { Plugin, PluginsContainer } from "@webiny/plugins";
-import { ValueFilterPlugin } from "~/plugins/definitions/ValueFilterPlugin.js";
 import type { FieldPlugin } from "~/plugins/definitions/FieldPlugin.js";
 import type { DynamoDbContainsFilter } from "~/types.js";
+import type { ValueFilter, ValueFilterRegistry } from "~/feature/ValueFilter/index.js";
 
 type TransformValue = (value: any) => any;
 
 export interface Params<T = any> {
-    plugins: PluginsContainer;
+    filterRegistry: ValueFilterRegistry.Interface,
     items: T[];
     where: Record<string, any>;
     /**
@@ -26,7 +26,7 @@ interface MappedPluginParams<T extends Plugin = Plugin> {
 interface Filter {
     operation: string;
     compareValue: any;
-    filterPlugin: ValueFilterPlugin;
+    filter: ValueFilter.Interface;
     transformValue?: TransformValue;
     paths: string[];
     negate: boolean;
@@ -75,11 +75,14 @@ const extractWhereArgs = (key: string): ExtractWhereArgsResult => {
 };
 
 const findFilterPlugin = (
-    plugins: Record<string, ValueFilterPlugin>,
+    registry: ValueFilterRegistry.Interface,
     operation: string
-): ValueFilterPlugin => {
-    if (plugins[operation]) {
-        return plugins[operation];
+): ValueFilter.Interface => {
+    const filter = registry.get({
+        operation
+    });
+    if (filter) {
+        return filter;
     }
     throw new WebinyError(`Missing filter plugin definition.`, "FILTER_PLUGIN_ERROR", {
         operation
@@ -89,7 +92,7 @@ const findFilterPlugin = (
 const multiSearchFieldOperations = ["contains", "fuzzy"];
 
 const createFilters = (params: Omit<Params, "items">): Filter[] => {
-    const { plugins, where, fields } = params;
+    const { where, fields, filterRegistry } = params;
 
     const keys = Object.keys(where);
     /**
@@ -98,11 +101,6 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
     if (keys.length === 0) {
         return [];
     }
-    const filterPlugins = getMappedPlugins<ValueFilterPlugin>({
-        plugins,
-        type: ValueFilterPlugin.type,
-        property: "operation"
-    });
 
     return keys.reduce((filters, key) => {
         const compareValue = where[key];
@@ -126,11 +124,11 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
                 return field;
             });
 
-            const filterPlugin = findFilterPlugin(filterPlugins, key);
+            const filter = findFilterPlugin(filterRegistry, key);
             filters.push({
-                operation: filterPlugin.operation,
+                operation: filter.operation,
                 compareValue: data.value,
-                filterPlugin,
+                filter,
                 transformValue,
                 paths,
                 negate: false
@@ -140,7 +138,7 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
 
         const { field, operation, negate } = extractWhereArgs(key);
 
-        const filterPlugin = findFilterPlugin(filterPlugins, operation);
+        const filter = findFilterPlugin(filterRegistry, operation);
 
         const fieldPlugin = fields.find(plugin => plugin.getField() === field);
         let path: string = field;
@@ -153,9 +151,9 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
         }
 
         filters.push({
-            operation: filterPlugin.operation,
+            operation: filter.operation,
             compareValue,
-            filterPlugin,
+            filter,
             transformValue,
             paths: [path],
             negate
@@ -194,7 +192,7 @@ const createFilterCallable = (params: Omit<Params, "items">): ((item: any) => bo
             const result = filter.paths.some(path => {
                 const value = transform(dotProp.getProperty(item, path), filter.transformValue);
                 const compareValue = transform(filter.compareValue, filter.transformValue);
-                const matched = filter.filterPlugin.matches({
+                const matched = filter.filter.matches({
                     value,
                     compareValue
                 });

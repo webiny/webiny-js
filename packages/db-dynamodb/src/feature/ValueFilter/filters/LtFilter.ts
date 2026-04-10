@@ -1,7 +1,7 @@
 import { ValueFilter } from "../abstractions/ValueFilter.js";
 
 class LtFilterImpl implements ValueFilter.Interface {
-    private readonly operation = "lt";
+    public readonly operation = "lt";
 
     public canUse({ operation }: ValueFilter.CanUseParams): boolean {
         return this.operation === operation;

@@ -2,7 +2,7 @@ import Fuse from "fuse.js";
 import { ValueFilter } from "../abstractions/ValueFilter.js";
 
 class FuzzyFilterImpl implements ValueFilter.Interface<string | null | undefined> {
-    private readonly operation = "fuzzy";
+    public readonly operation = "fuzzy";
 
     public canUse({ operation }: ValueFilter.CanUseParams): boolean {
         return this.operation === operation;
