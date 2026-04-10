@@ -50,6 +50,10 @@ export function createCorePulumiApp() {
             if (searchEngineParams) {
                 const params = searchEngineParams;
                 if (typeof params === "object") {
+                    if (params.endpoint) {
+                        process.env.OPENSEARCH_ENDPOINT = params.endpoint;
+                    }
+
                     if (params.domainName) {
                         process.env.AWS_OS_DOMAIN_NAME = params.domainName;
                     }
@@ -60,6 +64,14 @@ export function createCorePulumiApp() {
 
                     if (params.sharedIndexes) {
                         process.env.OPENSEARCH_SHARED_INDEXES = "true";
+                    }
+
+                    if (params.username) {
+                        process.env.OPENSEARCH_USERNAME = params.username;
+                    }
+
+                    if (params.password) {
+                        process.env.OPENSEARCH_PASSWORD = params.password;
                     }
                 }
             }
