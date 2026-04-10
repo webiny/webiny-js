@@ -3,12 +3,10 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { ContextPlugin } from "@webiny/api";
-import {
-    createCmsEntryElasticsearchBodyModifierPlugin,
-    registerCmsOpenSearchStorageOperations
-} from "../../src/index";
+import { registerCmsOpenSearchStorageOperations } from "../../src/index";
+import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenSearchBodyModifier/index.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { configurations } from "../../src/configurations";
-import { base as baseIndexConfigurationPlugin } from "../../src/elasticsearch/indices/base";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
 import {
@@ -88,22 +86,27 @@ setStorageOps("cms", () => {
             ...initializedDbPlugins,
             createOrRefreshIndexSubscription,
             getOpenSearchOperators(),
-            createCmsEntryElasticsearchBodyModifierPlugin({
-                modifyBody: ({ body }) => {
-                    if (!body.sort.customSorter) {
-                        return;
-                    }
-                    const order = body.sort.customSorter.order;
-                    delete body.sort.customSorter;
-
-                    body.sort = {
-                        createdOn: {
-                            order,
-                            unmapped_type: "date"
+            createRegisterExtensionPlugin(({ container }) => {
+                const FruitBodyModifier = CmsEntryOpenSearchBodyModifier.createImplementation({
+                    implementation: class {
+                        modelId = "fruit";
+                        modifyBody({ body }) {
+                            if (!body.sort.customSorter) {
+                                return;
+                            }
+                            const order = body.sort.customSorter.order;
+                            delete body.sort.customSorter;
+                            body.sort = {
+                                createdOn: {
+                                    order,
+                                    unmapped_type: "date"
+                                }
+                            };
                         }
-                    };
-                },
-                model: "fruit"
+                    },
+                    dependencies: []
+                });
+                container.register(FruitBodyModifier);
             })
         ]
     };

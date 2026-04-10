@@ -1,4 +1,4 @@
-import WebinyError from "@webiny/error";
+import { WebinyError } from "@webiny/error";
 import type {
     CmsEntry,
     CmsEntryStorageOperationsCreateParams,
@@ -70,6 +70,13 @@ import {
 import type { IEntryEntity, IEntryEntityAttributes } from "~/definitions/types.js";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
+import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
+import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
+import type { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
+import type { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
+import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
+import type { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
+import type { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
@@ -77,7 +84,14 @@ export interface CreateEntriesStorageOperationsParams {
     elasticsearch: Client;
     plugins: PluginsContainer;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
     compressionHandler: CompressionHandler.Interface;
+    bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
+    sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
+    queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
+    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
+    fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
+    valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
 }
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -103,7 +117,21 @@ const convertToStorageEntry = <T extends CmsEntryValues = CmsEntryValues>(
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
-    const { entity, esEntity, elasticsearch, plugins, fieldRegistry, compressionHandler } = params;
+    const {
+        entity,
+        esEntity,
+        elasticsearch,
+        plugins,
+        fieldRegistry,
+        fieldIndexRegistry,
+        compressionHandler,
+        bodyModifiers,
+        sortModifiers,
+        queryModifiers,
+        valueSearchRegistry,
+        fullTextSearches,
+        valuesModifiers
+    } = params;
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
     const getStorageOperationsCmsModelPlugin = () => {
@@ -143,11 +171,12 @@ export const createEntriesStorageOperations = (
 
         const transformer = createTransformer<T>({
             fieldRegistry,
-            plugins,
+            fieldIndexRegistry,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
-            compressionHandler
+            compressionHandler,
+            valuesModifiers
         });
 
         const { entry, storageEntry } = transformer.transformEntryKeys();
@@ -254,12 +283,13 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel<T>(initialModel);
 
         const transformer = createTransformer<T>({
-            plugins,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
-            compressionHandler
+            fieldIndexRegistry,
+            compressionHandler,
+            valuesModifiers
         });
         const { entry, storageEntry } = transformer.transformEntryKeys();
 
@@ -378,11 +408,12 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel(initialModel);
 
         const transformer = createTransformer({
-            plugins,
+            valuesModifiers,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
+            fieldIndexRegistry,
             compressionHandler
         });
 
@@ -703,11 +734,12 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel(initialModel);
 
         const transformer = createTransformer({
-            plugins,
+            valuesModifiers,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
+            fieldIndexRegistry,
             compressionHandler
         });
 
@@ -873,11 +905,12 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel(initialModel);
 
         const transformer = createTransformer({
-            plugins,
+            valuesModifiers,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
+            fieldIndexRegistry,
             compressionHandler
         });
 
@@ -1185,11 +1218,12 @@ export const createEntriesStorageOperations = (
             });
 
             const latestTransformer = createTransformer({
-                plugins,
+                valuesModifiers,
                 model,
                 entry: latestEntry,
                 storageEntry: initialLatestStorageEntry,
                 fieldRegistry,
+                fieldIndexRegistry,
                 compressionHandler
             });
 
@@ -1330,6 +1364,12 @@ export const createEntriesStorageOperations = (
         const body = createElasticsearchBody({
             model,
             fieldRegistry,
+            fieldIndexRegistry,
+            bodyModifiers,
+            sortModifiers,
+            queryModifiers,
+            valueSearchRegistry,
+            fullTextSearches,
             params: {
                 ...params,
                 limit,
@@ -1370,7 +1410,7 @@ export const createEntriesStorageOperations = (
 
         const items = extractEntriesFromIndex<T>({
             fieldRegistry,
-            plugins,
+            fieldIndexRegistry,
             model,
             entries: hits.map(item => {
                 return item._source as CmsIndexEntry<T>;
@@ -1423,11 +1463,12 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel(initialModel);
 
         const transformer = createTransformer({
-            plugins,
+            valuesModifiers,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
+            fieldIndexRegistry,
             compressionHandler
         });
 
@@ -1621,7 +1662,7 @@ export const createEntriesStorageOperations = (
             const updatedMetaFields = pickEntryMetaFields(entry);
 
             const latestTransformer = createTransformer({
-                plugins,
+                valuesModifiers,
                 model,
                 transformedToIndex: {
                     ...latestEsEntryDataDecompressed,
@@ -1630,6 +1671,7 @@ export const createEntriesStorageOperations = (
                     ...updatedMetaFields
                 },
                 fieldRegistry,
+                fieldIndexRegistry,
                 compressionHandler
             });
 
@@ -1724,11 +1766,12 @@ export const createEntriesStorageOperations = (
         const model = getStorageOperationsModel<T>(initialModel);
 
         const transformer = createTransformer({
-            plugins,
+            valuesModifiers,
             model,
             entry: initialEntry,
             storageEntry: initialStorageEntry,
             fieldRegistry,
+            fieldIndexRegistry,
             compressionHandler
         });
         const { entry, storageEntry } = await transformer.transformEntryKeys();
@@ -2034,6 +2077,12 @@ export const createEntriesStorageOperations = (
         const initialBody = createElasticsearchBody({
             model,
             fieldRegistry,
+            fieldIndexRegistry,
+            bodyModifiers,
+            sortModifiers,
+            queryModifiers,
+            valueSearchRegistry,
+            fullTextSearches,
             params: {
                 limit: 1,
                 where

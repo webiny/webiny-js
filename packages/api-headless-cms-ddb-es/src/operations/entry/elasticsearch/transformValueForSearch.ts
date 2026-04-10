@@ -1,26 +1,17 @@
-/**
- * We use any for input and output because they really can be anything.
- * Plugin, if exists, makes sure that response value is correct.
- */
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import type { OpenSearchQuerySearchValuePlugins } from "./types.js";
-import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
+import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
 interface Params {
-    plugins: OpenSearchQuerySearchValuePlugins;
+    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
     field: CmsModelField;
     value: any;
 }
 
-/**
- * Transformed value can be anything.
- */
 export const transformValueForSearch = (params: Params): any => {
-    const { field, plugins, value } = params;
-    const fieldType = getBaseFieldType(field);
-    const plugin = plugins[fieldType];
-    if (!plugin) {
+    const { field, valueSearchRegistry, value } = params;
+    const search = valueSearchRegistry.get(field.type);
+    if (!search) {
         return value;
     }
-    return plugin.transform({ field, value });
+    return search.transform({ field, value });
 };

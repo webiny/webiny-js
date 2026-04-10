@@ -1,13 +1,11 @@
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
-import type { CmsContext } from "~/types.js";
 import {
-    getOpenSearchIndexPrefix as getOpenSearchIndexPrefix,
-    getLastAddedIndexPlugin,
+    getOpenSearchIndexPrefix,
     isSharedOpenSearchIndex as isSharedElasticsearchIndex
 } from "@webiny/api-opensearch";
 import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
-import { CmsEntryElasticsearchIndexPlugin } from "~/plugins/index.js";
+import type { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex/index.js";
 
 interface ConfigurationsElasticsearch {
     index: string;
@@ -18,7 +16,8 @@ export interface CmsElasticsearchParams {
 }
 
 export interface ConfigurationsIndexSettingsParams {
-    context: CmsContext;
+    indexConfigs: CmsEntryOpenSearchIndex.Interface[];
+    model: Pick<CmsModel, "tenant" | "modelId" | "group">;
 }
 
 export interface Configurations {
@@ -55,12 +54,11 @@ export const configurations: Configurations = {
             index: prefix + index
         };
     },
-    indexSettings: ({ context }) => {
-        const plugin = getLastAddedIndexPlugin<CmsEntryElasticsearchIndexPlugin>({
-            container: context.plugins,
-            type: CmsEntryElasticsearchIndexPlugin.type
-        });
-
-        return plugin ? plugin.body : {};
+    indexSettings: ({ indexConfigs, model }) => {
+        const usable = indexConfigs.filter(c => c.canUse({ model }));
+        if (usable.length === 0) {
+            return {};
+        }
+        return usable[usable.length - 1].body;
     }
 };

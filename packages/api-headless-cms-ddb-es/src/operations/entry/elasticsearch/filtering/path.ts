@@ -1,11 +1,8 @@
-import type {
-    OpenSearchQuerySearchValuePlugins,
-    ModelField
-} from "~/operations/entry/elasticsearch/types.js";
-import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
+import type { ModelField } from "~/operations/entry/elasticsearch/types.js";
+import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
 interface FieldPathFactoryParams {
-    plugins: OpenSearchQuerySearchValuePlugins;
+    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
 }
 interface FieldPathParams {
     field: ModelField;
@@ -15,15 +12,14 @@ interface FieldPathParams {
     keyword: boolean;
 }
 
-export const createFieldPathFactory = ({ plugins }: FieldPathFactoryParams) => {
+export const createFieldPathFactory = ({ valueSearchRegistry }: FieldPathFactoryParams) => {
     return (params: FieldPathParams) => {
         const { field, key, value, keyword, originalValue } = params;
-        const fieldType = getBaseFieldType(field);
-        const plugin = plugins[fieldType];
+        const search = valueSearchRegistry.get(field.type);
 
         let fieldPath: string | null = null;
-        if (plugin) {
-            fieldPath = plugin.createPath({ field: field.field, value, key, originalValue });
+        if (search) {
+            fieldPath = search.createPath({ field: field.field, value, key, originalValue });
         }
         if (!fieldPath) {
             fieldPath = field.field.storageId;
