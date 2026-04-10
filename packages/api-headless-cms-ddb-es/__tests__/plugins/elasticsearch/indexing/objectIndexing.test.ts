@@ -1,24 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { createFieldRegistry } from "~tests/helpers/createFieldRegistry.js";
-import defaultIndexingPlugin from "~/elasticsearch/indexing/defaultFieldIndexing.js";
-import objectIndexing from "~/elasticsearch/indexing/objectIndexing.js";
-import elasticsearchIndexingPlugins from "~/elasticsearch/indexing/index.js";
+import { createTestContainer } from "~tests/helpers/createTestContainer";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import type {
-    CmsModelFieldToElasticsearchFromParams,
-    CmsModelFieldToElasticsearchPlugin,
-    CmsModelFieldToElasticsearchToParams
-} from "~/types.js";
 
-const indexingPlugins = elasticsearchIndexingPlugins();
-const fieldRegistry = createFieldRegistry();
+const container = createTestContainer();
+const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
+const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
 
-const getFieldIndexPlugin = (fieldType: string) => {
-    return indexingPlugins.find(pl => pl.fieldType === fieldType) || defaultIndexingPlugin();
-};
-
-const getFieldType = (fieldType: string) => {
-    return fieldRegistry.get(fieldType)!;
+const getFieldIndex = (type: string) => {
+    return fieldIndexRegistry.get(type) || fieldIndexRegistry.getDefault();
 };
 
 const objectField: CmsModelField = {
@@ -192,33 +183,31 @@ const expectedRawValue = {
 };
 
 describe("objectIndexing", () => {
+    const plugin = fieldIndexRegistry.get("object")!;
+
     it("toIndex should recursively transform an object", () => {
-        const plugin = objectIndexing() as Required<CmsModelFieldToElasticsearchPlugin>;
         const result = plugin.toIndex({
             value: input,
             rawValue: input,
             field: objectField,
-            getFieldIndexPlugin,
-            getFieldType,
-            plugins: {},
-            model: {}
-        } as CmsModelFieldToElasticsearchToParams);
+            getFieldIndex,
+            model: {} as any,
+            fieldRegistry
+        });
 
         expect(result.value).toEqual(expectedValue);
         expect(result.rawValue).toEqual(expectedRawValue);
     });
 
     it("fromIndex should recursively transform an object", () => {
-        const plugin = objectIndexing() as Required<CmsModelFieldToElasticsearchPlugin>;
         const result = plugin.fromIndex({
             value: expectedValue,
             rawValue: expectedRawValue,
             field: objectField,
-            getFieldIndexPlugin,
-            getFieldType,
-            plugins: {},
-            model: {}
-        } as CmsModelFieldToElasticsearchFromParams);
+            getFieldIndex,
+            model: {} as any,
+            fieldRegistry
+        });
 
         expect(result).toEqual(input);
     });

@@ -1,14 +1,16 @@
-import WebinyError from "@webiny/error";
+import { WebinyError } from "@webiny/error";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import type { CmsIndexEntry, CmsModelFieldToElasticsearchPlugin } from "~/types.js";
+import type { CmsIndexEntry } from "~/types.js";
 import { getFieldIdentifier, getFieldIdentifiers } from "~/helpers/fieldIdentifier.js";
-import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
-import { PluginsContainer } from "@webiny/plugins";
+import type {
+    CmsEntryOpenSearchFieldIndex,
+    CmsEntryOpenSearchFieldIndexRegistry
+} from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 interface SetupEntriesIndexHelpersParams {
-    plugins: PluginsContainer;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
 }
 
 interface ExtractEntriesFromIndexParams<T extends CmsEntryValues = CmsEntryValues>
@@ -27,32 +29,17 @@ interface PrepareElasticsearchDataParams<T extends CmsEntryValues = CmsEntryValu
 export const prepareEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
     params: PrepareElasticsearchDataParams<T>
 ): CmsIndexEntry<T> => {
-    const { fieldRegistry, storageEntry, entry, model, plugins } = params;
-    const {
-        fieldIndexPlugins,
-        defaultIndexFieldPlugin,
-        fieldRegistry: registry
-    } = setupEntriesIndexHelpers({ fieldRegistry, plugins });
+    const { fieldRegistry, fieldIndexRegistry, storageEntry, entry, model } = params;
 
-    function getFieldIndexPlugin(type: string) {
-        const fieldType = getBaseFieldType({
-            type
-        });
-        return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
-    }
-
-    function getFieldType(type: string) {
-        const fieldType = getBaseFieldType({
-            type
-        });
-        const impl = registry.get(fieldType);
-        if (impl) {
-            return impl;
+    function getFieldIndex(type: string): CmsEntryOpenSearchFieldIndex.Interface {
+        const fieldIndexing = fieldIndexRegistry.get(type);
+        if (fieldIndexing) {
+            return fieldIndexing;
         }
-        throw new WebinyError(`Missing field type plugin "${fieldType}". Prepare entry for index.`);
+        return fieldIndexRegistry.getDefault();
     }
 
-    // These objects will contain values processed by field index plugins
+    // These objects will contain values processed by field index implementations
     const values: T = {} as T;
     const rawValues: T = {} as T;
 
@@ -63,22 +50,15 @@ export const prepareEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
             continue;
         }
 
-        const targetFieldPlugin = getFieldIndexPlugin(field.type);
+        const fieldIndex = getFieldIndex(field.type);
 
-        // TODO: remove this `if` once we convert this plugin to proper plugin class
-        if (!targetFieldPlugin || !targetFieldPlugin.toIndex) {
-            continue;
-        }
-
-        const { value, rawValue } = targetFieldPlugin.toIndex({
+        const { value, rawValue } = fieldIndex.toIndex({
             fieldRegistry,
-            plugins,
             model,
             field,
             rawValue: entry.values[identifier],
             value: storageEntry.values[identifier],
-            getFieldIndexPlugin,
-            getFieldType
+            getFieldIndex
         });
 
         if (typeof value !== "undefined") {
@@ -96,54 +76,18 @@ export const prepareEntryToIndex = <T extends CmsEntryValues = CmsEntryValues>(
     };
 };
 
-const setupEntriesIndexHelpers = ({
-    fieldRegistry,
-    plugins: pluginsContainer
-}: SetupEntriesIndexHelpersParams) => {
-    const plugins = pluginsContainer.byType<CmsModelFieldToElasticsearchPlugin>(
-        "cms-model-field-to-elastic-search"
-    );
-
-    const fieldIndexPlugins: Record<string, CmsModelFieldToElasticsearchPlugin> = {};
-    for (const plugin of plugins.reverse()) {
-        if (fieldIndexPlugins[plugin.fieldType]) {
-            continue;
-        }
-        fieldIndexPlugins[plugin.fieldType] = plugin;
-    }
-    const defaultIndexFieldPlugin = plugins.find(plugin => plugin.fieldType === "*");
-
-    return {
-        fieldIndexPlugins,
-        defaultIndexFieldPlugin,
-        fieldRegistry
-    };
-};
-
 export const extractEntriesFromIndex = <T extends CmsEntryValues = CmsEntryValues>({
     fieldRegistry,
-    plugins,
+    fieldIndexRegistry,
     entries,
     model
 }: ExtractEntriesFromIndexParams<T>): CmsEntry<T>[] => {
-    const {
-        fieldIndexPlugins,
-        defaultIndexFieldPlugin,
-        fieldRegistry: registry
-    } = setupEntriesIndexHelpers({ plugins, fieldRegistry });
-
-    function getFieldIndexPlugin(type: string) {
-        const fieldType = getBaseFieldType({
-            type
-        });
-        return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
-    }
-
-    function getFieldType(type: string) {
-        const fieldType = getBaseFieldType({
-            type
-        });
-        return registry.get(fieldType);
+    function getFieldIndex(type: string): CmsEntryOpenSearchFieldIndex.Interface {
+        const fieldIndex = fieldIndexRegistry.get(type);
+        if (fieldIndex) {
+            return fieldIndex;
+        }
+        return fieldIndexRegistry.getDefault();
     }
 
     const list: CmsEntry<T>[] = [];
@@ -154,17 +98,14 @@ export const extractEntriesFromIndex = <T extends CmsEntryValues = CmsEntryValue
 
         // We only consider fields that are present in the model
         for (const field of model.fields) {
-            const fieldTypePlugin = getFieldType(field.type);
-            if (!fieldTypePlugin) {
+            const fieldType = fieldRegistry.get(field.type);
+            if (!fieldType) {
                 throw new WebinyError(
-                    `Missing field type plugin "${field.type}". Extract entries from index.`
+                    `Missing field type "${field.type}". Extract entries from index.`
                 );
             }
 
-            const targetFieldPlugin = getFieldIndexPlugin(field.type);
-            if (!targetFieldPlugin || !targetFieldPlugin.fromIndex) {
-                continue;
-            }
+            const fieldIndex = getFieldIndex(field.type);
             /**
              * We can safely cast as the code will not continue in case of no identifiers.
              */
@@ -172,17 +113,14 @@ export const extractEntriesFromIndex = <T extends CmsEntryValues = CmsEntryValue
             if (!identifiers) {
                 continue;
             }
-
             try {
                 const key = identifiers.valueIdentifier as keyof T;
                 const rawKey = identifiers.rawValueIdentifier as keyof T;
-                indexValues[key] = targetFieldPlugin.fromIndex({
+                indexValues[key] = fieldIndex.fromIndex({
                     fieldRegistry,
-                    plugins,
                     model,
                     field,
-                    getFieldIndexPlugin,
-                    getFieldType,
+                    getFieldIndex,
                     value: entry.values[key || rawKey],
                     /**
                      * Possibly no rawValues so we must check for the existence of the field.

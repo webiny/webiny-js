@@ -1,4 +1,3 @@
-import type { PluginsContainer } from "@webiny/plugins";
 import type {
     CmsEntry,
     CmsEntryValues,
@@ -8,7 +7,7 @@ import type {
 import { transformEntryKeys } from "./transformEntryKeys.js";
 import type { CmsIndexEntry } from "~/types.js";
 import { transformEntryToIndex } from "~/operations/entry/transformations/transformEntryToIndex.js";
-import { CmsEntryElasticsearchValuesModifier } from "~/plugins/index.js";
+import type { CmsEntryOpenSearchValuesModifier } from "~/features/CmsEntryOpenSearchValuesModifier/index.js";
 import { modifyEntryValues as modifyEntryValuesCallable } from "~/operations/entry/transformations/modifyEntryValues.js";
 import {
     createLatestRecordType,
@@ -17,12 +16,14 @@ import {
 import WebinyError from "@webiny/error";
 import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 import { CompressionHandler } from "@webiny/utils/features/compression/abstractions/CompressionHandler.js";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 interface BaseTransformerParams<T extends CmsEntryValues = CmsEntryValues> {
-    plugins: PluginsContainer;
     model: StorageOperationsCmsModel<T>;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
     compressionHandler: Pick<CompressionHandler.Interface, "compress">;
+    valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
 }
 
 interface EntryTransformerParams<T extends CmsEntryValues = CmsEntryValues>
@@ -60,13 +61,14 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
     params: EntryTransformerParams<T> | TransformedEntryTransformerParams<T>
 ): TransformerResult<T> => {
     const {
-        plugins,
         model,
         fieldRegistry,
+        fieldIndexRegistry,
         entry: baseEntry,
         storageEntry: baseStorageEntry,
         transformedToIndex: initialTransformedEntryToIndex = undefined,
-        compressionHandler
+        compressionHandler,
+        valuesModifiers
     } = params;
 
     let transformedEntryKeys: TransformedKeysEntry<T> | undefined = undefined;
@@ -75,9 +77,7 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
     let elasticsearchLatestEntry: any = undefined;
     let elasticsearchPublishedEntry: any = undefined;
 
-    const modifierPlugins = plugins
-        .byType<CmsEntryElasticsearchValuesModifier>(CmsEntryElasticsearchValuesModifier.type)
-        .filter(pl => pl.canModify(model.modelId));
+    const applicableModifiers = valuesModifiers.filter(m => m.canModify(model.modelId));
 
     const modifyEntryValues = () => {
         if (initialTransformedEntryToIndex || !baseEntry) {
@@ -93,12 +93,12 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
             return modifiedEntryValues;
         }
         const modifiedEntry = modifyEntryValuesCallable<T>({
-            plugins: modifierPlugins,
+            modifiers: applicableModifiers,
             model,
             entry: baseEntry
         });
         const modifiedStorageEntry = modifyEntryValuesCallable<T>({
-            plugins: modifierPlugins,
+            modifiers: applicableModifiers,
             model,
             entry: baseStorageEntry
         });
@@ -141,7 +141,7 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
              * - run modifiers
              * - transform keys
              */
-            if (modifierPlugins.length > 0) {
+            if (applicableModifiers.length > 0) {
                 const result = modifyEntryValues();
                 entry = result.entry;
                 storageEntry = result.storageEntry;
@@ -153,11 +153,11 @@ export const createTransformer = <T extends CmsEntryValues = CmsEntryValues>(
                 storageEntry = result.storageEntry;
             }
             return (transformedEntryToIndex = transformEntryToIndex<T>({
-                plugins,
                 model,
                 entry,
                 storageEntry,
-                fieldRegistry
+                fieldRegistry,
+                fieldIndexRegistry
             }));
         },
         getElasticsearchLatestEntryData: async function () {

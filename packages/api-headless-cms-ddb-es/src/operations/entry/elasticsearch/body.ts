@@ -8,23 +8,34 @@ import { createModelFields } from "./fields.js";
 import { createFullTextSearchFields } from "./fullTextSearchFields.js";
 import { createInitialQuery } from "./initialQuery.js";
 import { applyFullTextSearch } from "./fullTextSearch.js";
-import { createQueryModifierPluginList } from "./plugins/queryModifier.js";
-import { createSortModifierPluginList } from "./plugins/sortModifier.js";
-import { createBodyModifierPluginList } from "./plugins/bodyModifier.js";
+import type { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
+import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
+import type { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSearchQueryModifier/index.js";
+import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
+import type { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
 import { createElasticsearchSort } from "./sort.js";
 import type {
-    QueryDslBoolQuery as BoolQueryConfig,
     PrimitiveValue,
+    QueryDslBoolQuery as BoolQueryConfig,
     SearchBody
 } from "@webiny/api-opensearch/types.js";
 import { createExecFiltering } from "./filtering/index.js";
 import { assignMinimumShouldMatchToQuery } from "./assignMinimumShouldMatchToQuery.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
+import type { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter/index.js";
 
 interface ICreateElasticsearchBodyParams {
     plugins: PluginsContainer;
     model: CmsModel;
     fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
+    bodyModifiers: CmsEntryOpenSearchBodyModifier.Interface[];
+    sortModifiers: CmsEntryOpenSearchSortModifier.Interface[];
+    queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
+    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
+    fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
+    filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
         after?: PrimitiveValue[];
@@ -34,38 +45,42 @@ export const createElasticsearchBody = ({
     plugins,
     model,
     params,
-    fieldRegistry
+    fieldRegistry,
+    fieldIndexRegistry,
+    bodyModifiers,
+    sortModifiers,
+    queryModifiers,
+    valueSearchRegistry,
+    fullTextSearches,
+    filterRegistry
 }: ICreateElasticsearchBodyParams): SearchBody => {
     const { fields, search: term, where, sort: initialSort, after, limit } = params;
     /**
      * We need the model fields constructed as a key -> field value, so we do not need to iterate through array when we require some field.
      */
     const modelFields = createModelFields({
-        plugins,
         model,
-        fieldRegistry
+        fieldRegistry,
+        fieldIndexRegistry
     });
 
     /**
-     * We need the query modifier plugins.
+     * Filter query modifiers applicable to this model.
      */
-    const queryModifierPlugins = createQueryModifierPluginList({
-        plugins,
-        model
+    const applicableQueryModifiers = queryModifiers.filter(m => {
+        return !m.modelId || m.modelId === model.modelId;
     });
     /**
-     * We need the sort modifier plugins.
+     * Filter sort modifiers applicable to this model.
      */
-    const sortModifierPlugins = createSortModifierPluginList({
-        plugins,
-        model
-    });
+    const applicableSortModifiers = sortModifiers.filter(
+        m => !m.modelId || m.modelId === model.modelId
+    );
     /**
-     * We need the body modifier plugins.
+     * Filter body modifiers applicable to this model.
      */
-    const bodyModifierPlugins = createBodyModifierPluginList({
-        plugins,
-        model
+    const applicableBodyModifiers = bodyModifiers.filter(m => {
+        return !m.modelId || m.modelId === model.modelId;
     });
     /**
      * We need the fields which we can search through via the full text search.
@@ -88,7 +103,7 @@ export const createElasticsearchBody = ({
      */
     applyFullTextSearch({
         model,
-        plugins,
+        fullTextSearches,
         query,
         term,
         fields: fullTextSearchFields
@@ -97,7 +112,9 @@ export const createElasticsearchBody = ({
     const execFiltering = createExecFiltering({
         model,
         fields: modelFields,
-        plugins
+        plugins,
+        valueSearchRegistry,
+        filterRegistry
     });
 
     execFiltering({
@@ -105,19 +122,19 @@ export const createElasticsearchBody = ({
         query
     });
 
-    for (const pl of queryModifierPlugins) {
-        pl.modifyQuery({ query, model, where });
+    for (const modifier of applicableQueryModifiers) {
+        modifier.modifyQuery({ query, model, where });
     }
 
     const sort = createElasticsearchSort({
-        plugins,
         sort: initialSort,
         modelFields,
-        model
+        model,
+        valueSearchRegistry
     });
 
-    for (const pl of sortModifierPlugins) {
-        pl.modifySort({
+    for (const modifier of applicableSortModifiers) {
+        modifier.modifySort({
             sort,
             model
         });
@@ -144,8 +161,8 @@ export const createElasticsearchBody = ({
         track_total_hits: true
     };
 
-    for (const pl of bodyModifierPlugins) {
-        pl.modifyBody({
+    for (const modifier of applicableBodyModifiers) {
+        modifier.modifyBody({
             body,
             model,
             where

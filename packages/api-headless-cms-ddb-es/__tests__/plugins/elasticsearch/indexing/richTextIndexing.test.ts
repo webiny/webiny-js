@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
-import richTextIndexingPlugin from "~/elasticsearch/indexing/richTextIndexing";
 import type { CmsModelField } from "@webiny/api-headless-cms/types";
-import { PluginsContainer } from "@webiny/plugins";
-import type { CmsModelFieldToElasticsearchPlugin } from "~/types";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex";
+import { createTestContainer } from "~tests/helpers/createTestContainer";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
+
+const container = createTestContainer();
+const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
+const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
 
 const mockValue = [
     {
@@ -15,7 +18,7 @@ const mockModel: any = {};
 
 const mockField: CmsModelField = {
     id: "textField",
-    type: "text",
+    type: "rich-text",
     label: "Text",
     validation: [],
     listValidation: [],
@@ -33,35 +36,20 @@ const mockField: CmsModelField = {
     help: "text"
 };
 
-const getFieldType = () => {
-    return undefined;
-};
-
-const getFieldIndexPlugin = () => {
-    return null as unknown as CmsModelFieldToElasticsearchPlugin;
-};
-
-const fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface = {
-    get: () => {
-        return undefined;
-    },
-    getAll: () => {
-        return [];
-    }
+const getFieldIndex = (type: string) => {
+    return fieldIndexRegistry.get(type) || fieldIndexRegistry.getDefault();
 };
 
 describe("richTextIndexing", () => {
-    it("toIndex should return transformed objects", () => {
-        const plugin = richTextIndexingPlugin() as Required<CmsModelFieldToElasticsearchPlugin>;
+    const plugin = fieldIndexRegistry.get("rich-text")!;
 
+    it("toIndex should return transformed objects", () => {
         const result = plugin.toIndex({
             value: mockValue,
             rawValue: mockValue,
             field: mockField,
             model: mockModel,
-            plugins: new PluginsContainer(),
-            getFieldType,
-            getFieldIndexPlugin,
+            getFieldIndex,
             fieldRegistry
         });
 
@@ -71,15 +59,12 @@ describe("richTextIndexing", () => {
     });
 
     it("fromIndex should return transformed objects", () => {
-        const plugin = richTextIndexingPlugin() as Required<CmsModelFieldToElasticsearchPlugin>;
         const result = plugin.fromIndex({
             value: undefined,
             rawValue: mockValue,
             field: mockField,
             model: mockModel,
-            plugins: new PluginsContainer(),
-            getFieldType,
-            getFieldIndexPlugin,
+            getFieldIndex,
             fieldRegistry
         });
 

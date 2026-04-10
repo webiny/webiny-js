@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
-import defaultFieldIndexPlugin from "~/elasticsearch/indexing/defaultFieldIndexing";
-import { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
-import { PluginsContainer } from "@webiny/plugins/PluginsContainer";
-import { CmsModelFieldToElasticsearchPlugin } from "~/types";
-import { createFieldRegistry } from "~tests/helpers/createFieldRegistry.js";
+import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
+import { createTestContainer } from "~tests/helpers/createTestContainer";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
+
+const container = createTestContainer();
+const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
+const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
 
 const mockRichTextValue = [
     {
@@ -55,30 +58,23 @@ const mockIndexedEntry = {
     }
 } as unknown as Required<CmsEntry> & Record<string, any>;
 
-const getFieldIndexPlugin = () => {
-    return defaultFieldIndexPlugin();
-};
+const plugin = fieldIndexRegistry.getDefault();
 
-const fieldRegistry = createFieldRegistry();
-
-const getFieldType = (fieldType: string) => {
-    return fieldRegistry.get(fieldType)!;
+const getFieldIndex = (type: string) => {
+    return fieldIndexRegistry.get(type) || fieldIndexRegistry.getDefault();
 };
 
 describe("defaultFieldIndexPlugin", () => {
     it("toIndex should return transformed objects", () => {
-        const plugin = defaultFieldIndexPlugin() as Required<CmsModelFieldToElasticsearchPlugin>;
-
         const result = mockModel.fields.reduce(
             (entry: any, field: any) => {
                 const { value, rawValue } = plugin.toIndex({
                     rawValue: mockInputEntry.values[field.storageId],
                     value: mockInputEntry.values[field.storageId],
-                    plugins: new PluginsContainer(),
-                    getFieldIndexPlugin,
-                    getFieldType,
+                    getFieldIndex,
                     model: mockModel,
-                    field
+                    field,
+                    fieldRegistry
                 });
 
                 if (value) {
@@ -98,16 +94,14 @@ describe("defaultFieldIndexPlugin", () => {
     });
 
     it("fromIndex should return transformed objects", () => {
-        const plugin = defaultFieldIndexPlugin() as Required<CmsModelFieldToElasticsearchPlugin>;
         const result = mockModel.fields.reduce((entry: any, field) => {
             const value = plugin.fromIndex({
                 value: mockIndexedEntry.values[field.storageId],
                 rawValue: mockIndexedEntry.rawValues[field.storageId],
-                getFieldIndexPlugin,
-                getFieldType,
-                plugins: new PluginsContainer(),
+                getFieldIndex,
                 model: mockModel,
-                field
+                field,
+                fieldRegistry
             });
 
             if (value) {

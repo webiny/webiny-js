@@ -1,9 +1,13 @@
 import { getBaseConfiguration } from "@webiny/api-opensearch";
-import { CmsEntryElasticsearchIndexPlugin } from "~/plugins/CmsEntryElasticsearchIndexPlugin";
+import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
+import { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 
-export const createIndexConfigurationPlugin = () => {
-    return new CmsEntryElasticsearchIndexPlugin({
-        body: getBaseConfiguration(body => {
+class CustomOpenSearchIndex implements CmsEntryOpenSearchIndex.Interface {
+    public readonly body: OpenSearchIndexRequestBody;
+
+    public constructor() {
+        this.body = getBaseConfiguration(body => {
             return {
                 ...body,
                 mappings: {
@@ -45,6 +49,21 @@ export const createIndexConfigurationPlugin = () => {
                         ])
                 }
             };
-        })
+        });
+    }
+
+    public canUse(): boolean {
+        return true;
+    }
+}
+
+export const createIndexConfigurationPlugin = () => {
+    return createRegisterExtensionPlugin(({ container }) => {
+        container.register(
+            CmsEntryOpenSearchIndex.createImplementation({
+                implementation: CustomOpenSearchIndex,
+                dependencies: []
+            })
+        );
     });
 };
