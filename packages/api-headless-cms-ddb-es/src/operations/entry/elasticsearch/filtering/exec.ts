@@ -12,16 +12,16 @@ import { parseWhereKey } from "@webiny/api-opensearch";
 import { getWhereValues } from "./values.js";
 import { getPopulated } from "./populated.js";
 import { createApplyFiltering } from "./applyFiltering.js";
-import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin.js";
 import { assignMinimumShouldMatchToQuery } from "~/operations/entry/elasticsearch/assignMinimumShouldMatchToQuery.js";
-import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
+import type { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter/index.js";
 
 export interface CreateExecParams {
     model: CmsModel;
     fields: ModelFields;
     plugins: PluginsContainer;
     valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
+    filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
 }
 export interface IExecParams {
     where: CmsEntryListWhere;
@@ -32,7 +32,7 @@ export interface CreateExecFilteringResponse {
     (params: IExecParams): void;
 }
 export const createExecFiltering = (params: CreateExecParams): CreateExecFilteringResponse => {
-    const { fields, plugins, model, valueSearchRegistry } = params;
+    const { fields, plugins, model, valueSearchRegistry, filterRegistry } = params;
 
     const operatorPlugins = createOperatorPluginList({
         plugins
@@ -43,24 +43,8 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
         valueSearchRegistry
     });
 
-    const filteringPlugins = plugins
-        .byType<CmsEntryFilterPlugin>(CmsEntryFilterPlugin.type)
-        .reduce<Record<string, CmsEntryFilterPlugin>>((collection, plugin) => {
-            collection[plugin.fieldType] = plugin;
-            return collection;
-        }, {});
-
-    const getFilterPlugin = (type: string) => {
-        const fieldType = getBaseFieldType({ type });
-        const plugin = filteringPlugins[fieldType] || filteringPlugins["*"];
-        if (plugin) {
-            return plugin;
-        }
-        throw new WebinyError(
-            `There is no filtering plugin for the given field type "${fieldType}".`,
-            "FILTERING_PLUGIN_ERROR",
-            { fieldType }
-        );
+    const getFilter = (type: string) => {
+        return filterRegistry.get(type);
     };
 
     const execFiltering = (params: IExecParams) => {
@@ -127,11 +111,11 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
             if (!field) {
                 throw new WebinyError(`There is no field "${fieldId}".`, "EXEC_FILTERING_ERROR");
             }
-            const filterPlugin = getFilterPlugin(field.type);
+            const filter = getFilter(field.type);
 
-            filterPlugin.exec({
+            filter.exec({
                 applyFiltering,
-                getFilterPlugin,
+                getFilter,
                 key,
                 value,
                 operator,

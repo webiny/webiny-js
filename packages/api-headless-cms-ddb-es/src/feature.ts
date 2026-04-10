@@ -22,7 +22,6 @@ import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchInd
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex.js";
-import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins/index.js";
 import { createCreateIndexTask } from "~/tasks/createIndexTaskPlugin.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
@@ -39,6 +38,10 @@ import {
     CmsEntryOpenSearchFieldIndexFeature,
     CmsEntryOpenSearchFieldIndexRegistry
 } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
+import {
+    CmsEntryOpenSearchFilterFeature,
+    CmsEntryOpenSearchFilterRegistry
+} from "~/features/CmsEntryOpenSearchFilter/index.js";
 
 const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const { table, esTable, documentClient, elasticsearch, plugins, getContainer } = params;
@@ -71,13 +74,6 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         })
     };
 
-    plugins.register([
-        /**
-         * Filter plugins used to apply filtering from where conditions to Elasticsearch query.
-         */
-        createFilterPlugins()
-    ]);
-
     const fieldRegistry = getContainer().resolve(CmsModelFieldToGraphQLRegistry);
     const fieldIndexRegistry = getContainer().resolve(CmsEntryOpenSearchFieldIndexRegistry);
     const compressionHandler = getContainer().resolve(CompressionHandler);
@@ -87,6 +83,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     const valueSearchRegistry = getContainer().resolve(CmsEntryOpenSearchValueSearchRegistry);
     const fullTextSearches = getContainer().resolveAll(CmsEntryOpenSearchFullTextSearch);
     const valuesModifiers = getContainer().resolveAll(CmsEntryOpenSearchValuesModifier);
+    const filterRegistry = getContainer().resolve(CmsEntryOpenSearchFilterRegistry);
 
     const entries = createEntriesStorageOperations({
         entity: entities.entries,
@@ -101,7 +98,8 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         queryModifiers,
         valueSearchRegistry,
         fullTextSearches,
-        valuesModifiers
+        valuesModifiers,
+        filterRegistry
     });
 
     return {
@@ -201,6 +199,7 @@ const storageOperationsFeature = createFeature({
     name: "cms.storageOperations.openSearch",
     register: container => {
         CmsEntryOpenSearchFieldIndexFeature.register(container);
+        CmsEntryOpenSearchFilterFeature.register(container);
         CmsEntryOpenSearchIndexFeature.register(container);
         CmsEntryOpenSearchValueSearchFeature.register(container);
         container.register(OpenSearchStorageOperationsFactory).inSingletonScope();

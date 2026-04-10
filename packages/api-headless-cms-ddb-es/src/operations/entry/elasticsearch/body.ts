@@ -23,6 +23,7 @@ import { createExecFiltering } from "./filtering/index.js";
 import { assignMinimumShouldMatchToQuery } from "./assignMinimumShouldMatchToQuery.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
+import type { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter/index.js";
 
 interface ICreateElasticsearchBodyParams {
     plugins: PluginsContainer;
@@ -34,6 +35,7 @@ interface ICreateElasticsearchBodyParams {
     queryModifiers: CmsEntryOpenSearchQueryModifier.Interface[];
     valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
     fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
+    filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
     params: Omit<CmsEntryListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
         after?: PrimitiveValue[];
@@ -49,7 +51,8 @@ export const createElasticsearchBody = ({
     sortModifiers,
     queryModifiers,
     valueSearchRegistry,
-    fullTextSearches
+    fullTextSearches,
+    filterRegistry
 }: ICreateElasticsearchBodyParams): SearchBody => {
     const { fields, search: term, where, sort: initialSort, after, limit } = params;
     /**
@@ -110,7 +113,8 @@ export const createElasticsearchBody = ({
         model,
         fields: modelFields,
         plugins,
-        valueSearchRegistry
+        valueSearchRegistry,
+        filterRegistry
     });
 
     execFiltering({

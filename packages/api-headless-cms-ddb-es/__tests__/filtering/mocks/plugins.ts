@@ -1,14 +1,13 @@
 import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator";
 import { PluginsContainer } from "@webiny/plugins";
-import type { Plugin } from "@webiny/plugins/types";
 import { getOpenSearchOperators } from "@webiny/api-opensearch";
 import type { OpenSearchQueryBuilderOperatorPlugins } from "~/operations/entry/elasticsearch/types";
-import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
 import { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch";
+import { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter";
 import { createTestContainer } from "~tests/helpers/createTestContainer";
 
-export const createPluginsContainer = (plugins: Plugin[] = []) => {
-    return new PluginsContainer([getOpenSearchOperators(), createFilterPlugins(), ...plugins]);
+export const createPluginsContainer = () => {
+    return new PluginsContainer([getOpenSearchOperators()]);
 };
 
 export const buildElasticsearchOperatorPlugins = (container?: PluginsContainer) => {
@@ -20,6 +19,7 @@ export const buildElasticsearchOperatorPlugins = (container?: PluginsContainer) 
 export interface Plugins {
     operators: OpenSearchQueryBuilderOperatorPlugins;
     valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
+    filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
     container: PluginsContainer;
 }
 export const createPlugins = (): Plugins => {
@@ -28,6 +28,7 @@ export const createPlugins = (): Plugins => {
     return {
         container,
         operators: buildElasticsearchOperatorPlugins(container),
-        valueSearchRegistry: testContainer.resolve(CmsEntryOpenSearchValueSearchRegistry)
+        valueSearchRegistry: testContainer.resolve(CmsEntryOpenSearchValueSearchRegistry),
+        filterRegistry: testContainer.resolve(CmsEntryOpenSearchFilterRegistry)
     };
 };

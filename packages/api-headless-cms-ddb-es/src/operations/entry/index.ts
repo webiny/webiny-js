@@ -77,6 +77,7 @@ import type { CmsEntryOpenSearchQueryModifier } from "~/features/CmsEntryOpenSea
 import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import type { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
 import type { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
+import type { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter/index.js";
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
@@ -92,6 +93,7 @@ export interface CreateEntriesStorageOperationsParams {
     valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
     fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
     valuesModifiers: CmsEntryOpenSearchValuesModifier.Interface[];
+    filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
 }
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
@@ -130,7 +132,8 @@ export const createEntriesStorageOperations = (
         queryModifiers,
         valueSearchRegistry,
         fullTextSearches,
-        valuesModifiers
+        valuesModifiers,
+        filterRegistry
     } = params;
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
@@ -1370,6 +1373,7 @@ export const createEntriesStorageOperations = (
             queryModifiers,
             valueSearchRegistry,
             fullTextSearches,
+            filterRegistry,
             params: {
                 ...params,
                 limit,
@@ -2083,6 +2087,7 @@ export const createEntriesStorageOperations = (
             queryModifiers,
             valueSearchRegistry,
             fullTextSearches,
+            filterRegistry,
             params: {
                 limit: 1,
                 where
