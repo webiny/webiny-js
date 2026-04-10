@@ -8,7 +8,6 @@ export interface Language {
     name: string;
     direction?: "ltr" | "rtl";
     isDefault?: boolean;
-    enabled?: boolean;
 }
 
 export async function listLanguages(
@@ -27,7 +26,6 @@ export async function listLanguages(
                         name
                         direction
                         isDefault
-                        enabled
                     }
                     error {
                         code

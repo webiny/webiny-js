@@ -11,8 +11,6 @@ interface SdkLanguage {
     direction?: "ltr" | "rtl";
     /** Whether this is the default language. */
     isDefault?: boolean;
-    /** Whether this language is enabled. */
-    enabled?: boolean;
 }
 
 interface SdkLanguages {
