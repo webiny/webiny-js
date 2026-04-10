@@ -5,9 +5,7 @@ describe("startsWith filter", () => {
     const registry = createValueFilterRegistry();
 
     const getFilter = () => {
-        const filter = registry.get({
-            operation: "startsWith"
-        });
+        const filter = registry.get("startsWith");
         expect(filter).toBeDefined();
         return filter!;
     };
@@ -42,20 +40,19 @@ describe("startsWith filter", () => {
         }
     );
 
-    test("canUse returns false for empty compareValue", () => {
-        const filter = registry.get({ operation: "startsWith" });
-        expect(filter).toBeUndefined();
+    test("matches returns true for null value and null compareValue", () => {
+        const filter = getFilter();
+
+        const result = filter.matches({ value: null, compareValue: null });
+
+        expect(result).toBe(true);
     });
 
-    test("canUse returns false for null compareValue", () => {
-        const filter = registry.get({ operation: "startsWith" });
-        expect(filter).toBeUndefined();
-    });
+    test("matches returns true for undefined value and undefined compareValue", () => {
+        const filter = getFilter();
 
-    test("canUse returns false for undefined compareValue", () => {
-        const filter = registry.get({
-            operation: "startsWith",
-        });
-        expect(filter).toBeUndefined();
+        const result = filter.matches({ value: undefined, compareValue: undefined });
+
+        expect(result).toBe(true);
     });
 });

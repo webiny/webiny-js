@@ -4,9 +4,9 @@ import { ValueFilter } from "./abstractions/ValueFilter.js";
 class ValueFilterRegistryImpl implements Abstraction.Interface {
     public constructor(private readonly filters: ValueFilter.Interface[]) {}
 
-    public get(params: ValueFilter.CanUseParams): ValueFilter.Interface | undefined {
+    public get(operation: string): ValueFilter.Interface | undefined {
         return this.filters.find(filter => {
-            return filter.canUse(params);
+            return filter.is(operation);
         });
     }
 

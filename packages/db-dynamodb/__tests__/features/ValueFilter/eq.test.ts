@@ -5,7 +5,7 @@ describe("eq filter", () => {
     const registry = createValueFilterRegistry();
 
     const getFilter = () => {
-        const filter = registry.get({ operation: "eq" });
+        const filter = registry.get("eq");
         expect(filter).toBeDefined();
         return filter!;
     };

@@ -5,7 +5,7 @@ describe("gte filter", () => {
     const registry = createValueFilterRegistry();
 
     const getFilter = () => {
-        const filter = registry.get({ operation: "gte" });
+        const filter = registry.get("gte");
         expect(filter).toBeDefined();
         return filter!;
     };

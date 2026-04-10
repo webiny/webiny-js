@@ -5,7 +5,7 @@ describe("fuzzy filter", () => {
     const registry = createValueFilterRegistry();
 
     const getFilter = () => {
-        const filter = registry.get({ operation: "fuzzy" });
+        const filter = registry.get("fuzzy");
         expect(filter).toBeDefined();
         return filter!;
     };

@@ -10,7 +10,7 @@ export const createRefFilterCreate = () => {
     const plugin = new CmsEntryFieldFilterPlugin<GenericRecord | null | undefined>({
         fieldType: "ref",
         create: params => {
-            const { valueFilterPlugins, transformValuePlugins, field } = params;
+            const { valueFilterRegistry, transformValuePlugins, field } = params;
             let value = params.value;
             if (!value) {
                 value = {
@@ -44,8 +44,8 @@ export const createRefFilterCreate = () => {
                     });
                 };
 
-                const filterPlugin = valueFilterPlugins[propertyOperation];
-                if (!filterPlugin) {
+                const filter = valueFilterRegistry.get(propertyOperation);
+                if (!filter) {
                     throw new WebinyError(
                         `Missing operation filter for "${propertyOperation}".`,
                         "MISSING_OPERATION_FILTER"
@@ -63,7 +63,7 @@ export const createRefFilterCreate = () => {
                     field,
                     path: paths.join("."),
                     fieldPathId: [...field.parents.map(f => f.fieldId), field.fieldId].join("."),
-                    plugin: filterPlugin,
+                    filter,
                     negate,
                     compareValue: transformValue({
                         value: value[propertyFilter],

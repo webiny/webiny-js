@@ -5,7 +5,7 @@ describe("in filter", () => {
     const registry = createValueFilterRegistry();
 
     const getFilter = () => {
-        const filter = registry.get({ operation: "in" });
+        const filter = registry.get("in");
         expect(filter).toBeDefined();
         return filter!;
     };

@@ -4,8 +4,12 @@ import { ValueFilter } from "../abstractions/ValueFilter.js";
 class FuzzyFilterImpl implements ValueFilter.Interface<string | null | undefined> {
     public readonly operation = "fuzzy";
 
-    public canUse({ operation }: ValueFilter.CanUseParams): boolean {
+    public is(operation: string): boolean {
         return this.operation === operation;
+    }
+
+    public canUse(): boolean {
+        return true;
     }
 
     public matches({

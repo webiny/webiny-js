@@ -5,7 +5,7 @@ describe("and_in filter", () => {
     const registry = createValueFilterRegistry();
 
     const getFilter = () => {
-        const filter = registry.get({ operation: "and_in" });
+        const filter = registry.get("and_in");
         expect(filter).toBeDefined();
         return filter!;
     };

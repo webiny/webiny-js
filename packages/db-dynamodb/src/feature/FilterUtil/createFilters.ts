@@ -1,27 +1,11 @@
 import * as dotProp from "dot-prop";
 import { WebinyError } from "@webiny/error";
-import type { Plugin, PluginsContainer } from "@webiny/plugins";
 import type { FieldPlugin } from "~/plugins/definitions/FieldPlugin.js";
 import type { DynamoDbContainsFilter } from "~/types.js";
 import type { ValueFilter, ValueFilterRegistry } from "~/feature/ValueFilter/index.js";
+import { extractWhereArgs } from "./extractWhereArgs.js";
 
 type TransformValue = (value: any) => any;
-
-export interface Params<T = any> {
-    filterRegistry: ValueFilterRegistry.Interface,
-    items: T[];
-    where: Record<string, any>;
-    /**
-     * An array of fields that require some special operation.
-     */
-    fields: FieldPlugin[];
-}
-
-interface MappedPluginParams<T extends Plugin = Plugin> {
-    plugins: PluginsContainer;
-    type: string;
-    property: keyof T;
-}
 
 interface Filter {
     operation: string;
@@ -32,55 +16,17 @@ interface Filter {
     negate: boolean;
 }
 
-const getMappedPlugins = <T extends Plugin>(params: MappedPluginParams<T>): Record<string, T> => {
-    return params.plugins.byType<T>(params.type).reduce(
-        (plugins, plugin) => {
-            /**
-             * We expect op to be a string, that is why we cast.
-             */
-            const op = plugin[params.property] as unknown as string;
-            plugins[op] = plugin;
-            return plugins;
-        },
-        {} as Record<string, T>
-    );
-};
-
-interface ExtractWhereArgsResult {
-    field: string;
-    operation: string;
-    negate: boolean;
+interface CreateFiltersParams {
+    filterRegistry: ValueFilterRegistry.Interface;
+    where: Record<string, any>;
+    fields: FieldPlugin[];
 }
-const extractWhereArgs = (key: string): ExtractWhereArgsResult => {
-    const result = key.split("_");
-    const field = result.shift() as string;
-    const rawOp = result.length === 0 ? "eq" : result.join("_");
-    /**
-     * When rawOp is not, it means it is equal negated so just return that.
-     */
-    if (rawOp === "not") {
-        return {
-            field,
-            operation: "eq",
-            negate: true
-        };
-    }
-    const negate = rawOp.match("not_") !== null;
-    const operation = rawOp.replace("not_", "");
-    return {
-        field,
-        operation,
-        negate
-    };
-};
 
-const findFilterPlugin = (
+const findFilter = (
     registry: ValueFilterRegistry.Interface,
     operation: string
 ): ValueFilter.Interface => {
-    const filter = registry.get({
-        operation
-    });
+    const filter = registry.get(operation);
     if (filter) {
         return filter;
     }
@@ -91,7 +37,7 @@ const findFilterPlugin = (
 
 const multiSearchFieldOperations = ["contains", "fuzzy"];
 
-const createFilters = (params: Omit<Params, "items">): Filter[] => {
+export const createFilters = (params: CreateFiltersParams): Filter[] => {
     const { where, fields, filterRegistry } = params;
 
     const keys = Object.keys(where);
@@ -124,7 +70,7 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
                 return field;
             });
 
-            const filter = findFilterPlugin(filterRegistry, key);
+            const filter = findFilter(filterRegistry, key);
             filters.push({
                 operation: filter.operation,
                 compareValue: data.value,
@@ -138,7 +84,7 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
 
         const { field, operation, negate } = extractWhereArgs(key);
 
-        const filter = findFilterPlugin(filterRegistry, operation);
+        const filter = findFilter(filterRegistry, operation);
 
         const fieldPlugin = fields.find(plugin => plugin.getField() === field);
         let path: string = field;
@@ -162,6 +108,7 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
         return filters;
     }, [] as Filter[]);
 };
+
 /**
  * Transforms the value with given transformer callable.
  */
@@ -174,10 +121,13 @@ const transform = (value: any, transformValue?: TransformValue): any => {
     }
     return transformValue(value);
 };
+
 /**
  * Creates a filter callable that we can send to the .filter() method of the array.
  */
-const createFilterCallable = (params: Omit<Params, "items">): ((item: any) => boolean) | null => {
+export const createFilterCallable = (
+    params: CreateFiltersParams
+): ((item: any) => boolean) | null => {
     const filters = createFilters(params);
     /**
      * Just return null so there are no filters to be applied.
@@ -206,14 +156,3 @@ const createFilterCallable = (params: Omit<Params, "items">): ((item: any) => bo
         return true;
     };
 };
-
-export function filterItems<T = any>(params: Params<T>): T[] {
-    const filter = createFilterCallable(params);
-    /**
-     * No point in going through all the items when there are no filters to be applied.
-     */
-    if (!filter) {
-        return params.items;
-    }
-    return params.items.filter(filter);
-}

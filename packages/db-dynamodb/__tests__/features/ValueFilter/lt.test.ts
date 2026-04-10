@@ -5,7 +5,7 @@ describe("lt filter", () => {
     const registry = createValueFilterRegistry();
 
     const getFilter = () => {
-        const filter = registry.get({ operation: "lt" });
+        const filter = registry.get("lt");
         expect(filter).toBeDefined();
         return filter!;
     };

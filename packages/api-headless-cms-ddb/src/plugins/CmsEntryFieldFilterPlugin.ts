@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins";
-import type { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin.js";
 import type { Field } from "~/operations/entry/filtering/types.js";
 import type { CmsFieldFilterValueTransformPlugin } from "~/types.js";
+import { ValueFilterRegistry } from "@webiny/db-dynamodb/feature/ValueFilter/index.js";
 
 /**
  * This plugin is used to create the filter.
@@ -21,7 +21,7 @@ interface CmsEntryFieldFilterPluginCreateParams<T = any> {
     field: Field;
     fields: Record<string, Field>;
     operation: string;
-    valueFilterPlugins: Record<string, ValueFilterPlugin>;
+    valueFilterRegistry: ValueFilterRegistry.Interface;
     transformValuePlugins: Record<string, CmsFieldFilterValueTransformPlugin>;
     getFilterCreatePlugin: (type: string) => CmsEntryFieldFilterPlugin;
     negate: boolean;
@@ -33,7 +33,7 @@ export interface CmsEntryFieldFilterPluginCreateResponse {
     field: Field;
     path: string;
     fieldPathId: string;
-    plugin: ValueFilterPlugin;
+    filter: ValueFilterRegistry.Filter;
     negate: boolean;
     compareValue: any;
     transformValue: <I = any, O = any>(value: I) => O;

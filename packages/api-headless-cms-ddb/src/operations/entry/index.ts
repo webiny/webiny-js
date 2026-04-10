@@ -1086,7 +1086,8 @@ export const createEntriesStorageOperations = (
             fullTextSearch: {
                 term: search,
                 fields: fields || []
-            }
+            },
+            container
         });
 
         const totalCount = filteredItems.length;

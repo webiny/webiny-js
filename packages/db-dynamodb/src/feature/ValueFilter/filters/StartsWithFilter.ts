@@ -3,8 +3,15 @@ import { ValueFilter } from "../abstractions/ValueFilter.js";
 class StartsWithFilterImpl implements ValueFilter.Interface {
     public readonly operation = "startsWith";
 
-    public canUse({ operation }: ValueFilter.CanUseParams): boolean {
+    public is(operation: string): boolean {
         return this.operation === operation;
+    }
+
+    public canUse({ compareValue }: ValueFilter.CanUseParams): boolean {
+        if (compareValue === "" || compareValue === null || compareValue === undefined) {
+            return false;
+        }
+        return true;
     }
 
     public matches({ value, compareValue }: ValueFilter.MatchesParams): ValueFilter.Result {

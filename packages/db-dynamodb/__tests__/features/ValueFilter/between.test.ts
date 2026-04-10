@@ -5,7 +5,7 @@ describe("between filter", () => {
     const registry = createValueFilterRegistry();
 
     const getFilter = () => {
-        const filter = registry.get({ operation: "between" });
+        const filter = registry.get("between");
         expect(filter).toBeDefined();
         return filter!;
     };
