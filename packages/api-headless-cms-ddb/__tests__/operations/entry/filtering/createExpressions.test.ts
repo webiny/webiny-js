@@ -4,13 +4,16 @@ import { PluginsContainer } from "@webiny/plugins";
 import { Field } from "~/operations/entry/filtering/types";
 import { createPluginsContainer } from "../../helpers/pluginsContainer";
 import { createFields } from "./mocks/fields";
+import { createTestContainer } from "../../helpers/createTestContainer";
 
 describe("create expressions from where conditions", () => {
     let plugins: PluginsContainer;
     let fields: Record<string, Field>;
+    let container: ReturnType<typeof createTestContainer>;
 
     beforeEach(() => {
         plugins = createPluginsContainer();
+        container = createTestContainer();
         fields = createFields({
             plugins
         });
@@ -19,6 +22,7 @@ describe("create expressions from where conditions", () => {
     it("should convert simple root level where into expression", () => {
         const result = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 values: {
@@ -39,7 +43,7 @@ describe("create expressions from where conditions", () => {
                     path: "values.title",
                     compareValue: "some value",
                     transformValue: expect.any(Function),
-                    plugin: expect.any(Object),
+                    filter: expect.any(Object),
                     field: expect.any(Object)
                 },
                 {
@@ -48,7 +52,7 @@ describe("create expressions from where conditions", () => {
                     path: "values.date",
                     compareValue: "2023-01-01",
                     transformValue: expect.any(Function),
-                    plugin: expect.any(Object),
+                    filter: expect.any(Object),
                     field: expect.any(Object)
                 },
                 {
@@ -57,7 +61,7 @@ describe("create expressions from where conditions", () => {
                     path: "id",
                     compareValue: ["1", "2", "3"],
                     transformValue: expect.any(Function),
-                    plugin: expect.any(Object),
+                    filter: expect.any(Object),
                     field: expect.any(Object)
                 }
             ]
@@ -69,6 +73,7 @@ describe("create expressions from where conditions", () => {
     it("should convert root level AND where into expression", async () => {
         const andWhereResult = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 AND: [
@@ -97,7 +102,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.title",
                             compareValue: "some value",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         },
                         {
@@ -106,7 +111,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.date",
                             compareValue: "2023-01-01",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         },
                         {
@@ -115,7 +120,7 @@ describe("create expressions from where conditions", () => {
                             path: "id",
                             compareValue: ["1", "2", "3"],
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -127,6 +132,7 @@ describe("create expressions from where conditions", () => {
 
         const rootWithAndWhereResult = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 values: {
@@ -154,7 +160,7 @@ describe("create expressions from where conditions", () => {
                     path: "values.isMarried",
                     compareValue: true,
                     transformValue: expect.any(Function),
-                    plugin: expect.any(Object),
+                    filter: expect.any(Object),
                     field: expect.any(Object)
                 },
                 {
@@ -163,7 +169,7 @@ describe("create expressions from where conditions", () => {
                     path: "values.price",
                     compareValue: 100,
                     transformValue: expect.any(Function),
-                    plugin: expect.any(Object),
+                    filter: expect.any(Object),
                     field: expect.any(Object)
                 }
             ],
@@ -182,7 +188,7 @@ describe("create expressions from where conditions", () => {
                                     path: "values.title",
                                     compareValue: "some value",
                                     transformValue: expect.any(Function),
-                                    plugin: expect.any(Object),
+                                    filter: expect.any(Object),
                                     field: expect.any(Object)
                                 },
                                 {
@@ -191,7 +197,7 @@ describe("create expressions from where conditions", () => {
                                     path: "values.date",
                                     compareValue: "2023-01-01",
                                     transformValue: expect.any(Function),
-                                    plugin: expect.any(Object),
+                                    filter: expect.any(Object),
                                     field: expect.any(Object)
                                 },
                                 {
@@ -200,7 +206,7 @@ describe("create expressions from where conditions", () => {
                                     path: "id",
                                     compareValue: ["1", "2", "3"],
                                     transformValue: expect.any(Function),
-                                    plugin: expect.any(Object),
+                                    filter: expect.any(Object),
                                     field: expect.any(Object)
                                 }
                             ]
@@ -216,6 +222,7 @@ describe("create expressions from where conditions", () => {
     it("should convert nested AND where to expression", async () => {
         const oneLevelAndWhereResult = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 values: {
@@ -245,7 +252,7 @@ describe("create expressions from where conditions", () => {
                     path: "values.isMarried",
                     compareValue: true,
                     transformValue: expect.any(Function),
-                    plugin: expect.any(Object),
+                    filter: expect.any(Object),
                     field: expect.any(Object)
                 },
                 {
@@ -254,7 +261,7 @@ describe("create expressions from where conditions", () => {
                     path: "values.price",
                     compareValue: 100,
                     transformValue: expect.any(Function),
-                    plugin: expect.any(Object),
+                    filter: expect.any(Object),
                     field: expect.any(Object)
                 }
             ],
@@ -280,7 +287,7 @@ describe("create expressions from where conditions", () => {
                                                     path: "values.price",
                                                     compareValue: 500,
                                                     transformValue: expect.any(Function),
-                                                    plugin: expect.any(Object),
+                                                    filter: expect.any(Object),
                                                     field: expect.any(Object)
                                                 }
                                             ],
@@ -299,6 +306,7 @@ describe("create expressions from where conditions", () => {
 
         const twoLevelAndWhereResult = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 values: {
@@ -345,7 +353,7 @@ describe("create expressions from where conditions", () => {
                     path: "values.isMarried",
                     compareValue: true,
                     transformValue: expect.any(Function),
-                    plugin: expect.any(Object),
+                    filter: expect.any(Object),
                     field: expect.any(Object)
                 },
                 {
@@ -354,7 +362,7 @@ describe("create expressions from where conditions", () => {
                     path: "values.price",
                     compareValue: 100,
                     transformValue: expect.any(Function),
-                    plugin: expect.any(Object),
+                    filter: expect.any(Object),
                     field: expect.any(Object)
                 }
             ],
@@ -373,7 +381,7 @@ describe("create expressions from where conditions", () => {
                                     path: "values.date",
                                     compareValue: "2023-01-01",
                                     transformValue: expect.any(Function),
-                                    plugin: expect.any(Object),
+                                    filter: expect.any(Object),
                                     field: expect.any(Object)
                                 }
                             ]
@@ -396,7 +404,7 @@ describe("create expressions from where conditions", () => {
                                                     path: "values.price",
                                                     compareValue: 500,
                                                     transformValue: expect.any(Function),
-                                                    plugin: expect.any(Object),
+                                                    filter: expect.any(Object),
                                                     field: expect.any(Object)
                                                 }
                                             ]
@@ -410,7 +418,7 @@ describe("create expressions from where conditions", () => {
                                                     path: "values.availableOn",
                                                     compareValue: null,
                                                     transformValue: expect.any(Function),
-                                                    plugin: expect.any(Object),
+                                                    filter: expect.any(Object),
                                                     field: expect.any(Object)
                                                 }
                                             ],
@@ -429,7 +437,7 @@ describe("create expressions from where conditions", () => {
                                                                     compareValue: "nested",
                                                                     transformValue:
                                                                         expect.any(Function),
-                                                                    plugin: expect.any(Object),
+                                                                    filter: expect.any(Object),
                                                                     field: expect.any(Object)
                                                                 }
                                                             ],
@@ -454,6 +462,7 @@ describe("create expressions from where conditions", () => {
     it("should convert root level OR into expression", async () => {
         const result = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 OR: [
@@ -482,7 +491,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.title",
                             compareValue: "some value",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         },
                         {
@@ -491,7 +500,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.date",
                             compareValue: "2023-01-01",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         },
                         {
@@ -500,7 +509,7 @@ describe("create expressions from where conditions", () => {
                             path: "id",
                             compareValue: ["1", "2", "3"],
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -514,6 +523,7 @@ describe("create expressions from where conditions", () => {
     it("should convert one level OR into expressions", async () => {
         const result = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 OR: [
@@ -549,7 +559,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.title",
                             compareValue: "some value",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         },
                         {
@@ -558,7 +568,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.title",
                             compareValue: "unwanted value",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -573,7 +583,7 @@ describe("create expressions from where conditions", () => {
                             path: "id",
                             compareValue: ["1", "2", "3"],
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -588,7 +598,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.date",
                             compareValue: "2023-01-01",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -602,6 +612,7 @@ describe("create expressions from where conditions", () => {
     it("should convert two levels OR into expressions", async () => {
         const result = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 OR: [
@@ -641,7 +652,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.title",
                             compareValue: "some value",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         },
                         {
@@ -650,7 +661,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.date",
                             compareValue: "2023-01-01",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -665,7 +676,7 @@ describe("create expressions from where conditions", () => {
                             path: "id",
                             compareValue: ["1", "2", "3"],
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -688,7 +699,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.title",
                                             compareValue: "some other value",
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ]
@@ -706,6 +717,7 @@ describe("create expressions from where conditions", () => {
     it("should convert two levels OR into expressions - sibling OR", async () => {
         const result = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 OR: [
@@ -753,7 +765,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.title",
                             compareValue: "some value",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         },
                         {
@@ -762,7 +774,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.date",
                             compareValue: "2023-01-01",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -776,7 +788,7 @@ describe("create expressions from where conditions", () => {
                             path: "id",
                             compareValue: ["1", "2", "3"],
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ],
@@ -795,7 +807,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.price",
                                             compareValue: 100,
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ]
@@ -822,7 +834,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.title",
                                             compareValue: "some other value",
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ]
@@ -840,6 +852,7 @@ describe("create expressions from where conditions", () => {
     it("should convert three levels OR into expressions", async () => {
         const result = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 OR: [
@@ -898,7 +911,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.title",
                             compareValue: "some value",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -913,7 +926,7 @@ describe("create expressions from where conditions", () => {
                             path: "id",
                             compareValue: ["1", "2", "3"],
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -928,7 +941,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.date",
                             compareValue: "2023-01-01",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -951,7 +964,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.title",
                                             compareValue: "some other value",
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ]
@@ -974,7 +987,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 500,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ]
@@ -989,7 +1002,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 100,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         },
                                                         {
@@ -998,7 +1011,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 1000,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ]
@@ -1020,6 +1033,7 @@ describe("create expressions from where conditions", () => {
     it("should convert four levels OR into expressions", async () => {
         const result = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 OR: [
@@ -1090,7 +1104,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.title",
                             compareValue: "some value",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -1105,7 +1119,7 @@ describe("create expressions from where conditions", () => {
                             path: "id",
                             compareValue: ["1", "2", "3"],
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -1120,7 +1134,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.date",
                             compareValue: "2023-01-01",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -1143,7 +1157,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.title",
                                             compareValue: "some other value",
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ]
@@ -1165,7 +1179,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 500,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ],
@@ -1189,7 +1203,7 @@ describe("create expressions from where conditions", () => {
                                                                                 expect.any(
                                                                                     Function
                                                                                 ),
-                                                                            plugin: expect.any(
+                                                                            filter: expect.any(
                                                                                 Object
                                                                             ),
                                                                             field: expect.any(
@@ -1213,7 +1227,7 @@ describe("create expressions from where conditions", () => {
                                                                                 expect.any(
                                                                                     Function
                                                                                 ),
-                                                                            plugin: expect.any(
+                                                                            filter: expect.any(
                                                                                 Object
                                                                             ),
                                                                             field: expect.any(
@@ -1236,7 +1250,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 100,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         },
                                                         {
@@ -1245,7 +1259,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 1000,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ]
@@ -1267,6 +1281,7 @@ describe("create expressions from where conditions", () => {
     it("should convert a simple root level AND and OR into expression", async () => {
         const result = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 values: {
@@ -1296,7 +1311,7 @@ describe("create expressions from where conditions", () => {
                     path: "values.price",
                     compareValue: 100,
                     transformValue: expect.any(Function),
-                    plugin: expect.any(Object),
+                    filter: expect.any(Object),
                     field: expect.any(Object)
                 }
             ],
@@ -1315,7 +1330,7 @@ describe("create expressions from where conditions", () => {
                                     path: "values.title",
                                     compareValue: "some value",
                                     transformValue: expect.any(Function),
-                                    plugin: expect.any(Object),
+                                    filter: expect.any(Object),
                                     field: expect.any(Object)
                                 }
                             ]
@@ -1330,7 +1345,7 @@ describe("create expressions from where conditions", () => {
                                     path: "values.title",
                                     compareValue: "some other value",
                                     transformValue: expect.any(Function),
-                                    plugin: expect.any(Object),
+                                    filter: expect.any(Object),
                                     field: expect.any(Object)
                                 }
                             ]
@@ -1346,6 +1361,7 @@ describe("create expressions from where conditions", () => {
     it("should convert complex OR / AND where into expression", async () => {
         const rootOrResult = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 OR: [
@@ -1431,7 +1447,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.title",
                             compareValue: "some value",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -1446,7 +1462,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.title",
                             compareValue: "some other value",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -1469,7 +1485,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.title",
                                             compareValue: "some level #3 value",
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         },
                                         {
@@ -1478,7 +1494,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.price",
                                             compareValue: 100,
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ]
@@ -1492,7 +1508,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.title",
                                             compareValue: "some level #3.1 value",
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ],
@@ -1511,7 +1527,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 110,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         },
                                                         {
@@ -1520,7 +1536,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 490,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ]
@@ -1535,7 +1551,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.title",
                                                             compareValue: "some level #4 value",
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ]
@@ -1560,7 +1576,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.price",
                                             compareValue: 100,
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         },
                                         {
@@ -1569,7 +1585,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.price",
                                             compareValue: 500,
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ]
@@ -1583,7 +1599,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.isMarried",
                                             compareValue: true,
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ],
@@ -1602,7 +1618,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 120,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         },
                                                         {
@@ -1611,7 +1627,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 480,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ]
@@ -1626,7 +1642,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.title",
                                                             compareValue: "some level #4 value",
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ]
@@ -1646,6 +1662,7 @@ describe("create expressions from where conditions", () => {
 
         const rootAndResult = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 AND: [
@@ -1731,7 +1748,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.title",
                             compareValue: "some value",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -1746,7 +1763,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.title",
                             compareValue: "some other value",
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ]
@@ -1769,7 +1786,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.title",
                                             compareValue: "some level #3 value",
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         },
                                         {
@@ -1778,7 +1795,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.price",
                                             compareValue: 100,
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ]
@@ -1792,7 +1809,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.title",
                                             compareValue: "some level #3.1 value",
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ],
@@ -1811,7 +1828,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 110,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         },
                                                         {
@@ -1820,7 +1837,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 490,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ]
@@ -1835,7 +1852,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.title",
                                                             compareValue: "some level #4 value",
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ]
@@ -1860,7 +1877,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.price",
                                             compareValue: 100,
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         },
                                         {
@@ -1869,7 +1886,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.price",
                                             compareValue: 500,
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ]
@@ -1883,7 +1900,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.isMarried",
                                             compareValue: true,
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ],
@@ -1902,7 +1919,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 120,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         },
                                                         {
@@ -1911,7 +1928,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.price",
                                                             compareValue: 480,
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ]
@@ -1926,7 +1943,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.title",
                                                             compareValue: "some level #4 value",
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ]
@@ -1946,6 +1963,7 @@ describe("create expressions from where conditions", () => {
 
         const rootAndOrResult = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 AND: [
@@ -2047,7 +2065,7 @@ describe("create expressions from where conditions", () => {
                                     path: "values.title",
                                     compareValue: "some value",
                                     transformValue: expect.any(Function),
-                                    plugin: expect.any(Object),
+                                    filter: expect.any(Object),
                                     field: expect.any(Object)
                                 }
                             ]
@@ -2062,7 +2080,7 @@ describe("create expressions from where conditions", () => {
                                     path: "values.title",
                                     compareValue: "some other value",
                                     transformValue: expect.any(Function),
-                                    plugin: expect.any(Object),
+                                    filter: expect.any(Object),
                                     field: expect.any(Object)
                                 }
                             ]
@@ -2085,7 +2103,7 @@ describe("create expressions from where conditions", () => {
                                                     path: "values.title",
                                                     compareValue: "some level #3 value",
                                                     transformValue: expect.any(Function),
-                                                    plugin: expect.any(Object),
+                                                    filter: expect.any(Object),
                                                     field: expect.any(Object)
                                                 },
                                                 {
@@ -2094,7 +2112,7 @@ describe("create expressions from where conditions", () => {
                                                     path: "values.price",
                                                     compareValue: 100,
                                                     transformValue: expect.any(Function),
-                                                    plugin: expect.any(Object),
+                                                    filter: expect.any(Object),
                                                     field: expect.any(Object)
                                                 }
                                             ]
@@ -2108,7 +2126,7 @@ describe("create expressions from where conditions", () => {
                                                     path: "values.title",
                                                     compareValue: "some level #3.1 value",
                                                     transformValue: expect.any(Function),
-                                                    plugin: expect.any(Object),
+                                                    filter: expect.any(Object),
                                                     field: expect.any(Object)
                                                 }
                                             ],
@@ -2128,7 +2146,7 @@ describe("create expressions from where conditions", () => {
                                                                     compareValue: 110,
                                                                     transformValue:
                                                                         expect.any(Function),
-                                                                    plugin: expect.any(Object),
+                                                                    filter: expect.any(Object),
                                                                     field: expect.any(Object)
                                                                 },
                                                                 {
@@ -2138,7 +2156,7 @@ describe("create expressions from where conditions", () => {
                                                                     compareValue: 490,
                                                                     transformValue:
                                                                         expect.any(Function),
-                                                                    plugin: expect.any(Object),
+                                                                    filter: expect.any(Object),
                                                                     field: expect.any(Object)
                                                                 }
                                                             ]
@@ -2155,7 +2173,7 @@ describe("create expressions from where conditions", () => {
                                                                         "some level #4 value",
                                                                     transformValue:
                                                                         expect.any(Function),
-                                                                    plugin: expect.any(Object),
+                                                                    filter: expect.any(Object),
                                                                     field: expect.any(Object)
                                                                 }
                                                             ]
@@ -2180,7 +2198,7 @@ describe("create expressions from where conditions", () => {
                                                     path: "values.price",
                                                     compareValue: 100,
                                                     transformValue: expect.any(Function),
-                                                    plugin: expect.any(Object),
+                                                    filter: expect.any(Object),
                                                     field: expect.any(Object)
                                                 },
                                                 {
@@ -2189,7 +2207,7 @@ describe("create expressions from where conditions", () => {
                                                     path: "values.price",
                                                     compareValue: 500,
                                                     transformValue: expect.any(Function),
-                                                    plugin: expect.any(Object),
+                                                    filter: expect.any(Object),
                                                     field: expect.any(Object)
                                                 }
                                             ]
@@ -2203,7 +2221,7 @@ describe("create expressions from where conditions", () => {
                                                     path: "values.isMarried",
                                                     compareValue: true,
                                                     transformValue: expect.any(Function),
-                                                    plugin: expect.any(Object),
+                                                    filter: expect.any(Object),
                                                     field: expect.any(Object)
                                                 }
                                             ],
@@ -2223,7 +2241,7 @@ describe("create expressions from where conditions", () => {
                                                                     compareValue: 120,
                                                                     transformValue:
                                                                         expect.any(Function),
-                                                                    plugin: expect.any(Object),
+                                                                    filter: expect.any(Object),
                                                                     field: expect.any(Object)
                                                                 },
                                                                 {
@@ -2233,7 +2251,7 @@ describe("create expressions from where conditions", () => {
                                                                     compareValue: 480,
                                                                     transformValue:
                                                                         expect.any(Function),
-                                                                    plugin: expect.any(Object),
+                                                                    filter: expect.any(Object),
                                                                     field: expect.any(Object)
                                                                 }
                                                             ]
@@ -2250,7 +2268,7 @@ describe("create expressions from where conditions", () => {
                                                                         "some level #4 value",
                                                                     transformValue:
                                                                         expect.any(Function),
-                                                                    plugin: expect.any(Object),
+                                                                    filter: expect.any(Object),
                                                                     field: expect.any(Object)
                                                                 }
                                                             ]
@@ -2279,7 +2297,7 @@ describe("create expressions from where conditions", () => {
                                     path: "values.price",
                                     compareValue: 777,
                                     transformValue: expect.any(Function),
-                                    plugin: expect.any(Object),
+                                    filter: expect.any(Object),
                                     field: expect.any(Object)
                                 }
                             ]
@@ -2294,7 +2312,7 @@ describe("create expressions from where conditions", () => {
                                     path: "values.isMarried",
                                     compareValue: false,
                                     transformValue: expect.any(Function),
-                                    plugin: expect.any(Object),
+                                    filter: expect.any(Object),
                                     field: expect.any(Object)
                                 }
                             ]
@@ -2314,6 +2332,7 @@ describe("create expressions from where conditions", () => {
     it("test for product conditional test", async () => {
         const result = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 OR: [
@@ -2365,7 +2384,7 @@ describe("create expressions from where conditions", () => {
                             path: "values.price",
                             compareValue: [200, 300],
                             transformValue: expect.any(Function),
-                            plugin: expect.any(Object),
+                            filter: expect.any(Object),
                             field: expect.any(Object)
                         }
                     ],
@@ -2384,7 +2403,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.title",
                                             compareValue: "black",
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ]
@@ -2407,7 +2426,7 @@ describe("create expressions from where conditions", () => {
                                                             path: "values.title",
                                                             compareValue: "version",
                                                             transformValue: expect.any(Function),
-                                                            plugin: expect.any(Object),
+                                                            filter: expect.any(Object),
                                                             field: expect.any(Object)
                                                         }
                                                     ]
@@ -2438,7 +2457,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.availableOn",
                                             compareValue: "2024-02-01",
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         },
                                         {
@@ -2447,7 +2466,7 @@ describe("create expressions from where conditions", () => {
                                             path: "values.availableOn",
                                             compareValue: "2024-02-02",
                                             transformValue: expect.any(Function),
-                                            plugin: expect.any(Object),
+                                            filter: expect.any(Object),
                                             field: expect.any(Object)
                                         }
                                     ]

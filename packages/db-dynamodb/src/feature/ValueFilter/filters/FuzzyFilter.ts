@@ -1,16 +1,21 @@
 import Fuse from "fuse.js";
-import type { ValueFilterPluginParamsMatchesParams } from "../definitions/ValueFilterPlugin.js";
-import { ValueFilterPlugin } from "../definitions/ValueFilterPlugin.js";
+import { ValueFilter } from "../abstractions/ValueFilter.js";
 
-const plugin = new ValueFilterPlugin({
-    operation: "fuzzy",
-    matches: ({
+class FuzzyFilterImpl implements ValueFilter.Interface<string | null | undefined> {
+    public readonly operation = "fuzzy";
+
+    public is(operation: string): boolean {
+        return this.operation === operation;
+    }
+
+    public canUse(): boolean {
+        return true;
+    }
+
+    public matches({
         value: initialValue,
         compareValue: initialCompareValue
-    }: ValueFilterPluginParamsMatchesParams<
-        string | null | undefined,
-        string | null | undefined
-    >) => {
+    }: ValueFilter.MatchesParams): ValueFilter.Result {
         if (typeof initialValue !== "string" || typeof initialCompareValue !== "string") {
             return false;
         }
@@ -29,8 +34,9 @@ const plugin = new ValueFilterPlugin({
 
         return result.length > 0;
     }
+}
+
+export const FuzzyFilter = ValueFilter.createImplementation({
+    implementation: FuzzyFilterImpl,
+    dependencies: []
 });
-
-plugin.name = "dynamodb.value.filter.fuzzy";
-
-export default plugin;

@@ -1,4 +1,4 @@
-import { ValueFilterPlugin } from "../definitions/ValueFilterPlugin.js";
+import { ValueFilter } from "../abstractions/ValueFilter.js";
 
 const createValues = (initialValue: string | string[] | object): string[] => {
     if (typeof initialValue === "string") {
@@ -46,9 +46,21 @@ const createCompareValues = (value: string) => {
         });
 };
 
-const plugin = new ValueFilterPlugin({
-    operation: "contains",
-    matches: ({ value: initialValue, compareValue: initialCompareValue }) => {
+class ContainsFilterImpl implements ValueFilter.Interface {
+    public readonly operation = "contains";
+
+    public is(operation: string): boolean {
+        return this.operation === operation;
+    }
+
+    public canUse(): boolean {
+        return true;
+    }
+
+    public matches({
+        value: initialValue,
+        compareValue: initialCompareValue
+    }: ValueFilter.MatchesParams): ValueFilter.Result {
         if (!initialValue || (Array.isArray(initialValue) && initialValue.length === 0)) {
             return false;
         } else if (initialCompareValue === undefined || initialCompareValue === null) {
@@ -62,8 +74,9 @@ const plugin = new ValueFilterPlugin({
             });
         });
     }
+}
+
+export const ContainsFilter = ValueFilter.createImplementation({
+    implementation: ContainsFilterImpl,
+    dependencies: []
 });
-
-plugin.name = "dynamodb.value.filter.contains";
-
-export default plugin;

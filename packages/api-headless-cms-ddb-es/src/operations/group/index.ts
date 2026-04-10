@@ -8,9 +8,10 @@ import type {
     CmsGroupStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
-import { filterItems, sortItems, ValueFilterPlugin } from "@webiny/db-dynamodb";
-import type { PluginsContainer } from "@webiny/plugins";
+import { sortItems } from "@webiny/db-dynamodb";
 import { IGroupEntity } from "~/definitions/types.js";
+import { FilterUtil } from "@webiny/db-dynamodb/exports/api/db.js";
+import type { CmsContext } from "~/types.js";
 
 interface PartitionKeyParams {
     tenant: string;
@@ -47,20 +48,14 @@ const createType = (): string => {
 
 interface CreateGroupsStorageOperationsParams {
     entity: IGroupEntity;
-    plugins: PluginsContainer;
+    container: CmsContext["container"];
 }
 export const createGroupsStorageOperations = (
     params: CreateGroupsStorageOperationsParams
 ): CmsGroupStorageOperations => {
-    const { entity, plugins } = params;
+    const { entity, container } = params;
 
-    const filteringPlugins = plugins.byType<ValueFilterPlugin>(ValueFilterPlugin.type);
-    if (filteringPlugins.length === 0) {
-        throw new WebinyError(
-            "DynamoDB filtering plugins not loaded.",
-            "MISSING_DYNAMODB_FILTERING_PLUGINS"
-        );
-    }
+    const filterUtil = container.resolve(FilterUtil);
 
     const create = async (params: CmsGroupStorageOperationsCreateParams) => {
         const { group } = params;
@@ -165,11 +160,10 @@ export const createGroupsStorageOperations = (
             );
         }
 
-        const filteredItems = filterItems({
+        const filteredItems = filterUtil.filter({
             items: records,
             where,
-            fields: [],
-            plugins
+            fields: []
         });
         if (!sort || sort.length === 0) {
             return filteredItems;

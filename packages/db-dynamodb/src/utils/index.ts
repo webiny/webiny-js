@@ -2,7 +2,6 @@ export * from "./cleanup.js";
 export * from "./createEntity.js";
 export * from "./createTable.js";
 export * from "./cursor.js";
-export * from "./filter.js";
 export * from "./get.js";
 export * from "./delete.js";
 export * from "./put.js";

@@ -48,7 +48,7 @@ export interface StorageOperationsFactoryParams {
     documentClient: DynamoDBDocument;
     table?: string;
     plugins: PluginsContainer;
-    getContainer: () => CmsContext["container"];
+    container: CmsContext["container"];
 }
 
 export interface IHeadlessCmsStorageOperationsGetEntitiesResult {

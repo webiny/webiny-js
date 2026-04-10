@@ -1,8 +1,17 @@
-import { ValueFilterPlugin } from "../definitions/ValueFilterPlugin.js";
+import { ValueFilter } from "../abstractions/ValueFilter.js";
 
-const plugin = new ValueFilterPlugin({
-    operation: "eq",
-    matches: ({ value, compareValue }) => {
+class EqFilterImpl implements ValueFilter.Interface {
+    public readonly operation = "eq";
+
+    public is(operation: string): boolean {
+        return this.operation === operation;
+    }
+
+    public canUse(): boolean {
+        return true;
+    }
+
+    public matches({ value, compareValue }: ValueFilter.MatchesParams): ValueFilter.Result {
         /**
          * Possibility that either input value or one from the system is array.
          */
@@ -17,8 +26,9 @@ const plugin = new ValueFilterPlugin({
         }
         return value == compareValue;
     }
+}
+
+export const EqFilter = ValueFilter.createImplementation({
+    implementation: EqFilterImpl,
+    dependencies: []
 });
-
-plugin.name = "dynamodb.value.filter.eq";
-
-export default plugin;

@@ -1,9 +1,9 @@
 import type {
+    CmsContext,
     CmsEntry,
     CmsEntryListWhere,
     CmsEntryValues
 } from "@webiny/api-headless-cms/types/index.js";
-import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin.js";
 import WebinyError from "@webiny/error";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { Field } from "./types.js";
@@ -12,6 +12,7 @@ import type { Expression, ExpressionCondition, Filter } from "./createExpression
 import { createExpressions } from "./createExpressions.js";
 import { transformValue } from "./transform.js";
 import { getValue } from "~/operations/entry/filtering/getValue.js";
+import { ValueFilterRegistry } from "@webiny/db-dynamodb/exports/api/db.js";
 
 interface ExecuteFilterParams {
     value: any;
@@ -25,7 +26,7 @@ const executeFilter = (params: ExecuteFilterParams) => {
      * We need to check if the filter can be used.
      * If it cannot, we will just return true.
      */
-    const canUse = filter.plugin.canUse({
+    const canUse = filter.filter.canUse({
         value,
         compareValue: filter.compareValue
     });
@@ -33,7 +34,7 @@ const executeFilter = (params: ExecuteFilterParams) => {
         return true;
     }
 
-    const matched = filter.plugin.matches({
+    const matched = filter.filter.matches({
         value,
         compareValue: filter.compareValue
     });
@@ -95,10 +96,11 @@ const executeExpressions = (params: ExecuteExpressionsParams): boolean => {
     return condition === "OR" ? false : true;
 };
 
-interface Params<T extends CmsEntryValues = CmsEntryValues> {
+interface IFilterParams<T extends CmsEntryValues = CmsEntryValues> {
+    plugins: PluginsContainer;
+    container: CmsContext["container"];
     items: CmsEntry<T>[];
     where: Partial<CmsEntryListWhere>;
-    plugins: PluginsContainer;
     fields: Record<string, Field>;
     fullTextSearch?: {
         term?: string;
@@ -107,9 +109,11 @@ interface Params<T extends CmsEntryValues = CmsEntryValues> {
 }
 
 export const filter = <T extends CmsEntryValues = CmsEntryValues>(
-    params: Params<T>
+    params: IFilterParams<T>
 ): CmsEntry<T>[] => {
-    const { items: records, where, plugins, fields, fullTextSearch } = params;
+    const { items: records, where, plugins, fields, fullTextSearch, container } = params;
+
+    const valueFilterRegistry = container.resolve(ValueFilterRegistry);
 
     const keys = Object.keys(where);
     if (keys.length === 0 && !fullTextSearch) {
@@ -118,7 +122,8 @@ export const filter = <T extends CmsEntryValues = CmsEntryValues>(
     const expression = createExpressions({
         plugins,
         where,
-        fields
+        fields,
+        container
     });
 
     /**
@@ -134,10 +139,8 @@ export const filter = <T extends CmsEntryValues = CmsEntryValues>(
     /**
      * We need the contains plugin to run the full text search.
      */
-    const fullTextSearchPlugin = plugins
-        .byType<ValueFilterPlugin>(ValueFilterPlugin.type)
-        .find(plugin => plugin.getOperation() === "contains");
-    if (!fullTextSearchPlugin) {
+    const fullTextSearchFilter = valueFilterRegistry.get("contains");
+    if (!fullTextSearchFilter) {
         throw new WebinyError(
             `Missing "contains" plugin to run the full-text search.`,
             "MISSING_PLUGIN"
@@ -148,7 +151,7 @@ export const filter = <T extends CmsEntryValues = CmsEntryValues>(
         term: fullTextSearch?.term,
         targetFields: fullTextSearch?.fields,
         fields,
-        plugin: fullTextSearchPlugin
+        filter: fullTextSearchFilter
     });
 
     return records.filter(record => {
