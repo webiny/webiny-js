@@ -22,7 +22,6 @@ import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchInd
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createOpenSearchEntity, createOpenSearchTable } from "@webiny/api-opensearch";
 import { deleteElasticsearchIndex } from "./elasticsearch/deleteElasticsearchIndex.js";
-import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins/index.js";
 import { createCreateIndexTask } from "~/tasks/createIndexTaskPlugin.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
@@ -39,9 +38,13 @@ import {
     CmsEntryOpenSearchFieldIndexFeature,
     CmsEntryOpenSearchFieldIndexRegistry
 } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
+import {
+    CmsEntryOpenSearchFilterFeature,
+    CmsEntryOpenSearchFilterRegistry
+} from "~/features/CmsEntryOpenSearchFilter/index.js";
 
 const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
-    const { table, esTable, documentClient, elasticsearch, plugins, getContainer } = params;
+    const { table, esTable, documentClient, elasticsearch, plugins, container } = params;
 
     const tableInstance = createTable({
         name: table || (process.env.DB_TABLE as string),
@@ -71,22 +74,48 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         })
     };
 
-    plugins.register([
-        /**
-         * Filter plugins used to apply filtering from where conditions to Elasticsearch query.
-         */
-        createFilterPlugins()
-    ]);
+    const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
+    const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
+    const compressionHandler = container.resolve(CompressionHandler);
+    const bodyModifiers = container.resolveAll(CmsEntryOpenSearchBodyModifier);
+    const sortModifiers = container.resolveAll(CmsEntryOpenSearchSortModifier);
+    const queryModifiers = container.resolveAll(CmsEntryOpenSearchQueryModifier);
+    const valueSearchRegistry = container.resolve(CmsEntryOpenSearchValueSearchRegistry);
+    const fullTextSearches = container.resolveAll(CmsEntryOpenSearchFullTextSearch);
+    const valuesModifiers = container.resolveAll(CmsEntryOpenSearchValuesModifier);
+    const filterRegistry = container.resolve(CmsEntryOpenSearchFilterRegistry);
 
-    const fieldRegistry = getContainer().resolve(CmsModelFieldToGraphQLRegistry);
-    const fieldIndexRegistry = getContainer().resolve(CmsEntryOpenSearchFieldIndexRegistry);
-    const compressionHandler = getContainer().resolve(CompressionHandler);
-    const bodyModifiers = getContainer().resolveAll(CmsEntryOpenSearchBodyModifier);
-    const sortModifiers = getContainer().resolveAll(CmsEntryOpenSearchSortModifier);
-    const queryModifiers = getContainer().resolveAll(CmsEntryOpenSearchQueryModifier);
-    const valueSearchRegistry = getContainer().resolve(CmsEntryOpenSearchValueSearchRegistry);
-    const fullTextSearches = getContainer().resolveAll(CmsEntryOpenSearchFullTextSearch);
-    const valuesModifiers = getContainer().resolveAll(CmsEntryOpenSearchValuesModifier);
+    container.registerFactory(ModelAfterCreateEventHandler, () => ({
+        async handle(event) {
+            const { model } = event.payload;
+            await createElasticsearchIndex({
+                client: elasticsearch,
+                model,
+                indexConfigs: container.resolveAll(CmsEntryOpenSearchIndex)
+            });
+        }
+    }));
+
+    container.registerFactory(ModelAfterCreateFromEventHandler, () => ({
+        async handle(event) {
+            const { model } = event.payload;
+            await createElasticsearchIndex({
+                client: elasticsearch,
+                model,
+                indexConfigs: container.resolveAll(CmsEntryOpenSearchIndex)
+            });
+        }
+    }));
+
+    container.registerFactory(ModelAfterDeleteEventHandler, () => ({
+        async handle(event) {
+            const { model } = event.payload;
+            await deleteElasticsearchIndex({
+                client: elasticsearch,
+                model
+            });
+        }
+    }));
 
     const entries = createEntriesStorageOperations({
         entity: entities.entries,
@@ -101,7 +130,8 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         queryModifiers,
         valueSearchRegistry,
         fullTextSearches,
-        valuesModifiers
+        valuesModifiers,
+        filterRegistry
     });
 
     return {
@@ -122,43 +152,6 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
             createCreateIndexTask(context);
 
             entries.dataLoaders.clearAll();
-        },
-        init: async context => {
-            /**
-             * TODO @pavel
-             * Moved operations to AFTER create/from because at in before the model does not have modelId - to create the index.
-             */
-            context.container.registerFactory(ModelAfterCreateEventHandler, () => ({
-                async handle(event) {
-                    const { model } = event.payload;
-                    await createElasticsearchIndex({
-                        client: elasticsearch,
-                        model,
-                        indexConfigs: context.container.resolveAll(CmsEntryOpenSearchIndex)
-                    });
-                }
-            }));
-
-            context.container.registerFactory(ModelAfterCreateFromEventHandler, () => ({
-                async handle(event) {
-                    const { model } = event.payload;
-                    await createElasticsearchIndex({
-                        client: elasticsearch,
-                        model,
-                        indexConfigs: context.container.resolveAll(CmsEntryOpenSearchIndex)
-                    });
-                }
-            }));
-
-            context.container.registerFactory(ModelAfterDeleteEventHandler, () => ({
-                async handle(event) {
-                    const { model } = event.payload;
-                    await deleteElasticsearchIndex({
-                        client: elasticsearch,
-                        model
-                    });
-                }
-            }));
         },
         getEntities: () => entities,
         getTable: () => tableInstance,
@@ -183,9 +176,7 @@ class OpenSearchStorageOperationsFactoryImpl
             documentClient: context.db.driver.getClient() as DynamoDBDocument,
             elasticsearch: context.opensearch,
             plugins: context.plugins,
-            getContainer: () => {
-                return context.container;
-            }
+            container: context.container
         });
     }
 }
@@ -201,6 +192,7 @@ const storageOperationsFeature = createFeature({
     name: "cms.storageOperations.openSearch",
     register: container => {
         CmsEntryOpenSearchFieldIndexFeature.register(container);
+        CmsEntryOpenSearchFilterFeature.register(container);
         CmsEntryOpenSearchIndexFeature.register(container);
         CmsEntryOpenSearchValueSearchFeature.register(container);
         container.register(OpenSearchStorageOperationsFactory).inSingletonScope();

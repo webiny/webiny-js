@@ -3,7 +3,7 @@ import { transformValueForSearch } from "~/operations/entry/elasticsearch/transf
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword.js";
 import type { OpenSearchQueryBuilderOperatorPlugins } from "~/operations/entry/elasticsearch/types.js";
 import { createFieldPathFactory } from "~/operations/entry/elasticsearch/filtering/path.js";
-import type { ApplyFilteringCb } from "~/plugins/CmsEntryFilterPlugin.js";
+import type { CmsEntryOpenSearchFilter } from "~/features/CmsEntryOpenSearchFilter/index.js";
 import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
 interface CreateParams {
@@ -14,7 +14,7 @@ interface CreateParams {
 export const createApplyFiltering = ({
     operatorPlugins,
     valueSearchRegistry
-}: CreateParams): ApplyFilteringCb => {
+}: CreateParams): CmsEntryOpenSearchFilter.ApplyFiltering => {
     const createFieldPath = createFieldPathFactory({
         valueSearchRegistry
     });

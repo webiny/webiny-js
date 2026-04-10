@@ -6,11 +6,13 @@ import {
 import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 import { CmsEntryOpenSearchFieldIndexFeature } from "~/features/CmsEntryOpenSearchFieldIndex/feature.js";
 import { CmsEntryOpenSearchValueSearchFeature } from "~/features/CmsEntryOpenSearchValueSearch/feature.js";
+import { CmsEntryOpenSearchFilterFeature } from "~/features/CmsEntryOpenSearchFilter/feature.js";
 
 export const createTestContainer = () => {
     const container = new Container();
     GraphQLFeature.register(container);
     CmsEntryOpenSearchFieldIndexFeature.register(container);
+    CmsEntryOpenSearchFilterFeature.register(container);
     CmsEntryOpenSearchValueSearchFeature.register(container);
     return container;
 };

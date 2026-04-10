@@ -47,7 +47,7 @@ export interface StorageOperationsFactoryParams {
     table?: string;
     esTable?: string;
     plugins: PluginsContainer;
-    getContainer: () => CmsContext["container"];
+    container: CmsContext["container"];
 }
 
 export interface IGetEntitiesResponse {
