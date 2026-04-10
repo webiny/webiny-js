@@ -650,7 +650,9 @@ jobs:
           sed -i 's|<Infra.OpenSearch enabled={true} />|<Infra.OpenSearch
           enabled={true} domainName={process.env.AWS_OPENSEARCH_DOMAIN_NAME \|\|
           "webiny-e2e-os"} indexPrefix={process.env.OPENSEARCH_INDEX_PREFIX \|\|
-          ""} />|g' webiny.config.tsx
+          ""} endpoint={process.env.OPENSEARCH_ENDPOINT}
+          username={process.env.OPENSEARCH_USERNAME}
+          password={process.env.OPENSEARCH_PASSWORD} />|g' webiny.config.tsx
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
