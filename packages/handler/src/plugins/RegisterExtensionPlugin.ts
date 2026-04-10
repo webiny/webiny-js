@@ -1,23 +1,24 @@
 import { Plugin } from "@webiny/plugins";
-import type { Container } from "@webiny/di";
-import type { Context } from "~/Context.js";
+import type { Context } from "~/types.js";
 
-export interface IRegisterExtensionPluginCb {
-    (context: Pick<Context, "container">): void;
+export interface IRegisterExtensionPluginCb<C extends Context = Context> {
+    (context: C): Promise<void> | void;
 }
 
-export class RegisterExtensionPlugin extends Plugin {
+export class RegisterExtensionPlugin<C extends Context = Context> extends Plugin {
     public static override readonly type: string = "handler.register.extension";
 
-    public constructor(private readonly cb: IRegisterExtensionPluginCb) {
+    public constructor(private readonly cb: IRegisterExtensionPluginCb<C>) {
         super();
     }
 
-    public apply(container: Container): void {
-        this.cb({ container });
+    public apply(context: C): Promise<void> | void {
+        return this.cb(context);
     }
 }
 
-export const createRegisterExtensionPlugin = (cb: IRegisterExtensionPluginCb) => {
-    return new RegisterExtensionPlugin(cb);
+export const createRegisterExtensionPlugin = <C extends Context = Context>(
+    cb: IRegisterExtensionPluginCb<C>
+) => {
+    return new RegisterExtensionPlugin<C>(cb);
 };

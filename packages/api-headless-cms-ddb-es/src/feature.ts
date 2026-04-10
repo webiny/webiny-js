@@ -6,8 +6,8 @@ import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js"
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
 import {
-    CmsEntryOpenSearchValueSearchRegistry,
-    CmsEntryOpenSearchValueSearchFeature
+    CmsEntryOpenSearchValueSearchFeature,
+    CmsEntryOpenSearchValueSearchRegistry
 } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 import {
     CmsEntryOpenSearchIndex,
@@ -72,10 +72,6 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
     };
 
     plugins.register([
-        /**
-         * DynamoDB filter plugins for the where conditions.
-         */
-        dynamoDbValueFilters(),
         /**
          * Filter plugins used to apply filtering from where conditions to Elasticsearch query.
          */
@@ -213,6 +209,12 @@ const storageOperationsFeature = createFeature({
 
 export const registerCmsOpenSearchStorageOperations = () => {
     return createRegisterExtensionPlugin(context => {
+        context.plugins.register([
+            /**
+             * DynamoDB filter plugins for the where conditions.
+             */
+            dynamoDbValueFilters()
+        ]);
         return storageOperationsFeature.register(context.container);
     });
 };
