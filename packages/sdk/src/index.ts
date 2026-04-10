@@ -2,6 +2,7 @@ export * from "./Webiny.js";
 export * from "./CmsSdk.js";
 export * from "./TenantManagerSdk.js";
 export * from "./FileManagerSdk.js";
+export * from "./LanguagesSdk.js";
 export * from "./types.js";
 export { Result } from "./Result.js";
 export { HttpError, GraphQLError, NetworkError } from "./errors.js";
@@ -88,3 +89,6 @@ export type {
 } from "./methods/fileManager/createMultiPartUpload.js";
 
 export type { CompleteMultiPartUploadParams } from "./methods/fileManager/completeMultiPartUpload.js";
+
+// Export Languages types.
+export type { Language } from "./methods/languages/listLanguages.js";
