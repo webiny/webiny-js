@@ -273,8 +273,8 @@ export const OpenSearch = createAppModule({
                     variables: {
                         DEBUG: String(process.env.DEBUG),
                         OPENSEARCH_ENDPOINT: domainEndpoint,
-                        OPENSEARCH_USERNAME: process.env.OPENSEARCH_USERNAME,
-                        OPENSEARCH_PASSWORD: process.env.OPENSEARCH_PASSWORD
+                        OPENSEARCH_USERNAME: process.env.OPENSEARCH_USERNAME ?? "",
+                        OPENSEARCH_PASSWORD: process.env.OPENSEARCH_PASSWORD ?? ""
                     }
                 },
                 description: "Process DynamoDB Stream.",
