@@ -25,7 +25,7 @@
     "@fortawesome/free-regular-svg-icons": "^7.2.0",
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@fortawesome/react-fontawesome": "^3.3.0",
-    "@lexical/utils": "^0.42.0",
+    "@lexical/utils": "^0.43.0",
     "@svgr/webpack": "^8.1.0",
     "@types/react": "18.3.28",
     "@webiny/admin-ui": "0.0.0",
