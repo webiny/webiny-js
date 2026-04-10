@@ -22,7 +22,6 @@ import type {
     ResourceHandler
 } from "~/types.js";
 import type { PulumiAppRemoteResource } from "~/PulumiAppRemoteResource.js";
-import cloneDeep from "lodash/cloneDeep.js";
 import { DEFAULT_PROD_ENV_NAMES } from "./constants.js";
 
 export function createPulumiApp<TResources extends Record<string, unknown>>(
@@ -256,7 +255,7 @@ function createPulumiAppResourceConfigProxy<T extends object>(obj: T) {
     return new Proxy(obj, {
         get(target, p: string) {
             if (p === "clone") {
-                return () => cloneDeep(obj);
+                return () => structuredClone(obj);
             }
 
             type V = T[keyof T];

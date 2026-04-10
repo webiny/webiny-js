@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, runInAction, toJS } from "mobx";
 import {
     ListQueryParamsRepository as Abstraction,
     type BaseListParams,
@@ -75,7 +75,7 @@ export class ListQueryParamsRepositoryImpl<TParams extends BaseListParams>
     }
 
     private clone(value: TParams): TParams {
-        return structuredClone ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+        return structuredClone(toJS(value));
     }
 }
 

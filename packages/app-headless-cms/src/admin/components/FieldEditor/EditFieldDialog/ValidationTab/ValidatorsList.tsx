@@ -1,6 +1,5 @@
 import React, { Fragment } from "react";
 import { css } from "@emotion/css";
-import cloneDeep from "lodash/cloneDeep.js";
 import debounce from "lodash/debounce.js";
 import { plugins } from "@webiny/plugins";
 import { Switch } from "@webiny/ui/Switch/index.js";
@@ -68,10 +67,10 @@ const onEnabledChange = (params: OnEnabledChangeParams): void => {
 };
 
 const onFormChange = debounce(({ data, validationValue, onChangeValidation, validatorIndex }) => {
-    const newValidationValue = cloneDeep(validationValue);
+    const newValidationValue = structuredClone(validationValue);
     newValidationValue[validatorIndex] = {
         ...newValidationValue[validatorIndex],
-        ...cloneDeep(data)
+        ...structuredClone(data)
     };
     onChangeValidation(newValidationValue);
 }, 200);

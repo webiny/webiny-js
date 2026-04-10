@@ -1,5 +1,3 @@
-import cloneDeep from "lodash/cloneDeep.js";
-
 export type Constructor<T> = new (...args: any[]) => T;
 
 export interface IListCachePredicate<T> {
@@ -34,7 +32,7 @@ export class ListCache<T> implements IListCache<T> {
     }
 
     getItems(): T[] {
-        return cloneDeep(this.state);
+        return structuredClone(this.state);
     }
 
     addItems(items: T[]): void {

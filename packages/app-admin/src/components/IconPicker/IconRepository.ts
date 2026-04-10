@@ -1,6 +1,4 @@
-import cloneDeep from "lodash/cloneDeep.js";
-import { makeAutoObservable, runInAction } from "mobx";
-
+import { makeAutoObservable, runInAction, toJS } from "mobx";
 import { Loading } from "./Loading.js";
 import type { IconPackProviderInterface as IconPackProvider, IconType } from "./config/index.js";
 import type { Icon } from "./types.js";
@@ -39,7 +37,7 @@ export class IconRepository {
     }
 
     getIcons() {
-        return cloneDeep(this.icons);
+        return structuredClone(toJS(this.icons));
     }
 
     addIcon(icon: Icon) {

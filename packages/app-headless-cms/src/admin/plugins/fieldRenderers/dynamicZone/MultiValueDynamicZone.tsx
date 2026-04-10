@@ -1,5 +1,4 @@
 import React from "react";
-import cloneDeep from "lodash/cloneDeep.js";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import { ReactComponent as CloneIcon } from "@webiny/icons/library_add.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
@@ -210,7 +209,7 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
     };
 
     const cloneValue = (value: TemplateValue, index: number) => {
-        bind.appendValue(cloneDeep(value), index + 1);
+        bind.appendValue(structuredClone(value), index + 1);
     };
 
     const values: TemplateValue[] = bind.value || [];

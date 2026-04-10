@@ -1,7 +1,5 @@
-import cloneDeep from "lodash/cloneDeep.js";
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, observable, runInAction, toJS } from "mobx";
 import { mdbid } from "@webiny/utils";
-
 import type { FilterDTO } from "../domain/index.js";
 import { FilterMapper, Loading, Sorter } from "../domain/index.js";
 import type { FiltersGatewayInterface } from "../gateways/index.js";
@@ -10,19 +8,20 @@ export class FilterRepository {
     private gateway: FiltersGatewayInterface;
     private sorter: Sorter<FilterDTO>;
     private loading: Loading;
-    private filters: FilterDTO[] = [];
+    private filters;
     public readonly namespace: string;
 
     constructor(gateway: FiltersGatewayInterface, namespace: string) {
         this.gateway = gateway;
         this.loading = new Loading();
         this.namespace = namespace;
+        this.filters = observable.array<FilterDTO>([]);
         this.sorter = new Sorter(["createdOn_DESC"]);
         makeAutoObservable(this);
     }
 
     getFilters() {
-        return cloneDeep(this.filters);
+        return structuredClone(toJS(this.filters));
     }
 
     getLoading() {
@@ -58,15 +57,23 @@ export class FilterRepository {
         }
 
         runInAction(() => {
-            this.filters = this.sorter.sort(response.map(filter => FilterMapper.toDTO(filter)));
+            this.filters.replace(
+                this.sorter.sort(
+                    response.map(filter => {
+                        return FilterMapper.toDTO(filter);
+                    })
+                )
+            );
         });
     }
 
     async getFilterById(id: string) {
-        const filterInCache = this.filters.find(filter => filter.id === id);
+        const filterInCache = this.filters.find(filter => {
+            return filter.id === id;
+        });
 
         if (filterInCache) {
-            return cloneDeep(filterInCache);
+            return structuredClone(toJS(filterInCache));
         }
 
         const response = await this.runWithLoading<FilterDTO>(this.gateway.get(id));
@@ -77,10 +84,10 @@ export class FilterRepository {
 
         const filterDTO = FilterMapper.toDTO(response);
         runInAction(() => {
-            this.filters = this.sorter.sort([filterDTO, ...this.filters]);
+            this.filters.replace(this.sorter.sort([filterDTO, ...toJS(this.filters)]));
         });
 
-        return cloneDeep(filterDTO);
+        return structuredClone(toJS(filterDTO));
     }
 
     async createFilter(filter: FilterDTO) {
@@ -99,10 +106,10 @@ export class FilterRepository {
 
         const filterDTO = FilterMapper.toDTO(response);
         runInAction(() => {
-            this.filters = this.sorter.sort([filterDTO, ...this.filters]);
+            this.filters.replace(this.sorter.sort([filterDTO, ...toJS(this.filters)]));
         });
 
-        return cloneDeep(filterDTO);
+        return structuredClone(toJS(filterDTO));
     }
 
     async updateFilter(filter: FilterDTO) {
@@ -122,14 +129,17 @@ export class FilterRepository {
             const filterDTO = FilterMapper.toDTO(response);
 
             runInAction(() => {
-                this.filters = this.sorter.sort([
-                    ...this.filters.slice(0, filterIndex),
-                    {
-                        ...this.filters[filterIndex],
-                        ...filterDTO
-                    },
-                    ...this.filters.slice(filterIndex + 1)
-                ]);
+                const filters = toJS(this.filters);
+                this.filters.replace(
+                    this.sorter.sort([
+                        ...filters.slice(0, filterIndex),
+                        {
+                            ...filters[filterIndex],
+                            ...filterDTO
+                        },
+                        ...filters.slice(filterIndex + 1)
+                    ])
+                );
             });
         }
     }
@@ -149,7 +159,9 @@ export class FilterRepository {
 
         if (response) {
             runInAction(() => {
-                this.filters = this.sorter.sort(this.filters.filter(filter => filter.id !== id));
+                this.filters.replace(
+                    this.sorter.sort(toJS(this.filters.filter(filter => filter.id !== id)))
+                );
             });
         }
     }
