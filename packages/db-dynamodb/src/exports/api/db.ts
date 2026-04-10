@@ -1,1 +1,1 @@
-export { ValueFilter } from "~/feature/ValueFilter/index.js";
+export { ValueFilter, ValueFilterRegistry } from "~/feature/ValueFilter/index.js";
