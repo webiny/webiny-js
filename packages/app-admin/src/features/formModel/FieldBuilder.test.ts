@@ -47,6 +47,47 @@ describe("TextFieldBuilder", () => {
     });
 });
 
+describe("TextFieldBuilder - beforeChange / afterChange", () => {
+    it("should store beforeChange callbacks in config", () => {
+        const cb1 = (value: unknown) => value;
+        const cb2 = (value: unknown) => value;
+
+        const config = new TextFieldBuilder().beforeChange(cb1).beforeChange(cb2).build("field");
+
+        expect(config.beforeChangeCallbacks).toHaveLength(2);
+        expect(config.beforeChangeCallbacks![0]).toBe(cb1);
+        expect(config.beforeChangeCallbacks![1]).toBe(cb2);
+    });
+
+    it("should store afterChange callbacks in config", () => {
+        const cb = () => {};
+        const config = new TextFieldBuilder().afterChange(cb).build("field");
+
+        expect(config.afterChangeCallbacks).toHaveLength(1);
+        expect(config.afterChangeCallbacks![0]).toBe(cb);
+    });
+
+    it("should not have callback arrays when none are added", () => {
+        const config = new TextFieldBuilder().build("field");
+        expect(config.beforeChangeCallbacks).toBeUndefined();
+        expect(config.afterChangeCallbacks).toBeUndefined();
+    });
+
+    it("should support chaining callbacks with other builder methods", () => {
+        const config = new TextFieldBuilder()
+            .label("Title")
+            .beforeChange(value => value)
+            .required("Required")
+            .afterChange(() => {})
+            .build("title");
+
+        expect(config.label).toBe("Title");
+        expect(config.required).toBe(true);
+        expect(config.beforeChangeCallbacks).toHaveLength(1);
+        expect(config.afterChangeCallbacks).toHaveLength(1);
+    });
+});
+
 describe("SelectFieldBuilder", () => {
     it("should build a select field config with static options", () => {
         const options = [

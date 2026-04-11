@@ -5,7 +5,9 @@ import type {
     IFormModel,
     IFieldBuilder,
     ISelectFieldBuilder,
-    IFieldBuilderRegistry
+    IFieldBuilderRegistry,
+    BeforeChangeCallback,
+    AfterChangeCallback
 } from "./abstractions.js";
 
 /**
@@ -67,6 +69,22 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
 
     disabled(value = true): this {
         this._config.disabled = value;
+        return this;
+    }
+
+    beforeChange(fn: BeforeChangeCallback): this {
+        if (!this._config.beforeChangeCallbacks) {
+            this._config.beforeChangeCallbacks = [];
+        }
+        this._config.beforeChangeCallbacks.push(fn);
+        return this;
+    }
+
+    afterChange(fn: AfterChangeCallback): this {
+        if (!this._config.afterChangeCallbacks) {
+            this._config.afterChangeCallbacks = [];
+        }
+        this._config.afterChangeCallbacks.push(fn);
         return this;
     }
 

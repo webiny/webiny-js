@@ -18,6 +18,8 @@ export interface IFieldConfig {
     disabled: boolean;
     schema?: z.ZodTypeAny;
     options?: ISelectOption[] | ((form: IFormModel) => ISelectOption[]);
+    beforeChangeCallbacks?: BeforeChangeCallback[];
+    afterChangeCallbacks?: AfterChangeCallback[];
 }
 
 export interface ISelectOption {
@@ -50,6 +52,8 @@ export interface IField {
     readonly type: string;
     getValue(): unknown;
     setValue(value: unknown): void;
+    addBeforeChange(cb: BeforeChangeCallback): void;
+    addAfterChange(cb: AfterChangeCallback): void;
     readonly vm: IFieldVM;
     readonly config: IFieldConfig;
 }
@@ -155,6 +159,8 @@ export interface IFieldBuilder {
     hidden(): this;
     required(message?: string): this;
     disabled(value?: boolean): this;
+    beforeChange(fn: BeforeChangeCallback): this;
+    afterChange(fn: AfterChangeCallback): this;
     build(name: string): IFieldConfig;
 }
 

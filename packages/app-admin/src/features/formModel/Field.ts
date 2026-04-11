@@ -28,6 +28,13 @@ export class Field implements IField {
         this._value = config.defaultValue ?? null;
         this._disabled = config.disabled;
 
+        if (config.beforeChangeCallbacks) {
+            this._beforeChangeCallbacks = [...config.beforeChangeCallbacks];
+        }
+        if (config.afterChangeCallbacks) {
+            this._afterChangeCallbacks = [...config.afterChangeCallbacks];
+        }
+
         makeAutoObservable(this, {
             config: false,
             vm: computed

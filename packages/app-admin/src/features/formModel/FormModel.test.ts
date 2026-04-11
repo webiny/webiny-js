@@ -314,6 +314,210 @@ describe("FormModel", () => {
         });
     });
 
+    describe("beforeChange / afterChange", () => {
+        it("should run beforeChange pipeline in order, transforming value", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    path: fields
+                        .text()
+                        .label("Path")
+                        .beforeChange(value => String(value).trim())
+                        .beforeChange(value => String(value).toLowerCase())
+                })
+            });
+
+            form.field("path").setValue("  Hello World  ");
+            expect(form.field("path").getValue()).toBe("hello world");
+        });
+
+        it("should run afterChange after value is stored", () => {
+            const received: unknown[] = [];
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields
+                        .text()
+                        .label("Title")
+                        .afterChange(value => {
+                            received.push(value);
+                        })
+                })
+            });
+
+            form.field("title").setValue("Hello");
+            expect(received).toEqual(["Hello"]);
+        });
+
+        it("should pass transformed value to afterChange", () => {
+            const received: unknown[] = [];
+            const form = new FormModel({
+                fields: fields => ({
+                    path: fields
+                        .text()
+                        .label("Path")
+                        .beforeChange(value => String(value).toLowerCase())
+                        .afterChange(value => {
+                            received.push(value);
+                        })
+                })
+            });
+
+            form.field("path").setValue("HELLO");
+            expect(form.field("path").getValue()).toBe("hello");
+            expect(received).toEqual(["hello"]);
+        });
+
+        it("should not fire afterChange when value does not change (recursion guard)", () => {
+            const calls: string[] = [];
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields
+                        .text()
+                        .label("Title")
+                        .beforeChange(value => "constant")
+                        .afterChange(() => {
+                            calls.push("afterChange");
+                        })
+                })
+            });
+
+            form.field("title").setValue("anything");
+            expect(calls).toEqual(["afterChange"]);
+            expect(form.field("title").getValue()).toBe("constant");
+
+            // Setting again — beforeChange still produces "constant", which === current value.
+            // afterChange should NOT fire.
+            form.field("title").setValue("something else");
+            expect(calls).toEqual(["afterChange"]);
+        });
+
+        it("should not trigger beforeChange or afterChange on setData", () => {
+            const calls: string[] = [];
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields
+                        .text()
+                        .label("Title")
+                        .beforeChange(value => {
+                            calls.push("before");
+                            return value;
+                        })
+                        .afterChange(() => {
+                            calls.push("after");
+                        })
+                })
+            });
+
+            form.setData({ title: "Loaded" });
+            expect(calls).toEqual([]);
+            expect(form.field("title").getValue()).toBe("Loaded");
+        });
+
+        it("should support cross-field afterChange triggering target field pipeline", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields
+                        .text()
+                        .label("Title")
+                        .afterChange((value, f) => {
+                            // Auto-generate path from title
+                            const path = "/" + String(value).toLowerCase().replace(/\s+/g, "-");
+                            f.field("path").setValue(path);
+                        }),
+                    path: fields
+                        .text()
+                        .label("Path")
+                        .beforeChange(value => {
+                            // Ensure path starts with /
+                            const str = String(value);
+                            return str.startsWith("/") ? str : "/" + str;
+                        })
+                })
+            });
+
+            form.field("title").setValue("Hello World");
+            expect(form.field("path").getValue()).toBe("/hello-world");
+        });
+
+        it("should allow appending callbacks to existing fields at runtime", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title")
+                })
+            });
+
+            const field = form.field("title");
+            field.addBeforeChange(value => String(value).toUpperCase());
+            field.setValue("hello");
+            expect(field.getValue()).toBe("HELLO");
+        });
+
+        it("should chain builder callbacks with runtime-appended callbacks", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    path: fields
+                        .text()
+                        .label("Path")
+                        .beforeChange(value => String(value).trim())
+                })
+            });
+
+            // Append another transform at runtime (simulating a modifier)
+            form.field("path").addBeforeChange(value => String(value).toLowerCase());
+            form.field("path").setValue("  HELLO  ");
+            expect(form.field("path").getValue()).toBe("hello");
+        });
+
+        it("should demonstrate title→path with path-dirty tracking", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields
+                        .text()
+                        .label("Title")
+                        .required("Title is required")
+                        .afterChange((value, f) => {
+                            // Only auto-generate if path is empty
+                            if (f.field("path").getValue()) {
+                                return;
+                            }
+                            const slug = String(value)
+                                .toLowerCase()
+                                .replace(/[^a-z0-9]+/g, "-")
+                                .replace(/^-|-$/g, "");
+                            f.field("path").setValue("/" + slug);
+                        }),
+                    path: fields
+                        .text()
+                        .label("Path")
+                        .required("Path is required")
+                        .beforeChange(value => {
+                            const str = String(value);
+                            return (
+                                "/" +
+                                str
+                                    .replace(/^\//, "")
+                                    .toLowerCase()
+                                    .replace(/[^a-z0-9/-]+/g, "-")
+                                    .replace(/^-|-$/g, "")
+                            );
+                        })
+                }),
+                layout: layout => [layout.row("title"), layout.row("path")]
+            });
+
+            // Type title → path auto-fills (path was null/empty)
+            form.field("title").setValue("Hello World");
+            expect(form.field("path").getValue()).toBe("/hello-world");
+
+            // Manually edit path → title changes no longer overwrite
+            form.field("path").setValue("/custom-path");
+            expect(form.field("path").getValue()).toBe("/custom-path");
+
+            form.field("title").setValue("New Title");
+            // Path still "/custom-path" because path is no longer empty
+            expect(form.field("path").getValue()).toBe("/custom-path");
+        });
+    });
+
     describe("select field with options", () => {
         it("should resolve static options in field VM", () => {
             const form = new FormModel({
