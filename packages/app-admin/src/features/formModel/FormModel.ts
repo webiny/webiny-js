@@ -1,4 +1,4 @@
-import { makeAutoObservable, computed, toJS } from "mobx";
+import { makeAutoObservable, computed, toJS, runInAction } from "mobx";
 import { Field } from "./Field.js";
 import { createFieldBuilderRegistry } from "./FieldBuilder.js";
 import type {
@@ -71,15 +71,11 @@ export class FormModel implements IFormModel {
     }
 
     field(name: string): IField {
-        const parts = name.split(".");
-        const field = this._fields.get(parts[0]);
+        // Try exact match first (supports dotted field names like "properties.language").
+        const field = this._fields.get(name);
 
         if (!field) {
             throw new Error(`Field "${name}" not found.`);
-        }
-
-        if (parts.length > 1) {
-            throw new Error(`Nested field access ("${name}") is not yet supported.`);
         }
 
         return field;
@@ -234,10 +230,13 @@ export class FormModel implements IFormModel {
             }
         }
 
-        this._errors = errors;
-        this._isValid = errors.length === 0;
-        this._submitted = true;
-        return this._isValid;
+        const isValid = errors.length === 0;
+        runInAction(() => {
+            this._errors = errors;
+            this._isValid = isValid;
+            this._submitted = true;
+        });
+        return isValid;
     }
 
     async submit<T = Record<string, unknown>>(): Promise<T | false> {
@@ -281,7 +280,7 @@ export class FormModel implements IFormModel {
     private _resolveRowNode(node: IRowNode): IRowNodeVM | null {
         const fields = node.fieldIds
             .map(id => this._fields.get(id))
-            .filter((f): f is Field => f !== undefined && !f.config.hidden)
+            .filter((f): f is Field => f !== undefined && f.visible)
             .map(f => f.vm);
 
         if (fields.length === 0) {
@@ -294,7 +293,7 @@ export class FormModel implements IFormModel {
     private _generateDefaultLayout(): LayoutNode[] {
         const layout: LayoutNode[] = [];
         for (const [name, field] of this._fields) {
-            if (!field.config.hidden) {
+            if (field.visible) {
                 layout.push({ type: "row", fieldIds: [name] });
             }
         }
@@ -312,7 +311,7 @@ export class FormModel implements IFormModel {
         }
 
         for (const [name, field] of this._fields) {
-            if (!field.config.hidden && !layoutFieldIds.has(name)) {
+            if (field.visible && !layoutFieldIds.has(name)) {
                 console.warn(
                     `[FormModel] Field "${name}" is not in the layout and not marked as .hidden(). ` +
                         `Add it to the layout or mark it as .hidden() to suppress this warning.`

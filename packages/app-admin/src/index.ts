@@ -60,3 +60,38 @@ export { useBuildParams } from "./presentation/buildParams/useBuildParams.js";
 export { useSecurity } from "./presentation/security/hooks/useSecurity.js";
 
 export * from "@webiny/app/renderApp.js";
+
+// FormModel
+export { FormModelFactory, FormModel } from "./features/formModel/abstractions.js";
+export type {
+    IFormModelFactory,
+    IFormModelConfig,
+    ILayoutBuilder,
+    IFieldBuilder,
+    ISelectFieldBuilder,
+    IFieldBuilderRegistry,
+    IFormModel,
+    IField,
+    ISelectField,
+    FieldTypeMap,
+    IFieldConfig,
+    IFieldVM,
+    IFieldValidation,
+    IFormVM,
+    IFormError,
+    IValueOption,
+    IRowNode,
+    IRowNodeVM,
+    LayoutNode,
+    LayoutNodeVM,
+    LayoutPosition,
+    IPositionedLayoutNode,
+    ILayoutNodeHandle,
+    ILayoutModifier,
+    IFormModifier,
+    BeforeChangeCallback,
+    AfterChangeCallback
+} from "./features/formModel/abstractions.js";
+export { FormView } from "./features/formModel/FormView.js";
+export { defaultFieldRenderers } from "./features/formModel/defaultFieldRenderers.js";
+export type { FieldRenderers, FieldRendererComponent } from "./features/formModel/FormView.js";

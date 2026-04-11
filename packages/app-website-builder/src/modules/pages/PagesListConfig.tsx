@@ -23,26 +23,21 @@ import {
     BulkActionUnpublish
 } from "~/modules/pages/PagesList/components/BulkActions/index.js";
 import { FilterByStatus } from "~/modules/pages/PagesList/components/Filters/index.js";
+// import { StaticPageForm } from "~/modules/pages/PagesList/components/Main/CreatePage/StaticPageForm.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { TrashBin } from "~/components/TrashBin/index.js";
 
-const { Browser, PageType } = InternalPageListConfig;
+const { Browser } = InternalPageListConfig;
 
 export const PagesListConfig = () => {
     return (
         <>
             <InternalPageListConfig>
-                <PageType
-                    name={"static"}
-                    label={"Static Page"}
-                    element={
-                        <>
-                            <PageType.Language />
-                            <PageType.Title />
-                            <PageType.Path />
-                        </>
-                    }
-                />
+                {/*<InternalPageListConfig.PageType*/}
+                {/*    name={"static"}*/}
+                {/*    label={"Static Page"}*/}
+                {/*    element={<StaticPageForm />}*/}
+                {/*/>*/}
                 <Browser.Filter name={"status"} element={<FilterByStatus />} />
                 <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
                 <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />

@@ -7,7 +7,8 @@ import type {
     ISelectFieldBuilder,
     IFieldBuilderRegistry,
     BeforeChangeCallback,
-    AfterChangeCallback
+    AfterChangeCallback,
+    OnBlurCallback
 } from "./abstractions.js";
 
 /**
@@ -85,6 +86,14 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
             this._config.afterChangeCallbacks = [];
         }
         this._config.afterChangeCallbacks.push(fn);
+        return this;
+    }
+
+    onBlur(fn: OnBlurCallback): this {
+        if (!this._config.onBlurCallbacks) {
+            this._config.onBlurCallbacks = [];
+        }
+        this._config.onBlurCallbacks.push(fn);
         return this;
     }
 

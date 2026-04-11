@@ -30,7 +30,8 @@ export type {
     ILayoutModifier,
     IFormModifier,
     BeforeChangeCallback,
-    AfterChangeCallback
+    AfterChangeCallback,
+    OnBlurCallback
 } from "./abstractions.js";
 
 // Implementations

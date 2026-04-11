@@ -21,6 +21,7 @@ import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { TranslatePageFeature } from "~/features/pages/translatePage/index.js";
 import { CreatePageConfig } from "./presentation/pages/CreatePage/CreatePageConfig.js";
 import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
+import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -37,6 +38,7 @@ export const Extension = () => {
             <RegisterFeature feature={NextjsConfigFeature} />
             <RegisterFeature feature={WbPermissionsFeature} />
             <RegisterFeature feature={TranslatePageFeature} />
+            <RegisterFeature feature={CreatePageFeature} />
             <AdminConfig>
                 <Security.Permissions
                     name="website-builder"

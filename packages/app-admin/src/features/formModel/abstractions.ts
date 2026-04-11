@@ -20,6 +20,7 @@ export interface IFieldConfig {
     options?: IValueOption[] | ((form: IFormModel) => IValueOption[]);
     beforeChangeCallbacks?: BeforeChangeCallback[];
     afterChangeCallbacks?: AfterChangeCallback[];
+    onBlurCallbacks?: OnBlurCallback[];
 }
 
 export interface IValueOption {
@@ -45,17 +46,21 @@ export interface IFieldVM {
     renderer?: string;
     options?: IValueOption[];
     onChange: (value: unknown) => void;
+    onBlur: () => void;
 }
 
 export interface IField {
     readonly name: string;
     readonly type: string;
-    getValue(): unknown;
+    getValue<T = unknown>(): T;
     setValue(value: unknown): void;
     setDisabled(value: boolean): void;
+    setVisible(value: boolean): void;
     remove(): void;
     addBeforeChange(cb: BeforeChangeCallback): void;
     addAfterChange(cb: AfterChangeCallback): void;
+    addOnBlur(cb: OnBlurCallback): void;
+    blur(): void;
     as<T extends keyof FieldTypeMap>(type: T): FieldTypeMap[T];
     readonly vm: IFieldVM;
     readonly config: IFieldConfig;
@@ -82,6 +87,7 @@ export interface ISelectField extends IField {
 
 export type BeforeChangeCallback = (value: unknown, form: IFormModel) => unknown;
 export type AfterChangeCallback = (value: unknown, form: IFormModel) => void;
+export type OnBlurCallback = (value: unknown, form: IFormModel) => void;
 
 // ---------------------------------------------------------------------------
 // Layout types
@@ -185,6 +191,7 @@ export namespace FormModel {
     export type SelectField = ISelectField;
     export type BeforeChange = BeforeChangeCallback;
     export type AfterChange = AfterChangeCallback;
+    export type OnBlur = OnBlurCallback;
     export type RowNode = IRowNode;
     export type RowNodeVM = IRowNodeVM;
     export type FormError = IFormError;
@@ -223,6 +230,7 @@ export interface IFieldBuilder {
     disabled(value?: boolean): this;
     beforeChange(fn: BeforeChangeCallback): this;
     afterChange(fn: AfterChangeCallback): this;
+    onBlur(fn: OnBlurCallback): this;
     build(name: string): IFieldConfig;
 }
 

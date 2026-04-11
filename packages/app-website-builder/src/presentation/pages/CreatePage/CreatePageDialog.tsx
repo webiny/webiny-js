@@ -1,14 +1,13 @@
-import React, { useEffect, useMemo } from "react";
-import { useDialog } from "@webiny/app-admin";
-import { Dialog, Grid, Select } from "@webiny/admin-ui";
-import { Form, useBind } from "@webiny/form";
-import { validation } from "@webiny/validation";
-import { useOpenDialog } from "@webiny/app-admin";
+import React, { useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useDialog, useOpenDialog, FormView, defaultFieldRenderers } from "@webiny/app-admin";
+import { Dialog, Select } from "@webiny/admin-ui";
+import { useFeature } from "@webiny/app";
 import { useCreatePage } from "~/features/pages/index.js";
-import type { CreatePageParams } from "~/features/pages/createPage/ICreatePageUseCase.js";
 import { useEditPageUrl } from "~/modules/pages/PagesList/hooks/useEditPageUrl.js";
-import { useGetPageType, usePageTypes } from "~/features/index.js";
+import { CreatePageFeature } from "./feature.js";
 import { createPageDialogParams } from "./createPageSchema.js";
+import { OverlayLoader } from "@webiny/admin-ui";
 
 export const CREATE_PAGE_DIALOG = "createPage";
 
@@ -20,110 +19,63 @@ export const useCreatePageDialog = () => {
     };
 };
 
-export const CreatePageDialog = () => {
+export const CreatePageDialog = observer(() => {
+    const [loading, setLoading] = useState(false);
     const { params, closeDialog } = useDialog(createPageDialogParams);
     const { createPage } = useCreatePage();
     const { goToPageEditor } = useEditPageUrl();
-    const { getPageType } = useGetPageType();
-    const { pageTypes } = usePageTypes();
+    const { presenter } = useFeature(CreatePageFeature);
+    const vm = presenter.vm;
 
-    const options = useMemo(() => {
-        return Array.from(pageTypes.entries()).map(([, type]) => ({
-            label: type.label,
-            value: type.name
-        }));
-    }, [pageTypes]);
+    useEffect(() => {
+        const defaultPageType = vm.pageTypes[0]?.name ?? "static";
+        presenter.init(defaultPageType, params.folderId);
+    }, []);
 
-    const handleSubmit = async ({ type, ...formData }: Record<string, unknown>) => {
-        const pageType = getPageType(type as string);
+    const handlePageTypeChange = (pageType: string) => {
+        presenter.init(pageType, params.folderId);
+    };
 
-        if (!pageType) {
+    const handleSubmit = async () => {
+        const input = await presenter.submit();
+        if (!input) {
             return;
         }
 
-        const input: CreatePageParams = {
-            location: {
-                folderId: params.folderId
-            },
-            properties: {
-                ...((formData.properties as Record<string, unknown>) ?? {})
-            },
-            extensions: {
-                ...((formData.extensions as Record<string, unknown>) ?? {})
-            },
-            metadata: {
-                documentType: "page",
-                pageType: type as string,
-                ...((formData.metadata as Record<string, unknown>) ?? {})
-            },
-            elements: {
-                root: {
-                    type: "Webiny/Element",
-                    id: "root",
-                    component: {
-                        name: "Webiny/Root"
-                    }
-                }
-            }
-        };
-
-        const result = await createPage(input);
+        setLoading(true);
+        const page = await createPage(input);
         closeDialog();
-        goToPageEditor(result.id);
+        goToPageEditor(page.id);
     };
 
     return (
-        <Form onSubmit={handleSubmit} data={{}}>
-            {({ submit }) => (
-                <Dialog
-                    open={true}
-                    onClose={closeDialog}
-                    title="Create a Page"
-                    actions={
-                        <>
-                            <Dialog.CancelAction onClick={closeDialog} text="Cancel" />
-                            <Dialog.ConfirmAction onClick={submit} text="Create" />
-                        </>
-                    }
-                >
-                    <CreatePageForm options={options} pageTypes={pageTypes} />
-                </Dialog>
-            )}
-        </Form>
+        <Dialog
+            open={true}
+            onClose={closeDialog}
+            title="Create a Page"
+            actions={
+                <>
+                    <Dialog.CancelAction onClick={closeDialog} text="Cancel" />
+                    <Dialog.ConfirmAction onClick={handleSubmit} text="Create" />
+                </>
+            }
+        >
+            {loading ? <OverlayLoader text={"Creating page..."} /> : null}
+            <div className="flex flex-col gap-4">
+                {vm.pageTypes.length > 1 && (
+                    <Select
+                        label="Page Type"
+                        value={vm.selectedPageType}
+                        onChange={handlePageTypeChange}
+                        options={vm.pageTypes.map(pt => ({
+                            label: pt.label,
+                            value: pt.name
+                        }))}
+                        displayResetAction={false}
+                    />
+                )}
+                <FormView form={vm.form} renderers={defaultFieldRenderers} />
+            </div>
+        </Dialog>
     );
-};
-
-interface CreatePageFormProps {
-    options: { label: string; value: string }[];
-    pageTypes: ReturnType<typeof usePageTypes>["pageTypes"];
-}
-
-const CreatePageForm = ({ options, pageTypes }: CreatePageFormProps) => {
-    const pageTypeBind = useBind({
-        name: "type",
-        validators: [validation.create("required")]
-    });
-
-    useEffect(() => {
-        if (options.length > 0 && !pageTypeBind.value) {
-            pageTypeBind.onChange(options[0].value);
-        }
-    }, [options]);
-
-    const pageType = pageTypes.find(type => type.name === pageTypeBind.value);
-
-    return (
-        <Grid>
-            <Grid.Column span={12}>
-                <Select
-                    displayResetAction={false}
-                    label={"Page Type"}
-                    {...pageTypeBind}
-                    value={pageTypeBind.value ?? ""}
-                    options={options}
-                />
-            </Grid.Column>
-            <>{pageType ? pageType.element : null}</>
-        </Grid>
-    );
-};
+});

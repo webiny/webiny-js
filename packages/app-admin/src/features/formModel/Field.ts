@@ -1,4 +1,4 @@
-import { makeAutoObservable, computed } from "mobx";
+import { makeAutoObservable, computed, runInAction } from "mobx";
 import type {
     IFieldConfig,
     IFieldVM,
@@ -8,7 +8,8 @@ import type {
     IField,
     FieldTypeMap,
     BeforeChangeCallback,
-    AfterChangeCallback
+    AfterChangeCallback,
+    OnBlurCallback
 } from "./abstractions.js";
 
 /**
@@ -18,8 +19,10 @@ export class Field implements IField {
     private _value: unknown;
     private _validation: IFieldValidation = { isValid: null };
     private _disabled: boolean;
+    private _hidden: boolean;
     private _beforeChangeCallbacks: BeforeChangeCallback[] = [];
     private _afterChangeCallbacks: AfterChangeCallback[] = [];
+    private _onBlurCallbacks: OnBlurCallback[] = [];
     private _form: IFormModel | null = null;
 
     readonly config: IFieldConfig;
@@ -28,12 +31,16 @@ export class Field implements IField {
         this.config = config;
         this._value = config.defaultValue ?? null;
         this._disabled = config.disabled;
+        this._hidden = config.hidden;
 
         if (config.beforeChangeCallbacks) {
             this._beforeChangeCallbacks = [...config.beforeChangeCallbacks];
         }
         if (config.afterChangeCallbacks) {
             this._afterChangeCallbacks = [...config.afterChangeCallbacks];
+        }
+        if (config.onBlurCallbacks) {
+            this._onBlurCallbacks = [...config.onBlurCallbacks];
         }
 
         makeAutoObservable(this, {
@@ -50,8 +57,8 @@ export class Field implements IField {
         return this.config.type;
     }
 
-    getValue(): unknown {
-        return this._value;
+    getValue<T = unknown>(): T {
+        return this._value as T;
     }
 
     /**
@@ -87,6 +94,14 @@ export class Field implements IField {
         this._disabled = value;
     }
 
+    get visible(): boolean {
+        return !this._hidden;
+    }
+
+    setVisible(value: boolean): void {
+        this._hidden = !value;
+    }
+
     setValidation(validation: IFieldValidation): void {
         this._validation = validation;
     }
@@ -101,6 +116,16 @@ export class Field implements IField {
 
     addAfterChange(cb: AfterChangeCallback): void {
         this._afterChangeCallbacks.push(cb);
+    }
+
+    addOnBlur(cb: OnBlurCallback): void {
+        this._onBlurCallbacks.push(cb);
+    }
+
+    blur(): void {
+        for (const cb of this._onBlurCallbacks) {
+            cb(this._value, this._form!);
+        }
     }
 
     setForm(form: IFormModel): void {
@@ -137,7 +162,8 @@ export class Field implements IField {
             disabled: this._disabled,
             renderer: this.config.renderer,
             options,
-            onChange: (value: unknown) => this.setValue(value)
+            onChange: (value: unknown) => this.setValue(value),
+            onBlur: () => this.blur()
         };
     }
 
@@ -173,15 +199,19 @@ export class Field implements IField {
             const result = await this.config.schema.safeParseAsync(this._value);
             if (!result.success) {
                 const firstIssue = result.error.issues[0];
-                this._validation = {
-                    isValid: false,
-                    message: firstIssue?.message || "Invalid value."
-                };
+                runInAction(() => {
+                    this._validation = {
+                        isValid: false,
+                        message: firstIssue?.message || "Invalid value."
+                    };
+                });
                 return false;
             }
         }
 
-        this._validation = { isValid: true };
+        runInAction(() => {
+            this._validation = { isValid: true };
+        });
         return true;
     }
 }
