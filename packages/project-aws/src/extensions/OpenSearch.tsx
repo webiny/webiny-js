@@ -28,7 +28,15 @@ export const OpenSearch = defineExtension({
                 "Whether to use shared indexes across all environments (true) or separate indexes per environment (false)."
             )
             .default(false)
-            .optional()
+            .optional(),
+        endpoint: z
+            .string()
+            .describe(
+                "The endpoint of an existing OpenSearch cluster. Useful when cluster is behind a custom domain."
+            )
+            .optional(),
+        username: z.string().describe("The username for OpenSearch authentication.").optional(),
+        password: z.string().describe("The password for OpenSearch authentication.").optional()
     }),
     render: props => {
         return (
