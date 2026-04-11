@@ -821,14 +821,192 @@ class PageSettingsPresenter {
 }
 ```
 
-**FormModel mutation API — three methods:**
+**FormModel mutation API:**
 
-| Method                              | Behavior                                                                                                                                                      |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `form.fields(fields => ({ ... }))`  | Merges new fields into the existing field map. Same key without `.extend()` replaces the field. Same key with `.extend()` merges child fields (objects only). |
-| `form.field("name")`                | Access an existing field to append `beforeChange`/`afterChange` handlers or modify properties.                                                                |
-| `form.layout(layout => [ ... ])`    | Appends layout nodes to the existing layout tree.                                                                                                             |
-| `form.setLayout(layout => [ ... ])` | Replaces the entire layout tree.                                                                                                                              |
+| Method                              | Behavior                                                                                                                                                                                                        |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `form.fields(fields => ({ ... }))`  | Merges new fields into the existing field map. Same key without `.extend()` replaces the field. Same key with `.extend()` merges child fields (objects only). Supports `.replace()` and `.remove()` operations. |
+| `form.field("name")`                | Access an existing field to append `beforeChange`/`afterChange` handlers or modify properties. Returns base `FieldBuilder` with common operations.                                                              |
+| `form.field("name").as("type")`     | Narrows field access to a specific field type builder, enabling type-specific mutations. See **Type-Narrowed Field Access** below.                                                                              |
+| `form.layout(layout => [ ... ])`    | Appends layout nodes to the existing layout tree. Supports positional modifiers (`.before()`, `.after()`, `.replace()`, `.remove()`). See **Layout Positioning** below.                                         |
+| `form.layout("nodeId")`             | Access a named layout node for mutation. Returns a base handle, narrowed via `.as("tabs")` etc. See **Layout Node Access and Mutation** below.                                                                  |
+| `form.setLayout(layout => [ ... ])` | Replaces the entire layout tree.                                                                                                                                                                                |
+
+### Type-Narrowed Field Access
+
+`form.field("name")` returns a base `FieldBuilder` with operations common to all field types: `beforeChange`, `afterChange`, `disabled`, `setValue`, `getValue`. For type-specific operations, use `.as()` to narrow:
+
+```ts
+form.field("seo").as("object"); // → ObjectFieldBuilder (has .fields())
+form.field("title").as("text"); // → TextFieldBuilder
+```
+
+`.as()` provides autocomplete of all registered field type names. If the field's actual type doesn't match, it throws in development — runtime validation, same philosophy as `useDialog(zodSchema)`.
+
+Common operations don't need `.as()`:
+
+```ts
+// Base FieldBuilder — no narrowing needed
+form.field("path").beforeChange((value, form) => { ... });
+form.field("title").afterChange((value, form) => { ... });
+form.field("title").disabled(true);
+
+// Type-specific — narrowing required
+form.field("seo").as("object").fields(fields => ({ ... }));
+```
+
+### Field Operations: Replace and Remove
+
+Modifiers can replace or remove existing fields:
+
+```ts
+form.fields(fields => ({
+  // Add new field (default)
+  language: fields.select().label("Language"),
+
+  // Replace an existing field entirely
+  title: fields.replace().text().label("Page Title").renderer("custom-title-input"),
+
+  // Remove a field
+  snippet: fields.remove()
+}));
+```
+
+### Layout Positioning
+
+Layout nodes support positional modifiers for precise placement within the existing layout tree:
+
+```ts
+form.layout(layout => [
+    // Append (default — goes at the end)
+    layout.row("language"),
+
+    // Insert before a specific field/element
+    layout.row("language").before("title"),
+
+    // Insert after a specific field/element
+    layout.row("snippet").after("path"),
+
+    // Replace a node that contains the target field
+    layout.row("title", "subtitle").replace("title"),
+
+    // Remove a node by field reference
+    layout.remove("snippet"),
+
+    // Append a tab to an existing tabs node
+    layout.tab("custom", {
+        label: "Custom",
+        description: "My super custom group",
+        icon: "star",
+        layout: [layout.row("customTitle")]
+    }),
+
+    // Position a tab relative to other tabs
+    layout.tab("schema", { ... }).after("seo"),
+    layout.tab("intro", { ... }).before("general"),
+]);
+```
+
+The `before`/`after` target is a field ID or tab ID. The system searches the layout tree for the node containing that reference and inserts relative to it. First match in tree order wins. In practice, field IDs are unique within a form.
+
+### Layout Node Access and Mutation
+
+`form.layout()` has two overloads:
+
+- `form.layout(layout => [...])` — append nodes to the root layout tree, with optional positional modifiers
+- `form.layout("nodeId")` — access a named layout node for mutation, returns a base handle that can be narrowed via `.as()`
+
+Named layout nodes (e.g., tabs containers with `id`) can be accessed and mutated by modifiers:
+
+```ts
+// Access a named tabs container and narrow to its type
+form.layout("settings").as("tabs")
+```
+
+The `.as("tabs")` handle exposes:
+
+- `.tab({ id, label, layout, ... })` — add a new tab (returns a handle with `.before()` / `.after()`)
+- `.tab("seo")` — access an existing tab by id (returns a handle with `.layout()` for appending to its layout)
+
+#### Full modifier examples
+
+```ts
+// === Base form definition ===
+this.form = this.formFactory.create({
+    fields: fields => ({
+        title: fields.text().label("Title"),
+        slug: fields.text().label("Slug"),
+        description: fields.text().label("Description"),
+        metaTitle: fields.text().label("Meta Title"),
+        metaDescription: fields.text().label("Meta Description"),
+    }),
+    layout: layout => [
+        layout.row("title", "slug"),
+        layout.separator(),
+        layout.tabs({
+            id: "settings",
+            tabs: [
+                {
+                    id: "general",
+                    label: "General",
+                    layout: [layout.row("description")],
+                },
+                {
+                    id: "seo",
+                    label: "SEO",
+                    layout: [layout.row("metaTitle"), layout.row("metaDescription")],
+                },
+            ],
+        }),
+    ],
+});
+
+// === Modifier A: add a new tab ===
+class AddAnalyticsTabModifier implements FormModifier {
+    modify(form: FormModel) {
+        form.fields(fields => ({
+            trackingId: fields.text().label("Tracking ID"),
+            enableAnalytics: fields.select().label("Enable").options([
+                { label: "Yes", value: "yes" },
+                { label: "No", value: "no" },
+            ]),
+        }));
+
+        form.layout("settings").as("tabs").tab({
+            id: "analytics",
+            label: "Analytics",
+            icon: "chart",
+            layout: layout => [layout.row("trackingId", "enableAnalytics")],
+        }).after("seo");
+    }
+}
+
+// === Modifier B: append to an existing tab's layout ===
+class AddOgImageModifier implements FormModifier {
+    modify(form: FormModel) {
+        form.fields(fields => ({
+            ogImage: fields.text().label("OG Image").renderer("image"),
+        }));
+
+        form.layout("settings").as("tabs").tab("seo").layout(layout => [
+            layout.row("ogImage"),
+        ]);
+    }
+}
+
+// === Modifier C: positional insert in root layout ===
+class AddSubtitleModifier implements FormModifier {
+    modify(form: FormModel) {
+        form.fields(fields => ({
+            subtitle: fields.text().label("Subtitle"),
+        }));
+
+        form.layout(layout => [
+            layout.row("subtitle").after("slug"),
+        ]);
+    }
+}
+```
 
 **Modifier examples:**
 
@@ -1116,7 +1294,9 @@ this.form = formFactory.create<PageSettings>({
 
         layout.separator(),
 
-        layout.tabs([
+        layout.tabs({
+            id: "settings",
+            tabs: [
             {
                 id: "general",
                 label: "General",
@@ -1160,7 +1340,7 @@ this.form = formFactory.create<PageSettings>({
                     ]),
                 ],
             },
-        ]),
+        ]}),
 
         layout.element("usage-stats", {
             visible: () => this.form.getValue("plan") === "enterprise",
@@ -1185,6 +1365,7 @@ interface SeparatorNode {
 
 interface TabsNode {
   type: "tabs";
+  id?: string; // optional name for targeting by modifiers
   tabs: TabDefinition[];
   rules?: Rule[]; // rules on the tabs container itself
   activeTabId: string; // observable
@@ -1196,6 +1377,7 @@ interface TabsNode {
 interface TabDefinition {
   id: string;
   label: string | (() => string);
+  description?: string; // tab description text (e.g., "Optimize how this page appears...")
   rules?: Rule[]; // rules on this individual tab
   icon?: string;
   layout: LayoutNode[];
@@ -1447,3 +1629,13 @@ country: fields.select()
 21. **Form reset** — `form.reset()` reverts the form to the last `setData()` baseline, clears validation errors, and resets dirty tracking.
 
 22. **Modifiers can interact with core fields** — modifiers receive the full `FormModel` and can append `beforeChange`/`afterChange` handlers to existing fields without replacing core behavior. `beforeChange` on the target field is the preferred pattern for transformations that must apply regardless of what triggered the change. `afterChange` on the trigger field is used to nudge the target to re-run its pipeline.
+
+23. **Type-narrowed field access via `.as()`** — `form.field("name")` returns a base `FieldBuilder`. `.as("type")` narrows to a specific field type builder for type-specific operations (e.g., `.fields()` on `object`). Throws in development if the actual field type doesn't match.
+
+24. **Field replace and remove** — modifiers can replace an existing field entirely via `fields.replace().text()...` or remove a field via `fields.remove()`. This operates on the field map, not the layout.
+
+25. **Layout positional modifiers** — layout nodes support `.before("target")`, `.after("target")`, `.replace("target")`, and `layout.remove("target")` for precise placement within the existing layout tree. Target is a field ID or tab ID; first match in tree order wins.
+
+26. **Layout node access via `form.layout("nodeId")`** — `form.layout()` has two overloads: callback form appends nodes, string form accesses a named layout node. Named nodes (e.g., tabs with `id`) can be narrowed via `.as("tabs")` for type-specific mutations. Tabs handle exposes `.tab({...})` to add tabs and `.tab("id")` to access existing tabs (e.g., `.tab("seo").layout(...)` to append to a tab's layout).
+
+27. **Tabs are layout-only, not field types** — tabs are purely visual grouping defined in the layout tree. They are not in the field map and produce no data in `getData()`. The field map contains only data fields. Modifiers target tabs via `form.layout("nodeId").as("tabs")`, not via `form.field()`.

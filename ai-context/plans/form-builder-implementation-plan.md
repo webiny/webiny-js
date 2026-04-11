@@ -85,6 +85,16 @@ setValue(raw):
 
 **Modifier ordering is irrelevant.** All modifiers run during construction (before render). Pipelines (`beforeChange`/`afterChange`) execute at runtime when `setValue()` is called, by which point all modifiers have contributed their handlers.
 
+**Type-narrowed field access via `.as()`.** `form.field("name")` returns a base FieldBuilder with common ops. `.as("object")` narrows to type-specific builder (e.g., `.fields()` on object). Throws in dev if type doesn't match.
+
+**Field replace and remove.** `fields.replace().text()...` replaces a field entirely. `fields.remove()` removes a field. Both operate on the field map.
+
+**Layout positional modifiers.** Layout nodes support `.before("target")`, `.after("target")`, `.replace("target")`, `layout.remove("target")`. Target is a field ID or tab ID; first match in tree order wins.
+
+**Layout node access via `form.layout("nodeId")`.** `form.layout()` has two overloads: callback form appends nodes, string form accesses a named layout node. Named nodes (e.g., tabs with `id`) are narrowed via `.as("tabs")` for type-specific mutations. Tabs handle exposes `.tab({...})` to add and `.tab("id")` to access existing tabs.
+
+**Tabs are layout-only.** Tabs are purely visual grouping in the layout tree. Not in the field map, no data in `getData()`. Modifiers target tabs via `form.layout("nodeId").as("tabs")`, not via `form.field()`.
+
 ---
 
 ## Phase 1: Render a Form with Layout
@@ -196,14 +206,19 @@ External code contributes fields and behavior to the form.
 
 - `FormModifier` interface: `{ modify(form: FormModel): void }`
 - `form.fields(fields => ({ ... }))` — merges new fields into existing form's Map
+- `fields.replace().text()...` — replace an existing field entirely
+- `fields.remove()` — remove a field from the form
 - `form.field("existingField").disabled(value)` — set disabled state
 - `form.field("existingField").beforeChange(fn)` / `.afterChange(fn)` — append to existing pipelines
+- `form.field("name").as("type")` — type-narrowed field access (throws in dev if type doesn't match)
+- Layout positional modifiers: `.before("target")`, `.after("target")`, `.replace("target")`, `layout.remove("target")`
 - `FormModelFactory` enriched with rule evaluators (prepared for Phase 7, but factory wiring is here)
 
 **Build the Language modifier:**
 
 - `AddLanguageModifier` adds `language` select field with `afterChange` that nudges path
 - Appends `beforeChange` on path field for language prefix
+- Uses `form.layout(layout => [layout.row("language").after("path")])` for positional insertion
 - Feature flag check before applying
 
 **Update the Presenter:**
@@ -219,6 +234,9 @@ External code contributes fields and behavior to the form.
 
 - Modifier adds field, field appears in `getData()` and `form.vm`
 - Modifier appends `beforeChange` to existing field, pipeline chains correctly
+- `fields.replace()` replaces an existing field
+- `fields.remove()` removes a field from the form and `getData()`
+- Layout positional modifiers insert at correct positions
 - Feature flag off → modifier is no-op
 
 **End state:** With feature flag on: Language dropdown appears. Select German, type "Demo" → path is "/de/demo". Change language to English → path becomes "/en/demo". Change title → path updates with language prefix preserved.
@@ -267,6 +285,10 @@ Different page types reconfigure the form. Switching types rebuilds it.
 
 ### Phase 5: Layout System Expansion
 - `layout.separator()`, `layout.tabs()`, `layout.object()`, `layout.element()`
+- Named tabs containers: `layout.tabs({ id: "settings", tabs: [...] })`
+- `TabDefinition.description` for tab description text
+- `form.layout("nodeId")` — access named layout nodes for mutation
+- `form.layout("nodeId").as("tabs")` — type-narrowed layout access (`.tab({...})` to add, `.tab("id")` to access existing tabs, `.tab("id").layout(...)` to append)
 - Layout node types and field name resolution (dot-notation paths, relative names inside `layout.object()`)
 - Rules on layout elements (tabs containers, individual tabs)
 - Rule cascading from layout elements to fields
@@ -312,4 +334,4 @@ Different page types reconfigure the form. Switching types rebuilds it.
 - Reactive `.options(() => ...)` — MobX computed options
 - `.extend()` for object field merging
 - Form-level `addRule()` — zod refinements and imperative rules
-- `form.layout()` (append) and `form.setLayout()` (replace)
+- `form.setLayout()` — full layout replacement
