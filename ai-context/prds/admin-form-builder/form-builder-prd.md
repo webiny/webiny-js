@@ -349,12 +349,37 @@ class AccessControlRuleEvaluator implements RuleEvaluator {
 
 Unknown rule types (no evaluator returns `canEvaluate: true`) are ignored — the rule doesn't fire, the field/element remains in its default state. A console warning is emitted in development.
 
-### Validation: Zod
+### Validation
+
+**Required:** `.required(message)` is a first-class field concept, separate from zod schemas:
+
+```ts
+// Simple required
+title: fields.text().label("Title").required("Title is required")
+
+// Required + schema — required check runs first, then schema
+slug: fields.text().label("Slug").required("Slug is required").schema(z.string().regex(/^[a-z0-9-]+$/))
+
+// Conditionally required — callback evaluated as MobX computed
+discountCode: fields.text().label("Discount Code").requiredWhen(
+    form => form.field("enableDiscount").getValue() === true,
+    "Required when discount is enabled"
+)
+```
+
+Behavior:
+- `.required()` checks for empty values (null, undefined, empty string) before the zod schema runs. If empty, short-circuits with the required error.
+- Works without `.schema()` — a field can be required with no zod schema.
+- Exposes `field.vm.required: boolean` — reactive for `requiredWhen()`, so the renderer can show a required indicator (`*`).
+- `requiredWhen()` callback is a MobX computed — `field.vm.required` reactively flips as the condition changes.
+
+**Zod schemas:** For shape/format validation beyond "not empty":
 
 - Per-field: `.schema(z.string().email())` — validates individual field values.
 - Per-list: `.listSchema(z.array().max(20))` — validates the array itself (length, etc.).
 - Per-form (cross-field): via `addRule()` — see Form-Level Rules below.
-- Only visible, enabled fields participate in validation.
+
+**Validation order:** required check → zod schema → form-level rules. Only visible, enabled fields participate.
 
 ### Validation Flow and Error Surface
 
@@ -494,7 +519,7 @@ This avoids a separate field type — dynamic zones are just object lists with t
 
 ### Options (Select / MultiSelect)
 
-`.options()` accepts a static array or a reactive function:
+`.options()` accepts a static array or a reactive function. The function receives `form` as an argument (same pattern as `beforeChange`, `afterChange`, `defaultValue`):
 
 ```ts
 type Option = { label: string; value: string };
@@ -505,15 +530,15 @@ role: fields.select().options([
   { label: "Editor", value: "editor" }
 ]);
 
-// Reactive — computed from observable state
+// Reactive — computed from observable state (repository captured via closure)
 category: fields
   .select()
-  .options(() => this.repository.categories.map(c => ({ label: c.name, value: c.id })));
+  .options(form => repository.categories.map(c => ({ label: c.name, value: c.id })));
 
-// Dependent on another field — still just a computed
-city: fields.select().options(() => {
-  const country = this.form.getValue("country");
-  return this.repository.citiesByCountry.get(country) ?? [];
+// Dependent on another field — form arg provides access
+city: fields.select().options(form => {
+  const country = form.getValue("country");
+  return repository.citiesByCountry.get(country) ?? [];
 });
 ```
 
@@ -673,6 +698,7 @@ interface FieldVM {
     value: any;
     validation: { isValid: boolean | null; message?: string };
     validating: boolean;            // true while async validation is in-flight
+    required: boolean;              // computed from .required() or .requiredWhen()
     visible: boolean;               // computed from rules (hide rules + ancestor visibility)
     disabled: boolean;              // computed from rules (disable rules + ancestor disabled state)
     renderer?: string;              // renderer hint
@@ -1639,3 +1665,5 @@ country: fields.select()
 26. **Layout node access via `form.layout("nodeId")`** — `form.layout()` has two overloads: callback form appends nodes, string form accesses a named layout node. Named nodes (e.g., tabs with `id`) can be narrowed via `.as("tabs")` for type-specific mutations. Tabs handle exposes `.tab({...})` to add tabs and `.tab("id")` to access existing tabs (e.g., `.tab("seo").layout(...)` to append to a tab's layout).
 
 27. **Tabs are layout-only, not field types** — tabs are purely visual grouping defined in the layout tree. They are not in the field map and produce no data in `getData()`. The field map contains only data fields. Modifiers target tabs via `form.layout("nodeId").as("tabs")`, not via `form.field()`.
+
+28. **`.required()` is a first-class field concept** — separate from zod schemas. Checks for empty values before the schema runs. Exposes `field.vm.required: boolean` for renderer required indicators. Works without `.schema()`. Validation order: required check → zod schema → form-level rules. `.requiredWhen(fn, message)` provides conditional required via a MobX computed callback.

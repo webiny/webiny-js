@@ -95,6 +95,8 @@ setValue(raw):
 
 **Tabs are layout-only.** Tabs are purely visual grouping in the layout tree. Not in the field map, no data in `getData()`. Modifiers target tabs via `form.layout("nodeId").as("tabs")`, not via `form.field()`.
 
+**`.required()` is a first-class field concept.** Separate from zod schemas. Checks for empty values (null, undefined, empty string) before the schema runs. Exposes `field.vm.required: boolean` for renderer required indicators. Works without `.schema()`. Validation order: required check → zod schema → form-level rules. `.requiredWhen()` (Phase 11) adds conditional required via MobX computed.
+
 ---
 
 ## Phase 1: Render a Form with Layout
@@ -117,16 +119,18 @@ A FormModel with fields, validation, a layout system, and a generic `<FormView>`
 **Field Builders:**
 
 - `FieldBuilderRegistry` — Proxy + factory Map + module augmentation (CMS pattern)
-- `FieldBuilder` base class with fluent API: `.label()`, `.placeholder()`, `.schema()`, `.defaultValue()`, `.renderer()`, `.hidden()`
+- `FieldBuilder` base class with fluent API: `.label()`, `.placeholder()`, `.schema()`, `.defaultValue()`, `.renderer()`, `.hidden()`, `.required(message)`
 - `TextFieldBuilder` — registered as `fields.text()`
-- `SelectFieldBuilder` — registered as `fields.select()`, with `.options()` (static array)
+- `SelectFieldBuilder` — registered as `fields.select()`, with `.options()` (static array or `form => Option[]` reactive function)
 - Mutable builders: each method mutates `this`, returns `this`
 
 **Validation:**
 
-- `.schema(zodSchema)` on field builder
+- `.required(message)` — first-class field concept, checks empty before zod schema runs. Exposes `field.vm.required: boolean`.
+- `.schema(zodSchema)` on field builder — for shape/format validation beyond "not empty"
+- Validation order: required check → zod schema
 - `field.validation` — `{ isValid: boolean | null, message?: string }`
-- `form.validate()` — async, runs all schemas via `safeParseAsync()`, populates errors, returns `Promise<boolean>`
+- `form.validate()` — async, runs required checks then schemas via `safeParseAsync()`, populates errors, returns `Promise<boolean>`
 - `form.submit()` — validates, returns `Promise<T | false>`
 - `form.isValid` — computed, `boolean | null`
 - `form.errors` — flat list `{ path, label, message }[]`
@@ -134,7 +138,7 @@ A FormModel with fields, validation, a layout system, and a generic `<FormView>`
 
 **Field VM:**
 
-- `field.vm` getter — `{ name, type, label, placeholder, value, validation, disabled, renderer, options, onChange }`
+- `field.vm` getter — `{ name, type, label, placeholder, value, validation, required, disabled, renderer, options, onChange }`
 - `onChange` is a closure: `(value) => field.setValue(value)`
 - `validation.isValid` is `boolean | null` (tri-state)
 
@@ -155,7 +159,7 @@ A FormModel with fields, validation, a layout system, and a generic `<FormView>`
 
 **CreatePage integration:**
 
-- `CreatePagePresenter` — creates FormModel via factory with `title` (required), `path` (required), `pageType` (`.hidden()`, defaultValue `"staticPage"`)
+- `CreatePagePresenter` — creates FormModel via factory with `title` (`.required()`), `path` (`.required()`), `pageType` (`.hidden()`, defaultValue `"staticPage"`)
 - `CreatePageView` — reads `presenter.vm`, renders `<FormView>`, submit button
 - Replaces existing `CreatePage.tsx` / `CreatePageWizard` which uses `useBind()` from `@webiny/form`
 - Wired to existing `CreatePage` use case / gateway for actual page creation
@@ -329,9 +333,8 @@ Different page types reconfigure the form. Switching types rebuilds it.
 - `field.vm.validating` flag (true while `parseAsync()` in-flight)
 
 ### Phase 11: Advanced Features
-- `requiredWhen()` — conditional required
+- `.requiredWhen(fn, message)` — conditional required via MobX computed callback, reactively flips `field.vm.required`
 - `computed()` / `computedUntilDirty()` — derived fields
-- Reactive `.options(() => ...)` — MobX computed options
 - `.extend()` for object field merging
 - Form-level `addRule()` — zod refinements and imperative rules
 - `form.setLayout()` — full layout replacement
