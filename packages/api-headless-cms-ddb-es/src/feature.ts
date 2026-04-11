@@ -1,4 +1,4 @@
-import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters/index.js";
+import { createTable, registerExtension as registerDynamoDbExtension } from "@webiny/db-dynamodb";
 import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import type { CmsContext, StorageOperationsFactory as IStorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
@@ -26,7 +26,6 @@ import { createCreateIndexTask } from "~/tasks/createIndexTaskPlugin.js";
 import { ModelAfterCreateEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelAfterCreateFromEventHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
 import { ModelAfterDeleteEventHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
-import { createTable } from "@webiny/db-dynamodb";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 import { CompressionHandler } from "@webiny/utils/exports/api.js";
 import { CmsEntryOpenSearchBodyModifier } from "~/features/CmsEntryOpenSearchBodyModifier/index.js";
@@ -158,7 +157,7 @@ const createOpenSearchStorageOperations: IStorageOperationsFactory = params => {
         getEsTable: () => tableElasticsearchInstance,
         groups: createGroupsStorageOperations({
             entity: entities.groups,
-            plugins
+            container
         }),
         models: createModelsStorageOperations({
             entity: entities.models,
@@ -200,13 +199,10 @@ const storageOperationsFeature = createFeature({
 });
 
 export const registerCmsOpenSearchStorageOperations = () => {
-    return createRegisterExtensionPlugin(context => {
-        context.plugins.register([
-            /**
-             * DynamoDB filter plugins for the where conditions.
-             */
-            dynamoDbValueFilters()
-        ]);
-        return storageOperationsFeature.register(context.container);
-    });
+    return [
+        registerDynamoDbExtension(),
+        createRegisterExtensionPlugin(context => {
+            return storageOperationsFeature.register(context.container);
+        })
+    ];
 };

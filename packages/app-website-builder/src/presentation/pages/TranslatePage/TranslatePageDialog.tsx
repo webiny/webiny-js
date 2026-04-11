@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useDialog } from "@webiny/app-admin";
-import { Dialog, Grid, Select } from "@webiny/admin-ui";
+import { Dialog, Grid } from "@webiny/admin-ui";
+import { useLanguages } from "@webiny/languages/exports/admin/languages.js";
 import { Bind, Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { useFeature } from "@webiny/app";
 import { FolderPicker } from "@webiny/app-aco";
-import { ListLanguagesFeature } from "@webiny/languages/admin/features/listLanguages/index.js";
 import { useTranslatePage } from "~/presentation/pages/hooks/useTranslatePage.js";
 import { useEditPageUrl } from "~/modules/pages/PagesList/hooks/useEditPageUrl.js";
 import { translatePageParams } from "./translatePageSchema.js";
+import { LanguageSelector } from "~/presentation/components/LanguageSelector.js";
 
 export const TRANSLATE_PAGE_DIALOG = "translatePage";
 
@@ -16,17 +16,7 @@ export const TranslatePageDialog = () => {
     const { params, closeDialog } = useDialog(translatePageParams);
     const { translatePage } = useTranslatePage();
     const { goToPageEditor } = useEditPageUrl();
-    const { useCase: listLanguagesUseCase } = useFeature(ListLanguagesFeature);
-
-    const [languages, setLanguages] = useState<Array<{ code: string; name: string }>>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        listLanguagesUseCase.execute().then(langs => {
-            setLanguages(langs);
-            setLoading(false);
-        });
-    }, []);
+    const { languages, loading } = useLanguages();
 
     const handleSubmit = async (data: Record<string, unknown>) => {
         const { languageCode, folderId } = data as {
@@ -65,13 +55,10 @@ export const TranslatePageDialog = () => {
                     <Grid>
                         <Grid.Column span={12}>
                             <Bind name="languageCode" validators={[validation.create("required")]}>
-                                <Select
+                                <LanguageSelector
                                     label="Target Language"
                                     placeholder="Select a language"
-                                    options={languages.map(lang => ({
-                                        value: lang.code,
-                                        label: lang.name
-                                    }))}
+                                    languages={languages}
                                 />
                             </Bind>
                         </Grid.Column>

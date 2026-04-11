@@ -8,16 +8,12 @@ export interface ValueTransformPluginParamsTransformParams {
 export interface ValueTransformPluginParamsTransform {
     (params: ValueTransformPluginParamsTransformParams): any;
 }
-export interface CanTransform {
-    (field: string): boolean;
-}
 export interface ValueTransformPluginParams {
     fields: string[];
     transform: ValueTransformPluginParamsTransform;
-    canTransform?: CanTransform;
 }
 
-export class ValueTransformPlugin extends Plugin {
+export abstract class ValueTransformPlugin extends Plugin {
     public static override readonly type: string = "dynamodb.value.transform";
 
     private readonly _params: ValueTransformPluginParams;
@@ -28,13 +24,6 @@ export class ValueTransformPlugin extends Plugin {
             ...params,
             fields: assignFields(params.fields)
         };
-    }
-
-    public canTransform(field: string): boolean {
-        if (!this._params.canTransform) {
-            return this._params.fields.includes(field);
-        }
-        return this._params.canTransform(field);
     }
 
     public transform(params: ValueTransformPluginParamsTransformParams): any {

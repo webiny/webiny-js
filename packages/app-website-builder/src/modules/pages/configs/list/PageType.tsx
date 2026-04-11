@@ -1,6 +1,9 @@
 import type React from "react";
 import { useEffect } from "react";
 import { usePageTypes } from "~/features/index.js";
+import { Title } from "./PageType/Title.js";
+import { Path } from "./PageType/Path.js";
+import { Language } from "./PageType/Language.js";
 
 export type PageTypeProps =
     | {
@@ -14,7 +17,7 @@ export type PageTypeProps =
           remove?: never;
       };
 
-export const PageType = (props: PageTypeProps) => {
+const BasePageType = (props: PageTypeProps) => {
     const { addPageType, removePageType } = usePageTypes();
 
     useEffect(() => {
@@ -32,3 +35,9 @@ export const PageType = (props: PageTypeProps) => {
 
     return null;
 };
+
+export const PageType = Object.assign(BasePageType, {
+    Title,
+    Path,
+    Language
+});

@@ -2,11 +2,12 @@ import { makeAutoObservable, runInAction } from "mobx";
 import {
     ListLanguagesRepository as RepositoryAbstraction,
     ListLanguagesGateway,
-    LanguageDto
+    type LanguageDto
 } from "./abstractions.js";
 
 class ListLanguagesRepositoryImpl implements RepositoryAbstraction.Interface {
     private languages: LanguageDto[] = [];
+    private pending: Promise<LanguageDto[]> | undefined;
 
     constructor(private gateway: ListLanguagesGateway.Interface) {
         makeAutoObservable(this);
@@ -21,12 +22,20 @@ class ListLanguagesRepositoryImpl implements RepositoryAbstraction.Interface {
             return this.languages;
         }
 
-        const languages = await this.gateway.execute();
-        runInAction(() => {
-            this.languages = languages;
+        if (this.pending) {
+            return this.pending;
+        }
+
+        this.pending = this.gateway.execute().then(languages => {
+            runInAction(() => {
+                this.languages = languages.sort((a, b) => {
+                    return a.name.localeCompare(b.name);
+                });
+            });
+            return this.languages;
         });
 
-        return this.languages;
+        return this.pending;
     }
 }
 

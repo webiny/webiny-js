@@ -11,6 +11,7 @@ import { filter } from "~/operations/entry/filtering";
 import { getSearchableFields } from "@webiny/api-headless-cms/crud/contentEntry/searchableFields";
 import { Container } from "@webiny/di";
 import { GraphQLFeature } from "@webiny/api-headless-cms/features/graphql/index.js";
+import { createTestContainer } from "../../helpers/createTestContainer";
 
 describe("filtering cms ddb", () => {
     let plugins: PluginsContainer;
@@ -21,7 +22,7 @@ describe("filtering cms ddb", () => {
     beforeEach(() => {
         plugins = createPluginsContainer();
         model = createModel();
-        container = new Container();
+        container = createTestContainer();
         GraphQLFeature.register(container);
         fields = createFields({
             plugins,
@@ -56,6 +57,7 @@ describe("filtering cms ddb", () => {
 
             const createExpressionsParams = {
                 plugins,
+                container,
                 where: {
                     createdOn_gte: createdOn.toISOString()
                 },
@@ -76,12 +78,8 @@ describe("filtering cms ddb", () => {
                         field: expect.objectContaining({
                             fieldId: "createdOn"
                         }),
-                        plugin: expect.objectContaining({
-                            _params: {
-                                matches: expect.any(Function),
-                                operation: "gte"
-                            },
-                            name: "dynamodb.value.filter.gte"
+                        filter: expect.objectContaining({
+                            operation: "gte"
                         }),
                         negate: false,
                         fieldPathId: "createdOn",
@@ -96,6 +94,7 @@ describe("filtering cms ddb", () => {
                 items: records,
                 where: createExpressionsParams.where,
                 plugins,
+                container,
                 fields
             });
 
@@ -116,6 +115,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -145,6 +145,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -177,6 +178,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -215,6 +217,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -236,6 +239,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -274,6 +278,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -312,6 +317,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -350,6 +356,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -367,6 +374,7 @@ describe("filtering cms ddb", () => {
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -388,6 +396,7 @@ describe("filtering cms ddb", () => {
             items: records,
             where: {},
             plugins,
+            container,
             fields,
             fullTextSearch: {
                 term: "yellow",
@@ -403,6 +412,7 @@ describe("filtering cms ddb", () => {
             items: records,
             where: {},
             plugins,
+            container,
             fields,
             fullTextSearch: {
                 term: "white",
@@ -418,6 +428,7 @@ describe("filtering cms ddb", () => {
             items: records,
             where: {},
             plugins,
+            container,
             fields,
             fullTextSearch: {
                 term: "grey",
@@ -433,6 +444,7 @@ describe("filtering cms ddb", () => {
             items: records,
             where: {},
             plugins,
+            container,
             fields,
             fullTextSearch: {
                 term: "red",

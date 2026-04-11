@@ -5,7 +5,6 @@ import { createApiCore } from "@webiny/api-core";
 import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createFileManagerS3, createAssetDelivery } from "@webiny/api-file-manager-s3";
@@ -40,7 +39,6 @@ export const handler = createHandler({
         createApiCore({
             storageOperations: createApiCoreDdb({ documentClient })
         }),
-        dynamoDbPlugins(),
         graphqlPlugins({ debug }),
         dbPlugins({
             table: process.env.DB_TABLE,

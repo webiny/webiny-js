@@ -7,7 +7,7 @@ export const searchableJsonFilterCreate = () => {
     const plugin = new CmsEntryFieldFilterPlugin({
         fieldType: "searchable-json",
         create: params => {
-            const { value: objectValue, valueFilterPlugins, field: parentField } = params;
+            const { value: objectValue, valueFilterRegistry, field: parentField } = params;
 
             const filters = [];
 
@@ -31,12 +31,18 @@ export const searchableJsonFilterCreate = () => {
 
                 const fieldId = `${parentField.fieldId}.${whereParams.fieldId ?? key}`;
 
+                const filter = valueFilterRegistry.get(operation);
+                if (!filter) {
+                    console.error(`Missing operation filter for "${operation}".`);
+                    continue;
+                }
+
                 const result: CmsEntryFieldFilterPluginCreateResponse = {
                     field: parentField,
                     path: `values.${fieldId}`,
                     fieldPathId: `values.${fieldId}`,
                     negate,
-                    plugin: valueFilterPlugins[operation],
+                    filter,
                     compareValue: value,
                     transformValue: transformValueCallable
                 };

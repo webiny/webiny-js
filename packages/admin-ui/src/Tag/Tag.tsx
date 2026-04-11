@@ -11,7 +11,8 @@ import { TagIcon } from "./TagIcon.js";
 const tagVariants = cva(
     [
         "inline-flex items-center gap-xxs rounded-sm text-sm text-regular transition-colors overflow-hidden",
-        "focus:outline-none"
+        "focus:outline-none",
+        "h-[20px]"
     ],
     {
         variants: {

@@ -3,6 +3,7 @@ import { Input, Text } from "@webiny/admin-ui";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
+import { LanguageCodeTag } from "~/presentation/components/LanguageCodeTag.js";
 
 export function Title() {
     const [localValue, setLocalValue] = useState<string | undefined>();
@@ -11,9 +12,10 @@ export function Title() {
 
     const editor = useDocumentEditor();
 
-    const { title } = useSelectFromDocument(document => {
+    const { title, language } = useSelectFromDocument(document => {
         return {
-            title: document.properties.title ?? "Untitled"
+            title: document.properties.title ?? "Untitled",
+            language: document.properties.language ?? undefined
         };
     });
 
@@ -41,7 +43,8 @@ export function Title() {
     }
 
     return (
-        <div className={"flex flex-col min-w-0"}>
+        <div className={"flex flex-row min-w-0"}>
+            <LanguageCodeTag code={language} />
             {!isEditing ? (
                 <Text
                     onClick={() => setIsEditing(true)}
@@ -57,6 +60,7 @@ export function Title() {
                     autoSelect
                     size={"md"}
                     variant={"secondary"}
+                    className={"mx-sm"}
                     value={localValue ?? title}
                     onChange={setLocalValue}
                     onBlur={e => commitValue(e.currentTarget.value)}
