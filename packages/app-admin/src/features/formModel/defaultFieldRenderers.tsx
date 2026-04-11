@@ -2,7 +2,7 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { Input } from "@webiny/admin-ui";
 import { Select } from "@webiny/admin-ui";
-import type { IFieldVM, ISelectOption } from "./abstractions.js";
+import type { IFieldVM, IValueOption } from "./abstractions.js";
 import type { FieldRenderers } from "./FormView.js";
 
 const TextRenderer = observer(function TextRenderer({ field }: { field: IFieldVM }) {
@@ -20,7 +20,7 @@ const TextRenderer = observer(function TextRenderer({ field }: { field: IFieldVM
 });
 
 const SelectRenderer = observer(function SelectRenderer({ field }: { field: IFieldVM }) {
-    const options: ISelectOption[] = field.options ?? [];
+    const options: IValueOption[] = field.options ?? [];
 
     return (
         <Select

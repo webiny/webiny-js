@@ -17,12 +17,12 @@ export interface IFieldConfig {
     requiredMessage?: string;
     disabled: boolean;
     schema?: z.ZodTypeAny;
-    options?: ISelectOption[] | ((form: IFormModel) => ISelectOption[]);
+    options?: IValueOption[] | ((form: IFormModel) => IValueOption[]);
     beforeChangeCallbacks?: BeforeChangeCallback[];
     afterChangeCallbacks?: AfterChangeCallback[];
 }
 
-export interface ISelectOption {
+export interface IValueOption {
     label: string;
     value: string;
     disabled?: boolean;
@@ -43,7 +43,7 @@ export interface IFieldVM {
     required: boolean;
     disabled: boolean;
     renderer?: string;
-    options?: ISelectOption[];
+    options?: IValueOption[];
     onChange: (value: unknown) => void;
 }
 
@@ -52,10 +52,28 @@ export interface IField {
     readonly type: string;
     getValue(): unknown;
     setValue(value: unknown): void;
+    setDisabled(value: boolean): void;
+    remove(): void;
     addBeforeChange(cb: BeforeChangeCallback): void;
     addAfterChange(cb: AfterChangeCallback): void;
+    as<T extends keyof FieldTypeMap>(type: T): FieldTypeMap[T];
     readonly vm: IFieldVM;
     readonly config: IFieldConfig;
+}
+
+/**
+ * Maps field type strings to their typed field interfaces.
+ * Extended via module augmentation when new field types are registered.
+ */
+export interface FieldTypeMap {
+    text: IField;
+    select: ISelectField;
+}
+
+export interface ISelectField extends IField {
+    readonly config: IFieldConfig & {
+        options?: IValueOption[] | ((form: IFormModel) => IValueOption[]);
+    };
 }
 
 // ---------------------------------------------------------------------------
@@ -84,6 +102,43 @@ export interface IRowNodeVM {
 }
 
 // ---------------------------------------------------------------------------
+// Layout modifier types
+// ---------------------------------------------------------------------------
+
+export type LayoutPosition =
+    | { type: "before"; target: string }
+    | { type: "after"; target: string }
+    | { type: "replace"; target: string };
+
+export interface IPositionedLayoutNode {
+    node: LayoutNode;
+    position?: LayoutPosition;
+}
+
+/**
+ * Chainable handle returned by modifier layout.row().
+ * Can be used as-is (appended) or positioned via .before()/.after()/.replace().
+ */
+export interface ILayoutNodeHandle extends IPositionedLayoutNode {
+    before(target: string): IPositionedLayoutNode;
+    after(target: string): IPositionedLayoutNode;
+    replace(target: string): IPositionedLayoutNode;
+}
+
+// ---------------------------------------------------------------------------
+// Modifier types
+// ---------------------------------------------------------------------------
+
+export interface IFormModifier {
+    modify(form: IFormModel): void;
+}
+
+export interface ILayoutModifier {
+    row(...fieldIds: string[]): ILayoutNodeHandle;
+    remove(target: string): void;
+}
+
+// ---------------------------------------------------------------------------
 // Form types
 // ---------------------------------------------------------------------------
 
@@ -102,6 +157,10 @@ export interface IFormVM {
 
 export interface IFormModel {
     field(name: string): IField;
+    fields(
+        factory: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder | undefined>
+    ): void;
+    layout(factory: (layout: ILayoutModifier) => (LayoutNode | IPositionedLayoutNode)[]): void;
     getData(): Record<string, unknown>;
     setData(data: Record<string, unknown>): void;
     reset(): void;
@@ -119,10 +178,11 @@ export interface IFormModel {
 
 export namespace FormModel {
     export type FieldConfig = IFieldConfig;
-    export type SelectOption = ISelectOption;
+    export type ValueOption = IValueOption;
     export type FieldValidation = IFieldValidation;
     export type FieldVM = IFieldVM;
     export type Field = IField;
+    export type SelectField = ISelectField;
     export type BeforeChange = BeforeChangeCallback;
     export type AfterChange = AfterChangeCallback;
     export type RowNode = IRowNode;
@@ -130,6 +190,8 @@ export namespace FormModel {
     export type FormError = IFormError;
     export type FormVM = IFormVM;
     export type Interface = IFormModel;
+    export type Modifier = IFormModifier;
+    export type LayoutModifier = ILayoutModifier;
 }
 
 // ---------------------------------------------------------------------------
@@ -142,11 +204,11 @@ export interface IFormModelFactory {
 
 export interface IFormModelConfig {
     fields: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>;
-    layout?: (layout: ILayoutAPI) => LayoutNode[];
+    layout?: (layout: ILayoutBuilder) => LayoutNode[];
     validateOnSubmit?: boolean;
 }
 
-export interface ILayoutAPI {
+export interface ILayoutBuilder {
     row(...fieldIds: string[]): IRowNode;
 }
 
@@ -165,7 +227,7 @@ export interface IFieldBuilder {
 }
 
 export interface ISelectFieldBuilder extends IFieldBuilder {
-    options(opts: ISelectOption[] | ((form: IFormModel) => ISelectOption[])): this;
+    options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this;
 }
 
 export interface IFieldBuilderRegistry {
@@ -178,7 +240,7 @@ export const FormModelFactory = createAbstraction<IFormModelFactory>("FormModelF
 export namespace FormModelFactory {
     export type Interface = IFormModelFactory;
     export type Config = IFormModelConfig;
-    export type LayoutAPI = ILayoutAPI;
+    export type LayoutBuilder = ILayoutBuilder;
     export type FieldBuilder = IFieldBuilder;
     export type SelectFieldBuilder = ISelectFieldBuilder;
     export type FieldBuilderRegistry = IFieldBuilderRegistry;

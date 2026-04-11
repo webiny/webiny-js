@@ -1,7 +1,7 @@
 import type { z } from "zod";
 import type {
     IFieldConfig,
-    ISelectOption,
+    IValueOption,
     IFormModel,
     IFieldBuilder,
     ISelectFieldBuilder,
@@ -110,7 +110,7 @@ export class SelectFieldBuilder extends FieldBuilder<"select"> implements ISelec
         super("select");
     }
 
-    options(opts: ISelectOption[] | ((form: IFormModel) => ISelectOption[])): this {
+    options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this {
         this._config.options = opts;
         return this;
     }

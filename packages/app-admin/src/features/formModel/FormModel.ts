@@ -4,17 +4,23 @@ import { createFieldBuilderRegistry } from "./FieldBuilder.js";
 import type {
     IFormModel,
     IField,
+    IFieldBuilder,
+    IFieldBuilderRegistry,
     IFormVM,
     IFormError,
     IFormModelConfig,
-    ILayoutAPI,
+    ILayoutBuilder,
+    ILayoutNodeHandle,
+    ILayoutModifier,
+    IPositionedLayoutNode,
     LayoutNode,
+    LayoutPosition,
     LayoutNodeVM,
     IRowNode,
     IRowNodeVM
 } from "./abstractions.js";
 
-const layoutAPI: ILayoutAPI = {
+const layoutAPI: ILayoutBuilder = {
     row(...fieldIds: string[]): IRowNode {
         return { type: "row", fieldIds };
     }
@@ -77,6 +83,89 @@ export class FormModel implements IFormModel {
         }
 
         return field;
+    }
+
+    fields(
+        factory: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder | undefined>
+    ): void {
+        const registry = createFieldBuilderRegistry();
+        const builders = factory(registry);
+
+        for (const [name, builder] of Object.entries(builders)) {
+            if (builder === undefined) {
+                // undefined = remove
+                this.removeField(name);
+                continue;
+            }
+
+            const fieldConfig = builder.build(name);
+            const field = new Field(fieldConfig);
+            field.setForm(this);
+
+            // Replace or add — same operation on the map
+            this._fields.set(name, field);
+        }
+
+        // Re-snapshot baseline to include new fields
+        this._snapshotBaseline();
+    }
+
+    layout(factory: (layout: ILayoutModifier) => (LayoutNode | IPositionedLayoutNode)[]): void {
+        const removals: string[] = [];
+
+        const modifierLayoutAPI: ILayoutModifier = {
+            row(...fieldIds: string[]): ILayoutNodeHandle {
+                const node: IRowNode = { type: "row", fieldIds };
+                const handle: ILayoutNodeHandle = {
+                    node,
+                    before(target: string): IPositionedLayoutNode {
+                        handle.position = { type: "before", target };
+                        return handle;
+                    },
+                    after(target: string): IPositionedLayoutNode {
+                        handle.position = { type: "after", target };
+                        return handle;
+                    },
+                    replace(target: string): IPositionedLayoutNode {
+                        handle.position = { type: "replace", target };
+                        return handle;
+                    }
+                };
+                return handle;
+            },
+            remove(target: string): void {
+                removals.push(target);
+            }
+        };
+
+        const entries = factory(modifierLayoutAPI);
+
+        // Process removals first
+        for (const target of removals) {
+            this._layout = this._removeFromLayout(this._layout, target);
+        }
+
+        // Process additions with positional modifiers
+        for (const entry of entries) {
+            if (this._isPositionedNode(entry)) {
+                const { node, position } = entry;
+                if (position) {
+                    this._layout = this._insertIntoLayout(this._layout, node, position);
+                } else {
+                    this._layout.push(node);
+                }
+            } else {
+                this._layout.push(entry);
+            }
+        }
+    }
+
+    removeField(name: string): void {
+        this._fields.delete(name);
+        this._baseline.delete(name);
+
+        // Remove from layout
+        this._layout = this._removeFromLayout(this._layout, name);
     }
 
     getData(): Record<string, unknown> {
@@ -243,5 +332,69 @@ export class FormModel implements IFormModel {
         for (const [, field] of this._fields) {
             field.resetValidation();
         }
+    }
+
+    /**
+     * Find the index of a layout row that contains the given field ID.
+     * Returns -1 if not found.
+     */
+    private _findLayoutIndex(layout: LayoutNode[], target: string): number {
+        return layout.findIndex(node => node.type === "row" && node.fieldIds.includes(target));
+    }
+
+    /**
+     * Remove a field ID from all layout rows. Drops rows that become empty.
+     */
+    private _removeFromLayout(layout: LayoutNode[], target: string): LayoutNode[] {
+        return layout
+            .map(node => {
+                if (node.type === "row") {
+                    const filtered = node.fieldIds.filter(id => id !== target);
+                    if (filtered.length === 0) {
+                        return null;
+                    }
+                    return { ...node, fieldIds: filtered };
+                }
+                return node;
+            })
+            .filter(Boolean) as LayoutNode[];
+    }
+
+    /**
+     * Insert a layout node relative to a target field ID.
+     */
+    private _insertIntoLayout(
+        layout: LayoutNode[],
+        node: LayoutNode,
+        position: LayoutPosition
+    ): LayoutNode[] {
+        const targetIndex = this._findLayoutIndex(layout, position.target);
+
+        if (targetIndex === -1) {
+            // Target not found — append
+            return [...layout, node];
+        }
+
+        const result = [...layout];
+
+        switch (position.type) {
+            case "before":
+                result.splice(targetIndex, 0, node);
+                break;
+            case "after":
+                result.splice(targetIndex + 1, 0, node);
+                break;
+            case "replace":
+                result.splice(targetIndex, 1, node);
+                break;
+        }
+
+        return result;
+    }
+
+    private _isPositionedNode(
+        entry: LayoutNode | IPositionedLayoutNode
+    ): entry is IPositionedLayoutNode {
+        return "node" in entry;
     }
 }

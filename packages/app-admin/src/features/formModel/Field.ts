@@ -3,9 +3,10 @@ import type {
     IFieldConfig,
     IFieldVM,
     IFieldValidation,
-    ISelectOption,
+    IValueOption,
     IFormModel,
     IField,
+    FieldTypeMap,
     BeforeChangeCallback,
     AfterChangeCallback
 } from "./abstractions.js";
@@ -106,6 +107,22 @@ export class Field implements IField {
         this._form = form;
     }
 
+    as<T extends keyof FieldTypeMap>(type: T): FieldTypeMap[T] {
+        if (this.config.type !== type) {
+            throw new Error(
+                `Field "${this.config.name}" is type "${this.config.type}", not "${type}".`
+            );
+        }
+        return this as unknown as FieldTypeMap[T];
+    }
+
+    remove(): void {
+        if (!this._form) {
+            throw new Error(`Field "${this.config.name}" is not attached to a form.`);
+        }
+        (this._form as any).removeField(this.config.name);
+    }
+
     get vm(): IFieldVM {
         const options = this._resolveOptions();
 
@@ -124,7 +141,7 @@ export class Field implements IField {
         };
     }
 
-    private _resolveOptions(): ISelectOption[] | undefined {
+    private _resolveOptions(): IValueOption[] | undefined {
         if (!this.config.options) {
             return undefined;
         }
