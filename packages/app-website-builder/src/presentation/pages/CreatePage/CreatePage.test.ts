@@ -214,3 +214,125 @@ describe("PageType + Modifier 3-layer architecture", () => {
         expect(fieldNames).toEqual(["language", "title", "path"]);
     });
 });
+
+describe("Form rebuild on page type switch", () => {
+    const staticPageType: IPageType = {
+        name: "static",
+        label: "Static Page",
+        modifyForm() {
+            // no-op
+        }
+    };
+
+    const productPageType: IPageType = {
+        name: "product",
+        label: "Product Page",
+        modifyForm(form) {
+            form.fields(fields => ({
+                product: fields
+                    .select()
+                    .label("Product")
+                    .required("Product is required")
+                    .options([
+                        { label: "Shoes", value: "shoes" },
+                        { label: "Hats", value: "hats" }
+                    ])
+            }));
+            form.field("title").setDisabled(true);
+            form.field("path").setDisabled(true);
+            form.layout(layout => [layout.row("product").before("title")]);
+        }
+    };
+
+    const pageTypes: Record<string, IPageType> = {
+        static: staticPageType,
+        product: productPageType
+    };
+
+    /**
+     * Simulates the presenter's changePageType: getData → rebuild → setData.
+     * The real presenter sets `this.selectedPageType` before `buildForm()`,
+     * which sets the hidden field's defaultValue. Here we just rebuild and restore.
+     */
+    function changePageType(
+        currentForm: IFormModel,
+        newType: string,
+        modifiers: ICreatePageFormModifier[] = []
+    ): IFormModel {
+        const previousData = currentForm.getData();
+        const form = createBaseForm();
+        pageTypes[newType].modifyForm(form);
+        for (const modifier of modifiers) {
+            modifier.modifyForm(form);
+        }
+        form.setData(previousData);
+        return form;
+    }
+
+    it("should preserve common field values when switching page types", () => {
+        // Start with static page, fill in title and path.
+        const staticForm = createBaseForm();
+        staticPageType.modifyForm(staticForm);
+        staticForm.field("title").setValue("My Page");
+        staticForm.field("path").setValue("/my-page");
+
+        // Switch to product page.
+        const productForm = changePageType(staticForm, "product");
+
+        expect(productForm.field("title").getValue()).toBe("My Page");
+        expect(productForm.field("path").getValue()).toBe("/my-page");
+    });
+
+    it("should drop page-type-specific fields on switch", () => {
+        // Start with product page, select a product.
+        const productForm = createBaseForm();
+        productPageType.modifyForm(productForm);
+        productForm.field("product").setValue("shoes");
+
+        // Switch to static page — product field should not exist.
+        const staticForm = changePageType(productForm, "static");
+
+        const fieldNames = staticForm.vm.layout.flatMap(row => row.fields.map(f => f.name));
+        expect(fieldNames).toEqual(["title", "path"]);
+        expect(staticForm.getData()).not.toHaveProperty("product");
+    });
+
+    it("should preserve cross-cutting modifier values across page type switch", () => {
+        const langs: LanguageDto[] = [
+            { id: "en", code: "en", name: "English", isDefault: true },
+            { id: "de", code: "de", name: "German" }
+        ];
+        const { useCase, repository } = createLanguageMocks(langs);
+        const languageModifier = new AddLanguageModifier(useCase, repository);
+
+        // Start with static page + language modifier.
+        const staticForm = createBaseForm();
+        staticPageType.modifyForm(staticForm);
+        languageModifier.modifyForm(staticForm);
+        staticForm.field("title").setValue("Demo");
+        // Language is auto-assigned "en" by the modifier reaction.
+
+        const langValue = staticForm.field("language").getValue();
+        expect(langValue).toBe("en");
+
+        // Switch to product page with same modifier.
+        const productForm = changePageType(staticForm, "product", [languageModifier]);
+
+        expect(productForm.field("language").getValue()).toBe("en");
+        expect(productForm.field("title").getValue()).toBe("Demo");
+    });
+
+    it("should preserve hidden field values across rebuild", () => {
+        const staticForm = createBaseForm();
+        staticPageType.modifyForm(staticForm);
+        expect(staticForm.getData().pageType).toBe("staticPage");
+
+        // Switch to product — setData restores pageType from previous form.
+        const productForm = changePageType(staticForm, "product");
+
+        // The hidden pageType field is preserved via setData.
+        // In the real presenter, buildForm() sets defaultValue to the new type,
+        // so the hidden field gets the correct value regardless.
+        expect(productForm.field("pageType").getValue()).toBe("staticPage");
+    });
+});

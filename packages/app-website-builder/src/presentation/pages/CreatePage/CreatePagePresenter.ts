@@ -42,8 +42,10 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
     }
 
     changePageType(pageType: string): void {
+        const previousData = this.form.getData();
         this.selectedPageType = pageType;
         this.form = this.buildForm();
+        this.form.setData(previousData);
     }
 
     async submit() {
