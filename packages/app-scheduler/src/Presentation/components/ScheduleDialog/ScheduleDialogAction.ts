@@ -29,7 +29,7 @@ export class ScheduleDialogAction implements IScheduleDialogAction {
         this.unpublishGateway = unpublishGateway;
     }
 
-    public async schedule(params: IScheduleDialogScheduledActionExecuteParams): Promise<void> {
+    public schedule = async(params: IScheduleDialogScheduledActionExecuteParams): Promise<void> => {
         const { targetId, namespace, actionType, scheduleOn } = params;
 
         switch (actionType) {
@@ -54,7 +54,7 @@ export class ScheduleDialogAction implements IScheduleDialogAction {
         }
     }
 
-    public async cancel(params: IScheduleDialogCancelActionExecuteParams): Promise<void> {
+    public cancel = async(params: IScheduleDialogCancelActionExecuteParams): Promise<void> => {
         const { id, namespace } = params;
         await this.cancelGateway.execute({
             namespace,
