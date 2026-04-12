@@ -1,10 +1,10 @@
-import type {
-    IListPagesGateway,
-    ListPagesGatewayParams,
-    IListPagesGraphQLFieldSelection
+import {
+    ListPagesGateway as GatewayAbstraction,
+    ListPagesGraphQLFieldSelection
 } from "./abstractions.js";
+import type { ListPagesGatewayParams, IListPagesGraphQLFieldSelection } from "./abstractions.js";
 import type { PageGatewayDto } from "./PageGatewayDto.js";
-import type { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import type { WbListMeta } from "~/types.js";
 import { getPageGraphQLFields } from "~/features/pages/shared/pageGraphQLFields.js";
 
@@ -16,7 +16,7 @@ type ListPagesResponse = {
     };
 };
 
-export class ListPagesGatewayImpl implements IListPagesGateway {
+class ListPagesGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
         private client: MainGraphQLClient.Interface,
         private fieldSelections: IListPagesGraphQLFieldSelection[]
@@ -72,3 +72,8 @@ export class ListPagesGatewayImpl implements IListPagesGateway {
         return { pages: data, meta: meta! };
     }
 }
+
+export const ListPagesGateway = GatewayAbstraction.createImplementation({
+    implementation: ListPagesGatewayImpl,
+    dependencies: [MainGraphQLClient, [ListPagesGraphQLFieldSelection, { multiple: true }]]
+});

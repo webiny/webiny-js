@@ -1,6 +1,10 @@
-import type { IGetPageGateway, IGetPageGraphQLFieldSelection } from "./abstractions.js";
+import {
+    GetPageGateway as GatewayAbstraction,
+    GetPageGraphQLFieldSelection
+} from "./abstractions.js";
+import type { IGetPageGraphQLFieldSelection } from "./abstractions.js";
 import type { PageGatewayDto } from "./PageGatewayDto.js";
-import type { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import { getPageGraphQLFields } from "~/features/pages/shared/pageGraphQLFields.js";
 
 type GetPageResponse = {
@@ -11,7 +15,7 @@ type GetPageResponse = {
     };
 };
 
-export class GetPageGatewayImpl implements IGetPageGateway {
+class GetPageGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
         private client: MainGraphQLClient.Interface,
         private fieldSelections: IGetPageGraphQLFieldSelection[]
@@ -59,3 +63,8 @@ export class GetPageGatewayImpl implements IGetPageGateway {
         return envelope.data;
     }
 }
+
+export const GetPageGateway = GatewayAbstraction.createImplementation({
+    implementation: GetPageGatewayImpl,
+    dependencies: [MainGraphQLClient, [GetPageGraphQLFieldSelection, { multiple: true }]]
+});

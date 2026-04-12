@@ -4,9 +4,7 @@ import {
     FilterPagesUseCase as FilterPagesAbstraction,
     SearchPagesUseCase as SearchPagesAbstraction,
     SortPagesUseCase as SortPagesAbstraction,
-    LoadMorePagesUseCase as LoadMorePagesAbstraction,
-    ListPagesGateway as GatewayAbstraction,
-    ListPagesGraphQLFieldSelection
+    LoadMorePagesUseCase as LoadMorePagesAbstraction
 } from "./abstractions.js";
 import { LoadPagesUseCase } from "./LoadPagesUseCase.js";
 import { FilterPagesUseCase } from "./FilterPagesUseCase.js";
@@ -14,8 +12,7 @@ import { SearchPagesUseCase } from "./SearchPagesUseCase.js";
 import { SortPagesUseCase } from "./SortPagesUseCase.js";
 import { LoadMorePagesUseCase } from "./LoadMorePagesUseCase.js";
 import { ListPagesRepository } from "./ListPagesRepository.js";
-import { ListPagesGatewayImpl } from "./ListPagesGateway.js";
-import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
+import { ListPagesGateway } from "./ListPagesGateway.js";
 
 export const LoadPagesFeature = createFeature({
     name: "WebsiteBuilder/LoadPages",
@@ -26,11 +23,7 @@ export const LoadPagesFeature = createFeature({
         container.register(SortPagesUseCase);
         container.register(LoadMorePagesUseCase);
         container.register(ListPagesRepository).inSingletonScope();
-        container.registerFactory(GatewayAbstraction, () => {
-            const client = container.resolve(MainGraphQLClient);
-            const fieldSelections = container.resolveAll(ListPagesGraphQLFieldSelection);
-            return new ListPagesGatewayImpl(client, fieldSelections);
-        });
+        container.register(ListPagesGateway).inSingletonScope();
     },
     resolve(container) {
         return {
