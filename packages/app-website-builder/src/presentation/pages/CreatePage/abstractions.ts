@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IFormModel, IFormVM } from "@webiny/app-admin";
-import type { CreatePageParams } from "~/features/pages/createPage/ICreatePageUseCase.js";
+import type { CreatePageParams } from "~/features/pages/createPage/abstractions.js";
 
 // ---------------------------------------------------------------------------
 // Page Type — each registered implementation defines a page type

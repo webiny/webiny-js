@@ -1,18 +1,16 @@
-import type { IDuplicatePageRepository } from "~/features/pages/duplicatePage/IDuplicatePageRepository.js";
-import { type IListCache, Page } from "~/domain/Page/index.js";
-import type { IDuplicatePageGateway } from "~/features/pages/duplicatePage/IDuplicatePageGateway.js";
-import type { IMetaRepository } from "@webiny/app-utils";
+import {
+    DuplicatePageRepository as RepositoryAbstraction,
+    DuplicatePageGateway
+} from "./abstractions.js";
+import { Page } from "~/domain/Page/Page.js";
+import { PageListCache, WbPageMetaRepository } from "~/features/pages/shared/abstractions.js";
 
-export class DuplicatePageRepository implements IDuplicatePageRepository {
-    private cache: IListCache<Page>;
-    private meta: IMetaRepository;
-    private gateway: IDuplicatePageGateway;
-
-    constructor(cache: IListCache<Page>, meta: IMetaRepository, gateway: IDuplicatePageGateway) {
-        this.cache = cache;
-        this.meta = meta;
-        this.gateway = gateway;
-    }
+class DuplicatePageRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private cache: PageListCache.Interface,
+        private meta: WbPageMetaRepository.Interface,
+        private gateway: DuplicatePageGateway.Interface
+    ) {}
 
     async execute(page: Page) {
         const result = await this.gateway.execute(page.id);
@@ -20,3 +18,8 @@ export class DuplicatePageRepository implements IDuplicatePageRepository {
         await this.meta.increaseTotalCount();
     }
 }
+
+export const DuplicatePageRepository = RepositoryAbstraction.createImplementation({
+    implementation: DuplicatePageRepositoryImpl,
+    dependencies: [PageListCache, WbPageMetaRepository, DuplicatePageGateway]
+});

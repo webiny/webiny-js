@@ -1,22 +1,17 @@
-import type { IUpdatePageRepository } from "./IUpdatePageRepository.js";
-import type { IUpdatePageGateway } from "./IUpdatePageGateway.js";
+import {
+    UpdatePageRepository as RepositoryAbstraction,
+    UpdatePageGateway
+} from "./abstractions.js";
 import type { PageDto } from "./PageDto.js";
-import { type IListCache, Page } from "~/domain/Page/index.js";
+import { Page } from "~/domain/Page/Page.js";
+import { PageListCache, FullPageCache } from "~/features/pages/shared/abstractions.js";
 
-export class UpdatePageRepository implements IUpdatePageRepository {
-    private listCache: IListCache<Page>;
-    private gateway: IUpdatePageGateway;
-    private detailsCache: IListCache<Page>;
-
+class UpdatePageRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        listCache: IListCache<Page>,
-        detailsCache: IListCache<Page>,
-        gateway: IUpdatePageGateway
-    ) {
-        this.detailsCache = detailsCache;
-        this.listCache = listCache;
-        this.gateway = gateway;
-    }
+        private listCache: PageListCache.Interface,
+        private detailsCache: FullPageCache.Interface,
+        private gateway: UpdatePageGateway.Interface
+    ) {}
 
     async execute(page: Page) {
         const dto: PageDto = {
@@ -34,7 +29,6 @@ export class UpdatePageRepository implements IUpdatePageRepository {
             if (existingPage.id === page.id) {
                 return Page.create(result);
             }
-
             return existingPage;
         });
 
@@ -46,8 +40,12 @@ export class UpdatePageRepository implements IUpdatePageRepository {
                     bindings: dto.bindings
                 });
             }
-
             return existingPage;
         });
     }
 }
+
+export const UpdatePageRepository = RepositoryAbstraction.createImplementation({
+    implementation: UpdatePageRepositoryImpl,
+    dependencies: [PageListCache, FullPageCache, UpdatePageGateway]
+});

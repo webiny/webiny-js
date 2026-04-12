@@ -1,22 +1,18 @@
-import type {
-    CreatePageRevisionFromParams,
-    ICreatePageRevisionFromUseCase
-} from "~/features/pages/createPageRevisionFrom/ICreatePageRevisionFromUseCase.js";
-import type { ICreatePageRevisionFromRepository } from "~/features/pages/createPageRevisionFrom/ICreatePageRevisionFromRepository.js";
-import { Page } from "~/domain/Page/index.js";
+import {
+    CreatePageRevisionFromUseCase as UseCaseAbstraction,
+    CreatePageRevisionFromRepository
+} from "./abstractions.js";
+import { Page } from "~/domain/Page/Page.js";
 
-export class CreatePageRevisionFromUseCase implements ICreatePageRevisionFromUseCase {
-    private repository: ICreatePageRevisionFromRepository;
+class CreatePageRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: CreatePageRevisionFromRepository.Interface) {}
 
-    constructor(repository: ICreatePageRevisionFromRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: CreatePageRevisionFromParams) {
-        return await this.repository.execute(
-            Page.create({
-                id: params.id
-            })
-        );
+    async execute(params: UseCaseAbstraction.Params) {
+        return await this.repository.execute(Page.create({ id: params.id }));
     }
 }
+
+export const CreatePageRevisionFromUseCase = UseCaseAbstraction.createImplementation({
+    implementation: CreatePageRevisionFromUseCaseImpl,
+    dependencies: [CreatePageRevisionFromRepository]
+});

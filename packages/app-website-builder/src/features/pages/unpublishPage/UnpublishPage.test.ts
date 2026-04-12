@@ -1,7 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { UnpublishPage } from "./UnpublishPage.js";
+import { Container } from "@webiny/di";
 import { WbPageStatus } from "~/constants.js";
-import { Page, pageListCache } from "~/domain/Page/index.js";
+import { Page, pageListCache, fullPageCache } from "~/domain/Page/index.js";
+import {
+    UnpublishPageUseCase as UseCaseAbstraction,
+    UnpublishPageGateway as GatewayAbstraction
+} from "./abstractions.js";
+import { UnpublishPageUseCase } from "./UnpublishPageUseCase.js";
+import { UnpublishPageRepository } from "./UnpublishPageRepository.js";
+import { PageListCache, FullPageCache } from "~/features/pages/shared/abstractions.js";
 
 describe("UnpublishPage", () => {
     const gateway = {
@@ -28,10 +35,12 @@ describe("UnpublishPage", () => {
     };
 
     const pagesCache = pageListCache;
+    const detailsCache = fullPageCache;
 
     beforeEach(() => {
         vi.clearAllMocks();
         pagesCache.clear();
+        detailsCache.clear();
         pagesCache.addItems([
             Page.create({
                 id: "page-1#0001",
@@ -54,13 +63,20 @@ describe("UnpublishPage", () => {
     });
 
     it("should be able to unpublish a page", async () => {
-        const publishPage = UnpublishPage.getInstance(gateway);
+        const container = new Container();
+        container.registerInstance(PageListCache, pagesCache);
+        container.registerInstance(FullPageCache, detailsCache);
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(UnpublishPageRepository).inSingletonScope();
+        container.register(UnpublishPageUseCase);
+
+        const unpublishPage = container.resolve(UseCaseAbstraction);
 
         expect(pagesCache.hasItems()).toBeTrue();
         const item = pagesCache.getItem(page => page.id === "page-1#0001");
         expect(item?.id).toEqual("page-1#0001");
 
-        await publishPage.execute({
+        await unpublishPage.execute({
             id: "page-1#0001"
         });
 
@@ -75,9 +91,16 @@ describe("UnpublishPage", () => {
     });
 
     it("should not unpublish a page if id is missing", async () => {
-        const publishPage = UnpublishPage.getInstance(gateway);
+        const container = new Container();
+        container.registerInstance(PageListCache, pagesCache);
+        container.registerInstance(FullPageCache, detailsCache);
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(UnpublishPageRepository).inSingletonScope();
+        container.register(UnpublishPageUseCase);
 
-        await publishPage.execute({
+        const unpublishPage = container.resolve(UseCaseAbstraction);
+
+        await unpublishPage.execute({
             id: ""
         });
 

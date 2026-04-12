@@ -1,1 +1,2 @@
-export * from "./usePublishPage.js";
+export { PublishPageFeature } from "./feature.js";
+export type { PublishPageParams } from "./abstractions.js";

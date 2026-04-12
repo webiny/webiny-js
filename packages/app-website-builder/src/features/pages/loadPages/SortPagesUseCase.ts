@@ -1,19 +1,16 @@
-import type {
-    ISortPagesUseCase,
-    SortPagesUseCaseParams
-} from "~/features/pages/loadPages/ISortPagesUseCase.js";
-import type { IListPagesRepository } from "~/features/pages/loadPages/IListPagesRepository.js";
+import { SortPagesUseCase as UseCaseAbstraction, ListPagesRepository } from "./abstractions.js";
 import { Sorting } from "@webiny/app-utils";
 
-export class SortPagesUseCase implements ISortPagesUseCase {
-    private repository: IListPagesRepository;
+class SortPagesUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: ListPagesRepository.Interface) {}
 
-    constructor(repository: IListPagesRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: SortPagesUseCaseParams) {
+    async execute(params: UseCaseAbstraction.Params) {
         const sorts = params.sorts.map(sort => Sorting.create(sort));
         await this.repository.sortPages(sorts);
     }
 }
+
+export const SortPagesUseCase = UseCaseAbstraction.createImplementation({
+    implementation: SortPagesUseCaseImpl,
+    dependencies: [ListPagesRepository]
+});

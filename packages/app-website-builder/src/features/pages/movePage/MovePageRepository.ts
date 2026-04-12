@@ -1,15 +1,12 @@
-import type { IMovePageRepository } from "~/features/pages/movePage/IMovePageRepository.js";
-import type { IMovePageGateway } from "~/features/pages/movePage/IMovePageGateway.js";
-import { type IListCache, Page } from "~/domain/Page/index.js";
+import { MovePageRepository as RepositoryAbstraction, MovePageGateway } from "./abstractions.js";
+import { Page } from "~/domain/Page/Page.js";
+import { PageListCache } from "~/features/pages/shared/abstractions.js";
 
-export class MovePageRepository implements IMovePageRepository {
-    private cache: IListCache<Page>;
-    private gateway: IMovePageGateway;
-
-    constructor(cache: IListCache<Page>, gateway: IMovePageGateway) {
-        this.cache = cache;
-        this.gateway = gateway;
-    }
+class MovePageRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private cache: PageListCache.Interface,
+        private gateway: MovePageGateway.Interface
+    ) {}
 
     async execute(id: string, folderId: string): Promise<void> {
         await this.gateway.execute(id, folderId);
@@ -27,3 +24,8 @@ export class MovePageRepository implements IMovePageRepository {
         });
     }
 }
+
+export const MovePageRepository = RepositoryAbstraction.createImplementation({
+    implementation: MovePageRepositoryImpl,
+    dependencies: [PageListCache, MovePageGateway]
+});

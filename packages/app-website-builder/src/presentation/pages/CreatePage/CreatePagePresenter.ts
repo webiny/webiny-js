@@ -1,7 +1,7 @@
 import { makeAutoObservable, computed } from "mobx";
 import type { IFormModel, IFormModelFactory } from "@webiny/app-admin";
 import { FormModelFactory } from "@webiny/app-admin";
-import type { CreatePageParams } from "~/features/pages/createPage/ICreatePageUseCase.js";
+import type { CreatePageParams } from "~/features/pages/createPage/abstractions.js";
 import {
     CreatePagePresenter as PresenterAbstraction,
     PageType,

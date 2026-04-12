@@ -1,16 +1,16 @@
-import type { ICreatePageRepository } from "./ICreatePageRepository.js";
-import type { ICreatePageGateway } from "./ICreatePageGateway.js";
+import {
+    CreatePageRepository as RepositoryAbstraction,
+    CreatePageGateway
+} from "./abstractions.js";
 import type { PageDto } from "./PageDto.js";
-import { type IListCache, Page } from "~/domain/Page/index.js";
+import { Page } from "~/domain/Page/Page.js";
+import { PageListCache } from "~/features/pages/shared/abstractions.js";
 
-export class CreatePageRepository implements ICreatePageRepository {
-    private cache: IListCache<Page>;
-    private gateway: ICreatePageGateway;
-
-    constructor(cache: IListCache<Page>, gateway: ICreatePageGateway) {
-        this.cache = cache;
-        this.gateway = gateway;
-    }
+class CreatePageRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private cache: PageListCache.Interface,
+        private gateway: CreatePageGateway.Interface
+    ) {}
 
     async execute(page: Page) {
         const dto: PageDto = {
@@ -28,3 +28,8 @@ export class CreatePageRepository implements ICreatePageRepository {
         return newPage;
     }
 }
+
+export const CreatePageRepository = RepositoryAbstraction.createImplementation({
+    implementation: CreatePageRepositoryImpl,
+    dependencies: [PageListCache, CreatePageGateway]
+});

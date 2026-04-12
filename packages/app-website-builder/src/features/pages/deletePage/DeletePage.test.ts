@@ -1,7 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { DeletePage } from "./DeletePage.js";
+import { Container } from "@webiny/di";
 import { WbPageStatus } from "~/constants.js";
 import { Page, pageListCache } from "~/domain/Page/index.js";
+import { metaRepositoryFactory } from "@webiny/app-utils";
+import {
+    DeletePageUseCase as UseCaseAbstraction,
+    DeletePageGateway as GatewayAbstraction
+} from "./abstractions.js";
+import { DeletePageUseCase } from "./DeletePageUseCase.js";
+import { DeletePageRepository } from "./DeletePageRepository.js";
+import { PageListCache, WbPageMetaRepository } from "~/features/pages/shared/abstractions.js";
 
 describe("DeletePage", () => {
     const gateway = {
@@ -36,7 +44,17 @@ describe("DeletePage", () => {
     });
 
     it("should be able to delete a page", async () => {
-        const deletePage = DeletePage.getInstance(gateway);
+        const container = new Container();
+        container.registerInstance(PageListCache, pagesCache);
+        container.registerInstance(
+            WbPageMetaRepository,
+            metaRepositoryFactory.getRepository("WbPageTest")
+        );
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(DeletePageRepository).inSingletonScope();
+        container.register(DeletePageUseCase);
+
+        const deletePage = container.resolve(UseCaseAbstraction);
 
         expect(pagesCache.hasItems()).toBeTrue();
         const item = pagesCache.getItem(page => page.id === "page-1#0001");

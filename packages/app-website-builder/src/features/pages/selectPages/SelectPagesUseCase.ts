@@ -1,14 +1,15 @@
-import type { ISelectedItemsRepository } from "~/domain/SelectedItem/index.js";
-import type { ISelectPagesUseCase } from "~/features/pages/selectPages/ISelectPagesUseCases.js";
+import { SelectPagesUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { WbPageSelectedItemsRepository } from "~/features/pages/shared/abstractions.js";
 
-export class SelectPagesUseCase<T = any> implements ISelectPagesUseCase<T> {
-    private repository: ISelectedItemsRepository<T>;
+class SelectPagesUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: WbPageSelectedItemsRepository.Interface) {}
 
-    constructor(repository: ISelectedItemsRepository<T>) {
-        this.repository = repository;
-    }
-
-    async execute(pages: T[]) {
+    async execute(pages: any[]) {
         await this.repository.selectItems(pages);
     }
 }
+
+export const SelectPagesUseCase = UseCaseAbstraction.createImplementation({
+    implementation: SelectPagesUseCaseImpl,
+    dependencies: [WbPageSelectedItemsRepository]
+});

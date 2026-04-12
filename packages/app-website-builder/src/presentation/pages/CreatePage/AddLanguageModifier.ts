@@ -5,7 +5,7 @@ import {
     ListLanguagesRepository
 } from "@webiny/languages/admin/features/listLanguages/abstractions.js";
 import { CreatePageFormModifier } from "~/presentation/pages/CreatePage/abstractions.js";
-import type { CreatePageParams } from "~/features/pages/createPage/ICreatePageUseCase.js";
+import type { CreatePageParams } from "~/features/pages/createPage/abstractions.js";
 import { PagePath } from "~/shared/PagePath.js";
 
 /**

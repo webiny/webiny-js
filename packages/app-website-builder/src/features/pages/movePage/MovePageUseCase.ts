@@ -1,17 +1,14 @@
-import type { IMovePageRepository } from "~/features/pages/movePage/IMovePageRepository.js";
-import type {
-    IMovePageUseCase,
-    MovePageParams
-} from "~/features/pages/movePage/IMovePageUseCase.js";
+import { MovePageUseCase as UseCaseAbstraction, MovePageRepository } from "./abstractions.js";
 
-export class MovePageUseCase implements IMovePageUseCase {
-    private repository: IMovePageRepository;
+class MovePageUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: MovePageRepository.Interface) {}
 
-    constructor(repository: IMovePageRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: MovePageParams) {
+    async execute(params: UseCaseAbstraction.Params) {
         await this.repository.execute(params.id, params.folderId);
     }
 }
+
+export const MovePageUseCase = UseCaseAbstraction.createImplementation({
+    implementation: MovePageUseCaseImpl,
+    dependencies: [MovePageRepository]
+});
