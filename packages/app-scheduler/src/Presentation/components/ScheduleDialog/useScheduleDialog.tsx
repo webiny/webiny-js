@@ -203,22 +203,25 @@ export const useScheduleDialog = (
         return;
     });
 
-    const onAccept = useCallback(async (params: IOnAcceptParams) => {
-        const { scheduleOn, actionType } = params;
+    const onAccept = useCallback(
+        async (params: IOnAcceptParams) => {
+            const { scheduleOn, actionType } = params;
 
-        try {
-            await presenter.schedule({
-                targetId: target.id,
-                namespace,
-                scheduleOn,
-                actionType
-            });
-            showSnackbar(`Scheduled ${actionType} action for "${target.title}"!`);
-        } catch (error) {
-            showSnackbar(error.message);
-            console.error(error);
-        }
-    }, [presenter.vm]);
+            try {
+                await presenter.schedule({
+                    targetId: target.id,
+                    namespace,
+                    scheduleOn,
+                    actionType
+                });
+                showSnackbar(`Scheduled ${actionType} action for "${target.title}"!`);
+            } catch (error) {
+                showSnackbar(error.message);
+                console.error(error);
+            }
+        },
+        [presenter.vm]
+    );
 
     const onCancel = useCallback(async () => {
         const entry = presenter.vm.entry;
@@ -235,9 +238,7 @@ export const useScheduleDialog = (
                 id: entry.id,
                 namespace: entry.namespace
             });
-            showSnackbar(
-                `Canceled scheduled ${entry.actionType} on "${entry.title}"!`
-            );
+            showSnackbar(`Canceled scheduled ${entry.actionType} on "${entry.title}"!`);
         } catch (error) {
             showSnackbar(error.message);
         }
@@ -257,9 +258,7 @@ export const useScheduleDialog = (
 
         dialogClose.current = dialog.showDialog({
             title: `Schedule "${target.title}"`,
-            content: (
-                <FormComponent actionType={entry?.actionType} scheduleOn={scheduleOn} />
-            ),
+            content: <FormComponent actionType={entry?.actionType} scheduleOn={scheduleOn} />,
             formData: {
                 scheduleOn
             },
