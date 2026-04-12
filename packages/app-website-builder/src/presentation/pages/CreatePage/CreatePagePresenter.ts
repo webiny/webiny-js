@@ -1,6 +1,7 @@
-import { makeAutoObservable, computed } from "mobx";
+import { makeAutoObservable, computed, runInAction } from "mobx";
 import type { IFormModel, IFormModelFactory } from "@webiny/app-admin";
 import { FormModelFactory } from "@webiny/app-admin";
+import { CreatePageUseCase } from "~/features/pages/createPage/abstractions.js";
 import type { CreatePageParams } from "~/features/pages/createPage/abstractions.js";
 import {
     CreatePagePresenter as PresenterAbstraction,
@@ -13,11 +14,13 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
     private form: IFormModel;
     private selectedPageType = "";
     private folderId = "";
+    private loading = false;
 
     constructor(
         private factory: IFormModelFactory,
         private pageTypes: PageType.Interface[],
-        private modifiers: CreatePageFormModifier.Interface[]
+        private modifiers: CreatePageFormModifier.Interface[],
+        private createPage: CreatePageUseCase.Interface
     ) {
         this.form = this.buildForm();
         makeAutoObservable(this, { vm: computed }, { autoBind: true });
@@ -27,20 +30,26 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
         return {
             form: this.form.vm,
             pageTypes: this.pageTypes.map(t => ({ name: t.name, label: t.label })),
-            selectedPageType: this.selectedPageType
+            selectedPageType: this.selectedPageType,
+            loading: this.loading
         };
     }
 
-    init(pageType: string, folderId: string): void {
-        this.selectedPageType = pageType;
+    init(folderId: string): void {
         this.folderId = folderId;
+        this.selectedPageType = this.pageTypes[0]?.name ?? "static";
         this.form = this.buildForm();
     }
 
-    async submit(): Promise<CreatePageParams | false> {
+    changePageType(pageType: string): void {
+        this.selectedPageType = pageType;
+        this.form = this.buildForm();
+    }
+
+    async submit() {
         const data = await this.form.submit();
         if (!data) {
-            return false;
+            return null;
         }
 
         const input: CreatePageParams = {
@@ -79,7 +88,14 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
             }
         }
 
-        return input;
+        this.loading = true;
+        try {
+            return await this.createPage.execute(input);
+        } finally {
+            runInAction(() => {
+                this.loading = false;
+            });
+        }
     }
 
     private buildForm(): IFormModel {
@@ -134,6 +150,7 @@ export const CreatePagePresenter = PresenterAbstraction.createImplementation({
     dependencies: [
         FormModelFactory,
         [PageType, { multiple: true }],
-        [CreatePageFormModifier, { multiple: true }]
+        [CreatePageFormModifier, { multiple: true }],
+        CreatePageUseCase
     ]
 });

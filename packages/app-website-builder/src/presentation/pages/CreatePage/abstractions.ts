@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IFormModel, IFormVM } from "@webiny/app-admin";
 import type { CreatePageParams } from "~/features/pages/createPage/abstractions.js";
+import type { Page } from "~/domain/Page/Page.js";
 
 // ---------------------------------------------------------------------------
 // Page Type — each registered implementation defines a page type
@@ -49,12 +50,14 @@ export interface ICreatePageVm {
     form: IFormVM;
     pageTypes: IPageTypeOption[];
     selectedPageType: string;
+    loading: boolean;
 }
 
 export interface ICreatePagePresenter {
     readonly vm: ICreatePageVm;
-    init(pageType: string, folderId: string): void;
-    submit(): Promise<CreatePageParams | false>;
+    init(folderId: string): void;
+    changePageType(pageType: string): void;
+    submit(): Promise<Page | null>;
 }
 
 export const CreatePagePresenter = createAbstraction<ICreatePagePresenter>("CreatePagePresenter");
