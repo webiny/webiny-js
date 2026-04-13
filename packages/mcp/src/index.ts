@@ -7,3 +7,7 @@ export { startMcpServer } from "./cli/McpServer.js";
 export type { IMcpServerParams } from "./cli/McpServer.js";
 export { configureMcp } from "./cli/ConfigureMcp.js";
 export type { IConfigureMcpParams } from "./cli/ConfigureMcp.js";
+
+// Agent discovery
+export { discoverAgents, discoverPresets } from "./agents/discover.js";
+export type { AgentPreset, AgentModule } from "./agents/types.js";

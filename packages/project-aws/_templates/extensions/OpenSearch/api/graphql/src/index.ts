@@ -5,7 +5,6 @@ import { createApiCore } from "@webiny/api-core";
 import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import { createOpenSearchContext, createOpenSearchClient } from "@webiny/api-opensearch";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import { createFileManagerAco } from "@webiny/api-file-manager-aco";
@@ -37,7 +36,11 @@ const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
 
 const openSearchClient = createOpenSearchClient({
-    endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
+    endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`,
+    auth: {
+        username: process.env.OPENSEARCH_USERNAME || "",
+        password: process.env.OPENSEARCH_PASSWORD || ""
+    }
 });
 
 export const handler = createHandler({
@@ -45,7 +48,6 @@ export const handler = createHandler({
         createApiCore({
             storageOperations: createApiCoreDdb({ documentClient })
         }),
-        dynamoDbPlugins(),
         graphqlPlugins({ debug }),
         createOpenSearchContext(openSearchClient),
         dbPlugins({

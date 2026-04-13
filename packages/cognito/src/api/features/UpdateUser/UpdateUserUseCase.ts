@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
-import { UpdateUserUseCase as CoreUpdateUser } from "@webiny/api-core/features/UpdateUser";
-import { GetUserUseCase } from "@webiny/api-core/features/GetUser";
+import { UpdateUserUseCase as CoreUpdateUser } from "@webiny/api-core/features/users/UpdateUser/index.js";
+import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import {
     NotAuthorizedError,
     UserValidationError

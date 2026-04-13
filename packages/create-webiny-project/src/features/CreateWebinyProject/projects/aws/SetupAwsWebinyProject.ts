@@ -7,7 +7,7 @@ import { AwsProjectParams } from "./types.js";
 import { GetTemplatesFolderPath } from "../../../../services/GetTemplatesFolderPath.js";
 
 export class SetupAwsWebinyProject {
-    async execute(cliArgs: CliParams) {
+    async execute(cliArgs: CliParams): Promise<AwsProjectParams> {
         const awsArgs = await this.getAwsArgs(cliArgs);
 
         const getTemplatesFolderPath = new GetTemplatesFolderPath();
@@ -25,10 +25,16 @@ export class SetupAwsWebinyProject {
         let content = fs.readFileSync(webinyConfigTsxEnvFilePath).toString();
         content = content.replace("{REGION}", awsArgs.region);
         fs.writeFileSync(webinyConfigTsxEnvFilePath, content);
+
+        return awsArgs;
     }
 
     private async getAwsArgs(cliArgs: CliParams) {
-        const awsArgs: AwsProjectParams = { region: "us-east-1", storageOps: "ddb" };
+        const awsArgs: AwsProjectParams = {
+            region: "us-east-1",
+            storageOps: "ddb",
+            aiAgent: "other"
+        };
 
         const { templateOptions: templateOptionsString } = cliArgs;
         if (templateOptionsString) {

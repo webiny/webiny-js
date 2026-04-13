@@ -1,32 +1,31 @@
 import { describe, expect, it } from "vitest";
-import { ToStorageParams } from "~/plugins/StorageTransformPlugin";
-import { createDateStorageTransformPlugin } from "~/storage/date";
+import { Container } from "@webiny/di";
+import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
+import { StorageFeature } from "~/features/storage/feature.js";
+import { StorageTransformRegistry } from "~/features/storage/abstractions/StorageTransformRegistry.js";
 
-const createDefaultArgs = ({ storageId = "storageId", type = "", list = false }) => {
+const container = new Container();
+CompressionFeature.register(container);
+StorageFeature.register(container);
+const registry = container.resolve(StorageTransformRegistry);
+const dateTransform = registry.get("datetime")!;
+
+const createParams = ({
+    type = "",
+    list = false,
+    value
+}: {
+    type?: string;
+    list?: boolean;
+    value: any;
+}) => {
     return {
-        field: {
-            storageId,
-            settings: {
-                type
-            },
-            list
-        }
+        field: { storageId: "storageId", settings: { type }, list } as any,
+        model: {} as any,
+        value,
+        getStorageTransform: (fieldType: string) => registry.get(fieldType)!
     };
 };
-
-const defaultDateArgs = createDefaultArgs({
-    type: "date"
-});
-const defaultDateMultipleArgs = createDefaultArgs({
-    type: "date",
-    list: true
-});
-const defaultTimeArgs = createDefaultArgs({
-    type: "time"
-});
-const defaultDateTimeWithTimezoneArgs = createDefaultArgs({
-    type: "dateTimeWithTimezone"
-});
 
 describe("dateStoragePlugin", () => {
     const correctSingleToStorageDateValues = [
@@ -37,12 +36,7 @@ describe("dateStoragePlugin", () => {
     it.each(correctSingleToStorageDateValues)(
         "toStorage should transform single value for storage",
         async (value, expected) => {
-            const plugin = createDateStorageTransformPlugin();
-
-            const result = await plugin.toStorage({
-                ...defaultDateArgs,
-                value
-            } as ToStorageParams<any, any>);
+            const result = await dateTransform.toStorage(createParams({ type: "date", value }));
 
             expect(result).toEqual(expected);
         }
@@ -65,12 +59,9 @@ describe("dateStoragePlugin", () => {
     it.each(correctMultipleToStorageDateValues)(
         "toStorage should transform multiple value for storage",
         async (value, expected) => {
-            const plugin = createDateStorageTransformPlugin();
-
-            const result = await plugin.toStorage({
-                ...defaultDateMultipleArgs,
-                value
-            } as ToStorageParams<any, any>);
+            const result = await dateTransform.toStorage(
+                createParams({ type: "date", list: true, value })
+            );
 
             expect(result).toEqual(expected);
         }
@@ -85,12 +76,7 @@ describe("dateStoragePlugin", () => {
     it.each(correctSingleFromStorageDateValues)(
         "fromStorage should transform single value for output",
         async (value, expected) => {
-            const plugin = createDateStorageTransformPlugin();
-
-            const result = await plugin.fromStorage({
-                ...defaultDateArgs,
-                value
-            } as ToStorageParams<any, any>);
+            const result = await dateTransform.fromStorage(createParams({ type: "date", value }));
 
             expect(result).toEqual(expected);
         }
@@ -114,38 +100,25 @@ describe("dateStoragePlugin", () => {
     it.each(correctMultipleFromStorageDateValues)(
         "fromStorage should transform multiple value for output",
         async (value, expected) => {
-            const plugin = createDateStorageTransformPlugin();
-
-            const result = await plugin.fromStorage({
-                ...defaultDateMultipleArgs,
-                value
-            } as ToStorageParams<any, any>);
+            const result = await dateTransform.fromStorage(
+                createParams({ type: "date", list: true, value })
+            );
 
             expect(result).toEqual(expected);
         }
     );
 
     it("should not convert time field value", async () => {
-        const plugin = createDateStorageTransformPlugin();
         const value = "11:34:58";
-
-        const result = await plugin.toStorage({
-            ...defaultTimeArgs,
-            value
-        } as ToStorageParams<any, any>);
-
+        const result = await dateTransform.toStorage(createParams({ type: "time", value }));
         expect(result).toEqual(value);
     });
 
     it("should not convert dateTime with tz field value", async () => {
-        const plugin = createDateStorageTransformPlugin();
         const value = "2021-04-08T13:34:59+0100";
-
-        const result = await plugin.toStorage({
-            ...defaultDateTimeWithTimezoneArgs,
-            value
-        } as ToStorageParams<any, any>);
-
+        const result = await dateTransform.toStorage(
+            createParams({ type: "dateTimeWithTimezone", value })
+        );
         expect(result).toEqual(value);
     });
 });

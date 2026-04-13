@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent, IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { Folder, GetFolderParams } from "~/folder/folder.types.js";
 import type {
     FolderNotAuthorizedError,

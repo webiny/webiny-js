@@ -21,8 +21,8 @@ const osEndpoint: string | undefined = process.env.OPENSEARCH_ENDPOINT;
 const defaultOptions: Partial<ClientOptions> = {
     node: `http://localhost:${OPENSEARCH_PORT}`,
     auth: {
-        username: "",
-        password: ""
+        username: process.env.OPENSEARCH_USERNAME || "",
+        password: process.env.OPENSEARCH_PASSWORD || ""
     }
 };
 if (!!osEndpoint) {

@@ -170,7 +170,7 @@ During `yarn webiny watch api`:
 - Use `Logger` (DI-injected) for production logging to CloudWatch
 
 ```typescript
-import { Logger } from "webiny/api/logger";
+import { Logger } from "webiny/api";
 
 // In your extension class
 this.logger.info("Processing request...");

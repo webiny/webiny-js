@@ -5,6 +5,11 @@ interface ChildrenProps {
     children: React.ReactNode;
 }
 
+function CanUseMultiTenancy({ children }: ChildrenProps) {
+    const wcp = useWcp();
+    return wcp.canUseFeature("multiTenancy") ? <>{children}</> : null;
+}
+
 function CanUseTeams({ children }: ChildrenProps) {
     const wcp = useWcp();
     return wcp.canUseTeams() ? <>{children}</> : null;
@@ -31,6 +36,7 @@ function CanUseHcmsFieldPermissions({ children }: ChildrenProps) {
 }
 
 export const Wcp = {
+    CanUseMultiTenancy,
     CanUseTeams,
     CanUsePrivateFiles,
     CanUseFileManagerThreatDetection,

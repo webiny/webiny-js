@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { ApiKeyAfterUpdateEventHandler } from "@webiny/api-core/features/UpdateApiKey";
+import { ApiKeyAfterUpdateEventHandler } from "@webiny/api-core/features/security/apiKeys/UpdateApiKey/index.js";
 import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";

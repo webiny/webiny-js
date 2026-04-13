@@ -1,15 +1,15 @@
 import type { ConstructorArgs } from "@webiny/db";
 import { Db } from "@webiny/db";
-import { ContextPlugin } from "@webiny/api";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
 import type { DbContext } from "./types.js";
 
 export default <T = unknown>(args: ConstructorArgs<T>) => {
-    const plugin = new ContextPlugin<DbContext>(context => {
+    const plugin = createRegisterExtensionPlugin<DbContext>(async context => {
         if (context.db) {
             return;
         }
         context.db = new Db<T>(args);
     });
-    plugin.name = "handler-db.context.db";
+    plugin.name = "handler-db/extension/db";
     return [plugin];
 };

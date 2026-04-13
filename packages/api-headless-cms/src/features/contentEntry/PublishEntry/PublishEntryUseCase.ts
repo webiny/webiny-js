@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { PublishEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { PublishEntryRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";

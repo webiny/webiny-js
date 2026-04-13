@@ -6,7 +6,7 @@ import {
 } from "./abstractions.js";
 import { GetLockRecordUseCase } from "../GetLockRecord/abstractions.js";
 import { KickOutCurrentUserUseCase } from "../KickOutCurrentUser/abstractions.js";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import { LockRecordNotFoundError, IdentityMismatchError } from "~/domain/errors.js";
 import { hasFullAccessPermission } from "./hasFullAccessPermission.js";

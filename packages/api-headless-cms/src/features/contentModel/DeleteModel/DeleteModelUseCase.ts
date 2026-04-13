@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { DeleteModelUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { DeleteModelRepository } from "./abstractions.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { ModelBeforeDeleteEvent } from "./events.js";
 import { ModelAfterDeleteEvent } from "./events.js";
 import { ModelDeleteErrorEvent } from "./events.js";

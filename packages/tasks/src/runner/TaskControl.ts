@@ -7,7 +7,7 @@ import type { IResponse, IResponseResult } from "~/response/abstractions/index.j
 import { DatabaseResponse, TaskResponse } from "~/response/index.js";
 import { TaskManagerStore } from "./TaskManagerStore.js";
 import { getErrorProperties } from "~/utils/getErrorProperties.js";
-import { AuthenticatedIdentity } from "@webiny/api-core/features/IdentityContext";
+import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { TaskExecutionContext } from "~/features/TaskExecutionContext/index.js";
 import {
     TaskDefinition,

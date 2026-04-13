@@ -1,7 +1,7 @@
 import type { IGetDefaultPermissions } from "./IGetDefaultPermissions.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
-import type { IdentityContext } from "@webiny/api-core/features/IdentityContext";
-import { ListUserTeamsUseCase } from "@webiny/api-core/features/ListUserTeams";
+import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { ListUserTeamsUseCase } from "@webiny/api-core/features/users/ListUserTeams/index.js";
 import type { Team } from "@webiny/api-core/types/security.js";
 
 export class GetDefaultPermissionsWithTeams implements IGetDefaultPermissions {

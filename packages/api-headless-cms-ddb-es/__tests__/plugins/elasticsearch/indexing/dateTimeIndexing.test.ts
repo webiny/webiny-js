@@ -1,23 +1,15 @@
 import { describe, expect, it } from "vitest";
-import dateTimeIndexing from "~/elasticsearch/indexing/dateTimeIndexing";
-import { CmsModelFieldToElasticsearchPlugin } from "~/types";
-import { CmsModel, CmsModelDateTimeField } from "@webiny/api-headless-cms/types";
-import elasticsearchIndexingPlugins from "~/elasticsearch/indexing";
-import { createFieldRegistry } from "~tests/helpers/createFieldRegistry.js";
-import defaultIndexingPlugin from "~/elasticsearch/indexing/defaultFieldIndexing";
-import { PluginsContainer } from "@webiny/plugins";
+import type { CmsModel, CmsModelDateTimeField } from "@webiny/api-headless-cms/types";
+import { createTestContainer } from "~tests/helpers/createTestContainer";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
 
-const indexingPlugins = elasticsearchIndexingPlugins();
-const fieldRegistry = createFieldRegistry();
+const container = createTestContainer();
+const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
+const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
 
-const plugins = new PluginsContainer([indexingPlugins]);
-
-const getFieldIndexPlugin = (fieldType: string) => {
-    return indexingPlugins.find(pl => pl.fieldType === fieldType) || defaultIndexingPlugin();
-};
-
-const getFieldType = (fieldType: string) => {
-    return fieldRegistry.get(fieldType)!;
+const getFieldIndex = (type: string) => {
+    return fieldIndexRegistry.get(type) || fieldIndexRegistry.getDefault();
 };
 
 const createField = (type: CmsModelDateTimeField["settings"]["type"]): CmsModelDateTimeField => {
@@ -29,7 +21,9 @@ const createField = (type: CmsModelDateTimeField["settings"]["type"]): CmsModelD
         settings: {
             type
         },
-        label: type
+        label: type,
+        validation: [],
+        listValidation: []
     };
 };
 
@@ -41,16 +35,9 @@ const model = {
     layout: []
 } as unknown as CmsModel;
 
-const getPlugin = () => {
-    const plugin = dateTimeIndexing();
-
-    if (!plugin.toIndex || !plugin.fromIndex) {
-        throw new Error("There are no toIndex or fromIndex methods.");
-    }
-    return plugin as Required<CmsModelFieldToElasticsearchPlugin>;
-};
-
 describe("Date time indexing plugin", () => {
+    const plugin = fieldIndexRegistry.get("datetime")!;
+
     const dateValues: (string | string[])[][] = [
         ["2022-06-10", "2022-06-10"],
         ["2022-06-15", "2022-06-15"],
@@ -65,11 +52,10 @@ describe("Date time indexing plugin", () => {
     it.each(dateValues)(
         "should properly transform date to index value and back - %s",
         (value, expected) => {
-            const toIndexResult = getPlugin().toIndex({
+            const toIndexResult = plugin.toIndex({
                 field: createField("date"),
-                getFieldIndexPlugin,
-                getFieldType,
-                plugins,
+                getFieldIndex,
+                fieldRegistry,
                 model,
                 value,
                 rawValue: {}
@@ -80,11 +66,10 @@ describe("Date time indexing plugin", () => {
                 rawValue: undefined
             });
 
-            const fromIndexResult = getPlugin().fromIndex({
+            const fromIndexResult = plugin.fromIndex({
                 field: createField("date"),
-                getFieldIndexPlugin,
-                getFieldType,
-                plugins,
+                getFieldIndex,
+                fieldRegistry,
                 model,
                 value: toIndexResult.value,
                 rawValue: {}
@@ -104,11 +89,10 @@ describe("Date time indexing plugin", () => {
     it.each(dateTimeWithTimezone)(
         "should properly transform dateTimeWithTimezone to index value and back - %s",
         (value, expected) => {
-            const toIndexResult = getPlugin().toIndex({
+            const toIndexResult = plugin.toIndex({
                 field: createField("dateTimeWithTimezone"),
-                getFieldIndexPlugin,
-                getFieldType,
-                plugins,
+                getFieldIndex,
+                fieldRegistry,
                 model,
                 value,
                 rawValue: {}
@@ -119,11 +103,10 @@ describe("Date time indexing plugin", () => {
                 rawValue: undefined
             });
 
-            const fromIndexResult = getPlugin().fromIndex({
+            const fromIndexResult = plugin.fromIndex({
                 field: createField("dateTimeWithTimezone"),
-                getFieldIndexPlugin,
-                getFieldType,
-                plugins,
+                getFieldIndex,
+                fieldRegistry,
                 model,
                 value: toIndexResult.value,
                 rawValue: {}
@@ -147,11 +130,10 @@ describe("Date time indexing plugin", () => {
     it.each(time)(
         "should properly transform time to index value and back - %s",
         (value, expected) => {
-            const toIndexResult = getPlugin().toIndex({
+            const toIndexResult = plugin.toIndex({
                 field: createField("time"),
-                getFieldIndexPlugin,
-                getFieldType,
-                plugins,
+                getFieldIndex,
+                fieldRegistry,
                 model,
                 value,
                 rawValue: {}
@@ -162,11 +144,10 @@ describe("Date time indexing plugin", () => {
                 rawValue: undefined
             });
 
-            const fromIndexResult = getPlugin().fromIndex({
+            const fromIndexResult = plugin.fromIndex({
                 field: createField("time"),
-                getFieldIndexPlugin,
-                getFieldType,
-                plugins,
+                getFieldIndex,
+                fieldRegistry,
                 model,
                 value: toIndexResult.value,
                 rawValue: {}

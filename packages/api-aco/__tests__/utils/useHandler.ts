@@ -38,9 +38,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             ...cmsStorage.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({ permissions, identity: createIdentity() }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             createAco({ documentClient }),
             createEventHandler<any, AcoContext, AcoContext>(async ({ context }) => {

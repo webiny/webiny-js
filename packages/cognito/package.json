@@ -38,7 +38,7 @@
     "@webiny/build-tools": "*",
     "@webiny/project-utils": "*",
     "@webiny/wcp": "*",
-    "vitest": "^4.1.2"
+    "vitest": "^4.1.4"
   },
   "publishConfig": {
     "access": "public",

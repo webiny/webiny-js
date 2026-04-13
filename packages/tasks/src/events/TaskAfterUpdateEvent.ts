@@ -1,4 +1,4 @@
-import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import { DomainEvent } from "@webiny/api-core/features/eventPublisher/index.js";
 import { TaskAfterUpdateEventHandler, TaskAfterUpdatePayload } from "./abstractions.js";
 
 export class TaskAfterUpdateEvent extends DomainEvent<TaskAfterUpdatePayload> {

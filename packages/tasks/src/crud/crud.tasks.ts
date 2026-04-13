@@ -24,7 +24,7 @@ import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/cont
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import {
     TaskDefinitionNotFoundError,
     TaskLogNotFoundError,
@@ -32,7 +32,7 @@ import {
 } from "~/domain/errors.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     TaskAfterCreateEvent,
     TaskAfterDeleteEvent,

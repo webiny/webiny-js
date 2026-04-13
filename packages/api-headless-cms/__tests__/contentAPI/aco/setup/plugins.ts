@@ -7,7 +7,7 @@ import type { ContextPlugin } from "@webiny/api";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { CmsContext, HeadlessCmsStorageOperations } from "~/types";
-import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
@@ -74,7 +74,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                         return {
                             id: apiKey,
                             name: apiKey,
-                            tenant: tenant.id,
+                            slug: tenant.id,
                             permissions: identity?.permissions || [],
                             token,
                             createdBy: {
@@ -90,9 +90,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             } as ContextPlugin<CmsContext>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             plugins,
             graphQLHandlerPlugins(),

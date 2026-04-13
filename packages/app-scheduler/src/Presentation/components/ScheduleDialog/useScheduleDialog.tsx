@@ -9,12 +9,11 @@ import type { Validator } from "@webiny/validation/types.js";
 import ValidationError from "@webiny/validation/validationError.js";
 import { makeDecoratable } from "@webiny/react-composition";
 import ApolloClient from "apollo-client/ApolloClient.js";
-import { ScheduleDialogAction } from "~/Presentation/index.js";
 import { SchedulerCancelGraphQLGateway } from "~/Gateways/SchedulerCancelGraphQLGateway.js";
 import { SchedulerPublishGraphQLGateway } from "~/Gateways/SchedulerPublishGraphQLGateway.js";
 import { SchedulerUnpublishGraphQLGateway } from "~/Gateways/SchedulerUnpublishGraphQLGateway.js";
-import { useGetScheduledAction } from "~/Presentation/components/ScheduleDialog/useGetScheduledAction.js";
 import { SchedulerGetGraphQLGateway } from "~/Gateways/SchedulerGetGraphQLGateway.js";
+import { ScheduleDialogPresenter } from "./ScheduleDialogPresenter.js";
 
 export type ShowDialogParamsEntryStatus = "published" | "unpublished" | "draft" | string;
 
@@ -191,51 +190,42 @@ export const useScheduleDialog = (
     const dialog = useDialogs();
     const { showSnackbar } = useSnackbar();
 
-    const action = useMemo(() => {
-        const cancelGateway = new SchedulerCancelGraphQLGateway(client);
-        const publishGateway = new SchedulerPublishGraphQLGateway(client);
-        const unpublishGateway = new SchedulerUnpublishGraphQLGateway(client);
-
-        return new ScheduleDialogAction({
-            cancelGateway,
-            publishGateway,
-            unpublishGateway
+    const presenter = useMemo(() => {
+        return new ScheduleDialogPresenter({
+            getGateway: new SchedulerGetGraphQLGateway(client),
+            cancelGateway: new SchedulerCancelGraphQLGateway(client),
+            publishGateway: new SchedulerPublishGraphQLGateway(client),
+            unpublishGateway: new SchedulerUnpublishGraphQLGateway(client)
         });
     }, [client]);
-
-    const getGateway = useMemo(() => {
-        return new SchedulerGetGraphQLGateway(client);
-    }, [client]);
-
-    const schedulerEntry = useGetScheduledAction({
-        gateway: getGateway,
-        namespace,
-        id: target.id
-    });
 
     const dialogClose = useRef<null | (() => void)>(() => {
         return;
     });
 
-    const onAccept = useCallback(async (params: IOnAcceptParams) => {
-        const { scheduleOn, actionType } = params;
+    const onAccept = useCallback(
+        async (params: IOnAcceptParams) => {
+            const { scheduleOn, actionType } = params;
 
-        try {
-            await action.schedule({
-                targetId: target.id,
-                namespace,
-                scheduleOn,
-                actionType
-            });
-            showSnackbar(`Scheduled ${actionType} action for "${target.title}"!`);
-        } catch (error) {
-            showSnackbar(error.message);
-            console.error(error);
-        }
-    }, []);
+            try {
+                await presenter.schedule({
+                    targetId: target.id,
+                    namespace,
+                    scheduleOn,
+                    actionType
+                });
+                showSnackbar(`Scheduled ${actionType} action for "${target.title}"!`);
+            } catch (error) {
+                showSnackbar(error.message);
+                console.error(error);
+            }
+        },
+        [presenter.vm]
+    );
 
     const onCancel = useCallback(async () => {
-        if (!schedulerEntry) {
+        const entry = presenter.vm.entry;
+        if (!entry) {
             showSnackbar(`No scheduled action found for "${target.title}"!`);
             if (dialogClose.current) {
                 dialogClose.current();
@@ -244,13 +234,11 @@ export const useScheduleDialog = (
             return;
         }
         try {
-            await action.cancel({
-                id: schedulerEntry.id,
-                namespace: schedulerEntry.namespace
+            await presenter.cancel({
+                id: entry.id,
+                namespace: entry.namespace
             });
-            showSnackbar(
-                `Canceled scheduled ${schedulerEntry.actionType} on "${schedulerEntry.title}"!`
-            );
+            showSnackbar(`Canceled scheduled ${entry.actionType} on "${entry.title}"!`);
         } catch (error) {
             showSnackbar(error.message);
         }
@@ -259,17 +247,18 @@ export const useScheduleDialog = (
         }
         dialogClose.current();
         dialogClose.current = null;
-    }, [schedulerEntry?.id]);
+    }, [presenter.vm]);
 
-    const showDialog = () => {
+    const showDialog = async () => {
+        await presenter.load({ namespace, id: target.id });
+
         const isPublished = target.status === "published";
-        const scheduleOn = schedulerEntry?.publishOn || schedulerEntry?.unpublishOn;
+        const entry = presenter.vm.entry;
+        const scheduleOn = entry?.publishOn || entry?.unpublishOn;
 
         dialogClose.current = dialog.showDialog({
             title: `Schedule "${target.title}"`,
-            content: (
-                <FormComponent actionType={schedulerEntry?.actionType} scheduleOn={scheduleOn} />
-            ),
+            content: <FormComponent actionType={entry?.actionType} scheduleOn={scheduleOn} />,
             formData: {
                 scheduleOn
             },

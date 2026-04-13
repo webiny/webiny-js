@@ -1,5 +1,5 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import type { WbPage } from "~/domain/page/abstractions.js";
 import type { WbLocation } from "~/domain/shared/abstractions.js";
 import type { ICmsEntrySystem } from "@webiny/api-headless-cms/types/index.js";

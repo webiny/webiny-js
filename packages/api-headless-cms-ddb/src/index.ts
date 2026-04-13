@@ -1,4 +1,4 @@
-import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters/index.js";
+import { registerExtension as registerDynamoDbExtension } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "./dynamoDb/index.js";
 import type { CmsContext, StorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
@@ -12,13 +12,13 @@ import { createFilterCreatePlugins } from "~/operations/entry/filtering/plugins/
 import { createTable } from "~/definitions/table.js";
 import { createRegisterExtensionPlugin } from "@webiny/handler";
 import { createFeature } from "@webiny/feature/api/index.js";
-import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storageOperations.js";
+import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 export * from "./plugins/index.js";
 
 const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
-    const { table, documentClient, plugins } = params;
+    const { table, documentClient, plugins, container } = params;
 
     const tableInstance = createTable({
         name: table,
@@ -42,10 +42,6 @@ const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
 
     plugins.register([
         /**
-         * DynamoDB filter plugins for the where conditions.
-         */
-        dynamoDbValueFilters(),
-        /**
          * Field plugins for DynamoDB.
          */
         dynamoDbPlugins(),
@@ -57,6 +53,7 @@ const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
 
     const entries = createEntriesStorageOperations({
         entity: entities.entries,
+        container,
         plugins
     });
 
@@ -69,7 +66,7 @@ const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
         getTable: () => tableInstance,
         groups: createGroupsStorageOperations({
             entity: entities.groups,
-            plugins
+            container
         }),
         models: createModelsStorageOperations({
             entity: entities.models
@@ -85,9 +82,7 @@ class DynamoDbStorageOperationsFactoryImpl
         return createDynamoDbStorageOperations({
             documentClient: context.db.driver.getClient() as DynamoDBDocument,
             plugins: context.plugins,
-            getContainer: () => {
-                return context.container;
-            }
+            container: context.container
         });
     }
 }
@@ -105,7 +100,10 @@ const storageOperationsFeature = createFeature({
 });
 
 export const registerDynamoDbStorageOperations = () => {
-    return createRegisterExtensionPlugin(context => {
-        return storageOperationsFeature.register(context.container);
-    });
+    return [
+        registerDynamoDbExtension(),
+        createRegisterExtensionPlugin(context => {
+            return storageOperationsFeature.register(context.container);
+        })
+    ];
 };

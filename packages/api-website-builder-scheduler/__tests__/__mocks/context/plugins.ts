@@ -62,9 +62,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             createSchedulerManifestPlugin(),
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             ...createMockBackgroundTasks(),
             createWebsiteBuilder(),

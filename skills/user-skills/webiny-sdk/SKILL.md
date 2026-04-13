@@ -6,7 +6,7 @@ description: >
   Use this skill when the developer is building a Next.js, Vue, Node.js, or any external app
   that needs to fetch or write content to Webiny, set up the SDK, use the Result pattern,
   list/get/create/update/publish entries, filter and sort queries, use TypeScript generics
-  for type safety, work with the File Manager, or create API keys programmatically.
+  for type safety, work with the File Manager, list languages, or create API keys programmatically.
   Covers read vs preview mode, the `values` wrapper requirement, correct method names,
   and the `fields` required parameter.
 ---
@@ -271,6 +271,33 @@ await webiny.cms.deleteEntryRevision({
 });
 ```
 
+## Languages
+
+`webiny.languages.listLanguages()` returns all **enabled** languages — disabled languages are always filtered out server-side, so no filter parameter is needed.
+
+```typescript
+import type { Language } from "@webiny/sdk";
+
+const result = await webiny.languages.listLanguages();
+
+if (result.isOk()) {
+  const languages: Language[] = result.value;
+  // languages[0].code, .name, .direction, .isDefault
+}
+```
+
+The `Language` type:
+
+```typescript
+interface Language {
+  id: string;
+  code: string;        // e.g. "en-US"
+  name: string;        // e.g. "English (US)"
+  direction?: "ltr" | "rtl";
+  isDefault?: boolean;
+}
+```
+
 ## File Manager
 
 ```typescript
@@ -324,6 +351,7 @@ Register (**YOU MUST include the `.ts` file extension in the `src` prop** — om
 | `webiny.cms`           | Headless CMS  | List, get, create, update, publish, unpublish, delete entry revisions |
 | `webiny.fileManager`   | File Manager  | List, upload, and manage files and folders                            |
 | `webiny.tenantManager` | Multi-tenancy | Create, install, enable, disable tenants                              |
+| `webiny.languages`     | Languages     | List enabled languages (id, code, name, direction, isDefault)         |
 
 ## Common Mistakes
 

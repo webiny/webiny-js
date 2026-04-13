@@ -10,6 +10,7 @@ import { LinkProps } from "~/index.js";
 export interface SidebarMenuItemBaseProps {
     text: React.ReactNode;
     className?: string;
+    collapsible?: boolean;
     children?: React.ReactNode;
     onClick?: React.MouseEventHandler;
     icon?: React.ReactNode;

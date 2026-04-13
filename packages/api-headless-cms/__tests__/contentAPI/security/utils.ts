@@ -1,4 +1,4 @@
-import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { expect } from "vitest";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 

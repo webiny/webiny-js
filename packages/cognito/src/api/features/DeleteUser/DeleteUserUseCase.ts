@@ -1,7 +1,7 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { DeleteUserUseCase as CoreDeleteUser } from "@webiny/api-core/features/DeleteUser";
-import { GetUserUseCase } from "@webiny/api-core/features/GetUser";
+import { DeleteUserUseCase as CoreDeleteUser } from "@webiny/api-core/features/users/DeleteUser/index.js";
+import { GetUserUseCase } from "@webiny/api-core/features/users/GetUser/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/users/shared/errors.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { DeleteUserUseCase as UseCaseAbstraction } from "./abstractions.js";

@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { Sort } from "@webiny/api-opensearch/types";
-import { CmsEntryElasticsearchSortModifierPlugin } from "~/plugins";
-import { CmsModel } from "@webiny/api-headless-cms/types";
+import type { Sort } from "@webiny/api-opensearch/types";
+import type { CmsModel } from "@webiny/api-headless-cms/types";
+import type { CmsEntryOpenSearchSortModifier } from "~/features/CmsEntryOpenSearchSortModifier/index.js";
 
 const model = {} as unknown as CmsModel;
 
-describe("Elasticsearch sort modifier plugin", () => {
+describe("OpenSearch sort modifier", () => {
     it("should transform existing sort - add new sort", async () => {
-        const plugin = new CmsEntryElasticsearchSortModifierPlugin({
+        const modifier: CmsEntryOpenSearchSortModifier.Interface = {
             modifySort: ({ sort }) => {
                 if (typeof sort !== "object") {
                     return;
@@ -17,7 +17,7 @@ describe("Elasticsearch sort modifier plugin", () => {
                     order: "asc"
                 };
             }
-        });
+        };
 
         const sort: Sort = {
             ["field.keyword"]: {
@@ -25,7 +25,7 @@ describe("Elasticsearch sort modifier plugin", () => {
             }
         };
 
-        plugin.modifySort({
+        modifier.modifySort({
             sort,
             model
         });
@@ -41,7 +41,7 @@ describe("Elasticsearch sort modifier plugin", () => {
     });
 
     it("should transform existing sort - replace existing sort", async () => {
-        const plugin = new CmsEntryElasticsearchSortModifierPlugin({
+        const modifier: CmsEntryOpenSearchSortModifier.Interface = {
             modifySort: ({ sort }) => {
                 if (typeof sort !== "object") {
                     return;
@@ -61,7 +61,7 @@ describe("Elasticsearch sort modifier plugin", () => {
                     order: "asc"
                 };
             }
-        });
+        };
 
         const sort: Sort = {
             ["field.keyword"]: {
@@ -69,7 +69,7 @@ describe("Elasticsearch sort modifier plugin", () => {
             }
         };
 
-        plugin.modifySort({
+        modifier.modifySort({
             sort,
             model
         });

@@ -8,7 +8,7 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
-import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";

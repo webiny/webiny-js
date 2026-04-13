@@ -1,5 +1,5 @@
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { GetGroupRepository as RepositoryAbstraction } from "./abstractions.js";

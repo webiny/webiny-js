@@ -80,9 +80,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 permissions,
                 identity: identity === undefined ? createIdentity() : identity
             }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             createFileManagerContext(),
             createFileManagerGraphQL(),

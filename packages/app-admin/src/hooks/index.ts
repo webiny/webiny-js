@@ -1,5 +1,6 @@
 export * from "./useConfirmationDialog.js";
 export * from "./useDialog.js";
+export * from "./useOpenDialog.js";
 export * from "../components/Dialogs/useDialogs.js";
 export * from "./useSnackbar.js";
 export * from "./useKeyHandler.js";

@@ -1,4 +1,4 @@
-import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export interface PermissionsArg {
     name: string;

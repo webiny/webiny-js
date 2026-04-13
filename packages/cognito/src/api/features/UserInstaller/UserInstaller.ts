@@ -1,7 +1,7 @@
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { AdminUser } from "@webiny/api-core/types/users.js";
-import { AppInstaller } from "@webiny/api-core/features/InstallTenant";
-import { GetRoleUseCase } from "@webiny/api-core/features/GetRole";
+import { AppInstaller } from "@webiny/api-core/features/tenancy/InstallTenant/index.js";
+import { GetRoleUseCase } from "@webiny/api-core/features/security/roles/GetRole/index.js";
 import { DeleteUserUseCase } from "~/api/features/DeleteUser/index.js";
 import { CreateUserUseCase } from "~/api/features/CreateUser/index.js";
 

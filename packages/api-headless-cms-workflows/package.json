@@ -28,7 +28,7 @@
     "@webiny/testing": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "typescript": "5.9.3",
-    "vitest": "^4.1.2"
+    "vitest": "^4.1.4"
   },
   "publishConfig": {
     "access": "public",

@@ -11,7 +11,7 @@ export const objectFilterCreate = () => {
         create: params => {
             const {
                 value: objectValue,
-                valueFilterPlugins,
+                valueFilterRegistry,
                 transformValuePlugins,
                 getFilterCreatePlugin,
                 field: parentField,
@@ -67,7 +67,7 @@ export const objectFilterCreate = () => {
                 const result = filterCreatePlugin.create({
                     key,
                     value,
-                    valueFilterPlugins,
+                    valueFilterRegistry,
                     transformValuePlugins,
                     getFilterCreatePlugin,
                     operation,

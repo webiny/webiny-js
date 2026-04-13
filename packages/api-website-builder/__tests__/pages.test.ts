@@ -10,7 +10,10 @@ import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
 import { ListPagesUseCase } from "~/features/pages/ListPages/index.js";
 import { PublishPageUseCase } from "~/features/pages/PublishPage/index.js";
 import { UnpublishPageUseCase } from "~/features/pages/UnpublishPage/index.js";
-import { DuplicatePageUseCase } from "~/features/pages/DuplicatePage/index.js";
+import {
+    DuplicatePageUseCase,
+    DuplicatePageRepository
+} from "~/features/pages/DuplicatePage/index.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/CreatePageRevisionFrom/index.js";
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
 import { DeletePageUseCase } from "~/features/pages/DeletePage/index.js";
@@ -243,6 +246,38 @@ describe("Pages Use Cases (Authorized)", () => {
         });
         expect(duplicatedPage.id).not.toBe(page.id);
         expect(duplicatedPage.entryId).not.toBe(page.entryId);
+    });
+
+    it("should duplicate a page with callback that mutates page data", async () => {
+        const createPage = context.container.resolve(CreatePageUseCase);
+        const createResult = await createPage.execute(pageMocks.pageA);
+
+        if (createResult.isFail()) {
+            throw createResult.error;
+        }
+
+        const page = createResult.value;
+
+        const duplicatePageRepo = context.container.resolve(DuplicatePageRepository);
+        const duplicateResult = await duplicatePageRepo.execute(
+            { id: page.id },
+            ({ duplicate }) => {
+                duplicate.properties.path = "/de/about";
+                duplicate.properties.title = "Über uns";
+                duplicate.location.folderId = "custom-folder";
+            }
+        );
+
+        if (duplicateResult.isFail()) {
+            throw duplicateResult.error;
+        }
+
+        const duplicatedPage = duplicateResult.value;
+
+        expect(duplicatedPage.properties.path).toBe("/de/about");
+        expect(duplicatedPage.properties.title).toBe("Über uns");
+        expect(duplicatedPage.location.folderId).toBe("custom-folder");
+        expect(duplicatedPage.id).not.toBe(page.id);
     });
 
     it("should create revision from existing page", async () => {

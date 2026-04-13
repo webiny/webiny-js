@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";

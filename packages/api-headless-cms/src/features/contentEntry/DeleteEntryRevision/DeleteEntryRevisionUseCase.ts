@@ -8,7 +8,7 @@ import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "~/features/co
 import { GetPreviousRevisionByEntryIdUseCase } from "~/features/contentEntry/GetPreviousRevisionByEntryId/index.js";
 import { DeleteEntryUseCase } from "~/features/contentEntry/DeleteEntry/index.js";
 import type { CmsModel } from "~/types/index.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     EntryRevisionBeforeDeleteEvent,
     EntryRevisionAfterDeleteEvent,

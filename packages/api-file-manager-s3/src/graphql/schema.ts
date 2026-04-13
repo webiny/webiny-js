@@ -1,6 +1,6 @@
 import pMap from "p-map";
 import { createGraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
 import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload.js";

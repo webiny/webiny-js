@@ -15,7 +15,7 @@ const clients = new Map<string, Client>();
 
 const createClientKey = (options: OpenSearchClientOptions): string => {
     const key = JSON.stringify(options);
-    const hash = crypto.createHash("sha1");
+    const hash = crypto.createHash("sha256");
     hash.update(key);
     return hash.digest("hex");
 };

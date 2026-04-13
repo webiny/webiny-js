@@ -1,6 +1,7 @@
 import WebinyError from "@webiny/error";
 import { DataLoadersHandler } from "./dataLoaders.js";
 import type {
+    CmsContext,
     CmsEntry,
     CmsEntryListWhere,
     CmsEntryStorageOperationsGetByIdsParams,
@@ -34,7 +35,7 @@ import {
 } from "~/operations/entry/keys.js";
 import type { PluginsContainer } from "@webiny/plugins";
 import { decodeCursor, encodeCursor } from "@webiny/utils";
-import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
+import { StorageOperationsCmsModelPlugin } from "@webiny/api-headless-cms";
 import type { FilterItemFromStorage } from "./filtering/types.js";
 import { createFields } from "~/operations/entry/filtering/createFields.js";
 import { filter, sort } from "~/operations/entry/filtering/index.js";
@@ -46,6 +47,7 @@ import {
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
 import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
+import { StorageTransformRegistry } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
 
 interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
     storageEntry: CmsStorageEntry<T>;
@@ -84,13 +86,16 @@ const MAX_LIST_LIMIT = 1000000;
 
 export interface CreateEntriesStorageOperationsParams {
     entity: IEntryEntity;
+    container: CmsContext["container"];
     plugins: PluginsContainer;
 }
 
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
-    const { entity, plugins } = params;
+    const { entity, container, plugins } = params;
+
+    const storageTransformRegistry = container.resolve(StorageTransformRegistry);
 
     let storageOperationsCmsModelPlugin: StorageOperationsCmsModelPlugin | undefined;
     const getStorageOperationsCmsModelPlugin = () => {
@@ -117,32 +122,23 @@ export const createEntriesStorageOperations = (
     const createStorageTransformCallable = (
         model: StorageOperationsCmsModel
     ): FilterItemFromStorage => {
-        // Cache StorageTransformPlugin to optimize execution.
-        const storageTransformPlugins = plugins
-            .byType<StorageTransformPlugin>(StorageTransformPlugin.type)
-            .reduce(
-                (collection, plugin) => {
-                    collection[plugin.fieldType] = plugin;
-                    return collection;
-                },
-                {} as Record<string, StorageTransformPlugin>
-            );
-
         return (field, value) => {
             const fieldType = getBaseFieldType(field);
 
-            const plugin: StorageTransformPlugin = storageTransformPlugins[fieldType];
-            if (!plugin) {
+            const storageTransform = storageTransformRegistry.get(fieldType);
+            if (!storageTransform) {
                 return value;
             }
-            return plugin.fromStorage({
+            return storageTransform.fromStorage({
                 model,
                 field,
                 value,
-                getStoragePlugin(fieldType: string): StorageTransformPlugin {
-                    return storageTransformPlugins[fieldType] || storageTransformPlugins["*"];
-                },
-                plugins
+                getStorageTransform(fieldType: string) {
+                    return (
+                        storageTransformRegistry.get(fieldType) ||
+                        storageTransformRegistry.get("*")!
+                    );
+                }
             });
         };
     };
@@ -1090,7 +1086,8 @@ export const createEntriesStorageOperations = (
             fullTextSearch: {
                 term: search,
                 fields: fields || []
-            }
+            },
+            container
         });
 
         const totalCount = filteredItems.length;

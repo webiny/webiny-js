@@ -3,7 +3,7 @@ import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { RoleFactory } from "@webiny/api-core/features/security/roles/shared/abstractions.js";
 import { TeamFactory } from "@webiny/api-core/features/security/teams/shared/abstractions.js";
-import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";

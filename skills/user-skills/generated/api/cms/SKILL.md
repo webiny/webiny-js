@@ -2,7 +2,7 @@
 name: webiny-api-cms-catalog
 context: webiny-api
 description: >
-  API — Headless CMS — 102 abstractions.
+  API — Headless CMS — 110 abstractions.
   Entry, model, and group event handlers and use cases.
 ---
 
@@ -34,6 +34,11 @@ Entry, model, and group event handlers and use cases.
 **Description:** A content entry values definition for and from the database.
 
 ---
+**Name:** `CmsGraphQLSchemaSorter`
+**Import:** `import { CmsGraphQLSchemaSorter } from "webiny/api/cms/graphql"`
+**Source:** `@webiny/api-headless-cms/features/graphql/index.ts`
+
+---
 **Name:** `CmsGroup`
 **Kind:** type
 **Import:** `import type { CmsGroup } from "webiny/api/cms/group"`
@@ -53,6 +58,36 @@ Entry, model, and group event handlers and use cases.
 **Import:** `import type { CmsModelField } from "webiny/api/cms/model"`
 **Source:** `@webiny/api-headless-cms/types/modelField.ts`
 **Description:** A definition for content model field. This type exists on the app side as well.
+
+---
+**Name:** `CmsModelFieldPatternValidator`
+**Import:** `import { CmsModelFieldPatternValidator } from "webiny/api/cms/validation"`
+**Source:** `@webiny/api-headless-cms/features/validation/abstractions/CmsModelFieldPatternValidator.ts`
+
+---
+**Name:** `CmsModelFieldPatternValidatorRegistry`
+**Import:** `import { CmsModelFieldPatternValidatorRegistry } from "webiny/api/cms/validation"`
+**Source:** `@webiny/api-headless-cms/features/validation/abstractions/CmsModelFieldPatternValidatorRegistry.ts`
+
+---
+**Name:** `CmsModelFieldToGraphQL`
+**Import:** `import { CmsModelFieldToGraphQL } from "webiny/api/cms/graphql"`
+**Source:** `@webiny/api-headless-cms/features/graphql/index.ts`
+
+---
+**Name:** `CmsModelFieldToGraphQLRegistry`
+**Import:** `import { CmsModelFieldToGraphQLRegistry } from "webiny/api/cms/graphql"`
+**Source:** `@webiny/api-headless-cms/features/graphql/index.ts`
+
+---
+**Name:** `CmsModelFieldValidator`
+**Import:** `import { CmsModelFieldValidator } from "webiny/api/cms/validation"`
+**Source:** `@webiny/api-headless-cms/features/validation/abstractions/CmsModelFieldValidator.ts`
+
+---
+**Name:** `CmsModelFieldValidatorRegistry`
+**Import:** `import { CmsModelFieldValidatorRegistry } from "webiny/api/cms/validation"`
+**Source:** `@webiny/api-headless-cms/features/validation/abstractions/CmsModelFieldValidatorRegistry.ts`
 
 ---
 **Name:** `CmsModelGroup`
@@ -606,6 +641,11 @@ Call .private() or .public() to get the appropriate typed builder.
 **Import:** `import { ScheduleUnpublishEntryUseCase } from "webiny/api/cms/scheduler"`
 **Source:** `@webiny/api-headless-cms-scheduler/features/ScheduleUnpublishEntryUseCase/abstractions.ts`
 **Description:** Schedule an entry for future unpublishing.
+
+---
+**Name:** `StorageOperationsFactory`
+**Import:** `import { StorageOperationsFactory } from "webiny/api/cms/storageOperations"`
+**Source:** `@webiny/api-headless-cms/features/shared/abstractions.ts`
 
 ---
 **Name:** `UnpublishEntryUseCase`

@@ -1,7 +1,7 @@
 import { DisableTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
-import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
+import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 import { UpdateTenantUseCase as ApiCoreUpdateTenant } from "@webiny/api-core/features/tenancy/UpdateTenant";
 import { UpdateTenantUseCase as TenantManagerUpdateTenant } from "../UpdateTenant/abstractions.js";

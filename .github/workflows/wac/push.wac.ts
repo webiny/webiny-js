@@ -61,8 +61,10 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
     };
 
     if (storageOps.id === "ddb-os,ddb") {
-        env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}";
-        env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_3_ENDPOINT }}";
+        env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
+        env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
+        env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
+        env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
         env["OPENSEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
     }
 
@@ -124,7 +126,7 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
                       {
                           name: "Configure OpenSearch domain name and index prefix in webiny.config.tsx",
                           "working-directory": DIR_TEST_PROJECT,
-                          run: `sed -i 's|<Infra.OpenSearch enabled={true} />|<Infra.OpenSearch enabled={true} domainName={process.env.AWS_OPENSEARCH_DOMAIN_NAME \\|\\| ""} indexPrefix={process.env.OPENSEARCH_INDEX_PREFIX \\|\\| ""} />|g' webiny.config.tsx`
+                          run: `sed -i 's|<Infra.OpenSearch enabled={true} />|<Infra.OpenSearch enabled={true} domainName={process.env.AWS_OPENSEARCH_DOMAIN_NAME \\|\\| "webiny-e2e-os"} indexPrefix={process.env.OPENSEARCH_INDEX_PREFIX \\|\\| ""} endpoint={process.env.OPENSEARCH_ENDPOINT} username={process.env.OPENSEARCH_USERNAME} password={process.env.OPENSEARCH_PASSWORD} />|g' webiny.config.tsx`
                       }
                   ]
                 : []),
@@ -244,8 +246,10 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         env["WEBINY_STORAGE"] = storageOps.id;
 
         if (storageOps.id === "ddb-os,ddb") {
-            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}";
-            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_3_ENDPOINT }}";
+            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
+            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
+            env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
+            env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
             env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
         }
     }
