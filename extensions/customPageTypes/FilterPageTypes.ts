@@ -4,8 +4,8 @@ class FilterPageTypes implements PageTypeProvider.Interface {
     constructor(private decoratee: PageTypeProvider.Interface) {}
 
     getPageTypes() {
-        // Remove "static" page type
-        return this.decoratee.getPageTypes().filter(type => type.name !== "static");
+        // Return filtered page types
+        return this.decoratee.getPageTypes(); //.filter(type => type.name !== "static");
     }
 }
 

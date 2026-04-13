@@ -95,7 +95,9 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
             }
         }
 
-        this.loading = true;
+        runInAction(() => {
+            this.loading = true;
+        });
         try {
             return await this.createPage.execute(input);
         } finally {

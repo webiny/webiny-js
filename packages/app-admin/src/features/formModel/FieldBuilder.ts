@@ -8,6 +8,7 @@ import type {
     IFieldBuilderRegistry,
     BeforeChangeCallback,
     AfterChangeCallback,
+    AfterSetValueCallback,
     OnBlurCallback
 } from "./abstractions.js";
 
@@ -86,6 +87,14 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
             this._config.afterChangeCallbacks = [];
         }
         this._config.afterChangeCallbacks.push(fn);
+        return this;
+    }
+
+    afterSetValue(fn: AfterSetValueCallback): this {
+        if (!this._config.afterSetValueCallbacks) {
+            this._config.afterSetValueCallbacks = [];
+        }
+        this._config.afterSetValueCallbacks.push(fn);
         return this;
     }
 
