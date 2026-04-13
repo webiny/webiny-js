@@ -50,20 +50,39 @@ export const OpenSearch = createAppModule({
 
         const vpc = app.getModule(CoreVpc, { optional: true });
 
-        // This needs to be implemented in order to be able to use a shared OpenSearch cluster.
         let domain:
             | PulumiAppResource<PulumiAppResourceConstructor<aws.opensearch.Domain>>
-            | PulumiAppRemoteResource<aws.opensearch.GetDomainResult>;
+            | PulumiAppRemoteResource<aws.opensearch.GetDomainResult>
+            | null = null;
 
         let domainPolicy;
+        let domainEndpoint: pulumi.Output<string> | string;
+        let domainArn: pulumi.Output<string>;
 
-        if (process.env.AWS_OS_DOMAIN_NAME) {
-            const domainName = String(process.env.AWS_OS_DOMAIN_NAME);
-            // This can be useful for testing purposes in ephemeral environments. More information here:
+        const providedEndpoint = process.env.OPENSEARCH_ENDPOINT;
+        const providedDomainName = process.env.AWS_OS_DOMAIN_NAME;
+
+        if (providedEndpoint && !providedDomainName) {
+            throw new Error(
+                "OPENSEARCH_ENDPOINT was provided but AWS_OS_DOMAIN_NAME is missing. " +
+                    "A domain name is required to look up the domain ARN when using a custom endpoint."
+            );
+        }
+
+        if (providedDomainName) {
+            // Look up the existing domain by name to obtain its ARN and (if no explicit endpoint is
+            // provided) its endpoint. This covers both the ephemeral-environment pattern and the
+            // case where an external endpoint is supplied alongside a domain name.
             // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
-            domain = app.addRemoteResource(domainName, () => {
-                return aws.opensearch.getDomain({ domainName }, { async: true });
+            domain = app.addRemoteResource(providedDomainName, () => {
+                return aws.opensearch.getDomain(
+                    { domainName: providedDomainName },
+                    { async: true }
+                );
             });
+            domainArn = domain.output.arn;
+            // Prefer an explicitly provided endpoint; fall back to the one reported by AWS.
+            domainEndpoint = providedEndpoint ?? domain.output.endpoint;
         } else {
             const randomId = new random.RandomId("osDomainRandomId", { byteLength: 8 });
             const namePrefix = app.getParam(app.params.create.pulumiResourceNamePrefix) || "";
@@ -100,6 +119,9 @@ export const OpenSearch = createAppModule({
                 opts: { protect: params.protect }
             });
 
+            domainEndpoint = domain.output.endpoint;
+            domainArn = domain.output.arn;
+
             /**
              * Domain policy defines who can access your OpenSearch Domain.
              * For details on OpenSearch security, read the official documentation:
@@ -112,7 +134,7 @@ export const OpenSearch = createAppModule({
                 config: {
                     domainName: domain.output.domainName,
                     accessPolicies: pulumi
-                        .all([accountId, domain.output.arn])
+                        .all([accountId, domainArn])
                         .apply(([accountId, domainArn]) => {
                             return JSON.stringify({
                                 Version: "2012-10-17",
@@ -196,7 +218,7 @@ export const OpenSearch = createAppModule({
             meta: { isLambdaFunctionRole: true }
         });
 
-        const policy = getDynamoDbToElasticLambdaPolicy(app, domain.output);
+        const policy = getDynamoDbToElasticLambdaPolicy(app, domainArn);
 
         app.addResource(aws.iam.RolePolicyAttachment, {
             name: `${roleName}-DynamoDbToElasticLambdaPolicy`,
@@ -250,7 +272,9 @@ export const OpenSearch = createAppModule({
                 environment: {
                     variables: {
                         DEBUG: String(process.env.DEBUG),
-                        OPENSEARCH_ENDPOINT: domain.output.endpoint
+                        OPENSEARCH_ENDPOINT: domainEndpoint,
+                        OPENSEARCH_USERNAME: process.env.OPENSEARCH_USERNAME ?? "",
+                        OPENSEARCH_PASSWORD: process.env.OPENSEARCH_PASSWORD ?? ""
                     }
                 },
                 description: "Process DynamoDB Stream.",
@@ -284,8 +308,8 @@ export const OpenSearch = createAppModule({
         });
 
         app.addOutputs({
-            opensearchDomainArn: domain.output.arn,
-            opensearchDomainEndpoint: domain.output.endpoint,
+            opensearchDomainArn: domainArn,
+            opensearchDomainEndpoint: domainEndpoint,
             opensearchDynamodbTableArn: table.output.arn,
             opensearchDynamodbTableName: table.output.name
         });
@@ -304,10 +328,7 @@ export const OpenSearch = createAppModule({
     }
 });
 
-function getDynamoDbToElasticLambdaPolicy(
-    app: PulumiApp,
-    domain: pulumi.Output<aws.opensearch.Domain | aws.opensearch.GetDomainResult>
-) {
+function getDynamoDbToElasticLambdaPolicy(app: PulumiApp, domainArn: pulumi.Output<string>) {
     return app.addResource(aws.iam.Policy, {
         name: "DynamoDbToElasticLambdaPolicy-updated",
         config: {
@@ -333,8 +354,8 @@ function getDynamoDbToElasticLambdaPolicy(
                             "dynamodb:UpdateItem"
                         ],
                         Resource: [
-                            pulumi.interpolate`${domain.arn}`,
-                            pulumi.interpolate`${domain.arn}/*`
+                            pulumi.interpolate`${domainArn}`,
+                            pulumi.interpolate`${domainArn}/*`
                         ]
                     }
                 ]
