@@ -13,7 +13,7 @@ import { SchedulerCancelGraphQLGateway } from "~/Gateways/SchedulerCancelGraphQL
 import { SchedulerPublishGraphQLGateway } from "~/Gateways/SchedulerPublishGraphQLGateway.js";
 import { SchedulerUnpublishGraphQLGateway } from "~/Gateways/SchedulerUnpublishGraphQLGateway.js";
 import { SchedulerGetGraphQLGateway } from "~/Gateways/SchedulerGetGraphQLGateway.js";
-import { ScheduleDialogPresenter } from "~/Presenter/ScheduleDialog/ScheduleDialogPresenter.js";
+import { ScheduleDialogPresenter } from "./ScheduleDialogPresenter.js";
 
 export type ShowDialogParamsEntryStatus = "published" | "unpublished" | "draft" | string;
 
