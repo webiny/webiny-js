@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import { makeDecoratable } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n/index.js";
 import Label from "./Label.js";
@@ -36,7 +35,7 @@ const RenderField = (props: RenderFieldProps) => {
         return <>{field.renderer({ field, getBind, Label, contentModel })}</>;
     }
 
-    const fieldRendererName = get(field, "renderer.name");
+    const fieldRendererName = field.renderer.name;
     if (!fieldRendererName) {
         return t`Cannot render "{fieldName}" field - field renderer not defined.`({
             fieldName: <strong>{field.fieldId}</strong>

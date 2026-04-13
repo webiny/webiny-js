@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { FormComponentLabel } from "@webiny/admin-ui";
 import { FormComponentNote } from "@webiny/admin-ui";
@@ -27,7 +26,7 @@ const plugin: CmsModelFieldRendererPlugin = {
             return [
                 field.type === "rich-text",
                 !field.list,
-                !get(field, "predefinedValues.enabled")
+                !field.predefinedValues?.enabled
             ].every(Boolean);
         },
         render({ getBind }) {

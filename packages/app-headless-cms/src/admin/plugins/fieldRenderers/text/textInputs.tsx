@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
@@ -22,7 +21,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Text Inputs`,
         description: t`Renders a simple list of text inputs.`,
         canUse({ field }) {
-            return field.type === "text" && !!field.list && !get(field, "predefinedValues.enabled");
+            return field.type === "text" && !!field.list && !field.predefinedValues?.enabled;
         },
         render(props) {
             const { field } = useModelField();

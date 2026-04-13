@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import isEmpty from "lodash/isEmpty.js";
-import get from "lodash/get.js";
 import { Bind, type FormRenderPropParams, useForm, useGenerateSlug } from "@webiny/form";
 import { ReactComponent as DevicesIcon } from "@webiny/icons/devices_other.svg";
 import { Form } from "@webiny/form";
@@ -166,7 +165,7 @@ const ContentModelGroupsForm = ({ canCreate }: ContentModelGroupsFormProps) => {
 
     const data: CmsGroup | null = getQuery.loading
         ? null
-        : get(getQuery, "data.contentModelGroup.data", null);
+        : getQuery.data?.contentModelGroup?.data || null;
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
     // Render "No content selected" view.

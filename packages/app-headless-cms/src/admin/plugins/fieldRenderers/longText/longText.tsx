@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { DelayedOnChange, Textarea } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
@@ -15,9 +14,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Text Area`,
         description: t`Renders a simple text area, suitable for larger amounts of text.`,
         canUse({ field }) {
-            return (
-                field.type === "long-text" && !field.list && !get(field, "predefinedValues.enabled")
-            );
+            return field.type === "long-text" && !field.list && !field.predefinedValues?.enabled;
         },
         render({ getBind }) {
             const { field } = useModelField();

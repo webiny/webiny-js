@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import { useRoute, useRouter } from "@webiny/app-admin";
 import { Button, DropdownMenu, Text } from "@webiny/admin-ui";
 import { ReactComponent as DownButton } from "@webiny/icons/keyboard_arrow_down.svg";
@@ -29,8 +28,8 @@ export const RevisionSelector = () => {
     const { entry, revisions, loading } = useContentEntry();
 
     const currentRevision = {
-        version: get(entry, "meta.version", 1) as number,
-        status: get(entry, "meta.status", "draft") as CmsContentEntryRevision["meta"]["status"]
+        version: entry?.meta?.version || 1,
+        status: entry?.meta?.status || "draft"
     };
 
     const allRevisions = revisions.length ? revisions : defaultRevisions;

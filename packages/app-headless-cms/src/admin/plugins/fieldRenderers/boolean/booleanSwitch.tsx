@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Switch } from "@webiny/admin-ui";
@@ -15,9 +14,15 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Boolean Input`,
         description: t`Renders a simple switch button.`,
         canUse({ field }) {
-            return (
-                field.type === "boolean" && !field.list && !get(field, "predefinedValues.enabled")
-            );
+            if (field.type !== "boolean") {
+                return false;
+            } else if (!field.list) {
+                return false;
+            }
+            if (field.predefinedValues?.enabled) {
+                return false;
+            }
+            return true;
         },
         render({ getBind }) {
             const { field } = useModelField();

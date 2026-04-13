@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import get from "lodash/get.js";
 import orderBy from "lodash/orderBy.js";
 import dotProp from "dot-prop-immutable";
 import { i18n } from "@webiny/app/i18n/index.js";
@@ -88,7 +87,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
 
     const data: CmsGroupWithModels[] = listQuery.loading
         ? []
-        : get(listQuery, "data.listContentModelGroups.data", []);
+        : listQuery.data?.listContentModelGroups?.data || [];
     const groupId = new URLSearchParams(location.search).get("id");
 
     const deleteItem = useCallback(

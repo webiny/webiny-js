@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
@@ -22,9 +21,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Number Inputs`,
         description: t`Renders a simple list of number inputs.`,
         canUse({ field }) {
-            return (
-                field.type === "number" && !!field.list && !get(field, "predefinedValues.enabled")
-            );
+            return field.type === "number" && !!field.list && !field.predefinedValues?.enabled;
         },
         render(props) {
             const { field } = useModelField();

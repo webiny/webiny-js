@@ -1,5 +1,4 @@
 import React from "react";
-import get from "lodash/get.js";
 import DynamicSection from "../DynamicSection.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
@@ -20,11 +19,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Date/Time Inputs`,
         description: t`Renders inputs for various formats of dates and times.`,
         canUse({ field }) {
-            return !!(
-                field.type === "datetime" &&
-                field.list &&
-                !get(field, "predefinedValues.enabled")
-            );
+            return !!(field.type === "datetime" && field.list && !field.predefinedValues?.enabled);
         },
         render(props) {
             const { field } = props;
