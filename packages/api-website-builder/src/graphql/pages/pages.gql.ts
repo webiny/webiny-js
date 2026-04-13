@@ -54,7 +54,6 @@ export const createPagesSchema = () => {
                         const page = result.value;
                         return {
                             id: page.id,
-                            entryId: page.entryId,
                             properties: page.properties,
                             bindings: page.bindings,
                             elements: page.elements

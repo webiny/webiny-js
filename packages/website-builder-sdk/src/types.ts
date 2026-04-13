@@ -309,7 +309,6 @@ export type EditorDocument = Document;
 
 export type Page = Document & {
     id: string;
-    entryId: string;
     status: string;
     version: number;
     location: {

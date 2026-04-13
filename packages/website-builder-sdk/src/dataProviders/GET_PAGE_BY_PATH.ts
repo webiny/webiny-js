@@ -4,7 +4,6 @@ export const GET_PAGE_BY_PATH = /* GraphQL*/ `
             getPageByPath(path: $path) {
                 data {
                     id
-                    entryId
                     properties
                     elements
                     bindings
