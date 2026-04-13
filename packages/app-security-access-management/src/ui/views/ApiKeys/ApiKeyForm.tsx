@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Bind, Form, useForm, useGenerateSlug } from "@webiny/form";
@@ -109,7 +108,7 @@ export const ApiKeyForm = ({ id, newEntry }: ApiKeyFormProps) => {
         [id]
     );
 
-    const data: ApiKey = get(getQuery, "data.security.apiKey.data", {});
+    const data: ApiKey = getQuery.data?.security?.apiKey?.data || {};
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
 

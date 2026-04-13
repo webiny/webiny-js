@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Bind, Form, useForm, useGenerateSlug } from "@webiny/form";
 import { validation } from "@webiny/validation";
@@ -123,7 +122,7 @@ export const RolesForm = ({ id, newEntry }: RolesFormProps) => {
         [id]
     );
 
-    const data: Role = loading ? {} : get(getQuery, "data.security.role.data", {});
+    const data: Role = loading ? {} : getQuery.data?.security?.role?.data || {};
 
     const systemRole = data.slug === "full-access" || data.system;
     const pluginRole = data.plugin ?? false;

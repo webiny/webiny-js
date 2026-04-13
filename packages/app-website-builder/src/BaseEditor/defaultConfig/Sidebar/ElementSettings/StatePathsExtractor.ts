@@ -1,4 +1,4 @@
-import get from "lodash/get.js";
+import { immutableGet } from "@webiny/app/utils";
 import { StatePathsCollection, type PathOption } from "./StatePathsCollection.js";
 import { PathType } from "./PathType.js";
 
@@ -61,7 +61,7 @@ export class StatePathsExtractor {
 
     public getChildPaths(path: string): StatePathsCollection {
         const rawPath = path.replace(/^\$state\./, "");
-        const node = get(this.state, rawPath);
+        const node = immutableGet(this.state, rawPath);
 
         if (node === undefined || node === null) {
             return new StatePathsCollection([]);

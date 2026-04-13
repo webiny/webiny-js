@@ -1,9 +1,9 @@
-import React, { useMemo, useCallback } from "react";
-import get from "lodash/get.js";
+import React, { useCallback, useMemo } from "react";
+import { immutableGet } from "@webiny/app/utils";
 import { observer } from "mobx-react-lite";
-import { type NodeDto, Tree, type TreeProps, Tooltip } from "@webiny/admin-ui";
+import { type NodeDto, Tooltip, Tree, type TreeProps } from "@webiny/admin-ui";
 import { ReactComponent as VisibilityNone } from "@webiny/icons/visibility_off.svg";
-import type { Document } from "@webiny/website-builder-sdk";
+import type { Document, InputValueBinding } from "@webiny/website-builder-sdk";
 import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 import type { EditorState } from "~/editorSdk/Editor.js";
@@ -87,7 +87,10 @@ function getElementNodeData({
             return -1;
         }
 
-        const slotValue = get(elementBindings, `inputs.${slot}`);
+        const slotValue: InputValueBinding | undefined = immutableGet(
+            elementBindings,
+            `inputs.${slot}`
+        );
         if (!slotValue) {
             return -1;
         }

@@ -1,4 +1,4 @@
-import get from "lodash/get.js";
+import { immutableGet } from "@webiny/app/utils";
 import type { FilterDTO } from "~/components/AdvancedSearch/domain/index.js";
 
 interface NestedObject {
@@ -27,7 +27,7 @@ export class GraphQLInputMapper {
                             const values = JSON.parse(value);
                             return this.createNestedObject(
                                 this.createKeys(field, condition),
-                                this.convertToBooleanOrString(get(values, keys))
+                                this.convertToBooleanOrString(immutableGet(values, keys.join(".")))
                             );
                         } catch {
                             return this.createNestedObject(

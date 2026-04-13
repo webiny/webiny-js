@@ -1,6 +1,6 @@
 import invariant from "invariant";
 import { plugins } from "@webiny/plugins";
-import get from "lodash/get.js";
+import { immutableGet } from "~/utils/index.js";
 import type { ImageComponentPlugin, ImageProps } from "~/types.js";
 
 export const Image = ({ preset: presetName, ...props }: ImageProps) => {
@@ -10,7 +10,7 @@ export const Image = ({ preset: presetName, ...props }: ImageProps) => {
     }
 
     if (presetName) {
-        const preset = get(plugin, `presets.${presetName}`);
+        const preset = immutableGet(plugin, `presets.${presetName}`);
         invariant(preset, `Transform preset "${presetName}" not found.`);
         props.transform = preset;
     }

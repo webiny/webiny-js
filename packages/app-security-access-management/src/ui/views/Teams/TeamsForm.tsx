@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import pick from "lodash/pick.js";
-import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Bind, Form, useForm, useGenerateSlug } from "@webiny/form";
 import { validation } from "@webiny/validation";
@@ -97,7 +96,7 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
         [id]
     );
 
-    const data = loading ? {} : get(getQuery, "data.security.team.data", {});
+    const data = loading ? {} : getQuery.data?.security?.team?.data || {};
 
     const systemTeam = data.system;
     const pluginTeam = data.plugin ?? false;
