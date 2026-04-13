@@ -4,6 +4,9 @@
 # For more information, run "github-actions-wac --help".
 name: Pull Requests Command - Beta Release
 'on': issue_comment
+concurrency:
+  group: beta-release-${{ github.event.issue.number }}
+  cancel-in-progress: true
 jobs:
   checkComment:
     name: Check comment for /beta

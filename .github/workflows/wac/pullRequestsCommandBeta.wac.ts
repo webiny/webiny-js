@@ -20,6 +20,10 @@ const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: PR_BRANC
 export const pullRequestsCommandBeta = createWorkflow({
     name: "Pull Requests Command - Beta Release",
     on: "issue_comment",
+    concurrency: {
+        group: "beta-release-${{ github.event.issue.number }}",
+        "cancel-in-progress": true
+    },
     jobs: {
         checkComment: createJob({
             name: "Check comment for /beta",
