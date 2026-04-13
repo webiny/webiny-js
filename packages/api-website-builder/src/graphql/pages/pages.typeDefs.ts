@@ -1,4 +1,9 @@
 export const pagesTypeDefs = /* GraphQL */ `
+    type WbPageTranslation {
+        languageCode: String
+        path: String!
+    }
+
     type WbPage {
         id: ID!
         entryId: String!
@@ -27,6 +32,7 @@ export const pagesTypeDefs = /* GraphQL */ `
         bindings: JSON
         elements: JSON
         extensions: JSON
+        translations: [WbPageTranslation!]
     }
 
     input WbPageCreateInput {

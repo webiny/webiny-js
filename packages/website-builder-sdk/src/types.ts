@@ -307,13 +307,20 @@ export type EditorPage = EditorDocument & Pick<Page, "properties" | "status" | "
 
 export type EditorDocument = Document;
 
+export type PageTranslation = {
+    languageCode: string | null;
+    path: string;
+};
+
 export type Page = Document & {
     id: string;
+    entryId: string;
     status: string;
     version: number;
     location: {
         folderId: string;
     };
+    translations?: PageTranslation[];
     properties: {
         title: string;
         snippet: string;
