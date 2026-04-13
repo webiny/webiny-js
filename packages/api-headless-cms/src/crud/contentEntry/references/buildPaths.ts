@@ -1,5 +1,5 @@
 import type { CmsDynamicZoneTemplate, CmsEntryValues, CmsModelField } from "~/types/index.js";
-import dotPropImmutable from "dot-prop-immutable";
+import { immutableGet } from "@webiny/utils/dotProp/index.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 
 type INarrowedCmsModelField = Pick<CmsModelField, "fieldId" | "list" | "type" | "settings">;
@@ -18,7 +18,7 @@ const resolveBaseRef = <TValues extends CmsEntryValues = CmsEntryValues>(
     const { field, parentPaths, input, collection, isMultipleValues } = params;
     const parentPathsValue = parentPaths.length > 0 ? `${parentPaths.join(".")}.` : "";
     if (field.list) {
-        const inputValue = dotPropImmutable.get(input, `${field.fieldId}`, []);
+        const inputValue = immutableGet(input, `${field.fieldId}`, []);
         if (!Array.isArray(inputValue)) {
             return collection;
         }
@@ -79,7 +79,7 @@ export const buildReferenceFieldPaths = <TValues extends CmsEntryValues = CmsEnt
                 const templates: CmsDynamicZoneTemplate[] = field.settings?.templates || [];
 
                 if (field.list) {
-                    const values = dotPropImmutable.get(input, field.fieldId, []);
+                    const values = immutableGet(input, field.fieldId, []);
                     if (!Array.isArray(values)) {
                         return collection;
                     }
@@ -102,12 +102,22 @@ export const buildReferenceFieldPaths = <TValues extends CmsEntryValues = CmsEnt
                     return collection;
                 }
 
-                const value = dotPropImmutable.get(input, field.fieldId, {});
+                const value = immutableGet(input, field.fieldId, {});
                 if (!value) {
                     return collection;
                 }
+                /**
+                 * We know what the value possibly has _templateId field, but TS doesn't. We need to ignore it here.
+                 */
+                // @ts-expect-error
+                const templateId = value["_templateId"] as string | undefined;
+                if (!templateId) {
+                    return collection;
+                }
 
-                const template = templates.find(tpl => tpl.id === value["_templateId"]);
+                const template = templates.find(tpl => {
+                    return tpl.id === templateId;
+                });
 
                 if (!template) {
                     return collection;
@@ -139,7 +149,7 @@ export const buildReferenceFieldPaths = <TValues extends CmsEntryValues = CmsEnt
             }
 
             const objFieldPath = `${field.fieldId}`;
-            const objFieldInputValue = dotPropImmutable.get(input, objFieldPath, []);
+            const objFieldInputValue = immutableGet(input, objFieldPath, []);
 
             /**
              * If field is multiple values one, we need to go through the input and use the existing keys.

@@ -17,7 +17,7 @@ import type {
 import { GET_SETTINGS_QUERY, SAVE_SETTINGS_MUTATION } from "./graphql.js";
 import type { TransportSettings, ValidationError } from "~/types.js";
 import type { Validator } from "@webiny/validation/types.js";
-import dotPropImmutable from "dot-prop-immutable";
+import { immutableSet } from "@webiny/utils/dotProp/index.js";
 import { Alert, Button, Grid, Input, OverlayLoader } from "@webiny/admin-ui";
 
 const displayErrors = (errors?: ValidationError[]) => {
@@ -100,7 +100,7 @@ export const Settings = () => {
 
                                     cache.writeQuery({
                                         query: GET_SETTINGS_QUERY,
-                                        data: dotPropImmutable.set(data, "mailer.settings.data", {
+                                        data: immutableSet(data || {}, "mailer.settings.data", {
                                             ...settingsData,
                                             ...updateData
                                         })

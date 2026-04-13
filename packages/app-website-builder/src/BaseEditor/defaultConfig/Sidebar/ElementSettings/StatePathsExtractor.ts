@@ -1,4 +1,4 @@
-import { immutableGet } from "@webiny/app/utils";
+import { immutableGet } from "@webiny/utils/dotProp/index.js";
 import { StatePathsCollection, type PathOption } from "./StatePathsCollection.js";
 import { PathType } from "./PathType.js";
 

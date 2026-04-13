@@ -1,6 +1,6 @@
 import type { CmsEntry, CmsEntryValues, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
-import * as dotProp from "dot-prop";
+import { immutableGet } from "@webiny/utils/dotProp/index.js";
 import lodashSortBy from "lodash/sortBy.js";
 import { extractSort } from "./extractSort.js";
 import type { Field } from "./types.js";
@@ -53,7 +53,7 @@ export const sort = <T extends CmsEntryValues = CmsEntryValues>(
     const itemsToSort = items.map(item => {
         return {
             id: item.id,
-            value: field.transform(dotProp.getProperty(item, valuePath))
+            value: field.transform(immutableGet(item, valuePath))
         };
     });
     const sortedItems: SortedItem[] = lodashSortBy(itemsToSort, "value");

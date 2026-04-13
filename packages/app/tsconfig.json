@@ -7,7 +7,8 @@
     { "path": "../i18n-react" },
     { "path": "../plugins" },
     { "path": "../react-composition" },
-    { "path": "../react-properties" }
+    { "path": "../react-properties" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -29,7 +30,9 @@
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
-      "@webiny/react-properties": ["../react-properties/src"]
+      "@webiny/react-properties": ["../react-properties/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

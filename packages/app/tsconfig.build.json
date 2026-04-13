@@ -7,7 +7,8 @@
     { "path": "../i18n-react/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
-    { "path": "../react-properties/tsconfig.build.json" }
+    { "path": "../react-properties/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -29,7 +30,9 @@
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
-      "@webiny/react-properties": ["../react-properties/src"]
+      "@webiny/react-properties": ["../react-properties/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

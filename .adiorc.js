@@ -1,5 +1,4 @@
 import path from "path";
-import get from "lodash/get.js";
 import getWorkspaces from "get-yarn-workspaces";
 
 export default {
@@ -10,10 +9,10 @@ export default {
         const { node } = path;
         if (node.type === "CallExpression") {
             if (
-                get(node, "callee.property.name") === "resolve" &&
-                get(node, "callee.object.name") === "require"
+                node?.callee?.property?.name === "resolve" &&
+                node?.callee?.object?.name === "require"
             ) {
-                const possiblePackage = get(node, "arguments.0.value");
+                const possiblePackage = node?.arguments?.[0]?.value;
                 if (typeof possiblePackage === "string") {
                     return push(possiblePackage);
                 }

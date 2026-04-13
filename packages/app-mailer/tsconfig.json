@@ -5,7 +5,8 @@
     { "path": "../admin-ui" },
     { "path": "../app-admin" },
     { "path": "../form" },
-    { "path": "../validation" }
+    { "path": "../validation" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -21,7 +22,9 @@
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

@@ -1,4 +1,4 @@
-import dot from "dot-object";
+import { flattie } from "flattie";
 import type { CmsEntryFieldFilterPluginCreateResponse } from "~/plugins/CmsEntryFieldFilterPlugin.js";
 import { CmsEntryFieldFilterPlugin } from "~/plugins/CmsEntryFieldFilterPlugin.js";
 import { extractWhereParams } from "~/operations/entry/filtering/where.js";
@@ -11,7 +11,7 @@ export const searchableJsonFilterCreate = () => {
 
             const filters = [];
 
-            const accessPatterns = dot.dot(objectValue);
+            const accessPatterns = flattie(objectValue, ".", true);
 
             for (const key in accessPatterns) {
                 const value = accessPatterns[key];

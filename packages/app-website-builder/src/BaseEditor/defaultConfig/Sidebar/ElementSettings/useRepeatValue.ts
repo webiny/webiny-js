@@ -1,4 +1,4 @@
-import { mutableSet } from "@webiny/app/utils";
+import { mutableSet } from "@webiny/utils/dotProp/index.js";
 import { useCallback } from "react";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";

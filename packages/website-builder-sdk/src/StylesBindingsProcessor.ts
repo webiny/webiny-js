@@ -1,4 +1,4 @@
-import set from "lodash/set.js";
+import { mutableSet } from "@webiny/utils/dotProp/index.js";
 import unset from "lodash/unset.js";
 import type { DocumentElementBindings, DocumentElementStyleBindings } from "~/types.js";
 import { InheritedValueResolver } from "~/InheritedValueResolver.js";
@@ -76,12 +76,16 @@ export class StylesBindingsProcessor {
 
         for (const [key, value] of Object.entries(styles)) {
             if (this.isBaseBreakpoint(currentBreakpoint)) {
-                set(rebuilt, `styles.${key}.static`, value);
+                mutableSet(rebuilt, `styles.${key}.static`, value);
             } else {
                 const inheritedValue = valueResolver.getInheritedValue(key, currentBreakpoint);
 
                 if (value !== inheritedValue) {
-                    set(rebuilt, `overrides.${currentBreakpoint}.styles.${key}.static`, value);
+                    mutableSet(
+                        rebuilt,
+                        `overrides.${currentBreakpoint}.styles.${key}.static`,
+                        value
+                    );
                 } else {
                     unset(rebuilt, `overrides.${currentBreakpoint}.styles.${key}`);
                 }
@@ -101,7 +105,7 @@ export class StylesBindingsProcessor {
         if (this.rawBindings.overrides) {
             for (const [bp, overrides] of Object.entries(this.rawBindings.overrides)) {
                 if (overrides.styles) {
-                    set(
+                    mutableSet(
                         baseStyles,
                         `overrides.${bp}.styles`,
                         structuredClone(this.rawBindings.overrides[bp].styles)

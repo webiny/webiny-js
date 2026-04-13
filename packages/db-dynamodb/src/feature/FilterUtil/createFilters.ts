@@ -1,4 +1,4 @@
-import * as dotProp from "dot-prop";
+import { immutableGet } from "@webiny/utils/dotProp/index.js";
 import { WebinyError } from "@webiny/error";
 import type { FieldPlugin } from "~/plugins/definitions/FieldPlugin.js";
 import type { DynamoDbContainsFilter } from "~/types.js";
@@ -140,7 +140,7 @@ export const createFilterCallable = (
     return (item: any) => {
         for (const filter of filters) {
             const result = filter.paths.some(path => {
-                const value = transform(dotProp.getProperty(item, path), filter.transformValue);
+                const value = transform(immutableGet(item, path), filter.transformValue);
                 const compareValue = transform(filter.compareValue, filter.transformValue);
                 const matched = filter.filter.matches({
                     value,

@@ -1,4 +1,4 @@
-import { set } from "dot-prop-immutable";
+import { immutableSet } from "@webiny/utils/dotProp/index.js";
 import type { BindComponentRenderProp } from "@webiny/form";
 
 interface Params {
@@ -12,7 +12,7 @@ export const setValue = (params: Params): void => {
     const { value, bind, index, name } = params;
     const currentValue = [...(bind.value || [])];
     if (index >= 0) {
-        bind.onChange(set(currentValue, `${index}.${name}`, value));
+        bind.onChange(immutableSet(currentValue, `${index}.${name}`, value));
     } else {
         bind.onChange(value);
     }

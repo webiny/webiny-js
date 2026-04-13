@@ -1,4 +1,4 @@
-import { immutableGet, mutableSet } from "@webiny/app/utils/index.js";
+import { immutableGet, mutableSet } from "@webiny/utils/dotProp/index.js";
 import type { FileItem } from "~/types.js";
 import type { BatchDTO } from "~/components/BulkActions/ActionEdit/domain/index.js";
 import { OperatorType } from "~/components/BulkActions/ActionEdit/domain/index.js";

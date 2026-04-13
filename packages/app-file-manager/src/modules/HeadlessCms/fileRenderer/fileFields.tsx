@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import dotProp from "dot-prop-immutable";
+
 import type {
     BindComponentRenderProp,
     CmsModelFieldRendererPlugin,
@@ -90,7 +90,7 @@ const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
                                                 onSelectItem={() => selectFiles()}
                                                 onReplaceItem={(_, index) => selectFiles(index)}
                                                 onRemoveItem={(_, index) =>
-                                                    onChange(dotProp.delete(values, index))
+                                                    onChange(values.filter((_, i) => i !== index))
                                                 }
                                                 onEditItem={(value, index) => {
                                                     if (!value) {

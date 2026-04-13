@@ -1,5 +1,5 @@
 import deepEqual from "deep-equal";
-import set from "lodash/set.js";
+import { mutableSet } from "@webiny/utils/dotProp/index.js";
 import type { DocumentElementBindings, DocumentElementInputBindings } from "~/types.js";
 import { InheritedValueResolver } from "~/InheritedValueResolver.js";
 import type { InputAstNode } from "~/ComponentManifestToAstConverter.js";
@@ -140,7 +140,7 @@ export class InputsBindingsProcessor {
         if (this.rawBindings.overrides) {
             for (const [bp, overrides] of Object.entries(this.rawBindings.overrides)) {
                 if (overrides.inputs) {
-                    set(
+                    mutableSet(
                         rebuilt,
                         `overrides.${bp}.inputs`,
                         structuredClone(this.rawBindings.overrides[bp].inputs)

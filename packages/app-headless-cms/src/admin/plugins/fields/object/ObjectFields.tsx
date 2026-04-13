@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { set } from "dot-prop-immutable";
+import { immutableSet } from "@webiny/utils/dotProp/index.js";
 import { FieldEditor, useModelFieldEditor } from "~/admin/components/FieldEditor/index.js";
 import type { CmsModelField, CmsModel } from "~/types.js";
 
@@ -11,8 +11,8 @@ export const ObjectFields = ({ field }: ObjectFieldsProps) => {
 
     const onChange = useCallback(
         ({ fields, layout }: Pick<CmsModel, "fields" | "layout">) => {
-            const currentField = getField({ id: field.id });
-            const updatedField = set(
+            const currentField = getField({ id: field.id })!;
+            const updatedField = immutableSet(
                 currentField,
                 `settings`,
                 (settings: CmsModel["settings"]): Partial<CmsModel> => {

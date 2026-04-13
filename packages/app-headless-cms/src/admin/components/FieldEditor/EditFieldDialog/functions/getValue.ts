@@ -1,4 +1,4 @@
-import { immutableGet } from "@webiny/app/utils";
+import { immutableGet } from "@webiny/utils/dotProp/index.js";
 import type { BindComponentRenderProp } from "@webiny/form";
 
 interface Params {

@@ -1,5 +1,5 @@
 import { jsonPatch } from "~/jsonPatch.js";
-import set from "lodash/set.js";
+import { mutableSet } from "@webiny/utils/dotProp/index.js";
 import type { Document, DocumentElementBindings } from "./types.js";
 import type { IBindingsUpdater } from "./IBindingsUpdater.js";
 import type { ElementStylesBindings } from "./StylesBindingsProcessor.js";
@@ -21,7 +21,7 @@ export class StylesUpdater implements IBindingsUpdater {
         if (this.bindings.overrides) {
             for (const [bp, overrides] of Object.entries(this.bindings.overrides)) {
                 if (overrides.styles) {
-                    set(
+                    mutableSet(
                         document.bindings,
                         `${this.elementId}.overrides.${bp}.styles`,
                         structuredClone(this.bindings.overrides[bp].styles)

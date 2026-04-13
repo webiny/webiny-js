@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { set } from "dot-prop-immutable";
+import { immutableSet } from "@webiny/utils/dotProp/index.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
@@ -68,7 +68,7 @@ export const DynamicZoneTemplate = ({
 
     const updateTemplate = useCallback<UpdateTemplate>(params => {
         onChange(
-            set(field, `${TEMPLATES_PATH}.${index}`, (tpl: CmsDynamicZoneTemplate) => {
+            immutableSet(field, `${TEMPLATES_PATH}.${index}`, (tpl: CmsDynamicZoneTemplate) => {
                 return { ...tpl, ...params };
             })
         );
@@ -82,16 +82,16 @@ export const DynamicZoneTemplate = ({
     );
 
     const moveTemplateUp = useCallback(() => {
-        onChange(set(field, TEMPLATES_PATH, pullValueAtIndex(templates, index)));
+        onChange(immutableSet(field, TEMPLATES_PATH, pullValueAtIndex(templates, index)));
     }, callbackDeps);
 
     const moveTemplateDown = useCallback(() => {
-        onChange(set(field, TEMPLATES_PATH, pushValueAtIndex(templates, index)));
+        onChange(immutableSet(field, TEMPLATES_PATH, pushValueAtIndex(templates, index)));
     }, callbackDeps);
 
     const deleteTemplate = useCallback(() => {
         showConfirmation(() => {
-            onChange(set(field, TEMPLATES_PATH, removeValueAtIndex(templates, index)));
+            onChange(immutableSet(field, TEMPLATES_PATH, removeValueAtIndex(templates, index)));
         });
     }, callbackDeps);
 

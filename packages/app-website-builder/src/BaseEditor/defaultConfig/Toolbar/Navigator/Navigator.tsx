@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { immutableGet } from "@webiny/app/utils";
+import { immutableGet } from "@webiny/utils/dotProp/index.js";
 import { observer } from "mobx-react-lite";
 import { type NodeDto, Tooltip, Tree, type TreeProps } from "@webiny/admin-ui";
 import { ReactComponent as VisibilityNone } from "@webiny/icons/visibility_off.svg";

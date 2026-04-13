@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../app/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ],
@@ -12,6 +13,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/validation/*": ["../validation/src/*"],

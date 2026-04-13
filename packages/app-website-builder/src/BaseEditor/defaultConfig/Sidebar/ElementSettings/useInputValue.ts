@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { immutableSet } from "@webiny/app/utils/index.js";
+import { immutableSet } from "@webiny/utils/dotProp/index.js";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils/generateId.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import type { ValueBinding, CreateElementParams } from "@webiny/website-builder-sdk";

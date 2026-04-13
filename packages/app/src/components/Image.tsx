@@ -1,6 +1,6 @@
 import invariant from "invariant";
 import { plugins } from "@webiny/plugins";
-import { immutableGet } from "~/utils/index.js";
+import { immutableGet } from "@webiny/utils/dotProp/index.js";
 import type { ImageComponentPlugin, ImageProps } from "~/types.js";
 
 export const Image = ({ preset: presetName, ...props }: ImageProps) => {

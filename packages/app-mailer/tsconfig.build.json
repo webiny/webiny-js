@@ -5,7 +5,8 @@
     { "path": "../admin-ui/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
+    { "path": "../validation/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -21,7 +22,9 @@
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"]
+      "@webiny/validation": ["../validation/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     },
     "baseUrl": "."
   }

@@ -1,4 +1,4 @@
-import dotPropImmutable from "dot-prop-immutable";
+import { immutableGet, immutableSet } from "@webiny/utils/dotProp/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import type { CmsContext, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { buildReferenceFieldPaths } from "./references/buildPaths.js";
@@ -54,7 +54,7 @@ export const referenceFieldsMapping = async <TValues extends CmsEntryValues = Cm
      */
     for (const path of referenceFieldPaths) {
         // It is safe to cast here, because `referenceFieldPaths` array is generated from the `input`.
-        const refValue = dotPropImmutable.get(values, path) as CmsRefEntry | undefined;
+        const refValue = immutableGet<CmsRefEntry | undefined>(values, path);
         if (!refValue) {
             continue;
         }
@@ -71,7 +71,7 @@ export const referenceFieldsMapping = async <TValues extends CmsEntryValues = Cm
             id: entryId
         });
 
-        output = dotPropImmutable.set(output, path, {
+        output = immutableSet(output, path, {
             id,
             entryId,
             modelId: refValue.modelId

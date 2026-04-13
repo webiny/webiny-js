@@ -4,7 +4,7 @@ import * as path from "path";
 import fs from "fs-extra";
 import merge from "lodash/merge.js";
 import kebabCase from "lodash/kebabCase.js";
-import set from "lodash/set.js";
+import { mutableSet } from "@webiny/utils/dotProp/index.js";
 import downloadBinaries from "./downloadBinaries.js";
 
 type Command = string | string[];
@@ -113,15 +113,15 @@ export class Pulumi {
             args.execa = {};
         }
 
-        set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
-        set(args.execa, "env.PULUMI_HOME", this.pulumiFolder);
+        mutableSet(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
+        mutableSet(args.execa, "env.PULUMI_HOME", this.pulumiFolder);
 
         if (os.arch() === "arm64") {
             /**
              * This variable is an attempt to resolve this issue:
              * https://yaleman.org/post/2021/2021-01-01-apple-m1-terraform-and-golang/
              */
-            set(args.execa, "env.GODEBUG", "asyncpreemptoff=1");
+            mutableSet(args.execa, "env.GODEBUG", "asyncpreemptoff=1");
         }
 
         // Use ";" when on Windows. For Mac and Linux, use ":".

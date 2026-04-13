@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useMemo } from "react";
-import dotPropImmutable from "dot-prop-immutable";
+import { immutableGet, immutableSet } from "@webiny/utils/dotProp/index.js";
 import pick from "lodash/pick.js";
 import { useStateIfMounted } from "@webiny/app-admin";
 import { useSecurity } from "@webiny/app-admin";
@@ -111,7 +111,7 @@ const getCurrentRecordList = <T extends GenericSearchData = GenericSearchData>(
 
     return records.filter(
         (record): record is SearchRecordItem<T> =>
-            dotPropImmutable.get(record, folderIdPath) === currentFolderId
+            immutableGet(record, folderIdPath) === currentFolderId
     );
 };
 
@@ -263,7 +263,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
             );
 
             // Set the locationWhere object with descendant folder IDs
-            where = dotPropImmutable.set({}, folderIdInPath, descendantFolderIds);
+            where = immutableSet({}, folderIdInPath, descendantFolderIds);
         }
 
         return {
@@ -286,7 +286,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
                 (state.filters && Object.values(state.filters).filter(Boolean).length)
         );
 
-        let where = dotPropImmutable.set({}, folderIdPath, state.folderId);
+        let where = immutableSet({}, folderIdPath, state.folderId);
 
         // In case of a search or filters applied, let's get the where condition based on the current folder ID,
         // ownership status, and other existing filters in the state.

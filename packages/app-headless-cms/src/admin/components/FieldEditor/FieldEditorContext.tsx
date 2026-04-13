@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import dot from "dot-prop-immutable";
+import { immutableSet } from "@webiny/utils/dotProp/index.js";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import type {
     CmsEditorFieldId,
@@ -425,7 +425,10 @@ export const FieldEditorProvider = ({
      */
     const moveRow: MoveRowCallable = (source, destination) => {
         setState(data => {
-            return utils.moveRow({ data, source, destination });
+            return {
+                ...data,
+                ...utils.moveRow({ data, source, destination })
+            };
         });
     };
 
@@ -436,7 +439,7 @@ export const FieldEditorProvider = ({
         setState(data => {
             for (let i = 0; i < data.fields.length; i++) {
                 if (data.fields[i].id === field.id) {
-                    return dot.set(data, `fields.${i}`, field);
+                    return immutableSet(data, `fields.${i}`, field);
                 }
             }
             return data;
@@ -448,7 +451,10 @@ export const FieldEditorProvider = ({
      */
     const deleteField: DeleteFieldCallable = field => {
         setState(data => {
-            return utils.deleteField({ field, data });
+            return {
+                ...data,
+                ...utils.deleteField({ field, data })
+            };
         });
     };
 

@@ -1,7 +1,7 @@
 import accounting from "accounting";
 import * as fecha from "fecha";
 import lodashAssign from "lodash/assign.js";
-import lodashGet from "lodash/get.js";
+import { immutableGet } from "@webiny/utils/dotProp/index.js";
 
 import type {
     Formats,
@@ -71,7 +71,7 @@ export default class I18N {
             throw Error("I18N text namespace not defined.");
         }
 
-        base = lodashGet(base, "raw.0", base);
+        base = (base as any)?.raw?.[0] || base;
 
         let translation: string | null = this.getTranslation(namespace + "." + hash(base));
 
@@ -388,21 +388,21 @@ export default class I18N {
      * Returns current format to be used when outputting dates.
      */
     public getDateFormat(): string {
-        return lodashGet(this.locale, "formats.date", this.defaultFormats.date);
+        return immutableGet(this.locale as any, "formats.date", this.defaultFormats.date);
     }
 
     /**
      * Returns current format to be used when outputting time.
      */
     public getTimeFormat(): string {
-        return lodashGet(this.locale, "formats.time", this.defaultFormats.time);
+        return immutableGet(this.locale as any, "formats.time", this.defaultFormats.time);
     }
 
     /**
      * Returns current format to be used when outputting date/time.
      */
     public getDateTimeFormat(): string {
-        return lodashGet(this.locale, "formats.datetime", this.defaultFormats.datetime);
+        return immutableGet(this.locale as any, "formats.datetime", this.defaultFormats.datetime);
     }
 
     /**
@@ -412,7 +412,7 @@ export default class I18N {
         return lodashAssign(
             {},
             this.defaultFormats.price,
-            lodashGet(this.locale, "formats.price", {})
+            immutableGet(this.locale as any, "formats.price", {})
         );
     }
 
@@ -423,7 +423,7 @@ export default class I18N {
         return lodashAssign(
             {},
             this.defaultFormats.number,
-            lodashGet(this.locale, "formats.number", {})
+            immutableGet(this.locale as any, "formats.number", {})
         );
     }
 }

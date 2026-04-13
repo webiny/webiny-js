@@ -1,4 +1,4 @@
-import { mutableSet } from "@webiny/utils";
+import { mutableSet } from "@webiny/utils/dotProp/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { CmsEntryResolverFactory, CmsModel } from "~/types/index.js";
 import type { IContentEntryTraverser } from "~/features/contentEntry/ContentEntryTraverser/ContentEntryTraverser.js";

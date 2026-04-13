@@ -1,4 +1,4 @@
-import { mutableSet } from "@webiny/utils";
+import { mutableSet } from "@webiny/utils/dotProp/index.js";
 import type { Resolvers } from "@webiny/handler-graphql/types.js";
 import WebinyError from "@webiny/error";
 import type { ApiEndpoint, CmsContext, CmsModel, CmsModelField } from "~/types/index.js";

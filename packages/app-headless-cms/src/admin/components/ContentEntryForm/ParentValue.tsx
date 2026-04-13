@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef } from "react";
-import { immutableGet } from "@webiny/app/utils";
+import { immutableGet } from "@webiny/utils/dotProp/index.js";
 import type { CmsModelField } from "@webiny/app-headless-cms-common/types/index.js";
 import { useModelField } from "~/admin/components/ModelFieldProvider/index.js";
 import type { FormAPI } from "@webiny/form";

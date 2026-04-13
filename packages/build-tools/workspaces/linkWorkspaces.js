@@ -8,7 +8,6 @@
 import "tsx";
 
 import path from "path";
-import get from "lodash/get.js";
 import fs from "fs-extra";
 import * as rimraf from "rimraf";
 import { loadJsonFileSync } from "load-json-file";
@@ -85,9 +84,9 @@ export const linkWorkspaces = async ({ whitelist, blacklist } = defaults) => {
         const pkgJson = await PackageJson.fromFile(packageJson);
         const pkg = pkgJson.getJson();
 
-        let targetDirectory = get(pkg, "publishConfig.directory");
+        let targetDirectory = pkg?.publishConfig?.directory;
         if (!targetDirectory && lerna) {
-            targetDirectory = get(lerna, "command.publish.contents");
+            targetDirectory = lerna?.command?.publish?.contents;
         }
 
         const link = path.resolve("node_modules", pkg.name);

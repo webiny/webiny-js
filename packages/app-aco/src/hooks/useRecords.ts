@@ -1,4 +1,4 @@
-import dotPropImmutable from "dot-prop-immutable";
+import { immutableGet, immutableSet } from "@webiny/utils/dotProp/index.js";
 import { useContext, useEffect, useMemo } from "react";
 import { makeDecoratable } from "@webiny/app-admin";
 import type { ListRecordsParams } from "~/contexts/records.js";
@@ -45,7 +45,7 @@ export const useRecords = makeDecoratable((folderId?: string) => {
         if (!folderId) {
             return;
         }
-        const where = dotPropImmutable.set({}, folderIdPath, folderId);
+        const where = immutableSet({}, folderIdPath, folderId);
         listRecords({
             where
         });
@@ -61,11 +61,11 @@ export const useRecords = makeDecoratable((folderId?: string) => {
             loading,
             meta,
             records: records.filter(record => {
-                const recordFolderId = dotPropImmutable.get(record, folderIdPath);
+                const recordFolderId = immutableGet(record, folderIdPath);
                 return recordFolderId === folderId || recordFolderId === currentFolderId;
             }),
             listRecords(params: ListRecordsParams) {
-                const where = dotPropImmutable.set(params.where || {}, folderIdPath, folderId);
+                const where = immutableSet(params.where || {}, folderIdPath, folderId);
                 return listRecords({
                     ...params,
                     where

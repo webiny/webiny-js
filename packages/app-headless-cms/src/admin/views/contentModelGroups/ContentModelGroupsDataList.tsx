@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import orderBy from "lodash/orderBy.js";
-import dotProp from "dot-prop-immutable";
+import { immutableDelete } from "@webiny/utils/dotProp/index.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
@@ -117,7 +117,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                         cache.writeQuery({
                             ...gqlParams,
                             data: {
-                                listContentModelGroups: dotProp.delete(
+                                listContentModelGroups: immutableDelete(
                                     listContentModelGroups,
                                     `data.${index}`
                                 )

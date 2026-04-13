@@ -1,4 +1,4 @@
-import { immutableGet } from "@webiny/utils";
+import { immutableGet } from "@webiny/utils/dotProp/index.js";
 import chalk from "chalk";
 
 const { yellow } = chalk;
