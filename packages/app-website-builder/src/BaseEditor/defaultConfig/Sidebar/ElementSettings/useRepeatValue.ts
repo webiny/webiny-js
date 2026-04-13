@@ -1,4 +1,4 @@
-import set from "lodash/set.js";
+import { mutableSet } from "@webiny/app/utils";
 import { useCallback } from "react";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
@@ -22,7 +22,7 @@ export const useRepeatValue = (elementId: string) => {
                 if (!value) {
                     delete bindings.$repeat;
                 } else {
-                    set(bindings, "$repeat.expression", value);
+                    mutableSet(bindings, "$repeat.expression", value);
                 }
 
                 document.bindings[elementId] = bindings;

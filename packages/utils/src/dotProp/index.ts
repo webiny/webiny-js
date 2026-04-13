@@ -1,1 +1,7 @@
-export { immutableGet, immutableSet, immutableDelete, mutableDelete } from "./dotProp.js";
+export {
+    immutableGet,
+    immutableSet,
+    immutableDelete,
+    mutableSet,
+    mutableDelete
+} from "./dotProp.js";

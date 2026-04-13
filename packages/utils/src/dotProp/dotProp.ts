@@ -34,6 +34,14 @@ function immutableDelete<T extends Record<string, unknown>>(object: T, path: str
 }
 
 /**
+ * Sets the value at the given path on the original object.
+ */
+function mutableSet<T extends Record<string, unknown>>(object: T, path: string, value: unknown): T {
+    setProperty(object, path, value);
+    return object;
+}
+
+/**
  * Removes the property at the given path from the original object.
  */
 function mutableDelete<T extends Record<string, unknown>>(object: T, path: string): T {
@@ -41,4 +49,4 @@ function mutableDelete<T extends Record<string, unknown>>(object: T, path: strin
     return object;
 }
 
-export { immutableGet, immutableSet, immutableDelete, mutableDelete };
+export { immutableGet, immutableSet, immutableDelete, mutableSet, mutableDelete };

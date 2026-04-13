@@ -1,4 +1,4 @@
-import set from "lodash/set.js";
+import { mutableSet } from "@webiny/utils";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { CmsEntryResolverFactory, CmsModel } from "~/types/index.js";
 import type { IContentEntryTraverser } from "~/features/contentEntry/ContentEntryTraverser/ContentEntryTraverser.js";
@@ -57,7 +57,7 @@ class GraphQlInputNormalizer {
                     input: value
                 });
 
-                set(values, path, normalizedValue);
+                mutableSet(values, path, normalizedValue);
             }
         });
 
