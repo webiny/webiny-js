@@ -1,3 +1,4 @@
+export * from "./dotProp/index.js";
 export * from "~/parseIdentifier.js";
 export * from "~/zeroPad.js";
 export * from "~/exception.js";

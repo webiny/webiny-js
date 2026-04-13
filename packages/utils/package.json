@@ -21,6 +21,7 @@
     "@webiny/feature": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "bson-objectid": "^2.0.4",
+    "dot-prop": "^10.1.0",
     "jsonpack": "^1.1.5",
     "nanoid": "^5.1.7",
     "nanoid-dictionary": "^5.0.0",
