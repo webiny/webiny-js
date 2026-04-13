@@ -93,5 +93,5 @@ export type {
     AfterChangeCallback
 } from "./features/formModel/abstractions.js";
 export { FormView } from "./features/formModel/FormView.js";
-export { defaultFieldRenderers } from "./features/formModel/defaultFieldRenderers.js";
+export { useFieldRenderers } from "./features/formModel/useFieldRenderers.js";
 export type { FieldRenderers, FieldRendererComponent } from "./features/formModel/FormView.js";

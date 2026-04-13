@@ -108,6 +108,7 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
 export class TextFieldBuilder extends FieldBuilder<"text"> {
     constructor() {
         super("text");
+        this._config.renderer = "text";
     }
 }
 
@@ -117,6 +118,7 @@ export class TextFieldBuilder extends FieldBuilder<"text"> {
 export class SelectFieldBuilder extends FieldBuilder<"select"> implements ISelectFieldBuilder {
     constructor() {
         super("select");
+        this._config.renderer = "select";
     }
 
     options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this {

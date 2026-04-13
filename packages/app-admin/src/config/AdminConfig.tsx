@@ -16,6 +16,8 @@ import { Title } from "./AdminConfig/Title.js";
 import { Logo } from "./AdminConfig/Logo.js";
 import { Dialog } from "./AdminConfig/Dialog.js";
 import type { DialogConfig } from "./AdminConfig/Dialog.js";
+import { Form } from "./AdminConfig/Form.js";
+import type { FieldRendererConfig } from "./AdminConfig/FieldRenderer.js";
 import { createAdminConfig } from "./createAdminConfig.js";
 import type { EditorTheme } from "@webiny/lexical-theme";
 import { createLexicalTokens } from "@webiny/lexical-theme/createLexicalEditorTokens.js";
@@ -38,6 +40,7 @@ interface AdminConfig {
     permissionRenderers: PermissionRendererConfig[];
     lexicalTheme: EditorTheme;
     dialogs: DialogConfig[];
+    fieldRenderers: FieldRendererConfig[];
 }
 
 /* Once the app fully renders (after the LoginScreen), apply protected configs. */
@@ -77,7 +80,8 @@ export const useAdminConfig = () => {
         widgets: baseConfig.widgets ?? [],
         permissionRenderers: baseConfig.permissionRenderers ?? [],
         lexicalTheme,
-        dialogs: baseConfig.dialogs ?? []
+        dialogs: baseConfig.dialogs ?? [],
+        fieldRenderers: baseConfig.fieldRenderers ?? []
     };
 };
 
@@ -109,5 +113,6 @@ export const AdminConfig = Object.assign(Private, {
     Security,
     LexicalTheme,
     Dialog,
+    Form,
     useAdminConfig
 });

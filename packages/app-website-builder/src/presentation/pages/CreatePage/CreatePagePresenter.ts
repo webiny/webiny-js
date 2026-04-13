@@ -79,14 +79,14 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
 
         // Let the active page type map its form data.
         const pageType = this.pageTypes.find(pt => pt.name === this.selectedPageType);
-        if (pageType?.mapFormData) {
-            pageType.mapFormData(data, input);
+        if (pageType?.mapFromForm) {
+            pageType.mapFromForm(data, input);
         }
 
         // Let cross-cutting modifiers map their form data.
         for (const modifier of this.modifiers) {
-            if (modifier.mapFormData) {
-                modifier.mapFormData(data, input);
+            if (modifier.mapFromForm) {
+                modifier.mapFromForm(data, input);
             }
         }
 
@@ -108,13 +108,13 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
                     .text()
                     .label("Title")
                     .required("Title is required")
-                    .onBlur((value, f) => {
-                        const currentPath = f.field("path").getValue<string>();
+                    .onBlur((value, form) => {
+                        const currentPath = form.field("path").getValue<string>();
                         if (!PagePath.create(currentPath).isEmpty()) {
                             return;
                         }
                         const newPath = PagePath.fromTitle(String(value)).toString();
-                        f.field("path").setValue(newPath);
+                        form.field("path").setValue(newPath);
                     }),
                 path: fields
                     .text()
@@ -134,7 +134,7 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
 
         // Layer 2: Apply the selected page type's modifications
         const pageType = this.pageTypes.find(pt => pt.name === this.selectedPageType);
-        if (pageType) {
+        if (pageType && typeof pageType.modifyForm === "function") {
             pageType.modifyForm(form);
         }
 

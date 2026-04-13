@@ -11,8 +11,8 @@ export interface IPageType {
     name: string;
     label: string;
     description?: string;
-    modifyForm(form: IFormModel): void;
-    mapFormData?(data: Record<string, unknown>, input: CreatePageParams): void;
+    modifyForm?(form: IFormModel): void;
+    mapFromForm?(data: Record<string, unknown>, input: CreatePageParams): void;
 }
 
 export const PageType = createAbstraction<IPageType>("PageType");
@@ -27,7 +27,7 @@ export namespace PageType {
 
 export interface ICreatePageFormModifier {
     modifyForm(form: IFormModel): void;
-    mapFormData?(data: Record<string, unknown>, input: CreatePageParams): void;
+    mapFromForm?(data: Record<string, unknown>, input: CreatePageParams): void;
 }
 
 export const CreatePageFormModifier =

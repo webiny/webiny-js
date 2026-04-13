@@ -7,3 +7,5 @@ export * from "./ecommerce/apis/useEcommerceApiProvider.js";
 export * from "./pageTypes/usePageTypes.js";
 export * from "./pageTypes/useGetPageType.js";
 export { EcommerceApiManifest } from "./ecommerce/apis/EcommerceApiManifest.js";
+export { EcommerceApiProviderAbstraction } from "./ecommerce/apis/EcommerceApiProvider.js";
+export type { IEcommerceApiProvider } from "./ecommerce/apis/EcommerceApiProvider.js";

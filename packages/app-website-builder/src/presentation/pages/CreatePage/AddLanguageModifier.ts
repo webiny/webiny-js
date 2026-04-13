@@ -18,54 +18,6 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
         private repository: ListLanguagesRepository.Interface
     ) {}
 
-    private getSupportedCodes(): string[] {
-        return this.repository.getLanguages().map(l => l.code);
-    }
-
-    private getDefaultLanguageCode(): string | undefined {
-        const languages = this.repository.getLanguages();
-        const defaultLang = languages.find(l => l.isDefault);
-        return defaultLang?.code ?? languages[0]?.code;
-    }
-
-    private shouldPrefixPath(): boolean {
-        return this.repository.getLanguages().length > 1;
-    }
-
-    private afterChange(value: unknown, f: FormModel.Interface) {
-        const langCode = String(value);
-        const codes = this.getSupportedCodes();
-
-        const path = f.field("path").getValue<string>() || "";
-        const stripped = PagePath.create(path).stripLanguageCode(codes);
-        const needsPrefix = langCode && this.shouldPrefixPath();
-
-        // Determine the bare path — either from existing path or from title.
-        let barePath = stripped;
-        if (barePath.isEmpty()) {
-            const title = f.field("title").getValue<string>() || "";
-            if (title) {
-                barePath = PagePath.fromTitle(title);
-            }
-        }
-
-        if (barePath.isEmpty()) {
-            // No path and no title — nothing to do.
-            f.setData({ ...f.getData(), path: null });
-        } else if (needsPrefix) {
-            f.field("path").setValue(barePath.setLanguageCode(langCode, codes).toString());
-        } else {
-            f.field("path").setValue(barePath.toString());
-        }
-    }
-
-    private getLanguageOptions() {
-        return this.repository.getLanguages().map(lang => ({
-            label: lang.name,
-            value: lang.code
-        }));
-    }
-
     modifyForm(form: FormModel.Interface): void {
         void this.useCase.execute();
 
@@ -125,11 +77,59 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
         );
     }
 
-    mapFormData(data: Record<string, unknown>, input: CreatePageParams): void {
+    mapFromForm(data: Record<string, unknown>, input: CreatePageParams): void {
         if (data.language) {
             input.properties ??= {};
             input.properties.language = data.language;
         }
+    }
+
+    private getSupportedCodes(): string[] {
+        return this.repository.getLanguages().map(l => l.code);
+    }
+
+    private getDefaultLanguageCode(): string | undefined {
+        const languages = this.repository.getLanguages();
+        const defaultLang = languages.find(l => l.isDefault);
+        return defaultLang?.code ?? languages[0]?.code;
+    }
+
+    private shouldPrefixPath(): boolean {
+        return this.repository.getLanguages().length > 1;
+    }
+
+    private afterChange(value: unknown, f: FormModel.Interface) {
+        const langCode = String(value);
+        const codes = this.getSupportedCodes();
+
+        const path = f.field("path").getValue<string>() || "";
+        const stripped = PagePath.create(path).stripLanguageCode(codes);
+        const needsPrefix = langCode && this.shouldPrefixPath();
+
+        // Determine the bare path — either from existing path or from title.
+        let barePath = stripped;
+        if (barePath.isEmpty()) {
+            const title = f.field("title").getValue<string>() || "";
+            if (title) {
+                barePath = PagePath.fromTitle(title);
+            }
+        }
+
+        if (barePath.isEmpty()) {
+            // No path and no title — nothing to do.
+            f.setData({ ...f.getData(), path: null });
+        } else if (needsPrefix) {
+            f.field("path").setValue(barePath.setLanguageCode(langCode, codes).toString());
+        } else {
+            f.field("path").setValue(barePath.toString());
+        }
+    }
+
+    private getLanguageOptions() {
+        return this.repository.getLanguages().map(lang => ({
+            label: lang.name,
+            value: lang.code
+        }));
     }
 }
 

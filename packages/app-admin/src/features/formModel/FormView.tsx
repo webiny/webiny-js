@@ -1,6 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import type { IFormVM, LayoutNodeVM, IRowNodeVM, IFieldVM } from "./abstractions.js";
+import { useFieldRenderers } from "~/features/formModel/useFieldRenderers.js";
 
 /**
  * A field renderer component receives a FieldVM and renders the appropriate UI.
@@ -15,7 +16,7 @@ export type FieldRenderers = Record<string, FieldRendererComponent>;
 
 interface FormViewProps {
     form: IFormVM;
-    renderers: FieldRenderers;
+    renderers?: FieldRenderers;
 }
 
 /**
@@ -23,10 +24,16 @@ interface FormViewProps {
  * This component is stateless — it reads from the FormVM and delegates to renderers.
  */
 export const FormView = observer(function FormView({ form, renderers }: FormViewProps) {
+    const fieldRenderers = useFieldRenderers();
+
     return (
         <div className="w-full flex flex-col gap-4">
             {form.layout.map((node, index) => (
-                <LayoutNodeRenderer key={index} node={node} renderers={renderers} />
+                <LayoutNodeRenderer
+                    key={index}
+                    node={node}
+                    renderers={renderers ?? fieldRenderers}
+                />
             ))}
         </div>
     );
@@ -78,14 +85,12 @@ interface FieldRendererProps {
 }
 
 const FieldRenderer = observer(function FieldRenderer({ field, renderers }: FieldRendererProps) {
-    // Lookup order: {type}:{renderer} → {type}
-    const specificKey = field.renderer ? `${field.type}:${field.renderer}` : undefined;
-    const Renderer = (specificKey && renderers[specificKey]) || renderers[field.type];
+    const Renderer = field.renderer ? renderers[field.renderer] : undefined;
 
     if (!Renderer) {
         if (process.env.NODE_ENV === "development") {
             console.warn(
-                `[FormView] No renderer found for field "${field.name}" (type: "${field.type}", renderer: "${field.renderer || "default"}").`
+                `[FormView] No renderer found for field "${field.name}" (renderer: "${field.renderer || "none"}").`
             );
         }
         return null;

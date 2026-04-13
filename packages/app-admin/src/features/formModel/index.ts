@@ -47,5 +47,5 @@ export type { IFieldTypeFactory } from "./FieldBuilder.js";
 
 // View
 export { FormView } from "./FormView.js";
-export { defaultFieldRenderers } from "./defaultFieldRenderers.js";
+export { useFieldRenderers } from "./useFieldRenderers.js";
 export type { FieldRenderers, FieldRendererComponent } from "./FormView.js";

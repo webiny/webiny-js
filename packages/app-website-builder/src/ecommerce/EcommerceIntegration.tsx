@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
+import { useContainer } from "@webiny/app";
 import { Editor } from "~/index.js";
 import type {
     IEcommerceApi,
@@ -7,10 +8,19 @@ import type {
     Resource as IResource
 } from "./types.js";
 import { CreateInputRenderers } from "./CreateInputRenderers.js";
-import type { ResourcePageProps } from "./components/ResourcePage.js";
-import { ResourcePage } from "./components/ResourcePage.js";
+import type { EcommerceResourcePageTypeConfig } from "./components/ResourcePage.js";
+import {
+    EcommerceResourcePageType,
+    createResourcePickerRenderer
+} from "./components/ResourcePage.js";
+import { AdminConfig } from "@webiny/app-admin";
 import { createGenericContext } from "@webiny/app";
-import { EcommerceApiManifest, useEcommerceApiProvider, usePageTypes } from "~/features/index.js";
+import {
+    EcommerceApiManifest,
+    EcommerceApiProviderAbstraction,
+    useEcommerceApiProvider
+} from "~/features/index.js";
+import { PageType as PageTypeAbstraction } from "~/presentation/pages/CreatePage/abstractions.js";
 
 export interface CustomResourcePickerProps<T = any> {
     value?: T;
@@ -28,6 +38,11 @@ const Context = createGenericContext<{ pluginName: string }>("EcommerceIntegrati
 
 const EcommerceIntegrationBase = (props: EcommerceIntegrationProps) => {
     const provider = useEcommerceApiProvider();
+    const container = useContainer();
+
+    useMemo(() => {
+        container.registerInstance(EcommerceApiProviderAbstraction, provider);
+    }, []);
 
     useEffect(() => {
         provider.addApiManifest(new EcommerceApiManifest(props.name, props.init, props.settings));
@@ -43,21 +58,28 @@ const EcommerceIntegrationBase = (props: EcommerceIntegrationProps) => {
     );
 };
 
-export type PageTypeProps = Omit<ResourcePageProps, "apiName">;
+export type PageTypeProps = Omit<EcommerceResourcePageTypeConfig, "apiName">;
 
 const PageType = (props: PageTypeProps) => {
     const { pluginName } = Context.useHook();
-    const { addPageType } = usePageTypes();
+    const container = useContainer();
+    const provider = useEcommerceApiProvider();
 
-    useEffect(() => {
-        addPageType({
-            name: props.name,
-            label: props.label,
-            element: <ResourcePage {...props} apiName={pluginName} />
+    const renderer = useMemo(() => {
+        const pageType = new EcommerceResourcePageType({ ...props, apiName: pluginName }, provider);
+        container.registerInstance(PageTypeAbstraction, pageType);
+
+        return createResourcePickerRenderer({
+            pluginName,
+            resourceType: props.resourceType
         });
     }, []);
 
-    return null;
+    return (
+        <AdminConfig>
+            <AdminConfig.Form.FieldRenderer name={"resource-picker"} component={renderer} />
+        </AdminConfig>
+    );
 };
 
 export const EcommerceIntegration = Object.assign(EcommerceIntegrationBase, { PageType });

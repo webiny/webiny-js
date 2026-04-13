@@ -128,7 +128,7 @@ describe("PageType + Modifier 3-layer architecture", () => {
      */
     function buildForm(pageType: IPageType, modifiers: ICreatePageFormModifier[] = []): IFormModel {
         const form = createBaseForm();
-        pageType.modifyForm(form);
+        pageType.modifyForm?.(form);
         for (const modifier of modifiers) {
             modifier.modifyForm(form);
         }
@@ -261,7 +261,7 @@ describe("Form rebuild on page type switch", () => {
     ): IFormModel {
         const previousData = currentForm.getData();
         const form = createBaseForm();
-        pageTypes[newType].modifyForm(form);
+        pageTypes[newType].modifyForm?.(form);
         for (const modifier of modifiers) {
             modifier.modifyForm(form);
         }
@@ -272,7 +272,7 @@ describe("Form rebuild on page type switch", () => {
     it("should preserve common field values when switching page types", () => {
         // Start with static page, fill in title and path.
         const staticForm = createBaseForm();
-        staticPageType.modifyForm(staticForm);
+        staticPageType.modifyForm?.(staticForm);
         staticForm.field("title").setValue("My Page");
         staticForm.field("path").setValue("/my-page");
 
@@ -286,7 +286,7 @@ describe("Form rebuild on page type switch", () => {
     it("should drop page-type-specific fields on switch", () => {
         // Start with product page, select a product.
         const productForm = createBaseForm();
-        productPageType.modifyForm(productForm);
+        productPageType.modifyForm?.(productForm);
         productForm.field("product").setValue("shoes");
 
         // Switch to static page — product field should not exist.
@@ -307,7 +307,7 @@ describe("Form rebuild on page type switch", () => {
 
         // Start with static page + language modifier.
         const staticForm = createBaseForm();
-        staticPageType.modifyForm(staticForm);
+        staticPageType.modifyForm?.(staticForm);
         languageModifier.modifyForm(staticForm);
         staticForm.field("title").setValue("Demo");
         // Language is auto-assigned "en" by the modifier reaction.
@@ -324,7 +324,7 @@ describe("Form rebuild on page type switch", () => {
 
     it("should preserve hidden field values across rebuild", () => {
         const staticForm = createBaseForm();
-        staticPageType.modifyForm(staticForm);
+        staticPageType.modifyForm?.(staticForm);
         expect(staticForm.getData().pageType).toBe("staticPage");
 
         // Switch to product — setData restores pageType from previous form.

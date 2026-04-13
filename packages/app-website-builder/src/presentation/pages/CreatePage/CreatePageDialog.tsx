@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { useDialog, useOpenDialog, FormView, defaultFieldRenderers } from "@webiny/app-admin";
+import { useDialog, useOpenDialog, FormView } from "@webiny/app-admin";
 import { Dialog, Select, OverlayLoader } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
 import { useEditPageUrl } from "~/modules/pages/PagesList/hooks/useEditPageUrl.js";
@@ -63,7 +63,7 @@ export const CreatePageDialog = observer(() => {
                         displayResetAction={false}
                     />
                 )}
-                <FormView form={vm.form} renderers={defaultFieldRenderers} />
+                <FormView form={vm.form} />
             </div>
         </Dialog>
     );
