@@ -4,8 +4,6 @@ export * from "./ecommerce/settings/getSettings/useGetEcommerceSettings.js";
 export * from "./ecommerce/settings/updateSettings/useUpdateEcommerceSettings.js";
 export * from "./ecommerce/apis/useEcommerceApi.js";
 export * from "./ecommerce/apis/useEcommerceApiProvider.js";
-export * from "./pageTypes/usePageTypes.js";
-export * from "./pageTypes/useGetPageType.js";
 export { EcommerceApiManifest } from "./ecommerce/apis/EcommerceApiManifest.js";
 export { EcommerceApiProviderAbstraction } from "./ecommerce/apis/EcommerceApiProvider.js";
 export type { IEcommerceApiProvider } from "./ecommerce/apis/EcommerceApiProvider.js";

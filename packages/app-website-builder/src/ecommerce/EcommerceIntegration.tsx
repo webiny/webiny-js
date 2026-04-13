@@ -21,6 +21,7 @@ import {
     useEcommerceApiProvider
 } from "~/features/index.js";
 import { PageType as PageTypeAbstraction } from "~/presentation/pages/CreatePage/abstractions.js";
+import { createPageTypeRemovalDecorator } from "~/presentation/pages/CreatePage/PageTypeProvider.js";
 
 export interface CustomResourcePickerProps<T = any> {
     value?: T;
@@ -58,7 +59,9 @@ const EcommerceIntegrationBase = (props: EcommerceIntegrationProps) => {
     );
 };
 
-export type PageTypeProps = Omit<EcommerceResourcePageTypeConfig, "apiName">;
+export type PageTypeProps =
+    | (Omit<EcommerceResourcePageTypeConfig, "apiName"> & { remove?: never })
+    | { name: string; remove: true };
 
 const PageType = (props: PageTypeProps) => {
     const { pluginName } = Context.useHook();
@@ -66,6 +69,11 @@ const PageType = (props: PageTypeProps) => {
     const provider = useEcommerceApiProvider();
 
     const renderer = useMemo(() => {
+        if (props.remove) {
+            container.registerDecorator(createPageTypeRemovalDecorator(props.name));
+            return undefined;
+        }
+
         const pageType = new EcommerceResourcePageType({ ...props, apiName: pluginName }, provider);
         container.registerInstance(PageTypeAbstraction, pageType);
 
@@ -74,6 +82,10 @@ const PageType = (props: PageTypeProps) => {
             resourceType: props.resourceType
         });
     }, []);
+
+    if (!renderer) {
+        return null;
+    }
 
     return (
         <AdminConfig>

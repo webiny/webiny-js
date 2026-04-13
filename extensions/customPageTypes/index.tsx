@@ -1,36 +1,21 @@
-import React from "react";
-import { PageListConfig } from "webiny/admin/website-builder/page/list";
-
-const { PageType } = PageListConfig;
+import React, { useMemo } from "react";
+import { useContainer } from "@webiny/app";
+import { PageType } from "webiny/admin/website-builder";
 
 export default () => {
-    return (
-        <PageListConfig>
-            {/*<PageListConfig.PageType name={"static"} remove={true} />*/}
+    const container = useContainer();
 
-            <PageType
-                name={"retailPage"}
-                label={"Retail Page"}
-                element={
-                    <>
-                        <PageType.Language />
-                        <PageType.Title />
-                        <PageType.Path />
-                    </>
-                }
-            />
+    useMemo(() => {
+        container.registerInstance(PageType, {
+            name: "retailPage",
+            label: "Retail Page"
+        });
 
-            <PageListConfig.PageType
-                name={"restaurantPage"}
-                label={"Restaurant Page"}
-                element={
-                    <>
-                        <PageType.Language />
-                        <PageType.Title />
-                        <PageType.Path />
-                    </>
-                }
-            />
-        </PageListConfig>
-    );
+        container.registerInstance(PageType, {
+            name: "restaurantPage",
+            label: "Restaurant Page"
+        });
+    }, []);
+
+    return null;
 };
