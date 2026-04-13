@@ -307,11 +307,6 @@ export type EditorPage = EditorDocument & Pick<Page, "properties" | "status" | "
 
 export type EditorDocument = Document;
 
-export type PageTranslation = {
-    languageCode: string | null;
-    path: string;
-};
-
 export type Page = Document & {
     id: string;
     entryId: string;
@@ -320,7 +315,8 @@ export type Page = Document & {
     location: {
         folderId: string;
     };
-    translations?: PageTranslation[];
+    /** Map of language code → path, e.g. { en: '/about', de: '/de/about' } */
+    translations?: Record<string, string> | null;
     properties: {
         title: string;
         snippet: string;

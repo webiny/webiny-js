@@ -28,9 +28,6 @@ import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js"
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
-import { ListPublishedEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries";
-import { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry";
-import { EntryToPageMapper } from "~/domain/page/EntryToPageMapper.js";
 
 export const createPagesSchema = () => {
     const pageGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
@@ -334,67 +331,8 @@ export const createPagesSchema = () => {
                 }
             },
             WbPage: {
-                translations: async (page: any, _: any, context: ApiCoreContext) => {
-                    const properties = page.properties ?? {};
-                    const entryId: string | undefined = page.entryId;
-
-                    // Determine the root/source page's entryId.
-                    const rootEntryId: string | undefined = properties.sourcePage ?? entryId;
-
-                    if (!rootEntryId) {
-                        return [];
-                    }
-
-                    const pageModel = context.container.resolve(PageModel);
-                    const listPublished = context.container.resolve(ListPublishedEntriesUseCase);
-
-                    const results: Array<{ languageCode: string | null; path: string }> = [];
-
-                    if (properties.sourcePage) {
-                        // Current page is a translation – fetch the source page too.
-                        const getEntry = context.container.resolve(GetEntryUseCase);
-                        const sourceResult = await getEntry.execute(pageModel, {
-                            where: { entryId: rootEntryId, published: true }
-                        });
-                        if (!sourceResult.isFail() && sourceResult.value) {
-                            const src = EntryToPageMapper.toPage(sourceResult.value);
-                            results.push({
-                                languageCode: src.properties.language ?? null,
-                                path: src.properties.path
-                            });
-                        }
-                    } else {
-                        // Current page IS the source – include it directly.
-                        if (properties.path) {
-                            results.push({
-                                languageCode: properties.language ?? null,
-                                path: properties.path
-                            });
-                        }
-                    }
-
-                    // Fetch all translated pages (those with sourcePage = rootEntryId).
-                    const translationsResult = await listPublished.execute(pageModel, {
-                        where: {
-                            values: {
-                                properties: { sourcePage: rootEntryId }
-                            }
-                        }
-                    });
-
-                    if (!translationsResult.isFail()) {
-                        for (const entry of translationsResult.value.entries) {
-                            const p = EntryToPageMapper.toPage(entry);
-                            if (p.properties?.path) {
-                                results.push({
-                                    languageCode: p.properties.language ?? null,
-                                    path: p.properties.path
-                                });
-                            }
-                        }
-                    }
-
-                    return results;
+                translations: (page: any) => {
+                    return page.properties?.translations ?? null;
                 }
             }
         }

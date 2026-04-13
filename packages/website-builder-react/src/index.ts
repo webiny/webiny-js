@@ -29,7 +29,6 @@ export {
     type Breakpoint,
     type CreateElementParams,
     type ContentSDKConfig,
-    type PageTranslation,
     type ComponentManifest,
     type ComponentInput,
     type ComponentConstraint,
