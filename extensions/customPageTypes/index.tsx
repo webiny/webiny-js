@@ -1,21 +1,19 @@
-import React, { useMemo } from "react";
-import { useContainer } from "@webiny/app";
-import { PageType } from "webiny/admin/website-builder";
+import React from "react";
+import { createFeature, RegisterFeature } from "webiny/admin";
+import RetailPageType from "./RetailPageType.js";
+import FilterPageTypes from "./FilterPageTypes.js";
+
+const CustomPageTypes = createFeature({
+    name: "CustomPageTypes",
+    register(container) {
+        // Add a new page type
+        container.register(RetailPageType);
+
+        // Remove existing page type
+        container.registerDecorator(FilterPageTypes);
+    }
+});
 
 export default () => {
-    const container = useContainer();
-
-    useMemo(() => {
-        container.registerInstance(PageType, {
-            name: "retailPage",
-            label: "Retail Page"
-        });
-
-        container.registerInstance(PageType, {
-            name: "restaurantPage",
-            label: "Restaurant Page"
-        });
-    }, []);
-
-    return null;
+    return <RegisterFeature feature={CustomPageTypes} />;
 };

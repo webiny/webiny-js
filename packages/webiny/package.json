@@ -124,6 +124,8 @@
     "./admin/website-builder": "./admin/website-builder.js",
     "./cli/command": "./cli/command.js",
     "./cli": "./cli.js",
+    "./api/db": "./api/db.js",
+    "./admin/languages": "./admin/languages.js",
     "./api/languages": "./api/languages.js",
     "./admin/lexical": "./admin/lexical.js",
     "./infra/admin": "./infra/admin.js",
