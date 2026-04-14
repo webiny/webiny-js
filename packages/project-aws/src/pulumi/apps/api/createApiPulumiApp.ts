@@ -51,6 +51,10 @@ export const createApiPulumiApp = () => {
             if (searchEngineParams) {
                 const params = searchEngineParams;
                 if (typeof params === "object") {
+                    if (params.endpoint) {
+                        process.env.OPENSEARCH_ENDPOINT = params.endpoint;
+                    }
+
                     if (params.domainName) {
                         process.env.AWS_OS_DOMAIN_NAME = params.domainName;
                     }
@@ -61,6 +65,14 @@ export const createApiPulumiApp = () => {
 
                     if (params.sharedIndexes) {
                         process.env.OPENSEARCH_SHARED_INDEXES = "true";
+                    }
+
+                    if (params.username) {
+                        process.env.OPENSEARCH_USERNAME = params.username;
+                    }
+
+                    if (params.password) {
+                        process.env.OPENSEARCH_PASSWORD = params.password;
                     }
                 }
             }
@@ -160,6 +172,8 @@ export const createApiPulumiApp = () => {
                     // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
                     OPENSEARCH_INDEX_PREFIX: process.env.OPENSEARCH_INDEX_PREFIX,
                     OPENSEARCH_SHARED_INDEXES: process.env.OPENSEARCH_SHARED_INDEXES,
+                    OPENSEARCH_USERNAME: process.env.OPENSEARCH_USERNAME,
+                    OPENSEARCH_PASSWORD: process.env.OPENSEARCH_PASSWORD,
 
                     S3_BUCKET: core.fileManagerBucketId,
                     EVENT_BUS: core.eventBusArn,
