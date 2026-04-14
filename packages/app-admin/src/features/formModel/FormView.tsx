@@ -5,9 +5,7 @@ import type {
     LayoutNodeVM,
     IRowNodeVM,
     IFieldVM,
-    ISeparatorNodeVM,
     ITabsNodeVM,
-    ITabDefinitionVM,
     IElementNodeVM
 } from "./abstractions.js";
 import { useFieldRenderers } from "~/features/formModel/useFieldRenderers.js";
@@ -144,9 +142,7 @@ const TabsNodeRenderer = observer(function TabsNodeRenderer({
                         onClick={() => node.setActiveTab(tab.id)}
                     >
                         {tab.label}
-                        {tab.hasErrors && (
-                            <span className="ml-1 text-destructive text-xs">*</span>
-                        )}
+                        {tab.hasErrors && <span className="ml-1 text-destructive text-xs">*</span>}
                     </button>
                 ))}
             </div>
@@ -183,9 +179,7 @@ const ElementNodeRenderer = observer(function ElementNodeRenderer({
 
     if (!Renderer) {
         if (process.env.NODE_ENV === "development") {
-            console.warn(
-                `[FormView] No renderer found for element "${node.renderer}".`
-            );
+            console.warn(`[FormView] No renderer found for element "${node.renderer}".`);
         }
         return null;
     }

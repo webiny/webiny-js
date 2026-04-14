@@ -1,17 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { FormModel as FormModelImpl } from "@webiny/app-admin/features/formModel/FormModel.js";
-import type { IFormModel, IFormModelConfig, LayoutNodeVM, IRowNodeVM } from "@webiny/app-admin";
+import type { IFormModel, IFormModelConfig, IRowNodeVM } from "@webiny/app-admin";
 import type { LanguageDto } from "@webiny/languages/admin/features/listLanguages/abstractions.js";
 import { AddLanguageModifier } from "./AddLanguageModifier.js";
 import { PagePath } from "~/shared/PagePath.js";
 import type { IPageType, ICreatePageFormModifier } from "./abstractions.js";
-
-function asRow(node: LayoutNodeVM): IRowNodeVM {
-    if (node.type !== "row") {
-        throw new Error(`Expected row node, got "${node.type}"`);
-    }
-    return node;
-}
 
 /**
  * Creates a mock use case + repository pair for the AddLanguageModifier.

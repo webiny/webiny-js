@@ -610,6 +610,7 @@ export interface CmsSecurityPermission extends Identity.Permission {
     rwd?: string;
     own?: boolean;
     pw?: string;
+    _src?: string;
 }
 
 /**

@@ -7,33 +7,36 @@ class AddCmsPermissions implements PermissionTransformer.Interface {
             return permission;
         }
 
-        console.log("add languages permissions", permission);
         const isReadOnly = permission.name === "languages.*" && permission.rwd === "r";
 
         return [
             permission,
             {
-                name: "cms.endpoint.manage"
+                name: "cms.endpoint.manage",
+                _src: "languages"
             },
             {
                 name: "cms.contentModel",
                 own: false,
                 rwd: "r",
                 pw: "",
-                models: [LANGUAGE_MODEL_ID]
+                models: [LANGUAGE_MODEL_ID],
+                _src: "languages"
             },
             {
                 name: "cms.contentModelGroup",
                 own: false,
                 rwd: "r",
                 pw: "",
-                groups: ["hidden"]
+                groups: ["hidden"],
+                _src: "languages"
             },
             {
                 name: "cms.contentEntry",
                 own: false,
                 rwd: isReadOnly ? "r" : "rwd",
-                pw: ""
+                pw: "",
+                _src: "languages"
             }
         ];
     }
