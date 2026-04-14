@@ -323,7 +323,7 @@ export type Page = Document & {
         folderId: string;
     };
     /** Map of language code → path, e.g. { en: '/about', de: '/de/about' } */
-    languagePaths?: Record<string, string> | null;
+    languagePaths: Record<string, string>;
     properties: {
         title: string;
         snippet: string;

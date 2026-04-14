@@ -337,13 +337,13 @@ export const createPagesSchema = () => {
                     const rootEntryId: string | undefined = properties.sourcePage ?? page.entryId;
 
                     if (!rootEntryId) {
-                        return null;
+                        return {};
                     }
 
                     const getLanguagePaths = context.container.resolve(GetPageLanguagePathsUseCase);
                     const result = await getLanguagePaths.execute(rootEntryId);
 
-                    return result.isFail() ? null : result.value;
+                    return result.isFail() ? {} : result.value;
                 }
             }
         }
