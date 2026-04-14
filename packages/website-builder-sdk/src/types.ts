@@ -293,15 +293,7 @@ export type Document = {
 
 export type PublicPage = Pick<
     Page,
-    | "id"
-    | "version"
-    | "properties"
-    | "bindings"
-    | "elements"
-    | "extensions"
-    | "metadata"
-    | "state"
-    | "languagePaths"
+    "id" | "version" | "properties" | "bindings" | "elements" | "extensions" | "metadata" | "state"
 >;
 
 export type PublicRedirect = {
@@ -322,8 +314,6 @@ export type Page = Document & {
     location: {
         folderId: string;
     };
-    /** Map of language code → path, e.g. { en: '/about', de: '/de/about' } */
-    languagePaths: Record<string, string>;
     properties: {
         title: string;
         snippet: string;
@@ -335,7 +325,7 @@ export type Page = Document & {
             src: string;
         };*/
         path: string;
-        language?: string | null;
+        language?: string;
         tags: string[];
         seo: {
             title: string;
