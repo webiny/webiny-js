@@ -131,7 +131,7 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
 
     private getLanguageOptions() {
         return this.repository.getLanguages().map(lang => ({
-            label: lang.name,
+            label: `${lang.name} (${lang.code})`,
             value: lang.code
         }));
     }

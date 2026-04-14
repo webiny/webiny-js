@@ -19,7 +19,8 @@ export const TranslatePageAction = () => {
             onAction={() =>
                 openDialog(TRANSLATE_PAGE_DIALOG, {
                     pageId: page.id,
-                    folderId: page.location.folderId
+                    folderId: page.location.folderId,
+                    currentLanguage: page.properties.language
                 })
             }
         />

@@ -34,8 +34,7 @@ class ListLanguagesRepositoryImpl implements RepositoryAbstraction.Interface {
         }
 
         const languages: Language[] = listResult.value.entries.map(entry => ({
-            id: entry.id,
-            entryId: entry.entryId,
+            id: entry.entryId,
             name: entry.values.name,
             code: entry.values.code,
             direction: entry.values.direction,

@@ -5,7 +5,7 @@ import { ListLanguagesFeature } from "~/admin/features/listLanguages/index.js";
 import type { LanguageDto } from "~/admin/features/listLanguages/index.js";
 
 export const useLanguages = () => {
-    const { useCase, repository } = useFeature(ListLanguagesFeature);
+    const { useCase, cache } = useFeature(ListLanguagesFeature);
     const [languages, setLanguages] = useState<LanguageDto[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -15,10 +15,9 @@ export const useLanguages = () => {
         });
 
         return autorun(() => {
-            const languages = repository.getLanguages();
-            setLanguages(languages);
+            setLanguages(cache.getItems());
         });
-    }, [useCase, repository]);
+    }, [useCase, cache]);
 
     return { loading, languages };
 };

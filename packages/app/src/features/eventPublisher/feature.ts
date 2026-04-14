@@ -7,5 +7,10 @@ export const EventPublisherFeature = createFeature({
     name: "EventPublisher",
     register(container: Container) {
         container.registerInstance(EventPublisherAbstraction, new EventPublisher(container));
+    },
+    resolve(container: Container) {
+        return {
+            eventPublisher: container.resolve(EventPublisherAbstraction)
+        };
     }
 });
