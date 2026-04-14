@@ -7,6 +7,6 @@
   "bin": "./src/bin.ts",
   "main": "./src/bin.ts",
   "dependencies": {
-    "ts-morph": "^27.0.2"
+    "ts-morph": "^28.0.0"
   }
 }
