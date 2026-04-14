@@ -3,14 +3,16 @@ import { createOpenSearchClient } from "@webiny/api-opensearch";
 
 const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;
 const esEndpoint = process.env.OPENSEARCH_ENDPOINT;
-const esUsername = process.env.OPENSEARCH_USERNAME;
-const esPassword = process.env.OPENSEARCH_PASSWORD;
 const defaultOptions = {
     node: `http://localhost:${OPENSEARCH_PORT}`,
-    ...(esUsername && esPassword ? { auth: { username: esUsername, password: esPassword } } : {}),
     maxRetries: 10,
     pingTimeout: 500
 };
+const esUsername = process.env.OPENSEARCH_USERNAME;
+const esPassword = process.env.OPENSEARCH_PASSWORD;
+if (esUsername && esPassword) {
+    defaultOptions.auth = { username: esUsername, password: esPassword };
+}
 if (!!esEndpoint) {
     defaultOptions.node = esEndpoint.match(/^http/) === null ? `https://${esEndpoint}` : esEndpoint;
 }

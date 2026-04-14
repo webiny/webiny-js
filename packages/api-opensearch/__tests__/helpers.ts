@@ -18,13 +18,14 @@ const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;
 
 const osEndpoint: string | undefined = process.env.OPENSEARCH_ENDPOINT;
 
+const defaultOptions: Partial<ClientOptions> = {
+    node: `http://localhost:${OPENSEARCH_PORT}`
+};
 const osUsername = process.env.OPENSEARCH_USERNAME;
 const osPassword = process.env.OPENSEARCH_PASSWORD;
-
-const defaultOptions: Partial<ClientOptions> = {
-    node: `http://localhost:${OPENSEARCH_PORT}`,
-    ...(osUsername && osPassword ? { auth: { username: osUsername, password: osPassword } } : {})
-};
+if (osUsername && osPassword) {
+    defaultOptions.auth = { username: osUsername, password: osPassword };
+}
 if (!!osEndpoint) {
     defaultOptions.node = osEndpoint.match(/^http/) === null ? `https://${osEndpoint}` : osEndpoint;
 }
