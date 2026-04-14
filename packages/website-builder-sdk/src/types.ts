@@ -325,7 +325,6 @@ export type Page = Document & {
             src: string;
         };*/
         path: string;
-        language?: string;
         tags: string[];
         seo: {
             title: string;
