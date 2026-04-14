@@ -8,7 +8,7 @@ export const GET_PAGE_BY_PATH = /* GraphQL*/ `
                     elements
                     bindings
                     extensions
-                    translations
+                    languagePaths
                 }
                 error {
                     code
