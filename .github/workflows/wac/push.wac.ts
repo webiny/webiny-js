@@ -305,7 +305,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
 export const push = createWorkflow({
     name: `Push`,
-    on: { push: { branches: ["dev", "next"] } },
+    on: { push: { branches: ["dev", "next", "release/*"] } },
     jobs: {
         constants: createJob({
             name: "Create constants",
