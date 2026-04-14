@@ -2,12 +2,12 @@ import { createHandler } from "@webiny/handler-aws";
 import { createOpenSearchClient, createOpenSearchContext } from "@webiny/api-opensearch";
 import { createEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
 
+const osUsername = process.env.OPENSEARCH_USERNAME;
+const osPassword = process.env.OPENSEARCH_PASSWORD;
+
 const client = createOpenSearchClient({
     endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`,
-    auth: {
-        username: process.env.OPENSEARCH_USERNAME || "",
-        password: process.env.OPENSEARCH_PASSWORD || ""
-    }
+    ...(osUsername && osPassword ? { auth: { username: osUsername, password: osPassword } } : {})
 });
 
 export const handler = createHandler({
