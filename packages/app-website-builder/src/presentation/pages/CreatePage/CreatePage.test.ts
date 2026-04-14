@@ -1,10 +1,17 @@
 import { describe, it, expect } from "vitest";
 import { FormModel as FormModelImpl } from "@webiny/app-admin/features/formModel/FormModel.js";
-import type { IFormModel, IFormModelConfig } from "@webiny/app-admin";
+import type { IFormModel, IFormModelConfig, LayoutNodeVM, IRowNodeVM } from "@webiny/app-admin";
 import type { LanguageDto } from "@webiny/languages/admin/features/listLanguages/abstractions.js";
 import { AddLanguageModifier } from "./AddLanguageModifier.js";
 import { PagePath } from "~/shared/PagePath.js";
 import type { IPageType, ICreatePageFormModifier } from "./abstractions.js";
+
+function asRow(node: LayoutNodeVM): IRowNodeVM {
+    if (node.type !== "row") {
+        throw new Error(`Expected row node, got "${node.type}"`);
+    }
+    return node;
+}
 
 /**
  * Creates a mock use case + repository pair for the AddLanguageModifier.
@@ -74,7 +81,9 @@ describe("CreatePage base form", () => {
         const data = form.getData();
         expect(data.pageType).toBe("staticPage");
 
-        const fieldNames = form.vm.layout.flatMap(row => row.fields.map(f => f.name));
+        const fieldNames = form.vm.layout
+            .filter((n): n is IRowNodeVM => n.type === "row")
+            .flatMap(row => row.fields.map(f => f.name));
         expect(fieldNames).not.toContain("pageType");
     });
 
@@ -165,13 +174,17 @@ describe("PageType + Modifier 3-layer architecture", () => {
 
     it("should leave base form unchanged for static page type", () => {
         const form = buildForm(staticPageType);
-        const fieldNames = form.vm.layout.flatMap(row => row.fields.map(f => f.name));
+        const fieldNames = form.vm.layout
+            .filter((n): n is IRowNodeVM => n.type === "row")
+            .flatMap(row => row.fields.map(f => f.name));
         expect(fieldNames).toEqual(["title", "path"]);
     });
 
     it("should add product field and disable title/path for product page type", () => {
         const form = buildForm(productPageType);
-        const fieldNames = form.vm.layout.flatMap(row => row.fields.map(f => f.name));
+        const fieldNames = form.vm.layout
+            .filter((n): n is IRowNodeVM => n.type === "row")
+            .flatMap(row => row.fields.map(f => f.name));
         expect(fieldNames).toEqual(["product", "title", "path"]);
 
         expect(form.field("title").vm.disabled).toBe(true);
@@ -194,7 +207,9 @@ describe("PageType + Modifier 3-layer architecture", () => {
         const languageModifier = new AddLanguageModifier(useCase, repository);
 
         const form = buildForm(productPageType, [languageModifier]);
-        const fieldNames = form.vm.layout.flatMap(row => row.fields.map(f => f.name));
+        const fieldNames = form.vm.layout
+            .filter((n): n is IRowNodeVM => n.type === "row")
+            .flatMap(row => row.fields.map(f => f.name));
 
         // language before title (from modifier), product before title (from page type)
         expect(fieldNames).toEqual(["product", "language", "title", "path"]);
@@ -209,7 +224,9 @@ describe("PageType + Modifier 3-layer architecture", () => {
         const languageModifier = new AddLanguageModifier(useCase, repository);
 
         const form = buildForm(staticPageType, [languageModifier]);
-        const fieldNames = form.vm.layout.flatMap(row => row.fields.map(f => f.name));
+        const fieldNames = form.vm.layout
+            .filter((n): n is IRowNodeVM => n.type === "row")
+            .flatMap(row => row.fields.map(f => f.name));
 
         expect(fieldNames).toEqual(["language", "title", "path"]);
     });
@@ -292,7 +309,9 @@ describe("Form rebuild on page type switch", () => {
         // Switch to static page — product field should not exist.
         const staticForm = changePageType(productForm, "static");
 
-        const fieldNames = staticForm.vm.layout.flatMap(row => row.fields.map(f => f.name));
+        const fieldNames = staticForm.vm.layout
+            .filter((n): n is IRowNodeVM => n.type === "row")
+            .flatMap(row => row.fields.map(f => f.name));
         expect(fieldNames).toEqual(["title", "path"]);
         expect(staticForm.getData()).not.toHaveProperty("product");
     });

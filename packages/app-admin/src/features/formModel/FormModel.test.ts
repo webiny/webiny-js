@@ -1,6 +1,21 @@
 import { describe, it, expect, vi } from "vitest";
 import { z } from "zod";
 import { FormModel } from "./FormModel.js";
+import type {
+    IFormModel,
+    IRowNodeVM,
+    ITabsNodeVM,
+    IElementNodeVM,
+    ILayoutNodeAccessHandle,
+    LayoutNodeVM
+} from "./abstractions.js";
+
+function asRow(node: LayoutNodeVM): IRowNodeVM {
+    if (node.type !== "row") {
+        throw new Error(`Expected row node, got "${node.type}"`);
+    }
+    return node;
+}
 
 function createBasicForm() {
     return new FormModel({
@@ -230,8 +245,8 @@ describe("FormModel", () => {
 
             expect(vm.layout).toHaveLength(2);
             expect(vm.layout[0].type).toBe("row");
-            expect(vm.layout[0].fields[0].name).toBe("title");
-            expect(vm.layout[1].fields[0].name).toBe("path");
+            expect(asRow(vm.layout[0]).fields[0].name).toBe("title");
+            expect(asRow(vm.layout[1]).fields[0].name).toBe("path");
         });
 
         it("should exclude hidden fields from layout", () => {
@@ -244,7 +259,7 @@ describe("FormModel", () => {
 
             const vm = form.vm;
             expect(vm.layout).toHaveLength(1);
-            expect(vm.layout[0].fields[0].name).toBe("title");
+            expect(asRow(vm.layout[0]).fields[0].name).toBe("title");
         });
 
         it("should expose isDirty and isValid", () => {
@@ -255,7 +270,7 @@ describe("FormModel", () => {
 
         it("should expose field onChange that calls setValue", () => {
             const form = createBasicForm();
-            const fieldVM = form.vm.layout[0].fields[0];
+            const fieldVM = asRow(form.vm.layout[0]).fields[0];
             fieldVM.onChange("New Value");
             expect(form.field("title").getValue()).toBe("New Value");
         });
@@ -277,7 +292,7 @@ describe("FormModel", () => {
             });
 
             expect(form.vm.layout).toHaveLength(1);
-            expect(form.vm.layout[0].fields).toHaveLength(2);
+            expect(asRow(form.vm.layout[0]).fields).toHaveLength(2);
         });
 
         it("should warn about orphan fields in explicit layout", () => {
@@ -532,7 +547,7 @@ describe("FormModel", () => {
                 })
             });
 
-            const fieldVM = form.vm.layout[0].fields[0];
+            const fieldVM = asRow(form.vm.layout[0]).fields[0];
             expect(fieldVM.options).toEqual([
                 { label: "English", value: "en" },
                 { label: "German", value: "de" }
@@ -552,7 +567,7 @@ describe("FormModel", () => {
                 })
             });
 
-            const fieldVM = form.vm.layout[0].fields[0];
+            const fieldVM = asRow(form.vm.layout[0]).fields[0];
             expect(fieldVM.options).toEqual([{ label: "Dynamic", value: "dynamic" }]);
         });
     });
@@ -591,12 +606,12 @@ describe("FormModel", () => {
                 expect(form.getData()).toHaveProperty("description");
 
                 // But not in layout until explicitly positioned
-                const fieldNames = form.vm.layout.map(row => row.fields[0].name);
+                const fieldNames = form.vm.layout.map(row => asRow(row).fields[0].name);
                 expect(fieldNames).not.toContain("description");
 
                 // Position it
                 form.layout(layout => [layout.row("description").after("title")]);
-                const updatedNames = form.vm.layout.map(row => row.fields[0].name);
+                const updatedNames = form.vm.layout.map(row => asRow(row).fields[0].name);
                 expect(updatedNames).toEqual(["title", "description"]);
             });
 
@@ -639,7 +654,7 @@ describe("FormModel", () => {
                 form.field("path").remove();
 
                 expect(form.vm.layout).toHaveLength(1);
-                expect(form.vm.layout[0].fields[0].name).toBe("title");
+                expect(asRow(form.vm.layout[0]).fields[0].name).toBe("title");
             });
 
             it("should handle add + remove in the same fields() call", () => {
@@ -757,7 +772,7 @@ describe("FormModel", () => {
 
                 form.layout(layout => [layout.row("language").before("path")]);
 
-                const names = form.vm.layout.map(row => row.fields[0].name);
+                const names = form.vm.layout.map(row => asRow(row).fields[0].name);
                 expect(names).toEqual(["title", "language", "path", "description"]);
             });
 
@@ -769,7 +784,7 @@ describe("FormModel", () => {
 
                 form.layout(layout => [layout.row("language").after("path")]);
 
-                const names = form.vm.layout.map(row => row.fields[0].name);
+                const names = form.vm.layout.map(row => asRow(row).fields[0].name);
                 expect(names).toEqual(["title", "path", "language", "description"]);
             });
 
@@ -781,7 +796,7 @@ describe("FormModel", () => {
 
                 form.layout(layout => [layout.row("slug").replace("path")]);
 
-                const names = form.vm.layout.map(row => row.fields[0].name);
+                const names = form.vm.layout.map(row => asRow(row).fields[0].name);
                 expect(names).toEqual(["title", "slug", "description"]);
             });
 
@@ -793,7 +808,7 @@ describe("FormModel", () => {
                     return [];
                 });
 
-                const names = form.vm.layout.map(row => row.fields[0].name);
+                const names = form.vm.layout.map(row => asRow(row).fields[0].name);
                 expect(names).toEqual(["title", "description"]);
             });
 
@@ -805,7 +820,7 @@ describe("FormModel", () => {
 
                 form.layout(layout => [layout.row("language")]);
 
-                const names = form.vm.layout.map(row => row.fields[0].name);
+                const names = form.vm.layout.map(row => asRow(row).fields[0].name);
                 expect(names).toEqual(["title", "path", "description", "language"]);
             });
 
@@ -817,7 +832,7 @@ describe("FormModel", () => {
 
                 form.layout(layout => [layout.row("language").after("nonexistent")]);
 
-                const names = form.vm.layout.map(row => row.fields[0].name);
+                const names = form.vm.layout.map(row => asRow(row).fields[0].name);
                 expect(names).toEqual(["title", "path", "description", "language"]);
             });
         });
@@ -848,7 +863,7 @@ describe("FormModel", () => {
 
                 // Simulate a language modifier
                 const modifier = {
-                    modify(form: import("./abstractions.js").IFormModel) {
+                    modify(form: IFormModel) {
                         // Add language field
                         form.fields(fields => ({
                             language: fields
@@ -877,7 +892,7 @@ describe("FormModel", () => {
                 modifier.modify(form);
 
                 // Verify layout order
-                const names = form.vm.layout.map(row => row.fields[0].name);
+                const names = form.vm.layout.map(row => asRow(row).fields[0].name);
                 expect(names).toEqual(["title", "path", "language"]);
 
                 // Verify language field works
@@ -888,6 +903,535 @@ describe("FormModel", () => {
                 // Verify getData includes language
                 const data = form.getData();
                 expect(data.language).toBe("de");
+            });
+        });
+    });
+
+    describe("layout system expansion (Phase 5)", () => {
+        describe("separator", () => {
+            it("should include separator nodes in the resolved layout", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title"),
+                        description: fields.text().label("Description")
+                    }),
+                    layout: layout => [
+                        layout.row("title"),
+                        layout.separator(),
+                        layout.row("description")
+                    ]
+                });
+
+                const vm = form.vm;
+                expect(vm.layout).toHaveLength(3);
+                expect(vm.layout[0].type).toBe("row");
+                expect(vm.layout[1].type).toBe("separator");
+                expect(vm.layout[2].type).toBe("row");
+            });
+
+            it("should support separator via modifier layout API", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title"),
+                        description: fields.text().label("Description")
+                    }),
+                    layout: layout => [layout.row("title"), layout.row("description")]
+                });
+
+                form.layout(layout => [layout.separator().after("title")]);
+
+                expect(form.vm.layout).toHaveLength(3);
+                expect(form.vm.layout[1].type).toBe("separator");
+            });
+        });
+
+        describe("tabs", () => {
+            function createFormWithTabs() {
+                return new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title"),
+                        slug: fields.text().label("Slug"),
+                        description: fields.text().label("Description"),
+                        metaTitle: fields.text().label("Meta Title"),
+                        metaDescription: fields.text().label("Meta Description")
+                    }),
+                    layout: layout => [
+                        layout.row("title", "slug"),
+                        layout.tabs({
+                            id: "settings",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: [layout.row("description")]
+                                },
+                                {
+                                    id: "seo",
+                                    label: "SEO",
+                                    description: "Optimize how this page appears in search",
+                                    layout: [layout.row("metaTitle"), layout.row("metaDescription")]
+                                }
+                            ]
+                        })
+                    ]
+                });
+            }
+
+            it("should resolve tabs layout node with tab definitions", () => {
+                const form = createFormWithTabs();
+                const vm = form.vm;
+
+                expect(vm.layout).toHaveLength(2);
+                expect(vm.layout[0].type).toBe("row");
+                expect(vm.layout[1].type).toBe("tabs");
+
+                const tabsNode = vm.layout[1] as ITabsNodeVM;
+                expect(tabsNode.id).toBe("settings");
+                expect(tabsNode.tabs).toHaveLength(2);
+                expect(tabsNode.tabs[0].id).toBe("general");
+                expect(tabsNode.tabs[0].label).toBe("General");
+                expect(tabsNode.tabs[1].id).toBe("seo");
+                expect(tabsNode.tabs[1].label).toBe("SEO");
+                expect(tabsNode.tabs[1].description).toBe(
+                    "Optimize how this page appears in search"
+                );
+            });
+
+            it("should resolve fields inside tab layouts", () => {
+                const form = createFormWithTabs();
+                const tabsNode = form.vm.layout[1] as ITabsNodeVM;
+
+                const generalTab = tabsNode.tabs[0];
+                expect(generalTab.layout).toHaveLength(1);
+                expect(generalTab.layout[0].type).toBe("row");
+                const generalRow = generalTab.layout[0] as IRowNodeVM;
+                expect(generalRow.fields[0].name).toBe("description");
+
+                const seoTab = tabsNode.tabs[1];
+                expect(seoTab.layout).toHaveLength(2);
+            });
+
+            it("should default activeTabId to the first tab", () => {
+                const form = createFormWithTabs();
+                const tabsNode = form.vm.layout[1] as ITabsNodeVM;
+                expect(tabsNode.activeTabId).toBe("general");
+            });
+
+            it("should switch active tab via setActiveTab", () => {
+                const form = createFormWithTabs();
+                let tabsNode = form.vm.layout[1] as ITabsNodeVM;
+
+                tabsNode.setActiveTab("seo");
+
+                tabsNode = form.vm.layout[1] as ITabsNodeVM;
+                expect(tabsNode.activeTabId).toBe("seo");
+            });
+
+            it("should fall back to first tab when active tab ID is invalid", () => {
+                const form = createFormWithTabs();
+                let tabsNode = form.vm.layout[1] as ITabsNodeVM;
+
+                tabsNode.setActiveTab("nonexistent");
+
+                tabsNode = form.vm.layout[1] as ITabsNodeVM;
+                expect(tabsNode.activeTabId).toBe("general");
+            });
+
+            it("should compute hasErrors for tabs based on referenced fields", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title").required("Title is required"),
+                        metaTitle: fields.text().label("Meta Title").required("Required")
+                    }),
+                    layout: layout => [
+                        layout.tabs({
+                            id: "settings",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: [layout.row("title")]
+                                },
+                                {
+                                    id: "seo",
+                                    label: "SEO",
+                                    layout: [layout.row("metaTitle")]
+                                }
+                            ]
+                        })
+                    ]
+                });
+
+                // Before validation, no errors
+                let tabsNode = form.vm.layout[0] as ITabsNodeVM;
+                expect(tabsNode.tabs[0].hasErrors).toBe(false);
+                expect(tabsNode.tabs[1].hasErrors).toBe(false);
+
+                // Fill only title, leave metaTitle empty
+                form.field("title").setValue("Hello");
+                await form.validate();
+
+                tabsNode = form.vm.layout[0] as ITabsNodeVM;
+                expect(tabsNode.tabs[0].hasErrors).toBe(false);
+                expect(tabsNode.tabs[1].hasErrors).toBe(true);
+            });
+
+            it("should not warn about fields inside tabs as orphans", () => {
+                const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+                new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title"),
+                        description: fields.text().label("Description")
+                    }),
+                    layout: layout => [
+                        layout.row("title"),
+                        layout.tabs({
+                            id: "settings",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: [layout.row("description")]
+                                }
+                            ]
+                        })
+                    ]
+                });
+
+                expect(warnSpy).not.toHaveBeenCalled();
+                warnSpy.mockRestore();
+            });
+
+            it("should return null for tabs with empty tabs array", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title")
+                    }),
+                    layout: layout => [layout.row("title"), layout.tabs({ id: "empty", tabs: [] })]
+                });
+
+                expect(form.vm.layout).toHaveLength(1);
+                expect(form.vm.layout[0].type).toBe("row");
+            });
+        });
+
+        describe("element", () => {
+            it("should include element nodes in the resolved layout", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title")
+                    }),
+                    layout: layout => [
+                        layout.row("title"),
+                        layout.element("usage-stats", { plan: "enterprise" })
+                    ]
+                });
+
+                const vm = form.vm;
+                expect(vm.layout).toHaveLength(2);
+                expect(vm.layout[1].type).toBe("element");
+
+                const elementNode = vm.layout[1] as IElementNodeVM;
+                expect(elementNode.renderer).toBe("usage-stats");
+                expect(elementNode.props).toEqual({ plan: "enterprise" });
+            });
+
+            it("should support element without props", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title")
+                    }),
+                    layout: layout => [layout.row("title"), layout.element("divider")]
+                });
+
+                const elementNode = form.vm.layout[1] as IElementNodeVM;
+                expect(elementNode.renderer).toBe("divider");
+                expect(elementNode.props).toBeUndefined();
+            });
+        });
+
+        describe("named layout node access — form.layout(nodeId)", () => {
+            function createFormWithTabs() {
+                return new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title"),
+                        description: fields.text().label("Description"),
+                        metaTitle: fields.text().label("Meta Title")
+                    }),
+                    layout: layout => [
+                        layout.row("title"),
+                        layout.tabs({
+                            id: "settings",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: [layout.row("description")]
+                                },
+                                {
+                                    id: "seo",
+                                    label: "SEO",
+                                    layout: [layout.row("metaTitle")]
+                                }
+                            ]
+                        })
+                    ]
+                });
+            }
+
+            it("should access a tabs node by ID and add a new tab", () => {
+                const form = createFormWithTabs();
+
+                form.fields(fields => ({
+                    trackingId: fields.text().label("Tracking ID")
+                }));
+
+                (form.layout("settings") as ILayoutNodeAccessHandle)
+                    .as("tabs")
+                    .tab({
+                        id: "analytics",
+                        label: "Analytics",
+                        layout: [{ type: "row", fieldIds: ["trackingId"] }]
+                    })
+                    .after("seo");
+
+                const tabsNode = form.vm.layout[1] as ITabsNodeVM;
+                expect(tabsNode.tabs).toHaveLength(3);
+                expect(tabsNode.tabs[2].id).toBe("analytics");
+                expect(tabsNode.tabs[2].label).toBe("Analytics");
+            });
+
+            it("should add a tab before an existing tab", () => {
+                const form = createFormWithTabs();
+
+                form.fields(fields => ({
+                    trackingId: fields.text().label("Tracking ID")
+                }));
+
+                (form.layout("settings") as ILayoutNodeAccessHandle)
+                    .as("tabs")
+                    .tab({
+                        id: "analytics",
+                        label: "Analytics",
+                        layout: [{ type: "row", fieldIds: ["trackingId"] }]
+                    })
+                    .before("seo");
+
+                const tabsNode = form.vm.layout[1] as ITabsNodeVM;
+                expect(tabsNode.tabs).toHaveLength(3);
+                expect(tabsNode.tabs[0].id).toBe("general");
+                expect(tabsNode.tabs[1].id).toBe("analytics");
+                expect(tabsNode.tabs[2].id).toBe("seo");
+            });
+
+            it("should append to an existing tab's layout", () => {
+                const form = createFormWithTabs();
+
+                form.fields(fields => ({
+                    ogImage: fields.text().label("OG Image")
+                }));
+
+                (form.layout("settings") as ILayoutNodeAccessHandle)
+                    .as("tabs")
+                    .tab("seo")
+                    .layout(layout => [layout.row("ogImage")]);
+
+                const tabsNode = form.vm.layout[1] as ITabsNodeVM;
+                const seoTab = tabsNode.tabs.find(t => t.id === "seo")!;
+                expect(seoTab.layout).toHaveLength(2);
+
+                const lastRow = seoTab.layout[1] as IRowNodeVM;
+                expect(lastRow.fields[0].name).toBe("ogImage");
+            });
+
+            it("should throw when accessing a non-existent node ID", () => {
+                const form = createFormWithTabs();
+                expect(() =>
+                    (form.layout("nonexistent") as ILayoutNodeAccessHandle).as("tabs")
+                ).toThrow('Layout node "nonexistent" not found.');
+            });
+
+            it("should throw when accessing a non-existent tab ID", () => {
+                const form = createFormWithTabs();
+                expect(() =>
+                    (form.layout("settings") as ILayoutNodeAccessHandle)
+                        .as("tabs")
+                        .tab("nonexistent")
+                ).toThrow('Tab "nonexistent" not found in tabs node "settings".');
+            });
+        });
+
+        describe("positional modifiers targeting tabs/element nodes", () => {
+            it("should insert a row before a tabs node by ID", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title"),
+                        subtitle: fields.text().label("Subtitle"),
+                        description: fields.text().label("Description")
+                    }),
+                    layout: layout => [
+                        layout.row("title"),
+                        layout.tabs({
+                            id: "settings",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: [layout.row("description")]
+                                }
+                            ]
+                        })
+                    ]
+                });
+
+                form.layout(layout => [layout.row("subtitle").before("settings")]);
+
+                expect(form.vm.layout).toHaveLength(3);
+                expect(form.vm.layout[0].type).toBe("row");
+                expect(form.vm.layout[1].type).toBe("row");
+                expect(form.vm.layout[2].type).toBe("tabs");
+
+                const row = form.vm.layout[1] as IRowNodeVM;
+                expect(row.fields[0].name).toBe("subtitle");
+            });
+
+            it("should remove a tabs node by ID", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title"),
+                        description: fields.text().label("Description")
+                    }),
+                    layout: layout => [
+                        layout.row("title"),
+                        layout.tabs({
+                            id: "settings",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: [layout.row("description")]
+                                }
+                            ]
+                        })
+                    ]
+                });
+
+                form.layout(layout => {
+                    layout.remove("settings");
+                    return [];
+                });
+
+                expect(form.vm.layout).toHaveLength(1);
+                expect(form.vm.layout[0].type).toBe("row");
+            });
+
+            it("should replace a tabs node by ID", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title"),
+                        description: fields.text().label("Description"),
+                        metaTitle: fields.text().label("Meta Title")
+                    }),
+                    layout: layout => [
+                        layout.row("title"),
+                        layout.tabs({
+                            id: "settings",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: [layout.row("description")]
+                                }
+                            ]
+                        })
+                    ]
+                });
+
+                form.layout(layout => [layout.row("metaTitle").replace("settings")]);
+
+                expect(form.vm.layout).toHaveLength(2);
+                expect(form.vm.layout[0].type).toBe("row");
+                expect(form.vm.layout[1].type).toBe("row");
+                const row = form.vm.layout[1] as IRowNodeVM;
+                expect(row.fields[0].name).toBe("metaTitle");
+            });
+        });
+
+        describe("modifier integration with tabs", () => {
+            it("should support a full modifier workflow: base form with tabs + modifier adds tab + modifier appends to existing tab", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title"),
+                        description: fields.text().label("Description"),
+                        metaTitle: fields.text().label("Meta Title")
+                    }),
+                    layout: layout => [
+                        layout.row("title"),
+                        layout.separator(),
+                        layout.tabs({
+                            id: "settings",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: [layout.row("description")]
+                                },
+                                {
+                                    id: "seo",
+                                    label: "SEO",
+                                    layout: [layout.row("metaTitle")]
+                                }
+                            ]
+                        })
+                    ]
+                });
+
+                // Modifier A: add analytics tab
+                form.fields(fields => ({
+                    trackingId: fields.text().label("Tracking ID")
+                }));
+
+                (form.layout("settings") as ILayoutNodeAccessHandle)
+                    .as("tabs")
+                    .tab({
+                        id: "analytics",
+                        label: "Analytics",
+                        layout: [{ type: "row", fieldIds: ["trackingId"] }]
+                    })
+                    .after("seo");
+
+                // Modifier B: append OG Image to SEO tab
+                form.fields(fields => ({
+                    ogImage: fields.text().label("OG Image")
+                }));
+
+                (form.layout("settings") as ILayoutNodeAccessHandle)
+                    .as("tabs")
+                    .tab("seo")
+                    .layout(layout => [layout.row("ogImage")]);
+
+                // Verify full layout
+                const vm = form.vm;
+                expect(vm.layout).toHaveLength(3); // row, separator, tabs
+                expect(vm.layout[0].type).toBe("row");
+                expect(vm.layout[1].type).toBe("separator");
+                expect(vm.layout[2].type).toBe("tabs");
+
+                const tabsNode = vm.layout[2] as ITabsNodeVM;
+                expect(tabsNode.tabs).toHaveLength(3);
+                expect(tabsNode.tabs[0].id).toBe("general");
+                expect(tabsNode.tabs[1].id).toBe("seo");
+                expect(tabsNode.tabs[2].id).toBe("analytics");
+
+                // SEO tab now has metaTitle + ogImage
+                const seoTab = tabsNode.tabs[1];
+                expect(seoTab.layout).toHaveLength(2);
+
+                // Verify all fields are in getData
+                const data = form.getData();
+                expect(data).toHaveProperty("trackingId");
+                expect(data).toHaveProperty("ogImage");
             });
         });
     });

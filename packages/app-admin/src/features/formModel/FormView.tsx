@@ -1,6 +1,15 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import type { IFormVM, LayoutNodeVM, IRowNodeVM, IFieldVM } from "./abstractions.js";
+import type {
+    IFormVM,
+    LayoutNodeVM,
+    IRowNodeVM,
+    IFieldVM,
+    ISeparatorNodeVM,
+    ITabsNodeVM,
+    ITabDefinitionVM,
+    IElementNodeVM
+} from "./abstractions.js";
 import { useFieldRenderers } from "~/features/formModel/useFieldRenderers.js";
 
 /**
@@ -51,6 +60,12 @@ const LayoutNodeRenderer = observer(function LayoutNodeRenderer({
     switch (node.type) {
         case "row":
             return <RowNodeRenderer node={node} renderers={renderers} />;
+        case "separator":
+            return <SeparatorNodeRenderer />;
+        case "tabs":
+            return <TabsNodeRenderer node={node} renderers={renderers} />;
+        case "element":
+            return <ElementNodeRenderer node={node} renderers={renderers} />;
         default:
             return null;
     }
@@ -97,4 +112,83 @@ const FieldRenderer = observer(function FieldRenderer({ field, renderers }: Fiel
     }
 
     return <Renderer field={field} />;
+});
+
+const SeparatorNodeRenderer = observer(function SeparatorNodeRenderer() {
+    return <hr className="border-neutral-dimmed my-2" />;
+});
+
+interface TabsNodeRendererProps {
+    node: ITabsNodeVM;
+    renderers: FieldRenderers;
+}
+
+const TabsNodeRenderer = observer(function TabsNodeRenderer({
+    node,
+    renderers
+}: TabsNodeRendererProps) {
+    const activeTab = node.tabs.find(t => t.id === node.activeTabId);
+
+    return (
+        <div>
+            <div className="flex border-b border-neutral-dimmed">
+                {node.tabs.map(tab => (
+                    <button
+                        key={tab.id}
+                        type="button"
+                        className={`px-4 py-2 text-sm font-medium border-b-2 ${
+                            tab.id === node.activeTabId
+                                ? "border-primary text-primary"
+                                : "border-transparent text-neutral hover:text-neutral-strong"
+                        }`}
+                        onClick={() => node.setActiveTab(tab.id)}
+                    >
+                        {tab.label}
+                        {tab.hasErrors && (
+                            <span className="ml-1 text-destructive text-xs">*</span>
+                        )}
+                    </button>
+                ))}
+            </div>
+            {activeTab && (
+                <div className="pt-4">
+                    {activeTab.description && (
+                        <p className="text-sm text-neutral mb-4">{activeTab.description}</p>
+                    )}
+                    <div className="flex flex-col gap-4">
+                        {activeTab.layout.map((childNode, index) => (
+                            <LayoutNodeRenderer
+                                key={index}
+                                node={childNode}
+                                renderers={renderers}
+                            />
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+});
+
+interface ElementNodeRendererProps {
+    node: IElementNodeVM;
+    renderers: FieldRenderers;
+}
+
+const ElementNodeRenderer = observer(function ElementNodeRenderer({
+    node,
+    renderers
+}: ElementNodeRendererProps) {
+    const Renderer = renderers[`element:${node.renderer}`];
+
+    if (!Renderer) {
+        if (process.env.NODE_ENV === "development") {
+            console.warn(
+                `[FormView] No renderer found for element "${node.renderer}".`
+            );
+        }
+        return null;
+    }
+
+    return <Renderer field={{ ...node.props } as any} />;
 });

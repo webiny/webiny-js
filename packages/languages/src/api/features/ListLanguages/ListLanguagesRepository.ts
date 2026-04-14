@@ -26,7 +26,8 @@ class ListLanguagesRepositoryImpl implements RepositoryAbstraction.Interface {
                 values: {
                     enabled: true
                 }
-            }
+            },
+            sort: ["values_name_ASC"]
         });
 
         if (listResult.isFail()) {

@@ -1,4 +1,4 @@
-import { makeAutoObservable, computed, toJS, runInAction } from "mobx";
+import { makeAutoObservable, computed, toJS, runInAction, observable } from "mobx";
 import { Field } from "./Field.js";
 import { createFieldBuilderRegistry } from "./FieldBuilder.js";
 import type {
@@ -13,16 +13,36 @@ import type {
     ILayoutNodeHandle,
     ILayoutModifier,
     IPositionedLayoutNode,
+    ILayoutNodeAccessHandle,
+    ITabsHandle,
+    ITabHandle,
     LayoutNode,
     LayoutPosition,
     LayoutNodeVM,
     IRowNode,
-    IRowNodeVM
+    IRowNodeVM,
+    ISeparatorNode,
+    ISeparatorNodeVM,
+    ITabsNode,
+    ITabsNodeVM,
+    ITabDefinition,
+    ITabDefinitionVM,
+    IElementNode,
+    IElementNodeVM
 } from "./abstractions.js";
 
 const layoutAPI: ILayoutBuilder = {
     row(...fieldIds: string[]): IRowNode {
         return { type: "row", fieldIds };
+    },
+    separator(): ISeparatorNode {
+        return { type: "separator" };
+    },
+    tabs(config: { id?: string; tabs: ITabDefinition[] }): ITabsNode {
+        return { type: "tabs", id: config.id, tabs: config.tabs };
+    },
+    element(renderer: string, props?: Record<string, unknown>): IElementNode {
+        return { type: "element", renderer, props };
     }
 };
 
@@ -34,6 +54,7 @@ export class FormModel implements IFormModel {
     private _validateOnChange = false;
     private _isValid: boolean | null = null;
     private _errors: IFormError[] = [];
+    private _activeTabs = observable.map<string, string>();
 
     constructor(config: IFormModelConfig) {
         const registry = createFieldBuilderRegistry();
@@ -106,33 +127,20 @@ export class FormModel implements IFormModel {
         this._snapshotBaseline();
     }
 
-    layout(factory: (layout: ILayoutModifier) => (LayoutNode | IPositionedLayoutNode)[]): void {
-        const removals: string[] = [];
+    layout(factory: (layout: ILayoutModifier) => (LayoutNode | IPositionedLayoutNode)[]): void;
+    layout(nodeId: string): ILayoutNodeAccessHandle;
+    layout(
+        factoryOrNodeId:
+            | ((layout: ILayoutModifier) => (LayoutNode | IPositionedLayoutNode)[])
+            | string
+    ): void | ILayoutNodeAccessHandle {
+        if (typeof factoryOrNodeId === "string") {
+            return this._accessLayoutNode(factoryOrNodeId);
+        }
 
-        const modifierLayoutAPI: ILayoutModifier = {
-            row(...fieldIds: string[]): ILayoutNodeHandle {
-                const node: IRowNode = { type: "row", fieldIds };
-                const handle: ILayoutNodeHandle = {
-                    node,
-                    before(target: string): IPositionedLayoutNode {
-                        handle.position = { type: "before", target };
-                        return handle;
-                    },
-                    after(target: string): IPositionedLayoutNode {
-                        handle.position = { type: "after", target };
-                        return handle;
-                    },
-                    replace(target: string): IPositionedLayoutNode {
-                        handle.position = { type: "replace", target };
-                        return handle;
-                    }
-                };
-                return handle;
-            },
-            remove(target: string): void {
-                removals.push(target);
-            }
-        };
+        const factory = factoryOrNodeId;
+        const removals: string[] = [];
+        const modifierLayoutAPI = this._createModifierLayoutAPI(removals);
 
         const entries = factory(modifierLayoutAPI);
 
@@ -271,10 +279,21 @@ export class FormModel implements IFormModel {
     }
 
     private _resolveLayoutNode(node: LayoutNode): LayoutNodeVM | null {
-        if (node.type === "row") {
-            return this._resolveRowNode(node);
+        switch (node.type) {
+            case "row":
+                return this._resolveRowNode(node);
+            case "separator":
+                return this._resolveSeparatorNode();
+            case "tabs":
+                return this._resolveTabsNode(node);
+            case "element":
+                return this._resolveElementNode(node);
+            case "object":
+                // ObjectNode rendering deferred to Phase 6
+                return null;
+            default:
+                return null;
         }
-        return null;
     }
 
     private _resolveRowNode(node: IRowNode): IRowNodeVM | null {
@@ -290,6 +309,84 @@ export class FormModel implements IFormModel {
         return { type: "row", fields };
     }
 
+    private _resolveSeparatorNode(): ISeparatorNodeVM {
+        return { type: "separator" };
+    }
+
+    private _resolveTabsNode(node: ITabsNode): ITabsNodeVM | null {
+        if (node.tabs.length === 0) {
+            return null;
+        }
+
+        const tabKey = node.id || this._tabsNodeKey(node);
+
+        const tabs: ITabDefinitionVM[] = node.tabs.map(tab => ({
+            id: tab.id,
+            label: tab.label,
+            description: tab.description,
+            icon: tab.icon,
+            hasErrors: this._tabHasErrors(tab.layout),
+            layout: tab.layout
+                .map(child => this._resolveLayoutNode(child))
+                .filter(Boolean) as LayoutNodeVM[]
+        }));
+
+        if (tabs.length === 0) {
+            return null;
+        }
+
+        // Resolve active tab — fall back to first tab if stored value is invalid
+        const storedActive = this._activeTabs.get(tabKey);
+        const validActive = tabs.find(t => t.id === storedActive) ? storedActive! : tabs[0].id;
+
+        return {
+            type: "tabs",
+            id: node.id,
+            tabs,
+            activeTabId: validActive,
+            setActiveTab: (id: string) => {
+                this._activeTabs.set(tabKey, id);
+            }
+        };
+    }
+
+    private _resolveElementNode(node: IElementNode): IElementNodeVM {
+        return {
+            type: "element",
+            renderer: node.renderer,
+            props: node.props
+        };
+    }
+
+    private _tabHasErrors(layout: LayoutNode[]): boolean {
+        const fieldIds = this._collectFieldIdsFromLayout(layout);
+        for (const id of fieldIds) {
+            const field = this._fields.get(id);
+            if (field && field.vm.validation.isValid === false) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private _collectFieldIdsFromLayout(layout: LayoutNode[]): string[] {
+        const ids: string[] = [];
+        for (const node of layout) {
+            if (node.type === "row") {
+                ids.push(...node.fieldIds);
+            } else if (node.type === "tabs") {
+                for (const tab of node.tabs) {
+                    ids.push(...this._collectFieldIdsFromLayout(tab.layout));
+                }
+            }
+        }
+        return ids;
+    }
+
+    private _tabsNodeKey(node: ITabsNode): string {
+        return `__tabs_${node.tabs.map(t => t.id).join("_")}`;
+    }
+
     private _generateDefaultLayout(): LayoutNode[] {
         const layout: LayoutNode[] = [];
         for (const [name, field] of this._fields) {
@@ -301,14 +398,7 @@ export class FormModel implements IFormModel {
     }
 
     private _warnOrphanFields(): void {
-        const layoutFieldIds = new Set<string>();
-        for (const node of this._layout) {
-            if (node.type === "row") {
-                for (const id of node.fieldIds) {
-                    layoutFieldIds.add(id);
-                }
-            }
-        }
+        const layoutFieldIds = new Set(this._collectFieldIdsFromLayout(this._layout));
 
         for (const [name, field] of this._fields) {
             if (field.visible && !layoutFieldIds.has(name)) {
@@ -334,15 +424,30 @@ export class FormModel implements IFormModel {
     }
 
     /**
-     * Find the index of a layout row that contains the given field ID.
+     * Find the index of a layout node that matches the given target.
+     * Matches: row containing fieldId, tabs by id, element by id/renderer.
      * Returns -1 if not found.
      */
     private _findLayoutIndex(layout: LayoutNode[], target: string): number {
-        return layout.findIndex(node => node.type === "row" && node.fieldIds.includes(target));
+        return layout.findIndex(node => this._nodeMatchesTarget(node, target));
+    }
+
+    private _nodeMatchesTarget(node: LayoutNode, target: string): boolean {
+        switch (node.type) {
+            case "row":
+                return node.fieldIds.includes(target);
+            case "tabs":
+                return node.id === target;
+            case "element":
+                return node.id === target || node.renderer === target;
+            default:
+                return false;
+        }
     }
 
     /**
-     * Remove a field ID from all layout rows. Drops rows that become empty.
+     * Remove a target from the layout tree. Handles field IDs in rows,
+     * and node IDs for tabs/elements. Drops rows that become empty.
      */
     private _removeFromLayout(layout: LayoutNode[], target: string): LayoutNode[] {
         return layout
@@ -353,6 +458,13 @@ export class FormModel implements IFormModel {
                         return null;
                     }
                     return { ...node, fieldIds: filtered };
+                }
+                // Remove tabs/elements by their ID
+                if (
+                    (node.type === "tabs" && node.id === target) ||
+                    (node.type === "element" && (node.id === target || node.renderer === target))
+                ) {
+                    return null;
                 }
                 return node;
             })
@@ -391,9 +503,140 @@ export class FormModel implements IFormModel {
         return result;
     }
 
+    private _createModifierLayoutAPI(removals: string[]): ILayoutModifier {
+        return {
+            row(...fieldIds: string[]): ILayoutNodeHandle {
+                const node: IRowNode = { type: "row", fieldIds };
+                return createLayoutNodeHandle(node);
+            },
+            separator(): ILayoutNodeHandle {
+                const node: ISeparatorNode = { type: "separator" };
+                return createLayoutNodeHandle(node);
+            },
+            tabs(config: { id?: string; tabs: ITabDefinition[] }): ILayoutNodeHandle {
+                const node: ITabsNode = { type: "tabs", id: config.id, tabs: config.tabs };
+                return createLayoutNodeHandle(node);
+            },
+            element(renderer: string, props?: Record<string, unknown>): ILayoutNodeHandle {
+                const node: IElementNode = { type: "element", renderer, props };
+                return createLayoutNodeHandle(node);
+            },
+            remove(target: string): void {
+                removals.push(target);
+            }
+        };
+    }
+
+    private _accessLayoutNode(nodeId: string): ILayoutNodeAccessHandle {
+        const findTabsNode = (layout: LayoutNode[]): ITabsNode | undefined => {
+            for (const node of layout) {
+                if (node.type === "tabs" && node.id === nodeId) {
+                    return node;
+                }
+                // Search inside nested tabs
+                if (node.type === "tabs") {
+                    for (const tab of node.tabs) {
+                        const found = findTabsNode(tab.layout);
+                        if (found) {
+                            return found;
+                        }
+                    }
+                }
+            }
+            return undefined;
+        };
+
+        return {
+            as: (type: "tabs"): ITabsHandle => {
+                const tabsNode = findTabsNode(this._layout);
+                if (!tabsNode) {
+                    throw new Error(`Layout node "${nodeId}" not found.`);
+                }
+                if (tabsNode.type !== type) {
+                    throw new Error(
+                        `Layout node "${nodeId}" is type "${tabsNode.type}", not "${type}".`
+                    );
+                }
+
+                return {
+                    tab: (definitionOrId: ITabDefinition | string): ITabHandle => {
+                        if (typeof definitionOrId === "string") {
+                            // Access existing tab
+                            const tab = tabsNode.tabs.find(t => t.id === definitionOrId);
+                            if (!tab) {
+                                throw new Error(
+                                    `Tab "${definitionOrId}" not found in tabs node "${nodeId}".`
+                                );
+                            }
+                            return {
+                                layout: (factory: (layout: ILayoutBuilder) => LayoutNode[]) => {
+                                    const nodes = factory(layoutAPI);
+                                    tab.layout.push(...nodes);
+                                },
+                                before: () => {
+                                    /* no-op for existing tabs */
+                                },
+                                after: () => {
+                                    /* no-op for existing tabs */
+                                }
+                            };
+                        } else {
+                            // Add new tab
+                            const newTab: ITabDefinition = { ...definitionOrId };
+                            // Resolve layout if it's a factory
+                            if (typeof (definitionOrId as any).layout === "function") {
+                                newTab.layout = (definitionOrId as any).layout(layoutAPI);
+                            }
+                            return {
+                                layout: (factory: (layout: ILayoutBuilder) => LayoutNode[]) => {
+                                    newTab.layout = factory(layoutAPI);
+                                },
+                                before: (targetTabId: string) => {
+                                    const idx = tabsNode.tabs.findIndex(t => t.id === targetTabId);
+                                    if (idx !== -1) {
+                                        tabsNode.tabs.splice(idx, 0, newTab);
+                                    } else {
+                                        tabsNode.tabs.push(newTab);
+                                    }
+                                },
+                                after: (targetTabId: string) => {
+                                    const idx = tabsNode.tabs.findIndex(t => t.id === targetTabId);
+                                    if (idx !== -1) {
+                                        tabsNode.tabs.splice(idx + 1, 0, newTab);
+                                    } else {
+                                        tabsNode.tabs.push(newTab);
+                                    }
+                                }
+                            };
+                        }
+                    }
+                };
+            }
+        };
+    }
+
     private _isPositionedNode(
         entry: LayoutNode | IPositionedLayoutNode
     ): entry is IPositionedLayoutNode {
         return "node" in entry;
     }
+}
+
+function createLayoutNodeHandle(node: LayoutNode): ILayoutNodeHandle {
+    const handle: ILayoutNodeHandle = {
+        node,
+        before(target: string): IPositionedLayoutNode {
+            handle.position = { type: "before", target };
+            return handle;
+        },
+        after(target: string): IPositionedLayoutNode {
+            handle.position = { type: "after", target };
+            return handle;
+        },
+        replace(target: string): IPositionedLayoutNode {
+            handle.position = { type: "replace", target };
+            return handle;
+        }
+    };
+    return handle;
 }

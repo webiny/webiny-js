@@ -96,18 +96,81 @@ export type OnBlurCallback = (value: unknown, form: IFormModel) => void;
 // Layout types
 // ---------------------------------------------------------------------------
 
-export type LayoutNode = IRowNode;
+export type LayoutNode = IRowNode | ISeparatorNode | ITabsNode | IElementNode | IObjectNode;
 
 export interface IRowNode {
     type: "row";
     fieldIds: string[];
 }
 
-export type LayoutNodeVM = IRowNodeVM;
+export interface ISeparatorNode {
+    type: "separator";
+}
+
+export interface ITabDefinition {
+    id: string;
+    label: string;
+    description?: string;
+    icon?: string;
+    layout: LayoutNode[];
+}
+
+export interface ITabsNode {
+    type: "tabs";
+    id?: string;
+    tabs: ITabDefinition[];
+}
+
+export interface IElementNode {
+    type: "element";
+    id?: string;
+    renderer: string;
+    props?: Record<string, unknown>;
+}
+
+export interface IObjectNode {
+    type: "object";
+    fieldId: string;
+    layout?: LayoutNode[];
+    templates?: Record<string, LayoutNode[]>;
+}
+
+// ---------------------------------------------------------------------------
+// Layout VM types
+// ---------------------------------------------------------------------------
+
+export type LayoutNodeVM = IRowNodeVM | ISeparatorNodeVM | ITabsNodeVM | IElementNodeVM;
 
 export interface IRowNodeVM {
     type: "row";
     fields: IFieldVM[];
+}
+
+export interface ISeparatorNodeVM {
+    type: "separator";
+}
+
+export interface ITabDefinitionVM {
+    id: string;
+    label: string;
+    description?: string;
+    icon?: string;
+    hasErrors: boolean;
+    layout: LayoutNodeVM[];
+}
+
+export interface ITabsNodeVM {
+    type: "tabs";
+    id?: string;
+    tabs: ITabDefinitionVM[];
+    activeTabId: string;
+    setActiveTab: (id: string) => void;
+}
+
+export interface IElementNodeVM {
+    type: "element";
+    renderer: string;
+    props?: Record<string, unknown>;
 }
 
 // ---------------------------------------------------------------------------
@@ -135,6 +198,25 @@ export interface ILayoutNodeHandle extends IPositionedLayoutNode {
 }
 
 // ---------------------------------------------------------------------------
+// Named layout node access types
+// ---------------------------------------------------------------------------
+
+export interface ITabsHandle {
+    tab(definition: ITabDefinition): ITabHandle;
+    tab(id: string): ITabHandle;
+}
+
+export interface ITabHandle {
+    layout(factory: (layout: ILayoutBuilder) => LayoutNode[]): void;
+    before(target: string): void;
+    after(target: string): void;
+}
+
+export interface ILayoutNodeAccessHandle {
+    as(type: "tabs"): ITabsHandle;
+}
+
+// ---------------------------------------------------------------------------
 // Modifier types
 // ---------------------------------------------------------------------------
 
@@ -144,6 +226,9 @@ export interface IFormModifier {
 
 export interface ILayoutModifier {
     row(...fieldIds: string[]): ILayoutNodeHandle;
+    separator(): ILayoutNodeHandle;
+    tabs(config: { id?: string; tabs: ITabDefinition[] }): ILayoutNodeHandle;
+    element(renderer: string, props?: Record<string, unknown>): ILayoutNodeHandle;
     remove(target: string): void;
 }
 
@@ -170,6 +255,7 @@ export interface IFormModel {
         factory: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder | undefined>
     ): void;
     layout(factory: (layout: ILayoutModifier) => (LayoutNode | IPositionedLayoutNode)[]): void;
+    layout(nodeId: string): ILayoutNodeAccessHandle;
     getData(): Record<string, unknown>;
     setData(data: Record<string, unknown>): void;
     reset(): void;
@@ -198,6 +284,15 @@ export namespace FormModel {
     export type OnBlur = OnBlurCallback;
     export type RowNode = IRowNode;
     export type RowNodeVM = IRowNodeVM;
+    export type SeparatorNode = ISeparatorNode;
+    export type SeparatorNodeVM = ISeparatorNodeVM;
+    export type TabsNode = ITabsNode;
+    export type TabDefinition = ITabDefinition;
+    export type TabsNodeVM = ITabsNodeVM;
+    export type TabDefinitionVM = ITabDefinitionVM;
+    export type ElementNode = IElementNode;
+    export type ElementNodeVM = IElementNodeVM;
+    export type ObjectNode = IObjectNode;
     export type FormError = IFormError;
     export type FormVM = IFormVM;
     export type Interface = IFormModel;
@@ -221,6 +316,9 @@ export interface IFormModelConfig {
 
 export interface ILayoutBuilder {
     row(...fieldIds: string[]): IRowNode;
+    separator(): ISeparatorNode;
+    tabs(config: { id?: string; tabs: ITabDefinition[] }): ITabsNode;
+    element(renderer: string, props?: Record<string, unknown>): IElementNode;
 }
 
 export interface IFieldBuilder {

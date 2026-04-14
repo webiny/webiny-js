@@ -1,11 +1,14 @@
 import { PermissionTransformer } from "@webiny/api-core/features/security/authorization/AuthorizationContext/abstractions.js";
-import { TENANT_MODEL_ID } from "~/shared/constants.js";
+import { LANGUAGE_MODEL_ID } from "~/shared/constants.js";
 
 class AddCmsPermissions implements PermissionTransformer.Interface {
     execute(permission: PermissionTransformer.Permission) {
-        if (permission.name !== "tm.*") {
+        if (!permission.name.startsWith("languages.")) {
             return permission;
         }
+
+        console.log("add languages permissions", permission);
+        const isReadOnly = permission.name === "languages.*" && permission.rwd === "r";
 
         return [
             permission,
@@ -17,7 +20,7 @@ class AddCmsPermissions implements PermissionTransformer.Interface {
                 own: false,
                 rwd: "r",
                 pw: "",
-                models: [TENANT_MODEL_ID]
+                models: [LANGUAGE_MODEL_ID]
             },
             {
                 name: "cms.contentModelGroup",
@@ -29,7 +32,7 @@ class AddCmsPermissions implements PermissionTransformer.Interface {
             {
                 name: "cms.contentEntry",
                 own: false,
-                rwd: "rwd",
+                rwd: isReadOnly ? "r" : "rwd",
                 pw: ""
             }
         ];

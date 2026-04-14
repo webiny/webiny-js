@@ -1,16 +1,16 @@
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { Response } from "@webiny/handler-graphql";
 import { ErrorResponse } from "@webiny/handler-graphql";
-import { PluginsContainer } from "@webiny/api-headless-cms/legacy/abstractions.js";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields.js";
 import { CreateTenantUseCase } from "../features/CreateTenant/abstractions.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/exports/api/cms/model.js";
 import { TENANT_MODEL_ID } from "~/shared/constants.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
+import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 
 class CreateTenantSchema implements GraphQLSchemaFactory.Interface {
     constructor(
-        private pluginsContainer: PluginsContainer.Interface,
+        private identityContext: IdentityContext.Interface,
         private listModelsUseCase: ListModelsUseCase.Interface,
         private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface
     ) {}
@@ -57,9 +57,11 @@ class CreateTenantSchema implements GraphQLSchemaFactory.Interface {
     }
 
     private async getExtensionsInput() {
-        const modelsResult = await this.listModelsUseCase.execute({
-            includePlugins: true,
-            includePrivate: false
+        const modelsResult = await this.identityContext.withoutAuthorization(() => {
+            return this.listModelsUseCase.execute({
+                includePlugins: true,
+                includePrivate: false
+            });
         });
 
         if (modelsResult.isFail()) {
@@ -87,5 +89,5 @@ class CreateTenantSchema implements GraphQLSchemaFactory.Interface {
 
 export default GraphQLSchemaFactory.createImplementation({
     implementation: CreateTenantSchema,
-    dependencies: [PluginsContainer, ListModelsUseCase, CmsModelFieldToGraphQLRegistry]
+    dependencies: [IdentityContext, ListModelsUseCase, CmsModelFieldToGraphQLRegistry]
 });

@@ -6,13 +6,12 @@ import type { CreatePageParams } from "~/features/pages/createPage/abstractions.
 import {
     CreatePagePresenter as PresenterAbstraction,
     PageTypeProvider,
-    CreatePageFormModifier,
-    PageType
+    CreatePageFormModifier
 } from "./abstractions.js";
 import { PagePath } from "~/shared/PagePath.js";
 
 class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
-    private readonly pageTypes: PageType.Interface[] = [];
+    private readonly pageTypes;
     private form: IFormModel;
     private selectedPageType = "";
     private folderId = "";
