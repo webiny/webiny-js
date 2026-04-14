@@ -9,9 +9,11 @@ import type {
 import { createStoreKey } from "~/helpers/store.js";
 import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
+import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
+import { AccessControl } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 
 export interface ICancelDeleteModelParams {
-    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "db">;
+    readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "db" | "container">;
     readonly modelId: string;
 }
 
@@ -21,16 +23,17 @@ export const cancelDeleteModel = async (
     const { context, modelId } = params;
 
     const model = await context.cms.getModel(modelId);
+    const accessControl = context.container.resolve(AccessControl);
 
-    await context.cms.accessControl.ensureCanAccessModel({
-        model,
-        rwd: "d"
-    });
+    const canAccessModel = await accessControl.canAccessModel({ model, rwd: "d" });
+    if (!canAccessModel) {
+        throw new NotAuthorizedError(`Not allowed to access content model "${model.name}".`);
+    }
 
-    await context.cms.accessControl.ensureCanAccessEntry({
-        model,
-        rwd: "w"
-    });
+    const canAccessEntry = await accessControl.canAccessEntry({ model, rwd: "w" });
+    if (!canAccessEntry) {
+        throw new NotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
+    }
 
     const storeKey = createStoreKey(model);
 

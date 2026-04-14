@@ -21,14 +21,11 @@ class GetUniqueFieldValuesUseCaseImpl implements UseCaseAbstraction.Interface {
         model: CmsModel,
         params: GetUniqueFieldValuesParams
     ): Promise<Result<CmsEntryUniqueValue[], UseCaseAbstraction.Error>> {
-        // Check access control - throws if not authorized
-        try {
-            await this.accessControl.ensureCanAccessEntry({ model });
-        } catch (error) {
-            if (error instanceof EntryNotAuthorizedError) {
-                return Result.fail(error);
-            }
-            throw error;
+        const canAccess = await this.accessControl.canAccessEntry({ model });
+        if (!canAccess) {
+            return Result.fail(
+                new EntryNotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`)
+            );
         }
 
         const { where: initialWhere, fieldId } = params;
