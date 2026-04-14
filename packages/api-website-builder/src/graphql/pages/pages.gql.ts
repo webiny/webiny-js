@@ -55,6 +55,7 @@ export const createPagesSchema = () => {
                         const page = result.value;
                         return {
                             id: page.id,
+                            entryId: page.entryId,
                             properties: page.properties,
                             bindings: page.bindings,
                             elements: page.elements
@@ -333,9 +334,7 @@ export const createPagesSchema = () => {
             WbPage: {
                 languagePaths: async (page: any, _: any, context: ApiCoreContext) => {
                     const properties = page.properties ?? {};
-                    // Derive entryId from the versioned id (format: "entryId#version").
-                    const entryId: string | undefined = page.entryId ?? page.id?.split("#")[0];
-                    const rootEntryId: string | undefined = properties.sourcePage ?? entryId;
+                    const rootEntryId: string | undefined = properties.sourcePage ?? page.entryId;
 
                     if (!rootEntryId) {
                         return {};
