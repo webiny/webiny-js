@@ -42,8 +42,7 @@ class GetLanguageByCodeRepositoryImpl implements RepositoryAbstraction.Interface
         const entry = entries[0];
 
         const language: Language = {
-            id: entry.id,
-            entryId: entry.entryId,
+            id: entry.entryId,
             name: entry.values.name,
             code: entry.values.code,
             direction: entry.values.direction,

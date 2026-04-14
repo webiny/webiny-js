@@ -22,6 +22,20 @@ export namespace PageType {
 }
 
 // ---------------------------------------------------------------------------
+// Page Type Provider — indirection layer for filtering/decorating page types
+// ---------------------------------------------------------------------------
+
+export interface IPageTypeProvider {
+    getPageTypes(): IPageType[];
+}
+
+export const PageTypeProvider = createAbstraction<IPageTypeProvider>("PageTypeProvider");
+
+export namespace PageTypeProvider {
+    export type Interface = IPageTypeProvider;
+}
+
+// ---------------------------------------------------------------------------
 // Cross-cutting form modifier (e.g., Language field)
 // ---------------------------------------------------------------------------
 

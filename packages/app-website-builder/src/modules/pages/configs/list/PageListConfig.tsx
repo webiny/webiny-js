@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { createConfigurableComponent } from "@webiny/react-properties";
 import { Browser, type BrowserConfig } from "./Browser/index.js";
-import { PageType } from "./PageType.js";
 import { type AcoConfig, useAcoConfig } from "@webiny/app-aco";
 
 const base = createConfigurableComponent<PageListConfig>("WbPageList");
@@ -18,10 +17,9 @@ const ScopedInternalPageListConfig = ({ children }: { children: React.ReactNode 
 
 ScopedInternalPageListConfig.displayName = "WbPageListConfig";
 
-export const PageListConfig = Object.assign(ScopedPublicPageListConfig, { Browser, PageType });
+export const PageListConfig = Object.assign(ScopedPublicPageListConfig, { Browser });
 export const InternalPageListConfig = Object.assign(ScopedInternalPageListConfig, {
-    Browser,
-    PageType
+    Browser
 });
 export const PageListWithConfig = base.WithConfig;
 

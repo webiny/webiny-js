@@ -20,6 +20,7 @@ export interface IFieldConfig {
     options?: IValueOption[] | ((form: IFormModel) => IValueOption[]);
     beforeChangeCallbacks?: BeforeChangeCallback[];
     afterChangeCallbacks?: AfterChangeCallback[];
+    afterSetValueCallbacks?: AfterSetValueCallback[];
     onBlurCallbacks?: OnBlurCallback[];
 }
 
@@ -59,6 +60,7 @@ export interface IField {
     remove(): void;
     addBeforeChange(cb: BeforeChangeCallback): void;
     addAfterChange(cb: AfterChangeCallback): void;
+    addAfterSetValue(cb: AfterSetValueCallback): void;
     addOnBlur(cb: OnBlurCallback): void;
     blur(): void;
     as<T extends keyof FieldTypeMap>(type: T): FieldTypeMap[T];
@@ -87,6 +89,7 @@ export interface ISelectField extends IField {
 
 export type BeforeChangeCallback = (value: unknown, form: IFormModel) => unknown;
 export type AfterChangeCallback = (value: unknown, form: IFormModel) => void;
+export type AfterSetValueCallback = (value: unknown, form: IFormModel) => void;
 export type OnBlurCallback = (value: unknown, form: IFormModel) => void;
 
 // ---------------------------------------------------------------------------
@@ -191,6 +194,7 @@ export namespace FormModel {
     export type SelectField = ISelectField;
     export type BeforeChange = BeforeChangeCallback;
     export type AfterChange = AfterChangeCallback;
+    export type AfterSetValue = AfterSetValueCallback;
     export type OnBlur = OnBlurCallback;
     export type RowNode = IRowNode;
     export type RowNodeVM = IRowNodeVM;
@@ -230,6 +234,7 @@ export interface IFieldBuilder {
     disabled(value?: boolean): this;
     beforeChange(fn: BeforeChangeCallback): this;
     afterChange(fn: AfterChangeCallback): this;
+    afterSetValue(fn: AfterSetValueCallback): this;
     onBlur(fn: OnBlurCallback): this;
     build(name: string): IFieldConfig;
 }

@@ -90,7 +90,8 @@ export type {
     ILayoutModifier,
     IFormModifier,
     BeforeChangeCallback,
-    AfterChangeCallback
+    AfterChangeCallback,
+    AfterSetValueCallback
 } from "./features/formModel/abstractions.js";
 export { FormView } from "./features/formModel/FormView.js";
 export { useFieldRenderers } from "./features/formModel/useFieldRenderers.js";

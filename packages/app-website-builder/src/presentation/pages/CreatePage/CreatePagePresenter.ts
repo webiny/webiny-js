@@ -5,12 +5,14 @@ import { CreatePageUseCase } from "~/features/pages/createPage/abstractions.js";
 import type { CreatePageParams } from "~/features/pages/createPage/abstractions.js";
 import {
     CreatePagePresenter as PresenterAbstraction,
-    PageType,
-    CreatePageFormModifier
+    PageTypeProvider,
+    CreatePageFormModifier,
+    PageType
 } from "./abstractions.js";
 import { PagePath } from "~/shared/PagePath.js";
 
 class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
+    private readonly pageTypes: PageType.Interface[] = [];
     private form: IFormModel;
     private selectedPageType = "";
     private folderId = "";
@@ -18,18 +20,20 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
 
     constructor(
         private factory: IFormModelFactory,
-        private pageTypes: PageType.Interface[],
+        pageTypeProvider: PageTypeProvider.Interface,
         private modifiers: CreatePageFormModifier.Interface[],
         private createPage: CreatePageUseCase.Interface
     ) {
+        this.pageTypes = pageTypeProvider.getPageTypes();
         this.form = this.buildForm();
+
         makeAutoObservable(this, { vm: computed }, { autoBind: true });
     }
 
     get vm(): PresenterAbstraction.ViewModel {
         return {
             form: this.form.vm,
-            pageTypes: this.pageTypes.map(t => ({ name: t.name, label: t.label })),
+            pageTypes: this.pageTypes,
             selectedPageType: this.selectedPageType,
             loading: this.loading
         };
@@ -37,7 +41,8 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
 
     init(folderId: string): void {
         this.folderId = folderId;
-        this.selectedPageType = this.pageTypes[0]?.name ?? "static";
+        const staticPage = this.pageTypes.find(p => p.name === "static");
+        this.selectedPageType = staticPage ? "static" : this.pageTypes[0]?.name;
         this.form = this.buildForm();
     }
 
@@ -90,7 +95,9 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
             }
         }
 
-        this.loading = true;
+        runInAction(() => {
+            this.loading = true;
+        });
         try {
             return await this.createPage.execute(input);
         } finally {
@@ -151,7 +158,7 @@ export const CreatePagePresenter = PresenterAbstraction.createImplementation({
     implementation: CreatePagePresenterImpl,
     dependencies: [
         FormModelFactory,
-        [PageType, { multiple: true }],
+        PageTypeProvider,
         [CreatePageFormModifier, { multiple: true }],
         CreatePageUseCase
     ]

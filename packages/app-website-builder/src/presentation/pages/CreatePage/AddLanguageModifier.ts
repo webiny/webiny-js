@@ -30,9 +30,10 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
                 .afterChange((value, form) => this.afterChange(value, form))
         }));
 
-        // When title blur generates a path, add the language prefix.
-        form.field("title").addOnBlur((_value, f) => {
-            const path = String(f.field("path").getValue() || "");
+        // When path is set programmatically (e.g., product selection, title change), apply the language prefix.
+        // afterSetValue only fires on programmatic setValue calls, not on UI typing.
+        form.field("path").addAfterSetValue((value, f) => {
+            const path = String(value || "");
             if (!path) {
                 return;
             }
@@ -40,9 +41,12 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
             if (!langCode || !this.shouldPrefixPath()) {
                 return;
             }
-            f.field("path").setValue(
-                PagePath.create(path).setLanguageCode(langCode, this.getSupportedCodes()).toString()
-            );
+            const prefixed = PagePath.create(path)
+                .setLanguageCode(langCode, this.getSupportedCodes())
+                .toString();
+            if (prefixed !== path) {
+                f.field("path").setValue(prefixed);
+            }
         });
 
         // Field starts hidden. Show it once languages load (if 2+).
@@ -127,7 +131,7 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
 
     private getLanguageOptions() {
         return this.repository.getLanguages().map(lang => ({
-            label: lang.name,
+            label: `${lang.name} (${lang.code})`,
             value: lang.code
         }));
     }

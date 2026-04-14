@@ -31,6 +31,7 @@ export type {
     IFormModifier,
     BeforeChangeCallback,
     AfterChangeCallback,
+    AfterSetValueCallback,
     OnBlurCallback
 } from "./abstractions.js";
 

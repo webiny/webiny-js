@@ -9,6 +9,7 @@ import type {
     FieldTypeMap,
     BeforeChangeCallback,
     AfterChangeCallback,
+    AfterSetValueCallback,
     OnBlurCallback
 } from "./abstractions.js";
 
@@ -22,7 +23,9 @@ export class Field implements IField {
     private _hidden: boolean;
     private _beforeChangeCallbacks: BeforeChangeCallback[] = [];
     private _afterChangeCallbacks: AfterChangeCallback[] = [];
+    private _afterSetValueCallbacks: AfterSetValueCallback[] = [];
     private _onBlurCallbacks: OnBlurCallback[] = [];
+    private _isUIChange = false;
     private _form: IFormModel | null = null;
 
     readonly config: IFieldConfig;
@@ -38,6 +41,9 @@ export class Field implements IField {
         }
         if (config.afterChangeCallbacks) {
             this._afterChangeCallbacks = [...config.afterChangeCallbacks];
+        }
+        if (config.afterSetValueCallbacks) {
+            this._afterSetValueCallbacks = [...config.afterSetValueCallbacks];
         }
         if (config.onBlurCallbacks) {
             this._onBlurCallbacks = [...config.onBlurCallbacks];
@@ -81,6 +87,12 @@ export class Field implements IField {
         for (const cb of this._afterChangeCallbacks) {
             cb(transformed, this._form!);
         }
+
+        if (!this._isUIChange) {
+            for (const cb of this._afterSetValueCallbacks) {
+                cb(transformed, this._form!);
+            }
+        }
     }
 
     /**
@@ -116,6 +128,10 @@ export class Field implements IField {
 
     addAfterChange(cb: AfterChangeCallback): void {
         this._afterChangeCallbacks.push(cb);
+    }
+
+    addAfterSetValue(cb: AfterSetValueCallback): void {
+        this._afterSetValueCallbacks.push(cb);
     }
 
     addOnBlur(cb: OnBlurCallback): void {
@@ -162,9 +178,18 @@ export class Field implements IField {
             disabled: this._disabled,
             renderer: this.config.renderer,
             options,
-            onChange: (value: unknown) => this.setValue(value),
+            onChange: (value: unknown) => this._setValueFromUI(value),
             onBlur: () => this.blur()
         };
+    }
+
+    private _setValueFromUI(value: unknown): void {
+        this._isUIChange = true;
+        try {
+            this.setValue(value);
+        } finally {
+            this._isUIChange = false;
+        }
     }
 
     private _resolveOptions(): IValueOption[] | undefined {

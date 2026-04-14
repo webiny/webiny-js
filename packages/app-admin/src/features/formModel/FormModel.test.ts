@@ -373,7 +373,7 @@ describe("FormModel", () => {
                     title: fields
                         .text()
                         .label("Title")
-                        .beforeChange(value => "constant")
+                        .beforeChange(() => "constant")
                         .afterChange(() => {
                             calls.push("afterChange");
                         })
@@ -545,7 +545,7 @@ describe("FormModel", () => {
                     lang: fields
                         .select()
                         .label("Language")
-                        .options(f => {
+                        .options(() => {
                             // Dynamic options based on form state
                             return [{ label: "Dynamic", value: "dynamic" }];
                         })
