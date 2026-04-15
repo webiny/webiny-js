@@ -26,7 +26,7 @@ export const Extensions = () => {
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
 
-            <Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />
+            {/*<Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />*/}
             {/*<Infra.EnvVar varName="MY_ENV_VAR" value="myValue" />*/}
             {/*<Infra.Api.LambdaFunction*/}
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}
