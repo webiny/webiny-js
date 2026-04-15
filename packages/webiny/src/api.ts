@@ -2,7 +2,7 @@ export {
     AiProvider,
     AiProviderFactory,
     AiGateway,
-    AiService
+    Ai
 } from "@webiny/api-core/features/ai/index.js";
 export { Logger } from "@webiny/api-core/features/logger/index.js";
 export { BuildParam, BuildParams } from "@webiny/api-core/features/buildParams/index.js";

@@ -2,7 +2,7 @@ import { createFeature } from "@webiny/feature/api";
 import { OpenAiProviderFactory } from "./OpenAiProviderFactory.js";
 import { AnthropicProviderFactory } from "./AnthropicProviderFactory.js";
 import { AiGateway } from "./AiGateway.js";
-import { AiService } from "./AiService.js";
+import { Ai } from "./Ai.js";
 
 export const AiFeature = createFeature({
     name: "AiFeature",
@@ -10,6 +10,6 @@ export const AiFeature = createFeature({
         container.register(OpenAiProviderFactory);
         container.register(AnthropicProviderFactory);
         container.register(AiGateway).inSingletonScope();
-        container.register(AiService);
+        container.register(Ai);
     }
 });

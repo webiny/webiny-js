@@ -1,2 +1,2 @@
-export { AiProvider, AiProviderFactory, AiGateway, AiService } from "./abstractions.js";
+export { AiProvider, AiProviderFactory, AiGateway, Ai } from "./abstractions.js";
 export { AiFeature } from "./feature.js";

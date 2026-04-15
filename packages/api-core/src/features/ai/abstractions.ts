@@ -46,24 +46,24 @@ export namespace AiGateway {
     export type Interface = IAiGateway;
 }
 
-// AiService
+// Ai
 
 type SDKGenerateTextParams = Parameters<typeof generateText>[0];
 type SDKStreamTextParams = Parameters<typeof streamText>[0];
 
-export type AiServiceGenerateTextParams = Omit<SDKGenerateTextParams, "model"> & { model: string };
-export type AiServiceStreamTextParams = Omit<SDKStreamTextParams, "model"> & { model: string };
+export type AiGenerateTextParams = Omit<SDKGenerateTextParams, "model"> & { model: string };
+export type AiStreamTextParams = Omit<SDKStreamTextParams, "model"> & { model: string };
 
-export interface IAiService {
-    generateText(params: AiServiceGenerateTextParams): ReturnType<typeof generateText>;
-    streamText(params: AiServiceStreamTextParams): Promise<ReturnType<typeof streamText>>;
+export interface IAi {
+    generateText(params: AiGenerateTextParams): ReturnType<typeof generateText>;
+    streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>>;
 }
 
 /** Interact with AI language models using registered providers. */
-export const AiService = createAbstraction<IAiService>("AiService");
+export const Ai = createAbstraction<IAi>("Ai");
 
-export namespace AiService {
-    export type Interface = IAiService;
-    export type GenerateTextParams = AiServiceGenerateTextParams;
-    export type StreamTextParams = AiServiceStreamTextParams;
+export namespace Ai {
+    export type Interface = IAi;
+    export type GenerateTextParams = AiGenerateTextParams;
+    export type StreamTextParams = AiStreamTextParams;
 }
