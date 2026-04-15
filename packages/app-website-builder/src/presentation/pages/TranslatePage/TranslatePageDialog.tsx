@@ -58,6 +58,7 @@ export const TranslatePageDialog = () => {
                                 <LanguageSelector
                                     label="Target Language"
                                     placeholder="Select a language"
+                                    currentLanguage={params.currentLanguage}
                                     languages={languages}
                                 />
                             </Bind>

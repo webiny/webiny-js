@@ -1,7 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { PublishPage } from "./PublishPage.js";
+import { Container } from "@webiny/di";
 import { WbPageStatus } from "~/constants.js";
-import { Page, pageListCache } from "~/domain/Page/index.js";
+import { Page, pageListCache, fullPageCache } from "~/domain/Page/index.js";
+import {
+    PublishPageUseCase as UseCaseAbstraction,
+    PublishPageGateway as GatewayAbstraction
+} from "./abstractions.js";
+import { PublishPageUseCase } from "./PublishPageUseCase.js";
+import { PublishPageRepository } from "./PublishPageRepository.js";
+import { PageListCache, FullPageCache } from "~/features/pages/shared/abstractions.js";
 
 describe("PublishPage", () => {
     const gateway = {
@@ -57,7 +64,14 @@ describe("PublishPage", () => {
     });
 
     it("should be able to publish a page", async () => {
-        const publishPage = PublishPage.getInstance(gateway);
+        const container = new Container();
+        container.registerInstance(PageListCache, pagesCache);
+        container.registerInstance(FullPageCache, fullPageCache);
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(PublishPageRepository).inSingletonScope();
+        container.register(PublishPageUseCase);
+
+        const publishPage = container.resolve(UseCaseAbstraction);
 
         expect(pagesCache.hasItems()).toBeTrue();
         const item = pagesCache.getItem(page => page.id === "page-1#0001");
@@ -78,7 +92,14 @@ describe("PublishPage", () => {
     });
 
     it("should not publish a page if id is missing", async () => {
-        const publishPage = PublishPage.getInstance(gateway);
+        const container = new Container();
+        container.registerInstance(PageListCache, pagesCache);
+        container.registerInstance(FullPageCache, fullPageCache);
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(PublishPageRepository).inSingletonScope();
+        container.register(PublishPageUseCase);
+
+        const publishPage = container.resolve(UseCaseAbstraction);
 
         await publishPage.execute({
             id: ""

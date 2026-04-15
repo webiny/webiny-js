@@ -19,8 +19,22 @@ import { WB_PERMISSIONS_SCHEMA } from "~/constants.js";
 import { WbPermissionsFeature } from "~/features/permissions/feature.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { TranslatePageFeature } from "~/features/pages/translatePage/index.js";
+import { DeletePageFeature } from "~/features/pages/deletePage/index.js";
+import { MovePageFeature } from "~/features/pages/movePage/index.js";
+import { PublishPageFeature } from "~/features/pages/publishPage/index.js";
+import { UnpublishPageFeature } from "~/features/pages/unpublishPage/index.js";
+import { DuplicatePageFeature } from "~/features/pages/duplicatePage/index.js";
+import { CreatePageRevisionFromFeature } from "~/features/pages/createPageRevisionFrom/index.js";
+import { UpdatePageFeature } from "~/features/pages/updatePage/index.js";
+import { CreatePageFeature as CreatePageHeadlessFeature } from "~/features/pages/createPage/index.js";
+import { GetPageFeature } from "~/features/pages/getPage/index.js";
+import { GetPageRevisionsFeature } from "~/features/pages/getPageRevisions/index.js";
+import { SelectPagesFeature } from "~/features/pages/selectPages/index.js";
+import { SharedPageInfrastructureFeature } from "~/features/pages/shared/feature.js";
+import { LoadPagesFeature } from "~/features/pages/loadPages/index.js";
 import { CreatePageConfig } from "./presentation/pages/CreatePage/CreatePageConfig.js";
 import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
+import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -34,9 +48,23 @@ export const Extension = () => {
 
     return (
         <>
+            <RegisterFeature feature={SharedPageInfrastructureFeature} />
             <RegisterFeature feature={NextjsConfigFeature} />
             <RegisterFeature feature={WbPermissionsFeature} />
             <RegisterFeature feature={TranslatePageFeature} />
+            <RegisterFeature feature={DeletePageFeature} />
+            <RegisterFeature feature={MovePageFeature} />
+            <RegisterFeature feature={PublishPageFeature} />
+            <RegisterFeature feature={UnpublishPageFeature} />
+            <RegisterFeature feature={DuplicatePageFeature} />
+            <RegisterFeature feature={CreatePageRevisionFromFeature} />
+            <RegisterFeature feature={UpdatePageFeature} />
+            <RegisterFeature feature={CreatePageHeadlessFeature} />
+            <RegisterFeature feature={GetPageFeature} />
+            <RegisterFeature feature={GetPageRevisionsFeature} />
+            <RegisterFeature feature={SelectPagesFeature} />
+            <RegisterFeature feature={LoadPagesFeature} />
+            <RegisterFeature feature={CreatePageFeature} />
             <AdminConfig>
                 <Security.Permissions
                     name="website-builder"

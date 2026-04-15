@@ -28,6 +28,7 @@ import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js"
 import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index.js";
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
+import { GetPageLanguagePathsUseCase } from "~/features/pages/GetPageLanguagePaths/index.js";
 
 export const createPagesSchema = () => {
     const pageGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
@@ -54,6 +55,7 @@ export const createPagesSchema = () => {
                         const page = result.value;
                         return {
                             id: page.id,
+                            entryId: page.entryId,
                             properties: page.properties,
                             bindings: page.bindings,
                             elements: page.elements
@@ -327,6 +329,21 @@ export const createPagesSchema = () => {
 
                         return true;
                     });
+                }
+            },
+            WbPage: {
+                languagePaths: async (page: any, _: any, context: ApiCoreContext) => {
+                    const properties = page.properties ?? {};
+                    const rootEntryId: string | undefined = properties.sourcePage ?? page.entryId;
+
+                    if (!rootEntryId) {
+                        return {};
+                    }
+
+                    const getLanguagePaths = context.container.resolve(GetPageLanguagePathsUseCase);
+                    const result = await getLanguagePaths.execute(rootEntryId);
+
+                    return result.isFail() ? {} : result.value;
                 }
             }
         }

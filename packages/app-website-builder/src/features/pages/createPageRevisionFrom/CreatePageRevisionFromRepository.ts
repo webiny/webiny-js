@@ -1,15 +1,15 @@
-import type { ICreatePageRevisionFromRepository } from "~/features/pages/createPageRevisionFrom/ICreatePageRevisionFromRepository.js";
-import type { ICreatePageRevisionFromGateway } from "~/features/pages/createPageRevisionFrom/ICreatePageRevisionFromGateway.js";
-import { type IListCache, Page } from "~/domain/Page/index.js";
+import {
+    CreatePageRevisionFromRepository as RepositoryAbstraction,
+    CreatePageRevisionFromGateway
+} from "./abstractions.js";
+import { Page } from "~/domain/Page/Page.js";
+import { PageListCache } from "~/features/pages/shared/abstractions.js";
 
-export class CreatePageRevisionFromRepository implements ICreatePageRevisionFromRepository {
-    private cache: IListCache<Page>;
-    private gateway: ICreatePageRevisionFromGateway;
-
-    constructor(cache: IListCache<Page>, gateway: ICreatePageRevisionFromGateway) {
-        this.cache = cache;
-        this.gateway = gateway;
-    }
+class CreatePageRevisionFromRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private cache: PageListCache.Interface,
+        private gateway: CreatePageRevisionFromGateway.Interface
+    ) {}
 
     async execute(page: Page) {
         const result = await this.gateway.execute(page.id);
@@ -19,10 +19,14 @@ export class CreatePageRevisionFromRepository implements ICreatePageRevisionFrom
             if (p.id === page.id) {
                 return newPage;
             }
-
             return p;
         });
 
         return newPage;
     }
 }
+
+export const CreatePageRevisionFromRepository = RepositoryAbstraction.createImplementation({
+    implementation: CreatePageRevisionFromRepositoryImpl,
+    dependencies: [PageListCache, CreatePageRevisionFromGateway]
+});

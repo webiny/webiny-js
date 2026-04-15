@@ -16,6 +16,7 @@ import { createIdentifier, mdbid } from "@webiny/utils";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "./statuses.js";
 import { getIdentity } from "~/utils/identity.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
+import { NotAuthorizedError } from "~/utils/errors.js";
 import { getSystem } from "./system.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
@@ -174,10 +175,15 @@ export const createEntryData = async <TValues extends CmsEntryValues = CmsEntryV
     const status = rawInput.status || STATUS_DRAFT;
     if (status !== STATUS_DRAFT) {
         if (status === STATUS_PUBLISHED) {
-            await accessControl.ensureCanAccessEntry({ model, pw: "p" });
+            const canPublish = await accessControl.canAccessEntry({ model, pw: "p" });
+            if (!canPublish) {
+                throw new NotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
+            }
         } else if (status === STATUS_UNPUBLISHED) {
-            // If setting the status other than draft, we have to check if the user has permissions to publish.
-            await accessControl.ensureCanAccessEntry({ model, pw: "u" });
+            const canUnpublish = await accessControl.canAccessEntry({ model, pw: "u" });
+            if (!canUnpublish) {
+                throw new NotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
+            }
         }
     }
 
@@ -282,10 +288,15 @@ export const createEntryData = async <TValues extends CmsEntryValues = CmsEntryV
 
     if (status !== STATUS_DRAFT) {
         if (status === STATUS_PUBLISHED) {
-            await accessControl.ensureCanAccessEntry({ model, entry, pw: "p" });
+            const canPublish = await accessControl.canAccessEntry({ model, entry, pw: "p" });
+            if (!canPublish) {
+                throw new NotAuthorizedError(`Not allowed to access entry "${entry.entryId}".`);
+            }
         } else if (status === STATUS_UNPUBLISHED) {
-            // If setting the status other than draft, we have to check if the user has permissions to publish.
-            await accessControl.ensureCanAccessEntry({ model, entry, pw: "u" });
+            const canUnpublish = await accessControl.canAccessEntry({ model, entry, pw: "u" });
+            if (!canUnpublish) {
+                throw new NotAuthorizedError(`Not allowed to access entry "${entry.entryId}".`);
+            }
         }
     }
 

@@ -1,21 +1,16 @@
-import type { IPublishPageRepository } from "~/features/pages/publishPage/IPublishPageRepository.js";
-import type { IPublishPageGateway } from "~/features/pages/publishPage/IPublishPageGateway.js";
-import { type IListCache, Page } from "~/domain/Page/index.js";
+import {
+    PublishPageRepository as RepositoryAbstraction,
+    PublishPageGateway
+} from "./abstractions.js";
+import { Page } from "~/domain/Page/Page.js";
+import { PageListCache, FullPageCache } from "~/features/pages/shared/abstractions.js";
 
-export class PublishPageRepository implements IPublishPageRepository {
-    private listCache: IListCache<Page>;
-    private detailsCache: IListCache<Page>;
-    private gateway: IPublishPageGateway;
-
+class PublishPageRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        listCache: IListCache<Page>,
-        detailsCache: IListCache<Page>,
-        gateway: IPublishPageGateway
-    ) {
-        this.detailsCache = detailsCache;
-        this.listCache = listCache;
-        this.gateway = gateway;
-    }
+        private listCache: PageListCache.Interface,
+        private detailsCache: FullPageCache.Interface,
+        private gateway: PublishPageGateway.Interface
+    ) {}
 
     async execute(page: Page) {
         const result = await this.gateway.execute(page.id);
@@ -24,7 +19,6 @@ export class PublishPageRepository implements IPublishPageRepository {
             if (existingPage.id === page.id) {
                 return Page.create(result);
             }
-
             return existingPage;
         });
 
@@ -36,8 +30,12 @@ export class PublishPageRepository implements IPublishPageRepository {
                     bindings: page.bindings
                 });
             }
-
             return existingPage;
         });
     }
 }
+
+export const PublishPageRepository = RepositoryAbstraction.createImplementation({
+    implementation: PublishPageRepositoryImpl,
+    dependencies: [PageListCache, FullPageCache, PublishPageGateway]
+});

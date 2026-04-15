@@ -1,21 +1,22 @@
-import type { ILoadingRepository } from "@webiny/app-utils";
-import type { IUpdatePageUseCase } from "./IUpdatePageUseCase.js";
-import { type UpdatePageParams } from "./IUpdatePageUseCase.js";
+import { UpdatePageUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { WbPageLoadingRepository } from "~/features/pages/shared/abstractions.js";
 import { loadingActions } from "~/constants.js";
 
-export class UpdatePageUseCaseWithLoading implements IUpdatePageUseCase {
-    private loadingRepository: ILoadingRepository;
-    private useCase: IUpdatePageUseCase;
+class UpdatePageUseCaseWithLoadingImpl implements UseCaseAbstraction.Interface {
+    constructor(
+        private loadingRepository: WbPageLoadingRepository.Interface,
+        private decoratee: UseCaseAbstraction.Interface
+    ) {}
 
-    constructor(loadingRepository: ILoadingRepository, useCase: IUpdatePageUseCase) {
-        this.loadingRepository = loadingRepository;
-        this.useCase = useCase;
-    }
-
-    async execute(params: UpdatePageParams) {
+    async execute(params: UseCaseAbstraction.Params) {
         await this.loadingRepository.runCallBack(
-            this.useCase.execute(params),
+            this.decoratee.execute(params),
             loadingActions.update
         );
     }
 }
+
+export const UpdatePageUseCaseWithLoading = UseCaseAbstraction.createDecorator({
+    decorator: UpdatePageUseCaseWithLoadingImpl,
+    dependencies: [WbPageLoadingRepository]
+});

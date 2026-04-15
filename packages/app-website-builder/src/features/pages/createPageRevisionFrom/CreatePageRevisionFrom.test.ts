@@ -1,7 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { CreatePageRevisionFrom } from "./CreatePageRevisionFrom.js";
+import { Container } from "@webiny/di";
 import { WbPageStatus } from "~/constants.js";
 import { Page, pageListCache } from "~/domain/Page/index.js";
+import {
+    CreatePageRevisionFromUseCase as UseCaseAbstraction,
+    CreatePageRevisionFromGateway as GatewayAbstraction
+} from "./abstractions.js";
+import { CreatePageRevisionFromUseCase } from "./CreatePageRevisionFromUseCase.js";
+import { CreatePageRevisionFromRepository } from "./CreatePageRevisionFromRepository.js";
+import { PageListCache } from "~/features/pages/shared/abstractions.js";
 
 describe("CreatePageRevisionFrom", () => {
     const gateway = {
@@ -58,7 +65,13 @@ describe("CreatePageRevisionFrom", () => {
     });
 
     it("should be able to create a page revision from another revision", async () => {
-        const createPageRevisionFrom = CreatePageRevisionFrom.getInstance(gateway);
+        const container = new Container();
+        container.registerInstance(PageListCache, pagesCache);
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(CreatePageRevisionFromRepository).inSingletonScope();
+        container.register(CreatePageRevisionFromUseCase);
+
+        const createPageRevisionFrom = container.resolve(UseCaseAbstraction);
 
         expect(pagesCache.hasItems()).toBeTrue();
         const item = pagesCache.getItem(page => page.id === "page-1#0001");
@@ -77,7 +90,13 @@ describe("CreatePageRevisionFrom", () => {
     });
 
     it("should not publish a page if id is missing", async () => {
-        const createRevisionFrom = CreatePageRevisionFrom.getInstance(gateway);
+        const container = new Container();
+        container.registerInstance(PageListCache, pagesCache);
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(CreatePageRevisionFromRepository).inSingletonScope();
+        container.register(CreatePageRevisionFromUseCase);
+
+        const createRevisionFrom = container.resolve(UseCaseAbstraction);
 
         await createRevisionFrom.execute({
             id: ""

@@ -1,1 +1,2 @@
-export * from "./useMovePage.js";
+export { MovePageFeature } from "./feature.js";
+export type { MovePageParams } from "./abstractions.js";

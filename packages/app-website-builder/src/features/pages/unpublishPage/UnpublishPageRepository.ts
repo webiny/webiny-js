@@ -1,21 +1,16 @@
-import type { IUnpublishPageRepository } from "~/features/pages/unpublishPage/IUnpublishPageRepository.js";
-import type { IUnpublishPageGateway } from "~/features/pages/unpublishPage/IUnpublishPageGateway.js";
-import { type IListCache, Page } from "~/domain/Page/index.js";
+import {
+    UnpublishPageRepository as RepositoryAbstraction,
+    UnpublishPageGateway
+} from "./abstractions.js";
+import { Page } from "~/domain/Page/Page.js";
+import { PageListCache, FullPageCache } from "~/features/pages/shared/abstractions.js";
 
-export class UnpublishPageRepository implements IUnpublishPageRepository {
-    private gateway: IUnpublishPageGateway;
-    private detailsCache: IListCache<Page>;
-    private listCache: IListCache<Page>;
-
+class UnpublishPageRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        listCache: IListCache<Page>,
-        detailsCache: IListCache<Page>,
-        gateway: IUnpublishPageGateway
-    ) {
-        this.detailsCache = detailsCache;
-        this.listCache = listCache;
-        this.gateway = gateway;
-    }
+        private listCache: PageListCache.Interface,
+        private detailsCache: FullPageCache.Interface,
+        private gateway: UnpublishPageGateway.Interface
+    ) {}
 
     async execute(page: Page) {
         const result = await this.gateway.execute(page.id);
@@ -24,7 +19,6 @@ export class UnpublishPageRepository implements IUnpublishPageRepository {
             if (existingPage.id === page.id) {
                 return Page.create(result);
             }
-
             return existingPage;
         });
 
@@ -36,8 +30,12 @@ export class UnpublishPageRepository implements IUnpublishPageRepository {
                     bindings: page.bindings
                 });
             }
-
             return existingPage;
         });
     }
 }
+
+export const UnpublishPageRepository = RepositoryAbstraction.createImplementation({
+    implementation: UnpublishPageRepositoryImpl,
+    dependencies: [PageListCache, FullPageCache, UnpublishPageGateway]
+});

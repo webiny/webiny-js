@@ -60,14 +60,29 @@ export class AuthorizationContext implements Abstraction.Interface {
     private transformPermissions(permissions: SecurityPermission[]) {
         const transformers = this.getTransformers();
         if (transformers.length === 0) {
-            return permissions;
+            return this.deduplicatePermissions(permissions);
         }
 
-        return permissions
+        const transformed = permissions
             .map(permission => {
                 // A transformer can return one or multiple permissions, so we flatten the result.
                 return transformers.map(t => t.execute(permission)).flat();
             })
             .flat();
+
+        return this.deduplicatePermissions(transformed);
+    }
+
+    private deduplicatePermissions(permissions: SecurityPermission[]) {
+        const seen = new Set<string>();
+
+        return permissions.filter(permission => {
+            const key = JSON.stringify(permission);
+            if (seen.has(key)) {
+                return false;
+            }
+            seen.add(key);
+            return true;
+        });
     }
 }

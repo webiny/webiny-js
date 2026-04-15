@@ -1,0 +1,64 @@
+// Feature
+export { FormModelFeature } from "./feature.js";
+
+// Abstractions (types + DI tokens)
+export { FormModelFactory, FormModel } from "./abstractions.js";
+export type {
+    IFormModelFactory,
+    IFormModelConfig,
+    ILayoutBuilder,
+    IFieldBuilder,
+    ISelectFieldBuilder,
+    IFieldBuilderRegistry,
+    IFormModel,
+    IField,
+    ISelectField,
+    FieldTypeMap,
+    IFieldConfig,
+    IFieldVM,
+    IFieldValidation,
+    IFormVM,
+    IFormError,
+    IValueOption,
+    IRowNode,
+    IRowNodeVM,
+    ISeparatorNode,
+    ISeparatorNodeVM,
+    ITabsNode,
+    ITabDefinition,
+    ITabsNodeVM,
+    ITabDefinitionVM,
+    IElementNode,
+    IElementNodeVM,
+    IObjectNode,
+    ILayoutNodeAccessHandle,
+    ITabsHandle,
+    ITabHandle,
+    LayoutNode,
+    LayoutNodeVM,
+    LayoutPosition,
+    IPositionedLayoutNode,
+    ILayoutNodeHandle,
+    ILayoutModifier,
+    IFormModifier,
+    BeforeChangeCallback,
+    AfterChangeCallback,
+    AfterSetValueCallback,
+    OnBlurCallback
+} from "./abstractions.js";
+
+// Implementations
+export { FormModel as FormModelImpl } from "./FormModel.js";
+export { Field } from "./Field.js";
+export {
+    FieldBuilder,
+    TextFieldBuilder,
+    SelectFieldBuilder,
+    createFieldBuilderRegistry
+} from "./FieldBuilder.js";
+export type { IFieldTypeFactory } from "./FieldBuilder.js";
+
+// View
+export { FormView } from "./FormView.js";
+export { useFieldRenderers } from "./useFieldRenderers.js";
+export type { FieldRenderers, FieldRendererComponent } from "./FormView.js";

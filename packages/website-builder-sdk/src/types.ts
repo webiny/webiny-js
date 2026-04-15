@@ -294,7 +294,9 @@ export type Document = {
 export type PublicPage = Pick<
     Page,
     "id" | "version" | "properties" | "bindings" | "elements" | "extensions" | "metadata" | "state"
->;
+> & {
+    languagePaths: Record<string, string>;
+};
 
 export type PublicRedirect = {
     id: string;
@@ -325,6 +327,8 @@ export type Page = Document & {
             src: string;
         };*/
         path: string;
+        language?: string;
+        sourcePage?: string;
         tags: string[];
         seo: {
             title: string;

@@ -1,4 +1,5 @@
 import { PermissionTransformer } from "@webiny/api-core/features/security/authorization/AuthorizationContext/abstractions.js";
+import { TENANT_MODEL_ID } from "~/shared/constants.js";
 
 class AddCmsPermissions implements PermissionTransformer.Interface {
     execute(permission: PermissionTransformer.Permission) {
@@ -9,27 +10,31 @@ class AddCmsPermissions implements PermissionTransformer.Interface {
         return [
             permission,
             {
-                name: "cms.endpoint.manage"
+                name: "cms.endpoint.manage",
+                _src: "tenant-manager"
             },
             {
                 name: "cms.contentModel",
                 own: false,
                 rwd: "r",
                 pw: "",
-                models: ["tenant"]
+                models: [TENANT_MODEL_ID],
+                _src: "tenant-manager"
             },
             {
                 name: "cms.contentModelGroup",
                 own: false,
                 rwd: "r",
                 pw: "",
-                groups: ["hidden"]
+                groups: ["hidden"],
+                _src: "tenant-manager"
             },
             {
                 name: "cms.contentEntry",
                 own: false,
                 rwd: "rwd",
-                pw: ""
+                pw: "",
+                _src: "tenant-manager"
             }
         ];
     }
