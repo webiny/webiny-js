@@ -11,6 +11,7 @@ import type {
 import { createStoreKey } from "~/helpers/store.js";
 import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
+import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
 
 export interface IGetDeleteModelProgress {
     readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "db">;
@@ -38,15 +39,15 @@ export const getDeleteModelProgress = async (
         });
     }
 
-    await context.cms.accessControl.ensureCanAccessModel({
-        model,
-        rwd: "d"
-    });
+    const canAccessModel = await context.cms.accessControl.canAccessModel({ model, rwd: "d" });
+    if (!canAccessModel) {
+        throw new NotAuthorizedError(`Not allowed to access content model "${model.name}".`);
+    }
 
-    await context.cms.accessControl.ensureCanAccessEntry({
-        model,
-        rwd: "w"
-    });
+    const canAccessEntry = await context.cms.accessControl.canAccessEntry({ model, rwd: "w" });
+    if (!canAccessEntry) {
+        throw new NotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
+    }
 
     const storeKey = createStoreKey(model);
     const result = await context.db.store.getValue<IStoreValue>(storeKey);

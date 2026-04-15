@@ -1,7 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { GetPage } from "~/features/pages/getPage/GetPage.js";
+import { Container } from "@webiny/di";
 import { WbPageStatus } from "~/constants.js";
 import { fullPageCache } from "~/domain/Page/index.js";
+import {
+    GetPageUseCase as UseCaseAbstraction,
+    GetPageGateway as GatewayAbstraction
+} from "./abstractions.js";
+import { GetPageUseCase } from "./GetPageUseCase.js";
+import { GetPageRepository } from "./GetPageRepository.js";
+import { FullPageCache } from "~/features/pages/shared/abstractions.js";
 
 describe("GetPage", () => {
     const gateway = {
@@ -33,11 +40,17 @@ describe("GetPage", () => {
     });
 
     it("should be able to get a page", async () => {
-        const getPage = GetPage.getInstance(gateway);
+        const container = new Container();
+        container.registerInstance(FullPageCache, fullPageCache);
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(GetPageRepository).inSingletonScope();
+        container.register(GetPageUseCase);
+
+        const getPage = container.resolve(UseCaseAbstraction);
 
         expect(fullPageCache.hasItems()).toBeFalse();
 
-        await getPage.useCase.execute({ id: "page-1#0001" });
+        await getPage.execute({ id: "page-1#0001" });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
         expect(gateway.execute).toHaveBeenLastCalledWith("page-1#0001");
@@ -53,18 +66,24 @@ describe("GetPage", () => {
     });
 
     it("should be able to get a page more than once (returned from cache)", async () => {
-        const getPage = GetPage.getInstance(gateway);
+        const container = new Container();
+        container.registerInstance(FullPageCache, fullPageCache);
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(GetPageRepository).inSingletonScope();
+        container.register(GetPageUseCase);
+
+        const getPage = container.resolve(UseCaseAbstraction);
 
         expect(fullPageCache.hasItems()).toBeFalse();
 
         // execute the first time
-        await getPage.useCase.execute({ id: "page-1#0001" });
+        await getPage.execute({ id: "page-1#0001" });
         expect(gateway.execute).toHaveBeenCalledTimes(1);
         expect(gateway.execute).toHaveBeenLastCalledWith("page-1#0001");
         expect(fullPageCache.hasItems()).toBeTrue();
 
         // execute the second time
-        await getPage.useCase.execute({ id: "page-1#0001" });
+        await getPage.execute({ id: "page-1#0001" });
         expect(gateway.execute).toHaveBeenCalledTimes(1);
         expect(gateway.execute).toHaveBeenLastCalledWith("page-1#0001");
         expect(fullPageCache.hasItems()).toBeTrue();
@@ -82,13 +101,18 @@ describe("GetPage", () => {
         const errorGateway = {
             execute: vi.fn().mockRejectedValue(new Error("Gateway error"))
         };
-        const getPage = GetPage.getInstance(errorGateway);
+
+        const container = new Container();
+        container.registerInstance(FullPageCache, fullPageCache);
+        container.registerInstance(GatewayAbstraction, errorGateway);
+        container.register(GetPageRepository).inSingletonScope();
+        container.register(GetPageUseCase);
+
+        const getPage = container.resolve(UseCaseAbstraction);
 
         expect(fullPageCache.hasItems()).toBeFalse();
 
-        await expect(getPage.useCase.execute({ id: "page-1#0001" })).rejects.toThrow(
-            "Gateway error"
-        );
+        await expect(getPage.execute({ id: "page-1#0001" })).rejects.toThrow("Gateway error");
 
         expect(errorGateway.execute).toHaveBeenCalledTimes(1);
         expect(fullPageCache.hasItems()).toBeFalse();

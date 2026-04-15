@@ -7,6 +7,7 @@ import type {
 import { createStoreKey, createStoreValue } from "~/helpers/store.js";
 import { DELETE_MODEL_TASK } from "~/constants.js";
 import { getStatus } from "~/graphql/deleteModel/status.js";
+import { NotAuthorizedError } from "@webiny/api-headless-cms/utils/errors.js";
 
 export interface IFullyDeleteModelParams {
     readonly context: Pick<HcmsTasksContext, "cms" | "tasks" | "db" | "security">;
@@ -24,15 +25,15 @@ export const fullyDeleteModel = async (
         throw new Error(`Cannot delete private model.`);
     }
 
-    await context.cms.accessControl.ensureCanAccessModel({
-        model,
-        rwd: "d"
-    });
+    const canAccessModel = await context.cms.accessControl.canAccessModel({ model, rwd: "d" });
+    if (!canAccessModel) {
+        throw new NotAuthorizedError(`Not allowed to access content model "${model.name}".`);
+    }
 
-    await context.cms.accessControl.ensureCanAccessEntry({
-        model,
-        rwd: "w"
-    });
+    const canAccessEntry = await context.cms.accessControl.canAccessEntry({ model, rwd: "w" });
+    if (!canAccessEntry) {
+        throw new NotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
+    }
 
     if (!model) {
         throw new Error(`Model "${modelId}" not found.`);

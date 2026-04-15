@@ -17,6 +17,7 @@ import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "./statuses.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
+import { NotAuthorizedError } from "~/utils/errors.js";
 import { getSystem } from "./system.js";
 
 interface CreateEntryRevisionFromDataParams<TValues extends CmsEntryValues = CmsEntryValues> {
@@ -89,10 +90,15 @@ export const createEntryRevisionFromData = async <TValues extends CmsEntryValues
     const status = rawInput.status || STATUS_DRAFT;
     if (status !== STATUS_DRAFT) {
         if (status === STATUS_PUBLISHED) {
-            await accessControl.ensureCanAccessEntry({ model, pw: "p" });
+            const canPublish = await accessControl.canAccessEntry({ model, pw: "p" });
+            if (!canPublish) {
+                throw new NotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
+            }
         } else if (status === STATUS_UNPUBLISHED) {
-            // If setting the status other than draft, we have to check if the user has permissions to publish.
-            await accessControl.ensureCanAccessEntry({ model, pw: "u" });
+            const canUnpublish = await accessControl.canAccessEntry({ model, pw: "u" });
+            if (!canUnpublish) {
+                throw new NotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
+            }
         }
     }
 

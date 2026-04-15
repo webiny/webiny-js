@@ -16,6 +16,7 @@ import { createTenancyProvider } from "~/presentation/tenancy/createTenancyProvi
 import { TelemetryAdminAppStart } from "./TelemetryAdminAppStart.js";
 import { ApolloClientFeature } from "~/features/apolloClient/feature.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
+import { FormModelFeature } from "~/features/formModel/feature.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js";
 
@@ -35,6 +36,7 @@ export const Admin = ({ children, createApolloClient, createLegacyPlugins }: Adm
 
     ApolloClientFeature.register(container, apolloClient);
     SecurityFeature.register(container);
+    FormModelFeature.register(container);
 
     const ApolloProvider = createApolloProvider(apolloClient);
     const UIProviders = createUiProviders();

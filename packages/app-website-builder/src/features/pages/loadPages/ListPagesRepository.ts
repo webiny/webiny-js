@@ -1,63 +1,35 @@
-import type {
-    IListPagesRepository,
-    LoadPagesRepositoryParams
-} from "~/features/pages/loadPages/IListPagesRepository.js";
-import { type IListCache, Page } from "~/domain/Page/index.js";
+import { ListPagesRepository as RepositoryAbstraction, ListPagesGateway } from "./abstractions.js";
+import type { LoadPagesRepositoryParams, ListPagesGatewayParams } from "./abstractions.js";
+import { Page } from "~/domain/Page/Page.js";
 import type { Sorting } from "@webiny/app-utils";
-import {
-    type ILoadingRepository,
-    type IMetaRepository,
-    type ISortingRepository,
-    MetaMapper,
-    SortingMapper
-} from "@webiny/app-utils";
-import type { IParamsRepository } from "~/domain/Params/index.js";
-import type {
-    IListPagesGateway,
-    ListPagesGatewayParams
-} from "~/features/pages/loadPages/IListPagesGateway.js";
-import type { ISearchRepository } from "~/domain/Search/index.js";
+import { MetaMapper, SortingMapper } from "@webiny/app-utils";
 import { loadingActions } from "~/constants.js";
-import type { IFilterRepository } from "~/domain/Filter/index.js";
+import {
+    PageListCache,
+    WbPageLoadingRepository,
+    WbPageMetaRepository,
+    WbPageParamsRepository,
+    WbPageSearchRepository,
+    WbPageSortingRepository,
+    WbPageFilterRepository
+} from "~/features/pages/shared/abstractions.js";
 
-export class ListPagesRepository implements IListPagesRepository {
-    private pages: IListCache<Page>;
-    private loading: ILoadingRepository;
-    private meta: IMetaRepository;
-    private params: IParamsRepository;
-    private search: ISearchRepository;
-    private sorting: ISortingRepository;
-    private filter: IFilterRepository;
-    private gateway: IListPagesGateway;
-
+class ListPagesRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
-        cache: IListCache<Page>,
-        loading: ILoadingRepository,
-        meta: IMetaRepository,
-        params: IParamsRepository,
-        search: ISearchRepository,
-        sorting: ISortingRepository,
-        filter: IFilterRepository,
-        gateway: IListPagesGateway
-    ) {
-        this.pages = cache;
-        this.loading = loading;
-        this.meta = meta;
-        this.params = params;
-        this.search = search;
-        this.sorting = sorting;
-        this.filter = filter;
-        this.gateway = gateway;
-    }
+        private pages: PageListCache.Interface,
+        private loading: WbPageLoadingRepository.Interface,
+        private meta: WbPageMetaRepository.Interface,
+        private params: WbPageParamsRepository.Interface,
+        private search: WbPageSearchRepository.Interface,
+        private sorting: WbPageSortingRepository.Interface,
+        private filter: WbPageFilterRepository.Interface,
+        private gateway: ListPagesGateway.Interface
+    ) {}
 
     async loadPages({ resetSearch, ...params }: LoadPagesRepositoryParams) {
         await this.params.set(params);
         await this.filter.reset();
-        await this.meta.set({
-            totalCount: 0,
-            cursor: null,
-            hasMoreItems: false
-        });
+        await this.meta.set({ totalCount: 0, cursor: null, hasMoreItems: false });
 
         if (resetSearch) {
             await this.search.set("");
@@ -125,3 +97,17 @@ export class ListPagesRepository implements IListPagesRepository {
         };
     }
 }
+
+export const ListPagesRepository = RepositoryAbstraction.createImplementation({
+    implementation: ListPagesRepositoryImpl,
+    dependencies: [
+        PageListCache,
+        WbPageLoadingRepository,
+        WbPageMetaRepository,
+        WbPageParamsRepository,
+        WbPageSearchRepository,
+        WbPageSortingRepository,
+        WbPageFilterRepository,
+        ListPagesGateway
+    ]
+});

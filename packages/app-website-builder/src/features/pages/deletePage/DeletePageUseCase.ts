@@ -1,23 +1,15 @@
-import type {
-    DeletePageParams,
-    IDeletePageUseCase
-} from "~/features/pages/deletePage/IDeletePageUseCase.js";
-import type { IDeletePageRepository } from "~/features/pages/deletePage/IDeletePageRepository.js";
-import { Page } from "~/domain/Page/index.js";
+import { DeletePageUseCase as UseCaseAbstraction, DeletePageRepository } from "./abstractions.js";
+import { Page } from "~/domain/Page/Page.js";
 
-export class DeletePageUseCase implements IDeletePageUseCase {
-    private repository: IDeletePageRepository;
+class DeletePageUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: DeletePageRepository.Interface) {}
 
-    constructor(repository: IDeletePageRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: DeletePageParams) {
-        await this.repository.execute(
-            Page.create({
-                id: params.id
-            }),
-            params.permanently
-        );
+    async execute(params: UseCaseAbstraction.Params) {
+        await this.repository.execute(Page.create({ id: params.id }), params.permanently);
     }
 }
+
+export const DeletePageUseCase = UseCaseAbstraction.createImplementation({
+    implementation: DeletePageUseCaseImpl,
+    dependencies: [DeletePageRepository]
+});

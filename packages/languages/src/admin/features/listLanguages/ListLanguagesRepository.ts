@@ -1,25 +1,25 @@
-import { makeAutoObservable, runInAction } from "mobx";
 import {
     ListLanguagesRepository as RepositoryAbstraction,
     ListLanguagesGateway,
+    LanguagesCache,
     type LanguageDto
 } from "./abstractions.js";
 
 class ListLanguagesRepositoryImpl implements RepositoryAbstraction.Interface {
-    private languages: LanguageDto[] = [];
     private pending: Promise<LanguageDto[]> | undefined;
 
-    constructor(private gateway: ListLanguagesGateway.Interface) {
-        makeAutoObservable(this);
-    }
+    constructor(
+        private gateway: ListLanguagesGateway.Interface,
+        private cache: LanguagesCache.Interface
+    ) {}
 
     getLanguages(): LanguageDto[] {
-        return this.languages;
+        return this.cache.getItems();
     }
 
     async execute(): Promise<LanguageDto[]> {
-        if (this.languages.length > 0) {
-            return this.languages;
+        if (this.cache.hasItems()) {
+            return this.cache.getItems();
         }
 
         if (this.pending) {
@@ -27,12 +27,9 @@ class ListLanguagesRepositoryImpl implements RepositoryAbstraction.Interface {
         }
 
         this.pending = this.gateway.execute().then(languages => {
-            runInAction(() => {
-                this.languages = languages.sort((a, b) => {
-                    return a.name.localeCompare(b.name);
-                });
-            });
-            return this.languages;
+            const sorted = languages.sort((a, b) => a.name.localeCompare(b.name));
+            this.cache.addItems(sorted);
+            return this.cache.getItems();
         });
 
         return this.pending;
@@ -41,5 +38,5 @@ class ListLanguagesRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListLanguagesRepository = RepositoryAbstraction.createImplementation({
     implementation: ListLanguagesRepositoryImpl,
-    dependencies: [ListLanguagesGateway]
+    dependencies: [ListLanguagesGateway, LanguagesCache]
 });

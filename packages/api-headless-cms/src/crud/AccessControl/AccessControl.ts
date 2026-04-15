@@ -62,11 +62,11 @@ interface IModelAuthorizationDisabledParams {
 }
 
 export class AccessControl {
-    getIdentity: AccessControlParams["getIdentity"];
-    getGroupsPermissions: AccessControlParams["getGroupsPermissions"];
-    getModelsPermissions: AccessControlParams["getModelsPermissions"];
-    getEntriesPermissions: AccessControlParams["getEntriesPermissions"];
-    listAllGroupsCallback: AccessControlParams["listAllGroups"];
+    private getIdentity: AccessControlParams["getIdentity"];
+    private getGroupsPermissions: AccessControlParams["getGroupsPermissions"];
+    private getModelsPermissions: AccessControlParams["getModelsPermissions"];
+    private getEntriesPermissions: AccessControlParams["getEntriesPermissions"];
+    private listAllGroupsCallback: AccessControlParams["listAllGroups"];
 
     private fullAccessPermissions: string[];
     private allGroups: null | Promise<CmsGroup[]>;
@@ -116,17 +116,17 @@ export class AccessControl {
         return true;
     }
 
-    async canAccessNonOwnedGroups(params: GetGroupsAccessControlListParams) {
+    private async canAccessNonOwnedGroups(params: GetGroupsAccessControlListParams) {
         const acl = await this.getGroupsAccessControlList(params);
         return acl.some(ace => ace.canAccessNonOwned);
     }
 
-    async canAccessOnlyOwnedGroups(params: GetGroupsAccessControlListParams) {
+    private async canAccessOnlyOwnedGroups(params: GetGroupsAccessControlListParams) {
         const canAccessNonOwned = await this.canAccessNonOwnedGroups(params);
         return !canAccessNonOwned;
     }
 
-    async getGroupsAccessControlList(
+    private async getGroupsAccessControlList(
         params: GetGroupsAccessControlListParams
     ): Promise<AccessControlList> {
         if (await this.hasFullAccessToGroups()) {
@@ -186,7 +186,7 @@ export class AccessControl {
         return acl;
     }
 
-    async hasFullAccessToGroups() {
+    private async hasFullAccessToGroups() {
         const permissions = await this.getGroupsPermissions();
         return permissions.some(p => this.fullAccessPermissions.filter(Boolean).includes(p.name));
     }
@@ -220,7 +220,7 @@ export class AccessControl {
         return true;
     }
 
-    async ensureCanAccessModel(params: CanAccessModelParams = {}) {
+    private async ensureCanAccessModel(params: CanAccessModelParams = {}) {
         const canAccess = await this.canAccessModel(params);
         if (canAccess) {
             return;
@@ -238,17 +238,17 @@ export class AccessControl {
         throw new NotAuthorizedError(`Not allowed to access content models.`);
     }
 
-    async canAccessNonOwnedModels(params: GetModelsAccessControlListParams) {
+    private async canAccessNonOwnedModels(params: GetModelsAccessControlListParams) {
         const acl = await this.getModelsAccessControlList(params);
         return acl.some(ace => ace.canAccessNonOwned);
     }
 
-    async canAccessOnlyOwnedModels(params: GetModelsAccessControlListParams) {
+    private async canAccessOnlyOwnedModels(params: GetModelsAccessControlListParams) {
         const canAccessNonOwned = await this.canAccessNonOwnedModels(params);
         return !canAccessNonOwned;
     }
 
-    async getModelsAccessControlList(
+    private async getModelsAccessControlList(
         params: GetModelsAccessControlListParams
     ): Promise<AccessControlList> {
         if (await this.hasFullAccessToModels(params)) {
@@ -387,7 +387,7 @@ export class AccessControl {
         return acl;
     }
 
-    async hasFullAccessToModels(params: GetModelsAccessControlListParams) {
+    private async hasFullAccessToModels(params: GetModelsAccessControlListParams) {
         const { model } = params;
         if (model) {
             if (this.modelAuthorizationDisabled({ model })) {
@@ -436,7 +436,7 @@ export class AccessControl {
         return true;
     }
 
-    async ensureCanAccessEntry(params: CanAccessEntryParams) {
+    private async ensureCanAccessEntry(params: CanAccessEntryParams) {
         const canAccess = await this.canAccessEntry(params);
         if (!canAccess) {
             if (params.entry) {
@@ -451,7 +451,7 @@ export class AccessControl {
         }
     }
 
-    async canAccessNonOwnedEntries(params: GetEntriesAccessControlListParams) {
+    private async canAccessNonOwnedEntries(params: GetEntriesAccessControlListParams) {
         const acl = await this.getEntriesAccessControlList(params);
         return acl.some(ace => ace.canAccessNonOwned);
     }
@@ -461,7 +461,7 @@ export class AccessControl {
         return !canAccessNonOwned;
     }
 
-    async getEntriesAccessControlList(
+    private async getEntriesAccessControlList(
         params: GetEntriesAccessControlListParams
     ): Promise<EntriesAccessControlList> {
         if (await this.hasFullAccessToEntries(params)) {
@@ -611,7 +611,7 @@ export class AccessControl {
         return acl;
     }
 
-    async hasFullAccessToEntries(params: GetEntriesAccessControlListParams) {
+    private async hasFullAccessToEntries(params: GetEntriesAccessControlListParams) {
         if (this.modelAuthorizationDisabled(params)) {
             return true;
         }

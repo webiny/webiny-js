@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
-import { useSecurity } from "@webiny/app-admin";
-import type { CmsModel, CmsSecurityPermission } from "~/types.js";
+import React from "react";
+import type { CmsModel } from "~/types.js";
+import { usePermission } from "~/admin/hooks/usePermission.js";
 
 export interface ContentEntriesContext {
     contentModel: CmsModel;
@@ -23,20 +23,8 @@ export const ContentEntriesProvider = ({
     children,
     insideDialog
 }: ContentEntriesContextProviderProps) => {
-    const { identity, getPermission } = useSecurity();
-
-    const canCreate = useMemo((): boolean => {
-        const permission = getPermission<CmsSecurityPermission>("cms.contentEntry");
-        if (!permission) {
-            return false;
-        }
-
-        if (typeof permission.rwd !== "string") {
-            return true;
-        }
-
-        return permission.rwd.includes("w");
-    }, [identity]);
+    const { canCreate: canCreateEntries } = usePermission();
+    const canCreate = canCreateEntries("cms.contentEntry");
 
     const value = {
         insideDialog,

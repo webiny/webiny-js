@@ -1,17 +1,17 @@
-import type {
-    GetPageRevisionsParams,
-    IGetPageRevisionsUseCase
-} from "./IGetPageRevisionsUseCase.js";
-import type { IGetPageRevisionsRepository } from "./IGetPageRevisionsRepository.js";
+import {
+    GetPageRevisionsUseCase as UseCaseAbstraction,
+    GetPageRevisionsRepository
+} from "./abstractions.js";
 
-export class GetPageRevisionsUseCase implements IGetPageRevisionsUseCase {
-    private repository: IGetPageRevisionsRepository;
+class GetPageRevisionsUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: GetPageRevisionsRepository.Interface) {}
 
-    constructor(repository: IGetPageRevisionsRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: GetPageRevisionsParams) {
+    async execute(params: UseCaseAbstraction.Params) {
         return await this.repository.execute(params.entryId);
     }
 }
+
+export const GetPageRevisionsUseCase = UseCaseAbstraction.createImplementation({
+    implementation: GetPageRevisionsUseCaseImpl,
+    dependencies: [GetPageRevisionsRepository]
+});

@@ -1,15 +1,15 @@
-import type { IGetPageRevisionsRepository } from "./IGetPageRevisionsRepository.js";
-import type { IGetPageRevisionsGateway } from "./IGetPageRevisionsGateway.js";
-import { type IListCache, PageRevision } from "~/domain/PageRevision/index.js";
+import {
+    GetPageRevisionsRepository as RepositoryAbstraction,
+    GetPageRevisionsGateway
+} from "./abstractions.js";
+import { PageRevision } from "~/domain/PageRevision/PageRevision.js";
+import { PageRevisionsCache } from "~/features/pages/shared/abstractions.js";
 
-export class GetPageRevisionsRepository implements IGetPageRevisionsRepository {
-    private cache: IListCache<PageRevision>;
-    private gateway: IGetPageRevisionsGateway;
-
-    constructor(cache: IListCache<PageRevision>, gateway: IGetPageRevisionsGateway) {
-        this.cache = cache;
-        this.gateway = gateway;
-    }
+class GetPageRevisionsRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private cache: PageRevisionsCache.Interface,
+        private gateway: GetPageRevisionsGateway.Interface
+    ) {}
 
     async execute(pageId: string) {
         const response = await this.gateway.execute(pageId);
@@ -18,3 +18,8 @@ export class GetPageRevisionsRepository implements IGetPageRevisionsRepository {
         return revisions;
     }
 }
+
+export const GetPageRevisionsRepository = RepositoryAbstraction.createImplementation({
+    implementation: GetPageRevisionsRepositoryImpl,
+    dependencies: [PageRevisionsCache, GetPageRevisionsGateway]
+});

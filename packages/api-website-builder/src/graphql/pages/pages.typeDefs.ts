@@ -27,6 +27,7 @@ export const pagesTypeDefs = /* GraphQL */ `
         bindings: JSON
         elements: JSON
         extensions: JSON
+        languagePaths: JSON
     }
 
     input WbPageCreateInput {

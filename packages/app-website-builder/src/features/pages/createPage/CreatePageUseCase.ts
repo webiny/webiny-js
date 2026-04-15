@@ -1,15 +1,10 @@
-import type { CreatePageParams, ICreatePageUseCase } from "./ICreatePageUseCase.js";
-import type { ICreatePageRepository } from "./ICreatePageRepository.js";
-import { Page } from "~/domain/Page/index.js";
+import { CreatePageUseCase as UseCaseAbstraction, CreatePageRepository } from "./abstractions.js";
+import { Page } from "~/domain/Page/Page.js";
 
-export class CreatePageUseCase implements ICreatePageUseCase {
-    private repository: ICreatePageRepository;
+class CreatePageUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: CreatePageRepository.Interface) {}
 
-    constructor(repository: ICreatePageRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: CreatePageParams) {
+    async execute(params: UseCaseAbstraction.Params) {
         return await this.repository.execute(
             Page.create({
                 location: params.location,
@@ -24,3 +19,8 @@ export class CreatePageUseCase implements ICreatePageUseCase {
         );
     }
 }
+
+export const CreatePageUseCase = UseCaseAbstraction.createImplementation({
+    implementation: CreatePageUseCaseImpl,
+    dependencies: [CreatePageRepository]
+});

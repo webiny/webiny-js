@@ -36,6 +36,7 @@ import { ListDeletedPagesFeature } from "~/features/pages/ListDeletedPages/featu
 import { TrashPageFeature } from "~/features/pages/TrashPage/feature.js";
 import { RestorePageFeature } from "~/features/pages/RestorePage/feature.js";
 import { GetDeletedPageByIdFeature } from "~/features/pages/GetDeletedPageById/feature.js";
+import { GetPageLanguagePathsFeature } from "~/features/pages/GetPageLanguagePaths/feature.js";
 // import { TenantModelExtensionFeature } from "~/features/tenantManager/feature.js";
 
 const createContext = () => {
@@ -78,6 +79,7 @@ const createContext = () => {
             GetPageByPathFeature.register(container);
             GetPageRevisionsFeature.register(container);
             GetDeletedPageByIdFeature.register(container);
+            GetPageLanguagePathsFeature.register(container);
             ListPagesFeature.register(container);
             ListDeletedPagesFeature.register(container);
             CreatePageFeature.register(container);

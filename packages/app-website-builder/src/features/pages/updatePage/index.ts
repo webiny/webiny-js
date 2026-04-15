@@ -1,1 +1,2 @@
-export * from "./useUpdatePage.js";
+export { UpdatePageFeature } from "./feature.js";
+export type { UpdatePageParams } from "./abstractions.js";

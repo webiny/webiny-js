@@ -19,7 +19,7 @@ export const Extension = () => {
             <RegisterFeature feature={ListLanguagesFeature} />
             <SecurityPermission />
             <AdminConfig>
-                <HasPermission name={"languages"}>
+                <HasPermission name={"languages.*"}>
                     <Menu
                         parent={"settings.system"}
                         name="languages"

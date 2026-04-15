@@ -1,36 +1,19 @@
 import React from "react";
-import { PageListConfig } from "webiny/admin/website-builder/page/list";
+import { createFeature, RegisterFeature } from "webiny/admin";
+import RetailPageType from "./RetailPageType.js";
+import FilterPageTypes from "./FilterPageTypes.js";
 
-const { PageType } = PageListConfig;
+const CustomPageTypes = createFeature({
+    name: "CustomPageTypes",
+    register(container) {
+        // Add a new page type
+        container.register(RetailPageType);
+
+        // Remove existing page type
+        container.registerDecorator(FilterPageTypes);
+    }
+});
 
 export default () => {
-    return (
-        <PageListConfig>
-            {/*<PageListConfig.PageType name={"static"} remove={true} />*/}
-
-            <PageType
-                name={"retailPage"}
-                label={"Retail Page"}
-                element={
-                    <>
-                        <PageType.Language />
-                        <PageType.Title />
-                        <PageType.Path />
-                    </>
-                }
-            />
-
-            <PageListConfig.PageType
-                name={"restaurantPage"}
-                label={"Restaurant Page"}
-                element={
-                    <>
-                        <PageType.Language />
-                        <PageType.Title />
-                        <PageType.Path />
-                    </>
-                }
-            />
-        </PageListConfig>
-    );
+    return <RegisterFeature feature={CustomPageTypes} />;
 };

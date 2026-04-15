@@ -1,21 +1,22 @@
-import type { ILoadingRepository } from "@webiny/app-utils";
-import type { IDuplicatePageUseCase } from "./IDuplicatePageUseCase.js";
-import { type DuplicatePageParams } from "./IDuplicatePageUseCase.js";
+import { DuplicatePageUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { WbPageLoadingRepository } from "~/features/pages/shared/abstractions.js";
 import { loadingActions } from "~/constants.js";
 
-export class DuplicatePageUseCaseWithLoading implements IDuplicatePageUseCase {
-    private loadingRepository: ILoadingRepository;
-    private useCase: IDuplicatePageUseCase;
+class DuplicatePageUseCaseWithLoadingImpl implements UseCaseAbstraction.Interface {
+    constructor(
+        private loadingRepository: WbPageLoadingRepository.Interface,
+        private decoratee: UseCaseAbstraction.Interface
+    ) {}
 
-    constructor(loadingRepository: ILoadingRepository, useCase: IDuplicatePageUseCase) {
-        this.loadingRepository = loadingRepository;
-        this.useCase = useCase;
-    }
-
-    async execute(params: DuplicatePageParams) {
+    async execute(params: UseCaseAbstraction.Params) {
         await this.loadingRepository.runCallBack(
-            this.useCase.execute(params),
+            this.decoratee.execute(params),
             loadingActions.duplicate
         );
     }
 }
+
+export const DuplicatePageUseCaseWithLoading = UseCaseAbstraction.createDecorator({
+    decorator: DuplicatePageUseCaseWithLoadingImpl,
+    dependencies: [WbPageLoadingRepository]
+});
