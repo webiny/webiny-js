@@ -268,6 +268,9 @@ jobs:
           the affected files and fix them. 4. Run 'yarn
           check-package-dependencies' — if it reports errors, fix them. Work in
           the current directory."
+      - name: Update yarn.lock
+        run: yarn
+        working-directory: ${{ github.base_ref }}
       - name: Commit fixes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:

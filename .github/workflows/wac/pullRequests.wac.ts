@@ -348,6 +348,12 @@ export const pullRequests = createWorkflow({
                         `Work in the current directory."`
                     ].join(" ")
                 },
+                // Re-run yarn so yarn.lock is updated if package.json files were modified (e.g. by adio fixes).
+                {
+                    name: "Update yarn.lock",
+                    run: "yarn",
+                    "working-directory": DIR_WEBINY_JS
+                },
                 {
                     name: "Commit fixes",
                     uses: "stefanzweifel/git-auto-commit-action@v5",
