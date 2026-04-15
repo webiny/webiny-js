@@ -14,7 +14,7 @@ class LanguageModelFactory implements ModelFactory.Interface {
             .icon("fas/language")
             .singularApiName("Language")
             .pluralApiName("Languages")
-            .tags(["$publishing:false"]);
+            .tags(["$publishing:false", "$hidden:true"]);
 
         model
             .fields(fields => ({

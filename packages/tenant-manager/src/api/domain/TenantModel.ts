@@ -17,7 +17,7 @@ class TenantModelFactory implements ModelFactory.Interface {
             .icon("fas/building")
             .singularApiName("Tenant")
             .pluralApiName("Tenants")
-            .tags(["$publishing:false"]);
+            .tags(["$publishing:false", "$hidden:true"]);
 
         model
             .fields(fields => ({

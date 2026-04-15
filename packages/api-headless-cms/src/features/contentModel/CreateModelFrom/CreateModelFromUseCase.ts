@@ -78,6 +78,7 @@ class CreateModelFromUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const model: CmsModel = {
             ...original,
+            isPlugin: undefined,
             group: input.group || original.group,
             singularApiName: data.singularApiName,
             pluralApiName: data.pluralApiName,

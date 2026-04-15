@@ -87,6 +87,13 @@ const DisplayIcon = ({ model }: IconProps) => {
     );
 };
 
+const isHidden = (model: Pick<CmsModel, "tags">) => {
+    if (!model.tags?.length) {
+        return false;
+    }
+    return model.tags.includes("$hidden:true");
+};
+
 const ContentModelsDataList = ({
     canCreate,
     onCreate,
@@ -102,7 +109,10 @@ const ContentModelsDataList = ({
     const [modelToBeDeleted, setModelToBeDeleted] = useState<CmsModel | null>(null);
 
     const filterData = useCallback(
-        ({ name }: Pick<CmsModel, "name">): boolean => {
+        ({ name, tags }: Pick<CmsModel, "name" | "tags">): boolean => {
+            if (isHidden({ tags })) {
+                return false;
+            }
             return name.toLowerCase().includes(filter);
         },
         [filter]
@@ -210,67 +220,49 @@ const ContentModelsDataList = ({
                 }
                 refresh={onRefreshClick}
             >
-                {({ data = [] }: { data: CmsModel[] }) => (
-                    <UIL.List data-testid="default-data-list">
-                        {data.map(contentModel => {
-                            const disableViewContent = contentModel.fields.length === 0;
-                            const getMessage = () => {
-                                if (disableViewContent) {
-                                    return "To view the entries, you first need to add a field and save the model";
-                                }
+                {({ data = [] }: { data: CmsModel[] }) => {
+                    return (
+                        <UIL.List data-testid="default-data-list">
+                            {data.map(contentModel => {
+                                const disableViewContent = contentModel.fields.length === 0;
+                                const getMessage = () => {
+                                    if (disableViewContent) {
+                                        return "To view the entries, you first need to add a field and save the model";
+                                    }
 
-                                if (contentModel.tags.includes(CMS_MODEL_SINGLETON_TAG)) {
-                                    return "View";
-                                }
+                                    if (contentModel.tags.includes(CMS_MODEL_SINGLETON_TAG)) {
+                                        return "View";
+                                    }
 
-                                return "View entries";
-                            };
+                                    return "View entries";
+                                };
 
-                            return (
-                                <UIL.ListItem key={contentModel.modelId} className={"group/item"}>
-                                    <UIL.ListItemText>
-                                        <DisplayIcon model={contentModel} />
-                                        <UIL.ListItemTextPrimary>
-                                            {contentModel.name}
-                                        </UIL.ListItemTextPrimary>
-                                        <UIL.ListItemTextSecondary>
-                                            {t`Last modified: {time}.`({
-                                                time: contentModel.savedOn ? (
-                                                    <TimeAgo datetime={contentModel.savedOn} />
-                                                ) : (
-                                                    "N/A"
-                                                )
-                                            })}
-                                        </UIL.ListItemTextSecondary>
-                                    </UIL.ListItemText>
-                                    <UIL.ListItemMeta>
-                                        <UIL.ListActions>
-                                            <ModelIsBeingDeleted model={contentModel}>
-                                                <span
-                                                    className={"invisible group-hover/item:visible"}
-                                                >
-                                                    <Tooltip
-                                                        side={"top"}
-                                                        content={getMessage()}
-                                                        trigger={
-                                                            <Button
-                                                                text={"View entries"}
-                                                                icon={<ListIcon />}
-                                                                variant={"secondary"}
-                                                                size={"sm"}
-                                                                data-testid={
-                                                                    "cms-view-content-model-button"
-                                                                }
-                                                                onClick={viewContentEntries(
-                                                                    contentModel
-                                                                )}
-                                                                disabled={disableViewContent}
-                                                            />
-                                                        }
-                                                    />
-                                                </span>
+                                const canDeleteModel = canDelete(contentModel, "cms.contentModel");
+                                const canEditModel = canEdit(contentModel, "cms.contentModel");
 
-                                                {canEdit(contentModel, "cms.contentModel") && (
+                                return (
+                                    <UIL.ListItem
+                                        key={contentModel.modelId}
+                                        className={"group/item"}
+                                    >
+                                        <UIL.ListItemText>
+                                            <DisplayIcon model={contentModel} />
+                                            <UIL.ListItemTextPrimary>
+                                                {contentModel.name}
+                                            </UIL.ListItemTextPrimary>
+                                            <UIL.ListItemTextSecondary>
+                                                {t`Last modified: {time}.`({
+                                                    time: contentModel.savedOn ? (
+                                                        <TimeAgo datetime={contentModel.savedOn} />
+                                                    ) : (
+                                                        "N/A"
+                                                    )
+                                                })}
+                                            </UIL.ListItemTextSecondary>
+                                        </UIL.ListItemText>
+                                        <UIL.ListItemMeta>
+                                            <UIL.ListActions>
+                                                <ModelIsBeingDeleted model={contentModel}>
                                                     <span
                                                         className={
                                                             "invisible group-hover/item:visible"
@@ -278,101 +270,134 @@ const ContentModelsDataList = ({
                                                     >
                                                         <Tooltip
                                                             side={"top"}
-                                                            content={
-                                                                contentModel.plugin
-                                                                    ? t`Content model is registered via a plugin.`
-                                                                    : t`Edit content model`
-                                                            }
+                                                            content={getMessage()}
                                                             trigger={
                                                                 <Button
-                                                                    text={"Edit"}
-                                                                    icon={<EditIcon />}
+                                                                    text={"View entries"}
+                                                                    icon={<ListIcon />}
                                                                     variant={"secondary"}
                                                                     size={"sm"}
-                                                                    disabled={contentModel.plugin}
-                                                                    onClick={() =>
-                                                                        editRecord(contentModel)
-                                                                    }
                                                                     data-testid={
-                                                                        "cms-edit-content-model-button"
+                                                                        "cms-view-content-model-button"
                                                                     }
+                                                                    onClick={viewContentEntries(
+                                                                        contentModel
+                                                                    )}
+                                                                    disabled={disableViewContent}
                                                                 />
                                                             }
                                                         />
                                                     </span>
-                                                )}
 
-                                                <DropdownMenu
-                                                    trigger={
-                                                        <IconButton
-                                                            icon={<MoreVertIcon />}
-                                                            size={"sm"}
-                                                            variant={"ghost"}
-                                                        />
-                                                    }
-                                                >
                                                     {canEdit(contentModel, "cms.contentModel") && (
-                                                        <DropdownMenu.Item
-                                                            text={"Clone"}
-                                                            icon={
-                                                                <DropdownMenu.Item.Icon
-                                                                    label={"Clone"}
-                                                                    element={<CloneIcon />}
-                                                                />
+                                                        <span
+                                                            className={
+                                                                "invisible group-hover/item:visible"
                                                             }
-                                                            data-testid={
-                                                                "cms-clone-content-model-button"
-                                                            }
-                                                            onClick={() => onClone(contentModel)}
-                                                        />
+                                                        >
+                                                            <Tooltip
+                                                                side={"top"}
+                                                                content={
+                                                                    contentModel.plugin
+                                                                        ? t`Content model is registered via a plugin.`
+                                                                        : t`Edit content model`
+                                                                }
+                                                                trigger={
+                                                                    <Button
+                                                                        text={"Edit"}
+                                                                        icon={<EditIcon />}
+                                                                        variant={"secondary"}
+                                                                        size={"sm"}
+                                                                        disabled={
+                                                                            contentModel.plugin
+                                                                        }
+                                                                        onClick={() =>
+                                                                            editRecord(contentModel)
+                                                                        }
+                                                                        data-testid={
+                                                                            "cms-edit-content-model-button"
+                                                                        }
+                                                                    />
+                                                                }
+                                                            />
+                                                        </span>
                                                     )}
 
-                                                    <DropdownMenu.Item
-                                                        text={"Export"}
-                                                        icon={
-                                                            <DropdownMenu.Item.Icon
-                                                                label={"Export"}
-                                                                element={<ExportIcon />}
+                                                    <DropdownMenu
+                                                        trigger={
+                                                            <IconButton
+                                                                icon={<MoreVertIcon />}
+                                                                size={"sm"}
+                                                                variant={"ghost"}
                                                             />
                                                         }
-                                                        data-testid={
-                                                            "cms-export-content-model-button"
-                                                        }
-                                                        onClick={handleModelExport(contentModel)}
-                                                    />
+                                                    >
+                                                        {canEditModel && (
+                                                            <DropdownMenu.Item
+                                                                text={"Clone"}
+                                                                icon={
+                                                                    <DropdownMenu.Item.Icon
+                                                                        label={"Clone"}
+                                                                        element={<CloneIcon />}
+                                                                    />
+                                                                }
+                                                                data-testid={
+                                                                    "cms-clone-content-model-button"
+                                                                }
+                                                                onClick={() =>
+                                                                    onClone(contentModel)
+                                                                }
+                                                            />
+                                                        )}
 
-                                                    {canDelete(
-                                                        contentModel,
-                                                        "cms.contentModel"
-                                                    ) && (
                                                         <DropdownMenu.Item
-                                                            text={"Delete"}
+                                                            text={"Export"}
                                                             icon={
                                                                 <DropdownMenu.Item.Icon
-                                                                    label={"Delete"}
-                                                                    element={<DeleteIcon />}
+                                                                    label={"Export"}
+                                                                    element={<ExportIcon />}
                                                                 />
                                                             }
-                                                            onClick={() => {
-                                                                setModelToBeDeleted(contentModel);
-                                                            }}
                                                             data-testid={
-                                                                "cms-delete-content-model-button"
+                                                                "cms-export-content-model-button"
                                                             }
-                                                            className={
-                                                                "text-destructive-primary! [&_svg]:fill-destructive"
-                                                            }
+                                                            onClick={handleModelExport(
+                                                                contentModel
+                                                            )}
                                                         />
-                                                    )}
-                                                </DropdownMenu>
-                                            </ModelIsBeingDeleted>
-                                        </UIL.ListActions>
-                                    </UIL.ListItemMeta>
-                                </UIL.ListItem>
-                            );
-                        })}
-                    </UIL.List>
-                )}
+
+                                                        {canDeleteModel && (
+                                                            <DropdownMenu.Item
+                                                                text={"Delete"}
+                                                                icon={
+                                                                    <DropdownMenu.Item.Icon
+                                                                        label={"Delete"}
+                                                                        element={<DeleteIcon />}
+                                                                    />
+                                                                }
+                                                                onClick={() => {
+                                                                    setModelToBeDeleted(
+                                                                        contentModel
+                                                                    );
+                                                                }}
+                                                                data-testid={
+                                                                    "cms-delete-content-model-button"
+                                                                }
+                                                                className={
+                                                                    "text-destructive-primary! [&_svg]:fill-destructive"
+                                                                }
+                                                            />
+                                                        )}
+                                                    </DropdownMenu>
+                                                </ModelIsBeingDeleted>
+                                            </UIL.ListActions>
+                                        </UIL.ListItemMeta>
+                                    </UIL.ListItem>
+                                );
+                            })}
+                        </UIL.List>
+                    );
+                }}
             </UIL.DataList>
             {modelToBeDeleted ? (
                 <FullyDeleteModelDialog
