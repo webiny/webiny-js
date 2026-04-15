@@ -1,17 +1,13 @@
-import { AiService, Logger, Route } from "webiny/api";
+import { Ai, Route } from "webiny/api";
 
 class MyApiRouteImpl implements Route.Interface {
-    constructor(
-        private logger: Logger.Interface,
-        private aiService: AiService.Interface
-    ) {}
+    constructor(private ai: Ai.Interface) {}
 
     async execute(request: Route.Request, reply: Route.Reply) {
-        this.logger.info("MyApiRoute: handling GET /my-api-route");
-
-        const { text } = await this.aiService.generateText({
+        // AI ready!
+        const { text } = await this.ai.generateText({
             model: "anthropic/claude-sonnet-4-5",
-            prompt: "Say hello world in one sentence."
+            prompt: "Hello world!"
         });
 
         return reply.send({ message: text });
@@ -20,5 +16,5 @@ class MyApiRouteImpl implements Route.Interface {
 
 export default Route.createImplementation({
     implementation: MyApiRouteImpl,
-    dependencies: [Logger, AiService]
+    dependencies: [Ai]
 });
