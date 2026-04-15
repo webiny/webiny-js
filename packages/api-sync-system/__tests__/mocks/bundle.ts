@@ -4,8 +4,9 @@ import { createRegularMockTable } from "~tests/mocks/table.js";
 import type { IBaseBundleParams } from "~/resolver/app/bundler/BaseBundle.js";
 import type { IIngestorResultItem } from "~/resolver/app/ingestor/types.js";
 
-export interface ICreateMockBundleParams
-    extends Partial<Pick<IBaseBundleParams, "source" | "table">> {
+export interface ICreateMockBundleParams extends Partial<
+    Pick<IBaseBundleParams, "source" | "table">
+> {
     items: IIngestorResultItem[];
 }
 

@@ -17,9 +17,8 @@ export const useCancelSchedulerItem = ({ item }: UseCancelScheduleItemParams) =>
             <p>
                 You are about to cancel scheduled action for this item!
                 <br />
-                Are you sure you want to cancel scheduled <strong>
-                    {item.actionType}
-                </strong> for <strong>{item.title}</strong>?
+                Are you sure you want to cancel scheduled <strong>{item.actionType}</strong> for{" "}
+                <strong>{item.title}</strong>?
             </p>
         )
     });

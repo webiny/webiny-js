@@ -20,8 +20,7 @@ export interface ManagerParams<
 export class Manager<
     T extends TaskDefinition.TaskInput,
     O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
-> implements IManager<T, O>
-{
+> implements IManager<T, O> {
     public readonly controller: TaskController.Interface<T, O>;
     public readonly documentClient: DynamoDBDocument;
     public readonly elasticsearch: Client;

@@ -8,9 +8,10 @@ import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsea
 
 export const DATA_SYNCHRONIZATION_TASK = "dataSynchronization";
 
-export class DataSynchronizationTask
-    implements TaskDefinition.Interface<IDataSynchronizationInput, IDataSynchronizationOutput>
-{
+export class DataSynchronizationTask implements TaskDefinition.Interface<
+    IDataSynchronizationInput,
+    IDataSynchronizationOutput
+> {
     id = DATA_SYNCHRONIZATION_TASK;
     title = "Data Synchronization";
     description = "Synchronize data between Elasticsearch and DynamoDB";

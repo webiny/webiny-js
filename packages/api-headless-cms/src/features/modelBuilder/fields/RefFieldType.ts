@@ -3,7 +3,8 @@ import { DataFieldBuilder } from "./FieldBuilder.js";
 import type { FieldTypeValidator } from "./fieldTypeValidator.js";
 
 export interface IRefFieldBuilder
-    extends DataFieldBuilder<"ref">,
+    extends
+        DataFieldBuilder<"ref">,
         FieldTypeValidator.Required,
         FieldTypeValidator.ListMinLength,
         FieldTypeValidator.ListMaxLength {
