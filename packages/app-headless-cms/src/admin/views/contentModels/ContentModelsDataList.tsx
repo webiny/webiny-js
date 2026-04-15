@@ -105,7 +105,7 @@ const ContentModelsDataList = ({
     const { goToRoute } = useRouter();
     const { models: initialModels, loading, refresh } = useModels();
     const { canDelete, canEdit } = usePermission();
-    
+
     const models = useMemo(() => {
         return initialModels.filter(model => {
             return !isHidden(model);
