@@ -5,7 +5,7 @@ import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEnt
 import { useHandler } from "./utils/useHandler.js";
 import { LANGUAGE_MODEL_ID } from "~/shared/constants.js";
 import { GetLanguageByCodeUseCase } from "~/api/features/getLanguageByCode/index.js";
-import { ListLanguagesUseCase } from "~/api/features/listLanguages/index.js";
+import { ListLanguagesUseCase } from "~/api/features/ListLanguages/index.js";
 
 describe("Language Query Use Cases", () => {
     let context: ApiCoreContext;
