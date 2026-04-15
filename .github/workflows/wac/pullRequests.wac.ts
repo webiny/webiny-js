@@ -316,32 +316,43 @@ export const pullRequests = createWorkflow({
                     run: "yarn --immutable",
                     "working-directory": DIR_WEBINY_JS
                 },
+                // Run deterministic fixes as real shell commands so changes definitely land on disk.
+                {
+                    name: "Fix code formatting",
+                    run: "yarn prettier:fix",
+                    "working-directory": DIR_WEBINY_JS,
+                    "continue-on-error": true
+                },
+                {
+                    name: "Fix ESLint issues (auto-fixable)",
+                    run: "yarn eslint:fix",
+                    "working-directory": DIR_WEBINY_JS,
+                    "continue-on-error": true
+                },
+                // Let Claude handle whatever can't be auto-fixed: adio, ts-configs,
+                // remaining ESLint errors, and check-package-dependencies.
                 {
                     name: "Install Claude Code",
                     run: "npm install -g @anthropic-ai/claude-code"
                 },
                 {
-                    name: "AI Fix Code Issues",
+                    name: "AI Fix Remaining Issues",
                     "working-directory": DIR_WEBINY_JS,
                     run: [
                         `claude --dangerously-skip-permissions -p`,
-                        `"Static code analysis failed on this PR. Fix ALL issues in one pass:`,
-                        `1. Run 'yarn prettier:fix' to fix all formatting.`,
-                        `2. Run 'yarn eslint:fix' to fix all auto-fixable ESLint issues.`,
-                        `3. Run 'yarn prettier:check' — if it still reports failures, fix those files.`,
-                        `4. Run 'yarn adio' — if it reports dependency errors, fix them.`,
-                        `5. Run 'yarn check-ts-configs' — if it reports errors, fix them.`,
-                        `6. Run 'yarn eslint' — if there are still errors, read the affected files and fix them manually.`,
-                        `7. Run 'yarn check-package-dependencies' — if it reports errors, fix them.`,
-                        `Do not stop until ALL checks pass. Work in the '${DIR_WEBINY_JS}' directory."`
+                        `"Some static analysis checks may still be failing. Fix any remaining issues:`,
+                        `1. Run 'yarn adio' — if it reports dependency errors, fix the relevant package.json files.`,
+                        `2. Run 'yarn check-ts-configs' — if it reports errors, fix them.`,
+                        `3. Run 'yarn eslint' — if there are still non-auto-fixable errors, read the affected files and fix them.`,
+                        `4. Run 'yarn check-package-dependencies' — if it reports errors, fix them.`,
+                        `Work in the current directory."`
                     ].join(" ")
                 },
                 {
-                    name: "Commit AI fixes",
+                    name: "Commit fixes",
                     uses: "stefanzweifel/git-auto-commit-action@v5",
                     with: {
                         commit_message: "chore: ai fix static analysis [skip ci]",
-                        file_pattern: "*.js *.jsx *.ts *.tsx *.json *.scss *.yml",
                         repository: DIR_WEBINY_JS
                     }
                 }
