@@ -7,8 +7,9 @@ class OpenAiProviderFactoryImpl implements AiProviderFactoryAbstraction.Interfac
 
     async execute(): Promise<IAiProvider> {
         const { createOpenAI } = await import("@ai-sdk/openai");
-        // createOpenAI() reads OPENAI_API_KEY from env at request time.
-        return createOpenAI() as unknown as IAiProvider;
+        return createOpenAI({
+            apiKey: process.env.WEBINY_API_OPENAI_API_KEY
+        }) as unknown as IAiProvider;
     }
 }
 

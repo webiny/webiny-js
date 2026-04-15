@@ -7,8 +7,9 @@ class AnthropicProviderFactoryImpl implements AiProviderFactoryAbstraction.Inter
 
     async execute(): Promise<IAiProvider> {
         const { createAnthropic } = await import("@ai-sdk/anthropic");
-        // createAnthropic() reads ANTHROPIC_API_KEY from env at request time.
-        return createAnthropic() as unknown as IAiProvider;
+        return createAnthropic({
+            apiKey: process.env.WEBINY_API_ANTHROPIC_API_KEY
+        }) as unknown as IAiProvider;
     }
 }
 
