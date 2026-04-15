@@ -37,7 +37,8 @@ const prepareExportModel = (model: Pick<CmsModel, "modelId" | "fields">): IExpor
 export class ExportContentEntriesController<
     I extends IControllerInput = IControllerInput,
     O extends IControllerOutput = IControllerOutput
-> implements IExportContentEntriesController<I, O> {
+> implements IExportContentEntriesController<I, O>
+{
     constructor(private context: Context) {}
     public async run(params: TaskDefinition.RunParams<I, O>) {
         const { input, controller } = params;

@@ -31,7 +31,9 @@ interface CreateGsiKeysParams {
     parentId: string;
 }
 
-class FolderLevelPermissionsStorageOperations implements IAcoFolderLevelPermissionsStorageOperations {
+class FolderLevelPermissionsStorageOperations
+    implements IAcoFolderLevelPermissionsStorageOperations
+{
     private readonly entity;
     private readonly table;
 

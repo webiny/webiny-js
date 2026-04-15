@@ -13,9 +13,9 @@ import { Meta } from "@webiny/app-utils";
 import type { TrashBinBulkActionsParams, TrashBinListQueryVariables } from "~/types.js";
 import type { ITrashBinItemsRepository } from "./ITrashBinItemsRepository.js";
 
-export class TrashBinItemsRepository<
-    TItem extends Record<string, any>
-> implements ITrashBinItemsRepository {
+export class TrashBinItemsRepository<TItem extends Record<string, any>>
+    implements ITrashBinItemsRepository
+{
     private metaRepository: IMetaRepository;
     private listGateway: ITrashBinListGateway<TItem>;
     private deleteGateway: ITrashBinDeleteItemGateway;

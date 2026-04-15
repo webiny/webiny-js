@@ -7,8 +7,8 @@ export class DefaultAdminStackOutputServiceAbstraction
     constructor(private readonly getAppStackOutput: GetAppStackOutput.Interface) {}
 
     async execute<
-        TOutput extends AdminStackOutputServiceAbstraction.Output =
-            AdminStackOutputServiceAbstraction.Output
+        TOutput extends
+            AdminStackOutputServiceAbstraction.Output = AdminStackOutputServiceAbstraction.Output
     >(): Promise<TOutput | null> {
         return this.getAppStackOutput.execute<TOutput>("admin");
     }

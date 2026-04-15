@@ -15,7 +15,8 @@ const simpleFormInnerVariants = cva("mx-auto", {
 });
 
 interface SimpleFormProps
-    extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof simpleFormInnerVariants> {
+    extends React.HTMLAttributes<HTMLDivElement>,
+        VariantProps<typeof simpleFormInnerVariants> {
     children: React.ReactNode;
     noElevation?: boolean;
     className?: string;
@@ -41,8 +42,7 @@ const simpleFormHeaderVariants = cva("p-md pl-lg border-sm border-neutral-dimmed
 });
 
 interface SimpleFormHeaderProps
-    extends
-        Omit<React.HTMLAttributes<HTMLDivElement>, "title">,
+    extends Omit<React.HTMLAttributes<HTMLDivElement>, "title">,
         VariantProps<typeof simpleFormHeaderVariants> {
     title: React.ReactNode;
     icon?: React.ReactElement<any>;

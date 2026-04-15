@@ -5,7 +5,9 @@ import { GracefulError } from "@webiny/project";
 
 const MATCH_STRING = "failed to compute archive hash for";
 
-export class MissingFilesInBuildGracefulErrorHandler implements ErrorHandler.Interface<IBaseAppParams> {
+export class MissingFilesInBuildGracefulErrorHandler
+    implements ErrorHandler.Interface<IBaseAppParams>
+{
     execute({ error, params }: ErrorHandler.Params<IBaseAppParams>) {
         if (!error.message) {
             return;

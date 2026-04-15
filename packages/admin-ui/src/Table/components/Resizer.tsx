@@ -17,7 +17,8 @@ const resizerVariants = cva(
 );
 
 interface ResizerProps
-    extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof resizerVariants> {}
+    extends React.HTMLAttributes<HTMLDivElement>,
+        VariantProps<typeof resizerVariants> {}
 
 const Resizer = ({ className, isResizing, ...props }: ResizerProps) => (
     <div className={cn(resizerVariants({ isResizing }), className)} {...props} />

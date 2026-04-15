@@ -14,8 +14,7 @@ import {
 } from "./fieldTypeValidator.js";
 
 export interface ILongTextFieldBuilder
-    extends
-        DataFieldBuilder<"long-text">,
+    extends DataFieldBuilder<"long-text">,
         RequiredValidator,
         MinLengthValidator,
         MaxLengthValidator,

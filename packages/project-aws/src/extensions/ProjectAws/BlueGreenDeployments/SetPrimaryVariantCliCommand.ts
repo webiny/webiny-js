@@ -10,7 +10,9 @@ export interface ISetPrimaryVariantCommandParams {
 /**
  * Command to set a primary variant does not require a region because it is already contained inside the stack output.
  */
-export class SetPrimaryVariantCommandImpl implements CliCommandFactory.Interface<ISetPrimaryVariantCommandParams> {
+export class SetPrimaryVariantCommandImpl
+    implements CliCommandFactory.Interface<ISetPrimaryVariantCommandParams>
+{
     constructor(private getProjectSdkService: GetProjectSdkService.Interface) {}
 
     async execute(): Promise<CliCommandFactory.CommandDefinition<ISetPrimaryVariantCommandParams>> {

@@ -7,7 +7,9 @@ import type {
 import { createRestoreFromBinMutation } from "@webiny/app-headless-cms-common";
 import type { ITrashBinRestoreItemGateway } from "@webiny/app-trash-bin";
 
-export class TrashBinRestoreItemGraphQLGateway implements ITrashBinRestoreItemGateway<CmsContentEntry> {
+export class TrashBinRestoreItemGraphQLGateway
+    implements ITrashBinRestoreItemGateway<CmsContentEntry>
+{
     private client: ApolloClient<any>;
     private model: CmsModel;
 

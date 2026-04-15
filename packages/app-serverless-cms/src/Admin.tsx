@@ -28,10 +28,8 @@ import { Container } from "@webiny/di";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { WbScheduler } from "@webiny/app-website-builder-scheduler";
 
-export interface AdminProps extends Omit<
-    BaseAdminProps,
-    "createApolloClient" | "createLegacyPlugins"
-> {
+export interface AdminProps
+    extends Omit<BaseAdminProps, "createApolloClient" | "createLegacyPlugins"> {
     children?: React.ReactNode;
 }
 

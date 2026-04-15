@@ -6,10 +6,9 @@ import { DELETE_MODEL_TASK } from "~/constants.js";
 
 type IRunParams = TaskDefinition.RunParams<IDeleteModelTaskInput, IDeleteModelTaskOutput>;
 
-class DeleteModelTaskDefinition implements TaskDefinition.Interface<
-    IDeleteModelTaskInput,
-    IDeleteModelTaskOutput
-> {
+class DeleteModelTaskDefinition
+    implements TaskDefinition.Interface<IDeleteModelTaskInput, IDeleteModelTaskOutput>
+{
     id = DELETE_MODEL_TASK;
     title = "Delete model and all of the entries";
     maxIterations = 50;

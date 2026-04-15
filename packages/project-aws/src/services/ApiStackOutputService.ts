@@ -7,8 +7,8 @@ export class DefaultApiStackOutputServiceAbstraction
     constructor(private readonly getAppStackOutput: GetAppStackOutput.Interface) {}
 
     async execute<
-        TOutput extends ApiStackOutputServiceAbstraction.Output =
-            ApiStackOutputServiceAbstraction.Output
+        TOutput extends
+            ApiStackOutputServiceAbstraction.Output = ApiStackOutputServiceAbstraction.Output
     >(): Promise<TOutput | null> {
         return this.getAppStackOutput.execute<TOutput>("api");
     }

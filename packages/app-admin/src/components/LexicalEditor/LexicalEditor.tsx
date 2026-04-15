@@ -6,10 +6,8 @@ import { DelayedOnChange } from "@webiny/admin-ui";
 import { useAdminConfig } from "~/config/AdminConfig.js";
 import { lexicalValueWithHtml, type RichTextValueWithHtml } from "./lexicalValueWithHtml.js";
 
-export interface LexicalEditorProps extends Omit<
-    RichTextEditorProps,
-    "value" | "onChange" | "theme"
-> {
+export interface LexicalEditorProps
+    extends Omit<RichTextEditorProps, "value" | "onChange" | "theme"> {
     value?: RichTextValueWithHtml;
     onChange?: (value: RichTextValueWithHtml) => void;
     theme?: RichTextEditorProps["theme"];

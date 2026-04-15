@@ -10,7 +10,8 @@ export interface IDataSynchronizationInputValue {
     finished?: boolean;
 }
 
-export interface IDataSynchronizationInputElasticsearchToDynamoDbValue extends IDataSynchronizationInputValue {
+export interface IDataSynchronizationInputElasticsearchToDynamoDbValue
+    extends IDataSynchronizationInputValue {
     index?: string;
     cursor?: PrimitiveValue[];
 }

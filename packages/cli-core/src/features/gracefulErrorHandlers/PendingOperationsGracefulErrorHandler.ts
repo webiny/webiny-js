@@ -6,7 +6,9 @@ import { GracefulError } from "@webiny/project";
 const MATCH_STRING = "the stack is currently locked";
 const LEARN_MORE_URL = "https://webiny.link/locked-stacks";
 
-export class PendingOperationsGracefulErrorHandler implements ErrorHandler.Interface<IBaseAppParams> {
+export class PendingOperationsGracefulErrorHandler
+    implements ErrorHandler.Interface<IBaseAppParams>
+{
     execute({ error, params }: ErrorHandler.Params<IBaseAppParams>) {
         if (!error.message) {
             return;

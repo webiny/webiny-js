@@ -15,8 +15,7 @@ import { CloseDialogIconButton } from "~/Dialog/components/CloseDialogIconButton
 import { DialogClose } from "~/Dialog/components/DialogClose.js";
 
 interface DialogProps
-    extends
-        React.ComponentPropsWithoutRef<typeof DialogRoot>,
+    extends React.ComponentPropsWithoutRef<typeof DialogRoot>,
         Omit<React.ComponentPropsWithoutRef<typeof DialogContent>, "title"> {
     trigger?: React.ReactNode;
     title?: React.ReactNode;

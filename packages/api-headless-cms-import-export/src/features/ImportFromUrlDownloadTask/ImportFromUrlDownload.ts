@@ -18,7 +18,8 @@ type ProcessType = IDownloadFileFromUrlProcessResponseType<"continue" | "aborted
 export class ImportFromUrlDownload<
     I extends IImportFromUrlDownloadInput = IImportFromUrlDownloadInput,
     O extends IImportFromUrlDownloadOutput = IImportFromUrlDownloadOutput
-> implements IImportFromUrlDownload<I, O> {
+> implements IImportFromUrlDownload<I, O>
+{
     constructor(private context: Context) {}
 
     public async run(params: TaskDefinition.RunParams<I, O>) {

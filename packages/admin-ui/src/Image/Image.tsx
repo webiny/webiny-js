@@ -1,10 +1,8 @@
 import React from "react";
 
 // Accepts all props that a normal <img> element would accept.
-interface ImageProps extends React.DetailedHTMLProps<
-    React.ImgHTMLAttributes<HTMLImageElement>,
-    HTMLImageElement
-> {
+interface ImageProps
+    extends React.DetailedHTMLProps<React.ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement> {
     [key: string]: any;
 }
 

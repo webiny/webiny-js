@@ -28,7 +28,9 @@ export interface IMultiAutoCompleteListOptionsPresenter {
     resetSelectedOptions: () => void;
 }
 
-export class MultiAutoCompleteListOptionsPresenter implements IMultiAutoCompleteListOptionsPresenter {
+export class MultiAutoCompleteListOptionsPresenter
+    implements IMultiAutoCompleteListOptionsPresenter
+{
     private open = false;
     private loadedOptions = false;
     private emptyMessage = "No results.";

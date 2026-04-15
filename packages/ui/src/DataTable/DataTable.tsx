@@ -59,10 +59,8 @@ type Sorting = DataTableSorting;
  */
 type TableRow<T> = DataTableRow<T>;
 
-interface DataTableProps<TEntry> extends Omit<
-    AdminDataTableProps<TEntry>,
-    "loading" | "stickyHeader"
-> {
+interface DataTableProps<TEntry>
+    extends Omit<AdminDataTableProps<TEntry>, "loading" | "stickyHeader"> {
     loadingInitial?: AdminDataTableProps<TEntry>["loading"];
     stickyRows?: number;
 }

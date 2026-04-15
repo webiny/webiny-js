@@ -15,7 +15,8 @@ import type { IImportFromUrlProcessEntriesInput } from "~/features/ImportFromUrl
 export class ImportFromUrlControllerProcessEntriesStep<
     I extends IImportFromUrlControllerInput = IImportFromUrlControllerInput,
     O extends IImportFromUrlControllerOutput = IImportFromUrlControllerOutput
-> implements ImportFromUrlControllerStep<I, O> {
+> implements ImportFromUrlControllerStep<I, O>
+{
     constructor(private context: Context) {}
 
     public async execute(

@@ -26,8 +26,8 @@ export class DefaultProjectInfoService implements ProjectInfoService.Interface {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const wcpUsingProjectEnvironmentApiKey = Boolean(
             process.env.WEBINY_PROJECT_API_KEY ||
-            process.env.WCP_PROJECT_ENVIRONMENT_API_KEY ||
-            process.env.WCP_ENVIRONMENT_API_KEY
+                process.env.WCP_PROJECT_ENVIRONMENT_API_KEY ||
+                process.env.WCP_ENVIRONMENT_API_KEY
         );
 
         const isCI = this.getIsCi.execute();

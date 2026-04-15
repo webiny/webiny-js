@@ -26,8 +26,7 @@ const dialogContentVariants = cva(
 );
 
 export interface DialogContentProps
-    extends
-        React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
+    extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>,
         VariantProps<typeof dialogContentVariants> {
     dismissible?: boolean;
 }

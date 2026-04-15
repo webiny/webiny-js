@@ -1,6 +1,8 @@
 import type { ICmsAssetsZipperExecuteContinueWithoutResult } from "./abstractions/CmsAssetsZipperExecuteContinueWithoutResult.js";
 
-export class CmsAssetsZipperExecuteContinueWithoutResult implements ICmsAssetsZipperExecuteContinueWithoutResult {
+export class CmsAssetsZipperExecuteContinueWithoutResult
+    implements ICmsAssetsZipperExecuteContinueWithoutResult
+{
     public readonly entryCursor: string | undefined;
     public readonly fileCursor: string | undefined;
 

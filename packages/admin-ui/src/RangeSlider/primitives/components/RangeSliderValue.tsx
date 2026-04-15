@@ -10,7 +10,8 @@ const rangeSliderValueVariants = cva("font-normal text-sm leading-none", {
 });
 
 interface RangeSliderValueProps
-    extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof rangeSliderValueVariants> {
+    extends React.HTMLAttributes<HTMLSpanElement>,
+        VariantProps<typeof rangeSliderValueVariants> {
     value: string;
 }
 

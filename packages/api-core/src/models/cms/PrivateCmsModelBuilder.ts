@@ -52,9 +52,9 @@ class PrivateCmsModelBuilderImpl implements IPrivateCmsModelBuilder {
     }
 }
 
-class PrivateCmsModelConfiguration<
-    TModel extends BaseModel<any>
-> implements IPrivateCmsModelConfiguration<TModel> {
+class PrivateCmsModelConfiguration<TModel extends BaseModel<any>>
+    implements IPrivateCmsModelConfiguration<TModel>
+{
     private metadata: CmsModelMetadata = {};
     // eslint-disable-next-line
     private modelMethods: Record<string, Function> = {};

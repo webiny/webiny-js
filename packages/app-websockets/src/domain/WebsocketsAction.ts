@@ -8,7 +8,8 @@ import type {
 export class WebsocketsAction<
     T extends IGenericData = IGenericData,
     R extends IGenericData = IGenericData
-> implements IWebsocketsAction<T, R> {
+> implements IWebsocketsAction<T, R>
+{
     private readonly actions: IWebsocketsActions;
     private readonly name: string;
 

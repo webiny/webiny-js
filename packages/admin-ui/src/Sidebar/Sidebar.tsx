@@ -11,8 +11,7 @@ import { SidebarMenuRoot } from "./components/items/SidebarMenuRoot.js";
 import { SidebarMenuGroup } from "~/Sidebar/components/items/SidebarMenuGroup.js";
 
 interface SidebarProps
-    extends
-        Omit<React.ComponentPropsWithoutRef<typeof SidebarRoot>, "title">,
+    extends Omit<React.ComponentPropsWithoutRef<typeof SidebarRoot>, "title">,
         Omit<React.ComponentPropsWithoutRef<typeof SidebarContent>, "title"> {
     title?: React.ReactNode;
     icon?: React.ReactNode;

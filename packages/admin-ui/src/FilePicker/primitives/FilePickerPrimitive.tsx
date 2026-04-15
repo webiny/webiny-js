@@ -40,7 +40,8 @@ const filePickerVariants = cva(
 );
 
 interface FilePickerPrimitiveProps
-    extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof filePickerVariants> {
+    extends React.HTMLAttributes<HTMLDivElement>,
+        VariantProps<typeof filePickerVariants> {
     /**
      * Custom styles for the container.
      */

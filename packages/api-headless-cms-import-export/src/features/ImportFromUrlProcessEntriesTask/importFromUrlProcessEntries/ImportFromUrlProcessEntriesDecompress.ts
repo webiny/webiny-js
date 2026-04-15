@@ -19,7 +19,8 @@ export interface IImportFromUrlProcessEntriesDecompressParams {
 export class ImportFromUrlProcessEntriesDecompress<
     I extends IImportFromUrlProcessEntriesInput = IImportFromUrlProcessEntriesInput,
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
-> implements IImportFromUrlProcessEntriesDecompress<I, O> {
+> implements IImportFromUrlProcessEntriesDecompress<I, O>
+{
     private readonly reader: ICompressedFileReader;
     private readonly decompressor: IDecompressor;
 

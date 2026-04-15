@@ -20,8 +20,7 @@ const commandItemVariants = cva(
 );
 
 interface ItemProps
-    extends
-        React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>,
+    extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>,
         VariantProps<typeof commandItemVariants> {
     selected?: boolean;
 }

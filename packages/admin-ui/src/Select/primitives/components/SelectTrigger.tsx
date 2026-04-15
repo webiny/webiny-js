@@ -90,7 +90,8 @@ const selectTriggerVariants = cva(
 );
 
 interface SelectTriggerProps
-    extends SelectPrimitives.SelectTriggerProps, VariantProps<typeof selectTriggerVariants> {
+    extends SelectPrimitives.SelectTriggerProps,
+        VariantProps<typeof selectTriggerVariants> {
     startIcon?: React.ReactElement;
     endIcon?: React.ReactElement;
     resetButton?: React.ReactElement;

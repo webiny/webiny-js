@@ -6,7 +6,9 @@ import { GracefulError } from "@webiny/project";
 const MATCH_STRING = "ConditionalCheckFailedException: The conditional request failed";
 const LEARN_MORE_URL = "https://webiny.link/deployment-ddb-conditional-check-failed";
 
-export class DdbPutItemConditionalCheckFailedGracefulErrorHandler implements ErrorHandler.Interface<IBaseAppParams> {
+export class DdbPutItemConditionalCheckFailedGracefulErrorHandler
+    implements ErrorHandler.Interface<IBaseAppParams>
+{
     execute({ error }: ErrorHandler.Params<IBaseAppParams>) {
         if (!error.message) {
             return;

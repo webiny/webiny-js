@@ -3,10 +3,8 @@ import type { Slider as SliderPrimitives } from "radix-ui";
 import { SliderRoot, SliderThumb, type SliderThumbProps, SliderTrack } from "~/Slider/index.js";
 import { useRangeSlider } from "./useRangeSlider.js";
 
-interface RangeSliderPrimitiveRootProps extends Omit<
-    SliderPrimitives.SliderProps,
-    "min" | "max" | "value"
-> {
+interface RangeSliderPrimitiveRootProps
+    extends Omit<SliderPrimitives.SliderProps, "min" | "max" | "value"> {
     /**
      * Array of numbers representing the current values of the range slider.
      */
@@ -26,7 +24,8 @@ interface RangeSliderPrimitiveThumbProps extends Omit<SliderThumbProps, "labelVa
 }
 
 interface RangeSliderPrimitiveVm
-    extends RangeSliderPrimitiveRootProps, Omit<RangeSliderPrimitiveThumbProps, "textValue"> {
+    extends RangeSliderPrimitiveRootProps,
+        Omit<RangeSliderPrimitiveThumbProps, "textValue"> {
     textValues: string[];
 }
 
@@ -63,10 +62,11 @@ const RangeSliderPrimitiveRenderer = ({
 /**
  * RangeSlider
  */
-interface RangeSliderPrimitiveProps extends Omit<
-    SliderPrimitives.SliderProps,
-    "defaultValue" | "value" | "onValueChange" | "onValueCommit"
-> {
+interface RangeSliderPrimitiveProps
+    extends Omit<
+        SliderPrimitives.SliderProps,
+        "defaultValue" | "value" | "onValueChange" | "onValueCommit"
+    > {
     onValuesChange: (values: number[]) => void;
     onValuesCommit?: (values: number[]) => void;
     showTooltip?: boolean;

@@ -17,7 +17,8 @@ const dialogFooterVariants = cva("flex justify-between", {
 });
 
 export interface DialogFooterProps
-    extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof dialogFooterVariants> {
+    extends React.HTMLAttributes<HTMLDivElement>,
+        VariantProps<typeof dialogFooterVariants> {
     actions?: React.ReactNode;
     info?: React.ReactNode;
 }

@@ -5,7 +5,10 @@ import { RequiredValidator, DateGteValidator, DateLteValidator } from "./fieldTy
 export type DateTimeType = "date" | "time" | "dateTimeWithTimezone" | "dateTimeWithoutTimezone";
 
 export interface IDateTimeFieldBuilder
-    extends DataFieldBuilder<"datetime">, RequiredValidator, DateGteValidator, DateLteValidator {
+    extends DataFieldBuilder<"datetime">,
+        RequiredValidator,
+        DateGteValidator,
+        DateLteValidator {
     dateTimeType(type: DateTimeType): this;
     dateOnly(): this;
     timeOnly(): this;

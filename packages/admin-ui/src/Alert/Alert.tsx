@@ -63,7 +63,8 @@ const alertVariants = cva(
 );
 
 export interface AlertProps
-    extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof alertVariants> {
+    extends React.HTMLAttributes<HTMLDivElement>,
+        VariantProps<typeof alertVariants> {
     showCloseButton?: boolean;
     icon?: React.ReactElement | null;
     onClose?: () => void;

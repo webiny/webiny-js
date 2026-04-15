@@ -7,10 +7,8 @@ import { Tag } from "~/Tag/index.js";
 import { IconButton } from "~/Button/index.js";
 import type { Icon } from "~/Icon/index.js";
 
-interface TagsPrimitiveProps extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    "size" | "onChange"
-> {
+interface TagsPrimitiveProps
+    extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "onChange"> {
     /**
      * Indicates if the field is disabled.
      */

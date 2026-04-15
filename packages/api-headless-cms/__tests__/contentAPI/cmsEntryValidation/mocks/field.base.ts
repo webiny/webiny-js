@@ -2,10 +2,11 @@ import type { CmsModelField } from "~/types";
 import ucFirst from "lodash/upperFirst";
 import { createMinLengthValidation, createRequiredValidation } from "./validations";
 
-export interface CreateFieldInput extends Pick<
-    CmsModelField,
-    "id" | "fieldId" | "type" | "label" | "listValidation" | "validation" | "list"
-> {
+export interface CreateFieldInput
+    extends Pick<
+        CmsModelField,
+        "id" | "fieldId" | "type" | "label" | "listValidation" | "validation" | "list"
+    > {
     parentId?: string;
 }
 

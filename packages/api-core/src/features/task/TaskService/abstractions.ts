@@ -86,10 +86,8 @@ export interface ITaskValues<T = GenericRecord, O extends ITaskOutput = ITaskOut
     output?: O;
 }
 
-export interface ITask<T = GenericRecord, O extends ITaskOutput = ITaskOutput> extends ITaskValues<
-    T,
-    O
-> {
+export interface ITask<T = GenericRecord, O extends ITaskOutput = ITaskOutput>
+    extends ITaskValues<T, O> {
     /**
      * ID without the revision number (for example: #0001).
      */

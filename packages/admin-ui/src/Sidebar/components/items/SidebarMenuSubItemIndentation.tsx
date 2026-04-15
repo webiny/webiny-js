@@ -12,8 +12,7 @@ const separatorVariants = cva(["h-xl ml-px"], {
 });
 
 export interface SidebarMenuSubItemIndentationProps
-    extends
-        Omit<React.HTMLAttributes<HTMLLIElement>, "content">,
+    extends Omit<React.HTMLAttributes<HTMLLIElement>, "content">,
         VariantProps<typeof separatorVariants> {
     lvl: number;
 }
