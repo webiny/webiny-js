@@ -1,5 +1,4 @@
 import { Plugin } from "@webiny/plugins";
-import type { FieldType as MappingFieldType } from "@opensearch-project/opensearch/api/_types/_common.mapping";
 import type { FieldSortOptions, SortOrder } from "~/types.js";
 
 export type UnmappedTypes = "date" | "long" | string;
@@ -98,7 +97,8 @@ export class OpenSearchFieldPlugin extends Plugin {
         }
         return {
             ...options,
-            unmapped_type: this.unmappedType as MappingFieldType
+            // TODO: Cast to the proper MappingFieldType once deep opensearch _types/ imports are resolvable under bundler resolution.
+            unmapped_type: this.unmappedType as any
         };
     }
     /**

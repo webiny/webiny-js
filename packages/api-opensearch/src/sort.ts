@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
 import type { FieldSortOptions, SortOrder, SortType } from "~/types.js";
-import type { FieldType as MappingFieldType } from "@opensearch-project/opensearch/api/_types/_common.mapping";
 import { OpenSearchFieldPlugin } from "~/plugins/index.js";
 
 const sortRegExp = /^((?:values\.)?[a-zA-Z0-9_@-]+)_(ASC|DESC)$/;
@@ -25,7 +24,8 @@ export const createSort = (params: CreateSortParams): SortType => {
         return {
             [field || "id.keyword"]: {
                 order: order || "desc",
-                unmapped_type: (unmappedType || undefined) as MappingFieldType | undefined
+                // TODO: Cast to the proper MappingFieldType once deep opensearch _types/ imports are resolvable under bundler resolution.
+                unmapped_type: (unmappedType || undefined) as any
             }
         };
     }
