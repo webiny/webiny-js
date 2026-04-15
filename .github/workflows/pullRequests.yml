@@ -222,7 +222,6 @@ jobs:
     name: AI Fix Static Analysis
     needs:
       - constants
-      - build
       - staticCodeAnalysis
     if: >-
       needs.staticCodeAnalysis.result == 'failure' &&
@@ -245,15 +244,8 @@ jobs:
         with:
           path: ${{ github.base_ref }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
-        with:
-          path: ${{ github.base_ref }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: ${{ github.base_ref }}
-      - name: Build packages
-        run: yarn build
         working-directory: ${{ github.base_ref }}
       - name: Install Claude Code
         run: npm install -g @anthropic-ai/claude-code

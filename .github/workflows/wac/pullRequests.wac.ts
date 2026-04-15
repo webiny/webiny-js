@@ -304,15 +304,18 @@ export const pullRequests = createWorkflow({
         }),
         aiFixStaticAnalysis: createJob({
             name: "AI Fix Static Analysis",
-            needs: ["constants", "build", "staticCodeAnalysis"],
+            needs: ["constants", "staticCodeAnalysis"],
             if: "needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true' && github.event.pull_request.user.login == 'adrians5j'",
             permissions: { contents: "write" },
             checkout: { path: DIR_WEBINY_JS },
             env: { ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}" },
             steps: [
                 ...yarnCacheSteps,
-                ...runBuildCacheSteps,
-                ...installBuildSteps,
+                {
+                    name: "Install dependencies",
+                    run: "yarn --immutable",
+                    "working-directory": DIR_WEBINY_JS
+                },
                 {
                     name: "Install Claude Code",
                     run: "npm install -g @anthropic-ai/claude-code"
