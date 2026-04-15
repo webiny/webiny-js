@@ -4,7 +4,7 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/abstractions.js";
 import { useHandler } from "./utils/useHandler.js";
 import { LANGUAGE_MODEL_ID } from "~/shared/constants.js";
-import { GetLanguageByCodeUseCase } from "~/api/features/getLanguageByCode/index.js";
+import { GetLanguageByCodeUseCase } from "~/api/features/GetLanguageByCode/index.js";
 import { ListLanguagesUseCase } from "~/api/features/ListLanguages/index.js";
 
 describe("Language Query Use Cases", () => {
