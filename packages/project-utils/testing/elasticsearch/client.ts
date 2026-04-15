@@ -10,16 +10,16 @@ const esEndpoint: string | undefined = process.env.OPENSEARCH_ENDPOINT;
 
 const defaultOptions: Partial<OpenSearchClientOptions> = {
     node: `http://localhost:${OPENSEARCH_PORT}`,
-    auth: {
-        username: process.env.OPENSEARCH_USERNAME || "",
-        password: process.env.OPENSEARCH_PASSWORD || ""
-    },
     maxRetries: 10,
     pingTimeout: 500
 };
+const esUsername = process.env.OPENSEARCH_USERNAME;
+const esPassword = process.env.OPENSEARCH_PASSWORD;
+if (esUsername && esPassword) {
+    defaultOptions.auth = { username: esUsername, password: esPassword };
+}
 if (!!esEndpoint) {
     defaultOptions.node = esEndpoint.match(/^http/) === null ? `https://${esEndpoint}` : esEndpoint;
-    defaultOptions.auth = undefined;
 }
 
 const wait = (ms: number): Promise<void> => {
