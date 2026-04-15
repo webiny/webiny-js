@@ -5,16 +5,16 @@ const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;
 const esEndpoint = process.env.OPENSEARCH_ENDPOINT;
 const defaultOptions = {
     node: `http://localhost:${OPENSEARCH_PORT}`,
-    auth: {
-        username: process.env.OPENSEARCH_USERNAME || "",
-        password: process.env.OPENSEARCH_PASSWORD || ""
-    },
     maxRetries: 10,
     pingTimeout: 500
 };
+const esUsername = process.env.OPENSEARCH_USERNAME;
+const esPassword = process.env.OPENSEARCH_PASSWORD;
+if (esUsername && esPassword) {
+    defaultOptions.auth = { username: esUsername, password: esPassword };
+}
 if (!!esEndpoint) {
     defaultOptions.node = esEndpoint.match(/^http/) === null ? `https://${esEndpoint}` : esEndpoint;
-    defaultOptions.auth = undefined;
 }
 
 const wait = ms => {
