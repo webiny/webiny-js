@@ -18,6 +18,13 @@ export default {
                     return push(possiblePackage);
                 }
             }
+            // Dynamic import() — callee.type is "Import", not a member expression
+            if (get(node, "callee.type") === "Import") {
+                const possiblePackage = get(node, "arguments.0.value");
+                if (typeof possiblePackage === "string") {
+                    return push(possiblePackage);
+                }
+            }
         }
     },
     ignore: {
