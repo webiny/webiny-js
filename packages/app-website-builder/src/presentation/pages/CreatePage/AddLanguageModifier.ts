@@ -3,7 +3,7 @@ import { FormModel } from "@webiny/app-admin";
 import {
     ListLanguagesUseCase,
     ListLanguagesRepository
-} from "@webiny/languages/admin/features/ListLanguages/abstractions.js";
+} from "@webiny/languages/admin/features/listLanguages/abstractions.js";
 import { CreatePageFormModifier } from "~/presentation/pages/CreatePage/abstractions.js";
 import type { CreatePageParams } from "~/features/pages/createPage/abstractions.js";
 import { PagePath } from "~/shared/PagePath.js";
