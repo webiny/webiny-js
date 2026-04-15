@@ -224,7 +224,7 @@ jobs:
       - constants
       - staticCodeAnalysis
     if: >-
-      needs.staticCodeAnalysis.result == 'failure' &&
+      failure() && needs.staticCodeAnalysis.result == 'failure' &&
       needs.constants.outputs.is-fork-pr != 'true' &&
       github.event.pull_request.user.login == 'adrians5j'
     permissions:
