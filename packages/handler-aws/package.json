@@ -18,7 +18,7 @@
     "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "fastify": "5.8.4",
+    "fastify": "5.8.5",
     "pino-lambda": "^4.4.1"
   },
   "devDependencies": {
