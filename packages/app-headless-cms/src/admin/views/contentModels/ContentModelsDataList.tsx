@@ -103,16 +103,19 @@ const ContentModelsDataList = ({
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(SORTERS[0].sorters);
     const { goToRoute } = useRouter();
-    const { models, loading, refresh } = useModels();
+    const { models: initialModels, loading, refresh } = useModels();
     const { canDelete, canEdit } = usePermission();
+    
+    const models = useMemo(() => {
+        return initialModels.filter(model => {
+            return !isHidden(model);
+        });
+    }, [initialModels]);
 
     const [modelToBeDeleted, setModelToBeDeleted] = useState<CmsModel | null>(null);
 
     const filterData = useCallback(
-        ({ name, tags }: Pick<CmsModel, "name" | "tags">): boolean => {
-            if (isHidden({ tags })) {
-                return false;
-            }
+        ({ name }: Pick<CmsModel, "name">): boolean => {
             return name.toLowerCase().includes(filter);
         },
         [filter]
