@@ -16,11 +16,13 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `EnvConfig`
 **Import:** `import { EnvConfig } from "webiny/admin/env-config"`
 **Source:** `@webiny/app/features/envConfig/index.ts`
 
 ---
+
 **Name:** `useEnvConfig`
 **Import:** `import { useEnvConfig } from "webiny/admin/env-config"`
 **Source:** `@webiny/app/presentation/envConfig/useEnvConfig.ts`

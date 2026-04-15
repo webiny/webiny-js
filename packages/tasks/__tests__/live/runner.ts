@@ -12,8 +12,9 @@ const defaultLambdaContext: Pick<LambdaContext, "getRemainingTimeInMillis"> = {
     }
 };
 
-export interface CreateLiveRunnerParams<C extends Context = Context>
-    extends CreateLiveContextParams<C> {
+export interface CreateLiveRunnerParams<
+    C extends Context = Context
+> extends CreateLiveContextParams<C> {
     lambdaContext?: Pick<LambdaContext, "getRemainingTimeInMillis">;
     context?: C;
 }

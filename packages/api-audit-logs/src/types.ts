@@ -5,8 +5,10 @@ import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { IAuditLog } from "~/storage/types.js";
 import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
 
-export interface AuditLogPayload
-    extends Omit<IAuditLog, "id" | "tenant" | "createdOn" | "createdBy" | "expiresAt" | "content"> {
+export interface AuditLogPayload extends Omit<
+    IAuditLog,
+    "id" | "tenant" | "createdOn" | "createdBy" | "expiresAt" | "content"
+> {
     content: GenericRecord;
 }
 

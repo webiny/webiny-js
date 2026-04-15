@@ -2,7 +2,7 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "printWidth": 100,
   "trailingComma": "none",
-  "tabWidth": 4,
+  "tabWidth": 2,
   "arrowParens": "avoid",
   "endOfLine": "lf",
   "useTabs": false,
@@ -42,5 +42,13 @@
     "./nextjs/",
     "packages/admin-ui/storybook-static/**",
     "**/*.hbs"
+  ],
+  "overrides": [
+    {
+      "files": ["*.js", "*.ts", "*.tsx"],
+      "options": {
+        "tabWidth": 4
+      }
+    }
   ]
 }

@@ -22,8 +22,7 @@ const iconPickerTriggerVariants = cva("cursor-pointer fill-neutral-xstrong", {
 });
 
 interface IconPickerTriggerProps
-    extends VariantProps<typeof inputVariants>,
-        VariantProps<typeof iconPickerTriggerVariants> {
+    extends VariantProps<typeof inputVariants>, VariantProps<typeof iconPickerTriggerVariants> {
     icon: Icon | null;
     disabled?: boolean;
 }

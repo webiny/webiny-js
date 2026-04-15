@@ -21,7 +21,8 @@ const listVariants = cva("group w-full", {
 });
 
 interface ListProps
-    extends VariantProps<typeof listVariants>,
+    extends
+        VariantProps<typeof listVariants>,
         Omit<React.HTMLAttributes<HTMLDivElement>, "children"> {
     children: React.ReactNode;
 }

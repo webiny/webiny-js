@@ -58,7 +58,8 @@ const steppedProgressIconVariants = cva(
 );
 
 interface SteppedProgressIconProps
-    extends React.HTMLAttributes<HTMLDivElement>,
+    extends
+        React.HTMLAttributes<HTMLDivElement>,
         VariantProps<typeof steppedProgressIconVariants> {}
 
 const SteppedProgressIcon = ({

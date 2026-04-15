@@ -73,8 +73,9 @@ export interface ICmsImportExportValidatedValidFile {
     error?: never;
 }
 
-export interface ICmsImportExportValidatedInvalidFile
-    extends Partial<Omit<ICmsImportExportValidatedValidFile, "error">> {
+export interface ICmsImportExportValidatedInvalidFile extends Partial<
+    Omit<ICmsImportExportValidatedValidFile, "error">
+> {
     checked: boolean;
     error: ICmsImportExportValidatedFileError;
 }
@@ -83,8 +84,7 @@ export type ICmsImportExportValidatedFile =
     | ICmsImportExportValidatedValidFile
     | ICmsImportExportValidatedInvalidFile;
 
-export interface ICmsImportExportValidatedContentEntriesFile
-    extends ICmsImportExportValidatedValidFile {
+export interface ICmsImportExportValidatedContentEntriesFile extends ICmsImportExportValidatedValidFile {
     size: number;
     type: CmsImportExportFileType.ENTRIES;
 }

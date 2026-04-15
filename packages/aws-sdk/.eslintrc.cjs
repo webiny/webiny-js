@@ -1,5 +1,5 @@
 module.exports = {
-    rules: {
-        "no-restricted-imports": 0
-    }
+  rules: {
+    "no-restricted-imports": 0
+  }
 };

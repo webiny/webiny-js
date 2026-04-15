@@ -238,8 +238,9 @@ export interface CmsModelFieldTypePlugin extends Plugin {
     };
 }
 
-export interface CmsModelLayoutFieldTypePlugin<T extends CmsModelLayoutField = CmsModelLayoutField>
-    extends Plugin {
+export interface CmsModelLayoutFieldTypePlugin<
+    T extends CmsModelLayoutField = CmsModelLayoutField
+> extends Plugin {
     type: "cms-editor-layout-field-type";
     field: {
         type: T["type"];
@@ -546,8 +547,9 @@ export interface CmsIconsPlugin extends Plugin {
 /**
  * Transform field value when sending data to the API.
  */
-export interface CmsFieldValueTransformer<TField extends CmsModelField = CmsModelField>
-    extends Plugin {
+export interface CmsFieldValueTransformer<
+    TField extends CmsModelField = CmsModelField
+> extends Plugin {
     /**
      * A plugin type.
      */

@@ -9,8 +9,9 @@ const { AdvancedSearch } = AcoConfig;
 
 export type { FieldRendererConfig };
 
-export interface FieldRendererProps
-    extends React.ComponentProps<typeof AcoConfig.AdvancedSearch.FieldRenderer> {
+export interface FieldRendererProps extends React.ComponentProps<
+    typeof AcoConfig.AdvancedSearch.FieldRenderer
+> {
     modelIds?: string[];
 }
 

@@ -193,8 +193,10 @@ export interface ListGateway<TDto, TParams extends BaseListParams> {
 
 // Namespace for DI token and type utilities
 export namespace ListGateway {
-  export interface Interface<TDto, TParams extends BaseListParams>
-    extends ListGateway<TDto, TParams> {}
+  export interface Interface<TDto, TParams extends BaseListParams> extends ListGateway<
+    TDto,
+    TParams
+  > {}
 }
 ```
 

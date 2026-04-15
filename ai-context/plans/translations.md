@@ -53,10 +53,13 @@ Enhance `DuplicatePageRepository` with an optional callback parameter that lets 
 The callback receives the page data object (after the "Copy of" defaults are applied) and can mutate it in place. Existing callers that don't pass a callback continue to work unchanged.
 
 The `DuplicatePageRepository` abstraction interface changes from:
+
 ```
 execute(params: IDuplicateWbPageParams): Promise<Result<WbPage, Error>>
 ```
+
 to:
+
 ```
 execute(params: IDuplicateWbPageParams, callback?: (page: PageData) => Promise<void> | void): Promise<Result<WbPage, Error>>
 ```
@@ -79,6 +82,7 @@ execute(params: IDuplicateWbPageParams, callback?: (page: PageData) => Promise<v
 A new `TranslatePage` feature in `api-website-builder` that creates a translated copy of an existing page.
 
 **TranslatePageUseCase** steps:
+
 1. Check write permission via `WbPermissions.canCreate("page")`.
 2. Validate the language code by calling `GetLanguageByCodeUseCase`. Return `PageTranslationError` if not found.
 3. Fetch the source page to resolve lineage: if `properties.sourcePage` is already set (source is itself a translation), use that value; otherwise use the source page's `entryId`.

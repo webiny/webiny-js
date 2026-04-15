@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as AvatarStories from './Avatar.stories';
+import * as AvatarStories from "./Avatar.stories";
 
 <Meta of={AvatarStories} />
 
@@ -15,30 +15,30 @@ import React from "react";
 import { Avatar } from "@webiny/admin-ui";
 
 const AvatarExample = () => {
-    return (
-        <Avatar
-            image={<Avatar.Image src="https://i.pravatar.cc/300" alt="User" />}
-            fallback={<Avatar.Fallback>JD</Avatar.Fallback>}
-            size="md"
-            variant="strong"
-        />
-    );
-};
+return (
+
+<Avatar
+  image={<Avatar.Image src="https://i.pravatar.cc/300" alt="User" />}
+  fallback={<Avatar.Fallback>JD</Avatar.Fallback>}
+  size="md"
+  variant="strong"
+/>
+); };
 
 export default AvatarExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Avatar/Avatar.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Avatar/Avatar.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={AvatarStories.Documentation} />
@@ -48,14 +48,14 @@ import React from "react";
 import { Avatar } from "@webiny/admin-ui";
 
 const AvatarExample = () => {
-    return (
-        <Avatar
-            image={<Avatar.Image src="https://i.pravatar.cc/300" alt="User" />}
-            fallback={<Avatar.Fallback>JD</Avatar.Fallback>}
-            size="md"
-            variant="strong"
-        />
-    );
+  return (
+    <Avatar
+      image={<Avatar.Image src="https://i.pravatar.cc/300" alt="User" />}
+      fallback={<Avatar.Fallback>JD</Avatar.Fallback>}
+      size="md"
+      variant="strong"
+    />
+  );
 };
 
 export default AvatarExample;
@@ -71,14 +71,18 @@ import { ReactComponent as StormIcon } from "@webiny/icons/storm.svg";
 import { Avatar } from "@webiny/admin-ui";
 
 const AvatarExample = () => {
-    return (
-        <Avatar
-        fallback={<Avatar.Fallback><StormIcon /></Avatar.Fallback>}
-        size="md"
-        variant="strong"
-    />
-    );
-};
+return (
+
+<Avatar
+  fallback={
+    <Avatar.Fallback>
+      <StormIcon />
+    </Avatar.Fallback>
+  }
+  size="md"
+  variant="strong"
+/>
+); };
 
 export default AvatarExample;
 
@@ -88,18 +92,23 @@ export default AvatarExample;
 ## Anatomy
 
 ### Size
-<img src="/images/storybook/avatar/size.png" alt="Size"/>
+
+<img src="/images/storybook/avatar/size.png" alt="Size" />
 
 ### Type
-<img src="/images/storybook/avatar/type.png" alt="Type"/>
+
+<img src="/images/storybook/avatar/type.png" alt="Type" />
 
 ### Style
-<img src="/images/storybook/avatar/style.png" alt="Style"/>
+
+<img src="/images/storybook/avatar/style.png" alt="Style" />
 
 ## Usage
 
 ### Header
-<img src="/images/storybook/avatar/header.png" alt="Header"/>
+
+<img src="/images/storybook/avatar/header.png" alt="Header" />
 
 ### Table
-<img src="/images/storybook/avatar/table.png" alt="Table"/>
+
+<img src="/images/storybook/avatar/table.png" alt="Table" />

@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as TagStories from './Tag.stories';
+import * as TagStories from "./Tag.stories";
 
 <Meta of={TagStories} />
 
@@ -15,23 +15,23 @@ import React from "react";
 import { Tag } from "@webiny/admin-ui";
 
 const TagExample = () => {
-    return <Tag content="Label" />;
+return <Tag content="Label" />;
 };
 
 export default TagExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Tag/Tag.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Tag/Tag.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={TagStories.Documentation} />
@@ -41,7 +41,7 @@ import React from "react";
 import { Tag } from "@webiny/admin-ui";
 
 const TagExample = () => {
-    return <Tag content="Label" />;
+  return <Tag content="Label" />;
 };
 
 export default TagExample;
@@ -58,7 +58,7 @@ import React from "react";
 import { Tag } from "@webiny/admin-ui";
 
 const BasicTagExample = () => {
-    return <Tag content="Label" />;
+return <Tag content="Label" />;
 };
 
 export default BasicTagExample;
@@ -73,12 +73,12 @@ import React from "react";
 import { Tag } from "@webiny/admin-ui";
 
 const InteractiveTagExample = () => {
-    return <Tag
-        content="Click me"
-        onClick={evt => {
-            console.log("Tag clicked", evt);
-        }}
-    />;
+return <Tag
+content="Click me"
+onClick={evt => {
+console.log("Tag clicked", evt);
+}}
+/>;
 };
 
 export default InteractiveTagExample;
@@ -93,12 +93,12 @@ import React from "react";
 import { Tag } from "@webiny/admin-ui";
 
 const DismissibleTagExample = () => {
-    return <Tag
-        content="Dismissible"
-        onDismiss={evt => {
-            console.log("Tag dismissed", evt);
-        }}
-    />;
+return <Tag
+content="Dismissible"
+onDismiss={evt => {
+console.log("Tag dismissed", evt);
+}}
+/>;
 };
 
 export default DismissibleTagExample;
@@ -114,14 +114,14 @@ import { Tag } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 
 const CustomDismissIconExample = () => {
-    return <Tag
-        content="Custom Icon"
-        onDismiss={evt => {
-            console.log("Tag dismissed", evt);
-        }}
-        dismissIconElement={<AddIcon />}
-        dismissIconLabel="Custom dismiss label"
-    />;
+return <Tag
+content="Custom Icon"
+onDismiss={evt => {
+console.log("Tag dismissed", evt);
+}}
+dismissIconElement={<AddIcon />}
+dismissIconLabel="Custom dismiss label"
+/>;
 };
 
 export default CustomDismissIconExample;
@@ -136,24 +136,24 @@ import React from "react";
 import { Tag } from "@webiny/admin-ui";
 
 const TagVariantsExample = () => {
-    return (
-        <div className={"flex gap-sm"}>
-            <Tag content={"Neutral base"} variant={"neutral-base"} onDismiss={() => {}} />
-            <Tag content={"Neutral base outline"} variant={"neutral-base-outline"} onDismiss={() => {}} />
-            <Tag content={"Neutral light"} variant={"neutral-light"} onDismiss={() => {}} />
-            <Tag content={"Neutral muted"} variant={"neutral-muted"} onDismiss={() => {}} />
-            <Tag content={"Neutral strong"} variant={"neutral-strong"} onDismiss={() => {}} />
-            <Tag content={"Neutral xstrong"} variant={"neutral-xstrong"} onDismiss={() => {}} />
-            <Tag content={"Neutral dark"} variant={"neutral-dark"} onDismiss={() => {}} />
-            <Tag content={"Success"} variant={"success"} onDismiss={() => {}} />
-            <Tag content={"Success light"} variant={"success-light"} onDismiss={() => {}} />
-            <Tag content={"Warning"} variant={"warning"} onDismiss={() => {}} />
-            <Tag content={"Destructive"} variant={"destructive"} onDismiss={() => {}} />
-            <Tag content={"Accent"} variant={"accent"} onDismiss={() => {}} />
-            <Tag content={"Accent light"} variant={"accent-light"} onDismiss={() => {}} />
-        </div>
-    );
-};
+return (
+
+<div className={"flex gap-sm"}>
+  <Tag content={"Neutral base"} variant={"neutral-base"} onDismiss={() => {}} />
+  <Tag content={"Neutral base outline"} variant={"neutral-base-outline"} onDismiss={() => {}} />
+  <Tag content={"Neutral light"} variant={"neutral-light"} onDismiss={() => {}} />
+  <Tag content={"Neutral muted"} variant={"neutral-muted"} onDismiss={() => {}} />
+  <Tag content={"Neutral strong"} variant={"neutral-strong"} onDismiss={() => {}} />
+  <Tag content={"Neutral xstrong"} variant={"neutral-xstrong"} onDismiss={() => {}} />
+  <Tag content={"Neutral dark"} variant={"neutral-dark"} onDismiss={() => {}} />
+  <Tag content={"Success"} variant={"success"} onDismiss={() => {}} />
+  <Tag content={"Success light"} variant={"success-light"} onDismiss={() => {}} />
+  <Tag content={"Warning"} variant={"warning"} onDismiss={() => {}} />
+  <Tag content={"Destructive"} variant={"destructive"} onDismiss={() => {}} />
+  <Tag content={"Accent"} variant={"accent"} onDismiss={() => {}} />
+  <Tag content={"Accent light"} variant={"accent-light"} onDismiss={() => {}} />
+</div>
+); };
 
 export default TagVariantsExample;
 ` } } />
@@ -167,12 +167,12 @@ import React from "react";
 import { Tag } from "@webiny/admin-ui";
 
 const DisabledTagExample = () => {
-    return <Tag
-        content="Disabled"
-        variant="neutral-base"
-        onDismiss={() => {}}
-        disabled={true}
-    />;
+return <Tag
+content="Disabled"
+variant="neutral-base"
+onDismiss={() => {}}
+disabled={true}
+/>;
 };
 
 export default DisabledTagExample;
@@ -181,16 +181,20 @@ export default DisabledTagExample;
 ## Anatomy
 
 ### Construction
-<img src="/images/storybook/tag/construction.png" alt="Construction"/>
+
+<img src="/images/storybook/tag/construction.png" alt="Construction" />
 
 ### Style
-<img src="/images/storybook/tag/style.png" alt="Style"/>
+
+<img src="/images/storybook/tag/style.png" alt="Style" />
 
 ### States
-<img src="/images/storybook/tag/states.png" alt="States"/>
+
+<img src="/images/storybook/tag/states.png" alt="States" />
 
 ## Usage Guidelines
-<img src="/images/storybook/tag/usage.png" alt="Usage"/>
+
+<img src="/images/storybook/tag/usage.png" alt="Usage" />
 
 ## Best Practices
 

@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as GridStories from './Grid.stories';
+import * as GridStories from "./Grid.stories";
 
 <Meta of={GridStories} />
 
@@ -13,56 +13,44 @@ import React from "react";
 import { Grid } from "@webiny/admin-ui";
 
 const GridExample = () => {
-    return (
-        <Grid gap={"comfortable"} className={"bg-neutral-light p-4"}>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 1
-            </Grid.Column>
-            <Grid.Column span={3} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 2<br/>Span: 3
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 3
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 4
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 5
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 6
-            </Grid.Column>
-            <Grid.Column span={2} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 7<br/>Span: 2
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 8
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 9
-            </Grid.Column>
-        </Grid>
-    );
-};
+return (
+
+<Grid gap={"comfortable"} className={"bg-neutral-light p-4"}>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 1</Grid.Column>
+  <Grid.Column span={3} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+    Col 2<br />
+    Span: 3
+  </Grid.Column>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 3</Grid.Column>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 4</Grid.Column>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 5</Grid.Column>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 6</Grid.Column>
+  <Grid.Column span={2} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+    Col 7<br />
+    Span: 2
+  </Grid.Column>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 8</Grid.Column>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 9</Grid.Column>
+</Grid>
+); };
 
 export default GridExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Grid/Grid.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Grid/Grid.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={GridStories.Documentation}/>
+<Controls of={GridStories.Documentation} />
 
 ## Usage
 
@@ -71,37 +59,39 @@ import React from "react";
 import { Grid } from "@webiny/admin-ui";
 
 const GridExample = () => {
-    return (
-        <Grid gap={"comfortable"} className={"bg-neutral-light p-4"}>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 1
-            </Grid.Column>
-            <Grid.Column span={3} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 2<br/>Span: 3
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 3
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 4
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 5
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 6
-            </Grid.Column>
-            <Grid.Column span={2} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 7<br/>Span: 2
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 8
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 9
-            </Grid.Column>
-        </Grid>
-    );
+  return (
+    <Grid gap={"comfortable"} className={"bg-neutral-light p-4"}>
+      <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+        Col 1
+      </Grid.Column>
+      <Grid.Column span={3} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+        Col 2<br />
+        Span: 3
+      </Grid.Column>
+      <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+        Col 3
+      </Grid.Column>
+      <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+        Col 4
+      </Grid.Column>
+      <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+        Col 5
+      </Grid.Column>
+      <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+        Col 6
+      </Grid.Column>
+      <Grid.Column span={2} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+        Col 7<br />
+        Span: 2
+      </Grid.Column>
+      <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+        Col 8
+      </Grid.Column>
+      <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+        Col 9
+      </Grid.Column>
+    </Grid>
+  );
 };
 
 export default GridExample;
@@ -110,6 +100,7 @@ export default GridExample;
 ## Examples
 
 ### Spacious Gap
+
 To have more spacing between grid columns, you can use the `gap` prop and set it to `spacious`.
 
 <Canvas of={GridStories.WithGapSpacious}  source={ { code: `
@@ -117,38 +108,26 @@ import React from "react";
 import { Grid } from "@webiny/admin-ui";
 
 const GridSpaciousExample = () => {
-    return (
-        <Grid gap={"spacious"} className={"bg-neutral-light p-4"}>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 1
-            </Grid.Column>
-            <Grid.Column span={3} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 2<br/>Span: 3
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 3
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 4
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 5
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 6
-            </Grid.Column>
-            <Grid.Column span={2} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 7<br/>Span: 2
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 8
-            </Grid.Column>
-            <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
-                Col 9
-            </Grid.Column>
-        </Grid>
-    );
-};
+return (
+
+<Grid gap={"spacious"} className={"bg-neutral-light p-4"}>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 1</Grid.Column>
+  <Grid.Column span={3} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+    Col 2<br />
+    Span: 3
+  </Grid.Column>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 3</Grid.Column>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 4</Grid.Column>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 5</Grid.Column>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 6</Grid.Column>
+  <Grid.Column span={2} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
+    Col 7<br />
+    Span: 2
+  </Grid.Column>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 8</Grid.Column>
+  <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">Col 9</Grid.Column>
+</Grid>
+); };
 
     export default GridSpaciousExample;
 
@@ -156,6 +135,7 @@ const GridSpaciousExample = () => {
 />
 
 ### With Offset
+
 With Offset, you can create a grid with a specific offset. The offset is applied to columns, e.g. `<Grid.Column span={8} offset={2}/>`. Please refer to the example - click on **Show code** to see code example.
 
 <Canvas of={GridStories.WithOffset}  source={ { code: `
@@ -163,8 +143,9 @@ import React from "react";
 import { Grid } from "@webiny/admin-ui";
 
 const GridWithOffsetExample = () => {
-    return (
-        <Grid gap={"spacious"} className={"bg-neutral-light p-4"}>
+return (
+
+<Grid gap={"spacious"} className={"bg-neutral-light p-4"}>
 
                 {/* Row 1 */}
                 <Grid.Column span={8} offset={2} className="bg-primary text-neutral-light p-2 text-md rounded-sm">
@@ -204,46 +185,55 @@ const GridWithOffsetExample = () => {
 />
 
 ## Horizontal Grids
+
 The grids within the Webiny Design System behave as fixed and fluid elements relevant to the elements on the page.
 
 ### Grid types
+
 Webiny Design System use two types of grids: fluid and fixed. Both grid types use breakpoints to determine whether the layout needs to change between viewport sizes.
 
 ### Fluid
+
 The fluid grid stretches across an area to fill all available space within the screen, part of the screen or within the specific element if needed.
 
-<img src="/images/storybook/grid/fluid.png" alt="Fluid"/>
+<img src="/images/storybook/grid/fluid.png" alt="Fluid" />
 
-<img src="/images/storybook/grid/fluid-dashboard.png" alt="Fluid Dashboard"/>
-
+<img src="/images/storybook/grid/fluid-dashboard.png" alt="Fluid Dashboard" />
 
 ### Fixed
+
 The fixed grid applies the ideal maximum width to page or page element.
 
-<img src="/images/storybook/grid/fixed.png" alt="Fixed"/>
+<img src="/images/storybook/grid/fixed.png" alt="Fixed" />
 
-<img src="/images/storybook/grid/fixed-dashboard.png" alt="Fixed Dashboard"/>
+<img src="/images/storybook/grid/fixed-dashboard.png" alt="Fixed Dashboard" />
 
 ## Grid Gutter Sizes
+
 We considered using two main sizes for grid application, to be used dependent on the content type.
 
 ### Comfortable (Default)
-<img src="/images/storybook/grid/grid-gutter-size-comfortable.png" alt="Comfortable (Default)"/>
+
+<img src="/images/storybook/grid/grid-gutter-size-comfortable.png" alt="Comfortable (Default)" />
 
 ### Spacious
-<img src="/images/storybook/grid/grid-gutter-size-spacious.png" alt="Spacious"/>
+
+<img src="/images/storybook/grid/grid-gutter-size-spacious.png" alt="Spacious" />
 
 ## Breakpoints
+
 A breakpoint marks the point where a website’s layout adapts to provide the best user experience. In responsive design, the range of each breakpoint defines the ideal number of columns for a given viewport size, along with the suggested widths for margins and gutters.
 
-<img src="/images/storybook/grid/breakpoints.png" alt="Breakpoints"/>
+<img src="/images/storybook/grid/breakpoints.png" alt="Breakpoints" />
 
 ## Column Spans
+
 Content should be distributed across a minimum of 3 columns, with the option to extend up to 12 columns. To achieve a range of layouts, vary the number of columns used, allowing for flexible design across different breakpoints.
 
-<img src="/images/storybook/grid/column-spans.png" alt="Column Spans"/>
+<img src="/images/storybook/grid/column-spans.png" alt="Column Spans" />
 
 ## Column Offsets
+
 Content isn't required to span the full 12 columns. It can cover a smaller number of columns, creating a layout where the content is centered within a 12-column grid.
 
-<img src="/images/storybook/grid/column-offsets.png" alt="Column Offsets"/>
+<img src="/images/storybook/grid/column-offsets.png" alt="Column Offsets" />

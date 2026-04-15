@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as ToastStories from './useToast.stories';
+import * as ToastStories from "./useToast.stories";
 
 <Meta of={ToastStories} />
 
@@ -15,8 +15,8 @@ import React, { useState } from "react";
 import { useToast, Toast, Button } from "@webiny/admin-ui";
 
 const ToastExample = () => {
-    const [lastToast, setLastToast] = useState<string | number>("");
-    const { showToast, hideToast, hideAllToasts } = useToast();
+const [lastToast, setLastToast] = useState<string | number>("");
+const { showToast, hideToast, hideAllToasts } = useToast();
 
         const handleShowToast = () => {
             const toast = showToast({
@@ -38,17 +38,17 @@ const ToastExample = () => {
     export default ToastExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Toast/Toast.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Toast/Toast.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={ToastStories.Documentation} />
@@ -58,24 +58,24 @@ import React, { useState } from "react";
 import { useToast, Toast, Button } from "@webiny/admin-ui";
 
 const ToastExample = () => {
-    const [lastToast, setLastToast] = useState<string | number>("");
-    const { showToast, hideToast, hideAllToasts } = useToast();
+  const [lastToast, setLastToast] = useState<string | number>("");
+  const { showToast, hideToast, hideAllToasts } = useToast();
 
-    const handleShowToast = () => {
-        const toast = showToast({
-            title: "New entry created"
-        });
-        setLastToast(toast);
-    };
+  const handleShowToast = () => {
+    const toast = showToast({
+      title: "New entry created"
+    });
+    setLastToast(toast);
+  };
 
-    return (
-        <>
-            <Button text="Show Toast" onClick={handleShowToast} />
-            <Button text="Hide latest toast" onClick={() => hideToast(lastToast)} />
-            <Button text="Hide all toasts" onClick={() => hideAllToasts()} />
-            <Toast.Provider />
-        </>
-    );
+  return (
+    <>
+      <Button text="Show Toast" onClick={handleShowToast} />
+      <Button text="Hide latest toast" onClick={() => hideToast(lastToast)} />
+      <Button text="Hide all toasts" onClick={() => hideAllToasts()} />
+      <Toast.Provider />
+    </>
+  );
 };
 
 export default ToastExample;
@@ -92,8 +92,8 @@ import React, { useState } from "react";
 import { useToast, Toast, Button } from "@webiny/admin-ui";
 
 const BasicToastExample = () => {
-    const [lastToast, setLastToast] = useState<string | number>("");
-    const { showToast, hideToast, hideAllToasts } = useToast();
+const [lastToast, setLastToast] = useState<string | number>("");
+const { showToast, hideToast, hideAllToasts } = useToast();
 
     return (
         <>
@@ -111,6 +111,7 @@ const BasicToastExample = () => {
             <Toast.Provider />
         </>
     );
+
 };
 
 export default BasicToastExample;
@@ -125,8 +126,8 @@ import React, { useState } from "react";
 import { useToast, Toast, Button } from "@webiny/admin-ui";
 
 const SubtleToastExample = () => {
-    const [lastToast, setLastToast] = useState<string | number>("");
-    const { showToast, hideToast, hideAllToasts } = useToast();
+const [lastToast, setLastToast] = useState<string | number>("");
+const { showToast, hideToast, hideAllToasts } = useToast();
 
     return (
         <>
@@ -145,6 +146,7 @@ const SubtleToastExample = () => {
             <Toast.Provider />
         </>
     );
+
 };
 
 export default SubtleToastExample;
@@ -159,8 +161,8 @@ import React, { useState } from "react";
 import { useToast, Toast, Button } from "@webiny/admin-ui";
 
 const ToastWithDescriptionExample = () => {
-    const [lastToast, setLastToast] = useState<string | number>("");
-    const { showToast, hideToast, hideAllToasts } = useToast();
+const [lastToast, setLastToast] = useState<string | number>("");
+const { showToast, hideToast, hideAllToasts } = useToast();
 
     return (
         <>
@@ -179,6 +181,7 @@ const ToastWithDescriptionExample = () => {
             <Toast.Provider />
         </>
     );
+
 };
 
 export default ToastWithDescriptionExample;
@@ -193,8 +196,8 @@ import React, { useState } from "react";
 import { useToast, Toast, Button } from "@webiny/admin-ui";
 
 const ToastWithComponentsExample = () => {
-    const [lastToast, setLastToast] = useState<string | number>("");
-    const { showToast, hideToast, hideAllToasts } = useToast();
+const [lastToast, setLastToast] = useState<string | number>("");
+const { showToast, hideToast, hideAllToasts } = useToast();
 
     return (
         <>
@@ -215,6 +218,7 @@ const ToastWithComponentsExample = () => {
             <Toast.Provider />
         </>
     );
+
 };
 
 export default ToastWithComponentsExample;
@@ -229,8 +233,8 @@ import React, { useState } from "react";
 import { useToast, Toast, Button } from "@webiny/admin-ui";
 
 const ToastWithActionsExample = () => {
-    const [lastToast, setLastToast] = useState<string | number>("");
-    const { showToast, hideToast, hideAllToasts } = useToast();
+const [lastToast, setLastToast] = useState<string | number>("");
+const { showToast, hideToast, hideAllToasts } = useToast();
 
     return (
         <>
@@ -263,6 +267,7 @@ const ToastWithActionsExample = () => {
             <Toast.Provider />
         </>
     );
+
 };
 
 export default ToastWithActionsExample;
@@ -277,8 +282,8 @@ import React, { useState } from "react";
 import { useToast, Toast, Button } from "@webiny/admin-ui";
 
 const ToastWithDescriptionAndActionsExample = () => {
-    const [lastToast, setLastToast] = useState<string | number>("");
-    const { showToast, hideToast, hideAllToasts } = useToast();
+const [lastToast, setLastToast] = useState<string | number>("");
+const { showToast, hideToast, hideAllToasts } = useToast();
 
     return (
         <>
@@ -314,6 +319,7 @@ const ToastWithDescriptionAndActionsExample = () => {
             <Toast.Provider />
         </>
     );
+
 };
 
 export default ToastWithDescriptionAndActionsExample;
@@ -329,8 +335,8 @@ import { useToast, Toast, Button, Icon } from "@webiny/admin-ui";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 
 const ToastWithCustomIconExample = () => {
-    const [lastToast, setLastToast] = useState<string | number>("");
-    const { showToast, hideToast, hideAllToasts } = useToast();
+const [lastToast, setLastToast] = useState<string | number>("");
+const { showToast, hideToast, hideAllToasts } = useToast();
 
     return (
         <>
@@ -349,6 +355,7 @@ const ToastWithCustomIconExample = () => {
             <Toast.Provider />
         </>
     );
+
 };
 
 export default ToastWithCustomIconExample;
@@ -363,8 +370,8 @@ import React, { useState } from "react";
 import { useToast, Toast, Button } from "@webiny/admin-ui";
 
 const ToastWithInfiniteDurationExample = () => {
-    const [lastToast, setLastToast] = useState<string | number>("");
-    const { showToast, hideToast, hideAllToasts } = useToast();
+const [lastToast, setLastToast] = useState<string | number>("");
+const { showToast, hideToast, hideAllToasts } = useToast();
 
     return (
         <>
@@ -383,6 +390,7 @@ const ToastWithInfiniteDurationExample = () => {
             <Toast.Provider />
         </>
     );
+
 };
 
 export default ToastWithInfiniteDurationExample;
@@ -397,8 +405,8 @@ import React, { useState } from "react";
 import { useToast, Toast, Button } from "@webiny/admin-ui";
 
 const ToastNotDismissibleExample = () => {
-    const [lastToast, setLastToast] = useState<string | number>("");
-    const { showToast, hideToast, hideAllToasts } = useToast();
+const [lastToast, setLastToast] = useState<string | number>("");
+const { showToast, hideToast, hideAllToasts } = useToast();
 
     return (
         <>
@@ -417,6 +425,7 @@ const ToastNotDismissibleExample = () => {
             <Toast.Provider />
         </>
     );
+
 };
 
 export default ToastNotDismissibleExample;
@@ -431,8 +440,8 @@ import React, { useState } from "react";
 import { useToast, Toast, Button } from "@webiny/admin-ui";
 
 const ToastWithCustomPositionExample = () => {
-    const [lastToast, setLastToast] = useState<string | number>("");
-    const { showToast, hideToast, hideAllToasts } = useToast();
+const [lastToast, setLastToast] = useState<string | number>("");
+const { showToast, hideToast, hideAllToasts } = useToast();
 
     return (
         <>
@@ -451,6 +460,7 @@ const ToastWithCustomPositionExample = () => {
             <Toast.Provider />
         </>
     );
+
 };
 
 export default ToastWithCustomPositionExample;

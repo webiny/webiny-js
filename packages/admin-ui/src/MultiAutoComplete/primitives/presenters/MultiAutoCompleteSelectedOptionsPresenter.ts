@@ -19,9 +19,7 @@ interface IMultiAutoCompleteSelectedOptionsPresenter {
     resetOptions: () => void;
 }
 
-class MultiAutoCompleteSelectedOptionPresenter
-    implements IMultiAutoCompleteSelectedOptionsPresenter
-{
+class MultiAutoCompleteSelectedOptionPresenter implements IMultiAutoCompleteSelectedOptionsPresenter {
     private options = new ListCache<CommandOption>();
 
     constructor() {

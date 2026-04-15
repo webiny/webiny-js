@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as LabelStories from './Label.stories';
+import * as LabelStories from "./Label.stories";
 
 <Meta of={LabelStories} />
 
@@ -12,7 +12,6 @@ The Label component is a fundamental UI element used to provide clear text descr
 It enhances usability by clearly identifying input fields and improves accessibility by properly associating labels with their corresponding form elements using htmlFor.
 The component supports a range of customization options, including descriptions, hints, required indicators, disabled and invalid states, and visual weight variants.
 
-
 ## Usage
 
 <Canvas of={LabelStories.Documentation} source={ { code: `
@@ -20,7 +19,7 @@ import React, { useState } from "react";
 import { Label, Input } from "@webiny/admin-ui";
 
 const LabelExample = () => {
-    const [value, setValue] = useState("");
+const [value, setValue] = useState("");
 
     return (
         <div className="mb-4 space-y-2">
@@ -47,22 +46,23 @@ const LabelExample = () => {
             />
         </div>
     );
+
 };
 
 export default LabelExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Label/Label.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Label/Label.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={LabelStories.Documentation} />
@@ -72,33 +72,33 @@ import React, { useState } from "react";
 import { Label, Input } from "@webiny/admin-ui";
 
 const LabelExample = () => {
-    const [value, setValue] = useState("");
+  const [value, setValue] = useState("");
 
-    return (
-        <div className="mb-4 space-y-2">
-            <Label
-                id="full-name-label"
-                htmlFor="full-name"
-                text="Full Name"
-                description="As shown on your government-issued ID"
-                hint="Include middle name if applicable"
-                required={true}
-                value="Label value will be shown here"
-                weight="strong"
-                invalid={false}
-                disabled={false}
-            />
+  return (
+    <div className="mb-4 space-y-2">
+      <Label
+        id="full-name-label"
+        htmlFor="full-name"
+        text="Full Name"
+        description="As shown on your government-issued ID"
+        hint="Include middle name if applicable"
+        required={true}
+        value="Label value will be shown here"
+        weight="strong"
+        invalid={false}
+        disabled={false}
+      />
 
-            <Input
-                id="full-name"
-                type="text"
-                placeholder="e.g. John Michael Doe"
-                required={true}
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-            />
-        </div>
-    );
+      <Input
+        id="full-name"
+        type="text"
+        placeholder="e.g. John Michael Doe"
+        required={true}
+        value={value}
+        onChange={e => setValue(e.target.value)}
+      />
+    </div>
+  );
 };
 
 export default LabelExample;

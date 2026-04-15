@@ -10,7 +10,8 @@ import type {
 
 // Input/Output types
 export interface IListLockRecordsWhere
-    extends IdInterfaceGenerator<"id">,
+    extends
+        IdInterfaceGenerator<"id">,
         IdentityInterfaceGenerator<"lockedBy">,
         IdentityInterfaceGenerator<"createdBy">,
         DateStringInterfaceGenerator<"lockedOn">,

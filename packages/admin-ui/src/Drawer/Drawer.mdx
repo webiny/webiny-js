@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as DrawerStories from './Drawer.stories';
+import * as DrawerStories from "./Drawer.stories";
 
 <Meta of={DrawerStories} />
 
@@ -15,7 +15,7 @@ import React, { useState } from "react";
 import { Drawer, Button } from "@webiny/admin-ui";
 
 const DrawerExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -54,70 +54,71 @@ const DrawerExample = () => {
             </Drawer>
         </>
     );
+
 };
 
 export default DrawerExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Drawer/Drawer.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Drawer/Drawer.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={DrawerStories.Documentation} exclude={["onOpenChange", "trigger"]}/>
+<Controls of={DrawerStories.Documentation} exclude={["onOpenChange", "trigger"]} />
 
 ```tsx
 import React, { useState } from "react";
 import { Drawer, Button } from "@webiny/admin-ui";
 
 const DrawerExample = () => {
-    const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
-    return (
-        <>
-            <Button
-                variant="primary"
-                text="Open Drawer"
-                onClick={() => setOpen(true)}
-            />
+  return (
+    <>
+      <Button variant="primary" text="Open Drawer" onClick={() => setOpen(true)} />
 
-            <Drawer
-                open={open}
-                onOpenChange={open => setOpen(open)}
-                title="Drawer Title"
-                description="A short drawer description."
-                info={<>Learn more about this <a href={"#"}>here</a>.</>}
-                side="right"
-                showCloseButton={true}
-                bodyPadding={true}
-                headerSeparator={true}
-                footerSeparator={true}
-                actions={
-                    <>
-                        <Drawer.CancelButton />
-                        <Drawer.ConfirmButton />
-                    </>
-                }
-            >
-                <p className={"mb-md, mt-md"}>
-                    This is the drawer content area. You can place any content here including
-                    forms, text, images, or other components.
-                </p>
-                <p className={"mb-md"}>
-                    Drawers are useful for displaying additional information or actions
-                    without navigating away from the current page.
-                </p>
-            </Drawer>
-        </>
-    );
+      <Drawer
+        open={open}
+        onOpenChange={open => setOpen(open)}
+        title="Drawer Title"
+        description="A short drawer description."
+        info={
+          <>
+            Learn more about this <a href={"#"}>here</a>.
+          </>
+        }
+        side="right"
+        showCloseButton={true}
+        bodyPadding={true}
+        headerSeparator={true}
+        footerSeparator={true}
+        actions={
+          <>
+            <Drawer.CancelButton />
+            <Drawer.ConfirmButton />
+          </>
+        }
+      >
+        <p className={"mb-md, mt-md"}>
+          This is the drawer content area. You can place any content here including forms, text,
+          images, or other components.
+        </p>
+        <p className={"mb-md"}>
+          Drawers are useful for displaying additional information or actions without navigating
+          away from the current page.
+        </p>
+      </Drawer>
+    </>
+  );
 };
 
 export default DrawerExample;
@@ -134,7 +135,7 @@ import React, { useState } from "react";
 import { Drawer, Button } from "@webiny/admin-ui";
 
 const ControlledVisibilityExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -172,6 +173,7 @@ const ControlledVisibilityExample = () => {
             </Drawer>
         </>
     );
+
 };
 
 export default ControlledVisibilityExample;
@@ -184,7 +186,7 @@ import React, { useState } from "react";
 import { Drawer, Button, DropdownMenu } from "@webiny/admin-ui";
 
 const WithDropdownMenuExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -214,6 +216,7 @@ const WithDropdownMenuExample = () => {
             </Drawer>
         </>
     );
+
 };
 
 export default WithDropdownMenuExample;
@@ -226,7 +229,7 @@ import React, { useState } from "react";
 import { Drawer, Button } from "@webiny/admin-ui";
 
 const WithoutCloseButtonExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -259,6 +262,7 @@ const WithoutCloseButtonExample = () => {
             </Drawer>
         </>
     );
+
 };
 
 export default WithoutCloseButtonExample;
@@ -271,7 +275,7 @@ import React, { useState } from "react";
 import { Drawer, Button } from "@webiny/admin-ui";
 
 const CustomWidthExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -304,6 +308,7 @@ const CustomWidthExample = () => {
             </Drawer>
         </>
     );
+
 };
 
 export default CustomWidthExample;
@@ -316,7 +321,7 @@ import React, { useState } from "react";
 import { Drawer, Button, Tabs } from "@webiny/admin-ui";
 
 const WithTabsExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -372,6 +377,7 @@ const WithTabsExample = () => {
             </Drawer>
         </>
     );
+
 };
 
 export default WithTabsExample;
@@ -385,7 +391,7 @@ import { Drawer, Button } from "@webiny/admin-ui";
 import { ReactComponent as DoorbellIcon } from "@webiny/icons/ring_volume.svg";
 
 const WithIconExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -412,6 +418,7 @@ const WithIconExample = () => {
             </Drawer>
         </>
     );
+
 };
 
 export default WithIconExample;
@@ -424,7 +431,7 @@ import React, { useState } from "react";
 import { Drawer, Button } from "@webiny/admin-ui";
 
 const AsModalExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -452,6 +459,7 @@ const AsModalExample = () => {
             </Drawer>
         </>
     );
+
 };
 
 export default AsModalExample;
@@ -460,13 +468,14 @@ export default AsModalExample;
 ## Anatomy
 
 ### Construction
-<img src="/images/storybook/drawer/anatomy.png" alt="Anatomy"/>
+
+<img src="/images/storybook/drawer/anatomy.png" alt="Anatomy" />
 
 ### Header
 
 Header needs to support multiple formation options that can be independently enabled or disabled.
 
-<img src="/images/storybook/drawer/header.png" alt="Header"/>
+<img src="/images/storybook/drawer/header.png" alt="Header" />
 
 ## Usage
 
@@ -474,4 +483,4 @@ Header needs to support multiple formation options that can be independently ena
 
 Drawers should slide in from either the left or right side, depending on the context. The drawer should overlay the content, and clicking outside of it should close it. There also needs to be an option to use an overlay behind the drawer.
 
-<img src="/images/storybook/drawer/positioning.png" alt="Positioning"/>
+<img src="/images/storybook/drawer/positioning.png" alt="Positioning" />

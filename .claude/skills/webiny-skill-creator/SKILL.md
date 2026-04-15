@@ -197,19 +197,19 @@ When asked to create a skill for a specific feature:
 
 The following skills should exist in `webiny/my-skills/`:
 
-| Skill Folder                     | Covers                                                    |
-| -------------------------------- | --------------------------------------------------------- |
-| `project-structure/SKILL.md`     | Project layout, webiny.config.tsx, extension registration |
-| `content-models/SKILL.md`        | ModelFactory, fields, validators, layout                  |
-| `custom-graphql-api/SKILL.md`    | GraphQLSchemaFactory, resolvers, DI                       |
-| `lifecycle-events/SKILL.md`      | CMS entry hooks, security events                          |
-| `admin-ui-extensions/SKILL.md`   | White-labeling, custom columns, forms, Lexical            |
-| `infrastructure-extensions/SKILL.md` | Pulumi handlers, declarative infra components         |
-| `cli-extensions/SKILL.md`        | CliCommandFactory, custom CLI commands                    |
-| `dependency-injection/SKILL.md`  | Universal DI pattern, injectable services                 |
-| `webiny-sdk/SKILL.md`            | External app integration, Result pattern                  |
-| `website-builder/SKILL.md`       | Editor components, theming, CMS integration               |
-| `local-development/SKILL.md`     | Deploy, watch, environments, debugging                    |
+| Skill Folder                         | Covers                                                    |
+| ------------------------------------ | --------------------------------------------------------- |
+| `project-structure/SKILL.md`         | Project layout, webiny.config.tsx, extension registration |
+| `content-models/SKILL.md`            | ModelFactory, fields, validators, layout                  |
+| `custom-graphql-api/SKILL.md`        | GraphQLSchemaFactory, resolvers, DI                       |
+| `lifecycle-events/SKILL.md`          | CMS entry hooks, security events                          |
+| `admin-ui-extensions/SKILL.md`       | White-labeling, custom columns, forms, Lexical            |
+| `infrastructure-extensions/SKILL.md` | Pulumi handlers, declarative infra components             |
+| `cli-extensions/SKILL.md`            | CliCommandFactory, custom CLI commands                    |
+| `dependency-injection/SKILL.md`      | Universal DI pattern, injectable services                 |
+| `webiny-sdk/SKILL.md`                | External app integration, Result pattern                  |
+| `website-builder/SKILL.md`           | Editor components, theming, CMS integration               |
+| `local-development/SKILL.md`         | Deploy, watch, environments, debugging                    |
 
 ### When to Add New Skills
 

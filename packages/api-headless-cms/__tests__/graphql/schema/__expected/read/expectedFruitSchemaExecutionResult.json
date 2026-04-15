@@ -215,7 +215,12 @@
           "description": null,
           "fields": null
         },
-        { "name": "SkipValidatorEnum", "kind": "ENUM", "description": null, "fields": null },
+        {
+          "name": "SkipValidatorEnum",
+          "kind": "ENUM",
+          "description": null,
+          "fields": null
+        },
         {
           "name": "CreateCmsEntryOptionsInput",
           "kind": "INPUT_OBJECT",
@@ -234,7 +239,12 @@
           "description": null,
           "fields": null
         },
-        { "name": "CmsIdentityInput", "kind": "INPUT_OBJECT", "description": null, "fields": null },
+        {
+          "name": "CmsIdentityInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
         {
           "name": "CmsEntryValidationResponseData",
           "kind": "OBJECT",
@@ -299,7 +309,12 @@
             }
           ]
         },
-        { "name": "CmsEntryStateType", "kind": "ENUM", "description": null, "fields": null },
+        {
+          "name": "CmsEntryStateType",
+          "kind": "ENUM",
+          "description": null,
+          "fields": null
+        },
         {
           "name": "CmsEntryState",
           "kind": "OBJECT",
@@ -401,22 +416,38 @@
             {
               "name": "getContentModel",
               "description": null,
-              "type": { "kind": "OBJECT", "name": "CmsContentModelResponse", "ofType": null }
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelResponse",
+                "ofType": null
+              }
             },
             {
               "name": "listContentModels",
               "description": null,
-              "type": { "kind": "OBJECT", "name": "CmsContentModelListResponse", "ofType": null }
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelListResponse",
+                "ofType": null
+              }
             },
             {
               "name": "getFruitApiModel",
               "description": null,
-              "type": { "kind": "OBJECT", "name": "FruitApiModelResponse", "ofType": null }
+              "type": {
+                "kind": "OBJECT",
+                "name": "FruitApiModelResponse",
+                "ofType": null
+              }
             },
             {
               "name": "listFruitsApiModel",
               "description": null,
-              "type": { "kind": "OBJECT", "name": "FruitApiModelListResponse", "ofType": null }
+              "type": {
+                "kind": "OBJECT",
+                "name": "FruitApiModelListResponse",
+                "ofType": null
+              }
             }
           ]
         },
@@ -432,7 +463,12 @@
             }
           ]
         },
-        { "name": "CmsEntryStatusType", "kind": "ENUM", "description": null, "fields": null },
+        {
+          "name": "CmsEntryStatusType",
+          "kind": "ENUM",
+          "description": null,
+          "fields": null
+        },
         {
           "name": "CmsFieldValidation",
           "kind": "OBJECT",
@@ -592,7 +628,11 @@
             {
               "name": "predefinedValues",
               "description": null,
-              "type": { "kind": "OBJECT", "name": "CmsPredefinedValues", "ofType": null }
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsPredefinedValues",
+                "ofType": null
+              }
             },
             {
               "name": "renderer",
@@ -1152,7 +1192,11 @@
             {
               "name": "values",
               "description": null,
-              "type": { "kind": "OBJECT", "name": "FruitApiModelValues", "ofType": null }
+              "type": {
+                "kind": "OBJECT",
+                "name": "FruitApiModelValues",
+                "ofType": null
+              }
             }
           ]
         },
@@ -1180,7 +1224,12 @@
           "description": null,
           "fields": null
         },
-        { "name": "FruitApiModelListSorter", "kind": "ENUM", "description": null, "fields": null },
+        {
+          "name": "FruitApiModelListSorter",
+          "kind": "ENUM",
+          "description": null,
+          "fields": null
+        },
         {
           "name": "FruitApiModelResponse",
           "kind": "OBJECT",
