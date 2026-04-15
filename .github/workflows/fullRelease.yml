@@ -11,6 +11,38 @@ name: 🚀 Full Release
         required: true
         type: string
 jobs:
+  createWebinyJsBranch:
+    name: Create release branch (webiny-js)
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+      - name: Checkout next
+        uses: actions/checkout@v5
+        with:
+          ref: next
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+      - name: Create and push release branch
+        run: >-
+          git checkout -b release/${{ github.event.inputs.version }} && git push
+          origin release/${{ github.event.inputs.version }}
+      - name: Open pull request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: >-
+          gh pr create --title "Release ${{ github.event.inputs.version }}"
+          --body "Release ${{ github.event.inputs.version }}" --base next --head
+          release/${{ github.event.inputs.version }}
+    runs-on: ubuntu-latest
   createDocsBranch:
     name: Trigger release notes generation (docs.webiny.com)
     env:
