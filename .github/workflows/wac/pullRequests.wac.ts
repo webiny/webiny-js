@@ -302,6 +302,48 @@ export const pullRequests = createWorkflow({
                 )
             ]
         }),
+        aiFixStaticAnalysis: createJob({
+            name: "AI Fix Static Analysis",
+            needs: ["constants", "build", "staticCodeAnalysis"],
+            if: "needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true' && github.event.pull_request.user.login == 'adrians5j'",
+            permissions: { contents: "write" },
+            checkout: { path: DIR_WEBINY_JS },
+            env: { ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}" },
+            steps: [
+                ...yarnCacheSteps,
+                ...runBuildCacheSteps,
+                ...installBuildSteps,
+                {
+                    name: "Install Claude Code",
+                    run: "npm install -g @anthropic-ai/claude-code"
+                },
+                {
+                    name: "AI Fix Code Issues",
+                    "working-directory": DIR_WEBINY_JS,
+                    run: [
+                        `claude --dangerously-skip-permissions -p`,
+                        `"Static code analysis failed on this PR. Fix ALL issues in one pass:`,
+                        `1. Run 'yarn prettier:fix' to fix all formatting.`,
+                        `2. Run 'yarn eslint:fix' to fix all auto-fixable ESLint issues.`,
+                        `3. Run 'yarn prettier:check' — if it still reports failures, fix those files.`,
+                        `4. Run 'yarn adio' — if it reports dependency errors, fix them.`,
+                        `5. Run 'yarn check-ts-configs' — if it reports errors, fix them.`,
+                        `6. Run 'yarn eslint' — if there are still errors, read the affected files and fix them manually.`,
+                        `7. Run 'yarn check-package-dependencies' — if it reports errors, fix them.`,
+                        `Do not stop until ALL checks pass. Work in the '${DIR_WEBINY_JS}' directory."`
+                    ].join(" ")
+                },
+                {
+                    name: "Commit AI fixes",
+                    uses: "stefanzweifel/git-auto-commit-action@v5",
+                    with: {
+                        commit_message: "chore: ai fix static analysis [skip ci]",
+                        file_pattern: "*.js *.jsx *.ts *.tsx *.json *.scss *.yml",
+                        repository: DIR_WEBINY_JS
+                    }
+                }
+            ]
+        }),
         ...createVitestTestsJobs(),
         ...createVitestTestsJobs(ddbStorageOps),
         ...createVitestTestsJobs(ddbOsStorageOps)
