@@ -53,7 +53,8 @@ export interface ITaskManagerStoreParams {
 export class TaskManagerStore<
     T extends ITaskDataInput = ITaskDataInput,
     O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
-> implements ITaskManagerStorePrivate<T, O> {
+> implements ITaskManagerStorePrivate<T, O>
+{
     private readonly context: TaskManagerStoreContext;
     private task: ITask<T, O>;
     private taskLog: ITaskLog;

@@ -12,8 +12,7 @@ import { DropdownMenuGroup } from "./components/DropdownMenuGroup.js";
 import { DropdownMenuPortal } from "./components/DropdownMenuPortal.js";
 
 interface DropdownMenuProps
-    extends
-        React.ComponentPropsWithoutRef<typeof DropdownMenuRoot>,
+    extends React.ComponentPropsWithoutRef<typeof DropdownMenuRoot>,
         React.ComponentPropsWithoutRef<typeof DropdownMenuContent> {
     trigger?: React.ReactNode;
     children: React.ReactNode;

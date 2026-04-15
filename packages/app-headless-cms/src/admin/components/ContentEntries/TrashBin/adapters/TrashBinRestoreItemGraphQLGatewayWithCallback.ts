@@ -2,7 +2,9 @@ import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/inde
 
 import type { ITrashBinRestoreItemGateway } from "@webiny/app-trash-bin";
 
-export class TrashBinRestoreItemGraphQLGatewayWithCallback implements ITrashBinRestoreItemGateway<CmsContentEntry> {
+export class TrashBinRestoreItemGraphQLGatewayWithCallback
+    implements ITrashBinRestoreItemGateway<CmsContentEntry>
+{
     private readonly cb: (id: string) => Promise<void>;
     private readonly gateway: ITrashBinRestoreItemGateway<CmsContentEntry>;
 

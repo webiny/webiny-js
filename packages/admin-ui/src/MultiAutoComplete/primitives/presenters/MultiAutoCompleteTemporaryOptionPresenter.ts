@@ -12,7 +12,9 @@ export interface IMultiAutoCompleteTemporaryOptionPresenter {
     resetOption: () => void;
 }
 
-export class MultiAutoCompleteTemporaryOptionPresenter implements IMultiAutoCompleteTemporaryOptionPresenter {
+export class MultiAutoCompleteTemporaryOptionPresenter
+    implements IMultiAutoCompleteTemporaryOptionPresenter
+{
     private option?: CommandOption = undefined;
 
     constructor() {

@@ -30,10 +30,11 @@ type MiddlewareParams<C extends Context = Context> = Pick<
     "context" | "event" | "registry"
 >;
 
-interface IWebsocketsRunnerRespondParams extends Pick<
-    IWebsocketsEventRequestContext,
-    "connectionId" | "domainName" | "stage" | "eventType"
-> {
+interface IWebsocketsRunnerRespondParams
+    extends Pick<
+        IWebsocketsEventRequestContext,
+        "connectionId" | "domainName" | "stage" | "eventType"
+    > {
     messageId?: string;
     result: IWebsocketsResponseOkResult | IWebsocketsResponseErrorResult;
 }

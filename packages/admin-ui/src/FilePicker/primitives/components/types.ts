@@ -7,8 +7,7 @@ import type { FileItemFormatted } from "../../domains/index.js";
  * They are shared between the default and custom renderers.
  */
 export interface FilePreviewDefaultProps
-    extends
-        Omit<React.HTMLAttributes<HTMLDivElement>, "children">,
+    extends Omit<React.HTMLAttributes<HTMLDivElement>, "children">,
         VariantProps<typeof previewVariants> {
     onReplaceItem?: () => void;
     onRemoveItem?: () => void;

@@ -15,7 +15,8 @@ export class Table<
     Name extends string = string,
     PartitionKey extends string = string,
     SortKey extends string = string
-> implements ITable<Name, PartitionKey, SortKey> {
+> implements ITable<Name, PartitionKey, SortKey>
+{
     public readonly table: BaseTable<Name, PartitionKey, SortKey>;
 
     public constructor(params: TableConstructor<Name, PartitionKey, SortKey>) {

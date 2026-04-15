@@ -27,8 +27,7 @@ const iconVariants = cva("shrink-0", {
 });
 
 interface IconProps
-    extends
-        Omit<React.HTMLAttributes<HTMLOrSVGElement>, "color">,
+    extends Omit<React.HTMLAttributes<HTMLOrSVGElement>, "color">,
         VariantProps<typeof iconVariants> {
     label: string;
     icon: React.ReactNode;

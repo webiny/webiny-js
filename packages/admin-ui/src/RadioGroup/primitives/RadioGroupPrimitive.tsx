@@ -20,10 +20,11 @@ const RadioGroupRoot = ({ className, ...props }: RadioGroupPrimitives.RadioGroup
 /**
  * Radio Group Renderer
  */
-interface RadioGroupPrimitiveProps extends Omit<
-    RadioGroupPrimitives.RadioGroupProps,
-    "defaultValue" | "onChange" | "onValueChange" | "value"
-> {
+interface RadioGroupPrimitiveProps
+    extends Omit<
+        RadioGroupPrimitives.RadioGroupProps,
+        "defaultValue" | "onChange" | "onValueChange" | "value"
+    > {
     items: RadioItemParams[];
     /**
      * Callback triggered when the selected value changes.

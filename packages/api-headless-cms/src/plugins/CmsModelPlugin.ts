@@ -42,10 +42,11 @@ interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId" | "sett
     settings?: CmsModelFieldSettings;
 }
 
-export interface CmsApiModel extends Omit<
-    CmsModelPluginModel,
-    "isPrivate" | "fields" | "singularApiName" | "pluralApiName" | "isPlugin"
-> {
+export interface CmsApiModel
+    extends Omit<
+        CmsModelPluginModel,
+        "isPrivate" | "fields" | "singularApiName" | "pluralApiName" | "isPlugin"
+    > {
     isPrivate?: never;
     noValidate?: boolean;
     singularApiName?: string;
@@ -57,18 +58,19 @@ export interface CmsApiModelFull extends Omit<CmsApiModel, "fields"> {
     fields: CmsModelFieldBase[];
 }
 
-interface CmsPrivateModel extends Omit<
-    CmsModelPluginModel,
-    | "isPrivate"
-    | "singularApiName"
-    | "pluralApiName"
-    | "fields"
-    | "isPlugin"
-    | "layout"
-    | "icon"
-    | "titleFieldId"
-    | "description"
-> {
+interface CmsPrivateModel
+    extends Omit<
+        CmsModelPluginModel,
+        | "isPrivate"
+        | "singularApiName"
+        | "pluralApiName"
+        | "fields"
+        | "isPlugin"
+        | "layout"
+        | "icon"
+        | "titleFieldId"
+        | "description"
+    > {
     noValidate?: boolean;
     titleFieldId?: string;
     singularApiName?: never;
@@ -77,10 +79,8 @@ interface CmsPrivateModel extends Omit<
     fields: CmsModelFieldInput[];
 }
 
-export interface CmsPrivateModelFull extends Omit<
-    CmsPrivateModel,
-    "fields" | "createdBy" | "createdOn" | "savedOn"
-> {
+export interface CmsPrivateModelFull
+    extends Omit<CmsPrivateModel, "fields" | "createdBy" | "createdOn" | "savedOn"> {
     fields: CmsModelFieldBase[];
 }
 

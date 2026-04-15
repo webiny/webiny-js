@@ -24,7 +24,8 @@ export interface IImportFromUrlProcessEntriesInsertParams {
 export class ImportFromUrlProcessEntriesInsert<
     I extends IImportFromUrlProcessEntriesInput = IImportFromUrlProcessEntriesInput,
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
-> implements IImportFromUrlProcessEntriesInsert<I, O> {
+> implements IImportFromUrlProcessEntriesInsert<I, O>
+{
     private readonly createEntry: CreateEntryUseCase.Interface;
     private readonly fileFetcher: IFileFetcher;
     private readonly model: CmsModel;

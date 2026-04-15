@@ -17,7 +17,8 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 export class ImportFromUrlControllerDownloadStep<
     I extends IImportFromUrlControllerInput = IImportFromUrlControllerInput,
     O extends IImportFromUrlControllerOutput = IImportFromUrlControllerOutput
-> implements ImportFromUrlControllerStep<I, O> {
+> implements ImportFromUrlControllerStep<I, O>
+{
     constructor(private context: Context) {}
 
     public async execute(

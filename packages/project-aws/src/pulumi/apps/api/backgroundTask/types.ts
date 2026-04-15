@@ -70,7 +70,8 @@ export interface StepFunctionDefinitionStatesTypePass extends StepFunctionDefini
     End?: boolean;
 }
 
-export interface StepFunctionDefinitionStatesTypeChoice extends StepFunctionDefinitionStatesTypeBase {
+export interface StepFunctionDefinitionStatesTypeChoice
+    extends StepFunctionDefinitionStatesTypeBase {
     Type: StepFunctionDefinitionStatesType.Choice;
     Choices: StepFunctionDefinitionStatesChoice[];
     Default?: string;
@@ -84,7 +85,8 @@ export interface StepFunctionDefinitionStatesTypeFail extends StepFunctionDefini
     ErrorPath?: string;
 }
 
-export interface StepFunctionDefinitionStatesTypeSucceed extends StepFunctionDefinitionStatesTypeBase {
+export interface StepFunctionDefinitionStatesTypeSucceed
+    extends StepFunctionDefinitionStatesTypeBase {
     Type: StepFunctionDefinitionStatesType.Succeed;
 }
 

@@ -60,7 +60,8 @@ export interface IExportContentAssetsParams {
 export class ExportContentAssets<
     I extends IExportContentAssetsInput = IExportContentAssetsInput,
     O extends IExportContentAssetsOutput = IExportContentAssetsOutput
-> implements IExportContentAssets<I, O> {
+> implements IExportContentAssets<I, O>
+{
     private readonly createCmsAssetsZipper: ICreateCmsAssetsZipperCallable;
     private context: Context;
 

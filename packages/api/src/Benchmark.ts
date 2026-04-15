@@ -13,10 +13,8 @@ enum BenchmarkState {
     UNDETERMINED = "undetermined"
 }
 
-interface BenchmarkMeasurementStart extends Pick<
-    BenchmarkMeasurement,
-    "name" | "category" | "start"
-> {
+interface BenchmarkMeasurementStart
+    extends Pick<BenchmarkMeasurement, "name" | "category" | "start"> {
     memoryStart: number;
 }
 

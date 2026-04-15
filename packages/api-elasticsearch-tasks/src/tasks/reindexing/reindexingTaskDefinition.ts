@@ -7,7 +7,9 @@ import type {
 } from "~/types.js";
 import { getClients } from "~/helpers/getClients.js";
 
-class ElasticsearchReindexingTask implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues> {
+class ElasticsearchReindexingTask
+    implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues>
+{
     id = "elasticsearchReindexing";
     title = "Elasticsearch reindexing";
 

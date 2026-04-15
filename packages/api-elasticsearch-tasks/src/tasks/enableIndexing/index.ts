@@ -7,7 +7,9 @@ import { IndexManager } from "~/settings/index.js";
 import { EnableIndexingTaskRunner } from "./EnableIndexingTaskRunner.js";
 import { getClients } from "~/helpers/getClients.js";
 
-class ElasticsearchEnableIndexingTask implements TaskDefinition.Interface<IElasticsearchEnableIndexingTaskInput> {
+class ElasticsearchEnableIndexingTask
+    implements TaskDefinition.Interface<IElasticsearchEnableIndexingTaskInput>
+{
     id = "elasticsearchEnableIndexing";
     title = "Enable Indexing on Elasticsearch Indexes";
 

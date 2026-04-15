@@ -12,10 +12,10 @@ type IRunParams = TaskDefinition.RunParams<
     IImportFromUrlControllerOutput
 >;
 
-class ImportFromUrlControllerTaskDefinition implements TaskDefinition.Interface<
-    IImportFromUrlControllerInput,
-    IImportFromUrlControllerOutput
-> {
+class ImportFromUrlControllerTaskDefinition
+    implements
+        TaskDefinition.Interface<IImportFromUrlControllerInput, IImportFromUrlControllerOutput>
+{
     id = IMPORT_FROM_URL_CONTROLLER_TASK;
     title = "Import from URL List - Controller";
     maxIterations = 500;

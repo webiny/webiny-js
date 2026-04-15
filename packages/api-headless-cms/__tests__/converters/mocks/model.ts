@@ -1,7 +1,8 @@
 import type { CmsModel } from "~/types/index.js";
 
 export interface ICreateModelParams
-    extends Partial<Omit<CmsModel, "fields">>, Pick<CmsModel, "fields"> {}
+    extends Partial<Omit<CmsModel, "fields">>,
+        Pick<CmsModel, "fields"> {}
 
 export const createModel = (base: ICreateModelParams): CmsModel => {
     const { fields } = base;

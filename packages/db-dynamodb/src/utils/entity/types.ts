@@ -29,10 +29,8 @@ export type IEntityQueryOneParams = Omit<QueryOneParams, "entity">;
 export type IEntityQueryAllParams = Omit<QueryAllParams, "entity">;
 export type IEntityQueryPerPageParams = Omit<QueryAllParams, "entity">;
 
-export interface IEntityCreateEntityWriterParams<T = GenericRecord> extends Omit<
-    IEntityWriteBatchParams<T>,
-    "entity"
-> {}
+export interface IEntityCreateEntityWriterParams<T = GenericRecord>
+    extends Omit<IEntityWriteBatchParams<T>, "entity"> {}
 export interface IEntityCreateEntityReaderParams extends Omit<IEntityReadBatchParams, "entity"> {}
 
 export type IEntityPutResult = ReturnType<typeof put>;

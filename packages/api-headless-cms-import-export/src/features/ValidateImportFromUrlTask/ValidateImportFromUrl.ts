@@ -22,7 +22,8 @@ export interface IValidateImportFromUrlParams {
 export class ValidateImportFromUrl<
     I extends IValidateImportFromUrlInput = IValidateImportFromUrlInput,
     O extends IValidateImportFromUrlOutput = IValidateImportFromUrlOutput
-> implements IValidateImportFromUrl<I, O> {
+> implements IValidateImportFromUrl<I, O>
+{
     private readonly fileFetcher: IExternalFileFetcher;
     private readonly fileExists: IFileExists;
 

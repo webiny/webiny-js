@@ -12,7 +12,9 @@ interface ITrashBinRestorePageGraphQLGatewayParams {
     fields: string[];
 }
 
-export class TrashBinRestorePageGraphQLGateway implements ITrashBinRestoreItemGateway<PageGatewayDto> {
+export class TrashBinRestorePageGraphQLGateway
+    implements ITrashBinRestoreItemGateway<PageGatewayDto>
+{
     private readonly client: ApolloClient<object>;
     private readonly fields: string[];
 

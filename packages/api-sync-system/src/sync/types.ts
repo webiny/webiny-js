@@ -90,10 +90,8 @@ export interface IHandlerConverter {
     convert(input: IDynamoDbCommand): ICommandValue;
 }
 
-export interface IGetEventBridgeCallableParams extends Omit<
-    Partial<EventBridgeClientConfig>,
-    "region"
-> {
+export interface IGetEventBridgeCallableParams
+    extends Omit<Partial<EventBridgeClientConfig>, "region"> {
     region: string;
 }
 

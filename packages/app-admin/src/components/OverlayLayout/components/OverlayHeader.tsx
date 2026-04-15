@@ -15,7 +15,8 @@ const overlayHeaderVariants = cva("", {
 });
 
 interface OverlayHeaderProps
-    extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof overlayHeaderVariants> {
+    extends React.HTMLAttributes<HTMLDivElement>,
+        VariantProps<typeof overlayHeaderVariants> {
     start?: React.ReactNode;
     middle?: React.ReactNode;
     end?: React.ReactNode;

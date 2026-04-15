@@ -283,7 +283,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
 
         const isSearch = Boolean(
             state.searchQuery ||
-            (state.filters && Object.values(state.filters).filter(Boolean).length)
+                (state.filters && Object.values(state.filters).filter(Boolean).length)
         );
 
         let where = dotPropImmutable.set({}, folderIdPath, state.folderId);

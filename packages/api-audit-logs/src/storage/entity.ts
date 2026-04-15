@@ -4,10 +4,8 @@ import { createEntity as baseCreateEntity, createTable } from "@webiny/db-dynamo
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { IStorageAuditLog } from "~/storage/types.js";
 
-export interface IAuditLogsEntityAttributes extends Omit<
-    IStandardEntityAttributes<IStorageAuditLog>,
-    "GSI1_SK" | "GSI2_SK" | "expiresAt"
-> {
+export interface IAuditLogsEntityAttributes
+    extends Omit<IStandardEntityAttributes<IStorageAuditLog>, "GSI1_SK" | "GSI2_SK" | "expiresAt"> {
     GSI1_PK: string;
     GSI1_SK: number;
     GSI2_PK: string;

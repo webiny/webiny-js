@@ -102,8 +102,7 @@ export type IUpdateTaskResponse<
 export type IDeleteTaskResponse = boolean;
 
 export interface IListTaskParamsWhere
-    extends
-        IdInterfaceGenerator<"id">,
+    extends IdInterfaceGenerator<"id">,
         IdInterfaceGenerator<"parentId">,
         IdInterfaceGenerator<"definitionId">,
         IdInterfaceGenerator<"taskStatus"> {
@@ -115,15 +114,12 @@ export interface IListTaskParams extends Omit<CmsEntryListParams, "fields" | "se
 }
 
 export interface IListTaskLogParamsWhere
-    extends
-        IdInterfaceGenerator<"id">,
+    extends IdInterfaceGenerator<"id">,
         IdInterfaceGenerator<"task">,
         NumericInterfaceGenerator<"iteration"> {}
 
-export interface IListTaskLogParams extends Omit<
-    CmsEntryListParams,
-    "fields" | "search" | "where"
-> {
+export interface IListTaskLogParams
+    extends Omit<CmsEntryListParams, "fields" | "search" | "where"> {
     where?: IListTaskLogParamsWhere;
 }
 
@@ -243,7 +239,9 @@ export interface ITasksContextServiceObject {
 }
 
 export interface ITasksContextObject
-    extends ITasksContextCrudObject, ITasksContextDefinitionObject, ITasksContextServiceObject {}
+    extends ITasksContextCrudObject,
+        ITasksContextDefinitionObject,
+        ITasksContextServiceObject {}
 
 export interface Context extends BaseContext {
     tasks: ITasksContextObject;

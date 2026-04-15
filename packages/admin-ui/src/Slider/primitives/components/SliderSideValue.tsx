@@ -10,7 +10,8 @@ const sliderValueVariants = cva("font-normal text-sm leading-none", {
 });
 
 interface SliderValueProps
-    extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof sliderValueVariants> {
+    extends React.HTMLAttributes<HTMLSpanElement>,
+        VariantProps<typeof sliderValueVariants> {
     value?: string;
 }
 

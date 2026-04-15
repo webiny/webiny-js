@@ -61,10 +61,8 @@ const segmentedControlRootVariants = cva("inline-flex rounded-md p-xxs gap-xs", 
     }
 });
 
-interface SegmentedControlItemProps extends Omit<
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    "value"
-> {
+interface SegmentedControlItemProps
+    extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "value"> {
     item: SegmentedControlItemFormatted;
     isActive: boolean;
     onValueChange: (value: string) => void;
