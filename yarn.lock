@@ -33120,6 +33120,7 @@ __metadata:
     "@webiny/app-website-builder": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
