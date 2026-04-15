@@ -431,7 +431,7 @@ Status: ok
 
 Status: ok
 
-## prettier
+## oxfmt
 
 Status: ok
 

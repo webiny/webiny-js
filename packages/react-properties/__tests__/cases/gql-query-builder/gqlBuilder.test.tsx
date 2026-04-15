@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import React from "react";
-import prettier from "prettier";
+import { format } from "oxfmt";
 import { render } from "@testing-library/react";
 import { Properties, toObject } from "~/index";
 import { getLastCall, flush } from "~tests/utils";
@@ -9,7 +9,7 @@ import { Query, Field, Variable, InlineFragment } from "./components";
 import { generateQuery } from "./generateQuery";
 
 const prettyGql = async (query: string) => {
-    return await prettier.format(query.trim(), { parser: "graphql" });
+    return (await format("query.graphql", query.trim())).code;
 };
 
 const ListPagesQuery = () => {
