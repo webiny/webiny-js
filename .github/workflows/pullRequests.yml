@@ -3,7 +3,7 @@
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
 name: Pull Requests
-'on': pull_request
+"on": pull_request
 concurrency:
   group: pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -19,7 +19,7 @@ jobs:
       - uses: webiny/action-conventional-commits@v1.3.1
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   validateCommitsDev:
     name: Validate commit messages (dev branch, 'feat' commits not allowed)
@@ -34,7 +34,7 @@ jobs:
           allowed-commit-types: fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   constants:
     name: Create constants
@@ -87,7 +87,7 @@ jobs:
           "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   build:
     name: Build
@@ -119,7 +119,7 @@ jobs:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysis:
     needs:
@@ -144,7 +144,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Check code formatting
-        run: yarn prettier:check
+        run: yarn format:check
         working-directory: ${{ github.base_ref }}
       - name: Check dependencies
         run: yarn adio
@@ -160,7 +160,7 @@ jobs:
         working-directory: ${{ github.base_ref }}
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysisVerifyDependencies:
     needs:
@@ -193,7 +193,7 @@ jobs:
         working-directory: ${{ github.base_ref }}
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
@@ -216,7 +216,7 @@ jobs:
         run: yarn cy:ts
         working-directory: ${{ github.base_ref }}
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   aiFixStaticAnalysis:
     name: AI Fix Static Analysis
@@ -230,7 +230,7 @@ jobs:
     permissions:
       contents: write
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:
@@ -248,7 +248,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Fix code formatting
-        run: yarn prettier:fix
+        run: yarn format:fix
         working-directory: ${{ github.base_ref }}
         continue-on-error: true
       - name: Fix ESLint issues (auto-fixable)
@@ -274,7 +274,7 @@ jobs:
       - name: Commit fixes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'chore: ai fix static analysis [skip ci]'
+          commit_message: "chore: ai fix static analysis [skip ci]"
           repository: ${{ github.base_ref }}
     runs-on: ubuntu-latest
   vitest-constants:
@@ -306,7 +306,7 @@ jobs:
           }}'
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   vitest-run:
     needs:
@@ -324,7 +324,7 @@ jobs:
         testCommand: ${{ fromJSON(needs.vitest-constants.outputs.vitest-test-commands) }}
     runs-on: ${{ matrix.os }}
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
     if: needs.vitest-constants.outputs.vitest-test-commands != '[]'
@@ -381,7 +381,7 @@ jobs:
           }}'
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   vitest-ddb-run:
     needs:
@@ -401,7 +401,7 @@ jobs:
           }}
     runs-on: ${{ matrix.os }}
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
       WEBINY_STORAGE: ddb
@@ -466,7 +466,7 @@ jobs:
           }}'
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   vitest-ddb-os-run:
     needs:
@@ -487,7 +487,7 @@ jobs:
           }}
     runs-on: ${{ matrix.os }}
     env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
+      NODE_OPTIONS: "--max_old_space_size=4096"
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
       WEBINY_STORAGE: ddb-os,ddb
