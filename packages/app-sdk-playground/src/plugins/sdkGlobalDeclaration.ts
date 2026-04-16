@@ -15,6 +15,7 @@ import { CMS_DECLARATIONS } from "./declarations/cms.js";
 import { TENANT_MANAGER_DECLARATIONS } from "./declarations/tenantManager.js";
 import { FILE_MANAGER_DECLARATIONS } from "./declarations/fileManager.js";
 import { LANGUAGES_DECLARATIONS } from "./declarations/languages.js";
+import { BACKGROUND_TASKS_DECLARATIONS } from "./declarations/backgroundTasks.js";
 
 export const SDK_GLOBAL_DECLARATION = `
 ${COMMON_DECLARATIONS}
@@ -26,6 +27,8 @@ ${TENANT_MANAGER_DECLARATIONS}
 ${FILE_MANAGER_DECLARATIONS}
 
 ${LANGUAGES_DECLARATIONS}
+
+${BACKGROUND_TASKS_DECLARATIONS}
 
 // ============================================================================
 // MAIN SDK INTERFACE
@@ -43,6 +46,9 @@ interface SdkWebiny {
 
     /** Languages operations: list enabled languages. */
     readonly languages: SdkLanguages;
+
+    /** Background Tasks operations: trigger, abort, list tasks and logs. */
+    readonly backgroundTasks: SdkBackgroundTasks;
 }
 
 declare const sdk: SdkWebiny;

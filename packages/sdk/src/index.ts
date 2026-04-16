@@ -3,6 +3,7 @@ export * from "./CmsSdk.js";
 export * from "./TenantManagerSdk.js";
 export * from "./FileManagerSdk.js";
 export * from "./LanguagesSdk.js";
+export * from "./BackgroundTasksSdk.js";
 export * from "./types.js";
 export { Result } from "./Result.js";
 export { HttpError, GraphQLError, NetworkError } from "./errors.js";
@@ -92,3 +93,19 @@ export type { CompleteMultiPartUploadParams } from "./methods/fileManager/comple
 
 // Export Languages types.
 export type { Language } from "./methods/languages/listLanguages.js";
+
+// Export BackgroundTasks types.
+export type {
+    TaskStatus,
+    TaskDefinition,
+    TaskRun,
+    TaskLog,
+    TaskLogItem
+} from "./methods/backgroundTasks/backgroundTaskTypes.js";
+
+// Export types from backgroundTasks methods.
+export type { ListLogsParams } from "./methods/backgroundTasks/listLogs.js";
+
+export type { TriggerTaskParams } from "./methods/backgroundTasks/triggerTask.js";
+
+export type { AbortTaskParams } from "./methods/backgroundTasks/abortTask.js";
