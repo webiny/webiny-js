@@ -2,7 +2,7 @@ import React, { memo } from "react";
 import type { ApolloClient } from "apollo-client";
 import { plugins } from "@webiny/plugins";
 import { useRouter, AdminConfig, AdminLayout } from "@webiny/app-admin";
-import { ReactComponent as ApiPlaygroundIcon } from "@webiny/icons/swap_horiz.svg";
+import { ReactComponent as ApiPlaygroundIcon } from "@webiny/icons/graphql_playground.svg";
 import Playground from "./plugins/Playground.js";
 import playgroundPlugins from "./plugins/index.js";
 import { Routes } from "~/routes.js";
@@ -28,10 +28,10 @@ const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundPro
                 name={"api-playground"}
                 element={
                     <Menu.Support.Link
-                        text={"API Playground"}
+                        text={"GraphQL Playground"}
                         icon={
                             <Menu.Support.Link.Icon
-                                label="API Playground"
+                                label="GraphQL Playground"
                                 element={<ApiPlaygroundIcon />}
                             />
                         }
@@ -43,7 +43,7 @@ const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundPro
             <Route
                 route={Routes.ApiPlayground}
                 element={
-                    <AdminLayout title={"API Playground"}>
+                    <AdminLayout title={"GraphQL Playground"}>
                         <Playground createApolloClient={createApolloClient} />
                     </AdminLayout>
                 }
