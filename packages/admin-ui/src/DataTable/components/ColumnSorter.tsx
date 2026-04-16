@@ -10,8 +10,7 @@ const columnSorterVariants = cva("flex items-center gap-xxs cursor-auto", {
 });
 
 interface ColumnSorterProps
-    extends React.HTMLAttributes<HTMLDivElement>,
-        VariantProps<typeof columnSorterVariants> {}
+    extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof columnSorterVariants> {}
 
 const ColumnSorter = ({ className, children, sortable, ...props }: ColumnSorterProps) => {
     return (

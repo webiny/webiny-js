@@ -9,9 +9,10 @@ type IRunParams = TaskDefinition.RunParams<
     Controller.IControllerOutput
 >;
 
-class ExportContentEntriesControllerTaskDefinition
-    implements TaskDefinition.Interface<Controller.IControllerInput, Controller.IControllerOutput>
-{
+class ExportContentEntriesControllerTaskDefinition implements TaskDefinition.Interface<
+    Controller.IControllerInput,
+    Controller.IControllerOutput
+> {
     id = EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK;
     title = "Export Content Entries and Assets Controller";
     maxIterations = 100;

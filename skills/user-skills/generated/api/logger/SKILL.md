@@ -17,6 +17,7 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `Logger`
 **Import:** `import { Logger } from "webiny/api/logger"`
 **Source:** `@webiny/api-core/features/logger/index.ts`

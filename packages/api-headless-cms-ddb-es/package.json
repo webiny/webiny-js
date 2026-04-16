@@ -54,9 +54,8 @@
     "@webiny/tasks": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "jest-dynalite": "^3.6.1",
-    "prettier": "3.6.2",
     "rimraf": "^6.1.3",
-    "typescript": "5.9.3",
+    "typescript": "6.0.2",
     "vitest": "^4.1.4"
   },
   "publishConfig": {

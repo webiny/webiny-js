@@ -9,7 +9,7 @@ import { lexical } from "./lexical";
 import { ts } from "./ts";
 import { graphql } from "./graphql";
 import { eslint } from "./eslint";
-import { prettier } from "./prettier";
+import { oxfmt } from "./oxfmt";
 import { vitest } from "./vitest";
 import { storybook } from "./storybook";
 import { emotion } from "./emotion.js";
@@ -27,7 +27,7 @@ export const presets = [
     ts,
     graphql,
     eslint,
-    prettier,
+    oxfmt,
     vitest,
     storybook,
     emotion,

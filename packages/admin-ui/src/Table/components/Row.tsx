@@ -13,8 +13,7 @@ const rowVariants = cva(
 );
 
 interface RowProps
-    extends React.HTMLAttributes<HTMLTableRowElement>,
-        VariantProps<typeof rowVariants> {}
+    extends React.HTMLAttributes<HTMLTableRowElement>, VariantProps<typeof rowVariants> {}
 
 const Row = ({ className, selected, ...props }: RowProps) => (
     <tr className={cn(rowVariants({ selected }), className)} {...props} />

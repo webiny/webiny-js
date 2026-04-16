@@ -1,0 +1,54 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "trailingComma": "none",
+  "tabWidth": 2,
+  "arrowParens": "avoid",
+  "endOfLine": "lf",
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": false,
+  "jsxSingleQuote": false,
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "proseWrap": "preserve",
+  "htmlWhitespaceSensitivity": "css",
+  "vueIndentScriptAndStyle": false,
+  "singleAttributePerLine": false,
+  "embeddedLanguageFormatting": "auto",
+  "quoteProps": "as-needed",
+  "requirePragma": false,
+  "insertPragma": false,
+  "rangeStart": 0,
+  "rangeEnd": null,
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    ".nx/",
+    ".webiny/",
+    ".verdaccio/",
+    "docs/",
+    "**/build/",
+    "**/dist/",
+    "**/.out/",
+    "**/.pulumi/",
+    ".webiny/**",
+    "packages/admin-ui/scripts/importFromFigma/exports/Alias tokens.json",
+    "packages/project-aws/_templates/appTemplates/",
+    "lerna.json",
+    "coverage/**",
+    "packages/cli/files/**/*.json",
+    "packages/create-webiny-project/utils/binaries/**",
+    ".github/workflows/**/*.yml",
+    "./nextjs/",
+    "packages/admin-ui/storybook-static/**",
+    "**/*.hbs"
+  ],
+  "overrides": [
+    {
+      "files": ["*.js", "*.ts", "*.tsx"],
+      "options": {
+        "tabWidth": 4
+      }
+    }
+  ]
+}

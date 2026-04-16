@@ -17,12 +17,14 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `TaskDefinition`
 **Import:** `import { TaskDefinition } from "webiny/api/tasks"`
 **Source:** `@webiny/api-core/features/task/TaskDefinition/index.ts`
 **Description:** Define a long-running background task with lifecycle hooks.
 
 ---
+
 **Name:** `TaskService`
 **Import:** `import { TaskService } from "webiny/api/tasks"`
 **Source:** `@webiny/api-core/features/task/TaskService/index.ts`

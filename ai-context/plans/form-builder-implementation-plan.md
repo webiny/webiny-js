@@ -40,12 +40,13 @@ These decisions were resolved during design review and apply across all phases.
 **FormModel owns `form.vm`.** The VM is a computed getter on FormModel. Presenter forwards `form.vm` to the view — no Presenter-level VM construction for form state.
 
 **`form.vm` shape:**
+
 ```ts
 interface FormVM {
   layout: LayoutNodeVM[];
-  errors: FormError[];        // { path, label, message }[]
+  errors: FormError[]; // { path, label, message }[]
   isDirty: boolean;
-  isValid: boolean | null;    // null = not yet validated
+  isValid: boolean | null; // null = not yet validated
 }
 ```
 
@@ -60,6 +61,7 @@ interface FormVM {
 **Field builder registry:** Proxy + Map of factories + module augmentation per field type, same as CMS `FieldBuilderRegistry`. Enables type-safe `fields.text()` autocomplete and extensibility.
 
 **Recursion guard in `setValue()`:**
+
 ```
 setValue(raw):
   transformed = runBeforeChange(raw)
@@ -67,6 +69,7 @@ setValue(raw):
   this.value = transformed
   runAfterChange(transformed)
 ```
+
 `beforeChange` always runs (pure transform). `afterChange` (side effects) only fires when value actually changed.
 
 **`setData()` ignores unknown fields.** Only defined fields are hydrated. `getData()` returns all defined fields including hidden and defaults.
@@ -278,6 +281,7 @@ Different page types reconfigure the form. Switching types rebuilds it.
 - `getData()` includes `pageType` from hidden field
 
 **End state:** Full working dialog matching all four screenshots:
+
 1. Static Page: Title + Path (+ Language if enabled)
 2. Dropdown shows all registered page types
 3. Product Page: Product picker + disabled Title/Path
@@ -288,6 +292,7 @@ Different page types reconfigure the form. Switching types rebuilds it.
 ## Future Phases (post-MVP)
 
 ### Phase 5: Layout System Expansion
+
 - `layout.separator()`, `layout.tabs()`, `layout.object()`, `layout.element()`
 - Named tabs containers: `layout.tabs({ id: "settings", tabs: [...] })`
 - `TabDefinition.description` for tab description text
@@ -300,6 +305,7 @@ Different page types reconfigure the form. Switching types rebuilds it.
 - `ObjectNode` rendering for single objects and non-templated lists
 
 ### Phase 6: Object & List Fields
+
 - `ObjectField` with hierarchical children Map
 - `.fields()` on object builder for nesting
 - `.list()` modifier with stable item keys (internal, not data)
@@ -308,6 +314,7 @@ Different page types reconfigure the form. Switching types rebuilds it.
 - `hasErrors` rollup over descendants
 
 ### Phase 7: Rules System
+
 - Rule format: `{ type, target, operator, value, action }`
 - `ConditionRuleEvaluator` (built-in, reads form values)
 - `RuleEvaluator` interface + `AccessControlRuleEvaluator` (injected via factory)
@@ -316,23 +323,27 @@ Different page types reconfigure the form. Switching types rebuilds it.
 - Integrate evaluators into `FormModelFactory`
 
 ### Phase 8: Dynamic Zones / Templates
+
 - `.templates()` on object fields
 - `_templateId` discriminator
 - Template visibility and layouts
 - `layout.object("field", { templateId: [...] })` for per-template layouts
 
 ### Phase 9: CMS Model Conversion
+
 - `createFormFromCmsModel(model)` converter
 - Type mapping, validator-to-zod bridge
 - Layout generation from CMS `layout` grid
 - `factory.createFromCmsModel()` integration
 
 ### Phase 10: Advanced Validation
+
 - Async validation debouncing (default 300ms, configurable per field via `.debounce()`)
 - Async schema memoization (cache by input value, force-revalidate on `submit()`)
 - `field.vm.validating` flag (true while `parseAsync()` in-flight)
 
 ### Phase 11: Advanced Features
+
 - `.requiredWhen(fn, message)` — conditional required via MobX computed callback, reactively flips `field.vm.required`
 - `computed()` / `computedUntilDirty()` — derived fields
 - `.extend()` for object field merging

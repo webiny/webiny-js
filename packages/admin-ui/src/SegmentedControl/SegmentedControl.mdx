@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as SegmentedControlStories from './SegmentedControl.stories';
+import * as SegmentedControlStories from "./SegmentedControl.stories";
 
 <Meta of={SegmentedControlStories} />
 
@@ -24,19 +24,19 @@ import { SegmentedControl } from "@webiny/admin-ui";
 import { useState } from "react";
 
 const MyComponent = () => {
-    const [value, setValue] = useState("option1");
+  const [value, setValue] = useState("option1");
 
-    return (
-        <SegmentedControl
-            items={[
-                { label: "Option 1", value: "option1" },
-                { label: "Option 2", value: "option2" },
-                { label: "Option 3", value: "option3" }
-            ]}
-            value={value}
-            onChange={setValue}
-        />
-    );
+  return (
+    <SegmentedControl
+      items={[
+        { label: "Option 1", value: "option1" },
+        { label: "Option 2", value: "option2" },
+        { label: "Option 3", value: "option3" }
+      ]}
+      value={value}
+      onChange={setValue}
+    />
+  );
 };
 ```
 
@@ -47,38 +47,40 @@ import { SegmentedControl } from "@webiny/admin-ui";
 import { Icon } from "@webiny/admin-ui";
 
 <SegmentedControl
-    items={[
-        { label: "Lock", value: "lock", icon: <Icon name="lock" /> },
-        { label: "Unlock", value: "unlock", icon: <Icon name="lock-open" /> },
-        { label: "Settings", value: "settings", icon: <Icon name="settings" /> }
-    ]}
-    value={value}
-    onChange={setValue}
-/>
+  items={[
+    { label: "Lock", value: "lock", icon: <Icon name="lock" /> },
+    { label: "Unlock", value: "unlock", icon: <Icon name="lock-open" /> },
+    { label: "Settings", value: "settings", icon: <Icon name="settings" /> }
+  ]}
+  value={value}
+  onChange={setValue}
+/>;
 ```
 
 ## Variants
 
 ### Accent (Default)
+
 The accent variant uses the primary color for the selected state.
 
 ### Ghost
+
 The ghost variant is designed for use on dark backgrounds, using a more subtle appearance.
 
 ## Form Integration
 
 ```tsx
 <SegmentedControl
-    label="Select a plan"
-    description="Choose your subscription plan"
-    required
-    items={plans}
-    value={selectedPlan}
-    onChange={setSelectedPlan}
-    validation={{
-        isValid: false,
-        message: "Please select a plan"
-    }}
+  label="Select a plan"
+  description="Choose your subscription plan"
+  required
+  items={plans}
+  value={selectedPlan}
+  onChange={setSelectedPlan}
+  validation={{
+    isValid: false,
+    message: "Please select a plan"
+  }}
 />
 ```
 
@@ -86,30 +88,30 @@ The ghost variant is designed for use on dark backgrounds, using a more subtle a
 
 ### SegmentedControl Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `items` | `SegmentedControlItemParams[]` | - | Array of items to display |
-| `value` | `string` | - | Currently selected value |
-| `onChange` | `(value: string) => void` | - | Callback when selection changes |
-| `variant` | `"accent" \| "ghost"` | `"accent"` | Visual style variant |
-| `size` | `"sm" \| "md"` | `"md"` | Size of the control |
-| `disabled` | `boolean` | `false` | Disable all items |
-| `className` | `string` | - | Additional CSS class |
-| `label` | `string \| React.ReactNode` | - | Form label |
-| `description` | `string \| React.ReactNode` | - | Form description |
-| `note` | `string \| React.ReactNode` | - | Form note |
-| `required` | `boolean` | - | Show required indicator |
-| `validation` | `object` | - | Validation state and message |
+| Prop          | Type                           | Default    | Description                     |
+| ------------- | ------------------------------ | ---------- | ------------------------------- |
+| `items`       | `SegmentedControlItemParams[]` | -          | Array of items to display       |
+| `value`       | `string`                       | -          | Currently selected value        |
+| `onChange`    | `(value: string) => void`      | -          | Callback when selection changes |
+| `variant`     | `"accent" \| "ghost"`          | `"accent"` | Visual style variant            |
+| `size`        | `"sm" \| "md"`                 | `"md"`     | Size of the control             |
+| `disabled`    | `boolean`                      | `false`    | Disable all items               |
+| `className`   | `string`                       | -          | Additional CSS class            |
+| `label`       | `string \| React.ReactNode`    | -          | Form label                      |
+| `description` | `string \| React.ReactNode`    | -          | Form description                |
+| `note`        | `string \| React.ReactNode`    | -          | Form note                       |
+| `required`    | `boolean`                      | -          | Show required indicator         |
+| `validation`  | `object`                       | -          | Validation state and message    |
 
 ### SegmentedControlItemParams
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `label` | `string \| React.ReactNode` | - | Item label |
-| `value` | `string \| number` | - | Item value |
-| `disabled` | `boolean` | `false` | Disable this specific item |
-| `icon` | `React.ReactNode` | - | Optional icon to display |
-| `id` | `string` | - | Optional custom ID |
+| Prop       | Type                        | Default | Description                |
+| ---------- | --------------------------- | ------- | -------------------------- |
+| `label`    | `string \| React.ReactNode` | -       | Item label                 |
+| `value`    | `string \| number`          | -       | Item value                 |
+| `disabled` | `boolean`                   | `false` | Disable this specific item |
+| `icon`     | `React.ReactNode`           | -       | Optional icon to display   |
+| `id`       | `string`                    | -       | Optional custom ID         |
 
 ## Examples
 
@@ -120,4 +122,3 @@ The ghost variant is designed for use on dark backgrounds, using a more subtle a
 <Canvas of={SegmentedControlStories.StatesGhost} />
 <Canvas of={SegmentedControlStories.WithFormComponent} />
 <Canvas of={SegmentedControlStories.Disabled} />
-

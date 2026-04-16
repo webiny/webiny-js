@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as ButtonStories from './Button.stories';
+import * as ButtonStories from "./Button.stories";
 
 <Meta of={ButtonStories} />
 
@@ -17,25 +17,25 @@ The Button component is a key UI element that enables users to trigger actions o
         \n <Button variant="primary" text={"Button"}></Button>
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Button/Button.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Button/Button.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={ButtonStories.Documentation} exclude={"onClick"} />
 
 ```jsx
-import { Button } from '@webiny/admin-ui';
+import { Button } from "@webiny/admin-ui";
 
-<Button variant="primary" text={"Button"}></Button>
+<Button variant="primary" text={"Button"}></Button>;
 ```
 
 ## Examples
@@ -50,7 +50,6 @@ import { Button } from '@webiny/admin-ui';
 
 ` } }
 />
-
 
 ### Secondary
 
@@ -105,11 +104,12 @@ import { Button } from '@webiny/admin-ui';
                 import { Button } from '@webiny/admin-ui';
                 import { ReactComponent as PencilIcon } from "@webiny/icons/edit.svg";
                 \n<Button variant="primary"  text={"Button"} size="md" icon={<PencilIcon />} iconPosition="start"></Button>
+
 ` } }
 />
 
-
 ### As Child
+
 The Button component can be used as a wrapper for other elements, allowing flexible composition. This is particularly useful when integrating custom text elements, or any other components inside a button.
 
 <Canvas of={ButtonStories.WithAsChild} story={ {inline: false}}
@@ -125,19 +125,20 @@ The Button component can be used as a wrapper for other elements, allowing flexi
 />
 
 ### Icon Only Button
-import * as IconButtonStories from './IconButton.stories';
+
+import * as IconButtonStories from "./IconButton.stories";
 
 **We have a dedicated `IconButton` component for the Icon-only button. Please check the code below for more details.**
 
 #### Usage
 
 ```jsx
-import { IconButton } from '@webiny/admin-ui';
+import { IconButton } from "@webiny/admin-ui";
 ```
 
 ```jsx
-import { ReactComponent as AddIcon } from "@webiny/icons/add.svg"
-<IconButton icon={<AddIcon />} size={"md"}/>
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+<IconButton icon={<AddIcon />} size={"md"} />;
 ```
 
 <Canvas of={IconButtonStories.Documentation}
@@ -148,17 +149,17 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg"
         \n <IconButton icon={<AddIcon />} size={"md"}/>
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Button/Button.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Button/Button.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 #### Props
@@ -168,40 +169,47 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg"
 ## Anatomy
 
 ### Construction
-<img src="/images/storybook/button/contruction.png" alt="Construction"/>
+
+<img src="/images/storybook/button/contruction.png" alt="Construction" />
 
 ### Options
-<img src="/images/storybook/button/options.png" alt="Options"/>
+
+<img src="/images/storybook/button/options.png" alt="Options" />
 
 ### Variants
-<img src="/images/storybook/button/type.png" alt="Variants"/>
+
+<img src="/images/storybook/button/type.png" alt="Variants" />
 
 ### Size
+
 Regular buttons come in four different sizes: small, medium, large, and xl. The medium size is the default and most frequently used option. Use the other sizes sparingly; they should be used to create a hierarchy of importance within the page.
 
-<img src="/images/storybook/button/size.png" alt="Size"/>
+<img src="/images/storybook/button/size.png" alt="Size" />
 
 **Icon-only button** come in six different sizes to accommodate for various component needs.
 
-<img src="/images/storybook/button/size-icon-only.png" alt="Size - Icon Only"/>
-
+<img src="/images/storybook/button/size-icon-only.png" alt="Size - Icon Only" />
 
 ### States
-<img src="/images/storybook/button/states.png" alt="States"/>
+
+<img src="/images/storybook/button/states.png" alt="States" />
 
 ## Usage
 
 ### Icon Usage
+
 An icon should only be used in a button when it's benefitial and when it has a meaningful association with the label.
 
-<img src="/images/storybook/button/icon-usage.png" alt="Icon Usage"/>
+<img src="/images/storybook/button/icon-usage.png" alt="Icon Usage" />
 
 ### Use primary buttons sparingly
+
 Use primary buttons as the desired action for users. Competing primary buttons may leave the user unsure of next steps in their user journey. As a rule of thumb limit primary buttons to 1 in contained UIs and 3 in full page UIs.
 
-<img src="/images/storybook/button/primary-button-usage.png" alt="Primary Button Usage"/>
+<img src="/images/storybook/button/primary-button-usage.png" alt="Primary Button Usage" />
 
 ### Button Group
+
 When used in groups, buttons should support only maximum of two type variants, with an exception of third variant being ghost extension button (eg. ellipsis). Avoid using random type and icon options within the button groups. Avoid using different sizes within the same group.
 
-<img src="/images/storybook/button/button-group.png" alt="Button Group"/>
+<img src="/images/storybook/button/button-group.png" alt="Button Group" />

@@ -116,6 +116,7 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
     protected createOptions(params: ICreateOptionsParams): IEntityQueryAllParams["options"] {
         const options: IEntityQueryAllParams["options"] = {
             limit: params.limit || 25,
+            // @ts-expect-error
             startKey: createStartKey({
                 after: params.after
             }),
@@ -124,7 +125,7 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
         };
 
         if (params.createdOn_lte || params.createdOn_gte) {
-            options.between = [toGteTime(params.createdOn_gte), toLteTime(params.createdOn_lte)];
+            options!.between = [toGteTime(params.createdOn_gte), toLteTime(params.createdOn_lte)];
         }
 
         return options;

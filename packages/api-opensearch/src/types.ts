@@ -1,20 +1,34 @@
 import type { Client } from "@opensearch-project/opensearch";
 import type {
-    QueryContainer as QueryDslQueryContainer,
-    BoolQuery as QueryDslBoolQuery
-} from "@opensearch-project/opensearch/api/_types/_common.query_dsl";
-import type {
-    FieldSort as SearchFieldSort,
-    SortOrder as SearchSortOrder,
-    Sort as SearchSort
-} from "@opensearch-project/opensearch/api/_types/_common";
-import type {
     Search_RequestBody as SearchRequestBody,
-    Search_Response
-} from "@opensearch-project/opensearch/api/_core/search";
-import type { Indices_Create_RequestBody } from "@opensearch-project/opensearch/api/indices/create";
-import type { DynamicTemplate } from "@opensearch-project/opensearch/api/_types/_common.mapping";
+    Search_Response,
+    Indices_Create_RequestBody
+} from "@opensearch-project/opensearch/api/index.js";
 import type { Context } from "@webiny/api/types.js";
+
+// ---------------------------------------------------------------------------
+// Types inferred from the accessible API surface.
+// The `_types/` directory in the opensearch package only ships `.d.ts` files
+// (no `.js` runtime modules), so deep imports are unresolvable under
+// `moduleResolution: "bundler"`.  We infer what we can from the public
+// barrel (`api/index.js`) and use `string` where structural extraction
+// is not possible.
+// ---------------------------------------------------------------------------
+
+type QueryDslQueryContainer = NonNullable<SearchRequestBody["query"]>;
+type QueryDslBoolQuery = NonNullable<QueryDslQueryContainer["bool"]>;
+type SearchSort = NonNullable<SearchRequestBody["sort"]>;
+type SearchSortOrder = "asc" | "desc";
+
+// Distribute over the SortOptions union and extract only the Record<string, FieldSort> variant.
+type _ExtractRecordValue<T> = T extends Record<string, infer V> ? V : never;
+type _SortMember =
+    NonNullable<SearchRequestBody["sort"]> extends (infer U)[] | (infer U) ? U : never;
+type SearchFieldSort = _ExtractRecordValue<Exclude<_SortMember, string>>;
+
+type DynamicTemplate = NonNullable<
+    NonNullable<Indices_Create_RequestBody["mappings"]>["dynamic_templates"]
+>[number][string];
 
 export type { ApiResponse } from "@opensearch-project/opensearch";
 

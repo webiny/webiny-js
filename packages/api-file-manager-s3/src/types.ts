@@ -1,4 +1,5 @@
 import type { PresignedPost } from "@webiny/aws-sdk/client-s3/index.js";
+import "@webiny/tasks/features/TaskController/augmentation.js";
 
 export interface PresignedPostPayloadData {
     name: string;

@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as TextStories from './Text.stories';
+import * as TextStories from "./Text.stories";
 
 <Meta of={TextStories} />
 
@@ -15,23 +15,23 @@ import React from "react";
 import { Text } from "@webiny/admin-ui";
 
 const TextExample = () => {
-    return <Text size="md">Text component example</Text>;
+return <Text size="md">Text component example</Text>;
 };
 
 export default TextExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Text/Text.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Text/Text.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={TextStories.Documentation} />
@@ -41,7 +41,7 @@ import React from "react";
 import { Text } from "@webiny/admin-ui";
 
 const TextExample = () => {
-    return <Text size="md">Text component example</Text>;
+  return <Text size="md">Text component example</Text>;
 };
 
 export default TextExample;
@@ -56,12 +56,13 @@ import React from "react";
 import { Text } from "@webiny/admin-ui";
 
 const TextXlExample = () => {
-    return (
-        <Text size="xl">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempus tortor eu sapien interdum rhoncus.
-        </Text>
-    );
-};
+return (
+
+<Text size="xl">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempus tortor eu sapien interdum
+  rhoncus.
+</Text>
+); };
 
 export default TextXlExample;
 ` } } />
@@ -73,12 +74,13 @@ import React from "react";
 import { Text } from "@webiny/admin-ui";
 
 const TextLgExample = () => {
-    return (
-        <Text size="lg">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempus tortor eu sapien interdum rhoncus.
-        </Text>
-    );
-};
+return (
+
+<Text size="lg">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempus tortor eu sapien interdum
+  rhoncus.
+</Text>
+); };
 
 export default TextLgExample;
 ` } } />
@@ -90,12 +92,13 @@ import React from "react";
 import { Text } from "@webiny/admin-ui";
 
 const TextMdExample = () => {
-    return (
-        <Text size="md">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempus tortor eu sapien interdum rhoncus.
-        </Text>
-    );
-};
+return (
+
+<Text size="md">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempus tortor eu sapien interdum
+  rhoncus.
+</Text>
+); };
 
 export default TextMdExample;
 ` } } />
@@ -107,12 +110,13 @@ import React from "react";
 import { Text } from "@webiny/admin-ui";
 
 const TextSmExample = () => {
-    return (
-        <Text size="sm">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempus tortor eu sapien interdum rhoncus.
-        </Text>
-    );
-};
+return (
+
+<Text size="sm">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempus tortor eu sapien interdum
+  rhoncus.
+</Text>
+); };
 
 export default TextSmExample;
 ` } } />
@@ -126,15 +130,17 @@ import React from "react";
 import { Text } from "@webiny/admin-ui";
 
 const TextAsExample = () => {
-    return (
-        <>
-            {/* Render as a div element */}
-            <Text as="div" size="md">This text is rendered as a div</Text>
+  return (
+    <>
+      {/* Render as a div element */}
+      <Text as="div" size="md">
+        This text is rendered as a div
+      </Text>
 
-            {/* Default is span */}
-            <Text size="md">This text is rendered as a span</Text>
-        </>
-    );
+      {/* Default is span */}
+      <Text size="md">This text is rendered as a span</Text>
+    </>
+  );
 };
 
 export default TextAsExample;

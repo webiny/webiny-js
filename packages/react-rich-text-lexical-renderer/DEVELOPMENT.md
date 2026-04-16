@@ -116,6 +116,7 @@ different versions of React. Our rich text renderer component is using `v17.0.2`
 using `v18.x.x`.
 
 > You can check which React versions are requested by various dependencies by running the following command:
+>
 > - `yarn why react` for `yarn` users.
 > - `npm ls react` for `npm` users.
 

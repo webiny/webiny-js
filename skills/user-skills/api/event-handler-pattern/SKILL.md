@@ -90,7 +90,9 @@ class MyHandler implements SomeEventHandler.Interface {
   constructor(private someUseCase: SomeUseCase.Interface) {}
 
   async handle(event: SomeEventHandler.Event) {
-    const result = await this.someUseCase.execute({ /* ... */ });
+    const result = await this.someUseCase.execute({
+      /* ... */
+    });
   }
 }
 
@@ -120,30 +122,30 @@ import type { EntityBeforeDisableEvent, EntityAfterDisableEvent } from "./events
 
 // Event Payload Types
 export interface EntityBeforeDisablePayload {
-    entity: Entity;
+  entity: Entity;
 }
 
 export interface EntityAfterDisablePayload {
-    entity: Entity;
+  entity: Entity;
 }
 
 // Handler Abstractions — one per event
 export const EntityBeforeDisableEventHandler = createAbstraction<
-    IEventHandler<EntityBeforeDisableEvent>
+  IEventHandler<EntityBeforeDisableEvent>
 >("MyPackage/EntityBeforeDisableEventHandler");
 
 export namespace EntityBeforeDisableEventHandler {
-    export type Interface = IEventHandler<EntityBeforeDisableEvent>;
-    export type Event = EntityBeforeDisableEvent;
+  export type Interface = IEventHandler<EntityBeforeDisableEvent>;
+  export type Event = EntityBeforeDisableEvent;
 }
 
 export const EntityAfterDisableEventHandler = createAbstraction<
-    IEventHandler<EntityAfterDisableEvent>
+  IEventHandler<EntityAfterDisableEvent>
 >("MyPackage/EntityAfterDisableEventHandler");
 
 export namespace EntityAfterDisableEventHandler {
-    export type Interface = IEventHandler<EntityAfterDisableEvent>;
-    export type Event = EntityAfterDisableEvent;
+  export type Interface = IEventHandler<EntityAfterDisableEvent>;
+  export type Event = EntityAfterDisableEvent;
 }
 ```
 
@@ -154,29 +156,23 @@ Event classes import payload types and handler abstractions from `abstractions.t
 ```ts
 // features/disableEntity/events.ts
 import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import {
-    EntityBeforeDisableEventHandler,
-    EntityAfterDisableEventHandler
-} from "./abstractions.js";
-import type {
-    EntityBeforeDisablePayload,
-    EntityAfterDisablePayload
-} from "./abstractions.js";
+import { EntityBeforeDisableEventHandler, EntityAfterDisableEventHandler } from "./abstractions.js";
+import type { EntityBeforeDisablePayload, EntityAfterDisablePayload } from "./abstractions.js";
 
 export class EntityBeforeDisableEvent extends DomainEvent<EntityBeforeDisablePayload> {
-    eventType = "entity.beforeDisable" as const;
+  eventType = "entity.beforeDisable" as const;
 
-    getHandlerAbstraction() {
-        return EntityBeforeDisableEventHandler;
-    }
+  getHandlerAbstraction() {
+    return EntityBeforeDisableEventHandler;
+  }
 }
 
 export class EntityAfterDisableEvent extends DomainEvent<EntityAfterDisablePayload> {
-    eventType = "entity.afterDisable" as const;
+  eventType = "entity.afterDisable" as const;
 
-    getHandlerAbstraction() {
-        return EntityAfterDisableEventHandler;
-    }
+  getHandlerAbstraction() {
+    return EntityAfterDisableEventHandler;
+  }
 }
 ```
 
@@ -188,35 +184,35 @@ import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
 import { EntityBeforeDisableEvent, EntityAfterDisableEvent } from "./events.js";
 
 class DisableEntityUseCase implements UseCaseAbstraction.Interface {
-    constructor(
-        private eventPublisher: EventPublisher.Interface,
-        private getEntityById: GetEntityByIdUseCase.Interface,
-        private updateEntity: UpdateEntityUseCase.Interface
-    ) {}
+  constructor(
+    private eventPublisher: EventPublisher.Interface,
+    private getEntityById: GetEntityByIdUseCase.Interface,
+    private updateEntity: UpdateEntityUseCase.Interface
+  ) {}
 
-    async execute(entityId: string): Promise<Result<void, UseCaseAbstraction.Error>> {
-        const getResult = await this.getEntityById.execute(entityId);
-        if (getResult.isFail()) return Result.fail(getResult.error);
+  async execute(entityId: string): Promise<Result<void, UseCaseAbstraction.Error>> {
+    const getResult = await this.getEntityById.execute(entityId);
+    if (getResult.isFail()) return Result.fail(getResult.error);
 
-        const entity = getResult.value;
+    const entity = getResult.value;
 
-        // Publish BEFORE event (can be intercepted to reject)
-        await this.eventPublisher.publish(new EntityBeforeDisableEvent({ entity }));
+    // Publish BEFORE event (can be intercepted to reject)
+    await this.eventPublisher.publish(new EntityBeforeDisableEvent({ entity }));
 
-        // Perform the operation
-        const updateResult = await this.updateEntity.execute(entityId, { status: "disabled" });
-        if (updateResult.isFail()) return Result.fail(updateResult.error);
+    // Perform the operation
+    const updateResult = await this.updateEntity.execute(entityId, { status: "disabled" });
+    if (updateResult.isFail()) return Result.fail(updateResult.error);
 
-        // Publish AFTER event (for side effects)
-        await this.eventPublisher.publish(new EntityAfterDisableEvent({ entity: updateResult.value }));
+    // Publish AFTER event (for side effects)
+    await this.eventPublisher.publish(new EntityAfterDisableEvent({ entity: updateResult.value }));
 
-        return Result.ok();
-    }
+    return Result.ok();
+  }
 }
 
 export default UseCaseAbstraction.createImplementation({
-    implementation: DisableEntityUseCase,
-    dependencies: [EventPublisher, GetEntityByIdUseCase, UpdateEntityUseCase]
+  implementation: DisableEntityUseCase,
+  dependencies: [EventPublisher, GetEntityByIdUseCase, UpdateEntityUseCase]
 });
 ```
 
@@ -233,23 +229,23 @@ import { CleanupService } from "../cleanupService/abstractions.js";
 import { MY_MODEL_ID } from "~/shared/constants.js";
 
 class CleanupOnEntryDeleteHandler implements EntryAfterDeleteEventHandler.Interface {
-    constructor(private cleanupService: CleanupService.Interface) {}
+  constructor(private cleanupService: CleanupService.Interface) {}
 
-    async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
-        const { entry, model } = event.payload;
+  async handle(event: EntryAfterDeleteEventHandler.Event): Promise<void> {
+    const { entry, model } = event.payload;
 
-        // ALWAYS filter by model — handler fires for ALL models
-        if (model.modelId !== MY_MODEL_ID) return;
+    // ALWAYS filter by model — handler fires for ALL models
+    if (model.modelId !== MY_MODEL_ID) return;
 
-        if (!event.payload.permanent) return;
+    if (!event.payload.permanent) return;
 
-        await this.cleanupService.cleanup(entry.entryId);
-    }
+    await this.cleanupService.cleanup(entry.entryId);
+  }
 }
 
 export default EntryAfterDeleteEventHandler.createImplementation({
-    implementation: CleanupOnEntryDeleteHandler,
-    dependencies: [CleanupService]
+  implementation: CleanupOnEntryDeleteHandler,
+  dependencies: [CleanupService]
 });
 ```
 
@@ -257,11 +253,11 @@ export default EntryAfterDeleteEventHandler.createImplementation({
 
 ## Event Naming Conventions
 
-| Artifact           | Pattern                                        | Example                            |
-| ------------------ | ---------------------------------------------- | ---------------------------------- |
-| `eventType`        | `"entity.beforeAction"` / `"entity.afterAction"` | `"tenant.beforeDisable"`          |
-| Handler abstraction | `{Entity}{Before\|After}{Action}EventHandler` | `TenantBeforeDisableEventHandler` |
-| Event class        | `{Entity}{Before\|After}{Action}Event`         | `TenantBeforeDisableEvent`        |
+| Artifact            | Pattern                                          | Example                           |
+| ------------------- | ------------------------------------------------ | --------------------------------- |
+| `eventType`         | `"entity.beforeAction"` / `"entity.afterAction"` | `"tenant.beforeDisable"`          |
+| Handler abstraction | `{Entity}{Before\|After}{Action}EventHandler`    | `TenantBeforeDisableEventHandler` |
+| Event class         | `{Entity}{Before\|After}{Action}Event`           | `TenantBeforeDisableEvent`        |
 
 ## Registration
 

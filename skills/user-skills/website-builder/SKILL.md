@@ -341,7 +341,11 @@ createComponent(ProductListing, {
   name: "Custom/ProductListing",
   label: "Product Listing",
   inputs: [
-    createTextInput({ name: "heading", label: "Section Heading", defaultValue: "Our Products" }),
+    createTextInput({
+      name: "heading",
+      label: "Section Heading",
+      defaultValue: "Our Products"
+    }),
     createTextInput({ name: "limit", label: "Number of products", defaultValue: "6" })
   ]
 });

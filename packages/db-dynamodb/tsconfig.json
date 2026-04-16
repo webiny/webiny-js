@@ -36,7 +36,6 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

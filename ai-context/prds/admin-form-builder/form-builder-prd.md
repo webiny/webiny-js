@@ -355,19 +355,27 @@ Unknown rule types (no evaluator returns `canEvaluate: true`) are ignored — th
 
 ```ts
 // Simple required
-title: fields.text().label("Title").required("Title is required")
+title: fields.text().label("Title").required("Title is required");
 
 // Required + schema — required check runs first, then schema
-slug: fields.text().label("Slug").required("Slug is required").schema(z.string().regex(/^[a-z0-9-]+$/))
+slug: fields
+  .text()
+  .label("Slug")
+  .required("Slug is required")
+  .schema(z.string().regex(/^[a-z0-9-]+$/));
 
 // Conditionally required — callback evaluated as MobX computed
-discountCode: fields.text().label("Discount Code").requiredWhen(
+discountCode: fields
+  .text()
+  .label("Discount Code")
+  .requiredWhen(
     form => form.field("enableDiscount").getValue() === true,
     "Required when discount is enabled"
-)
+  );
 ```
 
 Behavior:
+
 - `.required()` checks for empty values (null, undefined, empty string) before the zod schema runs. If empty, short-circuits with the required error.
 - Works without `.schema()` — a field can be required with no zod schema.
 - Exposes `field.vm.required: boolean` — reactive for `requiredWhen()`, so the renderer can show a required indicator (`*`).
@@ -946,7 +954,7 @@ Named layout nodes (e.g., tabs containers with `id`) can be accessed and mutated
 
 ```ts
 // Access a named tabs container and narrow to its type
-form.layout("settings").as("tabs")
+form.layout("settings").as("tabs");
 ```
 
 The `.as("tabs")` handle exposes:
@@ -959,78 +967,85 @@ The `.as("tabs")` handle exposes:
 ```ts
 // === Base form definition ===
 this.form = this.formFactory.create({
-    fields: fields => ({
-        title: fields.text().label("Title"),
-        slug: fields.text().label("Slug"),
-        description: fields.text().label("Description"),
-        metaTitle: fields.text().label("Meta Title"),
-        metaDescription: fields.text().label("Meta Description"),
-    }),
-    layout: layout => [
-        layout.row("title", "slug"),
-        layout.separator(),
-        layout.tabs({
-            id: "settings",
-            tabs: [
-                {
-                    id: "general",
-                    label: "General",
-                    layout: [layout.row("description")],
-                },
-                {
-                    id: "seo",
-                    label: "SEO",
-                    layout: [layout.row("metaTitle"), layout.row("metaDescription")],
-                },
-            ],
-        }),
-    ],
+  fields: fields => ({
+    title: fields.text().label("Title"),
+    slug: fields.text().label("Slug"),
+    description: fields.text().label("Description"),
+    metaTitle: fields.text().label("Meta Title"),
+    metaDescription: fields.text().label("Meta Description")
+  }),
+  layout: layout => [
+    layout.row("title", "slug"),
+    layout.separator(),
+    layout.tabs({
+      id: "settings",
+      tabs: [
+        {
+          id: "general",
+          label: "General",
+          layout: [layout.row("description")]
+        },
+        {
+          id: "seo",
+          label: "SEO",
+          layout: [layout.row("metaTitle"), layout.row("metaDescription")]
+        }
+      ]
+    })
+  ]
 });
 
 // === Modifier A: add a new tab ===
 class AddAnalyticsTabModifier implements FormModifier {
-    modify(form: FormModel) {
-        form.fields(fields => ({
-            trackingId: fields.text().label("Tracking ID"),
-            enableAnalytics: fields.select().label("Enable").options([
-                { label: "Yes", value: "yes" },
-                { label: "No", value: "no" },
-            ]),
-        }));
+  modify(form: FormModel) {
+    form.fields(fields => ({
+      trackingId: fields.text().label("Tracking ID"),
+      enableAnalytics: fields
+        .select()
+        .label("Enable")
+        .options([
+          { label: "Yes", value: "yes" },
+          { label: "No", value: "no" }
+        ])
+    }));
 
-        form.layout("settings").as("tabs").tab({
-            id: "analytics",
-            label: "Analytics",
-            icon: "chart",
-            layout: layout => [layout.row("trackingId", "enableAnalytics")],
-        }).after("seo");
-    }
+    form
+      .layout("settings")
+      .as("tabs")
+      .tab({
+        id: "analytics",
+        label: "Analytics",
+        icon: "chart",
+        layout: layout => [layout.row("trackingId", "enableAnalytics")]
+      })
+      .after("seo");
+  }
 }
 
 // === Modifier B: append to an existing tab's layout ===
 class AddOgImageModifier implements FormModifier {
-    modify(form: FormModel) {
-        form.fields(fields => ({
-            ogImage: fields.text().label("OG Image").renderer("image"),
-        }));
+  modify(form: FormModel) {
+    form.fields(fields => ({
+      ogImage: fields.text().label("OG Image").renderer("image")
+    }));
 
-        form.layout("settings").as("tabs").tab("seo").layout(layout => [
-            layout.row("ogImage"),
-        ]);
-    }
+    form
+      .layout("settings")
+      .as("tabs")
+      .tab("seo")
+      .layout(layout => [layout.row("ogImage")]);
+  }
 }
 
 // === Modifier C: positional insert in root layout ===
 class AddSubtitleModifier implements FormModifier {
-    modify(form: FormModel) {
-        form.fields(fields => ({
-            subtitle: fields.text().label("Subtitle"),
-        }));
+  modify(form: FormModel) {
+    form.fields(fields => ({
+      subtitle: fields.text().label("Subtitle")
+    }));
 
-        form.layout(layout => [
-            layout.row("subtitle").after("slug"),
-        ]);
-    }
+    form.layout(layout => [layout.row("subtitle").after("slug")]);
+  }
 }
 ```
 

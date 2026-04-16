@@ -43,8 +43,7 @@ const columnVariants = cva("", {
 });
 
 interface ColumnProps
-    extends React.HTMLAttributes<HTMLDivElement>,
-        VariantProps<typeof columnVariants> {
+    extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof columnVariants> {
     children?: React.ReactNode;
 }
 
@@ -75,8 +74,7 @@ const gridVariants = cva("grid", {
 });
 
 interface GridProps
-    extends React.HTMLAttributes<HTMLDivElement>,
-        VariantProps<typeof gridVariants> {
+    extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof gridVariants> {
     children:
         | null
         | React.ReactElement<ColumnProps, typeof Column>

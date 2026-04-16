@@ -10,8 +10,7 @@ const headerVariants = cva("[&_tr]:hover:bg-transparent", {
 });
 
 interface HeaderProps
-    extends React.HTMLAttributes<HTMLTableSectionElement>,
-        VariantProps<typeof headerVariants> {}
+    extends React.HTMLAttributes<HTMLTableSectionElement>, VariantProps<typeof headerVariants> {}
 
 const Header = ({ className, sticky, ...props }: HeaderProps) => (
     <thead className={cn(headerVariants({ sticky }), className)} {...props} />

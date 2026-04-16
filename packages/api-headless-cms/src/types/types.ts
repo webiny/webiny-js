@@ -151,8 +151,9 @@ export interface CmsModelFieldValidatorValidateParams<T extends CmsEntryValues =
  *
  * @category CmsModel
  */
-export interface StorageOperationsCmsModel<T extends CmsEntryValues = CmsEntryValues>
-    extends CmsModel {
+export interface StorageOperationsCmsModel<
+    T extends CmsEntryValues = CmsEntryValues
+> extends CmsModel {
     convertValueKeyToStorage: CmsModelConverterCallable<T>;
     convertValueKeyFromStorage: CmsModelConverterCallable<T>;
 }
@@ -520,7 +521,8 @@ export interface CmsModelContext {
 export type CmsEntryStatus = "published" | "unpublished" | "draft";
 
 export interface CmsEntryListWhereRef
-    extends IdInterfaceGenerator<"id">,
+    extends
+        IdInterfaceGenerator<"id">,
         IdInterfaceGenerator<"entryId">,
         IdInterfaceGenerator<"modelId"> {}
 
@@ -549,7 +551,8 @@ export interface CmsEntryListWhereValues {
  */
 
 export interface CmsEntryListWhere
-    extends IdMixedInterfaceGenerator<"id">,
+    extends
+        IdMixedInterfaceGenerator<"id">,
         IdMixedInterfaceGenerator<"entryId">,
         IdInterfaceGenerator<"status", CmsEntryStatus>,
         /**

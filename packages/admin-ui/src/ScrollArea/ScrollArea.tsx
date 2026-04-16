@@ -13,8 +13,10 @@ export interface ScrollPosition {
     clientWidth: number;
 }
 
-interface ScrollAreaProps
-    extends Omit<React.ComponentProps<typeof ScrollAreaPrimitive.Root>, "onScroll"> {
+interface ScrollAreaProps extends Omit<
+    React.ComponentProps<typeof ScrollAreaPrimitive.Root>,
+    "onScroll"
+> {
     onScrollPositionChange?: (position: ScrollPosition) => void;
     onScroll?: (position: ScrollPosition) => void;
 }

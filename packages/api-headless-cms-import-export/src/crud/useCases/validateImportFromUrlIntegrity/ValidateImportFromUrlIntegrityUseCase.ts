@@ -11,9 +11,7 @@ export interface IValidateImportFromUrlIntegrityUseCaseParams {
     triggerTask: ITasksContextObject["trigger"];
 }
 
-export class ValidateImportFromUrlIntegrityUseCase
-    implements IValidateImportFromUrlIntegrityUseCase
-{
+export class ValidateImportFromUrlIntegrityUseCase implements IValidateImportFromUrlIntegrityUseCase {
     private readonly triggerTask: ITasksContextObject["trigger"];
 
     public constructor(params: IValidateImportFromUrlIntegrityUseCaseParams) {

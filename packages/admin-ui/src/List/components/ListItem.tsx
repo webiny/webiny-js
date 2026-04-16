@@ -34,7 +34,8 @@ const listItemVariant = cva(
 );
 
 interface ListItemProps
-    extends Omit<React.HTMLAttributes<HTMLDivElement>, "title">,
+    extends
+        Omit<React.HTMLAttributes<HTMLDivElement>, "title">,
         VariantProps<typeof listItemVariant> {
     title: React.ReactNode;
     actions?: React.ReactNode;
@@ -68,7 +69,12 @@ const DecoratableListItem = ({
             {...props}
             tabIndex={0}
             className={cn(
-                listItemVariant({ disabled, activated, selected, clickable: Boolean(onClick) }),
+                listItemVariant({
+                    disabled,
+                    activated,
+                    selected,
+                    clickable: Boolean(onClick)
+                }),
                 className
             )}
         >

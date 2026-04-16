@@ -144,7 +144,7 @@ jobs:
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
       - name: Check code formatting
-        run: yarn prettier:check
+        run: yarn format:check
         working-directory: ${{ github.base_ref }}
       - name: Check dependencies
         run: yarn adio
@@ -218,65 +218,6 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  aiFixStaticAnalysis:
-    name: AI Fix Static Analysis
-    needs:
-      - constants
-      - staticCodeAnalysis
-    if: >-
-      failure() && needs.staticCodeAnalysis.result == 'failure' &&
-      needs.constants.outputs.is-fork-pr != 'true' &&
-      github.event.pull_request.user.login == 'adrians5j'
-    permissions:
-      contents: write
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-      YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-    steps:
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 24
-      - uses: actions/checkout@v5
-        with:
-          path: ${{ github.base_ref }}
-      - uses: actions/cache@v5
-        with:
-          path: ${{ github.base_ref }}/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - name: Install dependencies
-        run: yarn --immutable
-        working-directory: ${{ github.base_ref }}
-      - name: Fix code formatting
-        run: yarn prettier:fix
-        working-directory: ${{ github.base_ref }}
-        continue-on-error: true
-      - name: Fix ESLint issues (auto-fixable)
-        run: yarn eslint:fix
-        working-directory: ${{ github.base_ref }}
-        continue-on-error: true
-      - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code
-      - name: AI Fix Remaining Issues
-        working-directory: ${{ github.base_ref }}
-        run: >-
-          claude --dangerously-skip-permissions -p "Some static analysis checks
-          may still be failing. Fix any remaining issues: 1. Run 'yarn adio' —
-          if it reports dependency errors, fix the relevant package.json files.
-          2. Run 'yarn check-ts-configs' — if it reports errors, fix them. 3.
-          Run 'yarn eslint' — if there are still non-auto-fixable errors, read
-          the affected files and fix them. 4. Run 'yarn
-          check-package-dependencies' — if it reports errors, fix them. Work in
-          the current directory."
-      - name: Update yarn.lock
-        run: yarn
-        working-directory: ${{ github.base_ref }}
-      - name: Commit fixes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: 'chore: ai fix static analysis [skip ci]'
-          repository: ${{ github.base_ref }}
-    runs-on: ubuntu-latest
   vitest-constants:
     needs:
       - constants

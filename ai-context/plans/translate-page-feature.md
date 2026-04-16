@@ -3,7 +3,9 @@
 IMPORTANT: use "webiny" MCP server to discover patterns and best practices before modifying any code.
 
 ## Overview
+
 Build a complete translate page feature following Webiny Admin Architecture patterns:
+
 1. **Headless ListLanguages feature** in `packages/languages/src/admin/features/` (reusable business logic)
 2. **Headless TranslatePage feature** in `packages/app-website-builder/src/features/` (domain logic)
 3. **Presentation layer** in `packages/app-website-builder/src/presentation/` (Presenter + UI)
@@ -22,9 +24,11 @@ Build a complete translate page feature following Webiny Admin Architecture patt
 ## Phase 1: ListLanguages Headless Feature (packages/languages)
 
 ### Goal
+
 Create a reusable headless feature for listing languages following the UseCase → Repository → Gateway pattern.
 
 ### File Structure
+
 ```
 packages/languages/src/admin/features/listLanguages/
 ├── abstractions.ts          # All abstractions in one file
@@ -38,203 +42,220 @@ packages/languages/src/admin/features/listLanguages/
 ### Implementation Details
 
 #### 1. abstractions.ts (All abstractions in one file)
+
 ```typescript
 import { createAbstraction } from "webiny/admin";
 
 // DTO
 export interface LanguageDto {
-    id: string;
-    code: string;
-    name: string;
-    direction?: "ltr" | "rtl";
-    isDefault?: boolean;
-    enabled?: boolean;
+  id: string;
+  code: string;
+  name: string;
+  direction?: "ltr" | "rtl";
+  isDefault?: boolean;
+  enabled?: boolean;
 }
 
 // UseCase
 export interface IListLanguagesUseCase {
-    execute(): Promise<LanguageDto[]>;
+  execute(): Promise<LanguageDto[]>;
 }
 
-export const ListLanguagesUseCase = createAbstraction<IListLanguagesUseCase>("Languages/ListLanguagesUseCase");
+export const ListLanguagesUseCase = createAbstraction<IListLanguagesUseCase>(
+  "Languages/ListLanguagesUseCase"
+);
 
 export namespace ListLanguagesUseCase {
-    export type Interface = IListLanguagesUseCase;
+  export type Interface = IListLanguagesUseCase;
 }
 
 // Repository
 export interface IListLanguagesRepository {
-    execute(): Promise<LanguageDto[]>;
-    getLanguages(): LanguageDto[];
+  execute(): Promise<LanguageDto[]>;
+  getLanguages(): LanguageDto[];
 }
 
-export const ListLanguagesRepository = createAbstraction<IListLanguagesRepository>("Languages/ListLanguagesRepository");
+export const ListLanguagesRepository = createAbstraction<IListLanguagesRepository>(
+  "Languages/ListLanguagesRepository"
+);
 
 export namespace ListLanguagesRepository {
-    export type Interface = IListLanguagesRepository;
+  export type Interface = IListLanguagesRepository;
 }
 
 // Gateway
 export interface IListLanguagesGateway {
-    execute(): Promise<LanguageDto[]>;
+  execute(): Promise<LanguageDto[]>;
 }
 
-export const ListLanguagesGateway = createAbstraction<IListLanguagesGateway>("Languages/ListLanguagesGateway");
+export const ListLanguagesGateway = createAbstraction<IListLanguagesGateway>(
+  "Languages/ListLanguagesGateway"
+);
 
 export namespace ListLanguagesGateway {
-    export type Interface = IListLanguagesGateway;
+  export type Interface = IListLanguagesGateway;
 }
 ```
 
 #### 2. ListLanguagesGateway.ts
+
 ```typescript
 import { ListLanguagesGateway as GatewayAbstraction, LanguageDto } from "./abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 
 const LIST_LANGUAGES = /* GraphQL */ `
-    query ListLanguages {
-        languages {
-            listLanguages {
-                data {
-                    id
-                    code
-                    name
-                    direction
-                    isDefault
-                    enabled
-                }
-                error {
-                    code
-                    message
-                }
-            }
+  query ListLanguages {
+    languages {
+      listLanguages {
+        data {
+          id
+          code
+          name
+          direction
+          isDefault
+          enabled
         }
+        error {
+          code
+          message
+        }
+      }
     }
+  }
 `;
 
 type ListLanguagesResponse = {
-    languages: {
-        listLanguages:
-            | { data: LanguageDto[]; error: null }
-            | { data: null; error: { code: string; message: string } };
-    };
+  languages: {
+    listLanguages:
+      | { data: LanguageDto[]; error: null }
+      | { data: null; error: { code: string; message: string } };
+  };
 };
 
 class ListLanguagesGatewayImpl implements GatewayAbstraction.Interface {
-    constructor(private client: MainGraphQLClient.Interface) {}
+  constructor(private client: MainGraphQLClient.Interface) {}
 
-    async execute(): Promise<LanguageDto[]> {
-        const response = await this.client.execute<ListLanguagesResponse>({
-            query: LIST_LANGUAGES
-        });
+  async execute(): Promise<LanguageDto[]> {
+    const response = await this.client.execute<ListLanguagesResponse>({
+      query: LIST_LANGUAGES
+    });
 
-        const envelope = response.languages.listLanguages;
-        if (envelope.error) {
-            throw new Error(envelope.error.message);
-        }
-
-        return envelope.data;
+    const envelope = response.languages.listLanguages;
+    if (envelope.error) {
+      throw new Error(envelope.error.message);
     }
+
+    return envelope.data;
+  }
 }
 
 export const ListLanguagesGateway = GatewayAbstraction.createImplementation({
-    implementation: ListLanguagesGatewayImpl,
-    dependencies: [MainGraphQLClient]
+  implementation: ListLanguagesGatewayImpl,
+  dependencies: [MainGraphQLClient]
 });
 ```
 
 #### 3. ListLanguagesRepository.ts
+
 ```typescript
 import { makeAutoObservable, runInAction } from "mobx";
 import {
-    ListLanguagesRepository as RepositoryAbstraction,
-    ListLanguagesGateway,
-    LanguageDto
+  ListLanguagesRepository as RepositoryAbstraction,
+  ListLanguagesGateway,
+  LanguageDto
 } from "./abstractions.js";
 
 class ListLanguagesRepositoryImpl implements RepositoryAbstraction.Interface {
-    private languages: LanguageDto[] = [];
+  private languages: LanguageDto[] = [];
 
-    constructor(private gateway: ListLanguagesGateway.Interface) {
-        makeAutoObservable(this);
+  constructor(private gateway: ListLanguagesGateway.Interface) {
+    makeAutoObservable(this);
+  }
+
+  getLanguages(): LanguageDto[] {
+    return this.languages;
+  }
+
+  async execute(): Promise<LanguageDto[]> {
+    if (this.languages.length > 0) {
+      return this.languages; // Already loaded — cache hit
     }
 
-    getLanguages(): LanguageDto[] {
-        return this.languages;
-    }
+    const languages = await this.gateway.execute();
+    runInAction(() => {
+      this.languages = languages;
+    });
 
-    async execute(): Promise<LanguageDto[]> {
-        if (this.languages.length > 0) {
-            return this.languages; // Already loaded — cache hit
-        }
-
-        const languages = await this.gateway.execute();
-        runInAction(() => {
-            this.languages = languages;
-        });
-        
-        return this.languages;
-    }
+    return this.languages;
+  }
 }
 
 export const ListLanguagesRepository = RepositoryAbstraction.createImplementation({
-    implementation: ListLanguagesRepositoryImpl,
-    dependencies: [ListLanguagesGateway]
+  implementation: ListLanguagesRepositoryImpl,
+  dependencies: [ListLanguagesGateway]
 });
 ```
 
 #### 4. ListLanguagesUseCase.ts
+
 ```typescript
-import { ListLanguagesUseCase as UseCaseAbstraction, ListLanguagesRepository, LanguageDto } from "./abstractions.js";
+import {
+  ListLanguagesUseCase as UseCaseAbstraction,
+  ListLanguagesRepository,
+  LanguageDto
+} from "./abstractions.js";
 
 class ListLanguagesUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private repository: ListLanguagesRepository.Interface) {}
+  constructor(private repository: ListLanguagesRepository.Interface) {}
 
-    async execute(): Promise<LanguageDto[]> {
-        return await this.repository.execute();
-    }
+  async execute(): Promise<LanguageDto[]> {
+    return await this.repository.execute();
+  }
 }
 
 export const ListLanguagesUseCase = UseCaseAbstraction.createImplementation({
-    implementation: ListLanguagesUseCaseImpl,
-    dependencies: [ListLanguagesRepository]
+  implementation: ListLanguagesUseCaseImpl,
+  dependencies: [ListLanguagesRepository]
 });
 ```
 
 #### 5. feature.ts (MUST have resolve function)
+
 ```typescript
 import { createFeature } from "webiny/admin";
 import {
-    ListLanguagesUseCase as UseCaseAbstraction,
-    ListLanguagesRepository as RepositoryAbstraction
+  ListLanguagesUseCase as UseCaseAbstraction,
+  ListLanguagesRepository as RepositoryAbstraction
 } from "./abstractions.js";
 import { ListLanguagesUseCase } from "./ListLanguagesUseCase.js";
 import { ListLanguagesRepository } from "./ListLanguagesRepository.js";
 import { ListLanguagesGateway } from "./ListLanguagesGateway.js";
 
 export const ListLanguagesFeature = createFeature({
-    name: "Languages/ListLanguages",
-    register(container) {
-        container.register(ListLanguagesUseCase);
-        container.register(ListLanguagesRepository).inSingletonScope();
-        container.register(ListLanguagesGateway).inSingletonScope();
-    },
-    resolve(container) {
-        return {
-            useCase: container.resolve(UseCaseAbstraction),
-            repository: container.resolve(RepositoryAbstraction)
-        };
-    }
+  name: "Languages/ListLanguages",
+  register(container) {
+    container.register(ListLanguagesUseCase);
+    container.register(ListLanguagesRepository).inSingletonScope();
+    container.register(ListLanguagesGateway).inSingletonScope();
+  },
+  resolve(container) {
+    return {
+      useCase: container.resolve(UseCaseAbstraction),
+      repository: container.resolve(RepositoryAbstraction)
+    };
+  }
 });
 ```
 
 #### 6. index.ts
+
 ```typescript
 export { ListLanguagesFeature } from "./feature.js";
 export type { LanguageDto } from "./abstractions.js";
 ```
 
 #### 7. Register in languages Extension.tsx
+
 ```typescript
 // packages/languages/src/admin/Extension.tsx
 import { RegisterFeature } from "webiny/admin";
@@ -255,9 +276,11 @@ export const Extension = () => {
 ## Phase 2: TranslatePage Headless Feature (packages/app-website-builder)
 
 ### Goal
+
 Domain logic for translating pages using the new DI-powered feature pattern with `createAbstraction` and `createFeature`.
 
 ### File Structure
+
 ```
 packages/app-website-builder/src/features/pages/translatePage/
 ├── abstractions.ts          # All abstractions (UseCase, Repository, Gateway)
@@ -271,178 +294,199 @@ packages/app-website-builder/src/features/pages/translatePage/
 ### Implementation Details
 
 #### 1. abstractions.ts (Refactor to use createAbstraction)
+
 ```typescript
 import { createAbstraction } from "webiny/admin";
 import type { PageGatewayDto } from "~/features/pages/getPage/PageGatewayDto.js";
 
 // Params
 export interface TranslatePageParams {
-    id: string;
-    languageCode: string;
-    folderId: string;
+  id: string;
+  languageCode: string;
+  folderId: string;
 }
 
 // UseCase
 export interface ITranslatePageUseCase {
-    execute(params: TranslatePageParams): Promise<void>;
+  execute(params: TranslatePageParams): Promise<void>;
 }
 
-export const TranslatePageUseCase = createAbstraction<ITranslatePageUseCase>("WebsiteBuilder/TranslatePageUseCase");
+export const TranslatePageUseCase = createAbstraction<ITranslatePageUseCase>(
+  "WebsiteBuilder/TranslatePageUseCase"
+);
 
 export namespace TranslatePageUseCase {
-    export type Interface = ITranslatePageUseCase;
-    export type Params = TranslatePageParams;
+  export type Interface = ITranslatePageUseCase;
+  export type Params = TranslatePageParams;
 }
 
 // Repository
 export interface TranslatePageRepositoryParams {
-    pageId: string;
-    languageCode: string;
-    folderId: string;
+  pageId: string;
+  languageCode: string;
+  folderId: string;
 }
 
 export interface ITranslatePageRepository {
-    execute(params: TranslatePageRepositoryParams): Promise<void>;
+  execute(params: TranslatePageRepositoryParams): Promise<void>;
 }
 
-export const TranslatePageRepository = createAbstraction<ITranslatePageRepository>("WebsiteBuilder/TranslatePageRepository");
+export const TranslatePageRepository = createAbstraction<ITranslatePageRepository>(
+  "WebsiteBuilder/TranslatePageRepository"
+);
 
 export namespace TranslatePageRepository {
-    export type Interface = ITranslatePageRepository;
+  export type Interface = ITranslatePageRepository;
 }
 
 // Gateway
 export interface TranslatePageGatewayParams {
-    pageId: string;
-    languageCode: string;
-    folderId: string;
+  pageId: string;
+  languageCode: string;
+  folderId: string;
 }
 
 export interface ITranslatePageGateway {
-    execute(params: TranslatePageGatewayParams): Promise<PageGatewayDto>;
+  execute(params: TranslatePageGatewayParams): Promise<PageGatewayDto>;
 }
 
-export const TranslatePageGateway = createAbstraction<ITranslatePageGateway>("WebsiteBuilder/TranslatePageGateway");
+export const TranslatePageGateway = createAbstraction<ITranslatePageGateway>(
+  "WebsiteBuilder/TranslatePageGateway"
+);
 
 export namespace TranslatePageGateway {
-    export type Interface = ITranslatePageGateway;
+  export type Interface = ITranslatePageGateway;
 }
 ```
 
 #### 2. TranslatePageGateway.ts (Refactor to use MainGraphQLClient)
+
 ```typescript
 import { TranslatePageGateway as GatewayAbstraction } from "./abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import type { PageGatewayDto } from "~/features/pages/getPage/PageGatewayDto.js";
 
 const TRANSLATE_PAGE = /* GraphQL */ `
-    mutation TranslatePage($pageId: ID!, $languageCode: String!, $folderId: ID!) {
-        websiteBuilder {
-            translatePage(pageId: $pageId, languageCode: $languageCode, folderId: $folderId) {
-                data {
-                    id
-                    entryId
-                    properties {
-                        title
-                        path
-                        language
-                    }
-                }
-                error {
-                    code
-                    message
-                    data
-                }
-            }
+  mutation TranslatePage($pageId: ID!, $languageCode: String!, $folderId: ID!) {
+    websiteBuilder {
+      translatePage(pageId: $pageId, languageCode: $languageCode, folderId: $folderId) {
+        data {
+          id
+          entryId
+          properties {
+            title
+            path
+            language
+          }
         }
+        error {
+          code
+          message
+          data
+        }
+      }
     }
+  }
 `;
 
 type TranslatePageResponse = {
-    websiteBuilder: {
-        translatePage:
-            | { data: PageGatewayDto; error: null }
-            | { data: null; error: { code: string; message: string; data: any } };
-    };
+  websiteBuilder: {
+    translatePage:
+      | { data: PageGatewayDto; error: null }
+      | { data: null; error: { code: string; message: string; data: any } };
+  };
 };
 
 class TranslatePageGatewayImpl implements GatewayAbstraction.Interface {
-    constructor(private client: MainGraphQLClient.Interface) {}
+  constructor(private client: MainGraphQLClient.Interface) {}
 
-    async execute(params: GatewayAbstraction.Interface["execute"] extends (p: infer P) => any ? P : never): Promise<PageGatewayDto> {
-        const response = await this.client.execute<TranslatePageResponse>({
-            query: TRANSLATE_PAGE,
-            variables: {
-                pageId: params.pageId,
-                languageCode: params.languageCode,
-                folderId: params.folderId
-            }
-        });
+  async execute(
+    params: GatewayAbstraction.Interface["execute"] extends (p: infer P) => any ? P : never
+  ): Promise<PageGatewayDto> {
+    const response = await this.client.execute<TranslatePageResponse>({
+      query: TRANSLATE_PAGE,
+      variables: {
+        pageId: params.pageId,
+        languageCode: params.languageCode,
+        folderId: params.folderId
+      }
+    });
 
-        const envelope = response.websiteBuilder.translatePage;
-        if (envelope.error) {
-            throw new Error(envelope.error.message || "Could not translate page.");
-        }
-
-        return envelope.data;
+    const envelope = response.websiteBuilder.translatePage;
+    if (envelope.error) {
+      throw new Error(envelope.error.message || "Could not translate page.");
     }
+
+    return envelope.data;
+  }
 }
 
 export const TranslatePageGateway = GatewayAbstraction.createImplementation({
-    implementation: TranslatePageGatewayImpl,
-    dependencies: [MainGraphQLClient]
+  implementation: TranslatePageGatewayImpl,
+  dependencies: [MainGraphQLClient]
 });
 ```
 
 #### 3. TranslatePageRepository.ts (Refactor to use DI)
+
 ```typescript
-import { TranslatePageRepository as RepositoryAbstraction, TranslatePageGateway } from "./abstractions.js";
+import {
+  TranslatePageRepository as RepositoryAbstraction,
+  TranslatePageGateway
+} from "./abstractions.js";
 import { Page, pageListCache } from "~/domain/Page/index.js";
 
 class TranslatePageRepositoryImpl implements RepositoryAbstraction.Interface {
-    constructor(private gateway: TranslatePageGateway.Interface) {}
+  constructor(private gateway: TranslatePageGateway.Interface) {}
 
-    async execute(params: RepositoryAbstraction.Interface["execute"] extends (p: infer P) => any ? P : never): Promise<void> {
-        const result = await this.gateway.execute({
-            pageId: params.pageId,
-            languageCode: params.languageCode,
-            folderId: params.folderId
-        });
-        
-        // Add translated page to cache
-        pageListCache.addItems([Page.create(result)]);
-    }
+  async execute(
+    params: RepositoryAbstraction.Interface["execute"] extends (p: infer P) => any ? P : never
+  ): Promise<void> {
+    const result = await this.gateway.execute({
+      pageId: params.pageId,
+      languageCode: params.languageCode,
+      folderId: params.folderId
+    });
+
+    // Add translated page to cache
+    pageListCache.addItems([Page.create(result)]);
+  }
 }
 
 export const TranslatePageRepository = RepositoryAbstraction.createImplementation({
-    implementation: TranslatePageRepositoryImpl,
-    dependencies: [TranslatePageGateway]
+  implementation: TranslatePageRepositoryImpl,
+  dependencies: [TranslatePageGateway]
 });
 ```
 
 #### 4. TranslatePageUseCase.ts (Refactor to use DI)
+
 ```typescript
-import { TranslatePageUseCase as UseCaseAbstraction, TranslatePageRepository } from "./abstractions.js";
+import {
+  TranslatePageUseCase as UseCaseAbstraction,
+  TranslatePageRepository
+} from "./abstractions.js";
 
 class TranslatePageUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private repository: TranslatePageRepository.Interface) {}
+  constructor(private repository: TranslatePageRepository.Interface) {}
 
-    async execute(params: UseCaseAbstraction.Params): Promise<void> {
-        await this.repository.execute({
-            pageId: params.id,
-            languageCode: params.languageCode,
-            folderId: params.folderId
-        });
-    }
+  async execute(params: UseCaseAbstraction.Params): Promise<void> {
+    await this.repository.execute({
+      pageId: params.id,
+      languageCode: params.languageCode,
+      folderId: params.folderId
+    });
+  }
 }
 
 export const TranslatePageUseCase = UseCaseAbstraction.createImplementation({
-    implementation: TranslatePageUseCaseImpl,
-    dependencies: [TranslatePageRepository]
+  implementation: TranslatePageUseCaseImpl,
+  dependencies: [TranslatePageRepository]
 });
 ```
 
 #### 5. feature.ts (NEW - proper DI registration)
+
 ```typescript
 import { createFeature } from "webiny/admin";
 import { TranslatePageUseCase as UseCaseAbstraction } from "./abstractions.js";
@@ -451,27 +495,29 @@ import { TranslatePageRepository } from "./TranslatePageRepository.js";
 import { TranslatePageGateway } from "./TranslatePageGateway.js";
 
 export const TranslatePageFeature = createFeature({
-    name: "WebsiteBuilder/TranslatePage",
-    register(container) {
-        container.register(TranslatePageUseCase);
-        container.register(TranslatePageRepository).inSingletonScope();
-        container.register(TranslatePageGateway).inSingletonScope();
-    },
-    resolve(container) {
-        return {
-            useCase: container.resolve(UseCaseAbstraction)
-        };
-    }
+  name: "WebsiteBuilder/TranslatePage",
+  register(container) {
+    container.register(TranslatePageUseCase);
+    container.register(TranslatePageRepository).inSingletonScope();
+    container.register(TranslatePageGateway).inSingletonScope();
+  },
+  resolve(container) {
+    return {
+      useCase: container.resolve(UseCaseAbstraction)
+    };
+  }
 });
 ```
 
 #### 6. index.ts
+
 ```typescript
 export { TranslatePageFeature } from "./feature.js";
 export type { TranslatePageParams } from "./abstractions.js";
 ```
 
 #### 7. Register in app-website-builder Extension.tsx
+
 ```typescript
 // packages/app-website-builder/src/Extension.tsx
 import { RegisterFeature } from "webiny/admin";
@@ -482,7 +528,7 @@ export const Extension = () => {
         <>
             {/* Register headless feature */}
             <RegisterFeature feature={TranslatePageFeature} />
-            
+
             {/* ... rest of the code ... */}
         </>
     );
@@ -494,9 +540,11 @@ export const Extension = () => {
 ## Phase 3: Presentation Layer (packages/app-website-builder)
 
 ### Goal
+
 Simple presentation hook + Form-based Dialog + Action. No Presenter needed.
 
 ### File Structure
+
 ```
 packages/app-website-builder/src/presentation/pages/TranslatePage/
 └── hooks/
@@ -511,6 +559,7 @@ packages/app-website-builder/src/modules/pages/
 ### Implementation Details
 
 #### 1. presentation/pages/TranslatePage/hooks/useTranslatePage.ts
+
 ```typescript
 import { useCallback } from "react";
 import { useFeature } from "webiny/admin";
@@ -518,22 +567,23 @@ import { TranslatePageFeature } from "~/features/pages/translatePage/index.js";
 import type { TranslatePageParams } from "~/features/pages/translatePage/index.js";
 
 export const useTranslatePage = () => {
-    const { useCase } = useFeature(TranslatePageFeature);
+  const { useCase } = useFeature(TranslatePageFeature);
 
-    const translatePage = useCallback(
-        async (params: TranslatePageParams) => {
-            await useCase.execute(params);
-        },
-        [useCase]
-    );
+  const translatePage = useCallback(
+    async (params: TranslatePageParams) => {
+      await useCase.execute(params);
+    },
+    [useCase]
+  );
 
-    return {
-        translatePage
-    };
+  return {
+    translatePage
+  };
 };
 ```
 
 #### 2. modules/pages/TranslatePageAction.tsx
+
 ```typescript
 import React from "react";
 import { ReactComponent as TranslateIcon } from "@webiny/icons/translate.svg";
@@ -602,7 +652,7 @@ const TranslatePageForm = ({ languages }: TranslatePageFormProps) => {
                     }))}
                 />
             </Bind>
-            
+
             <Bind name="folderId" validators={[validation.create("required")]}>
                 <FolderSelector
                     label="Destination Folder"
@@ -615,6 +665,7 @@ const TranslatePageForm = ({ languages }: TranslatePageFormProps) => {
 ```
 
 #### 3. modules/pages/TranslatePageConfig.tsx
+
 ```typescript
 import React from "react";
 import { InternalPageListConfig } from "./configs/list/index.js";
@@ -639,6 +690,7 @@ export const TranslatePageConfig = () => {
 ## Phase 4: Integration
 
 ### Extension.tsx Updates
+
 ```typescript
 // packages/app-website-builder/src/Extension.tsx
 import { RegisterFeature } from "webiny/admin";
@@ -650,9 +702,9 @@ export const Extension = () => {
         <>
             {/* Register headless feature */}
             <RegisterFeature feature={TranslatePageFeature} />
-            
+
             {/* ... existing code ... */}
-            
+
             <PagesListConfig />
             <TranslatePageConfig />
             <RedirectsListConfig />
@@ -731,16 +783,19 @@ export const Extension = () => {
 ## Testing Strategy
 
 ### Unit Tests
+
 - Test use cases with mock repositories
 - Test repositories with mock gateways
 - Test presenter logic with mock dependencies
 
 ### Integration Tests
+
 - Test GraphQL queries/mutations
 - Test MobX reactivity
 - Test error scenarios
 
 ### E2E Tests
+
 - Test full translate flow in UI
 - Test permission checks
 - Test error messages display

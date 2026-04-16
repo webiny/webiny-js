@@ -28,7 +28,6 @@
       "@webiny/ui": ["../ui/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

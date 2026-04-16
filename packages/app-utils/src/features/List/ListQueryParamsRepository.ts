@@ -5,9 +5,9 @@ import {
     type IListQueryParamsRepository
 } from "./abstractions.js";
 
-export class ListQueryParamsRepositoryImpl<TParams extends BaseListParams>
-    implements IListQueryParamsRepository<TParams>
-{
+export class ListQueryParamsRepositoryImpl<
+    TParams extends BaseListParams
+> implements IListQueryParamsRepository<TParams> {
     private params: TParams;
     private readonly initial: TParams;
     private readonly listeners = new Set<(next: TParams) => void>();
