@@ -61,8 +61,7 @@ for (const key in packages) {
             acc[`${pkg}/*`] = [`${path}/src/*`];
             acc[pkg] = [`${path}/src`];
             return acc;
-        }, {}),
-        baseUrl: "."
+        }, {})
     };
 
     tsconfigJson.references = webinyPackages.map(pkg => {
@@ -73,8 +72,7 @@ for (const key in packages) {
 
     tsconfigbuildJson.compilerOptions = {
         ...(tsconfigbuildJson.compilerOptions || {}),
-        paths: {},
-        baseUrl: "."
+        paths: {}
     };
     tsconfigbuildJson.references = [];
 

@@ -45,7 +45,7 @@
     "adm-zip": "^0.5.17",
     "aws-sdk-client-mock": "^4.1.0",
     "graphql": "^16.13.2",
-    "typescript": "5.9.3",
+    "typescript": "6.0.2",
     "vitest": "^4.1.4"
   },
   "publishConfig": {

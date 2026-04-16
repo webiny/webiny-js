@@ -3,7 +3,7 @@ import tsParser from "@typescript-eslint/parser";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import react from "eslint-plugin-react";
 import lodash from "eslint-plugin-lodash";
-import _import from "eslint-plugin-import";
+import _import from "eslint-plugin-import-x";
 import vitest from "@vitest/eslint-plugin";
 import { FlatCompat } from "@eslint/eslintrc";
 import js from "@eslint/js";

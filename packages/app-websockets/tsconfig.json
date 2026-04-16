@@ -15,7 +15,6 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

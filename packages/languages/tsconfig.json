@@ -54,7 +54,6 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

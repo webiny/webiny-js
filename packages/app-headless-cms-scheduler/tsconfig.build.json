@@ -22,7 +22,6 @@
       "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
       "@webiny/app-scheduler/*": ["../app-scheduler/src/*"],
       "@webiny/app-scheduler": ["../app-scheduler/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

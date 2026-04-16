@@ -27,10 +27,16 @@ Used in production by teams managing hundreds of millions of content records, pe
 
 ## What's Inside
 
+![Webiny Headless CMS](https://www.webiny.com/_next/image?url=https%3A%2F%2Fd3ifp5fffz13jc.cloudfront.net%2Ffiles%2F6970b24992482400025a77b4%2FCMSModel(3).png%3Foriginal&w=3840&q=75)
+
 **Headless CMS** — Custom content models, GraphQL API, field-level permissions, localization, versioning. Models can be defined through the admin UI or in code via the framework.
+
+
+![Webiny Website Builder](https://www.webiny.com/_next/image?url=https%3A%2F%2Fd3ifp5fffz13jc.cloudfront.net%2Ffiles%2F6971fe95a148300002b2bffb%2FWebsiteBuilder-Featureimage.png%3Foriginal&w=3840&q=75)
 
 **Website Builder** — Visual drag-and-drop page editor with a Next.js SDK. Render pages through your own frontend (Vercel, CloudFront, wherever). Create custom page elements with React components.
 
+![Webiny Website Builder](https://www.webiny.com/_next/image?url=%2Fimages%2Fapp-showcase%2Ffile-manager.png&w=3840&q=75)
 **File Manager** — Digital asset management with CDN delivery, folder structure, tagging, search. Integrated into CMS and Website Builder.
 
 **Publishing Workflows** — Multi-step content approval with draft states, reviewer assignments, scheduled publishing, and audit trails.
@@ -99,6 +105,8 @@ yarn
 ---
 
 ## AI-Assisted Development
+
+![Webiny - MCP AI Assisted Development](https://image.mux.com/VAFZGdrkqL6HskOokDtEBkDnHUstqzTgkwgps59nEtE/animated.gif?width=640)
 
 Webiny ships with an **MCP server** and **AI skills** that give AI coding agents (Claude Code, Cursor, Kiro, etc.) deep context about the platform's architecture, extension points, and patterns.
 

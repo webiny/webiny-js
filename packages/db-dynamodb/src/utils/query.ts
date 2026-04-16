@@ -35,6 +35,7 @@ const query = async <T>(params: QueryParams): Promise<QueryResult<T>> => {
      * This is the first query on the given partition key.
      */
     if (!previous) {
+        // @ts-expect-error
         result = await entity.query(partitionKey, options);
     } else if (typeof previous.next === "function") {
         /**

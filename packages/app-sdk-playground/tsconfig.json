@@ -22,7 +22,6 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/sdk/*": ["../sdk/src/*"],
       "@webiny/sdk": ["../sdk/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }
