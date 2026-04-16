@@ -1,0 +1,46 @@
+{
+  "name": "@webiny/website-builder-vue",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "exports": {
+    ".": "./index.js"
+  },
+  "description": "A Vue 3 integration SDK for Webiny Website Builder.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/website-builder-sdk": "0.0.0",
+    "deep-equal": "^2.2.3",
+    "mobx": "^6.13.7"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "5.9.3",
+    "vue": "^3.5.0"
+  },
+  "peerDependencies": {
+    "vue": ">=3.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "mobx",
+        "deep-equal",
+        "@webiny/website-builder-sdk"
+      ]
+    }
+  }
+}
