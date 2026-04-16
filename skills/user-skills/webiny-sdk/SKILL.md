@@ -460,13 +460,13 @@ interface TaskRun {
 
 ## SDK Modules Reference
 
-| Module                        | Webiny App         | What You Can Do                                                       |
-| ----------------------------- | ------------------ | --------------------------------------------------------------------- |
-| `webiny.cms`                  | Headless CMS       | List, get, create, update, publish, unpublish, delete entry revisions |
-| `webiny.fileManager`          | File Manager       | List, upload, and manage files and folders                            |
-| `webiny.tenantManager`        | Multi-tenancy      | Create, install, enable, disable tenants                              |
-| `webiny.languages`            | Languages          | List enabled languages (id, code, name, direction, isDefault)         |
-| `webiny.backgroundTasks`      | Background Tasks   | Trigger, abort, list task runs, definitions, and logs                 |
+| Module                   | Webiny App       | What You Can Do                                                       |
+| ------------------------ | ---------------- | --------------------------------------------------------------------- |
+| `webiny.cms`             | Headless CMS     | List, get, create, update, publish, unpublish, delete entry revisions |
+| `webiny.fileManager`     | File Manager     | List, upload, and manage files and folders                            |
+| `webiny.tenantManager`   | Multi-tenancy    | Create, install, enable, disable tenants                              |
+| `webiny.languages`       | Languages        | List enabled languages (id, code, name, direction, isDefault)         |
+| `webiny.backgroundTasks` | Background Tasks | Trigger, abort, list task runs, definitions, and logs                 |
 
 ## Common Mistakes
 

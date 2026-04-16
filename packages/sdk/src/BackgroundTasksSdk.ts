@@ -1,7 +1,11 @@
 import type { WebinyConfig } from "./types.js";
 import type { HttpError, GraphQLError, NetworkError } from "./errors.js";
 import type { Result } from "./Result.js";
-import type { TaskDefinition, TaskRun, TaskLog } from "./methods/backgroundTasks/backgroundTaskTypes.js";
+import type {
+    TaskDefinition,
+    TaskRun,
+    TaskLog
+} from "./methods/backgroundTasks/backgroundTaskTypes.js";
 import type { ListLogsParams } from "./methods/backgroundTasks/listLogs.js";
 import type { TriggerTaskParams } from "./methods/backgroundTasks/triggerTask.js";
 import type { AbortTaskParams } from "./methods/backgroundTasks/abortTask.js";
