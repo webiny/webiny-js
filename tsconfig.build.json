@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
+    "types": ["node", "static", "vitest", "react-butterfiles"],
     "target": "esnext",
     "skipLibCheck": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "module": "esnext",
     "lib": ["esnext", "dom", "dom.iterable"],
     "resolveJsonModule": true,
@@ -17,7 +18,6 @@
     "jsx": "react",
     //    "jsxImportSource": "react",
     "emitDeclarationOnly": true,
-    "baseUrl": ".",
     "paths": {
       // For testing purposes (`webiny.config.tsx` and `/extensions`).
       "webiny/*": ["./packages/webiny/src/*"],

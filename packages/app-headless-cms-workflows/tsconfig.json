@@ -28,7 +28,6 @@
       "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
       "@webiny/app-workflows/*": ["../app-workflows/src/*"],
       "@webiny/app-workflows": ["../app-workflows/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

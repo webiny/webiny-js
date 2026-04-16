@@ -19,7 +19,6 @@
       "@webiny/app-scheduler": ["../app-scheduler/src"],
       "@webiny/app-website-builder/*": ["../app-website-builder/src/*"],
       "@webiny/app-website-builder": ["../app-website-builder/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

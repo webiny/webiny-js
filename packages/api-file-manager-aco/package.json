@@ -37,7 +37,7 @@
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.13.2",
-    "typescript": "5.9.3",
+    "typescript": "6.0.2",
     "vitest": "^4.1.4"
   }
 }

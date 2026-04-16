@@ -11,7 +11,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/mcp/*": ["../mcp/src/*"],
       "@webiny/mcp": ["../mcp/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

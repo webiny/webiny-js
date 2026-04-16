@@ -18,7 +18,6 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }
