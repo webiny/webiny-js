@@ -74,8 +74,7 @@ const textareaVariants = cva(
 );
 
 interface TextareaPrimitiveProps
-    extends React.ComponentProps<"textarea">,
-        VariantProps<typeof textareaVariants> {
+    extends React.ComponentProps<"textarea">, VariantProps<typeof textareaVariants> {
     /**
      * Reference to the textarea element.
      */

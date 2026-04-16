@@ -102,7 +102,8 @@ const tagVariants = cva(
 );
 
 export interface TagProps
-    extends Omit<React.HTMLAttributes<HTMLSpanElement>, "children" | "content">,
+    extends
+        Omit<React.HTMLAttributes<HTMLSpanElement>, "children" | "content">,
         VariantProps<typeof tagVariants> {
     content: React.ReactNode;
     onDismiss?: (event: React.SyntheticEvent<HTMLSpanElement>) => void;

@@ -12,13 +12,10 @@ type IRunParams = TaskDefinition.RunParams<
     IImportFromUrlProcessEntriesOutput
 >;
 
-class ImportFromUrlProcessEntriesTaskDefinition
-    implements
-        TaskDefinition.Interface<
-            IImportFromUrlProcessEntriesInput,
-            IImportFromUrlProcessEntriesOutput
-        >
-{
+class ImportFromUrlProcessEntriesTaskDefinition implements TaskDefinition.Interface<
+    IImportFromUrlProcessEntriesInput,
+    IImportFromUrlProcessEntriesOutput
+> {
     id = IMPORT_FROM_URL_PROCESS_ENTRIES_TASK;
     title = "Import from URL List - Process entries";
     maxIterations = 500;
@@ -28,9 +25,8 @@ class ImportFromUrlProcessEntriesTaskDefinition
     constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {
-        const { createImportFromUrlProcessEntries } = await import(
-            "./createImportFromUrlProcessEntries.js"
-        );
+        const { createImportFromUrlProcessEntries } =
+            await import("./createImportFromUrlProcessEntries.js");
 
         try {
             const runner = createImportFromUrlProcessEntries(this.context as Context);

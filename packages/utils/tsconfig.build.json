@@ -21,7 +21,6 @@
       "@webiny/feature": ["../feature/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

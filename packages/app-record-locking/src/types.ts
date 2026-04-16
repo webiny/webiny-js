@@ -34,8 +34,7 @@ export interface IRecordLockingCmsEntryValues {
     actions: IRecordLockingCmsEntryValuesAction;
 }
 
-export interface IPossiblyRecordLockingRecord
-    extends CmsContentEntry<IRecordLockingCmsEntryValues> {
+export interface IPossiblyRecordLockingRecord extends CmsContentEntry<IRecordLockingCmsEntryValues> {
     $selectable?: boolean;
     $type?: "RECORD";
     $lockingType?: string;

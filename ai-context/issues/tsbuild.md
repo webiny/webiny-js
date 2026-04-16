@@ -5,15 +5,15 @@
 When building packages that use TypeScript `projectReferences`, generated `.d.ts` files in `dist/` end up containing wrong relative paths like:
 
 ```ts
-import("../../api/src").ContextPlugin
-import("../../handler/src").BeforeHandlerPlugin
+import("../../api/src").ContextPlugin;
+import("../../handler/src").BeforeHandlerPlugin;
 ```
 
 Instead of the correct package names:
 
 ```ts
-import("@webiny/api").ContextPlugin
-import("@webiny/handler").BeforeHandlerPlugin
+import("@webiny/api").ContextPlugin;
+import("@webiny/handler").BeforeHandlerPlugin;
 ```
 
 This causes downstream TypeScript errors. For example, when `packages/api/src/` gets pulled into the `graphql` workspace TypeScript program via a bad `.d.ts` import, it fails with `TS2307: Cannot find module '~/...'` because the `~/` alias is not configured in that workspace's tsconfig.
@@ -38,6 +38,7 @@ The fix is in `packages/build-tools/packages/buildPackage/tsAliasReplacer.js`.
 This file is a post-processing step that runs after `tsc` emit. It was extended to also replace cross-package relative `src/` paths in generated `.d.ts` files with proper package names.
 
 It works by:
+
 1. Scanning sibling packages in `packages/` to build a map of `absolute/path/to/pkg/src → @webiny/pkg-name`
 2. After `tsc` emit, scanning all `.d.ts` files in `dist/`
 3. Replacing any `"../../xxx/src[/subpath]"` pattern with the resolved package name `"@webiny/xxx[/subpath]"`
@@ -58,9 +59,9 @@ The fix in `tsAliasReplacer.js` uses `path.resolve()` and `path.join()` internal
 
 ## Key Files
 
-| File | Role |
-|------|------|
-| `packages/build-tools/packages/buildPackage/tsAliasReplacer.js` | Post-processes `.d.ts` files — **this is where the fix lives** |
-| `packages/build-tools/packages/buildPackage/tsCompile.js` | Calls `tsc` and then `replaceTscAliases` |
-| `scripts/generateTsConfigsInPackages.js` | Autogenerates all `tsconfig.build.json` files — **do not edit generated files** |
-| `scripts/checkDistPaths.js` | Verification script — scans dist for bad paths |
+| File                                                            | Role                                                                            |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `packages/build-tools/packages/buildPackage/tsAliasReplacer.js` | Post-processes `.d.ts` files — **this is where the fix lives**                  |
+| `packages/build-tools/packages/buildPackage/tsCompile.js`       | Calls `tsc` and then `replaceTscAliases`                                        |
+| `scripts/generateTsConfigsInPackages.js`                        | Autogenerates all `tsconfig.build.json` files — **do not edit generated files** |
+| `scripts/checkDistPaths.js`                                     | Verification script — scans dist for bad paths                                  |

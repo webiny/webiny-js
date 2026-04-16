@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as LinkStories from './Link.stories';
+import * as LinkStories from "./Link.stories";
 
 <Meta of={LinkStories} />
 
@@ -15,39 +15,39 @@ import React from "react";
 import { Link } from "@webiny/admin-ui";
 
 const LinkExample = () => {
-    return (
-        <div>
-            <p>
-                This is a paragraph with a <Link to="/dashboard">link to the dashboard</Link> in it.
-            </p>
-            <p>
-                <Link to="/settings" variant="secondary" size="lg">
-                    This is a large secondary link
-                </Link>
-            </p>
-            <p>
-                <Link to="/help" underline={true}>
-                    This link is underlined by default
-                </Link>
-            </p>
-        </div>
-    );
-};
+return (
+
+<div>
+  <p>
+    This is a paragraph with a <Link to="/dashboard">link to the dashboard</Link> in it.
+  </p>
+  <p>
+    <Link to="/settings" variant="secondary" size="lg">
+      This is a large secondary link
+    </Link>
+  </p>
+  <p>
+    <Link to="/help" underline={true}>
+      This link is underlined by default
+    </Link>
+  </p>
+</div>
+); };
 
 export default LinkExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Link/Link.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Link/Link.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={LinkStories.Documentation} />
@@ -57,23 +57,23 @@ import React from "react";
 import { Link } from "@webiny/admin-ui";
 
 const LinkExample = () => {
-    return (
-        <div>
-            <p>
-                This is a paragraph with a <Link to="/dashboard">link to the dashboard</Link> in it.
-            </p>
-            <p>
-                <Link to="/settings" variant="secondary" size="lg">
-                    This is a large secondary link
-                </Link>
-            </p>
-            <p>
-                <Link to="/help" underline={true}>
-                    This link is underlined by default
-                </Link>
-            </p>
-        </div>
-    );
+  return (
+    <div>
+      <p>
+        This is a paragraph with a <Link to="/dashboard">link to the dashboard</Link> in it.
+      </p>
+      <p>
+        <Link to="/settings" variant="secondary" size="lg">
+          This is a large secondary link
+        </Link>
+      </p>
+      <p>
+        <Link to="/help" underline={true}>
+          This link is underlined by default
+        </Link>
+      </p>
+    </div>
+  );
 };
 
 export default LinkExample;
@@ -88,12 +88,13 @@ import React from "react";
 import { Link } from "@webiny/admin-ui";
 
 const DefaultLinkExample = () => {
-    return (
-        <Link to="#">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempus tortor eu sapien interdum rhoncus.
-        </Link>
-    );
-};
+return (
+
+<Link to="#">
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tempus tortor eu sapien interdum
+  rhoncus.
+</Link>
+); };
 
 export default DefaultLinkExample;
 ` } } />
@@ -107,12 +108,12 @@ import React from "react";
 import { Link } from "@webiny/admin-ui";
 
 const XlLinkExample = () => {
-    return (
-        <Link to="#" size="xl">
-            Extra large link
-        </Link>
-    );
-};
+return (
+
+<Link to="#" size="xl">
+  Extra large link
+</Link>
+); };
 
 export default XlLinkExample;
 ` } } />
@@ -124,12 +125,12 @@ import React from "react";
 import { Link } from "@webiny/admin-ui";
 
 const LgLinkExample = () => {
-    return (
-        <Link to="#" size="lg">
-            Large link
-        </Link>
-    );
-};
+return (
+
+<Link to="#" size="lg">
+  Large link
+</Link>
+); };
 
 export default LgLinkExample;
 ` } } />
@@ -141,12 +142,12 @@ import React from "react";
 import { Link } from "@webiny/admin-ui";
 
 const MdLinkExample = () => {
-    return (
-        <Link to="#" size="md">
-            Medium link
-        </Link>
-    );
-};
+return (
+
+<Link to="#" size="md">
+  Medium link
+</Link>
+); };
 
 export default MdLinkExample;
 ` } } />
@@ -158,12 +159,12 @@ import React from "react";
 import { Link } from "@webiny/admin-ui";
 
 const SmLinkExample = () => {
-    return (
-        <Link to="#" size="sm">
-            Small link
-        </Link>
-    );
-};
+return (
+
+<Link to="#" size="sm">
+  Small link
+</Link>
+); };
 
 export default SmLinkExample;
 ` } } />
@@ -175,15 +176,15 @@ import React from "react";
 import { Link, Text } from "@webiny/admin-ui";
 
 const InheritedSizeLinkExample = () => {
-    return (
-        <Text>
-            <Text size="lg">
-                Size of this text is set to large, so,&nbsp;
-                <Link to="#">this link's</Link> size is also automatically set to large.
-            </Text>
-        </Text>
-    );
-};
+return (
+
+<Text>
+  <Text size="lg">
+    Size of this text is set to large, so,&nbsp;
+    <Link to="#">this link's</Link> size is also automatically set to large.
+  </Text>
+</Text>
+); };
 
 export default InheritedSizeLinkExample;
 ` } } />
@@ -195,12 +196,12 @@ import React from "react";
 import { Link } from "@webiny/admin-ui";
 
 const UnderlinedLinkExample = () => {
-    return (
-        <Link to="#" underline={true}>
-            This link is underlined by default
-        </Link>
-    );
-};
+return (
+
+<Link to="#" underline={true}>
+  This link is underlined by default
+</Link>
+); };
 
 export default UnderlinedLinkExample;
 ` } } />
@@ -212,15 +213,18 @@ import React from "react";
 import { Link, Text } from "@webiny/admin-ui";
 
 const PrimaryNegativeLinkExample = () => {
-    return (
-        <div className="bg-[#25292e] p-[300px] rounded-[5px] text-neutral-dimmed">
-            <Text>
-                Lorem <Link to="#" variant="primary-negative">ipsum dolor sit amet</Link>, consectetur adipiscing elit.
-                Fusce tempus tortor eu sapien interdum rhoncus.
-            </Text>
-        </div>
-    );
-};
+return (
+
+<div className="bg-[#25292e] p-[300px] rounded-[5px] text-neutral-dimmed">
+  <Text>
+    Lorem{" "}
+    <Link to="#" variant="primary-negative">
+      ipsum dolor sit amet
+    </Link>
+    , consectetur adipiscing elit. Fusce tempus tortor eu sapien interdum rhoncus.
+  </Text>
+</div>
+); };
 
 export default PrimaryNegativeLinkExample;
 ` } } />
@@ -232,15 +236,18 @@ import React from "react";
 import { Link, Text } from "@webiny/admin-ui";
 
 const SecondaryNegativeLinkExample = () => {
-    return (
-        <div className="bg-[#25292e] p-[300px] rounded-[5px] text-neutral-dimmed">
-            <Text>
-                Lorem <Link to="#" variant="secondary-negative">ipsum dolor sit amet</Link>, consectetur adipiscing elit.
-                Fusce tempus tortor eu sapien interdum rhoncus.
-            </Text>
-        </div>
-    );
-};
+return (
+
+<div className="bg-[#25292e] p-[300px] rounded-[5px] text-neutral-dimmed">
+  <Text>
+    Lorem{" "}
+    <Link to="#" variant="secondary-negative">
+      ipsum dolor sit amet
+    </Link>
+    , consectetur adipiscing elit. Fusce tempus tortor eu sapien interdum rhoncus.
+  </Text>
+</div>
+); };
 
 export default SecondaryNegativeLinkExample;
 ` } } />
@@ -248,17 +255,23 @@ export default SecondaryNegativeLinkExample;
 ## Anatomy
 
 ### Primary
-<img src="/images/storybook/link/primary.png" alt="Primary"/>
+
+<img src="/images/storybook/link/primary.png" alt="Primary" />
 
 ### Secondary
-<img src="/images/storybook/link/secondary.png" alt="Secondary"/>
+
+<img src="/images/storybook/link/secondary.png" alt="Secondary" />
 
 ### Sizing
+
 Links inherit font styles of surrounding text.
-<img src="/images/storybook/link/sizing.png" alt="Sizing"/>
+
+<img src="/images/storybook/link/sizing.png" alt="Sizing" />
 
 ### State
-<img src="/images/storybook/link/states.png" alt="State"/>
+
+<img src="/images/storybook/link/states.png" alt="State" />
 
 ## Usage
-<img src="/images/storybook/link/usage.png" alt="Usage"/>
+
+<img src="/images/storybook/link/usage.png" alt="Usage" />

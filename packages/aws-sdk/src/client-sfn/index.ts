@@ -37,8 +37,9 @@ export interface SFNClientConfig extends BaseSFNClientConfig {
     cache?: boolean;
 }
 
-export interface TriggerStepFunctionParams<T extends GenericRecord = GenericRecord>
-    extends Partial<Omit<StartExecutionCommandInput, "input">> {
+export interface TriggerStepFunctionParams<T extends GenericRecord = GenericRecord> extends Partial<
+    Omit<StartExecutionCommandInput, "input">
+> {
     input: T;
 }
 

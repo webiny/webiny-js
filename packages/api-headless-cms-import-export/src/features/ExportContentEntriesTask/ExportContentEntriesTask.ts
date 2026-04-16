@@ -9,9 +9,10 @@ import { EXPORT_CONTENT_ENTRIES_TASK } from "~/tasks/constants.js";
 
 type IRunParams = TaskDefinition.RunParams<IExportContentEntriesInput, IExportContentEntriesOutput>;
 
-class ExportContentEntriesTaskDefinition
-    implements TaskDefinition.Interface<IExportContentEntriesInput, IExportContentEntriesOutput>
-{
+class ExportContentEntriesTaskDefinition implements TaskDefinition.Interface<
+    IExportContentEntriesInput,
+    IExportContentEntriesOutput
+> {
     id = EXPORT_CONTENT_ENTRIES_TASK;
     title = "Export Content Entries";
     maxIterations = 50;

@@ -42,7 +42,6 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/testing/*": ["../testing/src/*"],
       "@webiny/testing": ["../testing/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

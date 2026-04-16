@@ -1,7 +1,6 @@
 {
   "extends": "webiny/configs/tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     }

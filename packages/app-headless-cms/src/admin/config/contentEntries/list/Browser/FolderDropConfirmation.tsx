@@ -4,8 +4,9 @@ import { useModel } from "@webiny/app-headless-cms-common";
 
 const { Folder } = AcoConfig;
 
-export interface FolderDropConfirmationProps
-    extends React.ComponentProps<typeof AcoConfig.Folder.DropConfirmation> {
+export interface FolderDropConfirmationProps extends React.ComponentProps<
+    typeof AcoConfig.Folder.DropConfirmation
+> {
     modelIds?: string[];
 }
 

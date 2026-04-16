@@ -13,8 +13,7 @@ const directionVariants = cva("inline", {
 });
 
 interface DirectionProps
-    extends React.HTMLAttributes<HTMLSpanElement>,
-        VariantProps<typeof directionVariants> {}
+    extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof directionVariants> {}
 
 const Direction = ({ className, direction }: DirectionProps) => {
     if (!direction) {

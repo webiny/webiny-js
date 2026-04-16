@@ -13,7 +13,6 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],
       "@webiny/tasks": ["../tasks/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as CodeEditorStories from './CodeEditor.stories';
+import * as CodeEditorStories from "./CodeEditor.stories";
 
 <Meta of={CodeEditorStories} />
 
@@ -15,8 +15,8 @@ import React, { useState } from "react";
 import { CodeEditor } from "@webiny/admin-ui";
 
 const CodeEditorExample = () => {
-    const [code, setCode] = useState('{\\n  "name": "example",\\n  "version": "1.0.0"\\n}');
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+const [code, setCode] = useState('{\\n "name": "example",\\n "version": "1.0.0"\\n}');
+const [validation, setValidation] = useState({ isValid: true, message: "" });
 
     const handleChange = (newCode: string) => {
         setCode(newCode);
@@ -42,58 +42,59 @@ const CodeEditorExample = () => {
             validation={validation}
         />
     );
+
 };
 
 export default CodeEditorExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/CodeEditor/CodeEditor.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/CodeEditor/CodeEditor.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={CodeEditorStories.Documentation} exclude={"onChange"}/>
+<Controls of={CodeEditorStories.Documentation} exclude={"onChange"} />
 
 ```tsx
 import React, { useState } from "react";
 import { CodeEditor } from "@webiny/admin-ui";
 
 const CodeEditorExample = () => {
-    const [code, setCode] = useState('{\n  "name": "example",\n  "version": "1.0.0"\n}');
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+  const [code, setCode] = useState('{\n  "name": "example",\n  "version": "1.0.0"\n}');
+  const [validation, setValidation] = useState({ isValid: true, message: "" });
 
-    const handleChange = (newCode: string) => {
-        setCode(newCode);
+  const handleChange = (newCode: string) => {
+    setCode(newCode);
 
-        // Simple required validation
-        if (!newCode || newCode.trim() === "") {
-            setValidation({ isValid: false, message: "This field is required" });
-        } else {
-            setValidation({ isValid: true, message: "" });
-        }
-    };
+    // Simple required validation
+    if (!newCode || newCode.trim() === "") {
+      setValidation({ isValid: false, message: "This field is required" });
+    } else {
+      setValidation({ isValid: true, message: "" });
+    }
+  };
 
-    return (
-        <CodeEditor
-            label="JSON Configuration"
-            description="Enter your configuration in JSON format"
-            note="Note: Make sure your JSON is valid"
-            required={true}
-            mode="json"
-            theme="github"
-            value={code}
-            onChange={handleChange}
-            validation={validation}
-        />
-    );
+  return (
+    <CodeEditor
+      label="JSON Configuration"
+      description="Enter your configuration in JSON format"
+      note="Note: Make sure your JSON is valid"
+      required={true}
+      mode="json"
+      theme="github"
+      value={code}
+      onChange={handleChange}
+      validation={validation}
+    />
+  );
 };
 
 export default CodeEditorExample;

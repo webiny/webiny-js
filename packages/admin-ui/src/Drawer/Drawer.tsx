@@ -13,7 +13,8 @@ import { ConfirmButton } from "./components/ConfirmButton.js";
 import { CancelButton } from "./components/CancelButton.js";
 
 interface DrawerProps
-    extends React.ComponentPropsWithoutRef<typeof DrawerRoot>,
+    extends
+        React.ComponentPropsWithoutRef<typeof DrawerRoot>,
         Omit<React.ComponentPropsWithoutRef<typeof DrawerContent>, "title"> {
     trigger?: React.ReactNode;
     title?: React.ReactNode;

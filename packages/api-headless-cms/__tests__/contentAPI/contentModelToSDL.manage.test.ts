@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import prettier from "prettier";
+import { format } from "oxfmt";
 import contentModels from "./mocks/contentModels.js";
 import categoryManage from "./snapshots/category.manage.js";
 import productManage from "./snapshots/product.manage.js";
@@ -18,24 +18,24 @@ describe("MANAGE - ContentModel to SDL", () => {
     it("Category SDL", async () => {
         const model = contentModels.find(c => c.modelId === "category") as CmsModel;
         const sdl = createManageSDL({ models, model, fieldRegistry, sorters: [] });
-        const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
-        const prettySnapshot = await prettier.format(categoryManage.trim(), { parser: "graphql" });
+        const prettyGql = (await format("query.graphql", sdl.trim())).code;
+        const prettySnapshot = (await format("query.graphql", categoryManage.trim())).code;
         expect(prettyGql).toBe(prettySnapshot);
     });
 
     it("Product SDL", async () => {
         const model = contentModels.find(c => c.modelId === "product") as CmsModel;
         const sdl = createManageSDL({ models, model, fieldRegistry, sorters: [] });
-        const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
-        const prettySnapshot = await prettier.format(productManage.trim(), { parser: "graphql" });
+        const prettyGql = (await format("query.graphql", sdl.trim())).code;
+        const prettySnapshot = (await format("query.graphql", productManage.trim())).code;
         expect(prettyGql).toBe(prettySnapshot);
     });
 
     it("Review SDL", async () => {
         const model = contentModels.find(c => c.modelId === "review") as CmsModel;
         const sdl = createManageSDL({ models, model, fieldRegistry, sorters: [] });
-        const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
-        const prettySnapshot = await prettier.format(reviewManage.trim(), { parser: "graphql" });
+        const prettyGql = (await format("query.graphql", sdl.trim())).code;
+        const prettySnapshot = (await format("query.graphql", reviewManage.trim())).code;
         expect(prettyGql).toBe(prettySnapshot);
     });
 
@@ -46,8 +46,8 @@ describe("MANAGE - ContentModel to SDL", () => {
             fieldRegistry,
             sorters: []
         });
-        const prettyGql = await prettier.format(sdl.trim(), { parser: "graphql" });
-        const prettySnapshot = await prettier.format(pageManage.trim(), { parser: "graphql" });
+        const prettyGql = (await format("query.graphql", sdl.trim())).code;
+        const prettySnapshot = (await format("query.graphql", pageManage.trim())).code;
         expect(prettyGql).toBe(prettySnapshot);
     });
 });

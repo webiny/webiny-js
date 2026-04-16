@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as SidebarStories from './Sidebar.stories';
+import * as SidebarStories from "./Sidebar.stories";
 
 <Meta of={SidebarStories} />
 
@@ -17,55 +17,44 @@ import { ReactComponent as CmsIcon } from "@webiny/icons/web.svg";
 import { ReactComponent as PageBuilderIcon } from "@webiny/icons/table_chart.svg";
 
 const SidebarExample = () => {
-    return (
-        <SidebarProvider>
-            <Sidebar
-                title={"Webiny"}
-                icon={
-                    <Sidebar.Icon
-                        element={<img src="/logo.png" alt="Webiny" />}
-                        label={"Webiny"}
-                    />
-                }
-            >
-                <Sidebar.Link
-                    text={"Headless CMS"}
-                    to={"/cms"}
-                    icon={<Sidebar.Item.Icon label="Headless CMS" element={<CmsIcon />} />}
-                />
-                <Sidebar.Item
-                    text={"Page Builder"}
-                    icon={<Sidebar.Item.Icon label="Page Builder" element={<PageBuilderIcon />} />}
-                >
-                    <Sidebar.Group text={"Pages"} />
-                    <Sidebar.Link
-                        to={"/page-builder/pages"}
-                        text={"Pages"}
-                    />
-                    <Sidebar.Link
-                        to={"/page-builder/templates"}
-                        text={"Templates"}
-                    />
-                </Sidebar.Item>
-            </Sidebar>
-        </SidebarProvider>
-    );
-};
+return (
+
+<SidebarProvider>
+  <Sidebar
+    title={"Webiny"}
+    icon={<Sidebar.Icon element={<img src="/logo.png" alt="Webiny" />} label={"Webiny"} />}
+  >
+    <Sidebar.Link
+      text={"Headless CMS"}
+      to={"/cms"}
+      icon={<Sidebar.Item.Icon label="Headless CMS" element={<CmsIcon />} />}
+    />
+    <Sidebar.Item
+      text={"Page Builder"}
+      icon={<Sidebar.Item.Icon label="Page Builder" element={<PageBuilderIcon />} />}
+    >
+      <Sidebar.Group text={"Pages"} />
+      <Sidebar.Link to={"/page-builder/pages"} text={"Pages"} />
+      <Sidebar.Link to={"/page-builder/templates"} text={"Templates"} />
+    </Sidebar.Item>
+  </Sidebar>
+</SidebarProvider>
+); };
 
 export default SidebarExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Sidebar/Sidebar.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Sidebar/Sidebar.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 ```tsx
@@ -75,39 +64,28 @@ import { ReactComponent as CmsIcon } from "@webiny/icons/web.svg";
 import { ReactComponent as PageBuilderIcon } from "@webiny/icons/table_chart.svg";
 
 const SidebarExample = () => {
-    return (
-        <SidebarProvider>
-            <Sidebar
-                title={"Webiny"}
-                icon={
-                    <Sidebar.Icon
-                        element={<img src="/logo.png" alt="Webiny" />}
-                        label={"Webiny"}
-                    />
-                }
-            >
-                <Sidebar.Link
-                    text={"Headless CMS"}
-                    to={"/cms"}
-                    icon={<Sidebar.Item.Icon label="Headless CMS" element={<CmsIcon />} />}
-                />
-                <Sidebar.Item
-                    text={"Page Builder"}
-                    icon={<Sidebar.Item.Icon label="Page Builder" element={<PageBuilderIcon />} />}
-                >
-                    <Sidebar.Group text={"Pages"} />
-                    <Sidebar.Link
-                        to={"/page-builder/pages"}
-                        text={"Pages"}
-                    />
-                    <Sidebar.Link
-                        to={"/page-builder/templates"}
-                        text={"Templates"}
-                    />
-                </Sidebar.Item>
-            </Sidebar>
-        </SidebarProvider>
-    );
+  return (
+    <SidebarProvider>
+      <Sidebar
+        title={"Webiny"}
+        icon={<Sidebar.Icon element={<img src="/logo.png" alt="Webiny" />} label={"Webiny"} />}
+      >
+        <Sidebar.Link
+          text={"Headless CMS"}
+          to={"/cms"}
+          icon={<Sidebar.Item.Icon label="Headless CMS" element={<CmsIcon />} />}
+        />
+        <Sidebar.Item
+          text={"Page Builder"}
+          icon={<Sidebar.Item.Icon label="Page Builder" element={<PageBuilderIcon />} />}
+        >
+          <Sidebar.Group text={"Pages"} />
+          <Sidebar.Link to={"/page-builder/pages"} text={"Pages"} />
+          <Sidebar.Link to={"/page-builder/templates"} text={"Templates"} />
+        </Sidebar.Item>
+      </Sidebar>
+    </SidebarProvider>
+  );
 };
 
 export default SidebarExample;
@@ -123,11 +101,11 @@ The main container component that holds the entire sidebar structure.
 
 ```jsx
 <Sidebar
-    title="Application Title"
-    icon={<Sidebar.Icon element={<Logo />} label="Logo" />}
-    footer={<FooterContent />}
+  title="Application Title"
+  icon={<Sidebar.Icon element={<Logo />} label="Logo" />}
+  footer={<FooterContent />}
 >
-    {/* Menu items */}
+  {/* Menu items */}
 </Sidebar>
 ```
 
@@ -158,10 +136,10 @@ Used to create menu items that link to different routes in the application.
 
 ```jsx
 <Sidebar.Link
-    text="Dashboard"
-    to="/dashboard"
-    icon={<Sidebar.Item.Icon label="Dashboard" element={<DashboardIcon />} />}
-    active={currentPath === "/dashboard"}
+  text="Dashboard"
+  to="/dashboard"
+  icon={<Sidebar.Item.Icon label="Dashboard" element={<DashboardIcon />} />}
+  active={currentPath === "/dashboard"}
 />
 ```
 

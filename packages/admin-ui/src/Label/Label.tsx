@@ -30,7 +30,8 @@ const labelVariants = cva(
 );
 
 interface LabelProps
-    extends Omit<React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>, "children">,
+    extends
+        Omit<React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>, "children">,
         VariantProps<typeof labelVariants> {
     text: React.ReactNode;
     value?: React.ReactNode;
