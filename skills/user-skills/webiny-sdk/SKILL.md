@@ -345,14 +345,128 @@ Register (**YOU MUST include the `.ts` file extension in the `src` prop** — om
 <Api.Extension src={"/extensions/MyApiKey.ts"} />
 ```
 
+## Background Tasks
+
+`webiny.backgroundTasks` wraps the Background Tasks GraphQL API. All methods return a `Result` and never throw.
+
+### List Task Definitions
+
+Returns all registered task definitions — use this to discover valid `definition` IDs before triggering.
+
+```typescript
+const result = await webiny.backgroundTasks.listDefinitions();
+
+if (result.isOk()) {
+  // result.value: TaskDefinition[]
+  for (const def of result.value) {
+    console.log(def.id, def.title, def.description);
+  }
+}
+```
+
+### List Task Runs
+
+```typescript
+const result = await webiny.backgroundTasks.listTasks();
+
+if (result.isOk()) {
+  // result.value: TaskRun[]
+  for (const task of result.value) {
+    console.log(task.id, task.taskStatus, task.definitionId);
+  }
+}
+```
+
+### List Task Logs
+
+Optionally filter by a specific task run ID:
+
+```typescript
+// All logs
+const result = await webiny.backgroundTasks.listLogs();
+
+// Logs for a specific task run
+const result = await webiny.backgroundTasks.listLogs({
+  where: { task: "yourTaskRunId" }
+});
+
+if (result.isOk()) {
+  for (const log of result.value) {
+    for (const item of log.items) {
+      console.log(`[${item.type}] ${item.message}`);
+    }
+  }
+}
+```
+
+### Trigger a Task
+
+```typescript
+const result = await webiny.backgroundTasks.triggerTask({
+  definition: "myTaskDefinitionId",
+  input: {
+    someVariable: "someValue",
+    anotherVariable: 42
+  }
+});
+
+if (result.isOk()) {
+  const task = result.value; // TaskRun
+  console.log(task.id, task.taskStatus, task.executionName);
+}
+```
+
+### Abort a Task
+
+The task stops at its next safe checkpoint.
+
+```typescript
+const result = await webiny.backgroundTasks.abortTask({
+  id: "yourTaskRunId",
+  message: "Stopped by user request" // optional
+});
+
+if (result.isOk()) {
+  console.log(result.value.taskStatus); // "aborted"
+}
+```
+
+### Background Task Types
+
+```typescript
+import type { TaskDefinition, TaskRun, TaskLog, TaskLogItem, TaskStatus } from "@webiny/sdk";
+
+type TaskStatus = "pending" | "running" | "completed" | "failed" | "aborted" | "stopped";
+
+interface TaskDefinition {
+  id: string;
+  title: string;
+  description?: string;
+}
+
+interface TaskRun {
+  id: string;
+  definitionId: string;
+  taskStatus: TaskStatus;
+  input?: unknown;
+  output?: unknown;
+  startedOn?: string;
+  finishedOn?: string;
+  executionName?: string;
+  iterations?: number;
+  parentId?: string;
+}
+```
+
 ## SDK Modules Reference
 
-| Module                 | Webiny App    | What You Can Do                                                       |
-| ---------------------- | ------------- | --------------------------------------------------------------------- |
-| `webiny.cms`           | Headless CMS  | List, get, create, update, publish, unpublish, delete entry revisions |
-| `webiny.fileManager`   | File Manager  | List, upload, and manage files and folders                            |
-| `webiny.tenantManager` | Multi-tenancy | Create, install, enable, disable tenants                              |
-| `webiny.languages`     | Languages     | List enabled languages (id, code, name, direction, isDefault)         |
+| Module                        | Webiny App         | What You Can Do                                                       |
+| ----------------------------- | ------------------ | --------------------------------------------------------------------- |
+| `webiny.cms`                  | Headless CMS       | List, get, create, update, publish, unpublish, delete entry revisions |
+| `webiny.fileManager`          | File Manager       | List, upload, and manage files and folders                            |
+| `webiny.tenantManager`        | Multi-tenancy      | Create, install, enable, disable tenants                              |
+| `webiny.languages`            | Languages          | List enabled languages (id, code, name, direction, isDefault)         |
+| `webiny.backgroundTasks`      | Background Tasks   | Trigger, abort, list task runs, definitions, and logs                 |
 
 ## Common Mistakes
 
