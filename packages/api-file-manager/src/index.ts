@@ -11,6 +11,7 @@ import { FileModel, FILE_MODEL_ID } from "~/domain/file/file.model.js";
 
 export * from "./modelModifier/CmsModelModifier.js";
 export * from "./delivery/index.js";
+export { FileManagerAi } from "./FileManagerAi.js";
 
 export const createFileManagerContext = () => {
     const plugin = new ContextPlugin<ApiCoreContext>(async context => {

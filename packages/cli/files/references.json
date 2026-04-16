@@ -4296,6 +4296,7 @@
         "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-file-manager/package.json",
         "/packages/api-file-manager-aco/package.json",
+        "/packages/api-file-manager-ai/package.json",
         "/packages/api-file-manager-s3/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-aco/package.json",
@@ -4397,6 +4398,7 @@
         "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-file-manager/package.json",
         "/packages/api-file-manager-aco/package.json",
+        "/packages/api-file-manager-ai/package.json",
         "/packages/api-file-manager-s3/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-aco/package.json",
@@ -4486,14 +4488,6 @@
         "/packages/website-builder-sdk/package.json",
         "/cypress-tests/package.json",
         "/scripts/cli/package.json"
-      ]
-    },
-    {
-      "name": "typescript",
-      "version": "5.9.3",
-      "files": [
-        "/packages/api-file-manager-ai/package.json",
-        "/packages/api-file-manager-ai/package.json"
       ]
     },
     {
@@ -6773,6 +6767,10 @@
               "types": ["devDependencies"]
             },
             {
+              "file": "/packages/api-file-manager-ai/package.json",
+              "types": ["devDependencies"]
+            },
+            {
               "file": "/packages/api-file-manager-s3/package.json",
               "types": ["devDependencies"]
             },
@@ -7130,15 +7128,6 @@
             },
             {
               "file": "/scripts/cli/package.json",
-              "types": ["devDependencies"]
-            }
-          ]
-        },
-        {
-          "version": "5.9.3",
-          "files": [
-            {
-              "file": "/packages/api-file-manager-ai/package.json",
               "types": ["devDependencies"]
             }
           ]

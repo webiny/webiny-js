@@ -1,9 +1,9 @@
 import "~/types.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
-import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
-import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
-import { GetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
+import { GetFileUseCase } from "~/features/file/GetFile/index.js";
+import { UpdateFileUseCase } from "~/features/file/UpdateFile/index.js";
+import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js";
 
 export const AI_IMAGE_TAGGING_TASK_ID = "fmAiImageTagging";
