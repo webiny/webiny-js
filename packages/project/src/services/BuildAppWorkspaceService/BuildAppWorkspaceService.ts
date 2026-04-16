@@ -63,11 +63,11 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
         const { env, variant } = sdkParams;
 
         replaceInPath(path.join(appWorkspaceFolderPath, "/**/*.{ts,js,yaml}"), [
-            { find: "{PROJECT_ID}", replaceWith: app.name },
-            { find: "{PROJECT_DESCRIPTION}", replaceWith: `Webiny's ${env} app.` },
-            { find: "{DEPLOY_ENV}", replaceWith: env },
+            { find: "%{PROJECT_ID}", replaceWith: app.name },
+            { find: "%{PROJECT_DESCRIPTION}", replaceWith: `Webiny's ${env} app.` },
+            { find: "%{DEPLOY_ENV}", replaceWith: env },
             {
-                find: "{DEPLOY_VARIANT}",
+                find: "%{DEPLOY_VARIANT}",
                 replaceWith: !variant || variant === "undefined" ? "" : variant
             }
         ]);
