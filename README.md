@@ -27,10 +27,9 @@ Used in production by teams managing hundreds of millions of content records, pe
 
 ## What's Inside
 
-![Webiny Headless CMS](https://www.webiny.com/_next/image?url=https%3A%2F%2Fd3ifp5fffz13jc.cloudfront.net%2Ffiles%2F6970b24992482400025a77b4%2FCMSModel(3).png%3Foriginal&w=3840&q=75)
+![Webiny Headless CMS](<https://www.webiny.com/_next/image?url=https%3A%2F%2Fd3ifp5fffz13jc.cloudfront.net%2Ffiles%2F6970b24992482400025a77b4%2FCMSModel(3).png%3Foriginal&w=3840&q=75>)
 
 **Headless CMS** — Custom content models, GraphQL API, field-level permissions, localization, versioning. Models can be defined through the admin UI or in code via the framework.
-
 
 ![Webiny Website Builder](https://www.webiny.com/_next/image?url=https%3A%2F%2Fd3ifp5fffz13jc.cloudfront.net%2Ffiles%2F6971fe95a148300002b2bffb%2FWebsiteBuilder-Featureimage.png%3Foriginal&w=3840&q=75)
 

@@ -22,7 +22,8 @@ type SearchSortOrder = "asc" | "desc";
 
 // Distribute over the SortOptions union and extract only the Record<string, FieldSort> variant.
 type _ExtractRecordValue<T> = T extends Record<string, infer V> ? V : never;
-type _SortMember = NonNullable<SearchRequestBody["sort"]> extends (infer U)[] | infer U ? U : never;
+type _SortMember =
+    NonNullable<SearchRequestBody["sort"]> extends (infer U)[] | (infer U) ? U : never;
 type SearchFieldSort = _ExtractRecordValue<Exclude<_SortMember, string>>;
 
 type DynamicTemplate = NonNullable<
