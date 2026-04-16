@@ -2228,6 +2228,7 @@
       "version": "18.3.1",
       "files": [
         "/packages/admin-ui/package.json",
+        "/packages/api-file-manager-ai/package.json",
         "/packages/app/package.json",
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
@@ -2267,6 +2268,7 @@
         "/packages/webiny/package.json",
         "/packages/website-builder-react/package.json",
         "/packages/admin-ui/package.json",
+        "/packages/api-file-manager-ai/package.json",
         "/packages/app/package.json",
         "/packages/app-aco/package.json",
         "/packages/app-admin/package.json",
@@ -4084,6 +4086,7 @@
         "/packages/api-core-ddb/package.json",
         "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-file-manager/package.json",
+        "/packages/api-file-manager-ai/package.json",
         "/packages/api-file-manager-s3/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-ddb-es/package.json",
@@ -4158,6 +4161,7 @@
         "/packages/api-core-ddb/package.json",
         "/packages/api-elasticsearch-tasks/package.json",
         "/packages/api-file-manager/package.json",
+        "/packages/api-file-manager-ai/package.json",
         "/packages/api-file-manager-s3/package.json",
         "/packages/api-headless-cms/package.json",
         "/packages/api-headless-cms-ddb-es/package.json",
@@ -4482,6 +4486,14 @@
         "/packages/website-builder-sdk/package.json",
         "/cypress-tests/package.json",
         "/scripts/cli/package.json"
+      ]
+    },
+    {
+      "name": "typescript",
+      "version": "5.9.3",
+      "files": [
+        "/packages/api-file-manager-ai/package.json",
+        "/packages/api-file-manager-ai/package.json"
       ]
     },
     {
@@ -6252,6 +6264,10 @@
               "file": "/packages/admin-ui/package.json",
               "types": ["dependencies"]
             },
+            {
+              "file": "/packages/api-file-manager-ai/package.json",
+              "types": ["dependencies"]
+            },
             { "file": "/packages/app/package.json", "types": ["dependencies"] },
             {
               "file": "/packages/app-aco/package.json",
@@ -7114,6 +7130,15 @@
             },
             {
               "file": "/scripts/cli/package.json",
+              "types": ["devDependencies"]
+            }
+          ]
+        },
+        {
+          "version": "5.9.3",
+          "files": [
+            {
+              "file": "/packages/api-file-manager-ai/package.json",
               "types": ["devDependencies"]
             }
           ]
@@ -8189,6 +8214,10 @@
             },
             {
               "file": "/packages/api-file-manager/package.json",
+              "types": ["devDependencies"]
+            },
+            {
+              "file": "/packages/api-file-manager-ai/package.json",
               "types": ["devDependencies"]
             },
             {
