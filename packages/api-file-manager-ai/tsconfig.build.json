@@ -7,6 +7,7 @@
     { "path": "../api-file-manager/tsconfig.build.json" },
     { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
+    { "path": "../tasks/tsconfig.build.json" },
     { "path": "../project-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -28,9 +29,10 @@
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/tasks/*": ["../tasks/src/*"],
+      "@webiny/tasks": ["../tasks/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],
       "@webiny/project-aws": ["../project-aws/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }
