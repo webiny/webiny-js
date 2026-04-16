@@ -484,15 +484,18 @@ interface TaskRun {
 ## Quick Reference
 
 ```
-Install:          npm install @webiny/sdk
-Import:           import { Webiny } from "@webiny/sdk";
-Type import:      import type { CmsEntryData } from "@webiny/sdk";
-Initialize:       new Webiny({ token, endpoint, tenant })
-Result check:     result.isOk() -> result.value.data / result.error.message
-API endpoint:     yarn webiny info (in your Webiny project) -- NO trailing slash
-Preview mode:     pass preview: true to listEntries / getEntry
-fields required:  every method needs a fields: string[] array
-values wrapper:   createEntry/updateEntryRevision data must use { values: { ... } }
+Install:              npm install @webiny/sdk
+Import:               import { Webiny } from "@webiny/sdk";
+Type import:          import type { CmsEntryData, TaskRun } from "@webiny/sdk";
+Initialize:           new Webiny({ token, endpoint, tenant })
+Result check:         result.isOk() -> result.value / result.error.message
+API endpoint:         yarn webiny info (in your Webiny project) -- NO trailing slash
+Preview mode:         pass preview: true to listEntries / getEntry
+fields required:      every CMS method needs a fields: string[] array
+values wrapper:       createEntry/updateEntryRevision data must use { values: { ... } }
+Background tasks:     webiny.backgroundTasks.triggerTask({ definition, input })
+Abort task:           webiny.backgroundTasks.abortTask({ id, message? })
+Filter logs by task:  webiny.backgroundTasks.listLogs({ where: { task: "id" } })
 ```
 
 ## Related Skills
