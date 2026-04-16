@@ -43,7 +43,8 @@ const loaderActiveVariant = cva("opacity-100", {
 });
 
 interface LoaderProps
-    extends React.HTMLAttributes<HTMLDivElement>,
+    extends
+        React.HTMLAttributes<HTMLDivElement>,
         VariantProps<typeof loaderVariants>,
         VariantProps<typeof loaderBaseVariant> {
     max?: number;

@@ -31,11 +31,14 @@ export interface IScheduledActionEntryValues<T> {
     error: string | undefined; // Error if execution failed
 }
 
-export interface IScheduledActionEntry<T extends GenericRecord = GenericRecord>
-    extends CmsEntry<IScheduledActionEntryValues<T>> {}
+export interface IScheduledActionEntry<T extends GenericRecord = GenericRecord> extends CmsEntry<
+    IScheduledActionEntryValues<T>
+> {}
 
-export interface IScheduledAction<T extends GenericRecord = GenericRecord>
-    extends Omit<IScheduledActionEntryValues<T>, "scheduledFor"> {
+export interface IScheduledAction<T extends GenericRecord = GenericRecord> extends Omit<
+    IScheduledActionEntryValues<T>,
+    "scheduledFor"
+> {
     id: string;
     scheduledFor: Date;
 }

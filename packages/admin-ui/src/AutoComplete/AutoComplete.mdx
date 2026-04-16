@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as AutoCompleteStories from './AutoComplete.stories';
+import * as AutoCompleteStories from "./AutoComplete.stories";
 
 <Meta of={AutoCompleteStories} />
 
@@ -15,8 +15,8 @@ import React, { useState } from "react";
 import { AutoComplete } from "@webiny/admin-ui";
 
 const TimezoneSelector = () => {
-    const [value, setValue] = useState("");
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+const [value, setValue] = useState("");
+const [validation, setValidation] = useState({ isValid: true, message: "" });
 
     const handleValueChange = (newValue: string) => {
         setValue(newValue);
@@ -47,63 +47,64 @@ const TimezoneSelector = () => {
             validation={validation}
         />
     );
+
 };
 
 export default TimezoneSelector;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/AutoComplete/AutoComplete.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/AutoComplete/AutoComplete.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={AutoCompleteStories.Documentation}/>
+<Controls of={AutoCompleteStories.Documentation} />
 
 ```tsx
 import React, { useState } from "react";
 import { AutoComplete } from "@webiny/admin-ui";
 
 const TimezoneSelector = () => {
-    const [value, setValue] = useState("");
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+  const [value, setValue] = useState("");
+  const [validation, setValidation] = useState({ isValid: true, message: "" });
 
-    const handleValueChange = (newValue: string) => {
-        setValue(newValue);
+  const handleValueChange = (newValue: string) => {
+    setValue(newValue);
 
-        if (!newValue) {
-            setValidation({ isValid: false, message: "This field is required" });
-        } else {
-            setValidation({ isValid: true, message: "" });
-        }
-    };
+    if (!newValue) {
+      setValidation({ isValid: false, message: "This field is required" });
+    } else {
+      setValidation({ isValid: true, message: "" });
+    }
+  };
 
-    const timezones = [
-        "Eastern Standard Time (EST)",
-        "Central Standard Time (CST)",
-        "Pacific Standard Time (PST)",
-        "Greenwich Mean Time (GMT)"
-    ];
+  const timezones = [
+    "Eastern Standard Time (EST)",
+    "Central Standard Time (CST)",
+    "Pacific Standard Time (PST)",
+    "Greenwich Mean Time (GMT)"
+  ];
 
-    return (
-        <AutoComplete
-            label="Time Zone"
-            required={true}
-            description="Select your timezone from the list"
-            placeholder="Select timezone..."
-            options={timezones}
-            value={value}
-            onValueChange={handleValueChange}
-            validation={validation}
-        />
-    );
+  return (
+    <AutoComplete
+      label="Time Zone"
+      required={true}
+      description="Select your timezone from the list"
+      placeholder="Select timezone..."
+      options={timezones}
+      value={value}
+      onValueChange={handleValueChange}
+      validation={validation}
+    />
+  );
 };
 
 export default TimezoneSelector;
@@ -112,24 +113,31 @@ export default TimezoneSelector;
 ## Anatomy
 
 ### Input Anatomy
-<img src="/images/storybook/autocomplete/input-anatomy.png" alt="Input Anatomy"/>
+
+<img src="/images/storybook/autocomplete/input-anatomy.png" alt="Input Anatomy" />
 
 ### Style
-<img src="/images/storybook/autocomplete/style.png" alt="Style"/>
+
+<img src="/images/storybook/autocomplete/style.png" alt="Style" />
 
 ### Option
-<img src="/images/storybook/autocomplete/option.png" alt="Option"/>
+
+<img src="/images/storybook/autocomplete/option.png" alt="Option" />
 
 ### States and Styles
-<img src="/images/storybook/autocomplete/states-and-styles.png" alt="States and Styles"/>
+
+<img src="/images/storybook/autocomplete/states-and-styles.png" alt="States and Styles" />
 
 ### Label Anatomy
-<img src="/images/storybook/autocomplete/label-anatomy.png" alt="Label Anatomy"/>
+
+<img src="/images/storybook/autocomplete/label-anatomy.png" alt="Label Anatomy" />
 
 ### Label Properties
-<img src="/images/storybook/autocomplete/label-properties.png" alt="Label Properties"/>
+
+<img src="/images/storybook/autocomplete/label-properties.png" alt="Label Properties" />
 
 ## Usage
 
 ### Used in forms
-<img src="/images/storybook/autocomplete/used-in-forms.png" alt="Used in forms"/>
+
+<img src="/images/storybook/autocomplete/used-in-forms.png" alt="Used in forms" />

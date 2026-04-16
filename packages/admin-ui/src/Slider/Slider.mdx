@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as SliderStories from './Slider.stories';
+import * as SliderStories from "./Slider.stories";
 
 <Meta of={SliderStories} />
 
@@ -15,8 +15,8 @@ import React, { useState } from "react";
 import { Slider } from "@webiny/admin-ui";
 
 const SliderExample = () => {
-    const [value, setValue] = useState(50);
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+const [value, setValue] = useState(50);
+const [validation, setValidation] = useState({ isValid: true, message: "" });
 
     const handleChange = (newValue: number) => {
         setValue(newValue);
@@ -46,62 +46,63 @@ const SliderExample = () => {
             />
         </div>
     );
+
 };
 
 export default SliderExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Slider/Slider.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Slider/Slider.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={SliderStories.Documentation} exclude={["onValueChange", "onValueCommit"]}/>
+<Controls of={SliderStories.Documentation} exclude={["onValueChange", "onValueCommit"]} />
 
 ```tsx
 import React, { useState } from "react";
 import { Slider } from "@webiny/admin-ui";
 
 const SliderExample = () => {
-    const [value, setValue] = useState(50);
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+  const [value, setValue] = useState(50);
+  const [validation, setValidation] = useState({ isValid: true, message: "" });
 
-    const handleChange = (newValue: number) => {
-        setValue(newValue);
+  const handleChange = (newValue: number) => {
+    setValue(newValue);
 
-        if (newValue === 0) {
-            setValidation({ isValid: false, message: "Please select a value" });
-        } else {
-            setValidation({ isValid: true, message: "" });
-        }
-    };
+    if (newValue === 0) {
+      setValidation({ isValid: false, message: "Please select a value" });
+    } else {
+      setValidation({ isValid: true, message: "" });
+    }
+  };
 
-    return (
-        <div>
-            <Slider
-                label="Volume Level"
-                description="Adjust the volume level of your device"
-                note="Note: Higher values may cause distortion on some devices"
-                min={0}
-                max={100}
-                step={1}
-                value={value}
-                required={true}
-                onValueChange={handleChange}
-                showTooltip={true}
-                transformValue={(value) => `${value}%`}
-                validation={validation}
-            />
-        </div>
-    );
+  return (
+    <div>
+      <Slider
+        label="Volume Level"
+        description="Adjust the volume level of your device"
+        note="Note: Higher values may cause distortion on some devices"
+        min={0}
+        max={100}
+        step={1}
+        value={value}
+        required={true}
+        onValueChange={handleChange}
+        showTooltip={true}
+        transformValue={value => `${value}%`}
+        validation={validation}
+      />
+    </div>
+  );
 };
 
 export default SliderExample;

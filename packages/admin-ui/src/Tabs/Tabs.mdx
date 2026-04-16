@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as Tabs from './Tabs.stories';
+import * as Tabs from "./Tabs.stories";
 
 <Meta of={Tabs} />
 
@@ -15,49 +15,49 @@ import React from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const TabsExample = () => {
-    return (
-        <Tabs
-            size="md"
-            spacing="lg"
-            separator={true}
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    content="Account settings and personal information"
-                />,
-                <Tabs.Tab
-                    key="security"
-                    value="security"
-                    trigger="Security"
-                    content="Security settings and password management"
-                />,
-                <Tabs.Tab
-                    key="preferences"
-                    value="preferences"
-                    trigger="Preferences"
-                    content="User interface preferences and customization"
-                />
-            ]}
-        />
-    );
-};
+return (
+
+<Tabs
+  size="md"
+  spacing="lg"
+  separator={true}
+  tabs={[
+    <Tabs.Tab
+      key="account"
+      value="account"
+      trigger="Account"
+      content="Account settings and personal information"
+    />,
+    <Tabs.Tab
+      key="security"
+      value="security"
+      trigger="Security"
+      content="Security settings and password management"
+    />,
+    <Tabs.Tab
+      key="preferences"
+      value="preferences"
+      trigger="Preferences"
+      content="User interface preferences and customization"
+    />
+  ]}
+/>
+); };
 
 export default TabsExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Tabs/Tabs.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Tabs/Tabs.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={Tabs.Documentation} />
@@ -67,33 +67,33 @@ import React from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const TabsExample = () => {
-    return (
-        <Tabs
-            size="md"
-            spacing="lg"
-            separator={true}
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    content="Account settings and personal information"
-                />,
-                <Tabs.Tab
-                    key="security"
-                    value="security"
-                    trigger="Security"
-                    content="Security settings and password management"
-                />,
-                <Tabs.Tab
-                    key="preferences"
-                    value="preferences"
-                    trigger="Preferences"
-                    content="User interface preferences and customization"
-                />
-            ]}
+  return (
+    <Tabs
+      size="md"
+      spacing="lg"
+      separator={true}
+      tabs={[
+        <Tabs.Tab
+          key="account"
+          value="account"
+          trigger="Account"
+          content="Account settings and personal information"
+        />,
+        <Tabs.Tab
+          key="security"
+          value="security"
+          trigger="Security"
+          content="Security settings and password management"
+        />,
+        <Tabs.Tab
+          key="preferences"
+          value="preferences"
+          trigger="Preferences"
+          content="User interface preferences and customization"
         />
-    );
+      ]}
+    />
+  );
 };
 
 export default TabsExample;
@@ -108,25 +108,25 @@ import React from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const DefaultTabsExample = () => {
-    return (
-        <Tabs
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />,
-                <Tabs.Tab
-                    key="password"
-                    value="password"
-                    trigger="Password"
-                    content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />
-            ]}
-        />
-    );
-};
+return (
+
+<Tabs
+  tabs={[
+    <Tabs.Tab
+      key="account"
+      value="account"
+      trigger="Account"
+      content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />,
+    <Tabs.Tab
+      key="password"
+      value="password"
+      trigger="Password"
+      content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />
+  ]}
+/>
+); };
 
 export default DefaultTabsExample;
 ` } } />
@@ -140,26 +140,26 @@ import React from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const SmallTabsExample = () => {
-    return (
-        <Tabs
-            size="sm"
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />,
-                <Tabs.Tab
-                    key="password"
-                    value="password"
-                    trigger="Password"
-                    content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />
-            ]}
-        />
-    );
-};
+return (
+
+<Tabs
+  size="sm"
+  tabs={[
+    <Tabs.Tab
+      key="account"
+      value="account"
+      trigger="Account"
+      content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />,
+    <Tabs.Tab
+      key="password"
+      value="password"
+      trigger="Password"
+      content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />
+  ]}
+/>
+); };
 
 export default SmallTabsExample;
 ` } } />
@@ -171,26 +171,26 @@ import React from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const MediumTabsExample = () => {
-    return (
-        <Tabs
-            size="md"
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />,
-                <Tabs.Tab
-                    key="password"
-                    value="password"
-                    trigger="Password"
-                    content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />
-            ]}
-        />
-    );
-};
+return (
+
+<Tabs
+  size="md"
+  tabs={[
+    <Tabs.Tab
+      key="account"
+      value="account"
+      trigger="Account"
+      content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />,
+    <Tabs.Tab
+      key="password"
+      value="password"
+      trigger="Password"
+      content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />
+  ]}
+/>
+); };
 
 export default MediumTabsExample;
 ` } } />
@@ -202,26 +202,26 @@ import React from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const LargeTabsExample = () => {
-    return (
-        <Tabs
-            size="lg"
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />,
-                <Tabs.Tab
-                    key="password"
-                    value="password"
-                    trigger="Password"
-                    content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />
-            ]}
-        />
-    );
-};
+return (
+
+<Tabs
+  size="lg"
+  tabs={[
+    <Tabs.Tab
+      key="account"
+      value="account"
+      trigger="Account"
+      content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />,
+    <Tabs.Tab
+      key="password"
+      value="password"
+      trigger="Password"
+      content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />
+  ]}
+/>
+); };
 
 export default LargeTabsExample;
 ` } } />
@@ -233,26 +233,26 @@ import React from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const ExtraLargeTabsExample = () => {
-    return (
-        <Tabs
-            size="xl"
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />,
-                <Tabs.Tab
-                    key="password"
-                    value="password"
-                    trigger="Password"
-                    content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />
-            ]}
-        />
-    );
-};
+return (
+
+<Tabs
+  size="xl"
+  tabs={[
+    <Tabs.Tab
+      key="account"
+      value="account"
+      trigger="Account"
+      content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />,
+    <Tabs.Tab
+      key="password"
+      value="password"
+      trigger="Password"
+      content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />
+  ]}
+/>
+); };
 
 export default ExtraLargeTabsExample;
 ` } } />
@@ -264,26 +264,26 @@ import React from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const SpacingMediumExample = () => {
-    return (
-        <Tabs
-            spacing="md"
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />,
-                <Tabs.Tab
-                    key="password"
-                    value="password"
-                    trigger="Password"
-                    content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />
-            ]}
-        />
-    );
-};
+return (
+
+<Tabs
+  spacing="md"
+  tabs={[
+    <Tabs.Tab
+      key="account"
+      value="account"
+      trigger="Account"
+      content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />,
+    <Tabs.Tab
+      key="password"
+      value="password"
+      trigger="Password"
+      content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />
+  ]}
+/>
+); };
 
 export default SpacingMediumExample;
 ` } } />
@@ -295,26 +295,26 @@ import React from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const WithSeparatorExample = () => {
-    return (
-        <Tabs
-            separator={true}
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />,
-                <Tabs.Tab
-                    key="password"
-                    value="password"
-                    trigger="Password"
-                    content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />
-            ]}
-        />
-    );
-};
+return (
+
+<Tabs
+  separator={true}
+  tabs={[
+    <Tabs.Tab
+      key="account"
+      value="account"
+      trigger="Account"
+      content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />,
+    <Tabs.Tab
+      key="password"
+      value="password"
+      trigger="Password"
+      content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />
+  ]}
+/>
+); };
 
 export default WithSeparatorExample;
 ` } } />
@@ -326,26 +326,26 @@ import React from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const WithDefaultValueExample = () => {
-    return (
-        <Tabs
-            defaultValue="password"
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />,
-                <Tabs.Tab
-                    key="password"
-                    value="password"
-                    trigger="Password"
-                    content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />
-            ]}
-        />
-    );
-};
+return (
+
+<Tabs
+  defaultValue="password"
+  tabs={[
+    <Tabs.Tab
+      key="account"
+      value="account"
+      trigger="Account"
+      content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />,
+    <Tabs.Tab
+      key="password"
+      value="password"
+      trigger="Password"
+      content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />
+  ]}
+/>
+); };
 
 export default WithDefaultValueExample;
 ` } } />
@@ -357,7 +357,7 @@ import React, { useState } from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const WithControlledValueExample = () => {
-    const [value, setValue] = useState("password");
+const [value, setValue] = useState("password");
 
     return (
         <Tabs
@@ -379,6 +379,7 @@ const WithControlledValueExample = () => {
             ]}
         />
     );
+
 };
 
 export default WithControlledValueExample;
@@ -393,27 +394,27 @@ import { ReactComponent as PersonIcon } from "@webiny/icons/person.svg";
 import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 
 const WithIconsExample = () => {
-    return (
-        <Tabs
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    icon={<PersonIcon />}
-                    content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />,
-                <Tabs.Tab
-                    key="password"
-                    value="password"
-                    trigger="Password"
-                    icon={<LockIcon />}
-                    content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />
-            ]}
-        />
-    );
-};
+return (
+
+<Tabs
+  tabs={[
+    <Tabs.Tab
+      key="account"
+      value="account"
+      trigger="Account"
+      icon={<PersonIcon />}
+      content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />,
+    <Tabs.Tab
+      key="password"
+      value="password"
+      trigger="Password"
+      icon={<LockIcon />}
+      content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />
+  ]}
+/>
+); };
 
 export default WithIconsExample;
 ` } } />
@@ -425,26 +426,26 @@ import React from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const WithDisabledTabExample = () => {
-    return (
-        <Tabs
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                    disabled={true}
-                />,
-                <Tabs.Tab
-                    key="password"
-                    value="password"
-                    trigger="Password"
-                    content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />
-            ]}
-        />
-    );
-};
+return (
+
+<Tabs
+  tabs={[
+    <Tabs.Tab
+      key="account"
+      value="account"
+      trigger="Account"
+      content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+      disabled={true}
+    />,
+    <Tabs.Tab
+      key="password"
+      value="password"
+      trigger="Password"
+      content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />
+  ]}
+/>
+); };
 
 export default WithDisabledTabExample;
 ` } } />
@@ -456,26 +457,26 @@ import React from "react";
 import { Tabs } from "@webiny/admin-ui";
 
 const WithHiddenTabExample = () => {
-    return (
-        <Tabs
-            tabs={[
-                <Tabs.Tab
-                    key="account"
-                    value="account"
-                    trigger="Account"
-                    content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                    visible={false}
-                />,
-                <Tabs.Tab
-                    key="password"
-                    value="password"
-                    trigger="Password"
-                    content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                />
-            ]}
-        />
-    );
-};
+return (
+
+<Tabs
+  tabs={[
+    <Tabs.Tab
+      key="account"
+      value="account"
+      trigger="Account"
+      content="Account content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+      visible={false}
+    />,
+    <Tabs.Tab
+      key="password"
+      value="password"
+      trigger="Password"
+      content="Password content - Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    />
+  ]}
+/>
+); };
 
 export default WithHiddenTabExample;
 ` } } />
@@ -483,13 +484,17 @@ export default WithHiddenTabExample;
 ## Anatomy
 
 ### Construction
-<img src="/images/storybook/tabs/construction.png" alt="Construction"/>
+
+<img src="/images/storybook/tabs/construction.png" alt="Construction" />
 
 ### Size & States
-<img src="/images/storybook/tabs/size-and-states.png" alt="Size & States"/>
+
+<img src="/images/storybook/tabs/size-and-states.png" alt="Size & States" />
 
 ### Tab Group
-<img src="/images/storybook/tabs/tab-group.png" alt="Tab Group"/>
+
+<img src="/images/storybook/tabs/tab-group.png" alt="Tab Group" />
 
 ## Usage
-<img src="/images/storybook/tabs/usage.png" alt="Usage"/>
+
+<img src="/images/storybook/tabs/usage.png" alt="Usage" />

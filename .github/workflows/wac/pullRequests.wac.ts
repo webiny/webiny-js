@@ -141,30 +141,6 @@ export const pullRequests = createWorkflow({
                 }
             ]
         }),
-        // autoFormat: createJob({
-        //     name: "Auto-format code",
-        //     if: "github.event.pull_request.head.repo.fork == false",
-        //     checkout: { path: DIR_WEBINY_JS },
-        //     steps: [
-        //         ...yarnCacheSteps,
-        //         ...withCommonParams(
-        //             [
-        //                 { name: "Install dependencies", run: "yarn --immutable" },
-        //                 { name: "Run Prettier", run: "yarn prettier:fix" },
-        //             ],
-        //             { "working-directory": DIR_WEBINY_JS }
-        //         ),
-        //         {
-        //             name: "Commit and push changes",
-        //             uses: "stefanzweifel/git-auto-commit-action@v5",
-        //             with: {
-        //                 "commit_message": "chore: auto-format code",
-        //                 "file_pattern": "*.js *.jsx *.ts *.tsx *.json *.scss *.yml",
-        //                 "repository": DIR_WEBINY_JS
-        //             }
-        //         }
-        //     ]
-        // }),
         constants: createJob({
             name: "Create constants",
             outputs: {
@@ -250,7 +226,7 @@ export const pullRequests = createWorkflow({
                 ...withCommonParams(
                     [
                         { name: "Install dependencies", run: "yarn --immutable" },
-                        { name: "Check code formatting", run: "yarn prettier:check" },
+                        { name: "Check code formatting", run: "yarn format:check" },
                         { name: "Check dependencies", run: "yarn adio" },
                         { name: "Check TS configs", run: "yarn check-ts-configs" },
                         { name: "ESLint", run: "yarn eslint" },
@@ -319,7 +295,7 @@ export const pullRequests = createWorkflow({
         //         // Run deterministic fixes as real shell commands so changes definitely land on disk.
         //         {
         //             name: "Fix code formatting",
-        //             run: "yarn prettier:fix",
+        //             run: "yarn format:fix",
         //             "working-directory": DIR_WEBINY_JS,
         //             "continue-on-error": true
         //         },

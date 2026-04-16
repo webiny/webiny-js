@@ -8,9 +8,10 @@ import { CmsContext } from "@webiny/api-headless-cms/features/shared/abstraction
 
 export const MOCK_DATA_CREATOR_TASK_ID = "mockDataCreator";
 
-class MockDataCreatorTask
-    implements TaskDefinition.Interface<IMockDataCreatorInput, IMockDataCreatorOutput>
-{
+class MockDataCreatorTask implements TaskDefinition.Interface<
+    IMockDataCreatorInput,
+    IMockDataCreatorOutput
+> {
     id = MOCK_DATA_CREATOR_TASK_ID;
     title = "Mock Data Creator";
     maxIterations = 500;

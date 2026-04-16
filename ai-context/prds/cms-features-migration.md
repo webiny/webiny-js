@@ -219,54 +219,65 @@ packages/app-headless-cms/src/features/
 Create the CMS-scoped GraphQL client targeting `${apiUrl}/cms/manage`.
 
 **`features/graphQLClient/abstractions.ts`**
+
 ```ts
 import { createAbstraction } from "@webiny/feature/admin";
 import type { IGraphQLClient } from "@webiny/app/features/graphqlClient";
 
 export const CmsGraphQLClient = createAbstraction<IGraphQLClient>("CmsGraphQLClient");
 export namespace CmsGraphQLClient {
-    export type Interface = IGraphQLClient;
+  export type Interface = IGraphQLClient;
 }
 ```
 
 **`features/graphQLClient/CmsGraphQLClient.ts`**
+
 - Same as `FetchGraphQLClient` but reads `envConfig.get("apiUrl")` and appends `/cms/manage`
 - Uses `createImplementation` with dependency on `EnvConfig`
 - Reuses `RequestValue` from `@webiny/app/features/graphqlClient`
 
 **`features/graphQLClient/feature.ts`**
+
 ```ts
 export const CmsGraphQLClientFeature = createFeature({
-    name: "CmsGraphQLClient",
-    register(container) {
-        container.register(CmsGraphQLClientImpl).inSingletonScope();
-    },
-    resolve(container) {
-        return { client: container.resolve(CmsGraphQLClient) };
-    }
+  name: "CmsGraphQLClient",
+  register(container) {
+    container.register(CmsGraphQLClientImpl).inSingletonScope();
+  },
+  resolve(container) {
+    return { client: container.resolve(CmsGraphQLClient) };
+  }
 });
 ```
 
 ### Phase 2: Model Features — Shared Cache
 
 **ModelsCache** — Follow ACO `ListCache<T>` pattern:
+
 - `ModelsCacheFactory`: `ListCache<CmsModel>` (single global instance)
 
 **`features/model/abstractions.ts`**:
+
 ```ts
 export const ModelsCache = createAbstraction<IListCache<CmsModel>>("ModelsCache");
-export namespace ModelsCache { export type Interface = IListCache<CmsModel>; }
+export namespace ModelsCache {
+  export type Interface = IListCache<CmsModel>;
+}
 ```
 
 ### Phase 2b: Model Group Features — Shared Cache
 
 **ModelGroupsCache** — Follow ACO `ListCache<T>` pattern:
+
 - `ModelGroupsCacheFactory`: `ListCache<CmsModelGroup>` (single global instance)
 
 **`features/modelGroup/abstractions.ts`**:
+
 ```ts
 export const ModelGroupsCache = createAbstraction<IListCache<CmsModelGroup>>("ModelGroupsCache");
-export namespace ModelGroupsCache { export type Interface = IListCache<CmsModelGroup>; }
+export namespace ModelGroupsCache {
+  export type Interface = IListCache<CmsModelGroup>;
+}
 ```
 
 **Important:** `FetchGraphQLClient.execute()` returns `json.data` (GQL response data field). So for `listContentModels { data, error }`, the gateway receives `{ listContentModels: { data, error } }`.
@@ -306,38 +317,40 @@ Same per-feature gateway pattern with `ModelGroupsCache`:
 ### Phase 4: Composite Features
 
 **`features/model/feature.ts`**:
+
 ```ts
 export const ModelFeature = createFeature({
-    name: "CmsModel",
-    register(container) {
-        container.registerInstance(ModelsCache, modelsCacheFactory.getCache());
+  name: "CmsModel",
+  register(container) {
+    container.registerInstance(ModelsCache, modelsCacheFactory.getCache());
 
-        ListModelsFeature.register(container);
-        GetModelFeature.register(container);
-        CreateModelFeature.register(container);
-        CloneModelFeature.register(container);
-        UpdateModelFeature.register(container);
-        DeleteModelFeature.register(container);
-        CancelDeleteModelFeature.register(container);
-        ExportModelsFeature.register(container);
-        ImportModelsFeature.register(container);
-    }
+    ListModelsFeature.register(container);
+    GetModelFeature.register(container);
+    CreateModelFeature.register(container);
+    CloneModelFeature.register(container);
+    UpdateModelFeature.register(container);
+    DeleteModelFeature.register(container);
+    CancelDeleteModelFeature.register(container);
+    ExportModelsFeature.register(container);
+    ImportModelsFeature.register(container);
+  }
 });
 ```
 
 **`features/modelGroup/feature.ts`**:
+
 ```ts
 export const ModelGroupFeature = createFeature({
-    name: "CmsModelGroup",
-    register(container) {
-        container.registerInstance(ModelGroupsCache, modelGroupsCacheFactory.getCache());
+  name: "CmsModelGroup",
+  register(container) {
+    container.registerInstance(ModelGroupsCache, modelGroupsCacheFactory.getCache());
 
-        ListModelGroupsFeature.register(container);
-        GetModelGroupFeature.register(container);
-        CreateModelGroupFeature.register(container);
-        UpdateModelGroupFeature.register(container);
-        DeleteModelGroupFeature.register(container);
-    }
+    ListModelGroupsFeature.register(container);
+    GetModelGroupFeature.register(container);
+    CreateModelGroupFeature.register(container);
+    UpdateModelGroupFeature.register(container);
+    DeleteModelGroupFeature.register(container);
+  }
 });
 ```
 
@@ -347,18 +360,27 @@ export const ModelGroupFeature = createFeature({
 **RevisionsCache**: `ListCache<CmsContentEntryRevision>` per entry (keyed by `entryId`)
 
 **`features/entry/abstractions.ts`**:
+
 ```ts
 export const EntriesCache = createAbstraction<IListCache<CmsContentEntry>>("EntriesCache");
-export namespace EntriesCache { export type Interface = IListCache<CmsContentEntry>; }
+export namespace EntriesCache {
+  export type Interface = IListCache<CmsContentEntry>;
+}
 
-export const RevisionsCache = createAbstraction<IListCache<CmsContentEntryRevision>>("RevisionsCache");
-export namespace RevisionsCache { export type Interface = IListCache<CmsContentEntryRevision>; }
+export const RevisionsCache =
+  createAbstraction<IListCache<CmsContentEntryRevision>>("RevisionsCache");
+export namespace RevisionsCache {
+  export type Interface = IListCache<CmsContentEntryRevision>;
+}
 
 export const EntryContext = createAbstraction<IEntryContext>("EntryContext");
-export namespace EntryContext { export type Interface = IEntryContext; }
+export namespace EntryContext {
+  export type Interface = IEntryContext;
+}
 ```
 
 Each entry sub-feature has its own gateway. Entry gateways are unique in that they accept `CmsModel` and use dynamic query generators from `@webiny/app-headless-cms-common` (e.g., `createReadQuery(model)`, `createCreateMutation(model)`). Each gateway:
+
 - Injects `CmsGraphQLClient`
 - Calls its specific query generator with the model
 - Unwraps Webiny envelope: `response.content.data` / `response.content.error`
@@ -384,25 +406,25 @@ Each follows UseCase → Repository → Gateway. Key repository behaviors:
 
 ```ts
 export const EntryFeature = createFeature({
-    name: "CmsEntry",
-    register(container, context: EntryContext.Interface) {
-        container.registerInstance(EntryContext, context);
-        container.registerInstance(EntriesCache, entriesCacheFactory.getCache(context.modelId));
-        container.registerInstance(RevisionsCache, revisionsCacheFactory.getCache(context.modelId));
+  name: "CmsEntry",
+  register(container, context: EntryContext.Interface) {
+    container.registerInstance(EntryContext, context);
+    container.registerInstance(EntriesCache, entriesCacheFactory.getCache(context.modelId));
+    container.registerInstance(RevisionsCache, revisionsCacheFactory.getCache(context.modelId));
 
-        // Sub-features (each registers its own gateway)
-        GetEntryFeature.register(container);
-        CreateEntryFeature.register(container);
-        UpdateEntryFeature.register(container);
-        DeleteEntryFeature.register(container);
-        PublishEntryFeature.register(container);
-        UnpublishEntryFeature.register(container);
-        CreateRevisionFeature.register(container);
-        ListRevisionsFeature.register(container);
-        BulkActionFeature.register(container);
-        GetSingletonEntryFeature.register(container);
-        UpdateSingletonEntryFeature.register(container);
-    }
+    // Sub-features (each registers its own gateway)
+    GetEntryFeature.register(container);
+    CreateEntryFeature.register(container);
+    UpdateEntryFeature.register(container);
+    DeleteEntryFeature.register(container);
+    PublishEntryFeature.register(container);
+    UnpublishEntryFeature.register(container);
+    CreateRevisionFeature.register(container);
+    ListRevisionsFeature.register(container);
+    BulkActionFeature.register(container);
+    GetSingletonEntryFeature.register(container);
+    UpdateSingletonEntryFeature.register(container);
+  }
 });
 ```
 
@@ -413,6 +435,7 @@ export const EntryFeature = createFeature({
 **8b. Replace `ContentModelEditorProvider`** — Currently uses `GET_CONTENT_MODEL` and `UPDATE_CONTENT_MODEL` via Apollo. Replace with `GetModelFeature` and `UpdateModelFeature`.
 
 **Key file:** `packages/app-headless-cms/src/admin/components/ContentModelEditor/ContentModelEditorProvider.tsx`
+
 - `getContentModel()` (line 207-229) → `useFeature(GetModelFeature).useCase.execute(modelId)`
 - `saveContentModel()` (line 137-182) → `useFeature(UpdateModelFeature).useCase.execute(modelId, data)`
 
@@ -435,6 +458,7 @@ export const EntryFeature = createFeature({
 **9a. CmsContext compatibility shim** — Rewrite `CmsProvider` internals to delegate entry methods to features. Keep `apolloClient` temporarily for any remaining consumers.
 
 **9b. Migrate `ContentEntryContext`** — Replace React state with MobX cache observations:
+
 - Remove `useState<CmsContentEntry>` → read from `EntriesCache`
 - Remove `useState<CmsContentEntryRevision[]>` → read from `RevisionsCache`
 - Remove `useCms()` → use `useFeature()` for each operation
@@ -462,44 +486,46 @@ export const EntryFeature = createFeature({
 ## Critical Files to Modify
 
 ### Model migration
-| File | Change |
-|------|--------|
-| `src/admin/hooks/useContentModels.ts` | Replace with hook using ListModelsFeature |
+
+| File                                                                     | Change                                                  |
+| ------------------------------------------------------------------------ | ------------------------------------------------------- |
+| `src/admin/hooks/useContentModels.ts`                                    | Replace with hook using ListModelsFeature               |
 | `src/admin/components/ContentModelEditor/ContentModelEditorProvider.tsx` | Replace Apollo calls with GetModel/UpdateModel features |
-| `src/admin/views/contentModels/ContentModelsDataList.tsx` | Use features instead of Apollo |
-| `src/admin/views/contentModels/NewContentModelDialog.tsx` | Use CreateModelFeature |
-| `src/admin/views/contentModels/CloneContentModelDialog.tsx` | Use CloneModelFeature |
-| `src/admin/views/contentModels/fullDelete/dialog/process.ts` | Use DeleteModelFeature |
-| `src/admin/views/contentModels/fullDelete/useCancelDelete.tsx` | Use CancelDeleteModelFeature |
-| `src/admin/views/contentModels/exporting/useModelExport.ts` | Use ExportModelsFeature |
-| `src/admin/views/contentModels/importing/ImportContext.tsx` | Use ImportModelsFeature |
-| `src/admin/views/contentModelGroups/ContentModelGroupsDataList.tsx` | Use group features |
-| `src/admin/views/contentModelGroups/ContentModelGroupsForm.tsx` | Use group features |
-| `src/admin/menus/ContentGroupsMenuItems.tsx` | Use features for menu data |
-| `src/admin/views/contentModels/cache.ts` | DELETE entirely |
+| `src/admin/views/contentModels/ContentModelsDataList.tsx`                | Use features instead of Apollo                          |
+| `src/admin/views/contentModels/NewContentModelDialog.tsx`                | Use CreateModelFeature                                  |
+| `src/admin/views/contentModels/CloneContentModelDialog.tsx`              | Use CloneModelFeature                                   |
+| `src/admin/views/contentModels/fullDelete/dialog/process.ts`             | Use DeleteModelFeature                                  |
+| `src/admin/views/contentModels/fullDelete/useCancelDelete.tsx`           | Use CancelDeleteModelFeature                            |
+| `src/admin/views/contentModels/exporting/useModelExport.ts`              | Use ExportModelsFeature                                 |
+| `src/admin/views/contentModels/importing/ImportContext.tsx`              | Use ImportModelsFeature                                 |
+| `src/admin/views/contentModelGroups/ContentModelGroupsDataList.tsx`      | Use group features                                      |
+| `src/admin/views/contentModelGroups/ContentModelGroupsForm.tsx`          | Use group features                                      |
+| `src/admin/menus/ContentGroupsMenuItems.tsx`                             | Use features for menu data                              |
+| `src/admin/views/contentModels/cache.ts`                                 | DELETE entirely                                         |
 
 ### Entry migration
-| File | Change |
-|------|--------|
-| `src/admin/contexts/Cms/index.tsx` | Shim then delete |
-| `src/admin/views/contentEntries/ContentEntry/ContentEntryContext.tsx` | Replace with MobX cache + features |
-| `src/admin/views/contentEntries/ContentEntry/SingletonContentEntryContext.tsx` | Same |
-| `src/admin/config/contentEntries/list/Browser/BulkAction.tsx` | Use BulkActionFeature |
-| `src/admin/components/ContentEntries/BulkActions/Action*.tsx` | Use entry features |
+
+| File                                                                           | Change                             |
+| ------------------------------------------------------------------------------ | ---------------------------------- |
+| `src/admin/contexts/Cms/index.tsx`                                             | Shim then delete                   |
+| `src/admin/views/contentEntries/ContentEntry/ContentEntryContext.tsx`          | Replace with MobX cache + features |
+| `src/admin/views/contentEntries/ContentEntry/SingletonContentEntryContext.tsx` | Same                               |
+| `src/admin/config/contentEntries/list/Browser/BulkAction.tsx`                  | Use BulkActionFeature              |
+| `src/admin/components/ContentEntries/BulkActions/Action*.tsx`                  | Use entry features                 |
 
 ## Existing Code to Reuse
 
-| What | Where | How |
-|------|-------|-----|
-| Entry query/mutation generators | `@webiny/app-headless-cms-common` (`createReadQuery`, etc.) | Each entry gateway calls its generator with model |
-| `ListCache<T>` + factory | `packages/app-aco/src/features/folders/cache/` | Import for all caches |
-| `IListCache<T>` interface | `packages/app-aco/src/features/folders/cache/ListCache.ts` | Import for abstractions |
-| `RequestValue` | `@webiny/app/features/graphqlClient/RequestValue.ts` | `features/graphQLClient/` impl |
-| `EnvConfig` | `@webiny/app/features/envConfig` | API URL |
-| `loadingRepositoryFactory` | `@webiny/app-utils` | Loading state management |
-| Model GQL strings | `src/admin/viewsGraphql.ts`, `src/admin/graphql/contentModels.ts` | Move each to its sub-feature's gateway |
-| Group GQL strings | `src/admin/views/contentModelGroups/graphql.ts` | Move each to its sub-feature's gateway |
-| Import/export GQL strings | `src/admin/views/contentModels/importing/graphql.ts`, `exporting/graphql.ts` | Move to respective feature gateways |
+| What                            | Where                                                                        | How                                               |
+| ------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------- |
+| Entry query/mutation generators | `@webiny/app-headless-cms-common` (`createReadQuery`, etc.)                  | Each entry gateway calls its generator with model |
+| `ListCache<T>` + factory        | `packages/app-aco/src/features/folders/cache/`                               | Import for all caches                             |
+| `IListCache<T>` interface       | `packages/app-aco/src/features/folders/cache/ListCache.ts`                   | Import for abstractions                           |
+| `RequestValue`                  | `@webiny/app/features/graphqlClient/RequestValue.ts`                         | `features/graphQLClient/` impl                    |
+| `EnvConfig`                     | `@webiny/app/features/envConfig`                                             | API URL                                           |
+| `loadingRepositoryFactory`      | `@webiny/app-utils`                                                          | Loading state management                          |
+| Model GQL strings               | `src/admin/viewsGraphql.ts`, `src/admin/graphql/contentModels.ts`            | Move each to its sub-feature's gateway            |
+| Group GQL strings               | `src/admin/views/contentModelGroups/graphql.ts`                              | Move each to its sub-feature's gateway            |
+| Import/export GQL strings       | `src/admin/views/contentModels/importing/graphql.ts`, `exporting/graphql.ts` | Move to respective feature gateways               |
 
 ## Verification
 

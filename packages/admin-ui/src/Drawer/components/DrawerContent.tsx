@@ -3,7 +3,8 @@ import { Dialog as DrawerPrimitive } from "radix-ui";
 import { cn, cva, type VariantProps } from "~/utils.js";
 
 export interface DrawerContentProps
-    extends React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>,
+    extends
+        React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>,
         VariantProps<typeof drawerVariants> {
     width?: React.CSSProperties["width"];
     modal?: boolean;

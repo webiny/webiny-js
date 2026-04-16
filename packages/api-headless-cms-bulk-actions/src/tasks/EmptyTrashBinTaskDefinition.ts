@@ -23,9 +23,10 @@ const calculateDateTimeString = () => {
     return currentDate.toISOString();
 };
 
-class EmptyTrashBinTask
-    implements TaskDefinition.Interface<IEmptyTrashBinsInput, IEmptyTrashBinsOutput>
-{
+class EmptyTrashBinTask implements TaskDefinition.Interface<
+    IEmptyTrashBinsInput,
+    IEmptyTrashBinsOutput
+> {
     public readonly isPrivate = true;
     public readonly id = "hcmsEntriesEmptyTrashBins";
     public readonly title = "Headless CMS - Empty all trash bins";

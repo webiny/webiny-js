@@ -16,12 +16,12 @@ Each group is a self-contained builder, not a modifier of an existing form:
 
 ```ts
 export interface IPageSettingsGroup {
-    name: string;
-    label: string;
-    description?: string;
-    icon?: string;
-    buildForm(form: IFormModel): void;
-    mapFormData?(data: Record<string, unknown>, input: UpdatePageSettingsParams): void;
+  name: string;
+  label: string;
+  description?: string;
+  icon?: string;
+  buildForm(form: IFormModel): void;
+  mapFormData?(data: Record<string, unknown>, input: UpdatePageSettingsParams): void;
 }
 ```
 
@@ -29,9 +29,9 @@ export interface IPageSettingsGroup {
 
 Two verbs, two intents:
 
-| Method | Intent | Use case |
-|---|---|---|
-| `buildForm` | "I own my section, I'm creating it." | Page settings groups, wizard steps |
+| Method       | Intent                                                | Use case                                                |
+| ------------ | ----------------------------------------------------- | ------------------------------------------------------- |
+| `buildForm`  | "I own my section, I'm creating it."                  | Page settings groups, wizard steps                      |
 | `modifyForm` | "Someone else owns the form, I'm contributing to it." | Cross-cutting modifiers (Language), page type providers |
 
 Both call the same FormModel mutation API (`form.fields(...)`, `form.layout(...)`, etc.). The distinction is semantic — it tells the reader whether this code owns the form or contributes to someone else's.
@@ -70,11 +70,15 @@ The dialog/drawer choice is a view concern, not a form concern. The FormModel an
 ```tsx
 // Same presenter VM, different chrome
 const PageSettingsDialog = ({ vm }) => (
-    <Dialog><HorizontalTabs form={vm.form} /></Dialog>
+  <Dialog>
+    <HorizontalTabs form={vm.form} />
+  </Dialog>
 );
 
 const PageSettingsDrawer = ({ vm }) => (
-    <Drawer><VerticalSidebar form={vm.form} /></Drawer>
+  <Drawer>
+    <VerticalSidebar form={vm.form} />
+  </Drawer>
 );
 ```
 
@@ -82,7 +86,7 @@ View mode is configured separately from the form:
 
 ```tsx
 <PageEditorConfig>
-    <PageSettings.ViewMode mode="drawer" />
+  <PageSettings.ViewMode mode="drawer" />
 </PageEditorConfig>
 ```
 
@@ -119,13 +123,13 @@ When the `required` validator has a `settings.condition`, the conversion uses `.
 
 ```ts
 if (validator.name === "required" && validator.settings?.condition) {
-    const { target, operator, value } = validator.settings.condition;
-    formField.requiredWhen(
-        form => evaluateCondition(form.getValue(target), operator, value),
-        validator.message
-    );
+  const { target, operator, value } = validator.settings.condition;
+  formField.requiredWhen(
+    form => evaluateCondition(form.getValue(target), operator, value),
+    validator.message
+  );
 } else if (validator.name === "required") {
-    formField.required(validator.message);
+  formField.required(validator.message);
 }
 ```
 
@@ -146,25 +150,27 @@ Some field values are derived from other fields. Currently the only mechanism is
 
 Three related patterns:
 
-| Pattern | Behavior | User editable? |
-|---|---|---|
-| `computed(() => ...)` | Always derived, always reactive | No |
-| `computedUntilDirty(() => ...)` | Derived until user edits, then user owns it | Yes, breaks the link |
-| `afterChange` on source | Imperative push from source to target | Yes (no automatic link) |
+| Pattern                         | Behavior                                    | User editable?          |
+| ------------------------------- | ------------------------------------------- | ----------------------- |
+| `computed(() => ...)`           | Always derived, always reactive             | No                      |
+| `computedUntilDirty(() => ...)` | Derived until user edits, then user owns it | Yes, breaks the link    |
+| `afterChange` on source         | Imperative push from source to target       | Yes (no automatic link) |
 
 #### Always-computed
 
 ```ts
-fullName: fields.text()
-    .label("Full Name")
-    .computed(() => {
-        const first = this.form.getValue("firstName");
-        const last = this.form.getValue("lastName");
-        return `${first} ${last}`.trim();
-    })
+fullName: fields
+  .text()
+  .label("Full Name")
+  .computed(() => {
+    const first = this.form.getValue("firstName");
+    const last = this.form.getValue("lastName");
+    return `${first} ${last}`.trim();
+  });
 ```
 
 Behavior:
+
 - Value is a MobX computed — re-derives automatically.
 - Field is read-only by default (user can't edit, computation is source of truth).
 - `getData()` includes computed values.
@@ -174,12 +180,14 @@ Behavior:
 #### Computed until dirty
 
 ```ts
-slug: fields.text()
-    .label("Slug")
-    .computedUntilDirty(() => slugify(this.form.getValue("title")))
+slug: fields
+  .text()
+  .label("Slug")
+  .computedUntilDirty(() => slugify(this.form.getValue("title")));
 ```
 
 Behavior:
+
 - Initially derived from the computation.
 - Once the user manually edits the field, the computation disconnects.
 - Subsequent changes to source fields no longer affect this field.
@@ -217,6 +225,7 @@ form.field("content").as("object").addItem({ _templateId: "hero" });
 ```
 
 The FormModel internally:
+
 - Creates a new item instance with its own field set (from field definition or template).
 - Populates default values (including `defaultValue(() => generateId())` for hidden ID fields).
 - Assigns a stable internal key for React rendering.
@@ -228,16 +237,16 @@ Every level uses `.field(name)` consistently:
 
 ```ts
 // Top-level
-form.field("title")
+form.field("title");
 
 // Nested object
-form.field("seo").as("object").field("metaTitle")
+form.field("seo").as("object").field("metaTitle");
 
 // List item's field
-form.field("metaTags").as("object").items[0].field("name")
+form.field("metaTags").as("object").items[0].field("name");
 
 // Deep nesting
-form.field("content").as("object").items[2].field("hero").as("object").field("image")
+form.field("content").as("object").items[2].field("hero").as("object").field("image");
 ```
 
 Form, object field, and list item all implement the same field access interface. The generic renderer doesn't care about depth — it receives a scope and calls `.field()`.
@@ -254,10 +263,10 @@ Flattens to the expected shape:
 
 ```json
 {
-    "metaTags": [
-        { "name": "description", "content": "My page" },
-        { "name": "keywords", "content": "webiny, cms" }
-    ]
+  "metaTags": [
+    { "name": "description", "content": "My page" },
+    { "name": "keywords", "content": "webiny, cms" }
+  ]
 }
 ```
 
@@ -319,11 +328,11 @@ field.focus() {
 
 Each layout container type implements `reveal()`:
 
-| Container | reveal() behavior |
-|---|---|
-| Tabs | `this.activeTabId = tabId` — switches to the tab containing the field |
-| Accordion | `this.expandedSections.add(sectionId)` — expands the section |
-| Nested tabs | Each level activates independently |
+| Container   | reveal() behavior                                                     |
+| ----------- | --------------------------------------------------------------------- |
+| Tabs        | `this.activeTabId = tabId` — switches to the tab containing the field |
+| Accordion   | `this.expandedSections.add(sectionId)` — expands the section          |
+| Nested tabs | Each level activates independently                                    |
 
 All state is MobX observable. `reveal()` just sets state — MobX batches the changes, React re-renders, and the correct tab/accordion is visible.
 
@@ -341,17 +350,17 @@ All state is MobX observable. `reveal()` just sets state — MobX batches the ch
 
 ```tsx
 const TextFieldRenderer = observer(({ field }) => {
-    const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-        if (field.vm.focusRequested) {
-            inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-            inputRef.current?.focus();
-            field.clearFocusRequest();
-        }
-    }, [field.vm.focusRequested]);
+  useEffect(() => {
+    if (field.vm.focusRequested) {
+      inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      inputRef.current?.focus();
+      field.clearFocusRequest();
+    }
+  }, [field.vm.focusRequested]);
 
-    return <Input ref={inputRef} {...field.vm} />;
+  return <Input ref={inputRef} {...field.vm} />;
 });
 ```
 

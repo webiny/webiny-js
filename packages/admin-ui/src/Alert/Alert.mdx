@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as AlertStories from './Alert.stories';
+import * as AlertStories from "./Alert.stories";
 
 <Meta of={AlertStories} />
 
@@ -18,33 +18,33 @@ import React from "react";
 import { Alert } from "@webiny/admin-ui";
 
 const AlertExample = () => {
-    return (
-        <Alert type={"info"}>
-            <>
-                This type of notification is suitable for general usage where there’s no need for
-                accent. And <a href={"#"}>this thing here</a> is a short link.
-            </>
-        </Alert>
-    );
-};
+return (
+
+<Alert type={"info"}>
+  <>
+    This type of notification is suitable for general usage where there’s no need for accent. And{" "}
+    <a href={"#"}>this thing here</a> is a short link.
+  </>
+</Alert>
+); };
 
 export default AlertExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Alert/Alert.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Alert/Alert.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={AlertStories.Documentation} exclude={"children"}/>
+<Controls of={AlertStories.Documentation} exclude={"children"} />
 
 ```tsx
 import React from "react";
@@ -52,14 +52,14 @@ import React from "react";
 import { Alert } from "@webiny/admin-ui";
 
 const AlertExample = () => {
-    return (
-        <Alert type={"info"}>
-            <>
-                This type of notification is suitable for general usage where there’s no need for
-                accent. And <a href={"#"}>this thing here</a> is a short link.
-            </>
-        </Alert>
-    );
+  return (
+    <Alert type={"info"}>
+      <>
+        This type of notification is suitable for general usage where there’s no need for accent.
+        And <a href={"#"}>this thing here</a> is a short link.
+      </>
+    </Alert>
+  );
 };
 
 export default AlertExample;
@@ -72,121 +72,118 @@ export default AlertExample;
 <Canvas of={AlertStories.Info} source={ { code: `
 // Code for an Info banner
 
-import { Alert } from '@webiny/admin-ui';
+import { Alert } from "@webiny/admin-ui";
 
 <Alert type={"info"}>
-    <>
-        This type of notification is suitable for general usage where there’s no need for
-        accent. And <a href={"#"}>this thing here</a> is a short link.
-    </>
+  <>
+    This type of notification is suitable for general usage where there’s no need for accent. And{" "}
+    <a href={"#"}>this thing here</a> is a short link.
+  </>
 </Alert>
-` } }
-/>
+` } } />
 
 ### Success
 
 <Canvas of={AlertStories.Success} source={ { code: `
 // Code for a Success banner
 
-import { Alert } from '@webiny/admin-ui';
+import { Alert } from "@webiny/admin-ui";
 
 <Alert type={"success"}>
-    <>
-        This is a success alert, used when something occurred successfully. And{" "}
-        <a href={"#"}>this thing here</a> is a short link.
-    </>
+  <>
+    This is a success alert, used when something occurred successfully. And{" "}
+    <a href={"#"}>this thing here</a> is a short link.
+  </>
 </Alert>
-` } }
-/>
-
+` } } />
 
 ### Warning
 
 <Canvas of={AlertStories.Warning} source={ { code: `
 // Code for a Warning banner
 
-import { Alert } from '@webiny/admin-ui';
+import { Alert } from "@webiny/admin-ui";
 
 <Alert type={"warning"}>
-    <>
-        This is a warning alert, used when something of strong relevance needs to be
-        communicated. And <a href={"#"}>this thing here</a> is a short link.
-    </>
+  <>
+    This is a warning alert, used when something of strong relevance needs to be communicated. And{" "}
+    <a href={"#"}>this thing here</a> is a short link.
+  </>
 </Alert>
-` } }
-/>
+` } } />
 
 ### Danger
 
 <Canvas of={AlertStories.Danger} source={ { code: `
 // Code for a Danger banner
 
-import { Alert } from '@webiny/admin-ui';
+import { Alert } from "@webiny/admin-ui";
 
 <Alert type={"danger"}>
-    <>
-        This is a danger alert, used when something critical needs to be communicated. And{" "}
-        <a href={"#"}>this thing here</a> is a short link.
-    </>
+  <>
+    This is a danger alert, used when something critical needs to be communicated. And{" "}
+    <a href={"#"}>this thing here</a> is a short link.
+  </>
 </Alert>
-` } }
-/>
+` } } />
 
 ### With Close Button
 
 <Canvas of={AlertStories.WithCloseButton} source={ { code: `
 // Code for a banner with a Close Button and an onClose action
 
-import { Alert } from '@webiny/admin-ui';
+import { Alert } from "@webiny/admin-ui";
 
 <Alert type={"info"} showCloseButton={true} onClose={() => alert("Close button clicked.")}>
-    <>
-        An alert that can be closed.
-    </>
+  <>An alert that can be closed.</>
 </Alert>
-` } }
-/>
+` } } />
 
 ### With Action
 
 <Canvas of={AlertStories.WithAction} source={ { code: `
 // Code for a banner with a close button and a action button
 
-import { Alert } from '@webiny/admin-ui';
+import { Alert } from "@webiny/admin-ui";
 
-<Alert type={"info"} showCloseButton={true} onClose={() => alert("Close button clicked.")}
-        actions={(
-            <Alert.Action text={"Button"} onClick={() => alert("Custom action button clicked.")} />
-        )}>
-    <>
-        An alert that can be closed and also has action button.
-    </>
+<Alert
+  type={"info"}
+  showCloseButton={true}
+  onClose={() => alert("Close button clicked.")}
+  actions={<Alert.Action text={"Button"} onClick={() => alert("Custom action button clicked.")} />}
+>
+  <>An alert that can be closed and also has action button.</>
 </Alert>
-` } }
-/>
+` } } />
 
 ## Anatomy
 
 ### Options
-<img src="/images/storybook/alert/options.png" alt="Options"/>
+
+<img src="/images/storybook/alert/options.png" alt="Options" />
 
 ### Style
-<img src="/images/storybook/alert/style.png" alt="Style"/>
+
+<img src="/images/storybook/alert/style.png" alt="Style" />
 
 ### Type
-<img src="/images/storybook/alert/type.png" alt="Type"/>
+
+<img src="/images/storybook/alert/type.png" alt="Type" />
 
 ### Examples
-<img src="/images/storybook/alert/examples.png" alt="Examples"/>
+
+<img src="/images/storybook/alert/examples.png" alt="Examples" />
 
 ## Usage
 
 ### Full width banner
-<img src="/images/storybook/alert/full-width-banner.png" alt="Full width banner"/>
 
+<img src="/images/storybook/alert/full-width-banner.png" alt="Full width banner" />
 
 ### Floating element
-<img src="/images/storybook/alert/floating-element.png" alt="Floating element"/>
+
+<img src="/images/storybook/alert/floating-element.png" alt="Floating element" />
 
 ### Nested element
-<img src="/images/storybook/alert/nested-element.png" alt="Nested element"/>
+
+<img src="/images/storybook/alert/nested-element.png" alt="Nested element" />

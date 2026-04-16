@@ -32,13 +32,10 @@ export const createBulkActionTasks = (
     const processTaskId = `hcmsBulkProcess${bulkActionName}Entries`;
 
     // List Task - manages pagination and creates subtasks
-    class BulkActionListTask
-        implements
-            TaskDefinition.Interface<
-                IBulkActionOperationByModelInput,
-                IBulkActionOperationByModelOutput
-            >
-    {
+    class BulkActionListTask implements TaskDefinition.Interface<
+        IBulkActionOperationByModelInput,
+        IBulkActionOperationByModelOutput
+    > {
         public readonly id = listTaskId;
         public readonly title = `Headless CMS: list "${bulkActionName}" entries by model`;
         public readonly maxIterations = 500;
@@ -124,9 +121,10 @@ export const createBulkActionTasks = (
     }
 
     // Process Task - processes individual batches of entries
-    class BulkActionProcessTask
-        implements TaskDefinition.Interface<IBulkActionOperationInput, IBulkActionOperationOutput>
-    {
+    class BulkActionProcessTask implements TaskDefinition.Interface<
+        IBulkActionOperationInput,
+        IBulkActionOperationOutput
+    > {
         public readonly id = processTaskId;
         public readonly title = `Headless CMS: process "${bulkActionName}" entries`;
         public readonly maxIterations = 2;

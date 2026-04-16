@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { getPackage, getPackages } from "./utils/getPackages.js";
 import { relative } from "path";
-import prettier from "prettier";
+import { format } from "oxfmt";
 import fs from "fs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -18,12 +18,8 @@ function getRelativePath(a, b) {
 }
 
 async function output(target, content) {
-    const options = await prettier.resolveConfig(target);
-    const fileContentFormatted = await prettier.format(content, {
-        ...options,
-        filepath: target
-    });
-    fs.writeFileSync(target, fileContentFormatted);
+    const result = await format(target, content);
+    fs.writeFileSync(target, result.code);
 }
 
 /**

@@ -167,7 +167,7 @@ jsonwebtoken                               9.0.3     2025-12-04  3mo
   @types/jsonwebtoken                      9.0.10    2025-06-16  9mo
 eslint-plugin-import                       2.32.0    2025-06-20  9mo
 @emotion/styled                            11.14.1   2025-06-26  9mo
-prettier                                   3.6.2     2025-06-27  9mo
+oxfmt                                      0.45.0    2025-06-27  9mo
 @minoru/react-dnd-treeview                 3.5.3     2025-07-13  8mo
 @types/hoist-non-react-statics             3.3.7     2025-07-21  8mo
 sonner                                     2.0.7     2025-08-02  8mo

@@ -73,16 +73,16 @@ Rewrite `presentation/security/usePermissions.ts` and `HasPermission.tsx` to pas
 
 Each package below registers `<Security.Permissions>` and may add programmatic permission checks as the codebase evolves. Migrating them now means future feature work gets DI injection for free.
 
-| Package | Permission name |
-|---------|----------------|
-| `app-headless-cms` | cms |
-| `app-file-manager` | file-manager |
-| `app-security-access-management` | security |
-| `cognito` | admin-users |
-| `tenant-manager` | tenant-manager |
-| `app-record-locking` | record-locking |
-| `app-audit-logs` | audit-logs |
-| `app-workflows` | workflows |
+| Package                          | Permission name |
+| -------------------------------- | --------------- |
+| `app-headless-cms`               | cms             |
+| `app-file-manager`               | file-manager    |
+| `app-security-access-management` | security        |
+| `cognito`                        | admin-users     |
+| `tenant-manager`                 | tenant-manager  |
+| `app-record-locking`             | record-locking  |
+| `app-audit-logs`                 | audit-logs      |
+| `app-workflows`                  | workflows       |
 
 ### What to build
 

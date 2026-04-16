@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as TextareaStories from './Textarea.stories';
+import * as TextareaStories from "./Textarea.stories";
 
 <Meta of={TextareaStories} />
 
@@ -16,7 +16,7 @@ import React, { useState } from "react";
 import { Textarea } from "@webiny/admin-ui";
 
 const TextareaExample = () => {
-    const [value, setValue] = useState("");
+const [value, setValue] = useState("");
 
     return (
         <Textarea
@@ -29,25 +29,26 @@ const TextareaExample = () => {
             onChange={newValue => setValue(newValue)}
         />
     );
+
 };
 
 export default TextareaExample;
 
 `} }
-    additionalActions={[
-        {
-            title: 'Open in GitHub',
-            onClick: () => {
-                window.open(
-                    'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Textarea/Textarea.tsx',
-                    '_blank'
-                );
-            },
-        }
-    ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Textarea/Textarea.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={TextareaStories.Documentation}/>
+<Controls of={TextareaStories.Documentation} />
 
 ```jsx
 import React, { useState } from "react";
@@ -55,19 +56,19 @@ import React, { useState } from "react";
 import { Textarea } from "@webiny/admin-ui";
 
 const TextareaExample = () => {
-    const [value, setValue] = useState("");
+  const [value, setValue] = useState("");
 
-    return (
-        <Textarea
-            label="Message"
-            description="Enter your feedback or message"
-            note="Please be specific and provide relevant details"
-            placeholder="Type your message here..."
-            required={true}
-            value={value}
-            onChange={newValue => setValue(newValue)}
-        />
-    );
+  return (
+    <Textarea
+      label="Message"
+      description="Enter your feedback or message"
+      note="Please be specific and provide relevant details"
+      placeholder="Type your message here..."
+      required={true}
+      value={value}
+      onChange={newValue => setValue(newValue)}
+    />
+  );
 };
 
 export default TextareaExample;
@@ -76,6 +77,7 @@ export default TextareaExample;
 ## Examples
 
 ### With Validate Function
+
 The Textarea component supports validation using the validation prop, as shown in the example above.
 For more complex or reusable validation scenarios, you can use the validate prop, which accepts a custom validation function.
 Try entering less than 10 characters to see it in action, and click on **Show code** to view the validation function.
@@ -86,8 +88,8 @@ import React, { useState } from "react";
 import { Textarea } from "@webiny/admin-ui";
 
 const MessageTextarea = () => {
-    const [value, setValue] = useState("");
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+const [value, setValue] = useState("");
+const [validation, setValidation] = useState({ isValid: true, message: "" });
 
     const validate = async () => {
         if (!value.trim()) {
@@ -110,34 +112,42 @@ const MessageTextarea = () => {
             validation={validation}
         />
     );
+
 };` } }
 />
-
 
 ## Anatomy
 
 ### Textarea
-<img src="/images/storybook/textarea/anatomy.png" alt="Textarea Anatomy"/>
+
+<img src="/images/storybook/textarea/anatomy.png" alt="Textarea Anatomy" />
 
 ### Styles
-<img src="/images/storybook/textarea/styles.png" alt="Styles"/>
+
+<img src="/images/storybook/textarea/styles.png" alt="Styles" />
 
 ### Field Size
-<img src="/images/storybook/textarea/field-size.png" alt="Field Size"/>
+
+<img src="/images/storybook/textarea/field-size.png" alt="Field Size" />
 
 ### States and Styles
-<img src="/images/storybook/textarea/states-and-styles.png" alt="States and Styles"/>
+
+<img src="/images/storybook/textarea/states-and-styles.png" alt="States and Styles" />
 
 ### Label Anatomy
-<img src="/images/storybook/textarea/label-anatomy.png" alt="Label Anatomy"/>
+
+<img src="/images/storybook/textarea/label-anatomy.png" alt="Label Anatomy" />
 
 ### Label Properties
-<img src="/images/storybook/textarea/label-properties.png" alt="Label Properties"/>
+
+<img src="/images/storybook/textarea/label-properties.png" alt="Label Properties" />
 
 ### Label Options
-<img src="/images/storybook/textarea/label-options.png" alt="Label Options"/>
+
+<img src="/images/storybook/textarea/label-options.png" alt="Label Options" />
 
 ## Usage
 
 ### Used in forms
-<img src="/images/storybook/textarea/used-in-forms.png" alt="Used in forms"/>
+
+<img src="/images/storybook/textarea/used-in-forms.png" alt="Used in forms" />

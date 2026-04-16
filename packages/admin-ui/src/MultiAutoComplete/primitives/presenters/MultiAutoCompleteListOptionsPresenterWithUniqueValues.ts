@@ -4,9 +4,7 @@ import type {
     IMultiAutoCompleteListOptionsPresenterParams
 } from "./MultiAutoCompleteListOptionsPresenter.js";
 
-export class MultiAutoCompleteListOptionsPresenterWithUniqueValues
-    implements IMultiAutoCompleteListOptionsPresenter
-{
+export class MultiAutoCompleteListOptionsPresenterWithUniqueValues implements IMultiAutoCompleteListOptionsPresenter {
     private decoretee: IMultiAutoCompleteListOptionsPresenter;
 
     constructor(decoretee: IMultiAutoCompleteListOptionsPresenter) {
