@@ -4609,13 +4609,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@iconify/json@npm:^2.2.462":
-  version: 2.2.462
-  resolution: "@iconify/json@npm:2.2.462"
+"@iconify/json@npm:^2.2.463":
+  version: 2.2.463
+  resolution: "@iconify/json@npm:2.2.463"
   dependencies:
     "@iconify/types": "npm:*"
     pathe: "npm:^2.0.3"
-  checksum: 10/c27cf2ca7bf58a5f356d1f0c015f20639c975b2c3d0667c73f3a0276936bdf4a54e780524ffd5629d479ee0462dd6a335c31a3d6cde1cb2a3e55a8560ff01adb
+  checksum: 10/6c94bbd4ce8c2713e1e2f2e3a8428b559dd558db6e7a7887815e8f1f15c7cd896c117f179e761705244d4a8d41dd43f08684fec9dc7f7e3789b68467ca9262ea
   languageName: node
   linkType: hard
 
@@ -13643,7 +13643,7 @@ __metadata:
     "@emotion/css": "npm:^11.13.5"
     "@emotion/react": "npm:11.14.0"
     "@emotion/styled": "npm:11.14.1"
-    "@iconify/json": "npm:^2.2.462"
+    "@iconify/json": "npm:^2.2.463"
     "@svgr/webpack": "npm:^8.1.0"
     "@testing-library/react": "npm:^16.3.2"
     "@types/bytes": "npm:^3.1.5"
