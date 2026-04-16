@@ -19,7 +19,7 @@
     "del": "^8.0.1",
     "graphql-request": "^7.4.0",
     "lodash": "^4.18.1",
-    "nanoid": "^5.1.7",
+    "nanoid": "^5.1.9",
     "typescript": "6.0.2",
     "uniqid": "^5.4.0"
   },
