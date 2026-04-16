@@ -1,5 +1,7 @@
 import type { StorybookConfig } from "@storybook/react-webpack5";
+import { dirname, join } from "node:path";
 import path from "path";
+import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/postcss";
 
 /**
@@ -7,7 +9,7 @@ import tailwindcss from "@tailwindcss/postcss";
  * It is needed in projects that use Yarn PnP or are set up within a monorepo.
  */
 function getAbsolutePath(value: string): any {
-    return path.dirname(require.resolve(path.join(value, "package.json")));
+    return dirname(fileURLToPath(import.meta.resolve(join(value, "package.json"))));
 }
 
 const config: StorybookConfig = {
@@ -39,7 +41,7 @@ const config: StorybookConfig = {
         config.resolve = config.resolve || {};
         config.resolve.alias = {
             ...config.resolve.alias,
-            "~": path.resolve(__dirname, "../src")
+            "~": path.resolve(import.meta.dirname, "../src")
         };
 
         // We use explicit `.js` imports, and webpack looks for that extension literally.
@@ -102,7 +104,9 @@ const config: StorybookConfig = {
                 },
                 {
                     loader: "sass-loader",
-                    options: { implementation: require.resolve("sass") }
+                    options: {
+                        implementation: fileURLToPath(import.meta.resolve("sass"))
+                    }
                 }
             ]
         });
