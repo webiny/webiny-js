@@ -5,7 +5,10 @@
       {
         "version": "6.0.2",
         "files": [
-          { "file": "/package.json", "types": ["devDependencies"] },
+          {
+            "file": "/package.json",
+            "types": ["devDependencies"]
+          },
           {
             "file": "/packages/admin-ui/package.json",
             "types": ["devDependencies"]
@@ -266,7 +269,10 @@
             "file": "/packages/create-webiny-project/_templates/base/template.package.json",
             "types": ["devDependencies"]
           },
-          { "file": "/packages/db/package.json", "types": ["devDependencies"] },
+          {
+            "file": "/packages/db/package.json",
+            "types": ["devDependencies"]
+          },
           {
             "file": "/packages/db-dynamodb/package.json",
             "types": ["devDependencies"]
@@ -371,7 +377,10 @@
             "file": "/packages/testing/package.json",
             "types": ["devDependencies"]
           },
-          { "file": "/packages/ui/package.json", "types": ["devDependencies"] },
+          {
+            "file": "/packages/ui/package.json",
+            "types": ["devDependencies"]
+          },
           {
             "file": "/packages/utils/package.json",
             "types": ["devDependencies"]
@@ -404,7 +413,10 @@
             "file": "/cypress-tests/package.json",
             "types": ["devDependencies"]
           },
-          { "file": "/scripts/cli/package.json", "types": ["devDependencies"] }
+          {
+            "file": "/scripts/cli/package.json",
+            "types": ["devDependencies"]
+          }
         ]
       },
       {
