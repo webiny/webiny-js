@@ -6,9 +6,10 @@ description: >
   Use this skill when the developer is building a Next.js, Vue, Node.js, or any external app
   that needs to fetch or write content to Webiny, set up the SDK, use the Result pattern,
   list/get/create/update/publish entries, filter and sort queries, use TypeScript generics
-  for type safety, work with the File Manager, list languages, or create API keys programmatically.
+  for type safety, work with the File Manager, list languages, trigger or monitor background tasks,
+  or create API keys programmatically.
   Covers read vs preview mode, the `values` wrapper requirement, correct method names,
-  and the `fields` required parameter.
+  the `fields` required parameter, and background task management via `sdk.backgroundTasks`.
 ---
 
 # Webiny SDK
