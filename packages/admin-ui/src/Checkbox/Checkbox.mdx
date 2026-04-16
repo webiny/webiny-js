@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as CheckboxStories from './Checkbox.stories';
+import * as CheckboxStories from "./Checkbox.stories";
 
 <Meta of={CheckboxStories} />
 
@@ -17,8 +17,8 @@ import React, { useState } from "react";
 import { Checkbox } from "@webiny/admin-ui";
 
 const CheckboxExample = () => {
-    const [isChecked, setIsChecked] = useState(false);
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+const [isChecked, setIsChecked] = useState(false);
+const [validation, setValidation] = useState({ isValid: true, message: "" });
 
     const handleChange = (checked: boolean) => {
         setIsChecked(checked);
@@ -43,57 +43,58 @@ const CheckboxExample = () => {
             />
         </div>
     );
+
 };
 
 export default CheckboxExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Checkbox/Checkbox.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Checkbox/Checkbox.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={CheckboxStories.Documentation} exclude={"onChange"}/>
+<Controls of={CheckboxStories.Documentation} exclude={"onChange"} />
 
 ```tsx
 import React, { useState } from "react";
 import { Checkbox } from "@webiny/admin-ui";
 
 const CheckboxExample = () => {
-    const [isChecked, setIsChecked] = useState(false);
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+  const [isChecked, setIsChecked] = useState(false);
+  const [validation, setValidation] = useState({ isValid: true, message: "" });
 
-    const handleChange = (checked: boolean) => {
-        setIsChecked(checked);
+  const handleChange = (checked: boolean) => {
+    setIsChecked(checked);
 
-        if (!checked) {
-            setValidation({ isValid: false, message: "This field is required" });
-        } else {
-            setValidation({ isValid: true, message: "" });
-        }
-    };
+    if (!checked) {
+      setValidation({ isValid: false, message: "This field is required" });
+    } else {
+      setValidation({ isValid: true, message: "" });
+    }
+  };
 
-    return (
-        <div>
-            <Checkbox
-                label="Any field label"
-                description="Provide the required information for processing your request."
-                note="Note: Ensure your selection or input is accurate before proceeding."
-                checked={isChecked}
-                required={true}
-                onChange={handleChange}
-                validation={validation}
-            />
-        </div>
-    );
+  return (
+    <div>
+      <Checkbox
+        label="Any field label"
+        description="Provide the required information for processing your request."
+        note="Note: Ensure your selection or input is accurate before proceeding."
+        checked={isChecked}
+        required={true}
+        onChange={handleChange}
+        validation={validation}
+      />
+    </div>
+  );
 };
 
 export default CheckboxExample;
@@ -102,24 +103,25 @@ export default CheckboxExample;
 ## Anatomy
 
 ### General
+
 Checkbox input enable users to select a single or multiple items from a list of offered choices. A checkbox input group organizes related checkbox input options together for better clarity and functionality.
 
-<img src="/images/storybook/checkbox/general.png" alt="General"/>
+<img src="/images/storybook/checkbox/general.png" alt="General" />
 
 ### Checkbox input options
+
 Checkbox inputs can exist in two different states: Selected and Not Selected.
 
-<img src="/images/storybook/checkbox/checkbox-input-options.png" alt="Checkbox input options"/>
+<img src="/images/storybook/checkbox/checkbox-input-options.png" alt="Checkbox input options" />
 
 ### States
-<img src="/images/storybook/checkbox/states.png" alt="States"/>
+
+<img src="/images/storybook/checkbox/states.png" alt="States" />
 
 ## Usage
 
 ### Text overflow
+
 When the checkbox text content is too long for the horizontal space available, the content should wrap to form another line aligning the text and checkbox on top.
 
-<img src="/images/storybook/checkbox/text-overflow.png" alt="Text overflow"/>
-
-
-
+<img src="/images/storybook/checkbox/text-overflow.png" alt="Text overflow" />

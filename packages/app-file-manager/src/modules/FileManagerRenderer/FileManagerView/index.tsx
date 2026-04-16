@@ -27,8 +27,10 @@ const imagesAccept = [
     "image/svg+xml"
 ];
 
-interface FileManagerProviderProps
-    extends Omit<FileManagerViewProviderProps, "accept" | "children"> {
+interface FileManagerProviderProps extends Omit<
+    FileManagerViewProviderProps,
+    "accept" | "children"
+> {
     children: React.ReactNode;
     images?: boolean;
     accept?: string[];

@@ -29,8 +29,7 @@ const tableVariants = cva("w-full caption-bottom text-sm bg-white", {
 });
 
 interface TableProps
-    extends React.HTMLAttributes<HTMLTableElement>,
-        VariantProps<typeof tableVariants> {
+    extends React.HTMLAttributes<HTMLTableElement>, VariantProps<typeof tableVariants> {
     sticky?: boolean;
 }
 

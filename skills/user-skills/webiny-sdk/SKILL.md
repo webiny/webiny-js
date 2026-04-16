@@ -292,8 +292,8 @@ The `Language` type:
 ```typescript
 interface Language {
   id: string;
-  code: string;        // e.g. "en-US"
-  name: string;        // e.g. "English (US)"
+  code: string; // e.g. "en-US"
+  name: string; // e.g. "English (US)"
   direction?: "ltr" | "rtl";
   isDefault?: boolean;
 }

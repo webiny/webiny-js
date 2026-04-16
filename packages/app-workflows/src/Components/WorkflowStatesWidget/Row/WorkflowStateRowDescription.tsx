@@ -22,8 +22,7 @@ export const WorkflowStateRowDescription = (props: IWorkflowStateRowDescriptionP
     return (
         <>
             {state.currentStep.title}
-            <Identity identity={state.currentStep.savedBy} />
-            , <TimeAgo datetime={state.savedOn} />
+            <Identity identity={state.currentStep.savedBy} />, <TimeAgo datetime={state.savedOn} />
         </>
     );
 };

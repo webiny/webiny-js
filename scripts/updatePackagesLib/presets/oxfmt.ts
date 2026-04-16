@@ -1,9 +1,9 @@
 import { createPreset } from "../createPreset";
 
-export const prettier = createPreset(() => {
+export const oxfmt = createPreset(() => {
     return {
-        name: "prettier",
-        matching: /prettier/,
+        name: "oxfmt",
+        matching: /oxfmt/,
         skipResolutions: true,
         caret: true
     };

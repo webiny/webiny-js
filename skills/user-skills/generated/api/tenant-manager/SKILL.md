@@ -20,12 +20,14 @@ Tenant management event handlers and use cases.
 ## Abstractions
 
 ---
+
 **Name:** `TenantExtensions`
 **Kind:** type
 **Import:** `import type { TenantExtensions } from "webiny/api/tenant-manager"`
 **Source:** `@webiny/tenant-manager/shared/Tenant.ts`
 
 ---
+
 **Name:** `TenantModelExtension`
 **Import:** `import { TenantModelExtension } from "webiny/api/tenant-manager"`
 **Source:** `@webiny/tenant-manager/api/domain/TenantModelExtension.ts`

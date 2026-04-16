@@ -38,8 +38,7 @@ const skeletonVariants = cva("animate-skeleton-pulse rounded-sm", {
 });
 
 interface SkeletonProps
-    extends React.HTMLAttributes<HTMLDivElement>,
-        VariantProps<typeof skeletonVariants> {}
+    extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof skeletonVariants> {}
 
 const DecoratableSkeleton = ({ size, type, className, ...props }: SkeletonProps) => {
     return <div className={cn(skeletonVariants({ size, type }), className)} {...props} />;

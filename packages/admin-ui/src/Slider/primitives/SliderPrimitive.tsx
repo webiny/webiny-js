@@ -29,11 +29,10 @@ const SliderPrimitiveRenderer = ({
     );
 };
 
-interface SliderPrimitiveProps
-    extends Omit<
-        SliderPrimitives.SliderProps,
-        "defaultValue" | "value" | "onValueChange" | "onValueCommit"
-    > {
+interface SliderPrimitiveProps extends Omit<
+    SliderPrimitives.SliderProps,
+    "defaultValue" | "value" | "onValueChange" | "onValueCommit"
+> {
     onValueChange: (value: number) => void;
     onValueCommit?: (value: number) => void;
     showTooltip?: boolean;

@@ -16,11 +16,13 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `LocalStorage`
 **Import:** `import { LocalStorage } from "webiny/admin/local-storage"`
 **Source:** `@webiny/app/features/localStorage/abstractions.ts`
 
 ---
+
 **Name:** `useLocalStorage`
 **Import:** `import { useLocalStorage } from "webiny/admin/local-storage"`
 **Source:** `@webiny/app/presentation/localStorage/index.ts`
@@ -28,11 +30,13 @@ description: >
 Useful when you want to call service methods imperatively inside components.
 
 ---
+
 **Name:** `useLocalStorageValue`
 **Import:** `import { useLocalStorageValue } from "webiny/admin/local-storage"`
 **Source:** `@webiny/app/presentation/localStorage/index.ts`
 
 ---
+
 **Name:** `useLocalStorageValues`
 **Import:** `import { useLocalStorageValues } from "webiny/admin/local-storage"`
 **Source:** `@webiny/app/presentation/localStorage/index.ts`

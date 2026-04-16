@@ -80,8 +80,9 @@ export interface ICmsFieldReadApi<TField extends CmsModelField = CmsModelField> 
     createSchema?(params: CreateSchemaParams): GraphQLSchemaDefinition<CmsContext>;
 }
 
-export interface ICmsFieldManageApi<TField extends CmsModelField = CmsModelField>
-    extends ICmsFieldReadApi<TField> {
+export interface ICmsFieldManageApi<
+    TField extends CmsModelField = CmsModelField
+> extends ICmsFieldReadApi<TField> {
     createInputField(
         params: CreateTypeFieldParams<TField>
     ): CmsModelFieldDefinition | string | null;

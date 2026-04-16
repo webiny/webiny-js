@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as ColorPickerStories from './ColorPicker.stories';
+import * as ColorPickerStories from "./ColorPicker.stories";
 
 <Meta of={ColorPickerStories} />
 
@@ -15,8 +15,8 @@ import React, { useState } from "react";
 import { ColorPicker } from "@webiny/admin-ui";
 
 const ColorPickerExample = () => {
-    const [color, setColor] = useState("#4285F4");
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+const [color, setColor] = useState("#4285F4");
+const [validation, setValidation] = useState({ isValid: true, message: "" });
 
     const handleChange = (newColor: string) => {
         setColor(newColor);
@@ -39,55 +39,56 @@ const ColorPickerExample = () => {
             validation={validation}
         />
     );
+
 };
 
 export default ColorPickerExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/ColorPicker/ColorPicker.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/ColorPicker/ColorPicker.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={ColorPickerStories.Documentation} exclude={"onChange"}/>
+<Controls of={ColorPickerStories.Documentation} exclude={"onChange"} />
 
 ```tsx
 import React, { useState } from "react";
 import { ColorPicker } from "@webiny/admin-ui";
 
 const ColorPickerExample = () => {
-    const [color, setColor] = useState("#4285F4");
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+  const [color, setColor] = useState("#4285F4");
+  const [validation, setValidation] = useState({ isValid: true, message: "" });
 
-    const handleChange = (newColor: string) => {
-        setColor(newColor);
+  const handleChange = (newColor: string) => {
+    setColor(newColor);
 
-        if (!newColor) {
-            setValidation({ isValid: false, message: "Please select a color" });
-        } else {
-            setValidation({ isValid: true, message: "" });
-        }
-    };
+    if (!newColor) {
+      setValidation({ isValid: false, message: "Please select a color" });
+    } else {
+      setValidation({ isValid: true, message: "" });
+    }
+  };
 
-    return (
-        <ColorPicker
-            label="Brand Color"
-            description="Select your primary brand color"
-            note="Note: Choose a color that aligns with your brand identity"
-            required={true}
-            value={color}
-            onChange={handleChange}
-            validation={validation}
-        />
-    );
+  return (
+    <ColorPicker
+      label="Brand Color"
+      description="Select your primary brand color"
+      note="Note: Choose a color that aligns with your brand identity"
+      required={true}
+      value={color}
+      onChange={handleChange}
+      validation={validation}
+    />
+  );
 };
 
 export default ColorPickerExample;

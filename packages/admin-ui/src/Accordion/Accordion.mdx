@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as AccordionStories from './Accordion.stories';
+import * as AccordionStories from "./Accordion.stories";
 
 <Meta of={AccordionStories} />
 
@@ -18,21 +18,21 @@ import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as TrashIcon } from "@webiny/icons/delete.svg";
 
 const AccordionExample = () => {
-    return (
-        <Accordion variant="underline" background="base">
-            <Accordion.Item
-                title="Accordion Item 1"
-                description="This is a description for the first item"
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                actions={
-                    <>
-                        <Accordion.Item.Action icon={<EditIcon />} />
-                        <Accordion.Item.Action icon={<TrashIcon />} />
-                    </>
-                }
-            >
-                This is the content for the first accordion item. It can contain any React elements.
-            </Accordion.Item>
+return (
+
+<Accordion variant="underline" background="base">
+<Accordion.Item
+title="Accordion Item 1"
+description="This is a description for the first item"
+icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+actions={
+<>
+<Accordion.Item.Action icon={<EditIcon />} />
+<Accordion.Item.Action icon={<TrashIcon />} />
+</>
+} >
+This is the content for the first accordion item. It can contain any React elements.
+</Accordion.Item>
 
             <Accordion.Item
                 title="Accordion Item 2"
@@ -51,22 +51,23 @@ const AccordionExample = () => {
             </Accordion.Item>
         </Accordion>
     );
+
 };
 
 export default AccordionExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Accordion/Accordion.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Accordion/Accordion.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={AccordionStories.Documentation} />
@@ -79,39 +80,39 @@ import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as TrashIcon } from "@webiny/icons/delete.svg";
 
 const AccordionExample = () => {
-    return (
-        <Accordion variant="underline" background="base">
-            <Accordion.Item
-                title="Accordion Item 1"
-                description="This is a description for the first item"
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                actions={
-                    <>
-                        <Accordion.Item.Action icon={<EditIcon />} />
-                        <Accordion.Item.Action icon={<TrashIcon />} />
-                    </>
-                }
-            >
-                This is the content for the first accordion item. It can contain any React elements.
-            </Accordion.Item>
+  return (
+    <Accordion variant="underline" background="base">
+      <Accordion.Item
+        title="Accordion Item 1"
+        description="This is a description for the first item"
+        icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+        actions={
+          <>
+            <Accordion.Item.Action icon={<EditIcon />} />
+            <Accordion.Item.Action icon={<TrashIcon />} />
+          </>
+        }
+      >
+        This is the content for the first accordion item. It can contain any React elements.
+      </Accordion.Item>
 
-            <Accordion.Item
-                title="Accordion Item 2"
-                description="This is a description for the second item"
-                defaultOpen={true}
-            >
-                This is the content for the second accordion item. It&apos;s open by default.
-            </Accordion.Item>
+      <Accordion.Item
+        title="Accordion Item 2"
+        description="This is a description for the second item"
+        defaultOpen={true}
+      >
+        This is the content for the second accordion item. It&apos;s open by default.
+      </Accordion.Item>
 
-            <Accordion.Item
-                title="Disabled Item"
-                description="This item cannot be interacted with"
-                disabled={true}
-            >
-                This content won&apos;t be visible because the item is disabled.
-            </Accordion.Item>
-        </Accordion>
-    );
+      <Accordion.Item
+        title="Disabled Item"
+        description="This item cannot be interacted with"
+        disabled={true}
+      >
+        This content won&apos;t be visible because the item is disabled.
+      </Accordion.Item>
+    </Accordion>
+  );
 };
 
 export default AccordionExample;
@@ -126,26 +127,26 @@ import React from "react";
 import { Accordion } from "@webiny/admin-ui";
 
 const DefaultAccordionExample = () => {
-    return (
-        <Accordion>
-            <Accordion.Item title="Accordion item 1">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus. Etiam venenatis, odio
-                sed consectetur consectetur, quam quam blandit ante, semper maximus lorem est vel dolor.
-            </Accordion.Item>
-            <Accordion.Item title="Accordion item 2">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus. Etiam venenatis, odio
-                sed consectetur consectetur, quam quam blandit ante, semper maximus lorem est vel dolor.
-            </Accordion.Item>
-            <Accordion.Item title="Accordion item 3">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus. Etiam venenatis, odio
-                sed consectetur consectetur, quam quam blandit ante, semper maximus lorem est vel dolor.
-            </Accordion.Item>
-        </Accordion>
-    );
-};
+return (
+
+<Accordion>
+  <Accordion.Item title="Accordion item 1">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus. Etiam venenatis, odio sed
+    consectetur consectetur, quam quam blandit ante, semper maximus lorem est vel dolor.
+  </Accordion.Item>
+  <Accordion.Item title="Accordion item 2">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus. Etiam venenatis, odio sed
+    consectetur consectetur, quam quam blandit ante, semper maximus lorem est vel dolor.
+  </Accordion.Item>
+  <Accordion.Item title="Accordion item 3">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus. Etiam venenatis, odio sed
+    consectetur consectetur, quam quam blandit ante, semper maximus lorem est vel dolor.
+  </Accordion.Item>
+</Accordion>
+); };
 
 export default DefaultAccordionExample;
 ` } } />
@@ -157,32 +158,32 @@ import React from "react";
 import { Accordion } from "@webiny/admin-ui";
 
 const WithDescriptionsExample = () => {
-    return (
-        <Accordion>
-            <Accordion.Item
-                title="Accordion item 1"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-            <Accordion.Item
-                title="Accordion item 2"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-            <Accordion.Item
-                title="Accordion item 3"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-        </Accordion>
-    );
-};
+return (
+
+<Accordion>
+  <Accordion.Item
+    title="Accordion item 1"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+  <Accordion.Item
+    title="Accordion item 2"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+  <Accordion.Item
+    title="Accordion item 3"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+</Accordion>
+); };
 
 export default WithDescriptionsExample;
 ` } } />
@@ -195,27 +196,27 @@ import { Accordion } from "@webiny/admin-ui";
 import { ReactComponent as WarningIcon } from "@webiny/icons/insert_chart.svg";
 
 const WithIconExample = () => {
-    return (
-        <Accordion>
-            <Accordion.Item
-                title="Accordion item 1"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-            <Accordion.Item
-                title="Accordion item 2"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-        </Accordion>
-    );
-};
+return (
+
+<Accordion>
+  <Accordion.Item
+    title="Accordion item 1"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+  <Accordion.Item
+    title="Accordion item 2"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+</Accordion>
+); };
 
 export default WithIconExample;
 ` } } />
@@ -232,45 +233,45 @@ import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as TrashIcon } from "@webiny/icons/delete.svg";
 
 const WithActionsExample = () => {
-    return (
-        <Accordion>
-            <Accordion.Item
-                title="Accordion item 1"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                actions={
-                    <>
-                        <Accordion.Item.Action icon={<ArrowUp />} />
-                        <Accordion.Item.Action icon={<ArrowDown />} />
-                        <Accordion.Item.Action.Separator />
-                        <Accordion.Item.Action icon={<EditIcon />} />
-                        <Accordion.Item.Action icon={<TrashIcon />} />
-                    </>
-                }
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-            <Accordion.Item
-                title="Accordion item 2"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                actions={
-                    <>
-                        <Accordion.Item.Action icon={<ArrowUp />} />
-                        <Accordion.Item.Action icon={<ArrowDown />} />
-                        <Accordion.Item.Action.Separator />
-                        <Accordion.Item.Action icon={<EditIcon />} />
-                        <Accordion.Item.Action icon={<TrashIcon />} />
-                    </>
-                }
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-        </Accordion>
-    );
-};
+return (
+
+<Accordion>
+  <Accordion.Item
+    title="Accordion item 1"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+    actions={
+      <>
+        <Accordion.Item.Action icon={<ArrowUp />} />
+        <Accordion.Item.Action icon={<ArrowDown />} />
+        <Accordion.Item.Action.Separator />
+        <Accordion.Item.Action icon={<EditIcon />} />
+        <Accordion.Item.Action icon={<TrashIcon />} />
+      </>
+    }
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+  <Accordion.Item
+    title="Accordion item 2"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+    actions={
+      <>
+        <Accordion.Item.Action icon={<ArrowUp />} />
+        <Accordion.Item.Action icon={<ArrowDown />} />
+        <Accordion.Item.Action.Separator />
+        <Accordion.Item.Action icon={<EditIcon />} />
+        <Accordion.Item.Action icon={<TrashIcon />} />
+      </>
+    }
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+</Accordion>
+); };
 
 export default WithActionsExample;
 ` } } />
@@ -283,35 +284,35 @@ import { Accordion } from "@webiny/admin-ui";
 import { ReactComponent as WarningIcon } from "@webiny/icons/insert_chart.svg";
 
 const WithHandleExample = () => {
-    return (
-        <Accordion>
-            <Accordion.Item
-                title="Accordion item 1"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                 draggable={true}
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-            <Accordion.Item
-                title="Accordion item 2"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                 draggable={true}
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-             <Accordion.Item
-                title="Accordion item 3"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-        </Accordion>
-    );
-};
+return (
+
+<Accordion>
+  <Accordion.Item
+    title="Accordion item 1"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+    draggable={true}
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+  <Accordion.Item
+    title="Accordion item 2"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    draggable={true}
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+  <Accordion.Item
+    title="Accordion item 3"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+</Accordion>
+); };
 
 export default WithHandleExample;
 ` } } />
@@ -323,26 +324,26 @@ import React from "react";
 import { Accordion } from "@webiny/admin-ui";
 
 const NonInteractiveExample = () => {
-    return (
-        <Accordion>
-            <Accordion.Item
-                title="Non-interactive item"
-                description="This item cannot be expanded or collapsed."
-                interactive={false}
-            >
-                This content won&apos;t be accessible because the item is not interactive.
-            </Accordion.Item>
-            <Accordion.Item title="Regular item">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-            <Accordion.Item title="Another regular item">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-        </Accordion>
-    );
-};
+return (
+
+<Accordion>
+  <Accordion.Item
+    title="Non-interactive item"
+    description="This item cannot be expanded or collapsed."
+    interactive={false}
+  >
+    This content won&apos;t be accessible because the item is not interactive.
+  </Accordion.Item>
+  <Accordion.Item title="Regular item">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+  <Accordion.Item title="Another regular item">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+</Accordion>
+); };
 
 export default NonInteractiveExample;
 ` } } />
@@ -354,26 +355,26 @@ import React from "react";
 import { Accordion } from "@webiny/admin-ui";
 
 const DefaultOpenExample = () => {
-    return (
-        <Accordion>
-            <Accordion.Item
-                title="Regular item"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-            <Accordion.Item
-                title="Default open item"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                defaultOpen={true}
-            >
-                This item is open by default. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Sed elit sem, pretium sit amet convallis nec, consequat non nulla.
-            </Accordion.Item>
-        </Accordion>
-    );
-};
+return (
+
+<Accordion>
+  <Accordion.Item
+    title="Regular item"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+  <Accordion.Item
+    title="Default open item"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    defaultOpen={true}
+  >
+    This item is open by default. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit
+    sem, pretium sit amet convallis nec, consequat non nulla.
+  </Accordion.Item>
+</Accordion>
+); };
 
 export default DefaultOpenExample;
 ` } } />
@@ -385,33 +386,33 @@ import React from "react";
 import { Accordion } from "@webiny/admin-ui";
 
 const DisabledItemExample = () => {
-    return (
-        <Accordion>
-            <Accordion.Item
-                title="Regular item"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-            <Accordion.Item
-                title="Disabled item"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                disabled={true}
-            >
-                This content won&apos;t be accessible because the item is disabled.
-            </Accordion.Item>
-            <Accordion.Item
-                title="Disabled but open item"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                defaultOpen={true}
-                disabled={true}
-            >
-                This item is disabled but open by default. Users cannot toggle it.
-            </Accordion.Item>
-        </Accordion>
-    );
-};
+return (
+
+<Accordion>
+  <Accordion.Item
+    title="Regular item"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+  <Accordion.Item
+    title="Disabled item"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    disabled={true}
+  >
+    This content won&apos;t be accessible because the item is disabled.
+  </Accordion.Item>
+  <Accordion.Item
+    title="Disabled but open item"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    defaultOpen={true}
+    disabled={true}
+  >
+    This item is disabled but open by default. Users cannot toggle it.
+  </Accordion.Item>
+</Accordion>
+); };
 
 export default DisabledItemExample;
 ` } } />
@@ -424,27 +425,27 @@ import { Accordion } from "@webiny/admin-ui";
 import { ReactComponent as WarningIcon } from "@webiny/icons/insert_chart.svg";
 
 const ContainerVariantExample = () => {
-    return (
-        <Accordion variant="container">
-            <Accordion.Item
-                title="Accordion item 1"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-            <Accordion.Item
-                title="Accordion item 2"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-        </Accordion>
-    );
-};
+return (
+
+<Accordion variant="container">
+  <Accordion.Item
+    title="Accordion item 1"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+  <Accordion.Item
+    title="Accordion item 2"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+</Accordion>
+); };
 
 export default ContainerVariantExample;
 ` } } />
@@ -457,60 +458,60 @@ import { Accordion } from "@webiny/admin-ui";
 import { ReactComponent as WarningIcon } from "@webiny/icons/insert_chart.svg";
 
 const LightBackgroundExample = () => {
-    return (
-        <Accordion background="base">
-            <Accordion.Item
-                title="Accordion item 1"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-            <Accordion.Item
-                title="Accordion item 2"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-        </Accordion>
-    );
-};
+return (
+
+<Accordion background="base">
+  <Accordion.Item
+    title="Accordion item 1"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+  <Accordion.Item
+    title="Accordion item 2"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+</Accordion>
+); };
 
 export default LightBackgroundExample;
 ` } } />
 
 ### Container Variant with Light Background
 
-<Canvas of={AccordionStories.ContainerVariantWithLightBackground} source={ { code: `
+<Canvas of={AccordionStories.ContainerVariantWithBaseBackground} source={ { code: `
 import React from "react";
 import { Accordion } from "@webiny/admin-ui";
 import { ReactComponent as WarningIcon } from "@webiny/icons/insert_chart.svg";
 
 const ContainerLightExample = () => {
-    return (
-        <Accordion variant="container" background="base">
-            <Accordion.Item
-                title="Accordion item 1"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-            <Accordion.Item
-                title="Accordion item 2"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-            >
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
-                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
-            </Accordion.Item>
-        </Accordion>
-    );
-};
+return (
+
+<Accordion variant="container" background="base">
+  <Accordion.Item
+    title="Accordion item 1"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+  <Accordion.Item
+    title="Accordion item 2"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+  >
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+    convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+  </Accordion.Item>
+</Accordion>
+); };
 
 export default ContainerLightExample;
 ` } } />
@@ -523,148 +524,121 @@ import { Accordion } from "@webiny/admin-ui";
 import { ReactComponent as WarningIcon } from "@webiny/icons/insert_chart.svg";
 
 const NestedExample = () => {
-    return (
+return (
+
+<Accordion>
+  <Accordion.Item
+    title="Level 1"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+    actions={
+      <>
+        <Accordion.Item.Action icon={<ArrowUp />} />
+        <Accordion.Item.Action icon={<ArrowDown />} />
+        <Accordion.Item.Action.Separator />
+        <Accordion.Item.Action icon={<EditIcon />} />
+        <Accordion.Item.Action icon={<TrashIcon />} />
+      </>
+    }
+  >
+    <Accordion>
+      <Accordion.Item
+        title="Level 2"
+        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+        actions={
+          <>
+            <Accordion.Item.Action icon={<ArrowUp />} />
+            <Accordion.Item.Action icon={<ArrowDown />} />
+            <Accordion.Item.Action.Separator />
+            <Accordion.Item.Action icon={<EditIcon />} />
+            <Accordion.Item.Action icon={<TrashIcon />} />
+          </>
+        }
+      >
         <Accordion>
-            <Accordion.Item
-                title="Level 1"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                actions={
-                    <>
-                        <Accordion.Item.Action icon={<ArrowUp />} />
-                        <Accordion.Item.Action icon={<ArrowDown />} />
-                        <Accordion.Item.Action.Separator />
-                        <Accordion.Item.Action icon={<EditIcon />} />
-                        <Accordion.Item.Action icon={<TrashIcon />} />
-                    </>
-                }
-            >
+          <Accordion.Item
+            title="Level 3"
+            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+            icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+            actions={
+              <>
+                <Accordion.Item.Action icon={<ArrowUp />} />
+                <Accordion.Item.Action icon={<ArrowDown />} />
+                <Accordion.Item.Action.Separator />
+                <Accordion.Item.Action icon={<EditIcon />} />
+                <Accordion.Item.Action icon={<TrashIcon />} />
+              </>
+            }
+          >
+            <Accordion>
+              <Accordion.Item title="Level 4">
                 <Accordion>
-                    <Accordion.Item
-                        title="Level 2"
-                        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                        icon={
-                            <Accordion.Item.Icon
-                                icon={<WarningIcon />}
-                                label={"Warning icon"}
-                            />
-                        }
-                        actions={
-                            <>
-                                <Accordion.Item.Action icon={<ArrowUp />} />
-                                <Accordion.Item.Action icon={<ArrowDown />} />
-                                <Accordion.Item.Action.Separator />
-                                <Accordion.Item.Action icon={<EditIcon />} />
-                                <Accordion.Item.Action icon={<TrashIcon />} />
-                            </>
-                        }
-                    >
-                        <Accordion>
-                            <Accordion.Item
-                                title="Level 3"
-                                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                                icon={
-                                    <Accordion.Item.Icon
-                                        icon={<WarningIcon />}
-                                        label={"Warning icon"}
-                                    />
-                                }
-                                actions={
-                                    <>
-                                        <Accordion.Item.Action icon={<ArrowUp />} />
-                                        <Accordion.Item.Action icon={<ArrowDown />} />
-                                        <Accordion.Item.Action.Separator />
-                                        <Accordion.Item.Action icon={<EditIcon />} />
-                                        <Accordion.Item.Action icon={<TrashIcon />} />
-                                    </>
-                                }
-                            >
-                                <Accordion>
-                                    <Accordion.Item title="Level 4">
-                                        <Accordion>
-                                            <Accordion.Item title="Level 5">
-                                                Content
-                                            </Accordion.Item>
-                                        </Accordion>
-                                        <Accordion>
-                                            <Accordion.Item title="Level 5">
-                                                Content
-                                            </Accordion.Item>
-                                        </Accordion>
-                                        <Accordion>
-                                            <Accordion.Item title="Level 5">
-                                                Content
-                                            </Accordion.Item>
-                                        </Accordion>
-                                    </Accordion.Item>
-                                </Accordion>
-                            </Accordion.Item>
-                        </Accordion>
-                        <Accordion>
-                            <Accordion.Item title="Level 3">Content</Accordion.Item>
-                        </Accordion>
-                        <Accordion>
-                            <Accordion.Item title="Level 3">Content</Accordion.Item>
-                        </Accordion>
-                    </Accordion.Item>
+                  <Accordion.Item title="Level 5">Content</Accordion.Item>
                 </Accordion>
-            </Accordion.Item>
-            <Accordion.Item title="Level 1">
                 <Accordion>
-                    <Accordion.Item
-                        title="Level 2"
-                        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                        icon={
-                            <Accordion.Item.Icon
-                                icon={<WarningIcon />}
-                                label={"Warning icon"}
-                            />
-                        }
-                        actions={
-                            <>
-                                <Accordion.Item.Action icon={<ArrowUp />} />
-                                <Accordion.Item.Action icon={<ArrowDown />} />
-                                <Accordion.Item.Action.Separator />
-                                <Accordion.Item.Action icon={<EditIcon />} />
-                                <Accordion.Item.Action icon={<TrashIcon />} />
-                            </>
-                        }
-                    >
-                        <Accordion>
-                            <Accordion.Item title="Level 3">
-                                <Accordion>
-                                    <Accordion.Item title="Level 4">
-                                        <Accordion>
-                                            <Accordion.Item title="Level 5">
-                                                Test
-                                            </Accordion.Item>
-                                        </Accordion>
-                                        <Accordion>
-                                            <Accordion.Item title="Level 5">
-                                                Test
-                                            </Accordion.Item>
-                                        </Accordion>
-                                        <Accordion>
-                                            <Accordion.Item title="Level 5">
-                                                Test
-                                            </Accordion.Item>
-                                        </Accordion>
-                                    </Accordion.Item>
-                                </Accordion>
-                            </Accordion.Item>
-                        </Accordion>
-                        <Accordion>
-                            <Accordion.Item title="Level 3">Content</Accordion.Item>
-                        </Accordion>
-                        <Accordion>
-                            <Accordion.Item title="Level 3">Content</Accordion.Item>
-                        </Accordion>
-                    </Accordion.Item>
+                  <Accordion.Item title="Level 5">Content</Accordion.Item>
                 </Accordion>
-            </Accordion.Item>
+                <Accordion>
+                  <Accordion.Item title="Level 5">Content</Accordion.Item>
+                </Accordion>
+              </Accordion.Item>
+            </Accordion>
+          </Accordion.Item>
         </Accordion>
-    );
-};
+        <Accordion>
+          <Accordion.Item title="Level 3">Content</Accordion.Item>
+        </Accordion>
+        <Accordion>
+          <Accordion.Item title="Level 3">Content</Accordion.Item>
+        </Accordion>
+      </Accordion.Item>
+    </Accordion>
+  </Accordion.Item>
+  <Accordion.Item title="Level 1">
+    <Accordion>
+      <Accordion.Item
+        title="Level 2"
+        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+        actions={
+          <>
+            <Accordion.Item.Action icon={<ArrowUp />} />
+            <Accordion.Item.Action icon={<ArrowDown />} />
+            <Accordion.Item.Action.Separator />
+            <Accordion.Item.Action icon={<EditIcon />} />
+            <Accordion.Item.Action icon={<TrashIcon />} />
+          </>
+        }
+      >
+        <Accordion>
+          <Accordion.Item title="Level 3">
+            <Accordion>
+              <Accordion.Item title="Level 4">
+                <Accordion>
+                  <Accordion.Item title="Level 5">Test</Accordion.Item>
+                </Accordion>
+                <Accordion>
+                  <Accordion.Item title="Level 5">Test</Accordion.Item>
+                </Accordion>
+                <Accordion>
+                  <Accordion.Item title="Level 5">Test</Accordion.Item>
+                </Accordion>
+              </Accordion.Item>
+            </Accordion>
+          </Accordion.Item>
+        </Accordion>
+        <Accordion>
+          <Accordion.Item title="Level 3">Content</Accordion.Item>
+        </Accordion>
+        <Accordion>
+          <Accordion.Item title="Level 3">Content</Accordion.Item>
+        </Accordion>
+      </Accordion.Item>
+    </Accordion>
+  </Accordion.Item>
+</Accordion>
+); };
 
 export default NestedExample;
 ` } } />

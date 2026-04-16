@@ -20,8 +20,8 @@ const createPartitionKey = (params: ICreatePartitionKeyParams) => {
 };
 
 export class AppEntityActionCreatedByAccessPattern<
-    T extends
-        IStorageListByAppEntityActionCreatedByParams = IStorageListByAppEntityActionCreatedByParams
+    T extends IStorageListByAppEntityActionCreatedByParams =
+        IStorageListByAppEntityActionCreatedByParams
 > extends BaseAccessPattern<T> {
     public override handles(): IAccessPatternHandles {
         return {

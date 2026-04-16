@@ -34,24 +34,26 @@ import { SomeUseCase } from "webiny/api/<category>";
 import { SomeEventHandler } from "webiny/api/<category>";
 
 class MyHandler implements SomeEventHandler.Interface {
-    constructor(private someUseCase: SomeUseCase.Interface) {}
+  constructor(private someUseCase: SomeUseCase.Interface) {}
 
-    async handle(event: SomeEventHandler.Event) {
-        const result = await this.someUseCase.execute({ /* input */ });
+  async handle(event: SomeEventHandler.Event) {
+    const result = await this.someUseCase.execute({
+      /* input */
+    });
 
-        if (result.isFail()) {
-            console.error(result.error.message);
-            return;
-        }
-
-        const value = result.value;
-        // ... use value
+    if (result.isFail()) {
+      console.error(result.error.message);
+      return;
     }
+
+    const value = result.value;
+    // ... use value
+  }
 }
 
 export default SomeEventHandler.createImplementation({
-    implementation: MyHandler,
-    dependencies: [SomeUseCase]
+  implementation: MyHandler,
+  dependencies: [SomeUseCase]
 });
 ```
 
@@ -63,15 +65,15 @@ To replace the default implementation, register your own:
 import { SomeUseCase } from "webiny/api/<category>";
 
 class CustomImplementation implements SomeUseCase.Interface {
-    async execute(input) {
-        // Custom logic
-        return Result.ok(/* ... */);
-    }
+  async execute(input) {
+    // Custom logic
+    return Result.ok(/* ... */);
+  }
 }
 
 export default SomeUseCase.createImplementation({
-    implementation: CustomImplementation,
-    dependencies: []
+  implementation: CustomImplementation,
+  dependencies: []
 });
 ```
 
@@ -101,24 +103,24 @@ Every feature defines errors extending `BaseError`. Never use generic `Error` fo
 import { BaseError } from "@webiny/feature/api";
 
 export class EntityNotFoundError extends BaseError {
-    override readonly code = "Entity/NotFound" as const;
-    constructor(id: string) {
-        super({ message: `Entity with id "${id}" was not found!` });
-    }
+  override readonly code = "Entity/NotFound" as const;
+  constructor(id: string) {
+    super({ message: `Entity with id "${id}" was not found!` });
+  }
 }
 
 export class EntityPersistenceError extends BaseError<{ error: Error }> {
-    override readonly code = "Entity/Persist" as const;
-    constructor(error: Error) {
-        super({ message: error.message, data: { error } });
-    }
+  override readonly code = "Entity/Persist" as const;
+  constructor(error: Error) {
+    super({ message: error.message, data: { error } });
+  }
 }
 
 export class EntityValidationError extends BaseError<{ message: string }> {
-    override readonly code = "Entity/Validation" as const;
-    constructor(message: string) {
-        super({ message, data: { message } });
-    }
+  override readonly code = "Entity/Validation" as const;
+  constructor(message: string) {
+    super({ message, data: { message } });
+  }
 }
 ```
 
@@ -130,54 +132,58 @@ Define an `IErrors` interface mapping error names to types, then create a union 
 // features/createEntity/abstractions.ts
 import { createAbstraction, Result } from "@webiny/feature/api";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
-import { EntityPersistenceError, EntityModelNotFoundError, EntityCreationError } from "~/api/domain/errors.js";
+import {
+  EntityPersistenceError,
+  EntityModelNotFoundError,
+  EntityCreationError
+} from "~/api/domain/errors.js";
 
 // REPOSITORY errors
 export interface ICreateEntityRepositoryErrors {
-    persistence: EntityPersistenceError;
-    modelNotFound: EntityModelNotFoundError;
-    creation: EntityCreationError;
+  persistence: EntityPersistenceError;
+  modelNotFound: EntityModelNotFoundError;
+  creation: EntityCreationError;
 }
 
 type RepositoryError = ICreateEntityRepositoryErrors[keyof ICreateEntityRepositoryErrors];
 
 export interface ICreateEntityRepository {
-    execute(entity: Entity): Promise<Result<Entity, RepositoryError>>;
+  execute(entity: Entity): Promise<Result<Entity, RepositoryError>>;
 }
 
 export const CreateEntityRepository = createAbstraction<ICreateEntityRepository>(
-    "MyExt/CreateEntityRepository"
+  "MyExt/CreateEntityRepository"
 );
 
 export namespace CreateEntityRepository {
-    export type Interface = ICreateEntityRepository;
-    export type Error = RepositoryError;
-    export type Return = Promise<Result<Entity, RepositoryError>>;
+  export type Interface = ICreateEntityRepository;
+  export type Error = RepositoryError;
+  export type Return = Promise<Result<Entity, RepositoryError>>;
 }
 
 // USE CASE errors — superset of repository errors
 export interface ICreateEntityUseCaseErrors {
-    persistence: EntityPersistenceError;
-    modelNotFound: EntityModelNotFoundError;
-    creation: EntityCreationError;
-    notAuthorized: NotAuthorizedError;
+  persistence: EntityPersistenceError;
+  modelNotFound: EntityModelNotFoundError;
+  creation: EntityCreationError;
+  notAuthorized: NotAuthorizedError;
 }
 
 type UseCaseError = ICreateEntityUseCaseErrors[keyof ICreateEntityUseCaseErrors];
 
 export interface ICreateEntityUseCase {
-    execute(input: CreateEntityInput): Promise<Result<Entity, UseCaseError>>;
+  execute(input: CreateEntityInput): Promise<Result<Entity, UseCaseError>>;
 }
 
 export const CreateEntityUseCase = createAbstraction<ICreateEntityUseCase>(
-    "MyExt/CreateEntityUseCase"
+  "MyExt/CreateEntityUseCase"
 );
 
 export namespace CreateEntityUseCase {
-    export type Interface = ICreateEntityUseCase;
-    export type Input = CreateEntityInput;
-    export type Error = UseCaseError;
-    export type Return = Promise<Result<Entity, UseCaseError>>;
+  export type Interface = ICreateEntityUseCase;
+  export type Input = CreateEntityInput;
+  export type Error = UseCaseError;
+  export type Return = Promise<Result<Entity, UseCaseError>>;
 }
 ```
 
@@ -192,7 +198,7 @@ return Result.fail(new EntityNotFoundError(id));
 
 // Check result
 if (result.isFail()) {
-    return Result.fail(result.error);
+  return Result.fail(result.error);
 }
 
 // Access value
@@ -207,7 +213,10 @@ Never use `result.isError()`, `result.getError()`, or `result.getValue()` — th
 
 ```ts
 // features/createEntity/CreateEntityUseCase.ts
-import { CreateEntityUseCase as UseCaseAbstraction, CreateEntityRepository } from "./abstractions.js";
+import {
+  CreateEntityUseCase as UseCaseAbstraction,
+  CreateEntityRepository
+} from "./abstractions.js";
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
@@ -215,37 +224,38 @@ import { Entity } from "~/shared/Entity.js";
 import { EntityId } from "~/api/domain/EntityId.js";
 
 class CreateEntityUseCase implements UseCaseAbstraction.Interface {
-    constructor(
-        private identityContext: IdentityContext.Interface,
-        private repository: CreateEntityRepository.Interface
-    ) {}
+  constructor(
+    private identityContext: IdentityContext.Interface,
+    private repository: CreateEntityRepository.Interface
+  ) {}
 
-    async execute(input: UseCaseAbstraction.Input): UseCaseAbstraction.Return {
-        if (!this.identityContext.getPermission("mypackage.entity")) {
-            return Result.fail(new NotAuthorizedError({ message: "Not authorized to create entities!" }));
-        }
-
-        const entity = Entity.from({
-            id: EntityId.from(input.id),
-            values: { name: input.name, status: "disabled" }
-        });
-
-        const result = await this.repository.execute(entity);
-        if (result.isFail()) {
-            return Result.fail(result.error);
-        }
-
-        return Result.ok(result.value);
+  async execute(input: UseCaseAbstraction.Input): UseCaseAbstraction.Return {
+    if (!this.identityContext.getPermission("mypackage.entity")) {
+      return Result.fail(new NotAuthorizedError({ message: "Not authorized to create entities!" }));
     }
+
+    const entity = Entity.from({
+      id: EntityId.from(input.id),
+      values: { name: input.name, status: "disabled" }
+    });
+
+    const result = await this.repository.execute(entity);
+    if (result.isFail()) {
+      return Result.fail(result.error);
+    }
+
+    return Result.ok(result.value);
+  }
 }
 
 export default UseCaseAbstraction.createImplementation({
-    implementation: CreateEntityUseCase,
-    dependencies: [IdentityContext, CreateEntityRepository]
+  implementation: CreateEntityUseCase,
+  dependencies: [IdentityContext, CreateEntityRepository]
 });
 ```
 
 **Rules:**
+
 - Class implements `UseCaseAbstraction.Interface`
 - Constructor params typed with `.Interface` from their abstractions
 - Return type uses `UseCaseAbstraction.Return`
@@ -269,36 +279,36 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/exports/api/cms/model"
 import { ENTITY_MODEL_ID } from "~/shared/constants.js";
 
 class CreateEntityRepository implements RepositoryAbstraction.Interface {
-    constructor(
-        private getModelUseCase: GetModelUseCase.Interface,
-        private createEntryUseCase: CreateEntryUseCase.Interface
-    ) {}
+  constructor(
+    private getModelUseCase: GetModelUseCase.Interface,
+    private createEntryUseCase: CreateEntryUseCase.Interface
+  ) {}
 
-    async execute(entity: Entity): RepositoryAbstraction.Return {
-        const modelResult = await this.getModelUseCase.execute(ENTITY_MODEL_ID);
-        if (modelResult.isFail()) {
-            return Result.fail(new EntityModelNotFoundError());
-        }
-
-        const createResult = await this.createEntryUseCase.execute(modelResult.value, {
-            id: entity.id,
-            values: {
-                name: entity.values.name,
-                status: entity.values.status
-            }
-        });
-
-        if (createResult.isFail()) {
-            return Result.fail(new EntityCreationError(createResult.error));
-        }
-
-        return Result.ok(entity);
+  async execute(entity: Entity): RepositoryAbstraction.Return {
+    const modelResult = await this.getModelUseCase.execute(ENTITY_MODEL_ID);
+    if (modelResult.isFail()) {
+      return Result.fail(new EntityModelNotFoundError());
     }
+
+    const createResult = await this.createEntryUseCase.execute(modelResult.value, {
+      id: entity.id,
+      values: {
+        name: entity.values.name,
+        status: entity.values.status
+      }
+    });
+
+    if (createResult.isFail()) {
+      return Result.fail(new EntityCreationError(createResult.error));
+    }
+
+    return Result.ok(entity);
+  }
 }
 
 export default RepositoryAbstraction.createImplementation({
-    implementation: CreateEntityRepository,
-    dependencies: [GetModelUseCase, CreateEntryUseCase]
+  implementation: CreateEntityRepository,
+  dependencies: [GetModelUseCase, CreateEntryUseCase]
 });
 ```
 
@@ -316,6 +326,7 @@ import { ListModelsUseCase } from "@webiny/api-headless-cms/exports/api/cms/mode
 ```
 
 **Rules:**
+
 - Always resolve the CMS model first via `GetModelUseCase`
 - Wrap CMS errors in domain-specific errors
 - Register repositories in **singleton scope**
@@ -333,12 +344,12 @@ import { Entity as EntityClass } from "~/shared/Entity.js";
 import type { Entity, EntityDto, EntityValues } from "~/shared/Entity.js";
 
 export class EntryToEntityMapper {
-    static toEntity(entry: { entryId: string; values: EntityValues }): Entity {
-        return EntityClass.from({
-            id: entry.entryId,
-            values: entry.values
-        });
-    }
+  static toEntity(entry: { entryId: string; values: EntityValues }): Entity {
+    return EntityClass.from({
+      id: entry.entryId,
+      values: entry.values
+    });
+  }
 }
 ```
 
@@ -360,22 +371,22 @@ import { IdentityContext } from "@webiny/api-core/exports/api/security.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
 
 class GetEntityByIdWithAuthorizationImpl implements GetEntityByIdUseCase.Interface {
-    constructor(
-        private identityContext: IdentityContext.Interface,
-        private decoratee: GetEntityByIdUseCase.Interface  // decoratee is LAST
-    ) {}
+  constructor(
+    private identityContext: IdentityContext.Interface,
+    private decoratee: GetEntityByIdUseCase.Interface // decoratee is LAST
+  ) {}
 
-    async execute(id: string): GetEntityByIdUseCase.Return {
-        if (!this.identityContext.getPermission("mypackage.entity")) {
-            return Result.fail(new NotAuthorizedError());
-        }
-        return this.decoratee.execute(id);
+  async execute(id: string): GetEntityByIdUseCase.Return {
+    if (!this.identityContext.getPermission("mypackage.entity")) {
+      return Result.fail(new NotAuthorizedError());
     }
+    return this.decoratee.execute(id);
+  }
 }
 
 export const GetEntityByIdWithAuthorization = GetEntityByIdUseCase.createDecorator({
-    decorator: GetEntityByIdWithAuthorizationImpl,
-    dependencies: [IdentityContext]  // does NOT include decoratee
+  decorator: GetEntityByIdWithAuthorizationImpl,
+  dependencies: [IdentityContext] // does NOT include decoratee
 });
 ```
 
@@ -389,16 +400,17 @@ import GetEntityByIdRepository from "./GetEntityByIdRepository.js";
 import { GetEntityByIdWithAuthorization } from "./decorators/GetEntityByIdWithAuthorization.js";
 
 export const GetEntityByIdFeature = createFeature({
-    name: "GetEntityById",
-    register(container) {
-        container.register(GetEntityByIdUseCase);
-        container.register(GetEntityByIdRepository).inSingletonScope();
-        container.registerDecorator(GetEntityByIdWithAuthorization);
-    }
+  name: "GetEntityById",
+  register(container) {
+    container.register(GetEntityByIdUseCase);
+    container.register(GetEntityByIdRepository).inSingletonScope();
+    container.registerDecorator(GetEntityByIdWithAuthorization);
+  }
 });
 ```
 
 **Rules:**
+
 - Implements the same interface as the use case it decorates
 - Constructor: extra dependencies first, `decoratee` **last**
 - Use `UseCaseAbstraction.createDecorator(...)` — the `dependencies` array does NOT include the decoratee
@@ -410,6 +422,7 @@ export const GetEntityByIdFeature = createFeature({
 ## Schema-Based Permissions
 
 For implementing authorization in use cases, see the **webiny-api-permissions** skill. It covers:
+
 - Permission schema definition with `createPermissions`
 - All permission methods (`canRead`, `canEdit`, `canDelete`, `canPublish`, `onlyOwnRecords`, etc.)
 - Use case patterns for every CRUD operation (get, list, update, delete, publish)

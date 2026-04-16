@@ -3,22 +3,26 @@
 ## Correct Mental Model
 
 **Applications** (api-core, cms, aco) define:
+
 - Abstractions (interfaces)
 - Use cases
 - Domain logic
 - **They don't know about DDB, ES, or any storage implementation**
 
 **Storage packages** (api-core-ddb, api-core-ddb-es, cms-ddb-es) provide:
+
 - Concrete implementations of storage abstractions
 - Tagged with keywords in package.json for discovery
 
 **Tests need**:
+
 - The application features
 - Storage implementations to be injected based on environment
 
 ## The Real Problem
 
 The current `getPresets()` system works well for discovering storage implementations. The issue is:
+
 1. It uses global state (`global.__storageOps`)
 2. Storage registration happens **before** test container creation
 3. Tests manually call `getStorageOps()` to retrieve them
@@ -86,6 +90,7 @@ class TestContextBuilder {
 ### 1. How do storage setup files provide operations?
 
 Current way:
+
 ```typescript
 // api-core-ddb/__tests__/__api__/setupFile.js
 setStorageOps("apiCore", () => {
@@ -97,6 +102,7 @@ setStorageOps("apiCore", () => {
 ```
 
 Should it be:
+
 ```typescript
 // Option A: Export a function
 export function createStorageOperations() {
@@ -141,6 +147,7 @@ Currently storage operations can return `{ storageOperations, plugins }`. How sh
 ### 4. Should preset loading stay the same or change?
 
 The current preset system with package.json keywords works. Should we:
+
 - Keep it exactly as-is, just bridge to DI container?
 - Modify it to return features instead of setup file paths?
 - Something else?

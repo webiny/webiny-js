@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as MultiFilePickerStories from './MultiFilePicker.stories';
+import * as MultiFilePickerStories from "./MultiFilePicker.stories";
 
 <Meta of={MultiFilePickerStories} />
 
@@ -13,8 +13,8 @@ The Multi File Picker component allows users to select, preview, and manage mult
 The MultiFilePicker component is typically used with [Webiny's File Manager](https://www.webiny.com/enterprise-serverless-cms/file-manager) to provide a complete file selection experience.
 
 > ⚠️ **Note**: The MultiFilePicker component is designed to work seamlessly with [Webiny's File Manager](https://www.webiny.com/enterprise-serverless-cms/file-manager).
-In the Storybook example below, we've used random images from Picsum for demonstration purposes.
-However, if you use this example code in a real Webiny project, the MultiFilePicker will integrate with the actual File Manager as expected.
+> In the Storybook example below, we've used random images from Picsum for demonstration purposes.
+> However, if you use this example code in a real Webiny project, the MultiFilePicker will integrate with the actual File Manager as expected.
 
 <Canvas of={MultiFilePickerStories.Documentation} source={ { code: `
 import React, { useState } from "react";
@@ -23,8 +23,8 @@ import { FileManager } from "@webiny/app-admin/components";
 import type { FileManagerFileItem } from "@webiny/app-admin/base/ui/FileManager";
 
 const MultiFilePickerExample = () => {
-    const [selectedFiles, setSelectedFiles] = useState<FileItemDto[]>([]);
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+const [selectedFiles, setSelectedFiles] = useState<FileItemDto[]>([]);
+const [validation, setValidation] = useState({ isValid: true, message: "" });
 
         const formatFile = (file: FileManagerFileItem): FileItemDto => {
             const metaItems = file.meta || [];
@@ -90,22 +90,23 @@ const MultiFilePickerExample = () => {
             />
         </div>
     );
+
 };
 
     export default MultiFilePickerExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/MultiFilePicker/MultiFilePicker.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/MultiFilePicker/MultiFilePicker.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={MultiFilePickerStories.Documentation} />
@@ -117,73 +118,76 @@ import { FileManager } from "@webiny/app-admin/components";
 import type { FileManagerFileItem } from "@webiny/app-admin/base/ui/FileManager";
 
 const MultiFilePickerExample = () => {
-    const [selectedFiles, setSelectedFiles] = useState<FileItemDto[]>([]);
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+  const [selectedFiles, setSelectedFiles] = useState<FileItemDto[]>([]);
+  const [validation, setValidation] = useState({ isValid: true, message: "" });
 
-    const formatFile = (file: FileManagerFileItem): FileItemDto => {
-        const metaItems = file.meta || [];
+  const formatFile = (file: FileManagerFileItem): FileItemDto => {
+    const metaItems = file.meta || [];
 
-        const getValue = (key: string) =>
-            metaItems.find((item: { key: string }) => item.key === key)?.value;
+    const getValue = (key: string) =>
+      metaItems.find((item: { key: string }) => item.key === key)?.value;
 
-        return {
-            id: file.id,
-            name: getValue("name") || "",
-            size: getValue("size") || 0,
-            mimeType: getValue("type") || "",
-            url: file.src || ""
-        };
+    return {
+      id: file.id,
+      name: getValue("name") || "",
+      size: getValue("size") || 0,
+      mimeType: getValue("type") || "",
+      url: file.src || ""
     };
+  };
 
-    return (
-        <div>
-            <FileManager
-                accept={["image/*", "application/pdf"]}
-                multiple={true}
-                render={({ showFileManager }) => (
-                    <MultiFilePicker
-                        label="Upload Images"
-                        description="Select files to upload (JPG, PNG, PDF)"
-                        note="Note: Maximum file size is 5MB per file"
-                        type="area"
-                        required={true}
-                        values={selectedFiles}
-                        validation={validation}
-                        onSelectItem={() => {
-                            showFileManager(files => {
-                                if (files && Array.isArray(files) && files.length > 0) {
-                                    const formatted = files.map(formatFile);
-                                    setSelectedFiles(prev => [...prev, ...formatted]);
-                                    setValidation({ isValid: true, message: "" });
-                                }
-                            });
-                        }}
-                        onReplaceItem={(_, index) => {
-                            // For replacing, we'll use the first file from the selection
-                            showFileManager(files => {
-                                if (files && Array.isArray(files) && files.length > 0) {
-                                    const updated = [...selectedFiles];
-                                    updated[index] = formatFile(files[0]);
-                                    setSelectedFiles(updated);
-                                }
-                            });
-                        }}
-                        onRemoveItem={(_, index) => {
-                            const updated = [...selectedFiles];
-                            updated.splice(index, 1);
-                            if (updated.length === 0) {
-                                setValidation({ isValid: false, message: "Please select at least one file" });
-                            }
-                            setSelectedFiles(updated);
-                        }}
-                        onEditItem={(file, index) => {
-                            alert(`Editing: ${file?.name} at index ${index}`);
-                        }}
-                    />
-                )}
-            />
-        </div>
-    );
+  return (
+    <div>
+      <FileManager
+        accept={["image/*", "application/pdf"]}
+        multiple={true}
+        render={({ showFileManager }) => (
+          <MultiFilePicker
+            label="Upload Images"
+            description="Select files to upload (JPG, PNG, PDF)"
+            note="Note: Maximum file size is 5MB per file"
+            type="area"
+            required={true}
+            values={selectedFiles}
+            validation={validation}
+            onSelectItem={() => {
+              showFileManager(files => {
+                if (files && Array.isArray(files) && files.length > 0) {
+                  const formatted = files.map(formatFile);
+                  setSelectedFiles(prev => [...prev, ...formatted]);
+                  setValidation({ isValid: true, message: "" });
+                }
+              });
+            }}
+            onReplaceItem={(_, index) => {
+              // For replacing, we'll use the first file from the selection
+              showFileManager(files => {
+                if (files && Array.isArray(files) && files.length > 0) {
+                  const updated = [...selectedFiles];
+                  updated[index] = formatFile(files[0]);
+                  setSelectedFiles(updated);
+                }
+              });
+            }}
+            onRemoveItem={(_, index) => {
+              const updated = [...selectedFiles];
+              updated.splice(index, 1);
+              if (updated.length === 0) {
+                setValidation({
+                  isValid: false,
+                  message: "Please select at least one file"
+                });
+              }
+              setSelectedFiles(updated);
+            }}
+            onEditItem={(file, index) => {
+              alert(`Editing: ${file?.name} at index ${index}`);
+            }}
+          />
+        )}
+      />
+    </div>
+  );
 };
 
 export default MultiFilePickerExample;

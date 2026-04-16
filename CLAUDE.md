@@ -43,8 +43,8 @@ node scripts/generateTsConfigsInPackages.js
 # Make sure all package.json deps are configured correctly
 yarn adio
 
-# Prettier format changed files
-npx pretty-quick > /dev/null 2>&1
+# Format changed files
+yarn format > /dev/null 2>&1
 
 # Run eslint
 y eslint
@@ -60,7 +60,7 @@ If any of the steps fail, and you fix anything, you must rerun all scripts from 
 
 ## Code Conventions
 
-- **Formatting:** Prettier with project defaults (`.prettierrc`)
+- **Formatting:** oxfmt with project defaults (`.oxfmtrc.json`)
 - **Linting:** ESLint with project config (`.eslintrc`)
 - **Commit style:** Conventional Commits (`feat:`, `fix:`, `chore:`, etc.)
 - **Branch naming:** `claude/issue-<number>` for Claude-generated branches

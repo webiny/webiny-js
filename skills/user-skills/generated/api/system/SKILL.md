@@ -20,12 +20,14 @@ System installation event handlers and use cases.
 ## Abstractions
 
 ---
+
 **Name:** `InstallSystemUseCase`
 **Import:** `import { InstallSystemUseCase } from "webiny/api/system"`
 **Source:** `@webiny/api-core/features/system/InstallSystem/index.ts`
 **Description:** Run system-wide installation.
 
 ---
+
 **Name:** `SystemInstalledEventHandler`
 **Import:** `import { SystemInstalledEventHandler } from "webiny/api/system"`
 **Source:** `@webiny/api-core/features/system/InstallSystem/index.ts`

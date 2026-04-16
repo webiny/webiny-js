@@ -11,7 +11,8 @@ export interface FieldParent {
 }
 
 export interface Field
-    extends Partial<Omit<CmsModelField, "id" | "type" | "storageId" | "fieldId">>,
+    extends
+        Partial<Omit<CmsModelField, "id" | "type" | "storageId" | "fieldId">>,
         Pick<CmsModelField, "id" | "type" | "storageId" | "fieldId"> {
     /**
      * A list od fieldId of all parents of the current field.
