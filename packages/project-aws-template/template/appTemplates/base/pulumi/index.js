@@ -4,7 +4,7 @@ export default async () => {
 
     const pulumi = await projectApplication.getPulumi();
     return pulumi.run({
-        env: "{DEPLOY_ENV}",
-        variant: "{DEPLOY_VARIANT}"
+        env: "%{DEPLOY_ENV}",
+        variant: "%{DEPLOY_VARIANT}"
     });
 };
