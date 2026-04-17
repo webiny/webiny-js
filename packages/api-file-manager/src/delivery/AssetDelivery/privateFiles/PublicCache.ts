@@ -1,5 +1,4 @@
-import cacheControlParser from "cache-control-parser";
-const { parse, stringify } = cacheControlParser;
+import { parse, stringify } from "cache-control-parser";
 import type { Asset, AssetOutputStrategy, AssetReply } from "~/delivery/index.js";
 
 export class PublicCache implements AssetOutputStrategy {
