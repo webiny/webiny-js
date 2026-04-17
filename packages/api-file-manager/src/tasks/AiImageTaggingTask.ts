@@ -8,7 +8,7 @@ import { WebsocketService } from "@webiny/api-websockets/features/WebsocketServi
 
 export const AI_IMAGE_TAGGING_TASK_ID = "fmAiImageTagging";
 
-const AI_MODEL = "anthropic/claude-3-5-sonnet-20241022";
+const AI_MODEL = "anthropic/claude-sonnet-4-6";
 
 const AI_PROMPT =
     'Generate up to 5 descriptive tags for this image. Return only a JSON array of lowercase strings, nothing else. Example: ["nature","landscape","mountain"]';
