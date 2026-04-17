@@ -40,8 +40,8 @@ const layoutAPI: ILayoutBuilder = {
     separator(): ISeparatorNode {
         return { type: "separator" };
     },
-    tabs(config: { id?: string; tabs: ITabDefinition[] }): ITabsNode {
-        return { type: "tabs", id: config.id, tabs: config.tabs };
+    tabs(config: { id?: string; renderer?: string; tabs: ITabDefinition[] }): ITabsNode {
+        return { type: "tabs", id: config.id, renderer: config.renderer, tabs: config.tabs };
     },
     element(renderer: string, props?: Record<string, unknown>): IElementNode {
         return { type: "element", renderer, props };
@@ -360,6 +360,7 @@ export class FormModel implements IFormModel {
         return {
             type: "tabs",
             id: node.id,
+            renderer: node.renderer,
             tabs,
             activeTabId: validActive,
             setActiveTab: (id: string) => {
@@ -537,8 +538,17 @@ export class FormModel implements IFormModel {
                 const node: ISeparatorNode = { type: "separator" };
                 return createLayoutNodeHandle(node);
             },
-            tabs(config: { id?: string; tabs: ITabDefinition[] }): ILayoutNodeHandle {
-                const node: ITabsNode = { type: "tabs", id: config.id, tabs: config.tabs };
+            tabs(config: {
+                id?: string;
+                renderer?: string;
+                tabs: ITabDefinition[];
+            }): ILayoutNodeHandle {
+                const node: ITabsNode = {
+                    type: "tabs",
+                    id: config.id,
+                    renderer: config.renderer,
+                    tabs: config.tabs
+                };
                 return createLayoutNodeHandle(node);
             },
             element(renderer: string, props?: Record<string, unknown>): ILayoutNodeHandle {

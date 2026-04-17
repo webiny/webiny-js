@@ -68,6 +68,12 @@ export type { IFieldTypeFactory } from "./FieldBuilder.js";
 export { ObjectField, isObjectField } from "./ObjectField.js";
 
 // View
-export { FormView } from "./FormView.js";
+export { FormView, LayoutNodeRenderer, useFormViewRenderers } from "./FormView.js";
 export { useFieldRenderers } from "./useFieldRenderers.js";
-export type { FieldRenderers, FieldRendererComponent } from "./FormView.js";
+export { useLayoutRenderers } from "./useLayoutRenderers.js";
+export type {
+    FieldRenderers,
+    FieldRendererComponent,
+    LayoutRenderers,
+    TabsNodeRendererProps
+} from "./FormView.js";

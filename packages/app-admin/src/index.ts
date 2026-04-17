@@ -93,6 +93,16 @@ export type {
     AfterChangeCallback,
     AfterSetValueCallback
 } from "./features/formModel/abstractions.js";
-export { FormView } from "./features/formModel/FormView.js";
+export {
+    FormView,
+    LayoutNodeRenderer,
+    useFormViewRenderers
+} from "./features/formModel/FormView.js";
 export { useFieldRenderers } from "./features/formModel/useFieldRenderers.js";
-export type { FieldRenderers, FieldRendererComponent } from "./features/formModel/FormView.js";
+export { useLayoutRenderers } from "./features/formModel/useLayoutRenderers.js";
+export type {
+    FieldRenderers,
+    FieldRendererComponent,
+    LayoutRenderers,
+    TabsNodeRendererProps
+} from "./features/formModel/FormView.js";

@@ -167,6 +167,7 @@ export interface ITabDefinition {
 export interface ITabsNode {
     type: "tabs";
     id?: string;
+    renderer?: string;
     tabs: ITabDefinition[];
 }
 
@@ -204,6 +205,7 @@ export interface ITabDefinitionVM {
 export interface ITabsNodeVM {
     type: "tabs";
     id?: string;
+    renderer?: string;
     tabs: ITabDefinitionVM[];
     activeTabId: string;
     setActiveTab: (id: string) => void;
@@ -269,7 +271,7 @@ export interface IFormModifier {
 export interface ILayoutModifier {
     row(...fieldIds: string[]): ILayoutNodeHandle;
     separator(): ILayoutNodeHandle;
-    tabs(config: { id?: string; tabs: ITabDefinition[] }): ILayoutNodeHandle;
+    tabs(config: { id?: string; renderer?: string; tabs: ITabDefinition[] }): ILayoutNodeHandle;
     element(renderer: string, props?: Record<string, unknown>): ILayoutNodeHandle;
     remove(target: string): void;
 }
@@ -362,7 +364,7 @@ export interface IFormModelConfig {
 export interface ILayoutBuilder {
     row(...fieldIds: string[]): IRowNode;
     separator(): ISeparatorNode;
-    tabs(config: { id?: string; tabs: ITabDefinition[] }): ITabsNode;
+    tabs(config: { id?: string; renderer?: string; tabs: ITabDefinition[] }): ITabsNode;
     element(renderer: string, props?: Record<string, unknown>): IElementNode;
 }
 

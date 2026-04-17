@@ -1,5 +1,6 @@
 import { makeAutoObservable, computed, runInAction } from "mobx";
 import { FormModelFactory, FormModel } from "@webiny/app-admin";
+import type { LayoutNode } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { GetSettingsUseCase } from "../../features/settings/getSettings/abstractions.js";
 import { UpdateSettingsUseCase } from "../../features/settings/updateSettings/abstractions.js";
 import { AiPowerUpsSettingsPresenter as PresenterAbstraction } from "./abstractions.js";
@@ -9,7 +10,7 @@ type FieldsFactory = (
     fields: FormModelFactory.FieldBuilderRegistry
 ) => Record<string, FormModelFactory.FieldBuilder>;
 
-type LayoutFactory = (layout: FormModelFactory.LayoutBuilder) => FormModel.RowNode[];
+type LayoutFactory = (layout: FormModelFactory.LayoutBuilder) => LayoutNode[];
 
 interface CollectedGroup {
     group: AiPowerUpsSettingsGroup.Interface;
@@ -123,12 +124,7 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
                     if (!fieldsFn) {
                         continue;
                     }
-                    // TODO: wrap each group's fields in fields.object(group.name).fields(...)
-                    // once Phase 4 (Object & List fields) is implemented.
-                    const groupFields = fieldsFn(fields);
-                    for (const [key, fieldBuilder] of Object.entries(groupFields)) {
-                        result[`${group.name}.${key}`] = fieldBuilder;
-                    }
+                    result[group.name] = fields.object().label(group.label).fields(fieldsFn);
                 }
                 return result;
             },
@@ -140,23 +136,13 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
                 return [
                     layout.tabs({
                         id: "settings-tabs",
+                        renderer: "tabs-vertical",
                         tabs: collected.map(({ group, layoutFn }) => ({
                             id: group.name,
                             label: group.label,
                             description: group.description,
                             icon: group.icon,
-                            layout: layoutFn
-                                ? layoutFn(layout).map(node => {
-                                      if (node.type === "row" && node.fieldIds) {
-                                          return layout.row(
-                                              ...node.fieldIds.map(
-                                                  (id: string) => `${group.name}.${id}`
-                                              )
-                                          );
-                                      }
-                                      return node;
-                                  })
-                                : []
+                            layout: layoutFn ? layoutFn(layout) : []
                         }))
                     })
                 ];
