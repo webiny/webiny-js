@@ -20,7 +20,7 @@ export async function triggerTask(
     const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
-        mutation TriggerTask($definition: String!, $input: JSON) {
+        mutation TriggerTask($definition: WebinyBackgroundTaskDefinitionEnum!, $input: JSON) {
             backgroundTasks {
                 triggerTask(definition: $definition, input: $input) {
                     data {
