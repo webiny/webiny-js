@@ -10,9 +10,9 @@ import { ListUserTeamsFeature } from "./ListUserTeams/feature.js";
 import { AdminUsersStorageOperations } from "./shared/storageAbstractions.js";
 import { ExternalIdpUserSyncFeature } from "./ExternalIdpUserSync/index.js";
 
-export const AdminUsersFeature = createFeature({
+export const AdminUsersFeature = createFeature<AdminUsersStorageOperations.Interface>({
     name: "AdminUsers",
-    register(container, storageOperations: AdminUsersStorageOperations.Interface) {
+    register(container, storageOperations) {
         // Register repository in singleton scope
         container.register(AdminUsersRepository).inSingletonScope();
 
