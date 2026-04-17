@@ -149,12 +149,12 @@ export const pullRequestsCommandBeta = createWorkflow({
                     },
                     run: [
                         "PROJECT_NAME=webiny-$(echo $BETA_VERSION | tr . -)",
-                        "INSTALL_CMD=\"npx create-webiny-project@${BETA_VERSION} ${PROJECT_NAME}\"",
-                        "MSG=\"Webiny ${BETA_VERSION} is out! :rocket:\\nTo install, run: \\`${INSTALL_CMD}\\`\"",
+                        'INSTALL_CMD="npx create-webiny-project@${BETA_VERSION} ${PROJECT_NAME}"',
+                        'MSG="Webiny ${BETA_VERSION} is out! :rocket:\\nTo install, run: \\`${INSTALL_CMD}\\`"',
                         "curl -s -o /dev/null -X POST \\",
-                        "  -H \"Content-type: application/json\" \\",
-                        "  --data \"{\\\"text\\\":\\\"${MSG}\\\"}\" \\",
-                        "  \"$SLACK_RELEASE_CHANNEL_WEBHOOK\""
+                        '  -H "Content-type: application/json" \\',
+                        '  --data "{\\"text\\":\\"${MSG}\\"}" \\',
+                        '  "$SLACK_RELEASE_CHANNEL_WEBHOOK"'
                     ].join("\n")
                 }
             ]
