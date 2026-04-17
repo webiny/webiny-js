@@ -1,31 +1,27 @@
 import cacheControlParser from "cache-control-parser";
 const { parse, stringify } = cacheControlParser;
-import type {
-  Asset,
-  AssetOutputStrategy,
-  AssetReply,
-} from "~/delivery/index.js";
+import type { Asset, AssetOutputStrategy, AssetReply } from "~/delivery/index.js";
 
 export class PublicCache implements AssetOutputStrategy {
-  private strategy: AssetOutputStrategy;
+    private strategy: AssetOutputStrategy;
 
-  constructor(strategy: AssetOutputStrategy) {
-    this.strategy = strategy;
-  }
+    constructor(strategy: AssetOutputStrategy) {
+        this.strategy = strategy;
+    }
 
-  async output(asset: Asset): Promise<AssetReply> {
-    const reply = await this.strategy.output(asset);
+    async output(asset: Asset): Promise<AssetReply> {
+        const reply = await this.strategy.output(asset);
 
-    reply.setHeaders((headers) => {
-      headers.set("cache-control", (value = "") => {
-        const cacheControl = parse(value);
-        cacheControl["private"] = false;
-        cacheControl["public"] = true;
-        return stringify(cacheControl);
-      });
-      return headers;
-    });
+        reply.setHeaders(headers => {
+            headers.set("cache-control", (value = "") => {
+                const cacheControl = parse(value);
+                cacheControl["private"] = false;
+                cacheControl["public"] = true;
+                return stringify(cacheControl);
+            });
+            return headers;
+        });
 
-    return reply;
-  }
+        return reply;
+    }
 }

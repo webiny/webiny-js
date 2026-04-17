@@ -5,12 +5,12 @@ import { Languages } from "@webiny/languages";
 import { Extensions as WebinyConfigTsx } from "../../webiny.config.js";
 
 export const Extensions = () => {
-  return (
-    <>
-      <ProjectAws />
-      <Languages />
-      <TenantManager />
-      <WebinyConfigTsx />
-    </>
-  );
+    return (
+        <>
+            <ProjectAws />
+            <Languages />
+            <TenantManager />
+            <WebinyConfigTsx />
+        </>
+    );
 };
