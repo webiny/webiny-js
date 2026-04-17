@@ -1,11 +1,13 @@
 import { makeAutoObservable, computed, toJS, runInAction, observable } from "mobx";
 import { Field } from "./Field.js";
+import { ObjectField, isObjectField } from "./ObjectField.js";
 import { createFieldBuilderRegistry } from "./FieldBuilder.js";
 import type {
     IFormModel,
     IField,
     IFieldBuilder,
     IFieldBuilderRegistry,
+    IObjectFieldConfig,
     IFormVM,
     IFormError,
     IFormModelConfig,
@@ -47,7 +49,7 @@ const layoutAPI: ILayoutBuilder = {
 };
 
 export class FormModel implements IFormModel {
-    private _fields = new Map<string, Field>();
+    private _fields = new Map<string, IField>();
     private _layout: LayoutNode[] = [];
     private _baseline = new Map<string, unknown>();
     private _submitted = false;
@@ -63,7 +65,7 @@ export class FormModel implements IFormModel {
         // Build fields from builders
         for (const [name, builder] of Object.entries(builders)) {
             const fieldConfig = builder.build(name);
-            const field = new Field(fieldConfig);
+            const field = this._createField(fieldConfig);
             field.setForm(this);
             this._fields.set(name, field);
         }
@@ -94,12 +96,27 @@ export class FormModel implements IFormModel {
     field(name: string): IField {
         // Try exact match first (supports dotted field names like "properties.language").
         const field = this._fields.get(name);
-
-        if (!field) {
-            throw new Error(`Field "${name}" not found.`);
+        if (field) {
+            return field;
         }
 
-        return field;
+        // Try dot-notation traversal through ObjectField children.
+        const parts = name.split(".");
+        if (parts.length > 1) {
+            let current: IField | undefined = this._fields.get(parts[0]);
+            for (let i = 1; i < parts.length && current; i++) {
+                if (isObjectField(current)) {
+                    current = current.getChild(parts[i]);
+                } else {
+                    current = undefined;
+                }
+            }
+            if (current) {
+                return current;
+            }
+        }
+
+        throw new Error(`Field "${name}" not found.`);
     }
 
     fields(
@@ -116,7 +133,7 @@ export class FormModel implements IFormModel {
             }
 
             const fieldConfig = builder.build(name);
-            const field = new Field(fieldConfig);
+            const field = this._createField(fieldConfig);
             field.setForm(this);
 
             // Replace or add — same operation on the map
@@ -175,7 +192,11 @@ export class FormModel implements IFormModel {
     getData(): Record<string, unknown> {
         const data: Record<string, unknown> = {};
         for (const [name, field] of this._fields) {
-            data[name] = toJS(field.getValue());
+            if (isObjectField(field)) {
+                data[name] = toJS(field.getData());
+            } else {
+                data[name] = toJS(field.getValue());
+            }
         }
         return data;
     }
@@ -208,8 +229,8 @@ export class FormModel implements IFormModel {
     get isDirty(): boolean {
         for (const [name, field] of this._fields) {
             const baseline = this._baseline.get(name);
-            const current = field.getValue();
-            if (!Object.is(toJS(current), toJS(baseline))) {
+            const current = isObjectField(field) ? field.getData() : field.getValue();
+            if (JSON.stringify(toJS(current)) !== JSON.stringify(toJS(baseline))) {
                 return true;
             }
         }
@@ -264,11 +285,11 @@ export class FormModel implements IFormModel {
         };
     }
 
-    getField(name: string): Field | undefined {
+    getField(name: string): IField | undefined {
         return this._fields.get(name);
     }
 
-    getFields(): Map<string, Field> {
+    getFields(): Map<string, IField> {
         return this._fields;
     }
 
@@ -288,9 +309,6 @@ export class FormModel implements IFormModel {
                 return this._resolveTabsNode(node);
             case "element":
                 return this._resolveElementNode(node);
-            case "object":
-                // ObjectNode rendering deferred to Phase 6
-                return null;
             default:
                 return null;
         }
@@ -299,7 +317,7 @@ export class FormModel implements IFormModel {
     private _resolveRowNode(node: IRowNode): IRowNodeVM | null {
         const fields = node.fieldIds
             .map(id => this._fields.get(id))
-            .filter((f): f is Field => f !== undefined && f.visible)
+            .filter((f): f is IField => f !== undefined && f.visible)
             .map(f => f.vm);
 
         if (fields.length === 0) {
@@ -362,7 +380,13 @@ export class FormModel implements IFormModel {
         const fieldIds = this._collectFieldIdsFromLayout(layout);
         for (const id of fieldIds) {
             const field = this._fields.get(id);
-            if (field && field.vm.validation.isValid === false) {
+            if (!field) {
+                continue;
+            }
+            if (field.vm.validation.isValid === false) {
+                return true;
+            }
+            if (isObjectField(field) && field.hasErrors) {
                 return true;
             }
         }
@@ -613,6 +637,13 @@ export class FormModel implements IFormModel {
                 };
             }
         };
+    }
+
+    private _createField(config: any): IField {
+        if (config.childBuilders) {
+            return new ObjectField(config as IObjectFieldConfig);
+        }
+        return new Field(config);
     }
 
     private _isPositionedNode(

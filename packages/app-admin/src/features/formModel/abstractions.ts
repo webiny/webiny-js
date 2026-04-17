@@ -50,13 +50,38 @@ export interface IFieldVM {
     onBlur: () => void;
 }
 
+export interface IObjectFieldVM extends IFieldVM {
+    type: "object";
+    isList: boolean;
+    /** Child field VMs for non-list object fields. */
+    fields: IFieldVM[];
+    /** Items for list-mode object fields. */
+    items: IObjectFieldItemVM[];
+    addItem: () => void;
+    removeItem: (index: number) => void;
+}
+
+export interface IObjectFieldItemVM {
+    key: string;
+    fields: IFieldVM[];
+    remove: () => void;
+}
+
 export interface IField {
     readonly name: string;
     readonly type: string;
+    readonly visible: boolean;
+    readonly vm: IFieldVM;
+    readonly config: IFieldConfig;
     getValue<T = unknown>(): T;
     setValue(value: unknown): void;
+    setValueSilent(value: unknown): void;
     setDisabled(value: boolean): void;
     setVisible(value: boolean): void;
+    setForm(form: IFormModel): void;
+    setValidation(validation: IFieldValidation): void;
+    resetValidation(): void;
+    validate(): Promise<boolean>;
     remove(): void;
     addBeforeChange(cb: BeforeChangeCallback): void;
     addAfterChange(cb: AfterChangeCallback): void;
@@ -64,8 +89,6 @@ export interface IField {
     addOnBlur(cb: OnBlurCallback): void;
     blur(): void;
     as<T extends keyof FieldTypeMap>(type: T): FieldTypeMap[T];
-    readonly vm: IFieldVM;
-    readonly config: IFieldConfig;
 }
 
 /**
@@ -75,12 +98,38 @@ export interface IField {
 export interface FieldTypeMap {
     text: IField;
     select: ISelectField;
+    object: IObjectField;
 }
 
 export interface ISelectField extends IField {
     readonly config: IFieldConfig & {
         options?: IValueOption[] | ((form: IFormModel) => IValueOption[]);
     };
+}
+
+// ---------------------------------------------------------------------------
+// Object / List field types
+// ---------------------------------------------------------------------------
+
+export interface IObjectFieldConfig extends IFieldConfig {
+    childBuilders: Record<string, IFieldBuilder>;
+    isList: boolean;
+    listSchema?: z.ZodTypeAny;
+}
+
+export interface IObjectField extends IField {
+    readonly isList: boolean;
+    readonly children: Map<string, IField>;
+    readonly items: IListItemField[];
+    addItem(data?: Record<string, unknown>): void;
+    removeItem(index: number): void;
+    getData(): Record<string, unknown> | Record<string, unknown>[];
+}
+
+export interface IListItemField {
+    readonly key: string;
+    readonly children: Map<string, IField>;
+    getData(): Record<string, unknown>;
 }
 
 // ---------------------------------------------------------------------------
@@ -96,7 +145,7 @@ export type OnBlurCallback = (value: unknown, form: IFormModel) => void;
 // Layout types
 // ---------------------------------------------------------------------------
 
-export type LayoutNode = IRowNode | ISeparatorNode | ITabsNode | IElementNode | IObjectNode;
+export type LayoutNode = IRowNode | ISeparatorNode | ITabsNode | IElementNode;
 
 export interface IRowNode {
     type: "row";
@@ -126,13 +175,6 @@ export interface IElementNode {
     id?: string;
     renderer: string;
     props?: Record<string, unknown>;
-}
-
-export interface IObjectNode {
-    type: "object";
-    fieldId: string;
-    layout?: LayoutNode[];
-    templates?: Record<string, LayoutNode[]>;
 }
 
 // ---------------------------------------------------------------------------
@@ -278,6 +320,8 @@ export namespace FormModel {
     export type FieldVM = IFieldVM;
     export type Field = IField;
     export type SelectField = ISelectField;
+    export type ObjectField = IObjectField;
+    export type ObjectFieldConfig = IObjectFieldConfig;
     export type BeforeChange = BeforeChangeCallback;
     export type AfterChange = AfterChangeCallback;
     export type AfterSetValue = AfterSetValueCallback;
@@ -292,7 +336,8 @@ export namespace FormModel {
     export type TabDefinitionVM = ITabDefinitionVM;
     export type ElementNode = IElementNode;
     export type ElementNodeVM = IElementNodeVM;
-    export type ObjectNode = IObjectNode;
+    export type ObjectFieldVM = IObjectFieldVM;
+    export type ObjectFieldItemVM = IObjectFieldItemVM;
     export type FormError = IFormError;
     export type FormVM = IFormVM;
     export type Interface = IFormModel;
@@ -341,9 +386,16 @@ export interface ISelectFieldBuilder extends IFieldBuilder {
     options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this;
 }
 
+export interface IObjectFieldBuilder extends IFieldBuilder {
+    fields(fn: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this;
+    list(): this;
+    listSchema(schema: z.ZodTypeAny): this;
+}
+
 export interface IFieldBuilderRegistry {
     text(): IFieldBuilder;
     select(): ISelectFieldBuilder;
+    object(): IObjectFieldBuilder;
 }
 
 export const FormModelFactory = createAbstraction<IFormModelFactory>("FormModelFactory");
@@ -354,5 +406,6 @@ export namespace FormModelFactory {
     export type LayoutBuilder = ILayoutBuilder;
     export type FieldBuilder = IFieldBuilder;
     export type SelectFieldBuilder = ISelectFieldBuilder;
+    export type ObjectFieldBuilder = IObjectFieldBuilder;
     export type FieldBuilderRegistry = IFieldBuilderRegistry;
 }

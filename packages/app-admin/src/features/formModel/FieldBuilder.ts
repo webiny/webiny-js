@@ -1,10 +1,12 @@
 import type { z } from "zod";
 import type {
     IFieldConfig,
+    IObjectFieldConfig,
     IValueOption,
     IFormModel,
     IFieldBuilder,
     ISelectFieldBuilder,
+    IObjectFieldBuilder,
     IFieldBuilderRegistry,
     BeforeChangeCallback,
     AfterChangeCallback,
@@ -137,6 +139,46 @@ export class SelectFieldBuilder extends FieldBuilder<"select"> implements ISelec
 }
 
 /**
+ * Object field builder with .fields(), .list(), .listSchema() support.
+ */
+export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjectFieldBuilder {
+    private _childBuilders: Record<string, IFieldBuilder> = {};
+    private _isList = false;
+    private _listSchema?: z.ZodTypeAny;
+
+    constructor() {
+        super("object");
+        this._config.renderer = "object";
+    }
+
+    fields(fn: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this {
+        const registry = createFieldBuilderRegistry();
+        this._childBuilders = fn(registry);
+        return this;
+    }
+
+    list(): this {
+        this._isList = true;
+        return this;
+    }
+
+    listSchema(schema: z.ZodTypeAny): this {
+        this._listSchema = schema;
+        return this;
+    }
+
+    override build(name: string): IObjectFieldConfig {
+        return {
+            ...this._config,
+            name,
+            childBuilders: this._childBuilders,
+            isList: this._isList,
+            listSchema: this._listSchema
+        };
+    }
+}
+
+/**
  * Factory interface for creating field builders.
  */
 export interface IFieldTypeFactory {
@@ -153,6 +195,7 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
     constructor(factories?: IFieldTypeFactory[]) {
         this.fieldTypes.set("text", { type: "text", create: () => new TextFieldBuilder() });
         this.fieldTypes.set("select", { type: "select", create: () => new SelectFieldBuilder() });
+        this.fieldTypes.set("object", { type: "object", create: () => new ObjectFieldBuilder() });
 
         if (factories) {
             for (const factory of factories) {
@@ -178,6 +221,9 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
         throw new Error("Should be intercepted by Proxy");
     }
     select(): SelectFieldBuilder {
+        throw new Error("Should be intercepted by Proxy");
+    }
+    object(): ObjectFieldBuilder {
         throw new Error("Should be intercepted by Proxy");
     }
 }

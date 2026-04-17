@@ -9,10 +9,16 @@ export type {
     ILayoutBuilder,
     IFieldBuilder,
     ISelectFieldBuilder,
+    IObjectFieldBuilder,
     IFieldBuilderRegistry,
     IFormModel,
     IField,
     ISelectField,
+    IObjectField,
+    IObjectFieldConfig,
+    IListItemField,
+    IObjectFieldVM,
+    IObjectFieldItemVM,
     FieldTypeMap,
     IFieldConfig,
     IFieldVM,
@@ -30,7 +36,6 @@ export type {
     ITabDefinitionVM,
     IElementNode,
     IElementNodeVM,
-    IObjectNode,
     ILayoutNodeAccessHandle,
     ITabsHandle,
     ITabHandle,
@@ -54,9 +59,13 @@ export {
     FieldBuilder,
     TextFieldBuilder,
     SelectFieldBuilder,
+    ObjectFieldBuilder,
     createFieldBuilderRegistry
 } from "./FieldBuilder.js";
 export type { IFieldTypeFactory } from "./FieldBuilder.js";
+
+// Object field
+export { ObjectField, isObjectField } from "./ObjectField.js";
 
 // View
 export { FormView } from "./FormView.js";
