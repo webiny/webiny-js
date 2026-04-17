@@ -12731,6 +12731,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/ai-powerups@workspace:packages/ai-powerups":
+  version: 0.0.0-use.local
+  resolution: "@webiny/ai-powerups@workspace:packages/ai-powerups"
+  dependencies:
+    "@webiny/admin-ui": "npm:0.0.0"
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-aws": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/icons": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
+    mobx: "npm:^6.15.0"
+    react: "npm:18.3.1"
+    react-dom: "npm:18.3.1"
+    rimraf: "npm:^6.1.3"
+    typescript: "npm:6.0.2"
+    vitest: "npm:^4.1.4"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-aco@npm:0.0.0, @webiny/api-aco@workspace:packages/api-aco":
   version: 0.0.0-use.local
   resolution: "@webiny/api-aco@workspace:packages/api-aco"
