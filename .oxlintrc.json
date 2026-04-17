@@ -1,0 +1,205 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [],
+  "categories": {
+    "correctness": "off"
+  },
+  "env": {
+    "builtin": true
+  },
+  "ignorePatterns": [
+    ".idea/**/*",
+    ".nx/**/*",
+    ".pulumi/**/*",
+    ".stormTests/**/*",
+    ".swc/**/*",
+    ".webiny/**/*",
+    ".yarn/**/*",
+    "ai-context/**/*",
+    "coverage/**/*",
+    "docs/**/*",
+    "**/node_modules/",
+    "**/dist/",
+    "**/lib/",
+    "**/build/",
+    "**/.out/",
+    "**/*.d.ts",
+    "idea.js",
+    "scripts/**/*.js",
+    "packages/admin-ui/.storybook/**/*",
+    "packages/admin-ui/storybook-static/**/*",
+    "packages/create-webiny-project/_templates/**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "packages/**/*.{ts,tsx}"
+      ],
+      "rules": {
+        "no-array-constructor": "error",
+        "no-unused-expressions": "off",
+        "no-unused-vars": "warn",
+        "typescript/ban-ts-comment": [
+          "error",
+          {
+            "ts-check": true,
+            "ts-ignore": "allow-with-description",
+            "ts-nocheck": "allow-with-description",
+            "ts-expect-error": false
+          }
+        ],
+        "typescript/no-duplicate-enum-values": "error",
+        "typescript/no-empty-object-type": [
+          "error",
+          {
+            "allowInterfaces": "always",
+            "allowObjectTypes": "never"
+          }
+        ],
+        "typescript/no-explicit-any": "off",
+        "typescript/no-extra-non-null-assertion": "error",
+        "typescript/no-misused-new": "error",
+        "typescript/no-namespace": "off",
+        "typescript/no-non-null-asserted-optional-chain": "error",
+        "typescript/no-require-imports": "error",
+        "typescript/no-this-alias": "error",
+        "typescript/no-unnecessary-type-constraint": "error",
+        "typescript/no-unsafe-declaration-merging": "error",
+        "typescript/no-unsafe-function-type": "error",
+        "typescript/no-wrapper-object-types": "error",
+        "typescript/prefer-as-const": "error",
+        "typescript/prefer-namespace-keyword": "error",
+        "typescript/triple-slash-reference": "error",
+        "react/display-name": "error",
+        "react/jsx-key": "error",
+        "react/jsx-no-comment-textnodes": "error",
+        "react/jsx-no-duplicate-props": "error",
+        "react/jsx-no-target-blank": "error",
+        "react/jsx-no-undef": "error",
+        "react/no-children-prop": "error",
+        "react/no-danger-with-children": "error",
+        "react/no-direct-mutation-state": "error",
+        "react/no-find-dom-node": "error",
+        "react/no-is-mounted": "error",
+        "react/no-render-return-value": "error",
+        "react/no-string-refs": "error",
+        "react/no-unescaped-entities": "error",
+        "react/no-unknown-property": "error",
+        "react/no-unsafe": "off",
+        "react/react-in-jsx-scope": "error",
+        "curly": [
+          "error"
+        ],
+        "lodash/import-scope": [
+          "error",
+          "method"
+        ],
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@aws-sdk/*"
+                ],
+                "message": "Please use @webiny/aws-sdk instead."
+              },
+              {
+                "group": [
+                  "@webiny/*/index.*"
+                ],
+                "message": "Do not import index.js/ts/* explicitly. Import the package root instead (e.g. `@webiny/utils`)."
+              }
+            ]
+          }
+        ],
+        "no-use-before-define": "off",
+        "typescript/explicit-function-return-type": "off",
+        "typescript/explicit-module-boundary-types": "off",
+        "typescript/no-restricted-types": "error",
+        "typescript/no-var-requires": "off",
+        "typescript/no-non-null-assertion": "off"
+      },
+      "plugins": [
+        "typescript",
+        "react"
+      ],
+      "jsPlugins": [
+        "eslint-plugin-lodash"
+      ],
+      "globals": {
+        "node": "writable",
+        "commonjs": "writable",
+        "window": "writable",
+        "document": "writable"
+      }
+    },
+    {
+      "files": [
+        "packages/**/*.{js,jsx}"
+      ],
+      "rules": {
+        "react/display-name": "error",
+        "react/jsx-key": "error",
+        "react/jsx-no-comment-textnodes": "error",
+        "react/jsx-no-duplicate-props": "error",
+        "react/jsx-no-target-blank": "error",
+        "react/jsx-no-undef": "error",
+        "react/no-children-prop": "error",
+        "react/no-danger-with-children": "error",
+        "react/no-direct-mutation-state": "error",
+        "react/no-find-dom-node": "error",
+        "react/no-is-mounted": "error",
+        "react/no-render-return-value": "error",
+        "react/no-string-refs": "error",
+        "react/no-unescaped-entities": "error",
+        "react/no-unknown-property": "error",
+        "react/no-unsafe": "off",
+        "react/react-in-jsx-scope": "error",
+        "lodash/import-scope": [
+          "error",
+          "method"
+        ],
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@aws-sdk/*"
+                ],
+                "message": "Please use @webiny/aws-sdk instead."
+              },
+              {
+                "group": [
+                  "@webiny/*/index.*"
+                ],
+                "message": "Do not import index.js/ts/* explicitly. Import the package root instead (e.g. `@webiny/utils`)."
+              }
+            ]
+          }
+        ]
+      },
+      "plugins": [
+        "react"
+      ],
+      "jsPlugins": [
+        "eslint-plugin-lodash"
+      ],
+      "globals": {
+        "node": "writable",
+        "commonjs": "writable",
+        "window": "writable",
+        "document": "writable"
+      }
+    },
+    {
+      "files": [
+        "packages/aws-sdk/**/*.{ts,tsx,js,jsx}"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
+}

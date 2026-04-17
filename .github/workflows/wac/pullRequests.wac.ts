@@ -229,7 +229,7 @@ export const pullRequests = createWorkflow({
                         { name: "Check code formatting", run: "yarn format:check" },
                         { name: "Check dependencies", run: "yarn adio" },
                         { name: "Check TS configs", run: "yarn check-ts-configs" },
-                        { name: "ESLint", run: "yarn eslint" },
+                        { name: "Lint", run: "yarn lint" },
                         {
                             name: "Check Package Node Modules",
                             run: "yarn check-package-dependencies"
@@ -300,13 +300,13 @@ export const pullRequests = createWorkflow({
                     "continue-on-error": true
                 },
                 {
-                    name: "Fix ESLint issues (auto-fixable)",
-                    run: "yarn eslint:fix",
+                    name: "Fix lint issues (auto-fixable)",
+                    run: "yarn lint:fix",
                     "working-directory": DIR_WEBINY_JS,
                     "continue-on-error": true
                 },
                 // Let Claude handle whatever can't be auto-fixed: adio, ts-configs,
-                // remaining ESLint errors, and check-package-dependencies.
+                // remaining lint errors, and check-package-dependencies.
                 {
                     name: "Install Claude Code",
                     run: "npm install -g @anthropic-ai/claude-code"
@@ -319,7 +319,7 @@ export const pullRequests = createWorkflow({
                         `"Some static analysis checks may still be failing. Fix any remaining issues:`,
                         `1. Run 'yarn adio' — if it reports dependency errors, fix the relevant package.json files.`,
                         `2. Run 'yarn check-ts-configs' — if it reports errors, fix them.`,
-                        `3. Run 'yarn eslint' — if there are still non-auto-fixable errors, read the affected files and fix them.`,
+                        `3. Run 'yarn lint' — if there are still non-auto-fixable errors, read the affected files and fix them.`,
                         `4. Run 'yarn check-package-dependencies' — if it reports errors, fix them.`,
                         `Work in the current directory."`
                     ].join(" ")

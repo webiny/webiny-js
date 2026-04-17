@@ -27,6 +27,7 @@ describe("Decoration of Hooks and Components", () => {
 
         const DecorateBaseComponent = createDecorator(
             BaseComponent,
+            // eslint-disable-next-line react/display-name
             function BaseComponentDecorator(Original) {
                 return function DecoratedBaseComponent() {
                     return (
