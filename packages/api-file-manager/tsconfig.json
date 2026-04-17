@@ -14,7 +14,6 @@
     { "path": "../tasks" },
     { "path": "../wcp" },
     { "path": "../handler-aws" },
-    { "path": "../project-aws" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -50,8 +49,6 @@
       "@webiny/wcp": ["../wcp/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/project-aws/*": ["../project-aws/src/*"],
-      "@webiny/project-aws": ["../project-aws/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     }

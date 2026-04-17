@@ -4,6 +4,7 @@ import { setupAssetDelivery } from "./delivery/setupAssetDelivery.js";
 import { createGraphQLSchemaPlugin } from "./graphql/index.js";
 import { FileManagerFeature } from "~/features/FileManagerFeature.js";
 import { FmPermissionsFeature } from "~/features/permissions/feature.js";
+import { AiImageTaggingFeature } from "~/features/ai/AiImageTaggingFeature.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FileModel as FileModelAbstraction } from "~/domain/file/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -11,7 +12,6 @@ import { FileModel, FILE_MODEL_ID } from "~/domain/file/file.model.js";
 
 export * from "./modelModifier/CmsModelModifier.js";
 export * from "./delivery/index.js";
-export { FileManagerAi } from "./FileManagerAi.js";
 
 export const createFileManagerContext = () => {
     const plugin = new ContextPlugin<ApiCoreContext>(async context => {
@@ -30,8 +30,8 @@ export const createFileManagerContext = () => {
         });
 
         FmPermissionsFeature.register(context.container);
-
         FileManagerFeature.register(context.container);
+        AiImageTaggingFeature.register(context.container);
     });
 
     plugin.name = "file-manager.createContext";
