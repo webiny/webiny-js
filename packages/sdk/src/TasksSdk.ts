@@ -1,21 +1,17 @@
 import type { WebinyConfig } from "./types.js";
 import type { HttpError, GraphQLError, NetworkError } from "./errors.js";
 import type { Result } from "./Result.js";
-import type {
-    TaskDefinition,
-    TaskRun,
-    TaskLog
-} from "./methods/backgroundTasks/backgroundTaskTypes.js";
-import type { ListLogsParams } from "./methods/backgroundTasks/listLogs.js";
-import type { TriggerTaskParams } from "./methods/backgroundTasks/triggerTask.js";
-import type { AbortTaskParams } from "./methods/backgroundTasks/abortTask.js";
-import { listDefinitions as listDefinitionsFn } from "./methods/backgroundTasks/listDefinitions.js";
-import { listTasks as listTasksFn } from "./methods/backgroundTasks/listTasks.js";
-import { listLogs as listLogsFn } from "./methods/backgroundTasks/listLogs.js";
-import { triggerTask as triggerTaskFn } from "./methods/backgroundTasks/triggerTask.js";
-import { abortTask as abortTaskFn } from "./methods/backgroundTasks/abortTask.js";
+import type { TaskDefinition, TaskRun, TaskLog } from "./methods/tasks/taskTypes.js";
+import type { ListLogsParams } from "./methods/tasks/listLogs.js";
+import type { TriggerTaskParams } from "./methods/tasks/triggerTask.js";
+import type { AbortTaskParams } from "./methods/tasks/abortTask.js";
+import { listDefinitions as listDefinitionsFn } from "./methods/tasks/listDefinitions.js";
+import { listTasks as listTasksFn } from "./methods/tasks/listTasks.js";
+import { listLogs as listLogsFn } from "./methods/tasks/listLogs.js";
+import { triggerTask as triggerTaskFn } from "./methods/tasks/triggerTask.js";
+import { abortTask as abortTaskFn } from "./methods/tasks/abortTask.js";
 
-export class BackgroundTasksSdk {
+export class TasksSdk {
     private config: WebinyConfig;
     private fetchFn: typeof fetch;
 

@@ -1,5 +1,5 @@
-// Background Tasks SDK type declarations.
-export const BACKGROUND_TASKS_DECLARATIONS = `
+// Tasks SDK type declarations.
+export const TASKS_DECLARATIONS = `
 type SdkTaskStatus =
     | "pending"
     | "running"
@@ -91,7 +91,7 @@ interface SdkAbortTaskParams {
     message?: string;
 }
 
-interface SdkBackgroundTasks {
+interface SdkTasks {
     /** List all registered task definitions. */
     listDefinitions(): Promise<SdkResult<SdkTaskDefinition[], SdkError>>;
 

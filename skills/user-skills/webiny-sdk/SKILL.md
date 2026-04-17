@@ -9,7 +9,7 @@ description: >
   for type safety, work with the File Manager, list languages, trigger or monitor background tasks,
   or create API keys programmatically.
   Covers read vs preview mode, the `values` wrapper requirement, correct method names,
-  the `fields` required parameter, and background task management via `sdk.backgroundTasks`.
+  the `fields` required parameter, and background task management via `sdk.tasks`.
 ---
 
 # Webiny SDK
@@ -347,14 +347,14 @@ Register (**YOU MUST include the `.ts` file extension in the `src` prop** — om
 
 ## Background Tasks
 
-`webiny.backgroundTasks` wraps the Background Tasks GraphQL API. All methods return a `Result` and never throw.
+`webiny.tasks` wraps the Background Tasks GraphQL API. All methods return a `Result` and never throw.
 
 ### List Task Definitions
 
 Returns all registered task definitions — use this to discover valid `definition` IDs before triggering.
 
 ```typescript
-const result = await webiny.backgroundTasks.listDefinitions();
+const result = await webiny.tasks.listDefinitions();
 
 if (result.isOk()) {
   // result.value: TaskDefinition[]
@@ -367,7 +367,7 @@ if (result.isOk()) {
 ### List Task Runs
 
 ```typescript
-const result = await webiny.backgroundTasks.listTasks();
+const result = await webiny.tasks.listTasks();
 
 if (result.isOk()) {
   // result.value: TaskRun[]
@@ -383,10 +383,10 @@ Optionally filter by a specific task run ID:
 
 ```typescript
 // All logs
-const result = await webiny.backgroundTasks.listLogs();
+const result = await webiny.tasks.listLogs();
 
 // Logs for a specific task run
-const result = await webiny.backgroundTasks.listLogs({
+const result = await webiny.tasks.listLogs({
   where: { task: "yourTaskRunId" }
 });
 
@@ -402,7 +402,7 @@ if (result.isOk()) {
 ### Trigger a Task
 
 ```typescript
-const result = await webiny.backgroundTasks.triggerTask({
+const result = await webiny.tasks.triggerTask({
   definition: "myTaskDefinitionId",
   input: {
     someVariable: "someValue",
@@ -421,7 +421,7 @@ if (result.isOk()) {
 The task stops at its next safe checkpoint.
 
 ```typescript
-const result = await webiny.backgroundTasks.abortTask({
+const result = await webiny.tasks.abortTask({
   id: "yourTaskRunId",
   message: "Stopped by user request" // optional
 });
@@ -466,20 +466,21 @@ interface TaskRun {
 | `webiny.fileManager`     | File Manager     | List, upload, and manage files and folders                            |
 | `webiny.tenantManager`   | Multi-tenancy    | Create, install, enable, disable tenants                              |
 | `webiny.languages`       | Languages        | List enabled languages (id, code, name, direction, isDefault)         |
-| `webiny.backgroundTasks` | Background Tasks | Trigger, abort, list task runs, definitions, and logs                 |
+| `webiny.tasks` | Background Tasks | Trigger, abort, list task runs, definitions, and logs                 |
 
 ## Common Mistakes
 
-| Mistake                     | Correct                                 |
-| --------------------------- | --------------------------------------- |
-| `data: { name: "..." }`     | `data: { values: { name: "..." } }`     |
-| `updateEntry(...)`          | `updateEntryRevision(...)`              |
-| `publishEntry(...)`         | `publishEntryRevision(...)`             |
-| `unpublishEntry(...)`       | `unpublishEntryRevision(...)`           |
-| `sort: ["values.name_ASC"]` | `sort: { "values.name": "asc" }`        |
-| `getEntry({ id: "..." })`   | `getEntry({ where: { id: "..." } })`    |
-| Omitting `fields`           | Always provide `fields: [...]`          |
-| Trailing slash in endpoint  | Remove trailing slash from endpoint URL |
+| Mistake                                          | Correct                                              |
+| ------------------------------------------------ | ---------------------------------------------------- |
+| `data: { name: "..." }`                          | `data: { values: { name: "..." } }`                  |
+| `updateEntry(...)`                               | `updateEntryRevision(...)`                           |
+| `publishEntry(...)`                              | `publishEntryRevision(...)`                          |
+| `unpublishEntry(...)`                            | `unpublishEntryRevision(...)`                        |
+| `sort: ["values.name_ASC"]`                      | `sort: { "values.name": "asc" }`                     |
+| `getEntry({ id: "..." })`                        | `getEntry({ where: { id: "..." } })`                 |
+| Omitting `fields`                                | Always provide `fields: [...]`                       |
+| Trailing slash in endpoint                       | Remove trailing slash from endpoint URL              |
+| `triggerTask` with unknown `definition` string   | Use an ID returned by `listDefinitions()` — the GQL schema validates it against `WebinyBackgroundTaskDefinitionEnum!` |
 
 ## Quick Reference
 
@@ -493,9 +494,9 @@ API endpoint:         yarn webiny info (in your Webiny project) -- NO trailing s
 Preview mode:         pass preview: true to listEntries / getEntry
 fields required:      every CMS method needs a fields: string[] array
 values wrapper:       createEntry/updateEntryRevision data must use { values: { ... } }
-Background tasks:     webiny.backgroundTasks.triggerTask({ definition, input })
-Abort task:           webiny.backgroundTasks.abortTask({ id, message? })
-Filter logs by task:  webiny.backgroundTasks.listLogs({ where: { task: "id" } })
+Background tasks:     webiny.tasks.triggerTask({ definition, input })
+Abort task:           webiny.tasks.abortTask({ id, message? })
+Filter logs by task:  webiny.tasks.listLogs({ where: { task: "id" } })
 ```
 
 ## Related Skills

@@ -1,7 +1,7 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
 import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
-import type { TaskDefinition } from "./backgroundTaskTypes.js";
+import type { TaskDefinition } from "./taskTypes.js";
 
 export async function listDefinitions(
     config: WebinyConfig,

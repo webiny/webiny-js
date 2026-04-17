@@ -3,14 +3,14 @@ import { CmsSdk } from "./CmsSdk.js";
 import { TenantManagerSdk } from "./TenantManagerSdk.js";
 import { FileManagerSdk } from "./FileManagerSdk.js";
 import { LanguagesSdk } from "./LanguagesSdk.js";
-import { BackgroundTasksSdk } from "./BackgroundTasksSdk.js";
+import { TasksSdk } from "./TasksSdk.js";
 
 export class Webiny {
     public readonly cms: CmsSdk;
     public readonly tenantManager: TenantManagerSdk;
     public readonly fileManager: FileManagerSdk;
     public readonly languages: LanguagesSdk;
-    public readonly backgroundTasks: BackgroundTasksSdk;
+    public readonly tasks: TasksSdk;
 
     constructor(config: WebinyConfig) {
         this.cms = new CmsSdk({
@@ -29,7 +29,7 @@ export class Webiny {
             ...config,
             tenant: config.tenant || "root"
         });
-        this.backgroundTasks = new BackgroundTasksSdk({
+        this.tasks = new TasksSdk({
             ...config,
             tenant: config.tenant || "root"
         });

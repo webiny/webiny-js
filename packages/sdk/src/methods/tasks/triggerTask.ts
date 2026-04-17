@@ -1,7 +1,7 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
 import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
-import type { TaskRun } from "./backgroundTaskTypes.js";
+import type { TaskRun } from "./taskTypes.js";
 
 export interface TriggerTaskParams {
     /** The task definition ID to trigger. */
