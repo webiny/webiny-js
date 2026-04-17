@@ -32,9 +32,7 @@
   ],
   "overrides": [
     {
-      "files": [
-        "packages/**/*.{ts,tsx}"
-      ],
+      "files": ["packages/**/*.{ts,tsx}"],
       "rules": {
         "no-array-constructor": "error",
         "no-unused-expressions": "off",
@@ -87,27 +85,18 @@
         "react/no-unknown-property": "error",
         "react/no-unsafe": "off",
         "react/react-in-jsx-scope": "error",
-        "curly": [
-          "error"
-        ],
-        "lodash/import-scope": [
-          "error",
-          "method"
-        ],
+        "curly": ["error"],
+        "lodash/import-scope": ["error", "method"],
         "no-restricted-imports": [
           "error",
           {
             "patterns": [
               {
-                "group": [
-                  "@aws-sdk/*"
-                ],
+                "group": ["@aws-sdk/*"],
                 "message": "Please use @webiny/aws-sdk instead."
               },
               {
-                "group": [
-                  "@webiny/*/index.*"
-                ],
+                "group": ["@webiny/*/index.*"],
                 "message": "Do not import index.js/ts/* explicitly. Import the package root instead (e.g. `@webiny/utils`)."
               }
             ]
@@ -120,13 +109,8 @@
         "typescript/no-var-requires": "off",
         "typescript/no-non-null-assertion": "off"
       },
-      "plugins": [
-        "typescript",
-        "react"
-      ],
-      "jsPlugins": [
-        "eslint-plugin-lodash"
-      ],
+      "plugins": ["typescript", "react"],
+      "jsPlugins": ["eslint-plugin-lodash"],
       "globals": {
         "node": "writable",
         "commonjs": "writable",
@@ -135,9 +119,7 @@
       }
     },
     {
-      "files": [
-        "packages/**/*.{js,jsx}"
-      ],
+      "files": ["packages/**/*.{js,jsx}"],
       "rules": {
         "react/display-name": "error",
         "react/jsx-key": "error",
@@ -156,36 +138,25 @@
         "react/no-unknown-property": "error",
         "react/no-unsafe": "off",
         "react/react-in-jsx-scope": "error",
-        "lodash/import-scope": [
-          "error",
-          "method"
-        ],
+        "lodash/import-scope": ["error", "method"],
         "no-restricted-imports": [
           "error",
           {
             "patterns": [
               {
-                "group": [
-                  "@aws-sdk/*"
-                ],
+                "group": ["@aws-sdk/*"],
                 "message": "Please use @webiny/aws-sdk instead."
               },
               {
-                "group": [
-                  "@webiny/*/index.*"
-                ],
+                "group": ["@webiny/*/index.*"],
                 "message": "Do not import index.js/ts/* explicitly. Import the package root instead (e.g. `@webiny/utils`)."
               }
             ]
           }
         ]
       },
-      "plugins": [
-        "react"
-      ],
-      "jsPlugins": [
-        "eslint-plugin-lodash"
-      ],
+      "plugins": ["react"],
+      "jsPlugins": ["eslint-plugin-lodash"],
       "globals": {
         "node": "writable",
         "commonjs": "writable",
@@ -194,9 +165,7 @@
       }
     },
     {
-      "files": [
-        "packages/aws-sdk/**/*.{ts,tsx,js,jsx}"
-      ],
+      "files": ["packages/aws-sdk/**/*.{ts,tsx,js,jsx}"],
       "rules": {
         "no-restricted-imports": "off"
       }
