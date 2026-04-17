@@ -198,29 +198,42 @@ export class Pulumi {
             );
         }
 
+        const pluginsDir = path.join(this.pulumiFolder, "plugins");
+        const requiredPluginDir = `resource-aws-v${pulumiAwsVersion}`;
+
+        const pluginBinary =
+            process.platform === "win32" ? "pulumi-resource-aws.exe" : "pulumi-resource-aws";
         const pluginExists = fs.pathExistsSync(
-            path.join(
-                this.pulumiFolder,
-                "plugins",
-                `resource-aws-${pulumiAwsVersion}`,
-                "pulumi-resource-aws"
-            )
+            path.join(pluginsDir, requiredPluginDir, pluginBinary)
         );
 
-        if (pluginExists) {
-            return;
+        if (!pluginExists) {
+            execa.sync(
+                this.pulumiBinaryPath,
+                ["plugin", "install", "resource", "aws", pulumiAwsVersion],
+                {
+                    stdio: "inherit",
+                    env: {
+                        PULUMI_HOME: this.pulumiFolder,
+                        PULUMI_SKIP_UPDATE_CHECK: "true"
+                    }
+                }
+            );
         }
 
-        return execa.sync(
-            this.pulumiBinaryPath,
-            ["plugin", "install", "resource", "aws", pulumiAwsVersion],
-            {
-                stdio: "inherit",
-                env: {
-                    PULUMI_HOME: this.pulumiFolder,
-                    PULUMI_SKIP_UPDATE_CHECK: "true"
+        // Remove stale resource-aws plugin versions to reclaim disk space.
+        if (fs.pathExistsSync(pluginsDir)) {
+            for (const entry of fs.readdirSync(pluginsDir)) {
+                if (!entry.startsWith("resource-aws-") || entry === requiredPluginDir) {
+                    continue;
+                }
+                // Strip the trailing ".lock" suffix so both the directory and its
+                // lock file are matched by the same prefix check.
+                const baseName = entry.endsWith(".lock") ? entry.slice(0, -5) : entry;
+                if (baseName !== requiredPluginDir) {
+                    fs.removeSync(path.join(pluginsDir, entry));
                 }
             }
-        );
+        }
     }
 }
