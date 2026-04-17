@@ -180,8 +180,8 @@ breaks as soon as you try to read `.src`, `.width`, etc.
 
 Use this table as the source of truth when you write the `ComponentProps<T>` generic for
 a component. These shapes come from the actual SDK usage (see e.g.
-`packages/website-builder-nextjs/src/editorComponents/Image.tsx` for the canonical
-file-input shape).
+`@webiny/website-builder-nextjs/editorComponents/Image.d.ts` in the project's
+`node_modules` for the canonical file-input shape).
 
 | Input factory           | Type of `inputs.<name>` in the component                                                                                                                              |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

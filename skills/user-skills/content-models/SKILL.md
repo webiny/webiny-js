@@ -176,8 +176,8 @@ made-up name (e.g. `"fileInput"`, `"lexicalTextInput"`, `"objectInput"`) will si
 misbehave in the Admin UI — the field will render with a fallback or not save values.
 
 The authoritative source for this list is
-`packages/api-headless-cms/src/features/modelBuilder/fields/DataFieldBuilder.ts` — if
-you're unsure, grep there first.
+`@webiny/api-headless-cms/features/modelBuilder/fields/DataFieldBuilder.d.ts` (in the
+project's `node_modules`) — if you're unsure, grep there first.
 
 | Builder Method         | Description                              | Renderer (single)            | Renderer when `.list()` (multi) |
 | ---------------------- | ---------------------------------------- | ---------------------------- | ------------------------------- |
