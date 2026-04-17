@@ -460,27 +460,27 @@ interface TaskRun {
 
 ## SDK Modules Reference
 
-| Module                   | Webiny App       | What You Can Do                                                       |
-| ------------------------ | ---------------- | --------------------------------------------------------------------- |
-| `webiny.cms`             | Headless CMS     | List, get, create, update, publish, unpublish, delete entry revisions |
-| `webiny.fileManager`     | File Manager     | List, upload, and manage files and folders                            |
-| `webiny.tenantManager`   | Multi-tenancy    | Create, install, enable, disable tenants                              |
-| `webiny.languages`       | Languages        | List enabled languages (id, code, name, direction, isDefault)         |
-| `webiny.tasks` | Background Tasks | Trigger, abort, list task runs, definitions, and logs                 |
+| Module                 | Webiny App       | What You Can Do                                                       |
+| ---------------------- | ---------------- | --------------------------------------------------------------------- |
+| `webiny.cms`           | Headless CMS     | List, get, create, update, publish, unpublish, delete entry revisions |
+| `webiny.fileManager`   | File Manager     | List, upload, and manage files and folders                            |
+| `webiny.tenantManager` | Multi-tenancy    | Create, install, enable, disable tenants                              |
+| `webiny.languages`     | Languages        | List enabled languages (id, code, name, direction, isDefault)         |
+| `webiny.tasks`         | Background Tasks | Trigger, abort, list task runs, definitions, and logs                 |
 
 ## Common Mistakes
 
-| Mistake                                          | Correct                                              |
-| ------------------------------------------------ | ---------------------------------------------------- |
-| `data: { name: "..." }`                          | `data: { values: { name: "..." } }`                  |
-| `updateEntry(...)`                               | `updateEntryRevision(...)`                           |
-| `publishEntry(...)`                              | `publishEntryRevision(...)`                          |
-| `unpublishEntry(...)`                            | `unpublishEntryRevision(...)`                        |
-| `sort: ["values.name_ASC"]`                      | `sort: { "values.name": "asc" }`                     |
-| `getEntry({ id: "..." })`                        | `getEntry({ where: { id: "..." } })`                 |
-| Omitting `fields`                                | Always provide `fields: [...]`                       |
-| Trailing slash in endpoint                       | Remove trailing slash from endpoint URL              |
-| `triggerTask` with unknown `definition` string   | Use an ID returned by `listDefinitions()` — the GQL schema validates it against `WebinyBackgroundTaskDefinitionEnum!` |
+| Mistake                                        | Correct                                                                                                               |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `data: { name: "..." }`                        | `data: { values: { name: "..." } }`                                                                                   |
+| `updateEntry(...)`                             | `updateEntryRevision(...)`                                                                                            |
+| `publishEntry(...)`                            | `publishEntryRevision(...)`                                                                                           |
+| `unpublishEntry(...)`                          | `unpublishEntryRevision(...)`                                                                                         |
+| `sort: ["values.name_ASC"]`                    | `sort: { "values.name": "asc" }`                                                                                      |
+| `getEntry({ id: "..." })`                      | `getEntry({ where: { id: "..." } })`                                                                                  |
+| Omitting `fields`                              | Always provide `fields: [...]`                                                                                        |
+| Trailing slash in endpoint                     | Remove trailing slash from endpoint URL                                                                               |
+| `triggerTask` with unknown `definition` string | Use an ID returned by `listDefinitions()` — the GQL schema validates it against `WebinyBackgroundTaskDefinitionEnum!` |
 
 ## Quick Reference
 
