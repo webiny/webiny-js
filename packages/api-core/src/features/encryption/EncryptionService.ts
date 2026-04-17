@@ -13,7 +13,9 @@ export class EncryptionImpl implements EncryptionAbstraction.Interface {
                 'Encryption key is not configured. Set it via <Infra.Encryption.Key value="..." /> in webiny.config.tsx.'
             );
         }
-        this.key = crypto.createHash("sha256").update(passphrase).digest();
+        // scrypt is memory-hard, making brute-force attacks on the passphrase expensive.
+        // Fixed salt is intentional: the passphrase itself is the secret, not the salt.
+        this.key = crypto.scryptSync(passphrase, "webiny-encryption-v1", 32);
     }
 
     encrypt(value: string): string {
