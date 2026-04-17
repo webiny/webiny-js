@@ -201,8 +201,10 @@ export class Pulumi {
         const pluginsDir = path.join(this.pulumiFolder, "plugins");
         const requiredPluginDir = `resource-aws-v${pulumiAwsVersion}`;
 
+        const pluginBinary =
+            process.platform === "win32" ? "pulumi-resource-aws.exe" : "pulumi-resource-aws";
         const pluginExists = fs.pathExistsSync(
-            path.join(pluginsDir, requiredPluginDir, "pulumi-resource-aws")
+            path.join(pluginsDir, requiredPluginDir, pluginBinary)
         );
 
         if (!pluginExists) {
