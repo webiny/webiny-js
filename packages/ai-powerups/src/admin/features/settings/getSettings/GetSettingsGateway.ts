@@ -28,16 +28,17 @@ class GetSettingsGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
 
     async execute(): Promise<Record<string, any>> {
-        const response = await this.client.execute<GetSettingsResponse>({
-            query: GET_SETTINGS
-        });
-
-        const envelope = response.aiPowerUps.getSettings;
-        if (envelope.error) {
-            throw new Error(envelope.error.message);
-        }
-
-        return envelope.data || {};
+        return { general: { presets: []} };
+        // const response = await this.client.execute<GetSettingsResponse>({
+        //     query: GET_SETTINGS
+        // });
+        //
+        // const envelope = response.aiPowerUps.getSettings;
+        // if (envelope.error) {
+        //     throw new Error(envelope.error.message);
+        // }
+        //
+        // return envelope.data || {};
     }
 }
 

@@ -12,13 +12,13 @@ const { Menu } = AdminConfig;
 const AiPowerUpsMenuItem = () => {
     const openSettings = useAiPowerUpsSettingsDialog();
 
+    return <Menu.Item text="AI PowerUps" onClick={openSettings} />;
+};
+
+const AiPowerUpsMenu = () => {
     return (
         <AdminConfig>
-            <Menu
-                parent={"settings.system"}
-                name="aiPowerUps"
-                element={<Menu.Item text="AI PowerUps" onClick={openSettings} />}
-            />
+            <Menu parent={"settings.system"} name="aiPowerUps" element={<AiPowerUpsMenuItem />} />
         </AdminConfig>
     );
 };
@@ -29,7 +29,7 @@ export const Extension = () => {
             <RegisterFeature feature={SettingsFeature} />
             <RegisterFeature feature={AiPowerUpsSettingsFeature} />
             <AiPowerUpsSettingsConfig />
-            <AiPowerUpsMenuItem />
+            <AiPowerUpsMenu />
         </>
     );
 };
