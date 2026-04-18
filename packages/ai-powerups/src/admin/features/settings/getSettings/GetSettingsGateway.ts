@@ -28,7 +28,17 @@ class GetSettingsGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
 
     async execute(): Promise<Record<string, any>> {
-        return { general: { presets: []} };
+        return {
+            general: {
+                presets: [
+                    {
+                        name: "General purpose",
+                        model: "gpt-4o",
+                        apiKey: "123"
+                    }
+                ]
+            }
+        };
         // const response = await this.client.execute<GetSettingsResponse>({
         //     query: GET_SETTINGS
         // });

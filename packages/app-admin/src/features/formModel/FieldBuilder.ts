@@ -8,6 +8,7 @@ import type {
     ISelectFieldBuilder,
     IObjectFieldBuilder,
     IFieldBuilderRegistry,
+    ItemTitleResolver,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
@@ -145,6 +146,7 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
     private _childBuilders: Record<string, IFieldBuilder> = {};
     private _isList = false;
     private _listSchema?: z.ZodTypeAny;
+    private _itemTitle?: ItemTitleResolver;
 
     constructor() {
         super("object");
@@ -167,13 +169,19 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
         return this;
     }
 
+    itemTitle(resolver: ItemTitleResolver): this {
+        this._itemTitle = resolver;
+        return this;
+    }
+
     override build(name: string): IObjectFieldConfig {
         return {
             ...this._config,
             name,
             childBuilders: this._childBuilders,
             isList: this._isList,
-            listSchema: this._listSchema
+            listSchema: this._listSchema,
+            itemTitle: this._itemTitle
         };
     }
 }

@@ -246,6 +246,37 @@ export class ObjectField implements IObjectField {
         this._items.splice(index, 1);
     }
 
+    moveItem(fromIndex: number, toIndex: number): void {
+        if (
+            fromIndex < 0 ||
+            fromIndex >= this._items.length ||
+            toIndex < 0 ||
+            toIndex >= this._items.length ||
+            fromIndex === toIndex
+        ) {
+            return;
+        }
+        const [item] = this._items.splice(fromIndex, 1);
+        this._items.splice(toIndex, 0, item);
+    }
+
+    private _resolveItemTitle(children: Map<string, IField>, index: number): string {
+        const { itemTitle } = this.config;
+
+        if (!itemTitle) {
+            return `${this.config.label || "Item"} #${index + 1}`;
+        }
+
+        if (typeof itemTitle === "string") {
+            const field = children.get(itemTitle);
+            const value = field ? String(field.getValue() ?? "") : "";
+            return value || `${this.config.label || "Item"} #${index + 1}`;
+        }
+
+        const data = getChildrenData(children);
+        return itemTitle(data, index);
+    }
+
     private _addItemInternal(data?: Record<string, unknown>): void {
         const children = createChildFields(this.config.childBuilders, this._form);
         if (data) {
@@ -293,12 +324,16 @@ export class ObjectField implements IObjectField {
             items: this.config.isList
                 ? this._items.map((item, index) => ({
                       key: item.key,
+                      title: this._resolveItemTitle(item.children, index),
                       fields: Array.from(item.children.values()).map(f => f.vm),
-                      remove: () => this.removeItem(index)
+                      remove: () => this.removeItem(index),
+                      moveUp: () => this.moveItem(index, index - 1),
+                      moveDown: () => this.moveItem(index, index + 1)
                   }))
                 : [],
             addItem: () => this.addItem(),
-            removeItem: (index: number) => this.removeItem(index)
+            removeItem: (index: number) => this.removeItem(index),
+            moveItem: (from: number, to: number) => this.moveItem(from, to)
         };
     }
 

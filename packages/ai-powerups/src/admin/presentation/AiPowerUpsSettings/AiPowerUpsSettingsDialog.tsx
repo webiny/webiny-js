@@ -28,6 +28,7 @@ export const AiPowerUpsSettingsDialog = observer(() => {
             open={true}
             onClose={closeDialog}
             title="AI PowerUps Settings"
+            size={"xl"}
             actions={
                 <>
                     <Dialog.CancelAction onClick={closeDialog} text="Cancel" />

@@ -72,6 +72,8 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
         if (!data) {
             return false;
         }
+        
+        console.log("data", data);
 
         this.saving = true;
         this.error = null;
@@ -124,7 +126,11 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
                     if (!fieldsFn) {
                         continue;
                     }
-                    result[group.name] = fields.object().label(group.label).fields(fieldsFn);
+                    result[group.name] = fields
+                        .object()
+                        .label(group.label)
+                        .renderer("passthrough")
+                        .fields(fieldsFn);
                 }
                 return result;
             },
@@ -137,12 +143,12 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
                     layout.tabs({
                         id: "settings-tabs",
                         renderer: "tabs-vertical",
-                        tabs: collected.map(({ group, layoutFn }) => ({
+                        tabs: collected.map(({ group }) => ({
                             id: group.name,
                             label: group.label,
                             description: group.description,
                             icon: group.icon,
-                            layout: layoutFn ? layoutFn(layout) : []
+                            layout: [layout.row(group.name)]
                         }))
                     })
                 ];

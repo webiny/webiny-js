@@ -59,12 +59,16 @@ export interface IObjectFieldVM extends IFieldVM {
     items: IObjectFieldItemVM[];
     addItem: () => void;
     removeItem: (index: number) => void;
+    moveItem: (fromIndex: number, toIndex: number) => void;
 }
 
 export interface IObjectFieldItemVM {
     key: string;
+    title: string;
     fields: IFieldVM[];
     remove: () => void;
+    moveUp: () => void;
+    moveDown: () => void;
 }
 
 export interface IField {
@@ -111,10 +115,13 @@ export interface ISelectField extends IField {
 // Object / List field types
 // ---------------------------------------------------------------------------
 
+export type ItemTitleResolver = string | ((data: Record<string, unknown>, index: number) => string);
+
 export interface IObjectFieldConfig extends IFieldConfig {
     childBuilders: Record<string, IFieldBuilder>;
     isList: boolean;
     listSchema?: z.ZodTypeAny;
+    itemTitle?: ItemTitleResolver;
 }
 
 export interface IObjectField extends IField {
@@ -123,6 +130,7 @@ export interface IObjectField extends IField {
     readonly items: IListItemField[];
     addItem(data?: Record<string, unknown>): void;
     removeItem(index: number): void;
+    moveItem(fromIndex: number, toIndex: number): void;
     getData(): Record<string, unknown> | Record<string, unknown>[];
 }
 
@@ -392,6 +400,7 @@ export interface IObjectFieldBuilder extends IFieldBuilder {
     fields(fn: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this;
     list(): this;
     listSchema(schema: z.ZodTypeAny): this;
+    itemTitle(resolver: ItemTitleResolver): this;
 }
 
 export interface IFieldBuilderRegistry {
