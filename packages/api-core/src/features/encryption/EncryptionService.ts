@@ -19,10 +19,10 @@ export class EncryptionImpl implements EncryptionAbstraction.Interface {
     private algorithm: string;
 
     constructor(buildParams: BuildParams.Interface) {
-        const passphrase = buildParams.get<string>("EncryptionKey");
+        const passphrase = buildParams.get<string>("EncryptionPassphrase");
         if (!passphrase) {
             throw new Error(
-                'Encryption key is not configured. Set it via <Infra.Encryption.Key value="..." /> in webiny.config.tsx.'
+                'Encryption passphrase is not configured. Set it via <Infra.Encryption passphrase="..." /> in webiny.config.tsx.'
             );
         }
 

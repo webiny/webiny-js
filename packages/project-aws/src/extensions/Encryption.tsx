@@ -10,7 +10,7 @@ export const Encryption = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Configure the API's EncryptionService.",
     paramsSchema: z.object({
-        key: z.string().min(1).describe("The encryption passphrase or secret key."),
+        passphrase: z.string().min(1).describe("The passphrase used to derive the AES encryption key via scrypt."),
         salt: z
             .string()
             .min(1)
@@ -23,10 +23,10 @@ export const Encryption = defineExtension({
             .optional()
             .describe("AES-GCM algorithm. Defaults to aes-256-gcm.")
     }),
-    render({ key, salt, algorithm }) {
+    render({ passphrase, salt, algorithm }) {
         return (
             <>
-                <BuildParam paramName="EncryptionKey" value={key} />
+                <BuildParam paramName="EncryptionPassphrase" value={passphrase} />
                 {salt && <BuildParam paramName="EncryptionSalt" value={salt} />}
                 {algorithm && <BuildParam paramName="EncryptionAlgorithm" value={algorithm} />}
             </>
