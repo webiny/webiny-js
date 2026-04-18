@@ -11,8 +11,17 @@ export const Encryption = defineExtension({
     description: "Configure the API's EncryptionService.",
     paramsSchema: z.object({
         key: z.string().min(1).describe("The encryption passphrase or secret key."),
-        salt: z.string().min(1).optional().describe("Optional scrypt salt. Strengthens key derivation when the passphrase has low entropy."),
-        algorithm: z.enum(SUPPORTED_ALGORITHMS).optional().describe("AES-GCM algorithm. Defaults to aes-256-gcm.")
+        salt: z
+            .string()
+            .min(1)
+            .optional()
+            .describe(
+                "Optional scrypt salt. Strengthens key derivation when the passphrase has low entropy."
+            ),
+        algorithm: z
+            .enum(SUPPORTED_ALGORITHMS)
+            .optional()
+            .describe("AES-GCM algorithm. Defaults to aes-256-gcm.")
     }),
     render({ key, salt, algorithm }) {
         return (
