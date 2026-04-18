@@ -10,7 +10,10 @@ export const Encryption = defineExtension({
     tags: { runtimeContext: "project" },
     description: "Configure the API's EncryptionService.",
     paramsSchema: z.object({
-        passphrase: z.string().min(1).describe("The passphrase used to derive the AES encryption key via scrypt."),
+        passphrase: z
+            .string()
+            .min(1)
+            .describe("The passphrase used to derive the AES encryption key via scrypt."),
         salt: z
             .string()
             .min(1)
