@@ -19,7 +19,7 @@ export const Encryption = defineExtension({
             .min(1)
             .optional()
             .describe(
-                "Optional scrypt salt. Strengthens key derivation when the passphrase has low entropy."
+                "Optional scrypt salt. Ensures two projects using the same passphrase derive different encryption keys."
             ),
         algorithm: z
             .enum(SUPPORTED_ALGORITHMS)

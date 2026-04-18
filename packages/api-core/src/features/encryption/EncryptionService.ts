@@ -26,9 +26,8 @@ export class EncryptionImpl implements EncryptionAbstraction.Interface {
             );
         }
 
-        // Salt is optional. It strengthens key derivation when the passphrase has low entropy,
-        // but since the passphrase is a configuration secret (not a user-entered password),
-        // its absence does not materially weaken security.
+        // Salt is optional. It ensures two projects using the same passphrase derive different keys,
+        // but since passphrases should be unique per project anyway, it's extra insurance rather than a necessity.
         const salt = buildParams.get<string>("EncryptionSalt") ?? "";
 
         this.algorithm = buildParams.get<string>("EncryptionAlgorithm") ?? DEFAULT_ALGORITHM;
