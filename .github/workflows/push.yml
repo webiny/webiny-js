@@ -91,7 +91,7 @@ jobs:
         run: yarn --immutable
         working-directory: v6
       - name: Check code formatting
-        run: yarn prettier:check
+        run: yarn format:check
         working-directory: v6
       - name: Check dependencies
         run: yarn adio

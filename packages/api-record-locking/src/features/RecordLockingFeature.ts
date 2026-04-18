@@ -23,9 +23,9 @@ export interface RecordLockingParams {
     model: CmsModel;
 }
 
-export const RecordLockingFeature = createFeature({
+export const RecordLockingFeature = createFeature<RecordLockingParams>({
     name: "RecordLockingManagement",
-    register(container, params: RecordLockingParams) {
+    register(container, params) {
         // Register domain abstractions
         container.registerInstance(RecordLockingConfig, { timeout: params.timeout });
         container.registerInstance(RecordLockingModel, params.model);

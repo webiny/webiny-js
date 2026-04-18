@@ -16,6 +16,7 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `AdminConfig`
 **Import:** `import { AdminConfig } from "webiny/admin/configs"`
 **Source:** `@webiny/app-admin/config/AdminConfig.tsx`

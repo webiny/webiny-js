@@ -10,9 +10,10 @@ type IRunParams = TaskDefinition.RunParams<
     IValidateImportFromUrlOutput
 >;
 
-class ValidateImportFromUrlTaskDefinition
-    implements TaskDefinition.Interface<IValidateImportFromUrlInput, IValidateImportFromUrlOutput>
-{
+class ValidateImportFromUrlTaskDefinition implements TaskDefinition.Interface<
+    IValidateImportFromUrlInput,
+    IValidateImportFromUrlOutput
+> {
     id = VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK;
     title = "Validate Import from URL Integrity";
     maxIterations = 1;

@@ -7,12 +7,14 @@ The frontend permission system (`createUsePermissions`) is a hook factory that r
 ## Layer Separation
 
 ### Domain: schema only
+
 ```ts
 // packages/app-website-builder/src/constants.ts (already exists)
 export const WB_PERMISSIONS_SCHEMA = { prefix: "wb", ... } as const;
 ```
 
 ### Application (features): DI artifacts + registration
+
 ```ts
 // packages/app-website-builder/src/features/permissions.ts
 export const WbPermissions = createPermissions(WB_PERMISSIONS_SCHEMA);
@@ -22,6 +24,7 @@ export const WbPermissions = createPermissions(WB_PERMISSIONS_SCHEMA);
 ```
 
 ### Presentation: React hooks, components, UI config
+
 ```tsx
 // hooks/components (consume DI)
 export const usePermissions = createUsePermissions(WbPermissions);
@@ -29,11 +32,11 @@ export const HasPermission = createHasPermission(WbPermissions);
 
 // UI registration (unchanged pattern)
 <Security.Permissions
-    name="website-builder"
-    title="Website Builder"
-    icon={<PermissionsIcon />}
-    schema={WbPermissions.schema}
-/>
+  name="website-builder"
+  title="Website Builder"
+  icon={<PermissionsIcon />}
+  schema={WbPermissions.schema}
+/>;
 ```
 
 ## Detailed Changes
@@ -75,6 +78,7 @@ export function createPermissions<const S extends PermissionSchemaConfig>(schema
 ```
 
 `SchemaPermissions` methods are synchronous ports of `buildResult()` from `usePermissions.ts` lines 40-186:
+
 - Uses `this.identityContext.getIdentity()` per call (not closed-over identity)
 - Adopts backend's stricter `hasFullSchemaAccess` — `{ name: "wb.*", rwd: "r" }` is NOT full access
 
@@ -86,7 +90,7 @@ Add canonical type for DI contexts:
 
 ```ts
 export type Permissions<S extends PermissionSchemaConfig> =
-    string extends AllEntityIds<S> ? UsePermissionsResultUntyped : UsePermissionsResultTyped<S>;
+  string extends AllEntityIds<S> ? UsePermissionsResultUntyped : UsePermissionsResultTyped<S>;
 ```
 
 Same underlying type as `UsePermissionsResult<S>`.
@@ -97,24 +101,25 @@ Add overload accepting `createPermissions` result:
 
 ```ts
 // New: DI-backed
-export function createUsePermissions<const S extends PermissionSchemaConfig>(
-    permissions: { Abstraction: Abstraction<Permissions<S>>; schema: S }
-): () => Permissions<S>;
+export function createUsePermissions<const S extends PermissionSchemaConfig>(permissions: {
+  Abstraction: Abstraction<Permissions<S>>;
+  schema: S;
+}): () => Permissions<S>;
 
 // Deprecated: inline build
 export function createUsePermissions<const S extends PermissionSchemaConfig>(
-    schema: S
+  schema: S
 ): () => UsePermissionsResult<S>;
 
 export function createUsePermissions(schemaOrResult: any) {
-    if ('Abstraction' in schemaOrResult) {
-        return function usePermissions() {
-            useIdentity(); // MobX re-render subscription
-            const container = useContainer();
-            return container.resolve(schemaOrResult.Abstraction);
-        };
-    }
-    // ... existing inline implementation (deprecated path) ...
+  if ("Abstraction" in schemaOrResult) {
+    return function usePermissions() {
+      useIdentity(); // MobX re-render subscription
+      const container = useContainer();
+      return container.resolve(schemaOrResult.Abstraction);
+    };
+  }
+  // ... existing inline implementation (deprecated path) ...
 }
 ```
 
@@ -123,33 +128,37 @@ export function createUsePermissions(schemaOrResult: any) {
 Same overload pattern:
 
 ```ts
-export function createHasPermission<const S extends PermissionSchemaConfig>(
-    permissions: { Abstraction: Abstraction<Permissions<S>>; schema: S }
-): React.FC<HasPermissionProps<S>>;
+export function createHasPermission<const S extends PermissionSchemaConfig>(permissions: {
+  Abstraction: Abstraction<Permissions<S>>;
+  schema: S;
+}): React.FC<HasPermissionProps<S>>;
 
 export function createHasPermission<const S extends PermissionSchemaConfig>(
-    schema: S
+  schema: S
 ): React.FC<HasPermissionProps<S>>;
 
 export function createHasPermission(schemaOrResult: any) {
-    const usePermissions = createUsePermissions(schemaOrResult);
-    return function HasPermission({ children, ...props }) {
-        const permissions = usePermissions();
-        // ... existing check logic ...
-    };
+  const usePermissions = createUsePermissions(schemaOrResult);
+  return function HasPermission({ children, ...props }) {
+    const permissions = usePermissions();
+    // ... existing check logic ...
+  };
 }
 ```
 
 ### 5. Exports
 
 Add to `packages/app-admin/src/permissions/index.ts` and `packages/app-admin/src/exports/admin.ts`:
+
 - `createPermissions`
 - `Permissions` type
 
 ## Consumer Migration (Website Builder)
 
 ### Features (application layer)
+
 **New: `packages/app-website-builder/src/features/permissions.ts`**
+
 ```ts
 import { createPermissions } from "@webiny/app-admin/exports/admin.js";
 import type { Permissions } from "@webiny/app-admin/exports/admin.js";
@@ -158,12 +167,14 @@ import { WB_PERMISSIONS_SCHEMA } from "~/constants.js";
 export const WbPermissions = createPermissions(WB_PERMISSIONS_SCHEMA);
 
 export namespace WbPermissions {
-    export type Interface = Permissions<typeof WB_PERMISSIONS_SCHEMA>;
+  export type Interface = Permissions<typeof WB_PERMISSIONS_SCHEMA>;
 }
 ```
 
 ### Extension
+
 **Modify: `packages/app-website-builder/src/Extension.tsx`**
+
 ```tsx
 // Add:
 <RegisterFeature feature={WbPermissions.Feature} />
@@ -181,7 +192,9 @@ export namespace WbPermissions {
 ```
 
 ### Presentation hooks
+
 **Modify: `packages/app-website-builder/src/presentation/security/usePermissions.ts`**
+
 ```ts
 import { createUsePermissions } from "@webiny/app-admin/exports/admin.js";
 import { WbPermissions } from "~/features/permissions.js";
@@ -189,6 +202,7 @@ export const usePermissions = createUsePermissions(WbPermissions);
 ```
 
 **Modify: `packages/app-website-builder/src/presentation/security/HasPermission.tsx`**
+
 ```ts
 import { createHasPermission } from "@webiny/app-admin/exports/admin.js";
 import { WbPermissions } from "~/features/permissions.js";
@@ -196,33 +210,35 @@ export const HasPermission = createHasPermission(WbPermissions);
 ```
 
 ### DI injection (in features)
+
 ```ts
 class SomeFeatureImpl {
-    constructor(private permissions: WbPermissions.Interface) {}
+  constructor(private permissions: WbPermissions.Interface) {}
 }
 
 const SomeFeature = createImplementation({
-    implementation: SomeFeatureImpl,
-    dependencies: [WbPermissions.Abstraction]
+  implementation: SomeFeatureImpl,
+  dependencies: [WbPermissions.Abstraction]
 });
 ```
 
 ## Files Summary
 
-| File | Action |
-|------|--------|
-| `packages/app-admin/src/permissions/createPermissions.ts` | **New** — application-layer factory |
-| `packages/app-admin/src/permissions/types.ts` | **Modify** — add `Permissions<S>` type |
-| `packages/app-admin/src/permissions/usePermissions.ts` | **Modify** — add DI-backed overload |
-| `packages/app-admin/src/permissions/createHasPermission.tsx` | **Modify** — add DI-backed overload |
-| `packages/app-admin/src/permissions/index.ts` | **Modify** — exports |
-| `packages/app-admin/src/exports/admin.ts` | **Modify** — exports |
-| `packages/app-website-builder/src/features/permissions.ts` | **New** — WB permissions |
-| `packages/app-website-builder/src/presentation/security/usePermissions.ts` | **Modify** — DI-backed |
-| `packages/app-website-builder/src/presentation/security/HasPermission.tsx` | **Modify** — DI-backed |
-| `packages/app-website-builder/src/Extension.tsx` | **Modify** — add `RegisterFeature` |
+| File                                                                       | Action                                 |
+| -------------------------------------------------------------------------- | -------------------------------------- |
+| `packages/app-admin/src/permissions/createPermissions.ts`                  | **New** — application-layer factory    |
+| `packages/app-admin/src/permissions/types.ts`                              | **Modify** — add `Permissions<S>` type |
+| `packages/app-admin/src/permissions/usePermissions.ts`                     | **Modify** — add DI-backed overload    |
+| `packages/app-admin/src/permissions/createHasPermission.tsx`               | **Modify** — add DI-backed overload    |
+| `packages/app-admin/src/permissions/index.ts`                              | **Modify** — exports                   |
+| `packages/app-admin/src/exports/admin.ts`                                  | **Modify** — exports                   |
+| `packages/app-website-builder/src/features/permissions.ts`                 | **New** — WB permissions               |
+| `packages/app-website-builder/src/presentation/security/usePermissions.ts` | **Modify** — DI-backed                 |
+| `packages/app-website-builder/src/presentation/security/HasPermission.tsx` | **Modify** — DI-backed                 |
+| `packages/app-website-builder/src/Extension.tsx`                           | **Modify** — add `RegisterFeature`     |
 
 **Unchanged:**
+
 - `Security.Permissions` JSX — stays for UI registration
 - `PermissionRenderer.tsx` — auto-generates UI from schema
 - `usePermissionForm.ts` — form serialization

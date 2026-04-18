@@ -7,8 +7,10 @@ import type {
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 import { BaseFieldBuilder, type DataFieldBuildResult } from "./BaseFieldBuilder.js";
 
-export interface FieldBuilderConfig
-    extends Omit<CmsModelField, "id" | "fieldId" | "storageId" | "type"> {
+export interface FieldBuilderConfig extends Omit<
+    CmsModelField,
+    "id" | "fieldId" | "storageId" | "type"
+> {
     _storageId?: string;
     _fieldId?: string;
     description?: string | null;

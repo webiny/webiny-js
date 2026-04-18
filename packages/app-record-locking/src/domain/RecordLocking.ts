@@ -60,9 +60,9 @@ export interface IOnErrorCb {
     (error: IRecordLockingError): void;
 }
 
-class RecordLocking<T extends IPossiblyRecordLockingRecord = IPossiblyRecordLockingRecord>
-    implements IRecordLocking<T>
-{
+class RecordLocking<
+    T extends IPossiblyRecordLockingRecord = IPossiblyRecordLockingRecord
+> implements IRecordLocking<T> {
     private currentRecordType?: string;
     private currentFolderId?: string;
     private currentRecordsCacheKey?: string;

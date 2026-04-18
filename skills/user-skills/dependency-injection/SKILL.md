@@ -154,11 +154,11 @@ export default CorePulumi.createImplementation({
 
 The `dependencies` array supports three forms per entry:
 
-| Form | Meaning |
-|------|---------|
-| `Abstraction` | Single required dependency (shorthand) |
-| `[Abstraction, { optional: true }]` | Single optional dependency — injects `undefined` if not registered |
-| `[Abstraction, { multiple: true }]` | Multi-injection — injects **all** registered implementations as `T[]` |
+| Form                                                | Meaning                                                                                                 |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `Abstraction`                                       | Single required dependency (shorthand)                                                                  |
+| `[Abstraction, { optional: true }]`                 | Single optional dependency — injects `undefined` if not registered                                      |
+| `[Abstraction, { multiple: true }]`                 | Multi-injection — injects **all** registered implementations as `T[]`                                   |
 | `[Abstraction, { multiple: true, optional: true }]` | Multi-injection, optional — injects `undefined` if none registered (vs empty `[]` with just `multiple`) |
 
 ### Multi-injection (`{ multiple: true }`)
@@ -169,15 +169,15 @@ Use when a class needs all registered implementations of an abstraction. The con
 
 ```ts
 interface IPageType {
-    name: string;
-    label: string;
-    modify(form: IFormModel): void;
+  name: string;
+  label: string;
+  modify(form: IFormModel): void;
 }
 
 export const PageType = createAbstraction<IPageType>("PageType");
 
 export namespace PageType {
-    export type Interface = IPageType;
+  export type Interface = IPageType;
 }
 ```
 
@@ -186,32 +186,34 @@ export namespace PageType {
 ```ts
 // StaticPageType.ts
 class StaticPageTypeImpl implements PageType.Interface {
-    name = "static";
-    label = "Static Page";
-    modify(form: IFormModel) { /* no-op — base form is sufficient */ }
+  name = "static";
+  label = "Static Page";
+  modify(form: IFormModel) {
+    /* no-op — base form is sufficient */
+  }
 }
 
 export const StaticPageType = PageType.createImplementation({
-    implementation: StaticPageTypeImpl,
-    dependencies: []
+  implementation: StaticPageTypeImpl,
+  dependencies: []
 });
 
 // ProductPageType.ts (in another package/extension)
 class ProductPageTypeImpl implements PageType.Interface {
-    name = "product";
-    label = "Product Page";
-    modify(form: IFormModel) {
-        form.fields(fields => ({
-            product: fields.select().label("Product").required("Product is required")
-        }));
-        form.field("title").disabled(true);
-        form.field("path").disabled(true);
-    }
+  name = "product";
+  label = "Product Page";
+  modify(form: IFormModel) {
+    form.fields(fields => ({
+      product: fields.select().label("Product").required("Product is required")
+    }));
+    form.field("title").disabled(true);
+    form.field("path").disabled(true);
+  }
 }
 
 export const ProductPageType = PageType.createImplementation({
-    implementation: ProductPageTypeImpl,
-    dependencies: []
+  implementation: ProductPageTypeImpl,
+  dependencies: []
 });
 ```
 
@@ -219,20 +221,20 @@ export const ProductPageType = PageType.createImplementation({
 
 ```ts
 class CreatePagePresenterImpl implements CreatePagePresenter.Interface {
-    constructor(
-        private factory: FormModelFactory.Interface,
-        private pageTypes: PageType.Interface[],
-        private modifiers: CreatePageFormModifier.Interface[]
-    ) {}
+  constructor(
+    private factory: FormModelFactory.Interface,
+    private pageTypes: PageType.Interface[],
+    private modifiers: CreatePageFormModifier.Interface[]
+  ) {}
 }
 
 export const CreatePagePresenter = PresenterAbstraction.createImplementation({
-    implementation: CreatePagePresenterImpl,
-    dependencies: [
-        FormModelFactory,
-        [PageType, { multiple: true }],
-        [CreatePageFormModifier, { multiple: true }]
-    ]
+  implementation: CreatePagePresenterImpl,
+  dependencies: [
+    FormModelFactory,
+    [PageType, { multiple: true }],
+    [CreatePageFormModifier, { multiple: true }]
+  ]
 });
 ```
 
@@ -240,12 +242,12 @@ export const CreatePagePresenter = PresenterAbstraction.createImplementation({
 
 ```ts
 export const CreatePageFeature = createFeature({
-    name: "CreatePage",
-    register(container) {
-        container.register(StaticPageType);   // first PageType impl
-        container.register(ProductPageType);  // second PageType impl
-        container.register(CreatePagePresenter);
-    }
+  name: "CreatePage",
+  register(container) {
+    container.register(StaticPageType); // first PageType impl
+    container.register(ProductPageType); // second PageType impl
+    container.register(CreatePagePresenter);
+  }
 });
 ```
 
@@ -257,18 +259,15 @@ Use when a dependency may not be registered. The container injects `undefined` i
 
 ```ts
 class MyPresenterImpl {
-    constructor(
-        private required: RequiredService.Interface,
-        private analytics: AnalyticsService.Interface | undefined
-    ) {}
+  constructor(
+    private required: RequiredService.Interface,
+    private analytics: AnalyticsService.Interface | undefined
+  ) {}
 }
 
 export const MyPresenter = Abstraction.createImplementation({
-    implementation: MyPresenterImpl,
-    dependencies: [
-        RequiredService,
-        [AnalyticsService, { optional: true }]
-    ]
+  implementation: MyPresenterImpl,
+  dependencies: [RequiredService, [AnalyticsService, { optional: true }]]
 });
 ```
 
@@ -276,21 +275,21 @@ export const MyPresenter = Abstraction.createImplementation({
 
 ### Registration
 
-| Method | Description |
-|--------|-------------|
-| `container.register(Impl)` | Register a class implementation. Returns `RegistrationBuilder` with `.inSingletonScope()`. Multiple registrations of the same abstraction accumulate — `resolve()` returns the last, `resolveAll()` returns all. |
-| `container.registerInstance(Abstraction, instance)` | Register a pre-built instance (no constructor resolution). |
-| `container.registerFactory(Abstraction, factory)` | Register a factory function. Called on every `resolve()`. |
-| `container.registerDecorator(Decorator)` | Register a decorator that wraps resolved instances. Applied in registration order. |
-| `container.registerComposite(Composite)` | Register a composite that aggregates all implementations behind a single `resolve()`. |
+| Method                                              | Description                                                                                                                                                                                                      |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `container.register(Impl)`                          | Register a class implementation. Returns `RegistrationBuilder` with `.inSingletonScope()`. Multiple registrations of the same abstraction accumulate — `resolve()` returns the last, `resolveAll()` returns all. |
+| `container.registerInstance(Abstraction, instance)` | Register a pre-built instance (no constructor resolution).                                                                                                                                                       |
+| `container.registerFactory(Abstraction, factory)`   | Register a factory function. Called on every `resolve()`.                                                                                                                                                        |
+| `container.registerDecorator(Decorator)`            | Register a decorator that wraps resolved instances. Applied in registration order.                                                                                                                               |
+| `container.registerComposite(Composite)`            | Register a composite that aggregates all implementations behind a single `resolve()`.                                                                                                                            |
 
 ### Resolution
 
-| Method | Description |
-|--------|-------------|
-| `container.resolve(Abstraction)` | Resolve single instance (last registered wins). Throws if not registered. |
+| Method                              | Description                                                                   |
+| ----------------------------------- | ----------------------------------------------------------------------------- |
+| `container.resolve(Abstraction)`    | Resolve single instance (last registered wins). Throws if not registered.     |
 | `container.resolveAll(Abstraction)` | Resolve all registered implementations as `T[]`. Returns empty array if none. |
-| `container.createChildContainer()` | Create a child container that inherits parent registrations. |
+| `container.createChildContainer()`  | Create a child container that inherits parent registrations.                  |
 
 ### Lifetime Scopes
 
@@ -305,20 +304,20 @@ Decorators wrap resolved instances. The decoratee is always the **last** constru
 
 ```ts
 class LoggingServiceDecorator implements MyService.Interface {
-    constructor(
-        private logger: Logger.Interface,
-        private decoratee: MyService.Interface  // LAST param — injected automatically
-    ) {}
+  constructor(
+    private logger: Logger.Interface,
+    private decoratee: MyService.Interface // LAST param — injected automatically
+  ) {}
 
-    execute() {
-        this.logger.info("Before");
-        this.decoratee.execute();
-    }
+  execute() {
+    this.logger.info("Before");
+    this.decoratee.execute();
+  }
 }
 
 export const MyServiceLoggingDecorator = MyService.createDecorator({
-    decorator: LoggingServiceDecorator,
-    dependencies: [Logger]  // decoratee is NOT listed
+  decorator: LoggingServiceDecorator,
+  dependencies: [Logger] // decoratee is NOT listed
 });
 
 // Registration:
@@ -331,16 +330,16 @@ Composites aggregate multiple implementations behind a single `resolve()` call. 
 
 ```ts
 class AllValidatorsComposite implements Validator.Interface {
-    constructor(private validators: Validator.Interface[]) {}
+  constructor(private validators: Validator.Interface[]) {}
 
-    validate(input: unknown) {
-        for (const v of this.validators) v.validate(input);
-    }
+  validate(input: unknown) {
+    for (const v of this.validators) v.validate(input);
+  }
 }
 
 export const ValidatorComposite = Validator.createComposite({
-    implementation: AllValidatorsComposite,
-    dependencies: [[Validator, { multiple: true }]]
+  implementation: AllValidatorsComposite,
+  dependencies: [[Validator, { multiple: true }]]
 });
 
 // Registration:

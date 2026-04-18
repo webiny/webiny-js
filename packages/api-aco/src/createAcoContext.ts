@@ -115,13 +115,9 @@ const setupAcoContext = async (
 
     CreateFlpOnFolderCreatedFeature.register(context.container);
 
-    UpdateFlpOnFolderUpdatedFeature.register(context.container, {
-        tasks: context.tasks
-    });
+    UpdateFlpOnFolderUpdatedFeature.register(context.container);
 
-    DeleteFlpOnFolderDeletedFeature.register(context.container, {
-        tasks: context.tasks
-    });
+    DeleteFlpOnFolderDeletedFeature.register(context.container);
 
     /**
      * Register folder event handlers

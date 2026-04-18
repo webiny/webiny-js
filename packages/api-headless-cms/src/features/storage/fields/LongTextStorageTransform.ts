@@ -8,9 +8,10 @@ interface StorageValue {
     isArray?: boolean;
 }
 
-class LongTextStorageTransformImpl
-    implements StorageTransform.Interface<string | string[], StorageValue>
-{
+class LongTextStorageTransformImpl implements StorageTransform.Interface<
+    string | string[],
+    StorageValue
+> {
     public readonly fieldType = "long-text";
 
     public constructor(private readonly compressionHandler: CompressionHandler.Interface) {}

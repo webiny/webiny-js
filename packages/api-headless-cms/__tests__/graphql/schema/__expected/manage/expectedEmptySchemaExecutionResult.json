@@ -215,7 +215,12 @@
           "description": null,
           "fields": null
         },
-        { "name": "SkipValidatorEnum", "kind": "ENUM", "description": null, "fields": null },
+        {
+          "name": "SkipValidatorEnum",
+          "kind": "ENUM",
+          "description": null,
+          "fields": null
+        },
         {
           "name": "CreateCmsEntryOptionsInput",
           "kind": "INPUT_OBJECT",
@@ -234,7 +239,12 @@
           "description": null,
           "fields": null
         },
-        { "name": "CmsIdentityInput", "kind": "INPUT_OBJECT", "description": null, "fields": null },
+        {
+          "name": "CmsIdentityInput",
+          "kind": "INPUT_OBJECT",
+          "description": null,
+          "fields": null
+        },
         {
           "name": "CmsEntryValidationResponseData",
           "kind": "OBJECT",
@@ -413,12 +423,20 @@
             {
               "name": "getContentModel",
               "description": null,
-              "type": { "kind": "OBJECT", "name": "CmsContentModelResponse", "ofType": null }
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelResponse",
+                "ofType": null
+              }
             },
             {
               "name": "listContentModels",
               "description": null,
-              "type": { "kind": "OBJECT", "name": "CmsContentModelListResponse", "ofType": null }
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsContentModelListResponse",
+                "ofType": null
+              }
             }
           ]
         },
@@ -434,7 +452,12 @@
             }
           ]
         },
-        { "name": "CmsEntryStatusType", "kind": "ENUM", "description": null, "fields": null },
+        {
+          "name": "CmsEntryStatusType",
+          "kind": "ENUM",
+          "description": null,
+          "fields": null
+        },
         {
           "name": "CmsFieldValidation",
           "kind": "OBJECT",
@@ -652,7 +675,11 @@
             {
               "name": "predefinedValues",
               "description": null,
-              "type": { "kind": "OBJECT", "name": "CmsPredefinedValues", "ofType": null }
+              "type": {
+                "kind": "OBJECT",
+                "name": "CmsPredefinedValues",
+                "ofType": null
+              }
             },
             {
               "name": "renderer",

@@ -31,8 +31,7 @@ const headingVariants = cva("font-sans", {
 });
 
 interface HeadingProps
-    extends React.HTMLAttributes<HTMLHeadingElement>,
-        VariantProps<typeof headingVariants> {
+    extends React.HTMLAttributes<HTMLHeadingElement>, VariantProps<typeof headingVariants> {
     as?: HeadingTags;
 }
 

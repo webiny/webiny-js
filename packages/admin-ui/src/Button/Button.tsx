@@ -160,7 +160,8 @@ const buttonVariants = cva(
 );
 
 interface ButtonProps
-    extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">,
+    extends
+        Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">,
         VariantProps<typeof buttonVariants> {
     text?: React.ReactNode;
     children?: React.ReactNode;

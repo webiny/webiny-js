@@ -13,14 +13,16 @@ interface SetupEntriesIndexHelpersParams {
     fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
 }
 
-interface ExtractEntriesFromIndexParams<T extends CmsEntryValues = CmsEntryValues>
-    extends SetupEntriesIndexHelpersParams {
+interface ExtractEntriesFromIndexParams<
+    T extends CmsEntryValues = CmsEntryValues
+> extends SetupEntriesIndexHelpersParams {
     model: CmsModel;
     entries: CmsIndexEntry<T>[];
 }
 
-interface PrepareElasticsearchDataParams<T extends CmsEntryValues = CmsEntryValues>
-    extends SetupEntriesIndexHelpersParams {
+interface PrepareElasticsearchDataParams<
+    T extends CmsEntryValues = CmsEntryValues
+> extends SetupEntriesIndexHelpersParams {
     model: CmsModel;
     entry: CmsEntry<T>;
     storageEntry: CmsEntry<T>;

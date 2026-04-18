@@ -23,22 +23,21 @@ export interface HeadlessCmsExportStructureParams {
 
 export type SanitizedCmsGroup = Pick<CmsGroup, "id" | "name" | "slug" | "description" | "icon">;
 
-export interface SanitizedCmsModel
-    extends Pick<
-        CmsModel,
-        | "modelId"
-        | "fields"
-        | "titleFieldId"
-        | "descriptionFieldId"
-        | "imageFieldId"
-        | "layout"
-        | "icon"
-        | "singularApiName"
-        | "pluralApiName"
-        | "name"
-        | "description"
-        | "tags"
-    > {
+export interface SanitizedCmsModel extends Pick<
+    CmsModel,
+    | "modelId"
+    | "fields"
+    | "titleFieldId"
+    | "descriptionFieldId"
+    | "imageFieldId"
+    | "layout"
+    | "icon"
+    | "singularApiName"
+    | "pluralApiName"
+    | "name"
+    | "description"
+    | "tags"
+> {
     group: string;
 }
 
@@ -51,8 +50,10 @@ export interface HeadlessCmsExportStructure {
     (params: HeadlessCmsExportStructureParams): Promise<HeadlessCmsExportStructureResponse>;
 }
 
-export interface HeadlessCmsImportStructureParamsDataModel
-    extends Omit<Partial<CmsModel>, "group"> {
+export interface HeadlessCmsImportStructureParamsDataModel extends Omit<
+    Partial<CmsModel>,
+    "group"
+> {
     group?: string;
 }
 

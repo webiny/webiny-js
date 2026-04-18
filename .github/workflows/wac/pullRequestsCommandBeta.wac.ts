@@ -108,7 +108,7 @@ export const pullRequestsCommandBeta = createWorkflow({
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
-                BETA_VERSION: "${{ vars.BETA_VERSION }}"
+                SLACK_RELEASE_CHANNEL_WEBHOOK: "${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}"
             },
             checkout: { path: PR_BRANCH, ref: PR_BRANCH, "fetch-depth": 0 },
             steps: [
@@ -131,11 +131,32 @@ export const pullRequestsCommandBeta = createWorkflow({
                         },
                         {
                             name: 'Version and publish "beta" tag to NPM',
-                            run: "yarn release --type=beta --tag=beta"
+                            id: "release",
+                            run: [
+                                "set -o pipefail",
+                                "yarn release --type=beta --tag=beta 2>&1 | tee /tmp/release-output.txt",
+                                "BETA_VERSION=$(grep -oE '[0-9]+\\.[0-9]+\\.[0-9]+-beta\\.[0-9]+' /tmp/release-output.txt | tail -1)",
+                                'echo "beta-version=$BETA_VERSION" >> $GITHUB_OUTPUT'
+                            ].join("\n")
                         }
                     ],
                     { "working-directory": PR_BRANCH }
-                )
+                ),
+                {
+                    name: "Notify Slack - Beta Release",
+                    env: {
+                        BETA_VERSION: "${{ steps.release.outputs.beta-version }}"
+                    },
+                    run: [
+                        "PROJECT_NAME=webiny-$(echo $BETA_VERSION | tr . -)",
+                        'INSTALL_CMD="npx create-webiny-project@${BETA_VERSION} ${PROJECT_NAME}"',
+                        'MSG="Webiny ${BETA_VERSION} is out! :rocket:\\nTo install, run: \\`${INSTALL_CMD}\\`"',
+                        "curl -s -o /dev/null -X POST \\",
+                        '  -H "Content-type: application/json" \\',
+                        '  --data "{\\"text\\":\\"${MSG}\\"}" \\',
+                        '  "$SLACK_RELEASE_CHANNEL_WEBHOOK"'
+                    ].join("\n")
+                }
             ]
         })
     }

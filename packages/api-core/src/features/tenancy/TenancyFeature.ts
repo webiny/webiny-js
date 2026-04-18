@@ -12,9 +12,9 @@ import { GetTenantByIdFeature } from "./GetTenantById/feature.js";
 import { TenantContextFeature } from "./TenantContext/feature.js";
 import { InstallTenantFeature } from "./InstallTenant/index.js";
 
-export const TenancyFeature = createFeature({
+export const TenancyFeature = createFeature<ITenancyStorageOperations>({
     name: "TenancyFeature",
-    register: (container, storageOperations: ITenancyStorageOperations) => {
+    register: (container, storageOperations) => {
         // Register storage operations abstraction (singleton)
         container.registerInstance(TenancyStorageOperations, storageOperations);
 

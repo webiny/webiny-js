@@ -39,6 +39,7 @@ These use cases should be registered in the languages package's API Extension an
 ### New Feature in `api-website-builder`: TranslatePage
 
 **GraphQL mutation:**
+
 ```
 translatePage(pageId: ID!, languageCode: String!, folderId: ID!): WbPageResponse
 ```
@@ -46,11 +47,13 @@ translatePage(pageId: ID!, languageCode: String!, folderId: ID!): WbPageResponse
 Added to the existing `WbMutation` type in the pages schema.
 
 **TranslatePageUseCase:**
+
 - Follows the established UseCase pattern (abstraction + implementation + DI).
 - Dependencies: `WbPermissions`, `DuplicatePageRepository`, `GetLanguageByCodeUseCase`.
 - Checks write permission, then delegates to the repository (NOT use case - repository. This way we bypass double permissions checks and events).
 - No events for now — this will be added later if needed.
 - Steps:
+
 1. Validate language code by calling `GetLanguageByCodeUseCase`. If not found, return a `PageTranslationError` (domain error).
 2. Resolve `properties.sourcePage`: if the source page already has `properties.sourcePage` set (i.e., it's itself a translation), use that value; otherwise use the source page's `entryId`.
 3. Call `DuplicatePageRepository.execute(pageId, callback)` with a callback that modifies the page before creation:
@@ -76,26 +79,30 @@ This is a backward-compatible change — existing callers of `DuplicatePageRepos
 
 - Dependencies: `GetLanguageByCodeUseCase` (from `@webiny/languages`), `DuplicatePageRepository`.
 
-
 **Page properties contract:**
+
 - `properties.language`: `string | undefined`. Undefined (or absent) means default language. Set to a language code string (e.g., `"de"`, `"fr"`) for translations.
 - `properties.sourcePage`: `string | undefined`. The `entryId` of the base page this translation originated from. `undefined` for base pages. Always points to the root base page, never to an intermediate translation.
 - `properties.path`: Prefixed with `/<languageCode>` for translated pages. Base pages keep their original path.
 
 **Domain error:**
+
 - `PageTranslationError` — thrown when the language code is not found in the language registry. Should extend the project's standard error pattern.
 
 **Feature registration:**
+
 - A new `TranslatePageFeature` registered in the `api-website-builder` plugin setup, following the same pattern as `CreatePageFeature`, `DuplicatePageFeature`, etc.
 - `TranslatePageRepository` registered in singleton scope.
 - `TranslatePageUseCase` registered normally.
 
 **Dependency between packages:**
+
 - `api-website-builder` will import `GetLanguageByCodeUseCase` from `@webiny/languages` and resolve it from the container. This creates a new package dependency.
 
 ### GraphQL resolver pattern
 
 The resolver follows the same pattern as all other page mutations:
+
 1. Resolve `TranslatePageUseCase` from `context.container`.
 2. Call `execute({ pageId, languageCode, folderId })`.
 3. If result is a failure, throw the error.

@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as ListStories from './List.stories';
+import * as ListStories from "./List.stories";
 
 <Meta of={ListStories} />
 
@@ -18,44 +18,44 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as HelpIcon } from "@webiny/icons/help.svg";
 
 const ListExample = () => {
-    return (
-        <List variant="underline" background="base">
-            <List.Item
-                icon={<UserIcon />}
-                title="User Profile"
-                description="View and edit your profile information"
-                onClick={() => console.log("User Profile clicked")}
-            />
-            <List.Item
-                icon={<SettingsIcon />}
-                title="Settings"
-                description="Configure application settings"
-                onClick={() => console.log("Settings clicked")}
-            />
-            <List.Item
-                icon={<HelpIcon />}
-                title="Help & Support"
-                description="Get assistance and view documentation"
-                onClick={() => console.log("Help & Support clicked")}
-            />
-        </List>
-    );
-};
+return (
+
+<List variant="underline" background="base">
+  <List.Item
+    icon={<UserIcon />}
+    title="User Profile"
+    description="View and edit your profile information"
+    onClick={() => console.log("User Profile clicked")}
+  />
+  <List.Item
+    icon={<SettingsIcon />}
+    title="Settings"
+    description="Configure application settings"
+    onClick={() => console.log("Settings clicked")}
+  />
+  <List.Item
+    icon={<HelpIcon />}
+    title="Help & Support"
+    description="Get assistance and view documentation"
+    onClick={() => console.log("Help & Support clicked")}
+  />
+</List>
+); };
 
 export default ListExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/List/List.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/List/List.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={ListStories.Documentation} />
@@ -68,28 +68,28 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as HelpIcon } from "@webiny/icons/help.svg";
 
 const ListExample = () => {
-    return (
-        <List variant="underline" background="base">
-            <List.Item
-                icon={<UserIcon />}
-                title="User Profile"
-                description="View and edit your profile information"
-                onClick={() => console.log("User Profile clicked")}
-            />
-            <List.Item
-                icon={<SettingsIcon />}
-                title="Settings"
-                description="Configure application settings"
-                onClick={() => console.log("Settings clicked")}
-            />
-            <List.Item
-                icon={<HelpIcon />}
-                title="Help & Support"
-                description="Get assistance and view documentation"
-                onClick={() => console.log("Help & Support clicked")}
-            />
-        </List>
-    );
+  return (
+    <List variant="underline" background="base">
+      <List.Item
+        icon={<UserIcon />}
+        title="User Profile"
+        description="View and edit your profile information"
+        onClick={() => console.log("User Profile clicked")}
+      />
+      <List.Item
+        icon={<SettingsIcon />}
+        title="Settings"
+        description="Configure application settings"
+        onClick={() => console.log("Settings clicked")}
+      />
+      <List.Item
+        icon={<HelpIcon />}
+        title="Help & Support"
+        description="Get assistance and view documentation"
+        onClick={() => console.log("Help & Support clicked")}
+      />
+    </List>
+  );
 };
 
 export default ListExample;
@@ -104,14 +104,14 @@ import React from "react";
 import { List } from "@webiny/admin-ui";
 
 const DefaultListExample = () => {
-    return (
-        <List>
-            <List.Item title="Item 1" />
-            <List.Item title="Item 2" />
-            <List.Item title="Item 3" />
-        </List>
-    );
-};
+return (
+
+<List>
+  <List.Item title="Item 1" />
+  <List.Item title="Item 2" />
+  <List.Item title="Item 3" />
+</List>
+); };
 
 export default DefaultListExample;
 ` } } />
@@ -126,14 +126,14 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as HelpIcon } from "@webiny/icons/help.svg";
 
 const WithIconsExample = () => {
-    return (
-        <List>
-            <List.Item icon={<UserIcon />} title="User Profile" />
-            <List.Item icon={<SettingsIcon />} title="Settings" />
-            <List.Item icon={<HelpIcon />} title="Help & Support" />
-        </List>
-    );
-};
+return (
+
+<List>
+  <List.Item icon={<UserIcon />} title="User Profile" />
+  <List.Item icon={<SettingsIcon />} title="Settings" />
+  <List.Item icon={<HelpIcon />} title="Help & Support" />
+</List>
+); };
 
 export default WithIconsExample;
 ` } } />
@@ -145,23 +145,14 @@ import React from "react";
 import { List } from "@webiny/admin-ui";
 
 const WithDescriptionsExample = () => {
-    return (
-        <List>
-            <List.Item
-                title="User Profile"
-                description="View and edit your profile information"
-            />
-            <List.Item
-                title="Settings"
-                description="Configure application settings"
-            />
-            <List.Item
-                title="Help & Support"
-                description="Get assistance and view documentation"
-            />
-        </List>
-    );
-};
+return (
+
+<List>
+  <List.Item title="User Profile" description="View and edit your profile information" />
+  <List.Item title="Settings" description="Configure application settings" />
+  <List.Item title="Help & Support" description="Get assistance and view documentation" />
+</List>
+); };
 
 export default WithDescriptionsExample;
 ` } } />
@@ -176,26 +167,26 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as HelpIcon } from "@webiny/icons/help.svg";
 
 const WithIconsAndDescriptionsExample = () => {
-    return (
-        <List>
-            <List.Item
-                icon={<UserIcon />}
-                title="User Profile"
-                description="View and edit your profile information"
-            />
-            <List.Item
-                icon={<SettingsIcon />}
-                title="Settings"
-                description="Configure application settings"
-            />
-            <List.Item
-                icon={<HelpIcon />}
-                title="Help & Support"
-                description="Get assistance and view documentation"
-            />
-        </List>
-    );
-};
+return (
+
+<List>
+  <List.Item
+    icon={<UserIcon />}
+    title="User Profile"
+    description="View and edit your profile information"
+  />
+  <List.Item
+    icon={<SettingsIcon />}
+    title="Settings"
+    description="Configure application settings"
+  />
+  <List.Item
+    icon={<HelpIcon />}
+    title="Help & Support"
+    description="Get assistance and view documentation"
+  />
+</List>
+); };
 
 export default WithIconsAndDescriptionsExample;
 ` } } />
@@ -210,26 +201,26 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as HelpIcon } from "@webiny/icons/help.svg";
 
 const ContainerVariantExample = () => {
-    return (
-        <List variant="container">
-            <List.Item
-                icon={<UserIcon />}
-                title="User Profile"
-                description="View and edit your profile information"
-            />
-            <List.Item
-                icon={<SettingsIcon />}
-                title="Settings"
-                description="Configure application settings"
-            />
-            <List.Item
-                icon={<HelpIcon />}
-                title="Help & Support"
-                description="Get assistance and view documentation"
-            />
-        </List>
-    );
-};
+return (
+
+<List variant="container">
+  <List.Item
+    icon={<UserIcon />}
+    title="User Profile"
+    description="View and edit your profile information"
+  />
+  <List.Item
+    icon={<SettingsIcon />}
+    title="Settings"
+    description="Configure application settings"
+  />
+  <List.Item
+    icon={<HelpIcon />}
+    title="Help & Support"
+    description="Get assistance and view documentation"
+  />
+</List>
+); };
 
 export default ContainerVariantExample;
 ` } } />
@@ -244,26 +235,26 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as HelpIcon } from "@webiny/icons/help.svg";
 
 const LightBackgroundExample = () => {
-    return (
-        <List background="light">
-            <List.Item
-                icon={<UserIcon />}
-                title="User Profile"
-                description="View and edit your profile information"
-            />
-            <List.Item
-                icon={<SettingsIcon />}
-                title="Settings"
-                description="Configure application settings"
-            />
-            <List.Item
-                icon={<HelpIcon />}
-                title="Help & Support"
-                description="Get assistance and view documentation"
-            />
-        </List>
-    );
-};
+return (
+
+<List background="light">
+  <List.Item
+    icon={<UserIcon />}
+    title="User Profile"
+    description="View and edit your profile information"
+  />
+  <List.Item
+    icon={<SettingsIcon />}
+    title="Settings"
+    description="Configure application settings"
+  />
+  <List.Item
+    icon={<HelpIcon />}
+    title="Help & Support"
+    description="Get assistance and view documentation"
+  />
+</List>
+); };
 
 export default LightBackgroundExample;
 ` } } />
@@ -278,28 +269,28 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as HelpIcon } from "@webiny/icons/help.svg";
 
 const TransparentBackgroundExample = () => {
-    return (
-        <div className="bg-neutral-light p-md">
-            <List background="transparent">
-                <List.Item
-                    icon={<UserIcon />}
-                    title="User Profile"
-                    description="View and edit your profile information"
-                />
-                <List.Item
-                    icon={<SettingsIcon />}
-                    title="Settings"
-                    description="Configure application settings"
-                />
-                <List.Item
-                    icon={<HelpIcon />}
-                    title="Help & Support"
-                    description="Get assistance and view documentation"
-                />
-            </List>
-        </div>
-    );
-};
+return (
+
+<div className="bg-neutral-light p-md">
+  <List background="transparent">
+    <List.Item
+      icon={<UserIcon />}
+      title="User Profile"
+      description="View and edit your profile information"
+    />
+    <List.Item
+      icon={<SettingsIcon />}
+      title="Settings"
+      description="Configure application settings"
+    />
+    <List.Item
+      icon={<HelpIcon />}
+      title="Help & Support"
+      description="Get assistance and view documentation"
+    />
+  </List>
+</div>
+); };
 
 export default TransparentBackgroundExample;
 ` } } />
@@ -311,26 +302,26 @@ import React from "react";
 import { List } from "@webiny/admin-ui";
 
 const WithClickHandlersExample = () => {
-    return (
-        <List>
-            <List.Item
-                title="User Profile"
-                description="View and edit your profile information"
-                onClick={() => alert("User Profile clicked")}
-            />
-            <List.Item
-                title="Settings"
-                description="Configure application settings"
-                onClick={() => alert("Settings clicked")}
-            />
-            <List.Item
-                title="Help & Support"
-                description="Get assistance and view documentation"
-                onClick={() => alert("Help & Support clicked")}
-            />
-        </List>
-    );
-};
+return (
+
+<List>
+  <List.Item
+    title="User Profile"
+    description="View and edit your profile information"
+    onClick={() => alert("User Profile clicked")}
+  />
+  <List.Item
+    title="Settings"
+    description="Configure application settings"
+    onClick={() => alert("Settings clicked")}
+  />
+  <List.Item
+    title="Help & Support"
+    description="Get assistance and view documentation"
+    onClick={() => alert("Help & Support clicked")}
+  />
+</List>
+); };
 
 export default WithClickHandlersExample;
 ` } } />
@@ -342,7 +333,7 @@ import React, { useState } from "react";
 import { List } from "@webiny/admin-ui";
 
 const WithSelectedItemExample = () => {
-    const [selectedIndex, setSelectedIndex] = useState(0);
+const [selectedIndex, setSelectedIndex] = useState(0);
 
     return (
         <List>
@@ -366,6 +357,7 @@ const WithSelectedItemExample = () => {
             />
         </List>
     );
+
 };
 
 export default WithSelectedItemExample;
@@ -378,27 +370,27 @@ import React from "react";
 import { List } from "@webiny/admin-ui";
 
 const WithDisabledItemExample = () => {
-    return (
-        <List>
-            <List.Item
-                title="User Profile"
-                description="View and edit your profile information"
-                onClick={() => alert("User Profile clicked")}
-            />
-            <List.Item
-                title="Settings"
-                description="Configure application settings"
-                disabled={true}
-                onClick={() => alert("This alert won't show because the item is disabled")}
-            />
-            <List.Item
-                title="Help & Support"
-                description="Get assistance and view documentation"
-                onClick={() => alert("Help & Support clicked")}
-            />
-        </List>
-    );
-};
+return (
+
+<List>
+  <List.Item
+    title="User Profile"
+    description="View and edit your profile information"
+    onClick={() => alert("User Profile clicked")}
+  />
+  <List.Item
+    title="Settings"
+    description="Configure application settings"
+    disabled={true}
+    onClick={() => alert("This alert won't show because the item is disabled")}
+  />
+  <List.Item
+    title="Help & Support"
+    description="Get assistance and view documentation"
+    onClick={() => alert("Help & Support clicked")}
+  />
+</List>
+); };
 
 export default WithDisabledItemExample;
 ` } } />
@@ -410,27 +402,27 @@ import React from "react";
 import { List } from "@webiny/admin-ui";
 
 const WithActivatedItemExample = () => {
-    return (
-        <List>
-            <List.Item
-                title="User Profile"
-                description="View and edit your profile information"
-                activated={true}
-                onClick={() => console.log("User Profile clicked")}
-            />
-            <List.Item
-                title="Settings"
-                description="Configure application settings"
-                onClick={() => console.log("Settings clicked")}
-            />
-            <List.Item
-                title="Help & Support"
-                description="Get assistance and view documentation"
-                onClick={() => console.log("Help & Support clicked")}
-            />
-        </List>
-    );
-};
+return (
+
+<List>
+  <List.Item
+    title="User Profile"
+    description="View and edit your profile information"
+    activated={true}
+    onClick={() => console.log("User Profile clicked")}
+  />
+  <List.Item
+    title="Settings"
+    description="Configure application settings"
+    onClick={() => console.log("Settings clicked")}
+  />
+  <List.Item
+    title="Help & Support"
+    description="Get assistance and view documentation"
+    onClick={() => console.log("Help & Support clicked")}
+  />
+</List>
+); };
 
 export default WithActivatedItemExample;
 ` } } />
@@ -443,35 +435,31 @@ import { List } from "@webiny/admin-ui";
 import { Avatar } from "@webiny/admin-ui";
 
 const WithAvatarExample = () => {
-    return (
-        <List>
-            <List.Item
-                title="List item 1"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={
-                    <Avatar
-                        image={
-                            <Avatar.Image src="https://i.pravatar.cc/300?img=1" alt="@webiny" />
-                        }
-                        fallback={<Avatar.Fallback>W</Avatar.Fallback>}
-                    />
-                }
-            />
-            <List.Item
-                title="List item 2"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={
-                    <Avatar
-                        image={
-                            <Avatar.Image src="https://i.pravatar.cc/300?img=2" alt="@webiny" />
-                        }
-                        fallback={<Avatar.Fallback>W</Avatar.Fallback>}
-                    />
-                }
-            />
-        </List>
-    );
-};
+return (
+
+<List>
+  <List.Item
+    title="List item 1"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={
+      <Avatar
+        image={<Avatar.Image src="https://i.pravatar.cc/300?img=1" alt="@webiny" />}
+        fallback={<Avatar.Fallback>W</Avatar.Fallback>}
+      />
+    }
+  />
+  <List.Item
+    title="List item 2"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={
+      <Avatar
+        image={<Avatar.Image src="https://i.pravatar.cc/300?img=2" alt="@webiny" />}
+        fallback={<Avatar.Fallback>W</Avatar.Fallback>}
+      />
+    }
+  />
+</List>
+); };
 
 export default WithAvatarExample;
 ` } } />
@@ -483,21 +471,21 @@ import React from "react";
 import { List } from "@webiny/admin-ui";
 
 const WithHandleExample = () => {
-    return (
-        <List>
-            <List.Item
-                title="List Item 1"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                handle={<List.Item.Handle />}
-            />
-            <List.Item
-                title="List Item 2"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                handle={<List.Item.Handle />}
-            />
-        </List>
-    );
-};
+return (
+
+<List>
+  <List.Item
+    title="List Item 1"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    handle={<List.Item.Handle />}
+  />
+  <List.Item
+    title="List Item 2"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    handle={<List.Item.Handle />}
+  />
+</List>
+); };
 
 export default WithHandleExample;
 ` } } />
@@ -514,39 +502,39 @@ import { ReactComponent as MoreIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as ChartIcon } from "@webiny/icons/insert_chart.svg";
 
 const WithActionsExample = () => {
-    return (
-        <List>
-            <List.Item
-                title="List Item 1"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<List.Item.Icon icon={<ChartIcon />} label={"Chart"} />}
-                actions={
-                    <>
-                        <List.Item.Action icon={<EditIcon />} />
-                        <List.Item.Action icon={<TrashIcon />} />
-                        <List.Item.Action.Separator />
-                        <List.Item.Action icon={<OpenIcon />} />
-                        <List.Item.Action icon={<MoreIcon />} />
-                    </>
-                }
-            />
-            <List.Item
-                title="List Item 2"
-                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                icon={<List.Item.Icon icon={<ChartIcon />} label={"Chart"} />}
-                actions={
-                    <>
-                        <List.Item.Action icon={<EditIcon />} />
-                        <List.Item.Action icon={<TrashIcon />} />
-                        <List.Item.Action.Separator />
-                        <List.Item.Action icon={<OpenIcon />} />
-                        <List.Item.Action icon={<MoreIcon />} />
-                    </>
-                }
-            />
-        </List>
-    );
-};
+return (
+
+<List>
+  <List.Item
+    title="List Item 1"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<List.Item.Icon icon={<ChartIcon />} label={"Chart"} />}
+    actions={
+      <>
+        <List.Item.Action icon={<EditIcon />} />
+        <List.Item.Action icon={<TrashIcon />} />
+        <List.Item.Action.Separator />
+        <List.Item.Action icon={<OpenIcon />} />
+        <List.Item.Action icon={<MoreIcon />} />
+      </>
+    }
+  />
+  <List.Item
+    title="List Item 2"
+    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    icon={<List.Item.Icon icon={<ChartIcon />} label={"Chart"} />}
+    actions={
+      <>
+        <List.Item.Action icon={<EditIcon />} />
+        <List.Item.Action icon={<TrashIcon />} />
+        <List.Item.Action.Separator />
+        <List.Item.Action icon={<OpenIcon />} />
+        <List.Item.Action icon={<MoreIcon />} />
+      </>
+    }
+  />
+</List>
+); };
 
 export default WithActionsExample;
 ` } } />
@@ -558,14 +546,14 @@ import React from "react";
 import { List } from "@webiny/admin-ui";
 
 const WithBaseBackgroundExample = () => {
-    return (
-        <List background="base">
-            <List.Item title="List Item 1" />
-            <List.Item title="List Item 2" />
-            <List.Item title="List Item 3" />
-        </List>
-    );
-};
+return (
+
+<List background="base">
+  <List.Item title="List Item 1" />
+  <List.Item title="List Item 2" />
+  <List.Item title="List Item 3" />
+</List>
+); };
 
 export default WithBaseBackgroundExample;
 ` } } />
@@ -577,14 +565,14 @@ import React from "react";
 import { List } from "@webiny/admin-ui";
 
 const WithUnderlineVariantExample = () => {
-    return (
-        <List variant="underline">
-            <List.Item title="List Item 1" />
-            <List.Item title="List Item 2" />
-            <List.Item title="List Item 3" />
-        </List>
-    );
-};
+return (
+
+<List variant="underline">
+  <List.Item title="List Item 1" />
+  <List.Item title="List Item 2" />
+  <List.Item title="List Item 3" />
+</List>
+); };
 
 export default WithUnderlineVariantExample;
 ` } } />

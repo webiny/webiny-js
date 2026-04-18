@@ -3,8 +3,10 @@ import type { Context as BaseContext, Reply } from "@webiny/handler/types.js";
 import type { EventPluginCallableParams } from "@webiny/handler";
 import { EventPlugin } from "@webiny/handler";
 
-export interface RawEventHandlerCallableParams<Event, Context extends BaseContext>
-    extends EventPluginCallableParams<Event, Context> {
+export interface RawEventHandlerCallableParams<
+    Event,
+    Context extends BaseContext
+> extends EventPluginCallableParams<Event, Context> {
     lambdaContext: LambdaContext;
 }
 export interface RawEventHandlerCallable<Event, Context extends BaseContext, Response> {

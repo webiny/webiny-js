@@ -17,12 +17,14 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `DomainEvent`
 **Import:** `import { DomainEvent } from "webiny/api/event-publisher"`
 **Source:** `@webiny/api-core/features/eventPublisher/index.ts`
 **Description:** Base class for all domain events.
 
 ---
+
 **Name:** `EventPublisher`
 **Import:** `import { EventPublisher } from "webiny/api/event-publisher"`
 **Source:** `@webiny/api-core/features/eventPublisher/index.ts`

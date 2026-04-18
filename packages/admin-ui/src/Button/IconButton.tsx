@@ -121,7 +121,8 @@ const iconButtonVariants = cva(
 );
 
 interface IconButtonProps
-    extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">,
+    extends
+        Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">,
         VariantProps<typeof iconButtonVariants> {
     icon?: React.ReactNode;
     asChild?: boolean;

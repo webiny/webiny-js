@@ -55,7 +55,7 @@ export const createSingularSDL: CreateSingularSDL = ({
         return `${field}: ${fieldType}`;
     }).join("\n");
 
-    // Had to remove /* GraphQL */ because prettier would not format the code correctly.
+    // Had to remove /* GraphQL */ because it causes issues with oxfmt formatting.
     const read = `
         """${model.description || singularName}"""
         

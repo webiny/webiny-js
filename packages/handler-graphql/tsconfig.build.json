@@ -33,7 +33,6 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

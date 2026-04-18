@@ -4,7 +4,8 @@ import { FieldType, type IFieldTypeFactory } from "./abstractions.js";
 import type { FieldTypeValidator } from "./fieldTypeValidator.js";
 
 export interface ITextFieldBuilder
-    extends DataFieldBuilder<"text">,
+    extends
+        DataFieldBuilder<"text">,
         FieldTypeValidator.Required,
         FieldTypeValidator.MinLength,
         FieldTypeValidator.MaxLength,

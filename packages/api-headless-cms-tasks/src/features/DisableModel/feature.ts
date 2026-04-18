@@ -17,9 +17,9 @@ export interface LegacyDeps {
     isModelBeingDeleted: HeadlessCmsFullyDeleteModel["isModelBeingDeleted"];
 }
 
-export const DisableModelFeature = createFeature({
+export const DisableModelFeature = createFeature<LegacyDeps>({
     name: "DisableModel",
-    register(container, params: LegacyDeps) {
+    register(container, params) {
         // Register the blocking service
         container.registerInstance(
             Abstraction,

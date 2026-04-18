@@ -1,6 +1,7 @@
 ## How To Use?
 
 ### Information About `env` and `variant` Parameters
+
 We will use `dev` environment in the examples.
 
 Variants can be anything you like, for our example we use `blue` and `green`, but you can use `orange`, `black`, `car`,
@@ -27,18 +28,21 @@ Also, there can be more than two systems, so you can deploy as many as you like,
 ### Install Webiny Blue Variant
 
 Do a:
+
 ```
 yarn webiny info
 ```
+
 Find the `blue` variant Admin URL, and open it in your browser. Install the system by following the instructions.
 
 At that point, green system should be installed as well.
 
-
 # TODO
 
 ### Add BlueGreen, Resolver and Work Folders to User Projects
+
 We need to deploy the following folders to the user project:
+
 - blueGreen
 - sync/resolver
 - sync/worker
@@ -68,9 +72,11 @@ records, but when deleting, we do not have the modelId in the item being deleted
 Maybe implement filtering in the resolver ?
 
 ### Add proper logging?
+
 Use pino to log all events, separated in proper levels (info, warn, error, debug, etc...).
 
 ### Move Resolver plugins (file manager, users) into their own packages
+
 We should move the resolver plugins for file manager and users into their own packages, and those packages should register them.
 
 ### Implement Dependency Injection
@@ -79,9 +85,9 @@ Currently, we need to pass a ton of methods to the Sync system handlers. It woul
 
 ```typescript
 const handler = createSyncResolverHandler({
-    plugins: [],
-    debug: process.env.DEBUG === "true",
-    awsWorkerLambdaArn: process.env.AWS_SYNC_WORKER_LAMBDA_ARN,
+  plugins: [],
+  debug: process.env.DEBUG === "true",
+  awsWorkerLambdaArn: process.env.AWS_SYNC_WORKER_LAMBDA_ARN
 });
 ```
 
@@ -89,13 +95,13 @@ if we did not need to pass all creator methods:
 
 ```typescript
 const handler = createSyncResolverHandler({
-    plugins: [],
-    debug: process.env.DEBUG === "true",
-    awsWorkerLambdaArn: process.env.AWS_SYNC_WORKER_LAMBDA_ARN,
-    createS3Client,
-    createLambdaClient,
-    createDocumentClient,
-    createCognitoIdentityProviderClient
+  plugins: [],
+  debug: process.env.DEBUG === "true",
+  awsWorkerLambdaArn: process.env.AWS_SYNC_WORKER_LAMBDA_ARN,
+  createS3Client,
+  createLambdaClient,
+  createDocumentClient,
+  createCognitoIdentityProviderClient
 });
 ```
 
