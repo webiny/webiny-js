@@ -10,6 +10,7 @@ class MyApiRouteImpl implements Route.Interface {
         // AI ready!
         const { text } = await this.aiService.generateText({
             model: "anthropic/claude-sonnet-4-5",
+            connection: 'my-other-conn',
             prompt: "Is this working?!"
         });
 
