@@ -47,6 +47,9 @@ export type { AaclPermission } from "./features/wcp/types.js";
 export type { Tenant } from "./features/tenancy/types.js";
 
 export { BuildParamsFeature } from "./features/buildParams/feature.js";
+export { ToolsFeature } from "./features/tools/feature.js";
+export { Tool, ToolRegistry, PipelineRunner } from "./features/tools/abstractions.js";
+export type { ITool, IToolRegistry, IToolPipelineRunner } from "./features/tools/abstractions.js";
 
 // Hooks
 export * from "./hooks/index.js";
