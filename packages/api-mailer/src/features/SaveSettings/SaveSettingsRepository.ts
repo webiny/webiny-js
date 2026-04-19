@@ -1,5 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import { Encryption } from "~/domain/Encryption/abstractions.js";
+import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { SaveSettingsRepository, type SaveSettingsInput } from "./abstractions.js";
 import type { TransportSettings } from "~/types.js";
 import { SettingsPersistenceError } from "~/domain/errors.js";
@@ -24,11 +24,11 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
         // If updating and no password provided, keep the existing password
         let passwordToStore = input.password || "";
         if (!input.password && existingSettings) {
-            passwordToStore = await this.encryption.decrypt(transportSettings.password || "");
+            passwordToStore = this.encryption.decrypt(transportSettings.password || "");
         }
 
         // Encrypt password
-        const encryptedPassword = await this.encryption.encrypt(passwordToStore);
+        const encryptedPassword = this.encryption.encrypt(passwordToStore);
 
         // Prepare data
         const data = {

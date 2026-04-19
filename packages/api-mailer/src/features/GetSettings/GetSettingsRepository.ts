@@ -1,5 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import { Encryption } from "~/domain/Encryption/abstractions.js";
+import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetSettingsRepository } from "./abstractions.js";
 import type { TransportSettings } from "~/types.js";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
@@ -25,7 +25,7 @@ class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
 
         // Decrypt password if present
         const password = settings.password
-            ? await this.encryption.decrypt(String(settings.password))
+            ? this.encryption.decrypt(String(settings.password))
             : "";
 
         const transportSettings: TransportSettings = {
