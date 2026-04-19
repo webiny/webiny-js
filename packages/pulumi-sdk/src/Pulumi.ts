@@ -199,12 +199,11 @@ export class Pulumi {
         }
 
         const pluginsDir = path.join(this.pulumiFolder, "plugins");
+        // Pulumi names plugin directories with a "v" prefix (e.g. resource-aws-v7.25.0).
         const requiredPluginDir = `resource-aws-v${pulumiAwsVersion}`;
 
-        const pluginBinary =
-            process.platform === "win32" ? "pulumi-resource-aws.exe" : "pulumi-resource-aws";
         const pluginExists = fs.pathExistsSync(
-            path.join(pluginsDir, requiredPluginDir, pluginBinary)
+            path.join(pluginsDir, requiredPluginDir, "pulumi-resource-aws")
         );
 
         if (!pluginExists) {
@@ -231,6 +230,7 @@ export class Pulumi {
                 // lock file are matched by the same prefix check.
                 const baseName = entry.endsWith(".lock") ? entry.slice(0, -5) : entry;
                 if (baseName !== requiredPluginDir) {
+                    console.log("DERI", entry);
                     fs.removeSync(path.join(pluginsDir, entry));
                 }
             }

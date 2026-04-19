@@ -3,12 +3,14 @@ import { CmsSdk } from "./CmsSdk.js";
 import { TenantManagerSdk } from "./TenantManagerSdk.js";
 import { FileManagerSdk } from "./FileManagerSdk.js";
 import { LanguagesSdk } from "./LanguagesSdk.js";
+import { TasksSdk } from "./TasksSdk.js";
 
 export class Webiny {
     public readonly cms: CmsSdk;
     public readonly tenantManager: TenantManagerSdk;
     public readonly fileManager: FileManagerSdk;
     public readonly languages: LanguagesSdk;
+    public readonly tasks: TasksSdk;
 
     constructor(config: WebinyConfig) {
         this.cms = new CmsSdk({
@@ -24,6 +26,10 @@ export class Webiny {
             tenant: config.tenant || "root"
         });
         this.languages = new LanguagesSdk({
+            ...config,
+            tenant: config.tenant || "root"
+        });
+        this.tasks = new TasksSdk({
             ...config,
             tenant: config.tenant || "root"
         });
