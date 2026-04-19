@@ -60,6 +60,8 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
         const srcPrefix = settingsResult.isOk() ? (settingsResult.value.srcPrefix ?? "") : "";
         const imageUrl = `${srcPrefix}${file.key}`;
 
+        // TODO: for now we're loading first provider, but later we'll be loading
+        // TODO: the right provider via AI Powerups settings.
         const aiPowerupsResult = await this.aiPowerupsSettings.execute();
         const firstProvider = aiPowerupsResult.isOk()
             ? aiPowerupsResult.value?.providers[0]
