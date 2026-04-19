@@ -15,27 +15,29 @@ function keyLengthForAlgorithm(algorithm: string): number {
 }
 
 export class EncryptionImpl implements EncryptionAbstraction.Interface {
-    private key: Buffer;
+    private key: Buffer | null;
     private algorithm: string;
 
     constructor(buildParams: BuildParams.Interface) {
         const passphrase = buildParams.get<string>("EncryptionPassphrase");
-        if (!passphrase) {
-            throw new Error(
-                'Encryption passphrase is not configured. Set it via <Infra.Encryption passphrase="..." /> in webiny.config.tsx.'
-            );
+
+        if (passphrase) {
+            // Salt is optional. It ensures two projects using the same passphrase derive different keys,
+            // but since passphrases should be unique per project anyway, it's extra insurance rather than a necessity.
+            const salt = buildParams.get<string>("EncryptionSalt") ?? "";
+            this.algorithm = buildParams.get<string>("EncryptionAlgorithm") ?? DEFAULT_ALGORITHM;
+            const keyLength = keyLengthForAlgorithm(this.algorithm);
+            this.key = crypto.scryptSync(passphrase, salt, keyLength);
+        } else {
+            this.key = null;
+            this.algorithm = DEFAULT_ALGORITHM;
         }
-
-        // Salt is optional. It ensures two projects using the same passphrase derive different keys,
-        // but since passphrases should be unique per project anyway, it's extra insurance rather than a necessity.
-        const salt = buildParams.get<string>("EncryptionSalt") ?? "";
-
-        this.algorithm = buildParams.get<string>("EncryptionAlgorithm") ?? DEFAULT_ALGORITHM;
-        const keyLength = keyLengthForAlgorithm(this.algorithm);
-        this.key = crypto.scryptSync(passphrase, salt, keyLength);
     }
 
     encrypt(value: string): string {
+        if (!this.key) {
+            return value;
+        }
         const iv = crypto.randomBytes(12);
         const cipher = crypto.createCipheriv(this.algorithm, this.key, iv);
         const encrypted = Buffer.concat([cipher.update(value, "utf8"), cipher.final()]);
@@ -44,6 +46,9 @@ export class EncryptionImpl implements EncryptionAbstraction.Interface {
     }
 
     decrypt(value: string): string {
+        if (!this.key) {
+            return value;
+        }
         const data = Buffer.from(value, "base64");
         const iv = data.subarray(0, 12);
         const authTag = data.subarray(12, 28);
