@@ -34,11 +34,13 @@ import {
 
 import { OpenSearch } from "./extensions/OpenSearch.js";
 import { AwsDefaultRegion } from "./extensions/AwsDefaultRegion.js";
+import { Encryption } from "./extensions/Encryption.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
 import { EnvVar } from "@webiny/project/extensions/index.js";
 import { EnvIs, EnvIsNot, CiIs, CiIsNot } from "@webiny/project/extensions/infra/index.js";
 
 export const Infra = {
+    Encryption,
     Vpc,
     BlueGreenDeployments,
     OpenSearch,
