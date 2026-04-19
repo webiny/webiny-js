@@ -4,7 +4,6 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-headless-cms" },
-    { "path": "../error" },
     { "path": "../feature" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
@@ -25,8 +24,6 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
