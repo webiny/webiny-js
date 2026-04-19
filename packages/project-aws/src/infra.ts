@@ -36,6 +36,7 @@ import { OpenSearch } from "./extensions/OpenSearch.js";
 import { AwsDefaultRegion } from "./extensions/AwsDefaultRegion.js";
 import { Encryption } from "./extensions/Encryption.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
+import { Smtp as MailerSmtp } from "./extensions/Mailer/Smtp.js";
 import { EnvVar } from "@webiny/project/extensions/index.js";
 import {
     EnvIs,
@@ -57,6 +58,9 @@ export const Infra = {
     PulumiResourceNamePrefix,
     ProductionEnvironments,
     EnvVar,
+    Mailer: {
+        Smtp: MailerSmtp
+    },
     Aws: {
         DefaultRegion: AwsDefaultRegion,
         Tags: AwsTags
