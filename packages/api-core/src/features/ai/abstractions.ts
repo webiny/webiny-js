@@ -33,10 +33,13 @@ export namespace AiSdkFactory {
 
 // AiConnection
 
-export interface IAiConnection {
-    readonly id: string;
+export interface IAiConnectionInline {
     readonly sdkName: string;
     readonly apiKey?: string;
+}
+
+export interface IAiConnection extends IAiConnectionInline {
+    readonly id: string;
 }
 
 /**
@@ -47,6 +50,8 @@ export const AiConnection = createAbstraction<IAiConnection>("AiConnection");
 
 export namespace AiConnection {
     export type Interface = IAiConnection;
+    /** Inline/ephemeral connection — no id needed, just sdkName + optional apiKey. */
+    export type Inline = IAiConnectionInline;
 }
 
 // AiConnectionFactory
@@ -69,17 +74,17 @@ type SDKStreamTextParams = Parameters<typeof streamText>[0];
 
 export type AiGenerateTextParams = Omit<SDKGenerateTextParams, "model"> & {
     model: string;
-    connection?: string | IAiConnection;
+    connection?: string | IAiConnectionInline;
 };
 export type AiStreamTextParams = Omit<SDKStreamTextParams, "model"> & {
     model: string;
-    connection?: string | IAiConnection;
+    connection?: string | IAiConnectionInline;
 };
 
 export interface IAi {
     generateText(params: AiGenerateTextParams): ReturnType<typeof generateText>;
     streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>>;
-    listModels(connection?: string | IAiConnection): Promise<string[]>;
+    listModels(connection?: string | IAiConnectionInline): Promise<string[]>;
 }
 
 /** Interact with AI language models using registered providers. */

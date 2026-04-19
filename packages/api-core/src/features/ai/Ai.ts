@@ -9,6 +9,7 @@ import type { AiGenerateTextParams } from "./abstractions.js";
 import type { AiStreamTextParams } from "./abstractions.js";
 import type { IAiSdk } from "./abstractions.js";
 import type { IAiConnection } from "./abstractions.js";
+import type { IAiConnectionInline } from "./abstractions.js";
 import type { LanguageModel } from "ai";
 
 class AiImpl implements AiAbstraction.Interface {
@@ -31,9 +32,16 @@ class AiImpl implements AiAbstraction.Interface {
         });
     }
 
-    async listModels(connection?: string | IAiConnection): Promise<string[]> {
+    async streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>> {
+        const { model, connection, ...rest } = params;
+        const resolvedModel = await this.resolveLanguageModel(model, connection);
+        // Cast required: spreading the discriminated Prompt union loses its narrowing.
+        return streamText({ model: resolvedModel, ...rest } as Parameters<typeof streamText>[0]);
+    }
+
+    async listModels(connection?: string | IAiConnectionInline): Promise<string[]> {
         if (connection !== undefined) {
-            const conn = await this.resolveNamedConnection(connection);
+            const conn = await this.resolveConnection(undefined, connection);
             const sdk = await this.getSdk(conn);
             return sdk.listModels().map(m => `${conn.sdkName}/${m}`);
         }
@@ -48,16 +56,9 @@ class AiImpl implements AiAbstraction.Interface {
         return results.flat();
     }
 
-    async streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>> {
-        const { model, connection, ...rest } = params;
-        const resolvedModel = await this.resolveLanguageModel(model, connection);
-        // Cast required: spreading the discriminated Prompt union loses its narrowing.
-        return streamText({ model: resolvedModel, ...rest } as Parameters<typeof streamText>[0]);
-    }
-
     private async resolveLanguageModel(
         modelId: string,
-        connection?: string | IAiConnection
+        connection?: string | IAiConnectionInline
     ): Promise<LanguageModel> {
         const slashIndex = modelId.indexOf("/");
         if (slashIndex === -1) {
@@ -86,14 +87,26 @@ class AiImpl implements AiAbstraction.Interface {
     }
 
     private async resolveConnection(
-        sdkName: string,
-        connection?: string | IAiConnection
-    ): Promise<IAiConnection> {
-        if (connection !== undefined) {
-            return this.resolveNamedConnection(connection);
+        sdkName: string | undefined,
+        connection?: string | IAiConnectionInline
+    ): Promise<IAiConnectionInline> {
+        if (typeof connection === "object") {
+            return connection;
         }
 
         const connections = await this.getConnections();
+
+        if (typeof connection === "string") {
+            const found = connections.find(c => c.id === connection);
+            if (!found) {
+                const known = connections.map(c => `"${c.id}"`).join(", ");
+                throw new Error(
+                    `Unknown AI connection "${connection}". Registered connections: ${known}.`
+                );
+            }
+            return found;
+        }
+
         const found = connections.find(c => c.sdkName === sdkName);
         if (!found) {
             const known = connections.map(c => `"${c.id}" (${c.sdkName})`).join(", ");
@@ -104,24 +117,13 @@ class AiImpl implements AiAbstraction.Interface {
         return found;
     }
 
-    private async resolveNamedConnection(connection: string | IAiConnection): Promise<IAiConnection> {
-        if (typeof connection === "object") {
-            return connection;
-        }
+    private async getSdk(connection: IAiConnectionInline): Promise<IAiSdk> {
+        const cacheKey =
+            "id" in connection
+                ? (connection as IAiConnection).id
+                : `${connection.sdkName}:${connection.apiKey ?? "__env__"}`;
 
-        const connections = await this.getConnections();
-        const found = connections.find(c => c.id === connection);
-        if (!found) {
-            const known = connections.map(c => `"${c.id}"`).join(", ");
-            throw new Error(
-                `Unknown AI connection "${connection}". Registered connections: ${known}.`
-            );
-        }
-        return found;
-    }
-
-    private async getSdk(connection: IAiConnection): Promise<IAiSdk> {
-        const cached = this.sdkCache.get(connection.id);
+        const cached = this.sdkCache.get(cacheKey);
         if (cached) {
             return cached;
         }
@@ -135,7 +137,7 @@ class AiImpl implements AiAbstraction.Interface {
         }
 
         const sdk = await factory.execute(connection.apiKey);
-        this.sdkCache.set(connection.id, sdk);
+        this.sdkCache.set(cacheKey, sdk);
         return sdk;
     }
 }
