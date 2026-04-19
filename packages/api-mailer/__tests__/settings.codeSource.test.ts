@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { createContextHandler } from "./contextHandler";
+import { createGraphQLHandler } from "./graphQLHandler";
 import { GetSettingsUseCase } from "~/features/GetSettings/abstractions.js";
 import { SaveSettingsUseCase } from "~/features/SaveSettings/abstractions.js";
 import { SendMailUseCase } from "~/features/SendMail/abstractions.js";
@@ -91,6 +92,63 @@ describe("Mailer settings — code source end-to-end", () => {
         expect(result.value).toEqual({
             result: "ok",
             error: null
+        });
+    });
+
+    it("GraphQL getSettings returns source=code with the password stripped", async () => {
+        const handler = createGraphQLHandler({
+            plugins: [registerCodeSmtpSettings(codeSettings)]
+        });
+
+        const [response] = await handler.getSettings();
+
+        expect(response).toEqual({
+            data: {
+                mailer: {
+                    getSettings: {
+                        data: {
+                            host: codeSettings.host,
+                            port: codeSettings.port,
+                            user: codeSettings.user,
+                            from: codeSettings.from,
+                            replyTo: codeSettings.replyTo,
+                            source: "code"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    it("GraphQL saveSettings is rejected with Mailer/Settings/LockedByCode", async () => {
+        const handler = createGraphQLHandler({
+            plugins: [registerCodeSmtpSettings(codeSettings)]
+        });
+
+        const [response] = await handler.saveSettings({
+            data: {
+                host: "ignored.webiny",
+                user: "ignored",
+                password: "ignored",
+                from: "ignored@example.com"
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                mailer: {
+                    saveSettings: {
+                        data: null,
+                        error: {
+                            code: "Mailer/Settings/LockedByCode",
+                            message:
+                                "Mailer settings are managed by code and cannot be saved via the API.",
+                            data: null
+                        }
+                    }
+                }
+            }
         });
     });
 });
