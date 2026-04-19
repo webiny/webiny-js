@@ -52,13 +52,14 @@ export namespace SaveSettingsUseCase {
     export type Error = SaveSettingsError;
 }
 
-// Domain Events
+// Domain Events. Both payloads exclude `password` so subscribers (audit logs,
+// telemetry, etc.) cannot accidentally persist plaintext or ciphertext secrets.
 export interface MailerSettingsBeforeSavePayload {
-    input: SaveSettingsInput;
+    input: Omit<SaveSettingsInput, "password">;
 }
 
 export interface MailerSettingsAfterSavePayload {
-    settings: TransportSettings;
+    settings: Omit<TransportSettings, "password">;
 }
 
 // Event Handler Abstractions

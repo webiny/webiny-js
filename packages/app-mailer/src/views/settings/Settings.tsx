@@ -67,11 +67,9 @@ export const Settings = () => {
                     mutation={SAVE_SETTINGS_MUTATION}
                 >
                     {(update, result) => {
-                        const {
-                            data: settingsData,
-                            error: settingsError,
-                            source: settingsSource
-                        } = response?.mailer.settings || {};
+                        const { data: settingsData, error: settingsError } =
+                            response?.mailer.settings || {};
+                        const settingsSource = settingsData?.source;
                         const { loading: mutationInProgress } = result;
 
                         const onSubmit = async (data: TransportSettings): Promise<void> => {

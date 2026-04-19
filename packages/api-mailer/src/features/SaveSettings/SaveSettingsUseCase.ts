@@ -48,8 +48,10 @@ class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
             return Result.fail(new SettingsLockedByCode());
         }
 
-        // Publish before save event.
-        const beforeSaveEvent = new MailerSettingsBeforeSaveEvent({ input });
+        // Publish before save event. Strip the password — subscribers (audit
+        // logs, telemetry) must never see the plaintext value from the input.
+        const { password: _beforePassword, ...inputForEvent } = input;
+        const beforeSaveEvent = new MailerSettingsBeforeSaveEvent({ input: inputForEvent });
         await this.eventPublisher.publish(beforeSaveEvent);
 
         // Save settings.
@@ -59,8 +61,10 @@ class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
             return Result.fail(new SettingsPersistenceError(result.error));
         }
 
-        // Publish after save event.
-        const afterSaveEvent = new MailerSettingsAfterSaveEvent({ settings: result.value });
+        // Publish after save event. Strip the (encrypted) password for the same
+        // reason — audit subscribers only need the non-sensitive fields.
+        const { password: _afterPassword, ...settingsForEvent } = result.value;
+        const afterSaveEvent = new MailerSettingsAfterSaveEvent({ settings: settingsForEvent });
         await this.eventPublisher.publish(afterSaveEvent);
 
         return result;

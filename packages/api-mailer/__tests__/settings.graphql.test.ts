@@ -20,7 +20,6 @@ describe("Mailer Settings GraphQL", () => {
                 mailer: {
                     getSettings: {
                         data: null,
-                        source: null,
                         error: null
                     }
                 }
@@ -48,9 +47,9 @@ describe("Mailer Settings GraphQL", () => {
                             host: "dummy-host.webiny",
                             port: 25,
                             replyTo: "replyTo@dummy-host.webiny",
-                            user: "user"
+                            user: "user",
+                            source: "storage"
                         },
-                        source: "storage",
                         error: null
                     }
                 }
@@ -68,9 +67,9 @@ describe("Mailer Settings GraphQL", () => {
                             host: "dummy-host.webiny",
                             port: 25,
                             replyTo: "replyTo@dummy-host.webiny",
-                            user: "user"
+                            user: "user",
+                            source: "storage"
                         },
-                        source: "storage",
                         error: null
                     }
                 }
@@ -98,9 +97,9 @@ describe("Mailer Settings GraphQL", () => {
                             port: 25,
                             user: "user2",
                             from: "from2@dummy-host.webiny",
-                            replyTo: "replyTo2@dummy-host.webiny"
+                            replyTo: "replyTo2@dummy-host.webiny",
+                            source: "storage"
                         },
-                        source: "storage",
                         error: null
                     }
                 }
@@ -126,9 +125,9 @@ describe("Mailer Settings GraphQL", () => {
                             port: 25,
                             user: "user3",
                             from: "from3@dummy-host.webiny",
-                            replyTo: "replyTo3@dummy-host.webiny"
+                            replyTo: "replyTo3@dummy-host.webiny",
+                            source: "storage"
                         },
-                        source: "storage",
                         error: null
                     }
                 }
@@ -155,7 +154,6 @@ describe("Mailer Settings GraphQL", () => {
                 mailer: {
                     saveSettings: {
                         data: null,
-                        source: null,
                         error: {
                             data: null,
                             code: "Mailer/Settings/NotAuthorized",

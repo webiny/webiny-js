@@ -8,8 +8,8 @@ export const GET_SETTINGS_QUERY = `
                     user
                     from
                     replyTo
+                    source
                 }
-                source
                 error {
                     message
                     code
@@ -30,8 +30,8 @@ export const SAVE_SETTINGS_MUTATION = `
                     user
                     from
                     replyTo
+                    source
                 }
-                source
                 error {
                     message
                     code

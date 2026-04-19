@@ -2,22 +2,25 @@ import { ErrorResponse, GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { GetSettingsUseCase } from "~/features/GetSettings/abstractions.js";
 import { SaveSettingsUseCase } from "~/features/SaveSettings/abstractions.js";
 import { ActiveTransport } from "~/domain/MailTransport/abstractions.js";
+import type { MailerSettingsSource } from "~/features/GetSettings/abstractions.js";
 import type { Context } from "@webiny/api/types.js";
 import type { TransportSettings } from "~/types.js";
 
 const emptyResolver = () => ({});
 
-// Strip `password` before the settings leave the server. The GraphQL schema does not
-// expose a `password` field on the output type, but we defend in depth by never passing
-// the encrypted blob into the resolver's return object.
+// Strip `password` before the settings leave the server and tack on `source` so
+// the admin UI can branch on code-vs-storage. Defense in depth: the schema also
+// omits `password` on the output type, but we never pass the encrypted blob
+// into the resolver's return object either.
 const toPublicSettings = (
-    settings: TransportSettings | null
-): Omit<TransportSettings, "password"> | null => {
+    settings: TransportSettings | null,
+    source: MailerSettingsSource
+): (Omit<TransportSettings, "password"> & { source: MailerSettingsSource }) | null => {
     if (!settings) {
         return null;
     }
     const { password: _password, ...publicSettings } = settings;
-    return publicSettings;
+    return { ...publicSettings, source };
 };
 
 export const createSettingsGraphQL = () => {
@@ -35,11 +38,11 @@ export const createSettingsGraphQL = () => {
                 user: String
                 from: String
                 replyTo: String
+                source: String
             }
 
             type MailerTransportSettingsResponse {
                 data: MailerTransportSettings
-                source: String
                 error: MailerTransportSettingsError
             }
 
@@ -78,7 +81,7 @@ export const createSettingsGraphQL = () => {
                         const transportName = activeTransport.name();
 
                         if (!transportName) {
-                            return { data: null, source: null, error: null };
+                            return { data: null, error: null };
                         }
 
                         const getSettings = context.container.resolve(GetSettingsUseCase);
@@ -87,8 +90,7 @@ export const createSettingsGraphQL = () => {
                         const { settings, source } = result.value;
 
                         return {
-                            data: toPublicSettings(settings),
-                            source,
+                            data: toPublicSettings(settings, source),
                             error: null
                         };
                     } catch (ex) {
@@ -110,8 +112,7 @@ export const createSettingsGraphQL = () => {
                         }
 
                         return {
-                            data: toPublicSettings(result.value),
-                            source: "storage",
+                            data: toPublicSettings(result.value, "storage"),
                             error: null
                         };
                     } catch (ex) {
