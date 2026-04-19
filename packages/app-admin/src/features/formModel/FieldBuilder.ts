@@ -8,7 +8,6 @@ import type {
     ISelectFieldBuilder,
     IObjectFieldBuilder,
     IFieldBuilderRegistry,
-    ItemTitleResolver,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
@@ -41,6 +40,21 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
+    help(text: string): this {
+        this._config.help = text;
+        return this;
+    }
+
+    description(text: string): this {
+        this._config.description = text;
+        return this;
+    }
+
+    note(text: string): this {
+        this._config.note = text;
+        return this;
+    }
+
     placeholder(text: string): this {
         this._config.placeholder = text;
         return this;
@@ -56,8 +70,9 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
-    renderer(name: string): this {
+    renderer(name: string, settings?: Record<string, unknown>): this {
         this._config.renderer = name;
+        this._config.rendererSettings = settings;
         return this;
     }
 
@@ -120,7 +135,7 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
 export class TextFieldBuilder extends FieldBuilder<"text"> {
     constructor() {
         super("text");
-        this._config.renderer = "text";
+        this._config.renderer = "input";
     }
 }
 
@@ -130,7 +145,7 @@ export class TextFieldBuilder extends FieldBuilder<"text"> {
 export class SelectFieldBuilder extends FieldBuilder<"select"> implements ISelectFieldBuilder {
     constructor() {
         super("select");
-        this._config.renderer = "select";
+        this._config.renderer = "dropdown";
     }
 
     options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this {
@@ -146,7 +161,6 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
     private _childBuilders: Record<string, IFieldBuilder> = {};
     private _isList = false;
     private _listSchema?: z.ZodTypeAny;
-    private _itemTitle?: ItemTitleResolver;
 
     constructor() {
         super("object");
@@ -169,19 +183,13 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
         return this;
     }
 
-    itemTitle(resolver: ItemTitleResolver): this {
-        this._itemTitle = resolver;
-        return this;
-    }
-
     override build(name: string): IObjectFieldConfig {
         return {
             ...this._config,
             name,
             childBuilders: this._childBuilders,
             isList: this._isList,
-            listSchema: this._listSchema,
-            itemTitle: this._itemTitle
+            listSchema: this._listSchema
         };
     }
 }

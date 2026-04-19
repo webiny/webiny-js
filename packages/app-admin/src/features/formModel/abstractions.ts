@@ -2,6 +2,25 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { z } from "zod";
 
 // ---------------------------------------------------------------------------
+// Renderer registry — augmented by each renderer via declare module
+// ---------------------------------------------------------------------------
+
+export interface IFieldRendererRegistry {}
+
+export type FieldRendererName<TType extends string = string> = string extends TType
+    ? keyof IFieldRendererRegistry & string
+    : {
+          [K in keyof IFieldRendererRegistry]: TType extends IFieldRendererRegistry[K]["fieldType"]
+              ? K
+              : never;
+      }[keyof IFieldRendererRegistry] &
+          string;
+
+export type FieldRendererSettings<TName extends string> = TName extends keyof IFieldRendererRegistry
+    ? IFieldRendererRegistry[TName]["settings"]
+    : Record<string, unknown> | undefined;
+
+// ---------------------------------------------------------------------------
 // Field types
 // ---------------------------------------------------------------------------
 
@@ -9,9 +28,13 @@ export interface IFieldConfig {
     name: string;
     type: string;
     label?: string;
+    help?: string;
+    description?: string;
+    note?: string;
     placeholder?: string;
     defaultValue?: unknown;
     renderer?: string;
+    rendererSettings?: Record<string, unknown>;
     hidden: boolean;
     required: boolean;
     requiredMessage?: string;
@@ -39,12 +62,16 @@ export interface IFieldVM {
     name: string;
     type: string;
     label?: string;
+    help?: string;
+    description?: string;
+    note?: string;
     placeholder?: string;
     value: unknown;
     validation: IFieldValidation;
     required: boolean;
     disabled: boolean;
     renderer?: string;
+    rendererSettings?: Record<string, unknown>;
     options?: IValueOption[];
     onChange: (value: unknown) => void;
     onBlur: () => void;
@@ -64,7 +91,6 @@ export interface IObjectFieldVM extends IFieldVM {
 
 export interface IObjectFieldItemVM {
     key: string;
-    title: string;
     fields: IFieldVM[];
     remove: () => void;
     moveUp: () => void;
@@ -115,13 +141,10 @@ export interface ISelectField extends IField {
 // Object / List field types
 // ---------------------------------------------------------------------------
 
-export type ItemTitleResolver = string | ((data: Record<string, unknown>, index: number) => string);
-
 export interface IObjectFieldConfig extends IFieldConfig {
     childBuilders: Record<string, IFieldBuilder>;
     isList: boolean;
     listSchema?: z.ZodTypeAny;
-    itemTitle?: ItemTitleResolver;
 }
 
 export interface IObjectField extends IField {
@@ -376,12 +399,22 @@ export interface ILayoutBuilder {
     element(renderer: string, props?: Record<string, unknown>): IElementNode;
 }
 
-export interface IFieldBuilder {
+export interface IFieldBuilder<TType extends string = string> {
     label(text: string): this;
+    help(text: string): this;
+    description(text: string): this;
+    note(text: string): this;
     placeholder(text: string): this;
     schema(zodSchema: z.ZodTypeAny): this;
     defaultValue(value: unknown): this;
-    renderer(name: string): this;
+    renderer<TName extends FieldRendererName<TType>>(
+        name: TName,
+        ...args: undefined extends FieldRendererSettings<TName>
+            ? [settings?: FieldRendererSettings<TName>]
+            : FieldRendererSettings<TName> extends undefined
+              ? []
+              : [settings: FieldRendererSettings<TName>]
+    ): this;
     hidden(): this;
     required(message?: string): this;
     disabled(value?: boolean): this;
@@ -392,19 +425,18 @@ export interface IFieldBuilder {
     build(name: string): IFieldConfig;
 }
 
-export interface ISelectFieldBuilder extends IFieldBuilder {
+export interface ISelectFieldBuilder extends IFieldBuilder<"select"> {
     options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this;
 }
 
-export interface IObjectFieldBuilder extends IFieldBuilder {
+export interface IObjectFieldBuilder extends IFieldBuilder<"object"> {
     fields(fn: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this;
     list(): this;
     listSchema(schema: z.ZodTypeAny): this;
-    itemTitle(resolver: ItemTitleResolver): this;
 }
 
 export interface IFieldBuilderRegistry {
-    text(): IFieldBuilder;
+    text(): IFieldBuilder<"text">;
     select(): ISelectFieldBuilder;
     object(): IObjectFieldBuilder;
 }

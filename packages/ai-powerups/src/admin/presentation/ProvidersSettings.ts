@@ -1,10 +1,10 @@
-import { AiPowerUpsSettingsGroup } from "../AiPowerUpsSettings/settingsGroup.js";
-import { ListModelsUseCase, ListModelsRepository } from "../features/listModels/abstractions.js";
+import { AiPowerUpsSettingsGroup } from "./AiPowerUpsSettings/settingsGroup.js";
+import { ListModelsUseCase, ListModelsRepository } from "./ListModels/abstractions.js";
 
-class GeneralSettingsGroupImpl implements AiPowerUpsSettingsGroup.Interface {
-    name = "general";
-    label = "General";
-    description = "Configure AI model presets.";
+class ProviderSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
+    name = "providers";
+    label = "Providers";
+    description = "Configure AI model providers.";
 
     constructor(
         private useCase: ListModelsUseCase.Interface,
@@ -17,8 +17,10 @@ class GeneralSettingsGroupImpl implements AiPowerUpsSettingsGroup.Interface {
         form.fields(fields => ({
             presets: fields
                 .object()
-                .label("Presets")
-                .renderer("objectListFlat")
+                .renderer("objectListFlat", {
+                    addItemLabel: "Add preset",
+                    itemTitle: (data, index) => String(data.name || `Preset #${index + 1}`)
+                })
                 .fields(f => ({
                     name: f.text().label("Name").required("Name is required"),
                     model: f
@@ -29,7 +31,6 @@ class GeneralSettingsGroupImpl implements AiPowerUpsSettingsGroup.Interface {
                     apiKey: f.text().label("API Key").required("API Key is required")
                 }))
                 .list()
-                // .itemTitle(data =>  String(data.name || "Preset"))
         }));
 
         form.layout(layout => [layout.row("presets")]);
@@ -43,7 +44,7 @@ class GeneralSettingsGroupImpl implements AiPowerUpsSettingsGroup.Interface {
     }
 }
 
-export const GeneralSettingsGroup = AiPowerUpsSettingsGroup.createImplementation({
-    implementation: GeneralSettingsGroupImpl,
+export const ProviderSettings = AiPowerUpsSettingsGroup.createImplementation({
+    implementation: ProviderSettingsImpl,
     dependencies: [ListModelsUseCase, ListModelsRepository]
 });

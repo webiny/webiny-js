@@ -26,7 +26,7 @@ export const VerticalTabsRenderer = observer(function VerticalTabsRenderer({
                     ))}
                 </List>
             </div>
-            <div className={"flex flex-col flex-1 p-md border-l border-neutral-dimmed"}>
+            <div className={"flex flex-col flex-1 px-md border-l border-neutral-dimmed"}>
                 {activeTab && (
                     <>
                         <div className={"p-md"}>

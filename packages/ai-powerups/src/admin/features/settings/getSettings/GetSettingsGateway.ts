@@ -29,12 +29,28 @@ class GetSettingsGatewayImpl implements GatewayAbstraction.Interface {
 
     async execute(): Promise<Record<string, any>> {
         return {
-            general: {
+            providers: {
                 presets: [
                     {
                         name: "General purpose",
                         model: "gpt-4o",
                         apiKey: "123"
+                    }
+                ]
+            },
+            personas: {
+                presets: [
+                    {
+                        id: "123",
+                        name: "Student",
+                        description:
+                            "You are a student learning new concepts. Explain things simply, ask clarifying questions, and break down complex topics into easy-to-understand language. Avoid jargon and use relatable examples."
+                    },
+                    {
+                        id: "456",
+                        name: "Teacher",
+                        description:
+                            "You are an experienced educator. Provide thorough, well-structured explanations. Use examples and analogies to illustrate key points. Anticipate common misconceptions and address them proactively."
                     }
                 ]
             }

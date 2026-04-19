@@ -260,23 +260,6 @@ export class ObjectField implements IObjectField {
         this._items.splice(toIndex, 0, item);
     }
 
-    private _resolveItemTitle(children: Map<string, IField>, index: number): string {
-        const { itemTitle } = this.config;
-
-        if (!itemTitle) {
-            return `${this.config.label || "Item"} #${index + 1}`;
-        }
-
-        if (typeof itemTitle === "string") {
-            const field = children.get(itemTitle);
-            const value = field ? String(field.getValue() ?? "") : "";
-            return value || `${this.config.label || "Item"} #${index + 1}`;
-        }
-
-        const data = getChildrenData(children);
-        return itemTitle(data, index);
-    }
-
     private _addItemInternal(data?: Record<string, unknown>): void {
         const children = createChildFields(this.config.childBuilders, this._form);
         if (data) {
@@ -311,21 +294,30 @@ export class ObjectField implements IObjectField {
             name: baseVm.name,
             type: "object",
             label: baseVm.label,
+            help: baseVm.help,
+            description: baseVm.description,
+            note: baseVm.note,
             placeholder: baseVm.placeholder,
             value: this.getValue(),
             validation: baseVm.validation,
             required: baseVm.required,
             disabled: baseVm.disabled,
             renderer: baseVm.renderer,
+            rendererSettings: baseVm.rendererSettings,
             onChange: (value: unknown) => this.setValue(value),
             onBlur: () => this.blur(),
             isList: this.config.isList,
-            fields: this.config.isList ? [] : Array.from(this._children.values()).map(f => f.vm),
+            fields: this.config.isList
+                ? []
+                : Array.from(this._children.values())
+                      .filter(f => f.visible)
+                      .map(f => f.vm),
             items: this.config.isList
                 ? this._items.map((item, index) => ({
                       key: item.key,
-                      title: this._resolveItemTitle(item.children, index),
-                      fields: Array.from(item.children.values()).map(f => f.vm),
+                      fields: Array.from(item.children.values())
+                          .filter(f => f.visible)
+                          .map(f => f.vm),
                       remove: () => this.removeItem(index),
                       moveUp: () => this.moveItem(index, index - 1),
                       moveDown: () => this.moveItem(index, index + 1)

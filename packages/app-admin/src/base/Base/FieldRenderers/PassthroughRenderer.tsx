@@ -3,15 +3,17 @@ import { observer } from "mobx-react-lite";
 import type { IFieldVM, IObjectFieldVM } from "~/features/formModel/index.js";
 import { useFormViewRenderers } from "~/features/formModel/FormView.js";
 
+declare module "../../../features/formModel/abstractions.js" {
+    interface IFieldRendererRegistry {
+        passthrough: { fieldType: string; settings: undefined };
+    }
+}
+
 const isObjectFieldVM = (field: IFieldVM): field is IObjectFieldVM => {
     return field.type === "object";
 };
 
-export const PassthroughRenderer = observer(function PassthroughRenderer({
-    field
-}: {
-    field: IFieldVM;
-}) {
+export const PassthroughRenderer = observer(({ field }: { field: IFieldVM }) => {
     const { fieldRenderers } = useFormViewRenderers();
 
     if (!isObjectFieldVM(field)) {
@@ -21,7 +23,7 @@ export const PassthroughRenderer = observer(function PassthroughRenderer({
     const children = field.isList ? [] : field.fields;
 
     return (
-        <div className={"flex flex-col gap-4"}>
+        <>
             {children.map(childField => {
                 const Renderer = childField.renderer
                     ? fieldRenderers[childField.renderer]
@@ -33,6 +35,6 @@ export const PassthroughRenderer = observer(function PassthroughRenderer({
 
                 return <Renderer key={childField.name} field={childField} />;
             })}
-        </div>
+        </>
     );
 });

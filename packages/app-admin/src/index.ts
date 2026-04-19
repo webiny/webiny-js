@@ -62,8 +62,12 @@ export { useSecurity } from "./presentation/security/hooks/useSecurity.js";
 export * from "@webiny/app/renderApp.js";
 
 // FormModel
+import "./features/formModel/renderers.js";
 export { FormModelFactory, FormModel } from "./features/formModel/abstractions.js";
 export type {
+    IFieldRendererRegistry,
+    FieldRendererName,
+    FieldRendererSettings,
     IFormModelFactory,
     IFormModelConfig,
     ILayoutBuilder,

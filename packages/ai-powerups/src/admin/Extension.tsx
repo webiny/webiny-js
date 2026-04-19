@@ -12,7 +12,7 @@ const { Menu } = AdminConfig;
 const AiPowerUpsMenuItem = () => {
     const openSettings = useAiPowerUpsSettingsDialog();
 
-    return <Menu.Item text="AI PowerUps" onClick={openSettings} />;
+    return <Menu.Item text="AI Power Ups" onClick={openSettings} />;
 };
 
 const AiPowerUpsMenu = () => {

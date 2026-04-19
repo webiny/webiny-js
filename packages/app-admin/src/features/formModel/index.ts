@@ -1,9 +1,15 @@
 // Feature
 export { FormModelFeature } from "./feature.js";
 
+// Renderer registry augmentations
+import "./renderers.js";
+
 // Abstractions (types + DI tokens)
 export { FormModelFactory, FormModel } from "./abstractions.js";
 export type {
+    IFieldRendererRegistry,
+    FieldRendererName,
+    FieldRendererSettings,
     IFormModelFactory,
     IFormModelConfig,
     ILayoutBuilder,
