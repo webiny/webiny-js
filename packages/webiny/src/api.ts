@@ -5,6 +5,7 @@ export {
     Ai
 } from "@webiny/api-core/features/ai/index.js";
 export { Logger } from "@webiny/api-core/features/logger/index.js";
+export { Encryption } from "@webiny/api-core/features/encryption/index.js";
 export { BuildParam, BuildParams } from "@webiny/api-core/features/buildParams/index.js";
 export { DomainEvent, EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 export {
