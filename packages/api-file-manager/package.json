@@ -19,6 +19,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@webiny/ai-powerups": "0.0.0",
     "@webiny/api": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",

@@ -12702,7 +12702,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/ai-powerups@workspace:packages/ai-powerups":
+"@webiny/ai-powerups@npm:0.0.0, @webiny/ai-powerups@workspace:packages/ai-powerups":
   version: 0.0.0-use.local
   resolution: "@webiny/ai-powerups@workspace:packages/ai-powerups"
   dependencies:
@@ -12984,6 +12984,7 @@ __metadata:
   resolution: "@webiny/api-file-manager@workspace:packages/api-file-manager"
   dependencies:
     "@types/object-hash": "npm:^3.0.6"
+    "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"

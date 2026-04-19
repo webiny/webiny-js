@@ -4,11 +4,10 @@ import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { GetFileUseCase } from "~/features/file/GetFile/index.js";
 import { UpdateFileUseCase } from "~/features/file/UpdateFile/index.js";
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
+import { GetSettingsUseCase as AiPowerupsGetSettingsUseCase } from "@webiny/ai-powerups/api/features/GetSettings/index.js";
 import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js";
 
 export const AI_IMAGE_TAGGING_TASK_ID = "fmAiImageTagging";
-
-const AI_MODEL = "anthropic/claude-sonnet-4-6";
 
 const AI_PROMPT =
     'Generate up to 5 descriptive tags for this image. Return only a JSON array of lowercase strings, nothing else. Example: ["nature","landscape","mountain"]';
@@ -30,6 +29,7 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
         private getSettings: GetSettingsUseCase.Interface,
         private updateFile: UpdateFileUseCase.Interface,
         private ai: Ai.Interface,
+        private aiPowerupsSettings: AiPowerupsGetSettingsUseCase.Interface,
         private websocketService?: WebsocketService.Interface
     ) {}
 
@@ -60,10 +60,25 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
         const srcPrefix = settingsResult.isOk() ? (settingsResult.value.srcPrefix ?? "") : "";
         const imageUrl = `${srcPrefix}${file.key}`;
 
+        const aiPowerupsResult = await this.aiPowerupsSettings.execute();
+        const firstProvider = aiPowerupsResult.isOk()
+            ? aiPowerupsResult.value?.providers[0]
+            : undefined;
+
+        if (!firstProvider) {
+            return controller.response.error({
+                message: "No AI provider configured. Add a provider in AI Power Ups settings."
+            });
+        }
+
         let tags: string[] = [];
         try {
             const aiResult = await this.ai.generateText({
-                model: AI_MODEL,
+                model: firstProvider.model,
+                connection: {
+                    sdkName: firstProvider.model.split("/")[0],
+                    apiKey: firstProvider.apiKey
+                },
                 messages: [
                     {
                         role: "user",
@@ -128,6 +143,7 @@ export const AiImageTaggingTask = TaskDefinition.createImplementation({
         GetSettingsUseCase,
         UpdateFileUseCase,
         Ai,
+        AiPowerupsGetSettingsUseCase,
         [WebsocketService, { optional: true }]
     ]
 });
