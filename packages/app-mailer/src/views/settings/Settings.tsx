@@ -116,16 +116,10 @@ export const Settings = () => {
                                     <SimpleFormContent>
                                         <Grid>
                                             <Grid.Column span={12}>
-                                                <Alert title={settingsError.message} type="danger">
-                                                    {settingsError.code ===
-                                                        "PASSWORD_SECRET_ERROR" && (
-                                                        <p>
-                                                            To store the Mailer settings, you must
-                                                            have a password secret environment
-                                                            variable defined.
-                                                        </p>
-                                                    )}
-                                                </Alert>
+                                                <Alert
+                                                    title={settingsError.message}
+                                                    type="danger"
+                                                />
                                             </Grid.Column>
                                         </Grid>
                                     </SimpleFormContent>
