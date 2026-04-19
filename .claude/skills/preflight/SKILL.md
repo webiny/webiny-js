@@ -25,7 +25,13 @@ Webiny-only skill. Run all checks required before packages are ready for publish
 yarn > /dev/null 2>&1
 ```
 
-### 2. Sync dependency versions
+### 2. Generate `webiny` package
+
+```bash
+yarn webiny-scripts generate-webiny-package
+```
+
+### 3. Sync dependency versions
 
 ```bash
 yarn webiny sync-dependencies
@@ -33,19 +39,19 @@ yarn webiny sync-dependencies
 
 Verify `packages/cli/files/duplicates.json` is an empty array (`[]`). If it contains entries, there are duplicate dependency versions that must be resolved before continuing.
 
-### 3. Regenerate tsconfig files
+### 4. Generate tsconfig files
 
 ```bash
 node scripts/generateTsConfigsInPackages.js
 ```
 
-### 4. Check package node_modules
+### 5. Check package node_modules
 
 ```bash
 node scripts/checkPackageNodeModules.js
 ```
 
-### 5. Verify package.json dependencies match source imports
+### 6. Verify package.json dependencies match source imports
 
 ```bash
 yarn adio
@@ -53,15 +59,15 @@ yarn adio
 
 Must output "All dependencies in order!" to pass.
 
-### 6. Format code
+### 7. Format code
 
 ```bash
-yarn prettier:fix > /dev/null 2>&1
+yarn format:fix > /dev/null 2>&1
 ```
 
 This auto-fixes formatting issues. No manual intervention needed.
 
-### 7. Lint
+### 8. Lint
 
 ```bash
 yarn eslint
@@ -69,13 +75,13 @@ yarn eslint
 
 This only checks — it does not auto-fix. If eslint reports errors, fix them manually, then restart from step 1.
 
-### 8. Full clean build
+### 9. Full clean build
 
 ```bash
 yarn build --no-cache 2>&1 | tail -10
 ```
 
-### 9. Check dist paths
+### 10. Check dist paths
 
 ```bash
 node scripts/checkDistPaths.js
@@ -83,7 +89,7 @@ node scripts/checkDistPaths.js
 
 Verifies no `src/` paths remain in built output.
 
-### 10. Run DDB tests
+### 11. Run DDB tests
 
 Run `yarn test` for each package below, sequentially. Count active tests first and shard at 32.
 
@@ -140,11 +146,11 @@ yarn test packages/<name> --shard=2/$shards 2>&1 | grep "Test Files"
 # ... etc
 ```
 
-### 11. Run OpenSearch tests
+### 12. Run OpenSearch tests
 
 Run `yarn test:os` for each package below, sequentially. Count active tests first and shard at 32.
 
-**Packages that need BOTH `yarn test` (step 10) AND `yarn test:os`:**
+**Packages that need BOTH `yarn test` (step 11) AND `yarn test:os`:**
 
 - `api-aco`
 - `api-audit-logs`
@@ -159,7 +165,7 @@ Run `yarn test:os` for each package below, sequentially. Count active tests firs
 - `api-workflows`
 - `tasks`
 
-**Packages that need ONLY `yarn test:os` (not in step 10):**
+**Packages that need ONLY `yarn test:os` (not in step 11):**
 
 - `api-dynamodb-to-elasticsearch`
 - `api-elasticsearch-tasks`
@@ -171,7 +177,7 @@ Run `yarn test:os` for each package below, sequentially. Count active tests firs
 yarn test:os packages/<name> 2>&1 | grep "Test Files"
 ```
 
-### 12. Check for uncommitted changes
+### 13. Check for uncommitted changes
 
 ```bash
 git status

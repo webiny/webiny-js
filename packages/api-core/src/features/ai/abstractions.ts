@@ -3,47 +3,56 @@ import type { generateText } from "ai";
 import type { streamText } from "ai";
 import type { LanguageModel } from "ai";
 
-// AiProvider
+// AiSdk
 
-export interface IAiProvider {
+export interface IAiSdk {
     languageModel(modelId: string): LanguageModel;
+    listModels(): readonly string[];
 }
 
-/** A single AI provider (e.g. OpenAI, Anthropic) that resolves model instances. */
-export const AiProvider = createAbstraction<IAiProvider>("AiProvider");
+/** A single AI SDK instance (e.g. OpenAI, Anthropic) that resolves model instances. */
+export const AiSdk = createAbstraction<IAiSdk>("AiSdk");
 
-export namespace AiProvider {
-    export type Interface = IAiProvider;
+export namespace AiSdk {
+    export type Interface = IAiSdk;
 }
 
-// AiProviderFactory
+// AiSdkFactory
 
-export interface IAiProviderFactory {
+export interface IAiSdkFactory {
     readonly name: string;
-    execute(): Promise<IAiProvider>;
+    execute(apiKey?: string): Promise<IAiSdk>;
 }
 
-/** Factory that asynchronously initialises an AI provider. Register one per provider namespace. */
-export const AiProviderFactory = createAbstraction<IAiProviderFactory>("AiProviderFactory");
+/** Factory that asynchronously initialises an AI SDK. Register one per provider namespace. */
+export const AiSdkFactory = createAbstraction<IAiSdkFactory>("AiSdkFactory");
 
-export namespace AiProviderFactory {
-    export type Interface = IAiProviderFactory;
+export namespace AiSdkFactory {
+    export type Interface = IAiSdkFactory;
 }
 
-// AiGateway
+// AiConnection
 
-export interface IAiGateway {
-    languageModel(modelId: string): Promise<LanguageModel>;
+export interface IAiConnectionInline {
+    readonly sdkName: string;
+    readonly apiKey?: string;
 }
 
-/**
- * Routes "provider/model" strings to the correct registered AI provider.
- * Model IDs use the format "<providerName>/<modelId>", e.g. "openai/gpt-4o".
- */
-export const AiGateway = createAbstraction<IAiGateway>("AiGateway");
+export interface IAiConnection extends IAiConnectionInline {
+    readonly id: string;
+}
 
-export namespace AiGateway {
-    export type Interface = IAiGateway;
+// AiConnectionFactory
+
+export interface IAiConnectionFactory {
+    execute(): Promise<IAiConnection>;
+}
+
+/** Factory that asynchronously produces an AiConnection. */
+export const AiConnectionFactory = createAbstraction<IAiConnectionFactory>("AiConnectionFactory");
+
+export namespace AiConnectionFactory {
+    export type Interface = IAiConnectionFactory;
 }
 
 // Ai
@@ -51,12 +60,19 @@ export namespace AiGateway {
 type SDKGenerateTextParams = Parameters<typeof generateText>[0];
 type SDKStreamTextParams = Parameters<typeof streamText>[0];
 
-export type AiGenerateTextParams = Omit<SDKGenerateTextParams, "model"> & { model: string };
-export type AiStreamTextParams = Omit<SDKStreamTextParams, "model"> & { model: string };
+export type AiGenerateTextParams = Omit<SDKGenerateTextParams, "model"> & {
+    model: string;
+    connection?: string | IAiConnectionInline;
+};
+export type AiStreamTextParams = Omit<SDKStreamTextParams, "model"> & {
+    model: string;
+    connection?: string | IAiConnectionInline;
+};
 
 export interface IAi {
     generateText(params: AiGenerateTextParams): ReturnType<typeof generateText>;
     streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>>;
+    listModels(connection?: string | IAiConnectionInline): Promise<string[]>;
 }
 
 /** Interact with AI language models using registered providers. */

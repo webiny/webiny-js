@@ -12,7 +12,7 @@ export const createHeadlessCmsWorkflows = () => {
         }
 
         // Register features
-        EntryWorkflowsFeature.register(context.container, context);
+        EntryWorkflowsFeature.register(context.container);
         WorkflowsFeature.register(context.container);
     });
 

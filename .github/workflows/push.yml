@@ -3,7 +3,7 @@
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
 name: Push
-"on":
+'on':
   push:
     branches:
       - dev
@@ -33,7 +33,7 @@ jobs:
           vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   build:
     name: Build
@@ -65,7 +65,7 @@ jobs:
           path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   codeAnalysis:
     name: Static code analysis
@@ -107,7 +107,7 @@ jobs:
         working-directory: v6
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysisVerifyDependencies:
     needs:
@@ -140,7 +140,7 @@ jobs:
         working-directory: v6
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
@@ -163,7 +163,7 @@ jobs:
         run: yarn cy:ts
         working-directory: v6
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   vitest-constants:
     needs:
@@ -187,7 +187,7 @@ jobs:
           '[""]')" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   vitest-run:
     needs:
@@ -204,7 +204,7 @@ jobs:
         testCommand: ${{ fromJSON(needs.vitest-constants.outputs.vitest-test-commands) }}
     runs-on: ${{ matrix.os }}
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
     steps:
@@ -253,7 +253,7 @@ jobs:
           '["ddb"]')" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   vitest-ddb-run:
     needs:
@@ -272,7 +272,7 @@ jobs:
           }}
     runs-on: ${{ matrix.os }}
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
       WEBINY_STORAGE: ddb
@@ -329,7 +329,7 @@ jobs:
           '["ddb-os,ddb"]')" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   vitest-ddb-os-run:
     needs:
@@ -349,7 +349,7 @@ jobs:
           }}
     runs-on: ${{ matrix.os }}
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
       WEBINY_STORAGE: ddb-os,ddb
@@ -413,7 +413,7 @@ jobs:
           github.run_id }}_ddb" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2eTests-ddb-setup:
     needs:
@@ -426,8 +426,8 @@ jobs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
-      YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
@@ -558,7 +558,7 @@ jobs:
           github.run_id }}_ddb-os" >> $GITHUB_OUTPUT
     runs-on: ubuntu-latest
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   e2eTests-ddb-os-setup:
     needs:
@@ -571,8 +571,8 @@ jobs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
     environment: next
     env:
-      NODE_OPTIONS: "--max_old_space_size=4096"
-      YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: 'false'
       CYPRESS_MAILOSAUR_API_KEY: ${{ secrets.CYPRESS_MAILOSAUR_API_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}

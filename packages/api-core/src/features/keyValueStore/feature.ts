@@ -4,9 +4,9 @@ import { KeyValueStore } from "./KeyValueStore.js";
 import { KeyValueStoreRepository } from "./KeyValueStoreRepository.js";
 import { KeyValueStorageOperations } from "./abstractions.js";
 
-export const KeyValueStoreFeature = createFeature({
+export const KeyValueStoreFeature = createFeature<KeyValueStorageOperations.Interface>({
     name: "KeyValueStore",
-    register(container, storageOperations: KeyValueStorageOperations.Interface) {
+    register(container, storageOperations) {
         // Register legacy storage operations
         container.registerInstance(KeyValueStorageOperations, storageOperations);
 
