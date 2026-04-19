@@ -14,6 +14,7 @@ export namespace MailTransport {
 }
 
 export interface IMailTransportFactory {
+    name: string;
     createTransport(settings: TransportSettings): Promise<IMailTransport>;
 }
 
