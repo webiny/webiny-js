@@ -1,25 +1,35 @@
 import React from "react";
-import { AdminConfig } from "@webiny/app-admin";
+import { AdminConfig, RegisterFeature } from "@webiny/app-admin";
+import { SettingsFeature } from "./features/settings/index.js";
+import {
+    AiPowerUpsSettingsFeature,
+    AiPowerUpsSettingsConfig,
+    useAiPowerUpsSettingsDialog
+} from "./presentation/AiPowerUpsSettings/index.js";
 
 const { Menu } = AdminConfig;
+
+const AiPowerUpsMenuItem = () => {
+    const openSettings = useAiPowerUpsSettingsDialog();
+
+    return <Menu.Item text="AI Power Ups" onClick={openSettings} />;
+};
+
+const AiPowerUpsMenu = () => {
+    return (
+        <AdminConfig>
+            <Menu parent={"settings.system"} name="aiPowerUps" element={<AiPowerUpsMenuItem />} />
+        </AdminConfig>
+    );
+};
 
 export const Extension = () => {
     return (
         <>
-            <AdminConfig>
-                <Menu
-                    parent={"settings.system"}
-                    name="aiPowerups"
-                    element={
-                        <Menu.Item
-                            text="AI Powerups"
-                            onClick={() => {
-                                alert("Open AI Powerups");
-                            }}
-                        />
-                    }
-                />
-            </AdminConfig>
+            <RegisterFeature feature={SettingsFeature} />
+            <RegisterFeature feature={AiPowerUpsSettingsFeature} />
+            <AiPowerUpsSettingsConfig />
+            <AiPowerUpsMenu />
         </>
     );
 };
