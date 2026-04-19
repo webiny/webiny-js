@@ -8,7 +8,6 @@ import {
 import { MailTransport, MailTransportFactory } from "~/domain/MailTransport/abstractions.js";
 import { GetSettingsRepository } from "../GetSettings/abstractions.js";
 import type { TransportSettings, TransportSendData } from "~/types.js";
-import { getDefaultSettingsFromEnv } from "./TransportFactory.js";
 
 class MailerServiceImpl implements Abstraction.Interface {
     constructor(
@@ -17,15 +16,13 @@ class MailerServiceImpl implements Abstraction.Interface {
     ) {}
 
     async sendMail<T = any>(data: TransportSendData): Abstraction.Return<T> {
-        // Get settings from repository or environment variables
         const result = await this.getSettingsRepository.get();
-        const settings = result.value ?? getDefaultSettingsFromEnv();
+        const settings = result.value;
 
         if (!settings) {
             return Result.fail(new NoSettingsConfiguredError());
         }
 
-        // Get and configure transport
         const transport = await this.getTransport(settings);
 
         if (!transport) {
@@ -35,7 +32,6 @@ class MailerServiceImpl implements Abstraction.Interface {
         try {
             const response = await transport.send(data);
 
-            // If transport.send returned an error in the response
             if (response.error) {
                 return Result.fail(new TransportSendError(response.error));
             }
