@@ -34,7 +34,7 @@ describe("Settings Transporter CRUD", () => {
         replyTo: "replyTo@dummy-host.webiny"
     };
 
-    it("should not return response with password when saving settings", async () => {
+    it("should return stored settings with encrypted password when saving", async () => {
         const context = await handle();
 
         const saveSettings = context.container.resolve(SaveSettingsUseCase);
@@ -44,8 +44,10 @@ describe("Settings Transporter CRUD", () => {
         expect(result.value).toEqual({
             ...input,
             port: 25,
-            password: ""
+            password: expect.any(String)
         });
+        // The password is returned as the stored value; masking happens at the GraphQL boundary.
+        expect(result.value.password).toBeTruthy();
     });
 
     it("should return response with password when getting settings", async () => {
@@ -67,7 +69,7 @@ describe("Settings Transporter CRUD", () => {
         });
     });
 
-    it("should not return response with password when updating settings", async () => {
+    it("should return stored settings with encrypted password when updating", async () => {
         const context = await handle();
 
         const saveSettings = context.container.resolve(SaveSettingsUseCase);
@@ -84,7 +86,7 @@ describe("Settings Transporter CRUD", () => {
             ...input,
             port: 30,
             host: "dummy-host2.webiny",
-            password: ""
+            password: expect.any(String)
         });
 
         const updateResult2 = await saveSettings.execute({
@@ -97,7 +99,7 @@ describe("Settings Transporter CRUD", () => {
             ...input,
             port: 30,
             host: "dummy-host3.webiny",
-            password: ""
+            password: expect.any(String)
         });
     });
 
@@ -124,7 +126,7 @@ describe("Settings Transporter CRUD", () => {
             ...input,
             port: 25,
             host: "dummy-host2.webiny",
-            password: ""
+            password: expect.any(String)
         });
 
         const getSettings = context.container.resolve(GetSettingsUseCase);

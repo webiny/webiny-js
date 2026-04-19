@@ -40,20 +40,16 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
             replyTo: input.replyTo ?? transportSettings.replyTo
         };
 
-        // Save settings
+        // Save settings.
         const result = await this.keyValueStore.set(MAILER_TRANSPORT_SETTINGS, data);
 
         if (result.isFail()) {
             return Result.fail(new SettingsPersistenceError(result.error));
         }
 
-        // Return without encrypted password
-        const returnSettings: TransportSettings = {
-            ...data,
-            password: "" // Don't return password
-        };
-
-        return Result.ok(returnSettings);
+        // Return the stored state including the encrypted password. The GraphQL
+        // layer is responsible for masking before the response leaves the server.
+        return Result.ok(data as TransportSettings);
     }
 }
 

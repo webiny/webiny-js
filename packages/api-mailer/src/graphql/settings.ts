@@ -107,23 +107,11 @@ export const createSettingsGraphQL = () => {
                             return new ErrorResponse(result.error);
                         }
 
-                        // Re-read to get the full stored state (the repository strips the
-                        // password from its return value, but masking needs the real state
-                        // so the "update without password" case still renders "********").
-                        // If saveSettings succeeded, SaveSettingsUseCase's lockedByCode
-                        // check already proved ActiveTransport.name() was non-null — so the
-                        // non-null assertion here is an invariant, not a runtime guess.
-                        const activeTransport = context.container.resolve(ActiveTransport);
-                        const transportName = activeTransport.name();
-                        if (!transportName) {
-                            throw new Error(
-                                "Invariant: saveSettings succeeded but ActiveTransport.name() is null."
-                            );
-                        }
-                        const getSettings = context.container.resolve(GetSettingsUseCase);
-                        const getResult = await getSettings.execute(transportName);
-                        const { settings } = getResult.value;
-                        return { data: maskSettings(settings), source: "storage", error: null };
+                        return {
+                            data: maskSettings(result.value),
+                            source: "storage",
+                            error: null
+                        };
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }
