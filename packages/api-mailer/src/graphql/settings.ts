@@ -19,6 +19,7 @@ const toPublicSettings = (
     if (!settings) {
         return null;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _password, ...publicSettings } = settings;
     return { ...publicSettings, source };
 };

@@ -50,6 +50,7 @@ class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
 
         // Publish before save event. Strip the password — subscribers (audit
         // logs, telemetry) must never see the plaintext value from the input.
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password: _beforePassword, ...inputForEvent } = input;
         const beforeSaveEvent = new MailerSettingsBeforeSaveEvent({ input: inputForEvent });
         await this.eventPublisher.publish(beforeSaveEvent);
@@ -63,6 +64,7 @@ class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
 
         // Publish after save event. Strip the (encrypted) password for the same
         // reason — audit subscribers only need the non-sensitive fields.
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password: _afterPassword, ...settingsForEvent } = result.value;
         const afterSaveEvent = new MailerSettingsAfterSaveEvent({ settings: settingsForEvent });
         await this.eventPublisher.publish(afterSaveEvent);
