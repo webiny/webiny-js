@@ -6,6 +6,7 @@ import {
     AiPowerUpsSettingsConfig,
     useAiPowerUpsSettingsDialog
 } from "./presentation/AiPowerUpsSettings/index.js";
+import { WbContentGeneration } from "~/admin/presentation/WbContentGeneration/Extension.js";
 
 const { Menu } = AdminConfig;
 
@@ -30,6 +31,8 @@ export const Extension = () => {
             <RegisterFeature feature={AiPowerUpsSettingsFeature} />
             <AiPowerUpsSettingsConfig />
             <AiPowerUpsMenu />
+            {/* Website Builder Extension */}
+            <WbContentGeneration />
         </>
     );
 };
