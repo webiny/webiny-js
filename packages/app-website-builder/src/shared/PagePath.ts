@@ -20,7 +20,7 @@ export class PagePath {
         const slug = slugify(title, {
             replacement: "-",
             lower: true,
-            remove: /[*#?<>_{}\[\]+~.()'"!:;@]/g,
+            remove: /[*#?<>_{}[\]+~.()'"!:;@]/g,
             trim: false
         });
         return new PagePath("/" + slug);

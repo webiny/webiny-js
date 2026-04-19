@@ -22,7 +22,9 @@
         chrome.devtools.inspectedWindow.eval(
             "window.__WEBINY_DEVTOOLS_HOOK__?.revision ?? -1",
             function (revision, err) {
-                if (err) return;
+                if (err) {
+                    return;
+                }
                 if (revision !== lastRevision) {
                     lastRevision = revision;
                     fetchFullData();
@@ -49,8 +51,12 @@
     ].join("\n");
 
     function getSelectedData() {
-        if (!selectedItem) return undefined;
-        if (selectedItem.type === "config") return configs[selectedItem.name];
+        if (!selectedItem) {
+            return undefined;
+        }
+        if (selectedItem.type === "config") {
+            return configs[selectedItem.name];
+        }
         return sections[selectedItem.name];
     }
 
@@ -86,9 +92,13 @@
         var positions = {};
         positions.sidebar = sidebar.scrollTop;
         var browseKeys = detail.querySelector(".browse-keys");
-        if (browseKeys) positions.browseKeys = browseKeys.scrollTop;
+        if (browseKeys) {
+            positions.browseKeys = browseKeys.scrollTop;
+        }
         var browseValue = detail.querySelector(".browse-value");
-        if (browseValue) positions.browseValue = browseValue.scrollTop;
+        if (browseValue) {
+            positions.browseValue = browseValue.scrollTop;
+        }
         // Save all visible tab-content scroll positions by index
         var tabContents = detail.querySelectorAll(".tab-content");
         positions.tabs = [];
@@ -99,12 +109,18 @@
     }
 
     function restoreScrollPositions(positions) {
-        if (!positions) return;
+        if (!positions) {
+            return;
+        }
         sidebar.scrollTop = positions.sidebar || 0;
         var browseKeys = detail.querySelector(".browse-keys");
-        if (browseKeys) browseKeys.scrollTop = positions.browseKeys || 0;
+        if (browseKeys) {
+            browseKeys.scrollTop = positions.browseKeys || 0;
+        }
         var browseValue = detail.querySelector(".browse-value");
-        if (browseValue) browseValue.scrollTop = positions.browseValue || 0;
+        if (browseValue) {
+            browseValue.scrollTop = positions.browseValue || 0;
+        }
         var tabContents = detail.querySelectorAll(".tab-content");
         if (positions.tabs) {
             for (var i = 0; i < tabContents.length && i < positions.tabs.length; i++) {
@@ -540,22 +556,32 @@
 
     // Search: recursively check if a value (or any descendant) contains the query
     function valueContains(value, query) {
-        if (value === null || value === undefined) return false;
-        if (typeof value === "string") return value.toLowerCase().indexOf(query) !== -1;
+        if (value === null || value === undefined) {
+            return false;
+        }
+        if (typeof value === "string") {
+            return value.toLowerCase().indexOf(query) !== -1;
+        }
         if (typeof value === "number" || typeof value === "boolean") {
             return String(value).toLowerCase().indexOf(query) !== -1;
         }
         if (Array.isArray(value)) {
             for (var i = 0; i < value.length; i++) {
-                if (valueContains(value[i], query)) return true;
+                if (valueContains(value[i], query)) {
+                    return true;
+                }
             }
             return false;
         }
         if (typeof value === "object") {
             var keys = Object.keys(value);
             for (var j = 0; j < keys.length; j++) {
-                if (keys[j].toLowerCase().indexOf(query) !== -1) return true;
-                if (valueContains(value[keys[j]], query)) return true;
+                if (keys[j].toLowerCase().indexOf(query) !== -1) {
+                    return true;
+                }
+                if (valueContains(value[keys[j]], query)) {
+                    return true;
+                }
             }
             return false;
         }
@@ -564,7 +590,9 @@
 
     // Filter: return a new value keeping only matching branches
     function filterValue(value, query) {
-        if (value === null || value === undefined) return undefined;
+        if (value === null || value === undefined) {
+            return undefined;
+        }
         if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
             return valueContains(value, query) ? value : undefined;
         }
@@ -605,7 +633,9 @@
         expandBtn.textContent = "Expand All";
         expandBtn.addEventListener("click", function () {
             expandAllState = true;
-            if (stateKey != null) expandAllStates[stateKey] = true;
+            if (stateKey != null) {
+                expandAllStates[stateKey] = true;
+            }
             for (var i = 0; i < nodeList.length; i++) {
                 nodeList[i].setExpanded(true);
             }
@@ -615,7 +645,9 @@
         collapseBtn.textContent = "Collapse";
         collapseBtn.addEventListener("click", function () {
             expandAllState = false;
-            if (stateKey != null) expandAllStates[stateKey] = false;
+            if (stateKey != null) {
+                expandAllStates[stateKey] = false;
+            }
             for (var i = 0; i < nodeList.length; i++) {
                 nodeList[i].setExpanded(nodeList[i].depth < 2);
             }
@@ -844,9 +876,15 @@
     }
 
     function formatValue(val) {
-        if (val === undefined || val === "[undefined]") return "";
-        if (val === null) return "null";
-        if (typeof val === "string") return val;
+        if (val === undefined || val === "[undefined]") {
+            return "";
+        }
+        if (val === null) {
+            return "null";
+        }
+        if (typeof val === "string") {
+            return val;
+        }
         try {
             return JSON.stringify(val);
         } catch (e) {
@@ -906,8 +944,12 @@
         var y = e.clientY;
         var menuW = ctxMenu.offsetWidth;
         var menuH = ctxMenu.offsetHeight;
-        if (x + menuW > window.innerWidth) x = window.innerWidth - menuW - 4;
-        if (y + menuH > window.innerHeight) y = window.innerHeight - menuH - 4;
+        if (x + menuW > window.innerWidth) {
+            x = window.innerWidth - menuW - 4;
+        }
+        if (y + menuH > window.innerHeight) {
+            y = window.innerHeight - menuH - 4;
+        }
         ctxMenu.style.left = x + "px";
         ctxMenu.style.top = y + "px";
     }

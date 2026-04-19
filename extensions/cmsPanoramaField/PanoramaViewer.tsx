@@ -135,7 +135,9 @@ export const PanoramaViewer = forwardRef<PanoramaViewerHandle, PanoramaViewerPro
 
         const makeDragHandler = useCallback((index: number) => {
             return (e: MouseEvent) => {
-                if (!viewerRef.current) return;
+                if (!viewerRef.current) {
+                    return;
+                }
                 const [pitch, yaw] = viewerRef.current.mouseEventToCoords(e);
                 onHotspotMoveRef.current?.(index, pitch, yaw);
             };

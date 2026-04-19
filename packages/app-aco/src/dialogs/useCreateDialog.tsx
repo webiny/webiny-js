@@ -38,7 +38,7 @@ const FormComponent = ({ currentParentId = null }: FormComponentProps) => {
             slugify(form.data.title, {
                 replacement: "-",
                 lower: true,
-                remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
+                remove: /[*#?<>_{}[\]+~.()'"!:;@]/g,
                 trim: false
             })
         );

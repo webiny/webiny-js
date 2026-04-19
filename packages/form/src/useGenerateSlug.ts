@@ -22,7 +22,7 @@ export function useGenerateSlug(form: FormAPI, from: string, to = "slug") {
             slugify(sourceValue, {
                 replacement: "-",
                 lower: true,
-                remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
+                remove: /[*#?<>_{}[\]+~.()'"!:;@]/g,
                 trim: false
             })
         );
