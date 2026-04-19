@@ -5,19 +5,30 @@ import {
     NoSettingsConfiguredError,
     TransportSendError
 } from "~/domain/MailerService/errors.js";
-import { MailTransport, MailTransportFactory } from "~/domain/MailTransport/abstractions.js";
+import {
+    ActiveTransport,
+    MailTransport,
+    MailTransportFactory
+} from "~/domain/MailTransport/abstractions.js";
 import { GetSettingsRepository } from "../GetSettings/abstractions.js";
 import type { TransportSettings, TransportSendData } from "~/types.js";
 
 class MailerServiceImpl implements Abstraction.Interface {
     constructor(
         private getSettingsRepository: GetSettingsRepository.Interface,
+        private activeTransport: ActiveTransport.Interface,
         private transportFactories: MailTransportFactory.Interface[]
     ) {}
 
     async sendMail<T = any>(data: TransportSendData): Abstraction.Return<T> {
-        const result = await this.getSettingsRepository.get();
-        const settings = result.value;
+        const transportName = this.activeTransport.name();
+
+        if (!transportName) {
+            return Result.fail(new NoTransportAvailableError());
+        }
+
+        const result = await this.getSettingsRepository.get(transportName);
+        const { settings } = result.value;
 
         if (!settings) {
             return Result.fail(new NoSettingsConfiguredError());
@@ -57,5 +68,9 @@ class MailerServiceImpl implements Abstraction.Interface {
 
 export const MailerService = Abstraction.createImplementation({
     implementation: MailerServiceImpl,
-    dependencies: [GetSettingsRepository, [MailTransportFactory, { multiple: true }]]
+    dependencies: [
+        GetSettingsRepository,
+        ActiveTransport,
+        [MailTransportFactory, { multiple: true }]
+    ]
 });

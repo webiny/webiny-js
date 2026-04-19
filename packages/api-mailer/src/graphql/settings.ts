@@ -58,9 +58,9 @@ export const createSettingsGraphQL = () => {
                 getSettings: async (_, __, context) => {
                     try {
                         const getSettings = context.container.resolve(GetSettingsUseCase);
-                        const result = await getSettings.execute();
+                        const result = await getSettings.execute("Mailer/SmtpTransport");
 
-                        const settings = result.value;
+                        const settings = result.value.settings;
 
                         // Remove password from response
                         if (settings?.password) {

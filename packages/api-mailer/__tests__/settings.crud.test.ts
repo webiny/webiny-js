@@ -55,12 +55,15 @@ describe("Settings Transporter CRUD", () => {
         await saveSettings.execute(input);
 
         const getSettings = context.container.resolve(GetSettingsUseCase);
-        const result = await getSettings.execute();
+        const result = await getSettings.execute("Mailer/SmtpTransport");
 
         expect(result.isOk()).toBe(true);
         expect(result.value).toEqual({
-            ...input,
-            port: 25
+            settings: {
+                ...input,
+                port: 25
+            },
+            source: "storage"
         });
     });
 
@@ -125,14 +128,17 @@ describe("Settings Transporter CRUD", () => {
         });
 
         const getSettings = context.container.resolve(GetSettingsUseCase);
-        const afterUpdate = await getSettings.execute();
+        const afterUpdate = await getSettings.execute("Mailer/SmtpTransport");
 
         expect(afterUpdate.isOk()).toBe(true);
         expect(afterUpdate.value).toEqual({
-            ...input,
-            password: input.password,
-            port: 25,
-            host: "dummy-host2.webiny"
+            settings: {
+                ...input,
+                password: input.password,
+                port: 25,
+                host: "dummy-host2.webiny"
+            },
+            source: "storage"
         });
     });
 
@@ -149,12 +155,15 @@ describe("Settings Transporter CRUD", () => {
         const context = await noAccessHandle();
 
         const getSettings = context.container.resolve(GetSettingsUseCase);
-        const result = await getSettings.execute();
+        const result = await getSettings.execute("Mailer/SmtpTransport");
 
         expect(result.isOk()).toBe(true);
         expect(result.value).toEqual({
-            ...input,
-            port: 25
+            settings: {
+                ...input,
+                port: 25
+            },
+            source: "storage"
         });
     });
 
