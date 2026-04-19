@@ -5,7 +5,8 @@ import type { TransportSettings } from "~/types.js";
 import {
     SettingsValidationError,
     SettingsPersistenceError,
-    SettingsNotAuthorized
+    SettingsNotAuthorized,
+    SettingsLockedByCode
 } from "~/domain/errors.js";
 
 export interface SaveSettingsInput {
@@ -21,6 +22,7 @@ export interface ISaveSettingsErrors {
     validation: SettingsValidationError;
     persistence: SettingsPersistenceError;
     notAuthorized: SettingsNotAuthorized;
+    lockedByCode: SettingsLockedByCode;
 }
 
 type SaveSettingsError = ISaveSettingsErrors[keyof ISaveSettingsErrors];
