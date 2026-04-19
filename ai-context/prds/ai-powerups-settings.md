@@ -1,7 +1,9 @@
 # AI Powerups Settings
+
 - location: `packages/ai-powerups/src/admin`
 
 ## Tasks
+
 - define a named dialog `ai-powerups-settings` without params (no schema)
 - `packages/ai-powerups/src/admin/Extension.tsx:17` should open the dialog
 - dialog layout reference:
@@ -14,81 +16,79 @@
 - the dialog needs a presenter, which loads settings using the `GetSettingsUseCase` feature
 - a full example of presenter and dialog can be found here `packages/app-website-builder/src/presentation/pages/CreatePage/CreatePageDialog.tsx`
 - create an abstraction `AiPowerupsSettingsGroup` with an interface
+
 ```ts
 export interface IAiPowerupsSettingsGroup {
-    name: string;
-    label: string;
-    description?: string;
-    icon?: JSX.Element;
-    buildForm(formBuilder: AiPowerupsSettingsGroup.FormBuilder): void;
+  name: string;
+  label: string;
+  description?: string;
+  icon?: JSX.Element;
+  buildForm(formBuilder: AiPowerupsSettingsGroup.FormBuilder): void;
 }
 ```
 
 Example implementation of a group:
+
 ```ts
 class TranslationsGroup implements AiPowerupsSettingsGroup.Interface {
-    name = "seo";
-    label = "SEO";
+  name = "seo";
+  label = "SEO";
 
-    buildForm(form: AiPowerupsSettingsGroup.FormBuilder) {
-        form.fields(fields => ({
-            title: fields.text().label("Title"),
-            description: fields.text().label("Description").renderer("textarea"),
-            noIndex: fields.boolean().label("No Index"),
-        }));
+  buildForm(form: AiPowerupsSettingsGroup.FormBuilder) {
+    form.fields(fields => ({
+      title: fields.text().label("Title"),
+      description: fields.text().label("Description").renderer("textarea"),
+      noIndex: fields.boolean().label("No Index")
+    }));
 
-        form.layout(layout => [
-            layout.row("title"),
-            layout.row("description"),
-            layout.row("noIndex"),
-        ]);
-    }
+    form.layout(layout => [layout.row("title"), layout.row("description"), layout.row("noIndex")]);
+  }
 }
 ```
 
 - the main dialog presenter builds the entire form using the `AiPowerupsSettingsGroup` injected via `{ multiple: true }` and constructs the form like this
+
 ```ts
 class AiPowerupsSettingsPresenter {
-    private buildForm(): IFormModel {
-        const groups = this.groups.map(group => {
-            const collected = {fields: null, layout: null};
+  private buildForm(): IFormModel {
+    const groups = this.groups.map(group => {
+      const collected = { fields: null, layout: null };
 
-            const builder: GroupFormBuilder = {
-                fields(fn) {
-                    collected.fields = fn;
-                },
-                layout(fn) {
-                    collected.layout = fn;
-                }
-            };
+      const builder: GroupFormBuilder = {
+        fields(fn) {
+          collected.fields = fn;
+        },
+        layout(fn) {
+          collected.layout = fn;
+        }
+      };
 
-            group.buildForm(builder);
+      group.buildForm(builder);
 
-            return {group, collected};
-        });
+      return { group, collected };
+    });
 
-        return this.factory.create({
-            fields: fields => {
-                const result: Record<string, FieldBuilder> = {};
-                for (const {group, collected} of groups) {
-                    result[group.name] = fields
-                        .object()
-                        .label(group.label)
-                        .fields(collected.fields);
-                }
-                return result;
-            },
-            layout: layout => [
-                layout.tabs(groups.map(({group, collected}) => ({
-                    id: group.name,
-                    label: group.label,
-                    description: group.description,
-                    icon: group.icon,
-                    layout: collected.layout?.(layout) ?? []
-                })))
-            ]
-        });
-    }
+    return this.factory.create({
+      fields: fields => {
+        const result: Record<string, FieldBuilder> = {};
+        for (const { group, collected } of groups) {
+          result[group.name] = fields.object().label(group.label).fields(collected.fields);
+        }
+        return result;
+      },
+      layout: layout => [
+        layout.tabs(
+          groups.map(({ group, collected }) => ({
+            id: group.name,
+            label: group.label,
+            description: group.description,
+            icon: group.icon,
+            layout: collected.layout?.(layout) ?? []
+          }))
+        )
+      ]
+    });
+  }
 }
 ```
 

@@ -8,6 +8,9 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "imports": {
+    "#/*": "./src/*"
+  },
   "description": "Tenant Management module for Webiny CMS.",
   "author": "Webiny Ltd.",
   "license": "Webiny Enterprise",
