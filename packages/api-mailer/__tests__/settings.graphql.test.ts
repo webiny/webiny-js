@@ -43,15 +43,7 @@ describe("Mailer Settings GraphQL", () => {
             data: {
                 mailer: {
                     saveSettings: {
-                        data: {
-                            from: "from@dummy-host.webiny",
-                            host: "dummy-host.webiny",
-                            port: 25,
-                            password: "********",
-                            replyTo: "replyTo@dummy-host.webiny",
-                            user: "user"
-                        },
-                        source: "storage",
+                        success: true,
                         error: null
                     }
                 }
@@ -95,15 +87,7 @@ describe("Mailer Settings GraphQL", () => {
             data: {
                 mailer: {
                     saveSettings: {
-                        data: {
-                            host: "dummy-host2.webiny",
-                            port: 25,
-                            user: "user2",
-                            password: "********",
-                            from: "from2@dummy-host.webiny",
-                            replyTo: "replyTo2@dummy-host.webiny"
-                        },
-                        source: "storage",
+                        success: true,
                         error: null
                     }
                 }
@@ -124,15 +108,7 @@ describe("Mailer Settings GraphQL", () => {
             data: {
                 mailer: {
                     saveSettings: {
-                        data: {
-                            host: "dummy-host3.webiny",
-                            port: 25,
-                            user: "user3",
-                            password: "********",
-                            from: "from3@dummy-host.webiny",
-                            replyTo: "replyTo3@dummy-host.webiny"
-                        },
-                        source: "storage",
+                        success: true,
                         error: null
                     }
                 }
@@ -158,8 +134,7 @@ describe("Mailer Settings GraphQL", () => {
             data: {
                 mailer: {
                     saveSettings: {
-                        data: null,
-                        source: null,
+                        success: null,
                         error: {
                             data: null,
                             code: "Mailer/Settings/NotAuthorized",

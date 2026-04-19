@@ -17,7 +17,6 @@ import type {
 import { GET_SETTINGS_QUERY, SAVE_SETTINGS_MUTATION } from "./graphql.js";
 import type { TransportSettings, ValidationError } from "~/types.js";
 import type { Validator } from "@webiny/validation/types.js";
-import dotPropImmutable from "dot-prop-immutable";
 import { Alert, Button, Grid, Input, OverlayLoader } from "@webiny/admin-ui";
 
 const displayErrors = (errors?: ValidationError[]) => {
@@ -77,39 +76,24 @@ export const Settings = () => {
 
                         const onSubmit = async (data: TransportSettings): Promise<void> => {
                             setErrors([]);
-                            await update({
-                                variables: {
-                                    data
-                                },
-                                update: (cache, result) => {
-                                    const data = structuredClone(
-                                        cache.readQuery<SettingsQueryResponse>({
-                                            query: GET_SETTINGS_QUERY
-                                        })
-                                    );
-
-                                    const { data: updateData, error: updateError } =
-                                        result.data?.mailer.settings || {};
-
-                                    const errors = updateError?.data.errors;
-                                    if (errors) {
-                                        setErrors(errors);
-                                        showSnackbar(
-                                            "Settings not updated! Please check your network and console logs for detailed information."
-                                        );
-                                        return;
-                                    }
-
-                                    cache.writeQuery({
-                                        query: GET_SETTINGS_QUERY,
-                                        data: dotPropImmutable.set(data, "mailer.settings.data", {
-                                            ...settingsData,
-                                            ...updateData
-                                        })
-                                    });
-                                    showSnackbar("Settings updated successfully.");
-                                }
+                            const response = await update({
+                                variables: { data },
+                                refetchQueries: [{ query: GET_SETTINGS_QUERY }],
+                                awaitRefetchQueries: true
                             });
+
+                            const saveError = response.data?.mailer.settings.error;
+                            if (saveError) {
+                                const validationErrors = saveError.data?.errors;
+                                if (validationErrors) {
+                                    setErrors(validationErrors);
+                                }
+                                showSnackbar(
+                                    "Settings not updated! Please check your network and console logs for detailed information."
+                                );
+                                return;
+                            }
+                            showSnackbar("Settings updated successfully.");
                         };
                         if (settingsSource === "code") {
                             return (

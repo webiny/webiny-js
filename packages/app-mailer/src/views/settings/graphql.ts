@@ -52,8 +52,7 @@ export interface SaveSettingsMutationVariables {
 export interface SaveSettingsMutationResponse {
     mailer: {
         settings: {
-            data: TransportSettings | null;
-            source: MailerSettingsSource;
+            success: boolean | null;
             error: ApiError<ValidationErrors> | null;
         };
     };
@@ -62,8 +61,7 @@ export const SAVE_SETTINGS_MUTATION = gql`
     mutation SaveTransportSettings($data: MailerTransportSettingsInput!) {
         mailer {
             settings: saveSettings(data: $data) {
-                data ${SETTINGS_FIELDS}
-                source
+                success
                 error ${ERROR_FIELDS}
             }
         }

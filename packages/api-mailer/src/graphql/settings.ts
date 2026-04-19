@@ -45,6 +45,11 @@ export const createSettingsGraphQL = () => {
                 error: MailerTransportSettingsError
             }
 
+            type MailerSaveSettingsResponse {
+                success: Boolean
+                error: MailerTransportSettingsError
+            }
+
             type MailerQuery {
                 getSettings: MailerTransportSettingsResponse!
             }
@@ -59,7 +64,7 @@ export const createSettingsGraphQL = () => {
             }
 
             type MailerMutation {
-                saveSettings(data: MailerTransportSettingsInput!): MailerTransportSettingsResponse!
+                saveSettings(data: MailerTransportSettingsInput!): MailerSaveSettingsResponse!
             }
 
             extend type Query {
@@ -107,11 +112,7 @@ export const createSettingsGraphQL = () => {
                             return new ErrorResponse(result.error);
                         }
 
-                        return {
-                            data: maskSettings(result.value),
-                            source: "storage",
-                            error: null
-                        };
+                        return { success: true, error: null };
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }
