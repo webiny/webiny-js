@@ -6,6 +6,7 @@ const SETTINGS_FIELDS = `
         host
         port
         user
+        password
         from
         replyTo
     }
@@ -19,10 +20,13 @@ const ERROR_FIELDS = `
     }
 `;
 
+export type MailerSettingsSource = "code" | "storage" | null;
+
 export interface SettingsQueryResponse {
     mailer: {
         settings: {
             data: TransportSettings | null;
+            source: MailerSettingsSource;
             error: ApiError | null;
         };
     };
@@ -32,6 +36,7 @@ export const GET_SETTINGS_QUERY = gql`
         mailer {
             settings: getSettings {
                 data ${SETTINGS_FIELDS}
+                source
                 error ${ERROR_FIELDS}
             }
         }
@@ -48,6 +53,7 @@ export interface SaveSettingsMutationResponse {
     mailer: {
         settings: {
             data: TransportSettings | null;
+            source: MailerSettingsSource;
             error: ApiError<ValidationErrors> | null;
         };
     };
@@ -57,6 +63,7 @@ export const SAVE_SETTINGS_MUTATION = gql`
         mailer {
             settings: saveSettings(data: $data) {
                 data ${SETTINGS_FIELDS}
+                source
                 error ${ERROR_FIELDS}
             }
         }

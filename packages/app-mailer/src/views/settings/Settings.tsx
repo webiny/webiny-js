@@ -69,8 +69,11 @@ export const Settings = () => {
                     mutation={SAVE_SETTINGS_MUTATION}
                 >
                     {(update, result) => {
-                        const { data: settingsData, error: settingsError } =
-                            response?.mailer.settings || {};
+                        const {
+                            data: settingsData,
+                            error: settingsError,
+                            source: settingsSource
+                        } = response?.mailer.settings || {};
                         const { loading: mutationInProgress } = result;
 
                         const onSubmit = async (data: TransportSettings): Promise<void> => {
@@ -109,6 +112,81 @@ export const Settings = () => {
                                 }
                             });
                         };
+                        if (settingsSource === "code") {
+                            return (
+                                <CenteredView>
+                                    <SimpleForm>
+                                        <SimpleFormHeader title="Mailer Settings" />
+                                        <SimpleFormContent>
+                                            <Grid>
+                                                <Grid.Column span={12}>
+                                                    <Alert title="Managed by code" type="info">
+                                                        Mailer settings are managed by code. Edit
+                                                        <code> webiny.config.tsx </code>
+                                                        to change them.
+                                                    </Alert>
+                                                </Grid.Column>
+                                                <Grid.Column span={12}>
+                                                    <Input
+                                                        size="lg"
+                                                        type="text"
+                                                        label="Hostname"
+                                                        value={settingsData?.host ?? ""}
+                                                        disabled
+                                                    />
+                                                </Grid.Column>
+                                                <Grid.Column span={12}>
+                                                    <Input
+                                                        size="lg"
+                                                        type="number"
+                                                        label="Port"
+                                                        value={String(settingsData?.port ?? "")}
+                                                        disabled
+                                                    />
+                                                </Grid.Column>
+                                                <Grid.Column span={12}>
+                                                    <Input
+                                                        size="lg"
+                                                        type="text"
+                                                        label="User"
+                                                        value={settingsData?.user ?? ""}
+                                                        disabled
+                                                    />
+                                                </Grid.Column>
+                                                <Grid.Column span={12}>
+                                                    <Input
+                                                        size="lg"
+                                                        type="password"
+                                                        label="Password"
+                                                        value={settingsData?.password ?? ""}
+                                                        disabled
+                                                    />
+                                                </Grid.Column>
+                                                <Grid.Column span={12}>
+                                                    <Input
+                                                        size="lg"
+                                                        type="text"
+                                                        label="From"
+                                                        value={settingsData?.from ?? ""}
+                                                        disabled
+                                                    />
+                                                </Grid.Column>
+                                                <Grid.Column span={12}>
+                                                    <Input
+                                                        size="lg"
+                                                        type="text"
+                                                        label="Reply-To"
+                                                        value={settingsData?.replyTo ?? ""}
+                                                        disabled
+                                                    />
+                                                </Grid.Column>
+                                            </Grid>
+                                        </SimpleFormContent>
+                                        <SimpleFormFooter>{""}</SimpleFormFooter>
+                                    </SimpleForm>
+                                </CenteredView>
+                            );
+                        }
                         if (settingsError) {
                             return (
                                 <SimpleForm>
