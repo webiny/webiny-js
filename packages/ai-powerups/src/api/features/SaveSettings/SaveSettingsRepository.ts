@@ -19,13 +19,16 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
             }))
         );
 
-        const result = await this.keyValueStore.set(AI_POWERUPS_SETTINGS, { providers });
+        const result = await this.keyValueStore.set(AI_POWERUPS_SETTINGS, {
+            providers,
+            personas: input.personas
+        });
 
         if (result.isFail()) {
             return Result.fail(new Error(String(result.error)));
         }
 
-        return Result.ok({ providers: input.providers });
+        return Result.ok({ providers: input.providers, personas: input.personas });
     }
 }
 

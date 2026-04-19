@@ -1,9 +1,10 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
-import type { AiProvider, AiPowerupsSettings } from "~/api/types.js";
+import type { AiProvider, AiPersona, AiPowerupsSettings } from "~/api/types.js";
 
 export interface SaveSettingsInput {
     providers: Array<Pick<AiProvider, "name" | "model" | "apiKey"> & { description?: string }>;
+    personas: Array<Pick<AiPersona, "name" | "description">>;
 }
 
 export interface ISaveSettingsRepository {

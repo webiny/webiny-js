@@ -27,7 +27,7 @@ class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
             }))
         );
 
-        return Result.ok({ providers });
+        return Result.ok({ providers, personas: settings.personas ?? [] });
     }
 }
 

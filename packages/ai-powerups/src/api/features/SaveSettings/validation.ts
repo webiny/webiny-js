@@ -7,6 +7,12 @@ const provider = z.object({
     apiKey: z.string().min(1).describe("API key")
 });
 
+const persona = z.object({
+    name: z.string().min(1).describe("Persona name"),
+    description: z.string().min(1).describe("Persona description, used as the AI system prompt")
+});
+
 export const saveValidation = z.object({
-    providers: z.array(provider)
+    providers: z.array(provider),
+    personas: z.array(persona)
 });
