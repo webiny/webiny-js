@@ -1,4 +1,3 @@
-export { AiSdk, AiSdkFactory, AiConnection, AiConnectionFactory, Ai } from "./abstractions.js";
-export type { IAiConnectionInline } from "./abstractions.js";
+export { AiSdk, AiSdkFactory, AiConnectionFactory, Ai } from "./abstractions.js";
+export type { IAiConnection, IAiConnectionInline } from "./abstractions.js";
 export { AiFeature } from "./feature.js";
-export { createAiConnection, createAiConnectionFactory } from "./AiConnection.js";

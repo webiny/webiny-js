@@ -30,7 +30,7 @@ class AnthropicSdkFactoryImpl implements AiSdkFactoryAbstraction.Interface {
         });
         return {
             languageModel: modelId => provider.languageModel(modelId),
-            listModels: () => [...ANTHROPIC_MODELS]
+            listModels: () => ANTHROPIC_MODELS
         };
     }
 }

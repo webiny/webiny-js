@@ -44,7 +44,7 @@ class OpenAiSdkFactoryImpl implements AiSdkFactoryAbstraction.Interface {
         });
         return {
             languageModel: modelId => provider.languageModel(modelId),
-            listModels: () => [...OPENAI_MODELS]
+            listModels: () => OPENAI_MODELS
         };
     }
 }

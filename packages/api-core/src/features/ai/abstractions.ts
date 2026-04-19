@@ -7,7 +7,7 @@ import type { LanguageModel } from "ai";
 
 export interface IAiSdk {
     languageModel(modelId: string): LanguageModel;
-    listModels(): string[];
+    listModels(): readonly string[];
 }
 
 /** A single AI SDK instance (e.g. OpenAI, Anthropic) that resolves model instances. */
@@ -42,25 +42,13 @@ export interface IAiConnection extends IAiConnectionInline {
     readonly id: string;
 }
 
-/**
- * A configured connection to an AI provider, identified by a unique id.
- * Multiple connections can target the same sdkName (e.g. two Anthropic accounts).
- */
-export const AiConnection = createAbstraction<IAiConnection>("AiConnection");
-
-export namespace AiConnection {
-    export type Interface = IAiConnection;
-    /** Inline/ephemeral connection — no id needed, just sdkName + optional apiKey. */
-    export type Inline = IAiConnectionInline;
-}
-
 // AiConnectionFactory
 
 export interface IAiConnectionFactory {
     execute(): Promise<IAiConnection>;
 }
 
-/** Factory that asynchronously produces an AiConnection (e.g. fetching credentials from a secret store). */
+/** Factory that asynchronously produces an AiConnection. */
 export const AiConnectionFactory = createAbstraction<IAiConnectionFactory>("AiConnectionFactory");
 
 export namespace AiConnectionFactory {

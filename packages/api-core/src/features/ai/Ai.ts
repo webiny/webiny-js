@@ -3,7 +3,6 @@ import { generateText } from "ai";
 import { streamText } from "ai";
 import { Ai as AiAbstraction } from "./abstractions.js";
 import { AiSdkFactory } from "./abstractions.js";
-import { AiConnection } from "./abstractions.js";
 import { AiConnectionFactory } from "./abstractions.js";
 import type { AiGenerateTextParams } from "./abstractions.js";
 import type { AiStreamTextParams } from "./abstractions.js";
@@ -17,8 +16,7 @@ class AiImpl implements AiAbstraction.Interface {
     private resolvedConnections: IAiConnection[] | null = null;
 
     constructor(
-        private readonly factories: AiSdkFactory.Interface[],
-        private readonly staticConnections: AiConnection.Interface[],
+        private readonly sdkFactories: AiSdkFactory.Interface[],
         private readonly connectionFactories: AiConnectionFactory.Interface[]
     ) {}
 
@@ -70,19 +68,17 @@ class AiImpl implements AiAbstraction.Interface {
         const sdkName = modelId.slice(0, slashIndex);
         const modelName = modelId.slice(slashIndex + 1);
 
-        const resolvedConnection = await this.resolveConnection(sdkName, connection);
-        const sdk = await this.getSdk(resolvedConnection);
+        const conn = await this.resolveConnection(sdkName, connection);
+        const sdk = await this.getSdk(conn);
         return sdk.languageModel(modelName);
     }
 
     private async getConnections(): Promise<IAiConnection[]> {
-        if (this.resolvedConnections) {
-            return this.resolvedConnections;
+        if (!this.resolvedConnections) {
+            this.resolvedConnections = await Promise.all(
+                this.connectionFactories.map(f => f.execute())
+            );
         }
-        const fromFactories = await Promise.all(
-            this.connectionFactories.map(factory => factory.execute())
-        );
-        this.resolvedConnections = [...this.staticConnections, ...fromFactories];
         return this.resolvedConnections;
     }
 
@@ -128,9 +124,9 @@ class AiImpl implements AiAbstraction.Interface {
             return cached;
         }
 
-        const factory = this.factories.find(f => f.name === connection.sdkName);
+        const factory = this.sdkFactories.find(f => f.name === connection.sdkName);
         if (!factory) {
-            const known = this.factories.map(f => `"${f.name}"`).join(", ");
+            const known = this.sdkFactories.map(f => `"${f.name}"`).join(", ");
             throw new Error(
                 `No AI SDK factory found for "${connection.sdkName}". Registered factories: ${known}.`
             );
@@ -147,7 +143,6 @@ export const Ai = createImplementation({
     implementation: AiImpl,
     dependencies: [
         [AiSdkFactory, { multiple: true }],
-        [AiConnection, { multiple: true }],
         [AiConnectionFactory, { multiple: true }]
     ]
 });
