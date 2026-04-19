@@ -1,4 +1,5 @@
 import { createContextPlugin } from "@webiny/api";
+import { CodeMailerSettingsFeature } from "~/features/CodeMailerSettings/feature.js";
 import { GetSettingsFeature } from "~/features/GetSettings/feature.js";
 import { SaveSettingsFeature } from "~/features/SaveSettings/feature.js";
 import { DummyTransportFeature } from "~/features/DummyTransport/feature.js";
@@ -12,7 +13,8 @@ export type { IMailerService, IMailerServiceErrors } from "./domain/MailerServic
 
 export const createMailerContext = () => {
     return createContextPlugin(context => {
-        // Register all features
+        // Register all features.
+        CodeMailerSettingsFeature.register(context.container);
         DummyTransportFeature.register(context.container);
         SmtpTransportFeature.register(context.container);
         GetSettingsFeature.register(context.container);
