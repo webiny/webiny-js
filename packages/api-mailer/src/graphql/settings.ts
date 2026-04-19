@@ -5,20 +5,19 @@ import { ActiveTransport } from "~/domain/MailTransport/abstractions.js";
 import type { Context } from "@webiny/api/types.js";
 import type { TransportSettings } from "~/types.js";
 
-const PASSWORD_MASK = "********";
-
 const emptyResolver = () => ({});
 
-const maskSettings = (
+// Strip `password` before the settings leave the server. The GraphQL schema does not
+// expose a `password` field on the output type, but we defend in depth by never passing
+// the encrypted blob into the resolver's return object.
+const toPublicSettings = (
     settings: TransportSettings | null
-): (Omit<TransportSettings, "password"> & { password: string }) | null => {
+): Omit<TransportSettings, "password"> | null => {
     if (!settings) {
         return null;
     }
-    return {
-        ...settings,
-        password: settings.password ? PASSWORD_MASK : ""
-    };
+    const { password: _password, ...publicSettings } = settings;
+    return publicSettings;
 };
 
 export const createSettingsGraphQL = () => {
@@ -34,7 +33,6 @@ export const createSettingsGraphQL = () => {
                 host: String
                 port: Number
                 user: String
-                password: String
                 from: String
                 replyTo: String
             }
@@ -42,11 +40,6 @@ export const createSettingsGraphQL = () => {
             type MailerTransportSettingsResponse {
                 data: MailerTransportSettings
                 source: String
-                error: MailerTransportSettingsError
-            }
-
-            type MailerSaveSettingsResponse {
-                success: Boolean
                 error: MailerTransportSettingsError
             }
 
@@ -64,7 +57,7 @@ export const createSettingsGraphQL = () => {
             }
 
             type MailerMutation {
-                saveSettings(data: MailerTransportSettingsInput!): MailerSaveSettingsResponse!
+                saveSettings(data: MailerTransportSettingsInput!): MailerTransportSettingsResponse!
             }
 
             extend type Query {
@@ -93,7 +86,11 @@ export const createSettingsGraphQL = () => {
 
                         const { settings, source } = result.value;
 
-                        return { data: maskSettings(settings), source, error: null };
+                        return {
+                            data: toPublicSettings(settings),
+                            source,
+                            error: null
+                        };
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }
@@ -112,7 +109,11 @@ export const createSettingsGraphQL = () => {
                             return new ErrorResponse(result.error);
                         }
 
-                        return { success: true, error: null };
+                        return {
+                            data: toPublicSettings(result.value),
+                            source: "storage",
+                            error: null
+                        };
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }

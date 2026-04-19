@@ -6,7 +6,6 @@ export const GET_SETTINGS_QUERY = `
                     host
                     port
                     user
-                    password
                     from
                     replyTo
                 }
@@ -25,7 +24,14 @@ export const SAVE_SETTINGS_MUTATION = `
     mutation SaveSettings($data: MailerTransportSettingsInput!) {
         mailer {
             saveSettings(data: $data) {
-                success
+                data {
+                    host
+                    port
+                    user
+                    from
+                    replyTo
+                }
+                source
                 error {
                     message
                     code

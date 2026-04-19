@@ -6,7 +6,6 @@ const SETTINGS_FIELDS = `
         host
         port
         user
-        password
         from
         replyTo
     }
@@ -22,10 +21,13 @@ const ERROR_FIELDS = `
 
 export type MailerSettingsSource = "code" | "storage" | null;
 
+/** Settings as they appear in GraphQL responses — never includes the password. */
+export type PublicTransportSettings = Omit<TransportSettings, "password">;
+
 export interface SettingsQueryResponse {
     mailer: {
         settings: {
-            data: TransportSettings | null;
+            data: PublicTransportSettings | null;
             source: MailerSettingsSource;
             error: ApiError | null;
         };
@@ -44,15 +46,14 @@ export const GET_SETTINGS_QUERY = gql`
 `;
 
 export interface SaveSettingsMutationVariables {
-    data: TransportSettings & {
-        password?: string;
-    };
+    data: TransportSettings;
 }
 
 export interface SaveSettingsMutationResponse {
     mailer: {
         settings: {
-            success: boolean | null;
+            data: PublicTransportSettings | null;
+            source: MailerSettingsSource;
             error: ApiError<ValidationErrors> | null;
         };
     };
@@ -61,7 +62,8 @@ export const SAVE_SETTINGS_MUTATION = gql`
     mutation SaveTransportSettings($data: MailerTransportSettingsInput!) {
         mailer {
             settings: saveSettings(data: $data) {
-                success
+                data ${SETTINGS_FIELDS}
+                source
                 error ${ERROR_FIELDS}
             }
         }

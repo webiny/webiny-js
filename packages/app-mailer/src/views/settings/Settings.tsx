@@ -139,15 +139,6 @@ export const Settings = () => {
                                                 <Grid.Column span={12}>
                                                     <Input
                                                         size="lg"
-                                                        type="password"
-                                                        label="Password"
-                                                        value={settingsData?.password ?? ""}
-                                                        disabled
-                                                    />
-                                                </Grid.Column>
-                                                <Grid.Column span={12}>
-                                                    <Input
-                                                        size="lg"
                                                         type="text"
                                                         label="From"
                                                         value={settingsData?.from ?? ""}
