@@ -1,23 +1,15 @@
-import { Ai, Logger, Route } from "webiny/api";
+import { Encryption, Route } from "webiny/api";
 
 class MyApiRouteImpl implements Route.Interface {
-    constructor(
-        private logger: Logger.Interface,
-        private aiService: Ai.Interface
-    ) {}
+    constructor(private encryptionService: Encryption.Interface) {}
 
     async execute(request: Route.Request, reply: Route.Reply) {
-        // AI ready!
-        const { text } = await this.aiService.generateText({
-            model: "anthropic/claude-sonnet-4-5",
-            prompt: "Is this working?!"
-        });
-
-        return reply.send({ message: text });
+        const encryptedString = this.encryptionService.encrypt("my-secret");
+        return reply.send({ encryptedString });
     }
 }
 
 export default Route.createImplementation({
     implementation: MyApiRouteImpl,
-    dependencies: [Logger, Ai]
+    dependencies: [Encryption]
 });
