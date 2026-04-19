@@ -121,9 +121,9 @@ export const Settings = () => {
                                             <Grid>
                                                 <Grid.Column span={12}>
                                                     <Alert title="Managed by code" type="info">
-                                                        Mailer settings are managed by code. Edit
-                                                        <code> webiny.config.tsx </code>
-                                                        to change them.
+                                                        Mailer settings are managed by code. Edit{" "}
+                                                        <code>webiny.config.tsx</code> to change
+                                                        them.
                                                     </Alert>
                                                 </Grid.Column>
                                                 <Grid.Column span={12}>
