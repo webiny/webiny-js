@@ -25,3 +25,13 @@ export namespace MailTransportFactory {
     export type Interface = IMailTransportFactory;
     export type Return = Promise<IMailTransport>;
 }
+
+export interface IActiveTransport {
+    name(): string | null;
+}
+
+export const ActiveTransport = createAbstraction<IActiveTransport>("ActiveTransport");
+
+export namespace ActiveTransport {
+    export type Interface = IActiveTransport;
+}
