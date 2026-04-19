@@ -8,12 +8,19 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
         builder: CoreGraphQLSchemaFactory.SchemaBuilder
     ): Promise<CoreGraphQLSchemaFactory.SchemaBuilder> {
         builder.addTypeDefs(/* GraphQL */ `
+            type AiModel {
+                providerId: String!
+                providerName: String!
+                modelId: String!
+                modelName: String!
+            }
+
             type AiPowerupsSettings {
                 data: JSON
             }
 
             type AiPowerups {
-                listModels: [String!]!
+                listModels: [AiModel!]!
                 getSettings: AiPowerupsSettings
             }
 

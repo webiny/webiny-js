@@ -5,9 +5,13 @@ import type { LanguageModel } from "ai";
 
 // AiSdk
 
+export interface IAiSdkModel {
+    id: string; // raw model id, e.g. "claude-sonnet-4-5"
+    name: string; // human-friendly name, e.g. "Claude Sonnet 4.5"
+}
+
 export interface IAiSdk {
     languageModel(modelId: string): LanguageModel;
-    listModels(): readonly string[];
 }
 
 /** A single AI SDK instance (e.g. OpenAI, Anthropic) that resolves model instances. */
@@ -20,7 +24,9 @@ export namespace AiSdk {
 // AiSdkFactory
 
 export interface IAiSdkFactory {
-    readonly name: string;
+    readonly id: string; // machine id, e.g. "anthropic"
+    readonly name: string; // human-friendly name, e.g. "Anthropic"
+    readonly models: readonly IAiSdkModel[]; // static model list, no API call needed
     execute(apiKey?: string): Promise<IAiSdk>;
 }
 
@@ -69,10 +75,19 @@ export type AiStreamTextParams = Omit<SDKStreamTextParams, "model"> & {
     connection?: string | IAiConnectionInline;
 };
 
+export interface AiModel {
+    providerId: string; // e.g. "anthropic"
+    providerName: string; // e.g. "Anthropic"
+    modelId: string; // e.g. "claude-sonnet-4-5"
+    modelName: string; // e.g. "Claude Sonnet 4.5"
+}
+
 export interface IAi {
     generateText(params: AiGenerateTextParams): ReturnType<typeof generateText>;
     streamText(params: AiStreamTextParams): Promise<ReturnType<typeof streamText>>;
-    listModels(connection?: string | IAiConnectionInline): Promise<string[]>;
+    listModels(): Promise<AiModel[]>;
+    listModelsByConnections(): Promise<AiModel[]>;
+    listModelsByConnection(connection: string | IAiConnectionInline): Promise<AiModel[]>;
 }
 
 /** Interact with AI language models using registered providers. */
