@@ -4,10 +4,13 @@ export const GET_SETTINGS_QUERY = `
             getSettings {
                 data {
                     host
+                    port
                     user
+                    password
                     from
                     replyTo
                 }
+                source
                 error {
                     message
                     code
@@ -24,10 +27,13 @@ export const SAVE_SETTINGS_MUTATION = `
             saveSettings(data: $data) {
                 data {
                     host
+                    port
                     user
+                    password
                     from
                     replyTo
                 }
+                source
                 error {
                     message
                     code

@@ -1,8 +1,25 @@
-import { ErrorResponse, GraphQLSchemaPlugin, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { GetSettingsUseCase } from "~/features/GetSettings/abstractions.js";
 import { SaveSettingsUseCase } from "~/features/SaveSettings/abstractions.js";
+import { ActiveTransport } from "~/domain/MailTransport/abstractions.js";
 import type { Context } from "@webiny/api/types.js";
+import type { TransportSettings } from "~/types.js";
+
+const PASSWORD_MASK = "********";
+
 const emptyResolver = () => ({});
+
+const maskSettings = (
+    settings: TransportSettings | null
+): (Omit<TransportSettings, "password"> & { password: string }) | null => {
+    if (!settings) {
+        return null;
+    }
+    return {
+        ...settings,
+        password: settings.password ? PASSWORD_MASK : ""
+    };
+};
 
 export const createSettingsGraphQL = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -17,12 +34,14 @@ export const createSettingsGraphQL = () => {
                 host: String
                 port: Number
                 user: String
+                password: String
                 from: String
                 replyTo: String
             }
 
             type MailerTransportSettingsResponse {
                 data: MailerTransportSettings
+                source: String
                 error: MailerTransportSettingsError
             }
 
@@ -57,18 +76,19 @@ export const createSettingsGraphQL = () => {
             MailerQuery: {
                 getSettings: async (_, __, context) => {
                     try {
-                        const getSettings = context.container.resolve(GetSettingsUseCase);
-                        const result = await getSettings.execute("Mailer/SmtpTransport");
+                        const activeTransport = context.container.resolve(ActiveTransport);
+                        const transportName = activeTransport.name();
 
-                        const settings = result.value.settings;
-
-                        // Remove password from response
-                        if (settings?.password) {
-                            // oxlint-disable-next-line typescript/no-unused-vars
-                            const { password, ...settingsWithoutPassword } = settings;
-                            return new Response(settingsWithoutPassword);
+                        if (!transportName) {
+                            return { data: null, source: null, error: null };
                         }
-                        return new Response(settings);
+
+                        const getSettings = context.container.resolve(GetSettingsUseCase);
+                        const result = await getSettings.execute(transportName);
+
+                        const { settings, source } = result.value;
+
+                        return { data: maskSettings(settings), source, error: null };
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }
@@ -87,16 +107,17 @@ export const createSettingsGraphQL = () => {
                             return new ErrorResponse(result.error);
                         }
 
-                        const settings = result.value;
-
-                        // Remove password from response
-                        // TODO: create a GraphQL output mapper
-                        if (settings?.password) {
-                            // oxlint-disable-next-line typescript/no-unused-vars
-                            const { password, ...settingsWithoutPassword } = settings;
-                            return new Response(settingsWithoutPassword);
+                        // Re-read settings after save to get the full stored state (e.g. preserved password).
+                        const activeTransport = context.container.resolve(ActiveTransport);
+                        const transportName = activeTransport.name();
+                        if (transportName) {
+                            const getSettings = context.container.resolve(GetSettingsUseCase);
+                            const getResult = await getSettings.execute(transportName);
+                            const { settings } = getResult.value;
+                            return { data: maskSettings(settings), source: "storage", error: null };
                         }
-                        return new Response(settings);
+
+                        return { data: maskSettings(result.value), source: "storage", error: null };
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }
