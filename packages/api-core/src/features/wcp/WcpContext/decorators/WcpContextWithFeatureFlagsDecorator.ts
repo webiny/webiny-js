@@ -170,6 +170,27 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
         );
     }
 
+    canUseAiImageEnrichment() {
+        return (
+            this.decoratee.canUseAiImageEnrichment() &&
+            this.featureFlags.get().isAiImageEnrichmentEnabled()
+        );
+    }
+
+    canUseAiPageGeneration() {
+        return (
+            this.decoratee.canUseAiPageGeneration() &&
+            this.featureFlags.get().isAiPageGenerationEnabled()
+        );
+    }
+
+    canUseAiLexicalGeneration() {
+        return (
+            this.decoratee.canUseAiLexicalGeneration() &&
+            this.featureFlags.get().isAiLexicalGenerationEnabled()
+        );
+    }
+
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL) {
         return this.decoratee.ensureCanUseFeature(featureId);
     }

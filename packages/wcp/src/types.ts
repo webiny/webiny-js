@@ -23,6 +23,9 @@ export interface ILicense {
     canUseRecordLocking: () => boolean;
     canUseWorkflows: () => boolean;
     canUseHcmsFieldPermissions: () => boolean;
+    canUseAiImageEnrichment: () => boolean;
+    canUseAiPageGeneration: () => boolean;
+    canUseAiLexicalGeneration: () => boolean;
 }
 
 export declare type WcpProjectEnvironment = {
