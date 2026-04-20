@@ -29,6 +29,7 @@
     "@webiny/pulumi": "0.0.0",
     "@webiny/utils": "0.0.0",
     "chalk": "^5.6.2",
+    "email-addresses": "^5.0.0",
     "find-up": "^8.0.0",
     "invariant": "^2.2.4",
     "lodash": "^4.18.1",

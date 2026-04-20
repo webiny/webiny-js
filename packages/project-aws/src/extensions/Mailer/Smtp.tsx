@@ -1,7 +1,17 @@
 import React from "react";
 import { z } from "zod";
+import emailAddresses from "email-addresses";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { BuildParam } from "@webiny/project/extensions/index.js";
+
+// Accept both addr-spec ("foo@bar.com") and name-addr ("Foo <foo@bar.com>") forms.
+const isMailboxAddress = (value: string): boolean => {
+    return emailAddresses.parseOneAddress(value) !== null;
+};
+
+const mailboxAddress = z
+    .string()
+    .refine(isMailboxAddress, { message: "Invalid email address." });
 
 export const Smtp = defineExtension({
     type: "Infra/Mailer/Smtp",
@@ -18,8 +28,8 @@ export const Smtp = defineExtension({
             .describe(
                 "SMTP authentication password. Pass via env var (e.g. `process.env.SMTP_PASSWORD!`), never hard-code."
             ),
-        from: z.string().email().describe("Default 'from' address."),
-        replyTo: z.string().email().optional().describe("Default 'reply-to' address.")
+        from: mailboxAddress.describe("Default 'from' address."),
+        replyTo: mailboxAddress.optional().describe("Default 'reply-to' address.")
     }),
     render(params) {
         return <BuildParam paramName="Mailer.SmtpSettings" value={params} />;

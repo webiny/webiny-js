@@ -9,18 +9,21 @@ import { MailerService } from "~/domain/MailerService/abstractions.js";
 import type { TransportSendData } from "~/types.js";
 import { MailValidationError } from "~/domain/errors.js";
 import { Result } from "@webiny/feature/api";
+import { isMailboxAddress } from "~/utils/isMailboxAddress.js";
 
 const requiredString = zod.string();
-const requiredEmail = requiredString.email();
+const mailboxAddress = zod
+    .string()
+    .refine(isMailboxAddress, { message: "Invalid email address." });
 
 const schema = zod
     .object({
-        to: zod.array(requiredEmail).optional(),
-        from: zod.string().email().optional(),
+        to: zod.array(mailboxAddress).optional(),
+        from: mailboxAddress.optional(),
         subject: requiredString.max(1024).min(2),
-        cc: zod.array(requiredEmail).optional(),
-        bcc: zod.array(requiredEmail).optional(),
-        replyTo: zod.string().email().optional(),
+        cc: zod.array(mailboxAddress).optional(),
+        bcc: zod.array(mailboxAddress).optional(),
+        replyTo: mailboxAddress.optional(),
         text: zod.string().optional(),
         html: zod.string().optional()
     })
