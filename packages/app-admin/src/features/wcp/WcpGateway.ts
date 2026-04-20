@@ -39,15 +39,7 @@ const GET_WCP_PROJECT = /* GraphQL */ `
                             }
                             aiPowerups {
                                 enabled
-                                options {
-                                    websiteBuilder {
-                                        pageGeneration
-                                    }
-                                    fileManager {
-                                        imageEnrichment
-                                    }
-                                    lexicalGeneration
-                                }
+                                options
                             }
                         }
                     }

@@ -20,6 +20,7 @@ export const createWcpGraphQL = () => {
                 auditLogs: WcpProjectPackageFeaturesFeature
                 recordLocking: WcpProjectPackageFeaturesFeature
                 fileManager: WcpProjectPackageFeaturesFeature
+                aiPowerups: WcpProjectPackageFeaturesFeature
             }
 
             type WcpProjectPackage {

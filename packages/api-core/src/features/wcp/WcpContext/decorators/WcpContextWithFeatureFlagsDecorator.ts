@@ -80,6 +80,29 @@ class WcpContextWithFeatureFlagsDecoratorImpl implements WcpContext.Interface {
                                 ? project.package.features.fileManager.options.threatDetection
                                 : false
                         }
+                    },
+                    aiPowerups: {
+                        ...project.package.features.aiPowerups,
+                        enabled: flags.isAiPowerupsEnabled()
+                            ? project.package.features.aiPowerups?.enabled
+                            : false,
+                        options: {
+                            websiteBuilder: {
+                                pageGeneration: flags.isAiPageGenerationEnabled()
+                                    ? project.package.features.aiPowerups?.options?.websiteBuilder
+                                          ?.pageGeneration
+                                    : false
+                            },
+                            fileManager: {
+                                imageEnrichment: flags.isAiImageEnrichmentEnabled()
+                                    ? project.package.features.aiPowerups?.options?.fileManager
+                                          ?.imageEnrichment
+                                    : false
+                            },
+                            lexicalGeneration: flags.isAiLexicalGenerationEnabled()
+                                ? project.package.features.aiPowerups?.options?.lexicalGeneration
+                                : false
+                        }
                     }
                 }
             }
