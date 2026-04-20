@@ -44,6 +44,16 @@ export const createGetEntryResolver = () => {
                 variables: { where }
             })) as ExecutionResult;
 
+            if (result.errors && result.errors.length > 0) {
+                return {
+                    data: null,
+                    error: {
+                        message: result.errors.map(e => e.message).join("; "),
+                        code: "GET_ENTRY_ERROR"
+                    }
+                };
+            }
+
             const operationName = `get${model.singularApiName}`;
             return result.data?.[operationName] || { data: null, error: null };
         } catch (error) {

@@ -241,6 +241,27 @@ describe("SDK GraphQL - CMS Operations", () => {
             expect(list.data[0].values?.name).toBe("Keyboard");
         });
 
+        it("should return error when non-existent field is requested", async () => {
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id", "values.nonExistentField"]
+            });
+
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.message).toMatch(/nonExistentField/);
+        });
+
+        it("should return error when object field is requested without sub-selection", async () => {
+            // The 'category' field is a ref type — it has sub-fields, so selecting it as
+            // a plain leaf (without { id entryId modelId }) must surface a GraphQL error.
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id", "values.category"]
+            });
+
+            expect(listResult.isFail()).toBe(true);
+        });
+
         it("should list entries with limit and pagination", async () => {
             // Create 3 test products using SDK.
             for (let i = 1; i <= 3; i++) {
@@ -336,6 +357,17 @@ describe("SDK GraphQL - CMS Operations", () => {
             expect(entry?.values?.name).toBe("Tablet");
             expect(entry?.values?.price).toBe(300);
             expect(entry?.values?.sku).toBe("TAB-001");
+        });
+
+        it("should return error when non-existent field is requested", async () => {
+            const getResult = await sdk.cms.getEntry<ProductValues>({
+                modelId: "product",
+                where: { id: "someId#0001" },
+                fields: ["id", "values.nonExistentField"]
+            });
+
+            expect(getResult.isFail()).toBe(true);
+            expect(getResult.error?.message).toMatch(/nonExistentField/);
         });
 
         it("should return null when entry not found", async () => {

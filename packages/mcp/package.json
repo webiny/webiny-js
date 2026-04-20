@@ -28,7 +28,7 @@
     "@webiny/build-tools": "0.0.0",
     "execa": "^5.1.1",
     "tsx": "^4.21.0",
-    "typescript": "6.0.3"
+    "typescript": "5.9.3"
   },
   "scripts": {
     "prepublishOnly": "bash ./prepublishOnly.sh"

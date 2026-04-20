@@ -18,7 +18,7 @@
   "license": "MIT",
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "typescript": "6.0.3",
+    "typescript": "5.9.3",
     "vitest": "^4.1.4"
   },
   "adio": {

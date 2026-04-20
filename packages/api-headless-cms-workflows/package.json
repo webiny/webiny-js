@@ -27,7 +27,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/testing": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "typescript": "6.0.3",
+    "typescript": "5.9.3",
     "vitest": "^4.1.4"
   },
   "publishConfig": {

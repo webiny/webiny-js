@@ -23,7 +23,7 @@
     "@webiny/project-aws": "*",
     "@webiny/ui": "*",
     "@webiny/validation": "*",
-    "aws-amplify": "^6.16.4",
+    "aws-amplify": "^6.16.3",
     "graphql": "^16.13.2",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.3",
