@@ -168,31 +168,58 @@ Rule of thumb: **a layout can only reference field IDs in the same scope it's de
 in.** Model layout references model fields. Object layout references that object's
 sub-fields. Each dynamicZone template's layout references only that template's fields.
 
-## Field Types
+## Field Types and Renderers
 
-The renderer passed to `.renderer("...")` **must** come from this table. The name is a
-camelCase key that the framework maps internally to the real frontend renderer. Using a
-made-up name (e.g. `"fileInput"`, `"lexicalTextInput"`, `"objectInput"`) will silently
-misbehave in the Admin UI — the field will render with a fallback or not save values.
+Every field type exposes two renderer variants: a **single-value** renderer (used by
+default) and a **multi-value** renderer (used when the field is marked as a list via
+`.list()`). You **MUST** pair the renderer with the cardinality: calling `.list()`
+requires a renderer from the `list: true` column, and omitting `.list()` requires one
+from the `list: false` column. Using the wrong variant will render incorrectly in the
+Admin UI and the field may fail to save values. Invented names (e.g. `"fileInput"`,
+`"lexicalTextInput"`, `"objectInput"`, `"boolean"`) will silently misbehave the same way.
+
+Exception: `fields.boolean()` has no multi-value variant — do not call `.list()` on
+boolean fields.
 
 The authoritative source for this list is
 `@webiny/api-headless-cms/features/modelBuilder/fields/DataFieldBuilder.d.ts` (in the
 project's `node_modules`) — if you're unsure, grep there first.
 
-| Builder Method         | Description                              | Renderer (single)            | Renderer when `.list()` (multi) |
+| Builder Method         | Description                              | Single (`list: false`)       | Multiple (`list: true`)         |
 | ---------------------- | ---------------------------------------- | ---------------------------- | ------------------------------- |
 | `fields.text()`        | Single-line text                         | `"textInput"`                | `"textInputs"`                  |
-| `fields.text()` + tags | Tag-style text (predefinedValues, etc.)  | `"radioButtons"`, `"dropdown"`, `"tags"`, `"checkboxes"` | same (these don't pluralize) |
 | `fields.longText()`    | Multi-line text                          | `"textarea"`                 | `"textareas"`                   |
 | `fields.richText()`    | Rich text (Lexical)                      | `"lexicalEditor"`            | `"lexicalEditors"`              |
 | `fields.number()`      | Numeric value                            | `"numberInput"`              | `"numberInputs"`                |
-| `fields.boolean()`     | True/false toggle                        | `"switch"`                   | *(boolean fields don't list)*   |
+| `fields.boolean()`     | True/false toggle                        | `"switch"`                   | — (not supported)               |
 | `fields.datetime()`    | Date/time picker                         | `"dateTimeInput"`            | `"dateTimeInputs"`              |
 | `fields.file()`        | File/image attachment                    | `"file"`                     | `"files"`                       |
-| `fields.ref()`         | Reference to another model (single)      | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | — |
-| `fields.ref().list()`  | Reference to another model (multiple)    | —                            | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
+| `fields.ref()`         | Reference to another model               | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
 | `fields.object()`      | Nested object with sub-fields            | `"objectAccordionSingle"`    | `"objectAccordionMultiple"`     |
 | `fields.dynamicZone()` | Dynamic zone (choose-one-of-N templates) | `"dynamicZone"`              | *(implicitly a list; see below)* |
+
+### Ref renderer families
+
+The three `ref` renderer families look and behave very differently in the Admin UI —
+pick the one that fits your UX:
+
+- **Dialog** (`refDialogSingle` / `refDialogMultiple`) — opens a modal with a searchable,
+  filterable picker. Best for large reference sets.
+- **Autocomplete** (`refAutocompleteSingle` / `refAutocompleteMultiple`) — inline
+  typeahead input. Best for moderate reference sets.
+- **Inline** (`refRadioButtons` / `refCheckboxes`) — renders all referenced entries as
+  inline controls. Best for small, fixed reference sets.
+
+### Alternative text/number renderers (with `predefinedValues`)
+
+When a `text` or `number` field uses `.predefinedValues([...])`, additional renderers
+become available:
+
+- `"radioButtons"` — single-value; requires `list: false` and `predefinedValues`.
+- `"dropdown"` — single-value; requires `list: false` and `predefinedValues`.
+- `"checkboxes"` — multi-value; requires `list: true` and `predefinedValues`.
+- `"tags"` — multi-value free-form entry; `text` only, requires `list: true` and NO
+  `predefinedValues`.
 
 ### List fields and renderer pluralization
 
@@ -249,7 +276,7 @@ have distinct names (e.g. `refDialogSingle` → `refDialogMultiple`) — see the
 | `.renderer("rendererName")`     | Set the Admin UI renderer                          |
 | `.label("Display Name")`        | Field label in the editor                          |
 | `.help("Helper text")`          | Helper text shown below the field                  |
-| `.list()`                       | Make the field accept multiple values (arrays)     |
+| `.list()`                       | Make the field accept multiple values (arrays). Requires a multi-value renderer variant — see Field Types table. |
 | `.models([{ modelId: "..." }])` | For `ref()` fields: which models can be referenced |
 | `.tags(["tag1"])`               | Assign tags to a field (e.g., `"$bulk-edit"`)      |
 
