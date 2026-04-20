@@ -364,7 +364,9 @@ export class FormModel implements IFormModel {
             tabs,
             activeTabId: validActive,
             setActiveTab: (id: string) => {
-                this._activeTabs.set(tabKey, id);
+                runInAction(() => {
+                    this._activeTabs.set(tabKey, id);
+                });
             }
         };
     }
