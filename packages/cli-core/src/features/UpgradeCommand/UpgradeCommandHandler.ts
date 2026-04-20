@@ -25,7 +25,8 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
     public constructor(private ui: UiService.Interface) {}
 
     public async handle(params: UpgradeCommandHandlerAbstraction.Params): Promise<void> {
-        const { version, skipChecks, debug, logLevel, showLogs, showStackTrace } = params;
+        const { version, skipChecks, debug, logLevel, showLogs, showStackTrace, installVersion } =
+            params;
 
         if (!skipChecks) {
             /**
@@ -67,6 +68,7 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
             showLogs ? `--showLogs=${showLogs}` : "",
             showStackTrace ? `--showStackTrace=${showStackTrace}` : "",
             logLevel ? `--logLevel=${logLevel}` : "",
+            installVersion ? `--installVersion=${installVersion}` : "",
             "--json"
         ].filter(Boolean);
 
