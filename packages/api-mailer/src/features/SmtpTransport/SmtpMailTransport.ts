@@ -45,6 +45,10 @@ export class SmtpMailTransport implements MailTransport.Interface {
                 }
             };
         } catch (ex: any) {
+            // Allow-list specific nodemailer/SMTP error fields. Spreading `ex`
+            // or `ex.data` blindly would risk surfacing the transporter's auth
+            // config (or anything else a future nodemailer version stamps onto
+            // its errors) in error responses.
             return {
                 result: null,
                 error: {
@@ -52,7 +56,9 @@ export class SmtpMailTransport implements MailTransport.Interface {
                     code: ex.code,
                     data: {
                         ...params,
-                        ...ex.data
+                        command: ex.command,
+                        response: ex.response,
+                        responseCode: ex.responseCode
                     }
                 }
             };
