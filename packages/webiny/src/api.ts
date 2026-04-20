@@ -1,9 +1,10 @@
 export {
-    AiProvider,
-    AiProviderFactory,
-    AiGateway,
+    AiSdk,
+    AiSdkFactory,
+    AiConnectionFactory,
     Ai
 } from "@webiny/api-core/features/ai/index.js";
+export type { IAiConnection, IAiConnectionInline } from "@webiny/api-core/features/ai/index.js";
 export { Logger } from "@webiny/api-core/features/logger/index.js";
 export { Encryption } from "@webiny/api-core/features/encryption/index.js";
 export { BuildParam, BuildParams } from "@webiny/api-core/features/buildParams/index.js";

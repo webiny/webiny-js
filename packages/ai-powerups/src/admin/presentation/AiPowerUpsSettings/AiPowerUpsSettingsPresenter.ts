@@ -72,7 +72,7 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
         if (!data) {
             return false;
         }
-        
+
         console.log("data", data);
 
         this.saving = true;

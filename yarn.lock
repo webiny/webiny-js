@@ -12702,7 +12702,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/ai-powerups@workspace:packages/ai-powerups":
+"@webiny/ai-powerups@npm:0.0.0, @webiny/ai-powerups@workspace:packages/ai-powerups":
   version: 0.0.0-use.local
   resolution: "@webiny/ai-powerups@workspace:packages/ai-powerups"
   dependencies:
@@ -12984,9 +12984,11 @@ __metadata:
   resolution: "@webiny/api-file-manager@workspace:packages/api-file-manager"
   dependencies:
     "@types/object-hash": "npm:^3.0.6"
+    "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^0.2.3"
     "@webiny/error": "npm:0.0.0"
@@ -12996,6 +12998,7 @@ __metadata:
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     cache-control-parser: "npm:^2.2.0"
