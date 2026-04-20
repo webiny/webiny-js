@@ -1,14 +1,14 @@
 import { createFeature } from "@webiny/feature/api";
 import { BaseGraphQLSchema } from "./graphql/BaseGraphQLSchema.js";
 import { GetSettingsFeature } from "./features/GetSettings/feature.js";
-import { SaveSettingsFeature } from "./features/SaveSettings/feature.js";
+import { UpdateSettingsFeature } from "./features/UpdateSettings/feature.js";
 
 export const Extension = createFeature({
-    name: "AiPowerups",
-    register(container) {
-        GetSettingsFeature.register(container);
-        SaveSettingsFeature.register(container);
+  name: "AiPowerUps",
+  register(container) {
+    GetSettingsFeature.register(container);
+    UpdateSettingsFeature.register(container);
 
-        container.register(BaseGraphQLSchema);
-    }
+    container.register(BaseGraphQLSchema);
+  },
 });

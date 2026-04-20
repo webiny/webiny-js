@@ -1,123 +1,91 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
-import { SaveSettingsUseCase } from "~/api/features/SaveSettings/index.js";
+import { UpdateSettingsUseCase } from "~/api/features/UpdateSettings/index.js";
 
 class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
-    async execute(
-        builder: CoreGraphQLSchemaFactory.SchemaBuilder
-    ): Promise<CoreGraphQLSchemaFactory.SchemaBuilder> {
-        builder.addTypeDefs(/* GraphQL */ `
-            type AiModel {
-                providerId: String!
-                providerName: String!
-                modelId: String!
-                modelName: String!
-            }
+  async execute(
+    builder: CoreGraphQLSchemaFactory.SchemaBuilder,
+  ): Promise<CoreGraphQLSchemaFactory.SchemaBuilder> {
+    builder.addTypeDefs(/* GraphQL */ `
+      type AiModel {
+        providerId: String!
+        providerName: String!
+        modelId: String!
+        modelName: String!
+      }
 
-            type AiPowerupsProvider {
-                name: String!
-                description: String
-                model: String!
-                apiKey: String!
-            }
+      type AiPowerUpsQuery {
+        listModels: [AiModel!]!
+        getSettings: JSON
+      }
 
-            type AiPowerupsPersona {
-                name: String!
-                description: String!
-            }
+      type AiPowerUpsMutation {
+        updateSettings(input: JSON!): JSON!
+      }
 
-            type AiPowerupsSettings {
-                providers: [AiPowerupsProvider!]!
-                personas: [AiPowerupsPersona!]!
-            }
+      extend type Query {
+        aiPowerUps: AiPowerUpsQuery
+      }
 
-            input AiPowerupsProviderInput {
-                name: String!
-                description: String
-                model: String!
-                apiKey: String!
-            }
+      extend type Mutation {
+        aiPowerUps: AiPowerUpsMutation
+      }
+    `);
 
-            input AiPowerupsPersonaInput {
-                name: String!
-                description: String!
-            }
+    builder.addResolver({
+      path: "Query.aiPowerUps",
+      resolver: () => () => ({}),
+    });
 
-            type AiPowerups {
-                listModels: [AiModel!]!
-                getSettings: AiPowerupsSettings
-            }
+    builder.addResolver({
+      path: "Mutation.aiPowerUps",
+      resolver: () => () => ({}),
+    });
 
-            type AiPowerupsMutation {
-                saveSettings(
-                    providers: [AiPowerupsProviderInput!]!
-                    personas: [AiPowerupsPersonaInput!]!
-                ): AiPowerupsSettings
-            }
+    builder.addResolver({
+      path: "AiPowerUpsQuery.listModels",
+      dependencies: [Ai],
+      resolver: (ai: Ai.Interface) => {
+        return async () => ai.listModels();
+      },
+    });
 
-            extend type Query {
-                aiPowerups: AiPowerups
-            }
+    builder.addResolver({
+      path: "AiPowerUpsQuery.getSettings",
+      dependencies: [GetSettingsUseCase],
+      resolver: (useCase: GetSettingsUseCase.Interface) => {
+        return async () => {
+          const result = await useCase.execute();
+          if (result.isOk()) {
+            return result.value;
+          }
 
-            extend type Mutation {
-                aiPowerups: AiPowerupsMutation
-            }
-        `);
+          throw result.error;
+        };
+      },
+    });
 
-        builder.addResolver({
-            path: "Query.aiPowerups",
-            resolver: () => () => ({})
-        });
+    builder.addResolver<{ input: UpdateSettingsUseCase.Params }>({
+      path: "AiPowerUpsMutation.updateSettings",
+      dependencies: [UpdateSettingsUseCase],
+      resolver: (useCase: UpdateSettingsUseCase.Interface) => {
+        return async ({ args }) => {
+          const result = await useCase.execute(args.input);
 
-        builder.addResolver({
-            path: "Mutation.aiPowerups",
-            resolver: () => () => ({})
-        });
+          if (result.isFail()) {
+            throw result.error;
+          }
+          return result.value;
+        };
+      },
+    });
 
-        builder.addResolver({
-            path: "AiPowerups.listModels",
-            dependencies: [Ai],
-            resolver: (ai: Ai.Interface) => {
-                return async () => ai.listModels();
-            }
-        });
-
-        builder.addResolver({
-            path: "AiPowerups.getSettings",
-            dependencies: [GetSettingsUseCase],
-            resolver: (useCase: GetSettingsUseCase.Interface) => {
-                return async () => {
-                    const result = await useCase.execute();
-                    return result.isOk()
-                        ? (result.value ?? { providers: [], personas: [] })
-                        : { providers: [], personas: [] };
-                };
-            }
-        });
-
-        builder.addResolver({
-            path: "AiPowerupsMutation.saveSettings",
-            dependencies: [SaveSettingsUseCase],
-            resolver: (useCase: SaveSettingsUseCase.Interface) => {
-                return async ({ args }: { args: { providers: any[]; personas: any[] } }) => {
-                    const result = await useCase.execute({
-                        providers: args.providers,
-                        personas: args.personas
-                    });
-                    if (result.isFail()) {
-                        throw result.error;
-                    }
-                    return result.value;
-                };
-            }
-        });
-
-        return builder;
-    }
+    return builder;
+  }
 }
 
 export const BaseGraphQLSchema = CoreGraphQLSchemaFactory.createImplementation({
-    implementation: BaseGraphQLSchemaImpl,
-    dependencies: []
+  implementation: BaseGraphQLSchemaImpl,
+  dependencies: [],
 });

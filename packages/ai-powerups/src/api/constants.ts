@@ -1,1 +1,1 @@
-export const AI_POWERUPS_SETTINGS = "ai-powerups.settings";
+export const AI_POWER_UPS_SETTINGS = "AiPowerUps/Settings";

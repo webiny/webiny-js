@@ -1,48 +1,35 @@
 import { UpdateSettingsGateway as GatewayAbstraction } from "./abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
+import type { ISettings } from "~/admin/features/settings/shared/abstractions.js";
 
 const UPDATE_SETTINGS = /* GraphQL */ `
-    mutation UpdateAiPowerUpsSettings($data: JSON!) {
-        aiPowerUps {
-            updateSettings(data: $data) {
-                data
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
+  mutation UpdateAiPowerUpsSettings($input: JSON!) {
+    aiPowerUps {
+      updateSettings(input: $input)
     }
+  }
 `;
 
 type UpdateSettingsResponse = {
-    aiPowerUps: {
-        updateSettings:
-            | { data: Record<string, any>; error: null }
-            | { data: null; error: { code: string; message: string; data: any } };
-    };
+  aiPowerUps: {
+    updateSettings: ISettings;
+  };
 };
 
 class UpdateSettingsGatewayImpl implements GatewayAbstraction.Interface {
-    constructor(private client: MainGraphQLClient.Interface) {}
+  constructor(private client: MainGraphQLClient.Interface) {}
 
-    async execute(data: Record<string, any>): Promise<Record<string, any>> {
-        const response = await this.client.execute<UpdateSettingsResponse>({
-            query: UPDATE_SETTINGS,
-            variables: { data }
-        });
+  async execute(data: ISettings): Promise<ISettings> {
+    const response = await this.client.execute<UpdateSettingsResponse>({
+      query: UPDATE_SETTINGS,
+      variables: { input: data },
+    });
 
-        const envelope = response.aiPowerUps.updateSettings;
-        if (envelope.error) {
-            throw new Error(envelope.error.message);
-        }
-
-        return envelope.data || {};
-    }
+    return response.aiPowerUps.updateSettings ?? {};
+  }
 }
 
 export const UpdateSettingsGateway = GatewayAbstraction.createImplementation({
-    implementation: UpdateSettingsGatewayImpl,
-    dependencies: [MainGraphQLClient]
+  implementation: UpdateSettingsGatewayImpl,
+  dependencies: [MainGraphQLClient],
 });

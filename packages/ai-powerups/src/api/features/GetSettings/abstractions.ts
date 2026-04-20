@@ -1,26 +1,26 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
-import type { AiPowerupsSettings } from "~/api/types.js";
+import type { AiPowerUpsSettings } from "~/api/types.js";
 
 export interface IGetSettingsRepository {
-    get(): Promise<Result<AiPowerupsSettings | null>>;
+  get(): Promise<Result<AiPowerUpsSettings>>;
 }
 
 export const GetSettingsRepository = createAbstraction<IGetSettingsRepository>(
-    "AiPowerupsGetSettingsRepository"
+  "AiPowerUpsGetSettingsRepository",
 );
 
 export namespace GetSettingsRepository {
-    export type Interface = IGetSettingsRepository;
+  export type Interface = IGetSettingsRepository;
 }
 
 export interface IGetSettingsUseCase {
-    execute(): Promise<Result<AiPowerupsSettings | null>>;
+  execute(): Promise<Result<AiPowerUpsSettings>>;
 }
 
 export const GetSettingsUseCase = createAbstraction<IGetSettingsUseCase>(
-    "AiPowerupsGetSettingsUseCase"
+  "AiPowerUpsGetSettingsUseCase",
 );
 
 export namespace GetSettingsUseCase {
-    export type Interface = IGetSettingsUseCase;
+  export type Interface = IGetSettingsUseCase;
 }

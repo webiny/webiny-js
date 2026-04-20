@@ -1,34 +1,36 @@
 import { createAbstraction } from "@webiny/feature/admin";
+import type { ISettings } from "~/admin/features/settings/shared/abstractions.js";
 
 export interface IUpdateSettingsUseCase {
-    execute(data: Record<string, any>): Promise<Record<string, any>>;
+  execute(data: ISettings): Promise<ISettings>;
 }
 
 export const UpdateSettingsUseCase = createAbstraction<IUpdateSettingsUseCase>(
-    "AiPowerUps/UpdateSettingsUseCase"
+  "AiPowerUps/UpdateSettingsUseCase",
 );
 export namespace UpdateSettingsUseCase {
-    export type Interface = IUpdateSettingsUseCase;
+  export type Interface = IUpdateSettingsUseCase;
 }
 
 export interface IUpdateSettingsRepository {
-    execute(data: Record<string, any>): Promise<Record<string, any>>;
+  execute(data: ISettings): Promise<ISettings>;
 }
 
-export const UpdateSettingsRepository = createAbstraction<IUpdateSettingsRepository>(
-    "AiPowerUps/UpdateSettingsRepository"
-);
+export const UpdateSettingsRepository =
+  createAbstraction<IUpdateSettingsRepository>(
+    "AiPowerUps/UpdateSettingsRepository",
+  );
 export namespace UpdateSettingsRepository {
-    export type Interface = IUpdateSettingsRepository;
+  export type Interface = IUpdateSettingsRepository;
 }
 
 export interface IUpdateSettingsGateway {
-    execute(data: Record<string, any>): Promise<Record<string, any>>;
+  execute(data: ISettings): Promise<ISettings>;
 }
 
 export const UpdateSettingsGateway = createAbstraction<IUpdateSettingsGateway>(
-    "AiPowerUps/UpdateSettingsGateway"
+  "AiPowerUps/UpdateSettingsGateway",
 );
 export namespace UpdateSettingsGateway {
-    export type Interface = IUpdateSettingsGateway;
+  export type Interface = IUpdateSettingsGateway;
 }

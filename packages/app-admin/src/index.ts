@@ -1,5 +1,9 @@
 export * from "@webiny/app";
-export type { HigherOrderComponent, ProviderProps, ComposeProps } from "@webiny/app";
+export type {
+  HigherOrderComponent,
+  ProviderProps,
+  ComposeProps,
+} from "@webiny/app";
 // UI components
 export * from "./base/ui/Tags.js";
 export * from "./base/ui/Layout.js";
@@ -34,10 +38,10 @@ export { SecureRoute } from "./presentation/security/components/SecureRoute.js";
 
 export { FileManager, FileManagerRenderer } from "./base/ui/FileManager.js";
 export type {
-    FileManagerProps,
-    FileManagerRendererProps,
-    FileManagerFileItem,
-    FileManagerOnChange
+  FileManagerProps,
+  FileManagerRendererProps,
+  FileManagerFileItem,
+  FileManagerOnChange,
 } from "./base/ui/FileManager.js";
 
 export { SystemInstallerProvider } from "./presentation/installation/components/SystemInstaller/index.js";
@@ -48,10 +52,16 @@ export type { Tenant } from "./features/tenancy/types.js";
 
 export { BuildParamsFeature } from "./features/buildParams/feature.js";
 export { ToolsFeature } from "./features/tools/feature.js";
-export { Tool, ToolRegistry, ToolPipelineRunner } from "./features/tools/abstractions.js";
-export type { ITool, IToolRegistry, IToolPipelineRunner } from "./features/tools/abstractions.js";
-export { LexicalContext } from "./features/tools/LexicalContext/index.js";
-export type { ILexicalContext } from "./features/tools/LexicalContext/index.js";
+export {
+  Tool,
+  ToolRegistry,
+  ToolPipelineRunner,
+} from "./features/tools/abstractions.js";
+export type {
+  ITool,
+  IToolRegistry,
+  IToolPipelineRunner,
+} from "./features/tools/abstractions.js";
 
 // Hooks
 export * from "./hooks/index.js";
@@ -68,50 +78,53 @@ export * from "@webiny/app/renderApp.js";
 
 // FormModel
 import "./features/formModel/renderers.js";
-export { FormModelFactory, FormModel } from "./features/formModel/abstractions.js";
+export {
+  FormModelFactory,
+  FormModel,
+} from "./features/formModel/abstractions.js";
 export type {
-    IFieldRendererRegistry,
-    FieldRendererName,
-    FieldRendererSettings,
-    IFormModelFactory,
-    IFormModelConfig,
-    ILayoutBuilder,
-    IFieldBuilder,
-    ISelectFieldBuilder,
-    IFieldBuilderRegistry,
-    IFormModel,
-    IField,
-    ISelectField,
-    FieldTypeMap,
-    IFieldConfig,
-    IFieldVM,
-    IFieldValidation,
-    IFormVM,
-    IFormError,
-    IValueOption,
-    IRowNode,
-    IRowNodeVM,
-    LayoutNode,
-    LayoutNodeVM,
-    LayoutPosition,
-    IPositionedLayoutNode,
-    ILayoutNodeHandle,
-    ILayoutModifier,
-    IFormModifier,
-    BeforeChangeCallback,
-    AfterChangeCallback,
-    AfterSetValueCallback
+  IFieldRendererRegistry,
+  FieldRendererName,
+  FieldRendererSettings,
+  IFormModelFactory,
+  IFormModelConfig,
+  ILayoutBuilder,
+  IFieldBuilder,
+  ISelectFieldBuilder,
+  IFieldBuilderRegistry,
+  IFormModel,
+  IField,
+  ISelectField,
+  FieldTypeMap,
+  IFieldConfig,
+  IFieldVM,
+  IFieldValidation,
+  IFormVM,
+  IFormError,
+  IValueOption,
+  IRowNode,
+  IRowNodeVM,
+  LayoutNode,
+  LayoutNodeVM,
+  LayoutPosition,
+  IPositionedLayoutNode,
+  ILayoutNodeHandle,
+  ILayoutModifier,
+  IFormModifier,
+  BeforeChangeCallback,
+  AfterChangeCallback,
+  AfterSetValueCallback,
 } from "./features/formModel/abstractions.js";
 export {
-    FormView,
-    LayoutNodeRenderer,
-    useFormViewRenderers
+  FormView,
+  LayoutNodeRenderer,
+  useFormViewRenderers,
 } from "./features/formModel/FormView.js";
 export { useFieldRenderers } from "./features/formModel/useFieldRenderers.js";
 export { useLayoutRenderers } from "./features/formModel/useLayoutRenderers.js";
 export type {
-    FieldRenderers,
-    FieldRendererComponent,
-    LayoutRenderers,
-    TabsNodeRendererProps
+  FieldRenderers,
+  FieldRendererComponent,
+  LayoutRenderers,
+  TabsNodeRendererProps,
 } from "./features/formModel/FormView.js";
