@@ -11,9 +11,9 @@ class AiTagAfterCreateHandlerImpl implements FileAfterCreateEventHandler.Interfa
     ) {}
 
     async handle(event: FileAfterCreateEventHandler.Event): Promise<void> {
-        if (!this.wcpContext.canUseAiImageEnrichment()) {
-            return;
-        }
+        // if (!this.wcpContext.canUseAiImageEnrichment()) {
+        //     return;
+        // }
 
         const { file } = event.payload;
 
