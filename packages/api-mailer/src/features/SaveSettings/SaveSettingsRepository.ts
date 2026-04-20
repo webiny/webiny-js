@@ -47,9 +47,11 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
             return Result.fail(new SettingsPersistenceError(result.error));
         }
 
-        // Return the stored state including the encrypted password. The GraphQL
-        // layer is responsible for masking before the response leaves the server.
-        return Result.ok(data as TransportSettings);
+        // Return the stored state without the password. Callers that need the
+        // plaintext password go through GetSettingsRepository.get(transportName).
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password: _password, ...savedSettings } = data as TransportSettings;
+        return Result.ok(savedSettings);
     }
 }
 

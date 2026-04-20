@@ -62,11 +62,10 @@ class SaveSettingsUseCaseImpl implements SaveSettingsUseCase.Interface {
             return Result.fail(new SettingsPersistenceError(result.error));
         }
 
-        // Publish after save event. Strip the (encrypted) password for the same
-        // reason — audit subscribers only need the non-sensitive fields.
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password: _afterPassword, ...settingsForEvent } = result.value;
-        const afterSaveEvent = new MailerSettingsAfterSaveEvent({ settings: settingsForEvent });
+        // Publish after save event. The repository return is already password-free
+        // (its type is Omit<TransportSettings, "password">), so no runtime strip
+        // is needed here.
+        const afterSaveEvent = new MailerSettingsAfterSaveEvent({ settings: result.value });
         await this.eventPublisher.publish(afterSaveEvent);
 
         return result;

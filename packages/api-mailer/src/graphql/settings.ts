@@ -8,19 +8,20 @@ import type { TransportSettings } from "~/types.js";
 
 const emptyResolver = () => ({});
 
-// Strip `password` before the settings leave the server and tack on `source` so
-// the admin UI can branch on code-vs-storage. Defense in depth: the schema also
-// omits `password` on the output type, but we never pass the encrypted blob
-// into the resolver's return object either.
+// Strip `password` before the settings leave the server and tack on `source`
+// so the admin UI can branch on code-vs-storage. Accepts both the full
+// `TransportSettings` (from getSettings) and the already-stripped
+// `Omit<TransportSettings, "password">` (from saveSettings) — defense in depth
+// even when the input type carries no password to begin with.
 const toPublicSettings = (
-    settings: TransportSettings | null,
+    settings: TransportSettings | Omit<TransportSettings, "password"> | null,
     source: MailerSettingsSource
 ): (Omit<TransportSettings, "password"> & { source: MailerSettingsSource }) | null => {
     if (!settings) {
         return null;
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: _password, ...publicSettings } = settings;
+    const { password: _password, ...publicSettings } = settings as TransportSettings;
     return { ...publicSettings, source };
 };
 

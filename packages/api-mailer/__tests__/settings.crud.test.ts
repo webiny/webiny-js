@@ -34,20 +34,23 @@ describe("Settings Transporter CRUD", () => {
         replyTo: "replyTo@dummy-host.webiny"
     };
 
-    it("should return stored settings with encrypted password when saving", async () => {
+    it("should return stored settings without the password when saving", async () => {
         const context = await handle();
 
         const saveSettings = context.container.resolve(SaveSettingsUseCase);
         const result = await saveSettings.execute(input);
 
         expect(result.isOk()).toBe(true);
+        // The save path never returns the password — the only sanctioned path
+        // for retrieving the stored password is GetSettingsUseCase / Repository.
         expect(result.value).toEqual({
-            ...input,
+            host: input.host,
             port: 25,
-            password: expect.any(String)
+            user: input.user,
+            from: input.from,
+            replyTo: input.replyTo
         });
-        // The password is returned as the stored value; masking happens at the GraphQL boundary.
-        expect(result.value.password).toBeTruthy();
+        expect(result.value).not.toHaveProperty("password");
     });
 
     it("should return response with password when getting settings", async () => {
@@ -69,7 +72,7 @@ describe("Settings Transporter CRUD", () => {
         });
     });
 
-    it("should return stored settings with encrypted password when updating", async () => {
+    it("should return stored settings without the password when updating", async () => {
         const context = await handle();
 
         const saveSettings = context.container.resolve(SaveSettingsUseCase);
@@ -83,11 +86,13 @@ describe("Settings Transporter CRUD", () => {
 
         expect(updateResult.isOk()).toBe(true);
         expect(updateResult.value).toEqual({
-            ...input,
-            port: 30,
             host: "dummy-host2.webiny",
-            password: expect.any(String)
+            port: 30,
+            user: input.user,
+            from: input.from,
+            replyTo: input.replyTo
         });
+        expect(updateResult.value).not.toHaveProperty("password");
 
         const updateResult2 = await saveSettings.execute({
             ...input,
@@ -96,11 +101,13 @@ describe("Settings Transporter CRUD", () => {
 
         expect(updateResult2.isOk()).toBe(true);
         expect(updateResult2.value).toEqual({
-            ...input,
-            port: 30,
             host: "dummy-host3.webiny",
-            password: expect.any(String)
+            port: 30,
+            user: input.user,
+            from: input.from,
+            replyTo: input.replyTo
         });
+        expect(updateResult2.value).not.toHaveProperty("password");
     });
 
     it("should be possible to update settings without password", async () => {
@@ -123,11 +130,13 @@ describe("Settings Transporter CRUD", () => {
 
         expect(updateResult.isOk()).toBe(true);
         expect(updateResult.value).toEqual({
-            ...input,
-            port: 25,
             host: "dummy-host2.webiny",
-            password: expect.any(String)
+            port: 25,
+            user: input.user,
+            from: input.from,
+            replyTo: input.replyTo
         });
+        expect(updateResult.value).not.toHaveProperty("password");
 
         const getSettings = context.container.resolve(GetSettingsUseCase);
         const afterUpdate = await getSettings.execute("Mailer/SmtpTransport");
