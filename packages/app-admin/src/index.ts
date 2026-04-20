@@ -48,8 +48,10 @@ export type { Tenant } from "./features/tenancy/types.js";
 
 export { BuildParamsFeature } from "./features/buildParams/feature.js";
 export { ToolsFeature } from "./features/tools/feature.js";
-export { Tool, ToolRegistry, PipelineRunner } from "./features/tools/abstractions.js";
+export { Tool, ToolRegistry, ToolPipelineRunner } from "./features/tools/abstractions.js";
 export type { ITool, IToolRegistry, IToolPipelineRunner } from "./features/tools/abstractions.js";
+export { LexicalContext } from "./features/tools/LexicalContext/index.js";
+export type { ILexicalContext } from "./features/tools/LexicalContext/index.js";
 
 // Hooks
 export * from "./hooks/index.js";

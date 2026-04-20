@@ -6,6 +6,7 @@ import { LexicalComponent, createLexicalValue } from "./Lexical.js";
 export const Lexical = createComponent(LexicalComponent, {
     name: "Webiny/Lexical",
     label: "Rich Text",
+    aiContext: "Block of rich text content. Generate HTML or plain text.",
     group: "basic",
     image: `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M280-160v-520H80v-120h520v120H400v520H280Zm360 0v-320H520v-120h360v120H760v320H640Z"/></svg>`,
     inputs: [

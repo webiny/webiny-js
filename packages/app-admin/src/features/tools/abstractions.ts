@@ -1,17 +1,24 @@
 import type { z } from "zod";
 import { createAbstraction } from "@webiny/feature/admin";
 
-export interface ITool {
+export interface ITool<
+    TInput extends z.ZodType = z.ZodType,
+    TOutput extends z.ZodType = z.ZodType
+> {
     name: string;
     description: string;
-    inputSchema: z.ZodType;
-    execute(input: unknown): Promise<unknown>;
+    inputSchema: TInput;
+    outputSchema: TOutput;
+    execute(input: z.infer<TInput>): Promise<z.infer<TOutput>>;
 }
 
 export const Tool = createAbstraction<ITool>("Tool");
 
 export namespace Tool {
-    export type Interface = ITool;
+    export type Interface<
+        TInput extends z.ZodType = z.ZodType,
+        TOutput extends z.ZodType = z.ZodType
+    > = ITool<TInput, TOutput>;
 }
 
 export interface IToolRegistry {
