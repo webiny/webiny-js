@@ -34,7 +34,7 @@ class MailerServiceImpl implements Abstraction.Interface {
             return Result.fail(new NoSettingsConfiguredError());
         }
 
-        const transport = await this.getTransport(settings);
+        const transport = await this.getTransport(transportName, settings);
 
         if (!transport) {
             return Result.fail(new NoTransportAvailableError());
@@ -54,14 +54,13 @@ class MailerServiceImpl implements Abstraction.Interface {
     }
 
     private async getTransport(
+        transportName: string,
         settings: TransportSettings
     ): Promise<MailTransport.Interface | null> {
-        if (this.transportFactories.length === 0) {
+        const factory = this.transportFactories.find(f => f.name === transportName);
+        if (!factory) {
             return null;
         }
-
-        const factory = this.transportFactories[this.transportFactories.length - 1];
-
         return factory.createTransport(settings);
     }
 }
