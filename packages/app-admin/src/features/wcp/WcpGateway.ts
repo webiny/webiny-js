@@ -37,6 +37,18 @@ const GET_WCP_PROJECT = /* GraphQL */ `
                                 enabled
                                 options
                             }
+                            aiPowerups {
+                                enabled
+                                options {
+                                    websiteBuilder {
+                                        pageGeneration
+                                    }
+                                    fileManager {
+                                        imageEnrichment
+                                    }
+                                    lexicalGeneration
+                                }
+                            }
                         }
                     }
                 }
