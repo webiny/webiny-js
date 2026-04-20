@@ -12729,6 +12729,7 @@ __metadata:
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.2"
     vitest: "npm:^4.1.4"
+    zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
 
