@@ -12,9 +12,7 @@ import { Result } from "@webiny/feature/api";
 import { isMailboxAddress } from "~/utils/isMailboxAddress.js";
 
 const requiredString = zod.string();
-const mailboxAddress = zod
-    .string()
-    .refine(isMailboxAddress, { message: "Invalid email address." });
+const mailboxAddress = zod.string().refine(isMailboxAddress, { message: "Invalid email address." });
 
 const schema = zod
     .object({

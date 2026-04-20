@@ -3,9 +3,7 @@ import { isMailboxAddress } from "~/utils/isMailboxAddress.js";
 
 const password = zod.string().describe("Password");
 
-const mailboxAddress = zod
-    .string()
-    .refine(isMailboxAddress, { message: "Invalid email address." });
+const mailboxAddress = zod.string().refine(isMailboxAddress, { message: "Invalid email address." });
 
 const common = {
     from: mailboxAddress.describe("Mail from"),

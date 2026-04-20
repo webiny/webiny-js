@@ -14,15 +14,10 @@ describe("isMailboxAddress", () => {
         expect(isMailboxAddress(value)).toBe(true);
     });
 
-    it.each([
-        "",
-        " ",
-        "not-an-email",
-        "@example.com",
-        "foo@",
-        "Foo <not-an-email>",
-        "<>"
-    ])("rejects %s", value => {
-        expect(isMailboxAddress(value)).toBe(false);
-    });
+    it.each(["", " ", "not-an-email", "@example.com", "foo@", "Foo <not-an-email>", "<>"])(
+        "rejects %s",
+        value => {
+            expect(isMailboxAddress(value)).toBe(false);
+        }
+    );
 });

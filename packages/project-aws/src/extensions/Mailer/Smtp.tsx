@@ -9,9 +9,7 @@ const isMailboxAddress = (value: string): boolean => {
     return emailAddresses.parseOneAddress(value) !== null;
 };
 
-const mailboxAddress = z
-    .string()
-    .refine(isMailboxAddress, { message: "Invalid email address." });
+const mailboxAddress = z.string().refine(isMailboxAddress, { message: "Invalid email address." });
 
 export const Smtp = defineExtension({
     type: "Infra/Mailer/Smtp",
