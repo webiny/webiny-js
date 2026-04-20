@@ -74,19 +74,40 @@ Register in `webiny.config.tsx`:
 | `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                   |
 | `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                        |
 
-## Field Types
+## Field Types and Renderers
 
-| Builder Method      | Description                   | Common Renderers                             |
-| ------------------- | ----------------------------- | -------------------------------------------- |
-| `fields.text()`     | Single-line text              | `"textInput"`                                |
-| `fields.longText()` | Multi-line text               | `"textarea"`                                 |
-| `fields.richText()` | Rich text (Lexical)           | `"lexicalTextInput"`                         |
-| `fields.number()`   | Numeric value                 | `"numberInput"`                              |
-| `fields.boolean()`  | True/false toggle             | `"boolean"`                                  |
-| `fields.datetime()` | Date/time picker              | `"dateTimeInput"`                            |
-| `fields.file()`     | File/image attachment         | `"fileInput"`                                |
-| `fields.ref()`      | Reference to another model    | `"refDialogSingle"`, `"refAdvancedMultiple"` |
-| `fields.object()`   | Nested object with sub-fields | `"objectInput"`                              |
+Every field type exposes two renderer variants: a **single-value** renderer (used by default) and a **multi-value** renderer (used when the field is marked as a list via `.list()`). You **MUST** pair the renderer with the cardinality: calling `.list()` requires a renderer from the `list: true` column, and omitting `.list()` requires one from the `list: false` column. Using a single-value renderer with `.list()` (or vice versa) will render incorrectly in the Admin UI.
+
+Exception: `fields.boolean()` has no multi-value variant — do not call `.list()` on boolean fields.
+
+| Builder Method      | Description                   | Single (`list: false`)                                              | Multiple (`list: true`)                                               |
+| ------------------- | ----------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `fields.text()`     | Single-line text              | `"textInput"`                                                       | `"textInputs"`                                                        |
+| `fields.longText()` | Multi-line text               | `"textarea"`                                                        | `"textareas"`                                                         |
+| `fields.richText()` | Rich text (Lexical)           | `"lexicalEditor"`                                                   | `"lexicalEditors"`                                                    |
+| `fields.number()`   | Numeric value                 | `"numberInput"`                                                     | `"numberInputs"`                                                      |
+| `fields.boolean()`  | True/false toggle             | `"switch"`                                                          | — (not supported)                                                     |
+| `fields.datetime()` | Date/time picker              | `"dateTimeInput"`                                                   | `"dateTimeInputs"`                                                    |
+| `fields.file()`     | File/image attachment         | `"file"`                                                            | `"files"`                                                             |
+| `fields.ref()`      | Reference to another model    | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
+| `fields.object()`   | Nested object with sub-fields | `"objectAccordionSingle"`                                           | `"objectAccordionMultiple"`                                           |
+
+### Ref renderer families
+
+The three `ref` renderer families look and behave very differently in the Admin UI — pick the one that fits your UX:
+
+- **Dialog** (`refDialogSingle` / `refDialogMultiple`) -- opens a modal with a searchable, filterable picker. Best for large reference sets.
+- **Autocomplete** (`refAutocompleteSingle` / `refAutocompleteMultiple`) -- inline typeahead input. Best for moderate reference sets.
+- **Inline** (`refRadioButtons` / `refCheckboxes`) -- renders all referenced entries as inline controls. Best for small, fixed reference sets.
+
+### Alternative text/number renderers (with `predefinedValues`)
+
+When a `text` or `number` field uses `.predefinedValues([...])`, additional renderers become available:
+
+- `"radioButtons"` -- single-value; requires `list: false` and `predefinedValues`.
+- `"dropdown"` -- single-value; requires `list: false` and `predefinedValues`.
+- `"checkboxes"` -- multi-value; requires `list: true` and `predefinedValues`.
+- `"tags"` -- multi-value free-form entry; `text` only, requires `list: true` and NO `predefinedValues`.
 
 ## Field Validators (Chainable)
 
@@ -108,7 +129,7 @@ Register in `webiny.config.tsx`:
 | `.renderer("rendererName")`     | Set the Admin UI renderer                          |
 | `.label("Display Name")`        | Field label in the editor                          |
 | `.help("Helper text")`          | Helper text shown below the field                  |
-| `.list()`                       | Make the field accept multiple values (arrays)     |
+| `.list()`                       | Make the field accept multiple values (arrays). Requires a multi-value renderer variant — see Field Types table. |
 | `.models([{ modelId: "..." }])` | For `ref()` fields: which models can be referenced |
 | `.tags(["tag1"])`               | Assign tags to a field (e.g., `"$bulk-edit"`)      |
 
