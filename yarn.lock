@@ -12709,9 +12709,11 @@ __metadata:
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-website-builder": "npm:0.0.0"
+    "@webiny/app-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -12721,6 +12723,8 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/tasks": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     mobx: "npm:^6.15.0"
@@ -15027,6 +15031,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-aws-template@workspace:packages/project-aws-template"
   dependencies:
+    "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
     "@webiny/api-background-tasks-ddb": "npm:0.0.0"
