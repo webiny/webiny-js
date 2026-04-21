@@ -21,7 +21,7 @@ class ProviderSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
             presets: fields
                 .object()
                 .renderer("objectListFlat", {
-                    addItemLabel: "Add preset",
+                    addItemLabel: "Add provider",
                     itemTitle: (data, index) => String(data.name || `Preset #${index + 1}`)
                 })
                 .fields(f => ({

@@ -75,7 +75,7 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         const firstProvider = aiSettings.providers.presets[0];
 
         if (!firstProvider) {
-            return controller.response.error({
+            return controller.response.done({
                 message: "No AI provider configured. Add a provider in AI Power Ups settings."
             });
         }
