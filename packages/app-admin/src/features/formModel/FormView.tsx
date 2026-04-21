@@ -25,7 +25,6 @@ export type FieldRenderers = Record<string, FieldRendererComponent>;
 /**
  * Map of renderer keys to React components for layout nodes.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type LayoutRenderers = Record<string, React.ComponentType<any>>;
 
 interface FormViewRenderers {

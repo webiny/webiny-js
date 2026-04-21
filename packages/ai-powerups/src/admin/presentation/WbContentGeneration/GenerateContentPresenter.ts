@@ -53,7 +53,7 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
                 components: toJS(this._components),
                 tools
             });
-        } catch (error) {
+        } catch {
             runInAction(() => {
                 this._submitting = false;
             });

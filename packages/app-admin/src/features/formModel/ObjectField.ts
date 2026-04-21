@@ -6,7 +6,6 @@ import type {
     IListItemField,
     IField,
     IObjectFieldVM,
-    IFieldVM,
     IFieldValidation,
     IFormModel,
     IFieldBuilder,

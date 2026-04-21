@@ -1,5 +1,4 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { ComponentManifest } from "@webiny/website-builder-sdk";
 
 export type CreateElementParams = {
     componentName: string;
