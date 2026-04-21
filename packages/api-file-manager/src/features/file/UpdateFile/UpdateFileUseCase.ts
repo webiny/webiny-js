@@ -55,6 +55,7 @@ class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
             type: original.type,
             // Update mutable fields.
             tags: input.tags !== undefined ? input.tags : original.tags,
+            description: input.description !== undefined ? input.description : original.description,
             location: input.location !== undefined ? input.location : original.location,
             // System fields.
             createdOn: input.createdOn ?? original.createdOn,
