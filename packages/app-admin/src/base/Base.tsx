@@ -5,6 +5,7 @@ import { Tenant } from "./Base/Tenant.js";
 import { UserMenu } from "./Base/UserMenu.js";
 import { LexicalPreset } from "./Base/LexicalPreset.js";
 import { DefaultFieldRenderers } from "./Base/DefaultFieldRenderers.js";
+import { DefaultLayoutRenderers } from "./Base/DefaultLayoutRenderers.js";
 
 const BaseExtension = () => {
     return (
@@ -15,6 +16,7 @@ const BaseExtension = () => {
             <RoutesConfig />
             <LexicalPreset />
             <DefaultFieldRenderers />
+            <DefaultLayoutRenderers />
         </>
     );
 };

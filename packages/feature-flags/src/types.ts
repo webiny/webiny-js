@@ -9,6 +9,25 @@ export interface IFileManagerFeatureFlags {
     threatDetection?: boolean;
 }
 
+export interface IAiPowerupsWebsiteBuilderOptions {
+    pageGeneration?: boolean;
+}
+
+export interface IAiPowerupsFileManagerOptions {
+    imageEnrichment?: boolean;
+}
+
+export interface IAiPowerupsOptions {
+    websiteBuilder?: IAiPowerupsWebsiteBuilderOptions;
+    fileManager?: IAiPowerupsFileManagerOptions;
+    lexicalGeneration?: boolean;
+}
+
+export interface IAiPowerupsFeatureFlags {
+    enabled?: boolean;
+    options?: IAiPowerupsOptions;
+}
+
 /**
  * Top-level feature flags interface. Add new flags here as needed.
  * A boolean value controls whether the feature is enabled.
@@ -22,4 +41,5 @@ export interface IFeatureFlagsDto {
     auditLogs?: boolean;
     recordLocking?: boolean;
     fileManager?: IFileManagerFeatureFlags;
+    aiPowerups?: IAiPowerupsFeatureFlags;
 }

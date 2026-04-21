@@ -48,11 +48,41 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-core/src/features/settings/UpdateSettings/abstractions.ts`
 - **Usage:** Create or update settings records
 
+### Ai
+
+- **Import:** `import { Ai } from "@webiny/api-core/features/ai/index.js"`
+- **Interface Type:** See `packages/api-core/src/features/ai/abstractions.ts`
+- **Usage:** Generate text and stream text using registered AI providers. Model format: `"provider/modelId"` (e.g. `"anthropic/claude-3-5-sonnet-20241022"`, `"openai/gpt-4o"`). Providers: `anthropic` (env: `WEBINY_API_ANTHROPIC_API_KEY`), `openai` (env: `WEBINY_API_OPENAI_API_KEY`). Must register `AiFeature` from `@webiny/api-core/features/ai/index.js`.
+
 ### AiGateway
 
-- **Import:** `import { AiGateway } from "@webiny/api-core/exports/api"`
-- **Interface Type:** See `packages/api-core/src/features/aiGateway/abstractions.ts`
-- **Usage:** Obtain a configured `LanguageModel` (from the `ai` SDK) for the active provider. Provider/token/model are read from env vars (`WEBINY_API_AI_GATEWAY_PROVIDER`, `WEBINY_API_AI_GATEWAY_TOKEN`, `WEBINY_API_AI_GATEWAY_MODEL`). Call `aiGateway.getLanguageModel(modelId?)` and pass the result to `generateText`, `streamText`, etc. from the `ai` package.
+- **Import:** `import { AiGateway } from "@webiny/api-core/features/ai/index.js"`
+- **Interface Type:** See `packages/api-core/src/features/ai/abstractions.ts`
+- **Usage:** Routes `"provider/modelId"` strings to registered providers. Used internally by `Ai`.
+
+### TaskDefinition
+
+- **Import:** `import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js"`
+- **Interface Type:** See `packages/api-core/src/features/task/TaskDefinition/abstractions.ts`
+- **Usage:** Define background tasks. Use `TaskDefinition.createImplementation({ implementation, dependencies })`. Register with `context.container.register(MyTask)`. The `run` method receives `{ input, controller }` where controller provides `response.done/error/aborted/continue` and `runtime.isAborted/isCloseToTimeout`.
+
+### TaskService
+
+- **Import:** `import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js"`
+- **Interface Type:** See `packages/api-core/src/features/task/TaskService/abstractions.ts`
+- **Usage:** Trigger and abort background tasks. Call `taskService.trigger({ definition: "taskId", input: {...} })`. Inject as DI dependency via `TaskService`.
+
+### WebsocketService
+
+- **Import:** `import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js"`
+- **Interface Type:** See `packages/api-websockets/src/features/WebsocketService/abstractions.ts`
+- **Usage:** Send real-time messages to connected clients. Use `send({ id: userId }, { action, data })` for a specific user or `sendToConnections(connections, { action, data })` for multiple. List connections with `listConnections({ where: { identityId } })`. Make optional with `[WebsocketService, { optional: true }]`.
+
+### FileAfterCreateEventHandler (File Manager)
+
+- **Import:** `import { FileAfterCreateEventHandler } from "@webiny/api-file-manager/features/file/CreateFile/events.js"`
+- **Interface Type:** See `packages/api-file-manager/src/features/file/CreateFile/events.ts`
+- **Usage:** Hook into file creation. Implement `.handle(event)` where `event.payload.file` is the created file. Register via `FileAfterCreateEventHandler.createImplementation({ implementation, dependencies })`.
 
 ---
 
