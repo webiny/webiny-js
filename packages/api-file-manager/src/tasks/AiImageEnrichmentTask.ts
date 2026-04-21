@@ -7,19 +7,19 @@ import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions
 import { GetSettingsUseCase as AiPowerUpsGetSettingsUseCase } from "@webiny/ai-powerups/api/features/GetSettings/index.js";
 import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js";
 
-export const AI_IMAGE_TAGGING_TASK_ID = "fmAiImageTagging";
+export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
 
 const AI_PROMPT =
     'Analyze this image and return a JSON object with two keys: "tags" (array of up to 5 lowercase descriptive tags) and "description" (one short sentence describing the image). Return only the JSON object, nothing else. Example: {"tags":["nature","landscape","mountain"],"description":"A mountain landscape with a clear blue sky."}';
 
-export interface IAiImageTaggingTaskInput {
+export interface IAiImageEnrichmentTaskInput {
     fileId: string;
 }
 
-class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTaggingTaskInput> {
-    id = AI_IMAGE_TAGGING_TASK_ID;
-    title = "File Manager - AI Image Tagging";
-    description = "Automatically generates tags for uploaded images using AI.";
+class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnrichmentTaskInput> {
+    id = AI_IMAGE_ENRICHMENT_TASK_ID;
+    title = "File Manager - AI Image Enrichment";
+    description = "Automatically enriches uploaded images with AI-generated tags and description.";
     maxIterations = 1;
     isPrivate = true;
     databaseLogs = false;
@@ -36,8 +36,8 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
     async run({
         input,
         controller
-    }: TaskDefinition.RunParams<IAiImageTaggingTaskInput>): Promise<
-        TaskDefinition.Result<IAiImageTaggingTaskInput>
+    }: TaskDefinition.RunParams<IAiImageEnrichmentTaskInput>): Promise<
+        TaskDefinition.Result<IAiImageEnrichmentTaskInput>
     > {
         if (controller.runtime.isAborted()) {
             return controller.response.aborted();
@@ -53,7 +53,7 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
         const file = fileResult.value;
 
         if (!file.type.startsWith("image/")) {
-            return controller.response.done("File is not an image; skipping AI tagging.");
+            return controller.response.done("File is not an image; skipping AI enrichment.");
         }
 
         const settingsResult = await this.getSettings.execute();
@@ -89,7 +89,6 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
                     sdkName: firstProvider.model.split("/")[0],
                     apiKey: firstProvider.apiKey
                 },
-
                 messages: [
                     {
                         role: "user",
@@ -107,7 +106,6 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
                 ]
             });
 
-            console.log("aiResult.text", aiResult.text);
             const parsed = JSON.parse(aiResult.text);
             if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
                 if (Array.isArray(parsed.tags)) {
@@ -119,17 +117,12 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
             }
         } catch (error) {
             return controller.response.error({
-                message: `AI tagging failed: ${error instanceof Error ? error.message : String(error)}`
+                message: `AI enrichment failed: ${error instanceof Error ? error.message : String(error)}`
             });
         }
 
         const mergedTags = [...new Set([...file.tags, ...tags])];
 
-        console.log("aaa", {
-            id: file.id,
-            tags: mergedTags,
-            description
-        });
         const updateResult = await this.updateFile.execute({
             id: file.id,
             tags: mergedTags,
@@ -137,18 +130,16 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
         });
 
         if (updateResult.isFail()) {
-            console.log("faijlaaaa", updateResult);
             return controller.response.error({
                 message: `Failed to update file: ${updateResult.error.message}`
             });
         }
 
-        console.log("toooo");
         if (this.websocketService) {
             const connectionsResult = await this.websocketService.listConnections();
             if (connectionsResult.isOk() && connectionsResult.value.length > 0) {
                 await this.websocketService.sendToConnections(connectionsResult.value, {
-                    action: "fm.file.tags",
+                    action: "fm.file.enrichment",
                     data: {
                         id: file.id,
                         tags: mergedTags,
@@ -158,12 +149,12 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
             }
         }
 
-        return controller.response.done("AI image tagging completed successfully.");
+        return controller.response.done("AI image enrichment completed successfully.");
     }
 }
 
-export const AiImageTaggingTask = TaskDefinition.createImplementation({
-    implementation: AiImageTaggingTaskImpl,
+export const AiImageEnrichmentTask = TaskDefinition.createImplementation({
+    implementation: AiImageEnrichmentTaskImpl,
     dependencies: [
         GetFileUseCase,
         GetSettingsUseCase,

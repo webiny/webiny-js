@@ -4,7 +4,7 @@ import { setupAssetDelivery } from "./delivery/setupAssetDelivery.js";
 import { createGraphQLSchemaPlugin } from "./graphql/index.js";
 import { FileManagerFeature } from "~/features/FileManagerFeature.js";
 import { FmPermissionsFeature } from "~/features/permissions/feature.js";
-import { AiImageTaggingFeature } from "~/features/ai/AiImageTaggingFeature.js";
+import { AiImageEnrichmentFeature } from "~/features/ai/AiImageEnrichmentFeature.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FileModel as FileModelAbstraction } from "~/domain/file/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
@@ -35,7 +35,7 @@ export const createFileManagerContext = () => {
 
         const wcpContext = context.container.resolve(WcpContext);
         if (wcpContext.canUseAiImageEnrichment()) {
-            AiImageTaggingFeature.register(context.container);
+            AiImageEnrichmentFeature.register(context.container);
         }
     });
 
