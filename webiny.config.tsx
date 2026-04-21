@@ -24,6 +24,8 @@ export const Extensions = () => {
 
             <Infra.Encryption passphrase={"my-passphrase"} />
 
+            <Infra.Encryption passphrase={"my-passphrase"} />
+
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
