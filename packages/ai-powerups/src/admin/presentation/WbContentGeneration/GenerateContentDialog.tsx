@@ -102,7 +102,7 @@ export const GenerateContentDialog = observer(() => {
                 </>
             }
         >
-            {vm.submitting ? <OverlayLoader text={"Generating content..."}/> : null}
+            {vm.submitting ? <OverlayLoader text={"Generating content..."} /> : null}
             <Textarea
                 label="Prompt"
                 description="Describe the page content you want to generate."
