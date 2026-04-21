@@ -55,7 +55,8 @@ export class TaskManager implements ITaskManager {
             try {
                 if (definition.onMaxIterations) {
                     await definition.onMaxIterations({
-                        task: this.store.getTask()
+                        task: this.store.getTask(),
+                        context: this.context
                     });
                 }
                 return this.response.error({

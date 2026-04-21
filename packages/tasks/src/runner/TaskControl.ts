@@ -182,7 +182,8 @@ export class TaskControl implements ITaskControl {
         if (result.status === TaskResultStatus.ERROR && definition.onError) {
             try {
                 await definition.onError({
-                    task
+                    task,
+                    context: this.context
                 });
             } catch (ex) {
                 console.error(`Error executing onError hook for task "${task.id}".`);
@@ -191,7 +192,8 @@ export class TaskControl implements ITaskControl {
         } else if (result.status === TaskResultStatus.DONE && definition.onDone) {
             try {
                 await definition.onDone({
-                    task
+                    task,
+                    context: this.context
                 });
             } catch (ex) {
                 console.error(`Error executing onDone hook for task "${task.id}".`);
