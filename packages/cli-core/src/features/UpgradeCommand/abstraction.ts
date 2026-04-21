@@ -12,6 +12,7 @@ export interface IUpgradeCommandHandlerHandleParams {
     packageManager?: string;
     registry?: string;
     skipDependencyGuard?: boolean;
+    installVersion?: string;
 }
 
 export interface IUpgradeCommandHandler {

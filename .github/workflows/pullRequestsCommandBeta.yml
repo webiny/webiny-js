@@ -192,3 +192,52 @@ jobs:
             --data "{\"text\":\"${MSG}\"}" \
             "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
+  npmReleaseLatest:
+    needs:
+      - prBranch
+      - constants
+      - npmReleaseBeta
+    name: NPM release ("latest" tag)
+    environment: release
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      LATEST_VERSION: ${{ vars.LATEST_VERSION }}
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - uses: actions/checkout@v5
+        with:
+          path: ${{ needs.prBranch.outputs.pr-branch }}
+          ref: ${{ needs.prBranch.outputs.pr-branch }}
+          fetch-depth: 0
+      - uses: actions/cache@v5
+        with:
+          path: ${{ needs.prBranch.outputs.pr-branch }}/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v5
+        with:
+          path: ${{ needs.prBranch.outputs.pr-branch }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ needs.prBranch.outputs.pr-branch }}
+      - name: Build packages
+        run: yarn build
+        working-directory: ${{ needs.prBranch.outputs.pr-branch }}
+      - name: Create ".npmrc" file in the project root
+        run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+        working-directory: ${{ needs.prBranch.outputs.pr-branch }}
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+        working-directory: ${{ needs.prBranch.outputs.pr-branch }}
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+        working-directory: ${{ needs.prBranch.outputs.pr-branch }}
+      - name: Version and publish "latest" tag to NPM
+        run: yarn release --type=latest --sourceTag=beta --createGithubRelease=true
+        working-directory: ${{ needs.prBranch.outputs.pr-branch }}
+    runs-on: ubuntu-latest
