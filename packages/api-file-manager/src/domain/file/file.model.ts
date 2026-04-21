@@ -42,7 +42,8 @@ class FilePrivateModelImpl implements ModelFactory.Interface {
                 .label("Tags")
                 .tags(["$bulk-edit"])
                 .list()
-                .required("Value is required.")
+                .required("Value is required."),
+            description: fields.text().label("Description").defaultValue("")
         }));
 
         if (privateFiles) {
