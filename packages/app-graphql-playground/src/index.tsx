@@ -3,6 +3,7 @@ import type { ApolloClient } from "apollo-client";
 import { plugins } from "@webiny/plugins";
 import { useRouter, AdminConfig, AdminLayout } from "@webiny/app-admin";
 import { ReactComponent as ApiPlaygroundIcon } from "@webiny/icons/graphql_playground.svg";
+import { ReactComponent as DevToolsIcon } from "@webiny/icons/developer_mode.svg";
 import Playground from "./plugins/Playground.js";
 import playgroundPlugins from "./plugins/index.js";
 import { Routes } from "~/routes.js";
@@ -23,19 +24,30 @@ const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundPro
 
     return (
         <AdminConfig>
-            <Menu.Support
-                pin={"start"}
-                name={"api-playground"}
+            <Menu
+                name={"dev-tools"}
+                hideIfEmpty={true}
+                pin={"end"}
                 element={
-                    <Menu.Support.Link
+                    <Menu.Item
+                        text={"Dev Tools"}
+                        icon={<Menu.Item.Icon label="Dev Tools" element={<DevToolsIcon />} />}
+                    />
+                }
+            />
+            <Menu
+                name={"dev-tools.graphql"}
+                parent={"dev-tools"}
+                element={
+                    <Menu.Link
                         text={"GraphQL Playground"}
+                        to={router.getLink(Routes.ApiPlayground)}
                         icon={
-                            <Menu.Support.Link.Icon
+                            <Menu.Link.Icon
                                 label="GraphQL Playground"
                                 element={<ApiPlaygroundIcon />}
                             />
                         }
-                        to={router.getLink(Routes.ApiPlayground)}
                     />
                 }
             />

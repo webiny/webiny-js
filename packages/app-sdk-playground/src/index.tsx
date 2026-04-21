@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { useRouter, AdminConfig, AdminLayout } from "@webiny/app-admin";
 import { ReactComponent as CodeIcon } from "@webiny/icons/code.svg";
+import { ReactComponent as DevToolsIcon } from "@webiny/icons/developer_mode.svg";
 import Playground from "./plugins/Playground.js";
 import { Routes } from "./routes.js";
 
@@ -11,16 +12,25 @@ const SdkPlaygroundExtension = () => {
 
     return (
         <AdminConfig>
-            <Menu.Support
-                pin={"start"}
-                name={"sdk-playground"}
+            <Menu
+                name={"dev-tools"}
+                hideIfEmpty={true}
+                pin={"end"}
                 element={
-                    <Menu.Support.Link
+                    <Menu.Item
+                        text={"Dev Tools"}
+                        icon={<Menu.Item.Icon label="Dev Tools" element={<DevToolsIcon />} />}
+                    />
+                }
+            />
+            <Menu
+                name={"dev-tools.sdk"}
+                parent={"dev-tools"}
+                element={
+                    <Menu.Link
                         text={"SDK Playground"}
-                        icon={
-                            <Menu.Support.Link.Icon label="SDK Playground" element={<CodeIcon />} />
-                        }
                         to={router.getLink(Routes.SdkPlayground)}
+                        icon={<Menu.Link.Icon label="SDK Playground" element={<CodeIcon />} />}
                     />
                 }
             />
