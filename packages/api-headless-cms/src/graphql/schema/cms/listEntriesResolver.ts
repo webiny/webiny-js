@@ -6,7 +6,8 @@ import {
     getErrorMessage,
     buildFieldsSelection,
     transformSortToArray,
-    transformWhereToNested
+    transformWhereToNested,
+    transformFieldErrors
 } from "./helpers.js";
 
 export interface ListEntriesArgs {
@@ -84,7 +85,7 @@ export const createListEntriesResolver = () => {
                     data: [],
                     meta: { cursor: null, hasMoreItems: false, totalCount: 0 },
                     error: {
-                        message: result.errors.map(e => e.message).join("; "),
+                        message: transformFieldErrors(result.errors, fields),
                         code: "LIST_ENTRIES_ERROR"
                     }
                 };

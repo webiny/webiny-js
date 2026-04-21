@@ -3,6 +3,7 @@ import { Result } from "../../Result.js";
 import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { FmFile } from "./fileManagerTypes.js";
 import { buildFieldsSelection } from "./buildFieldsSelection.js";
+import { transformFieldError } from "../../utils/transformFieldErrors.js";
 
 export interface GetFileParams {
     id: string;
@@ -48,7 +49,14 @@ ${fieldsSelection}
     const result = await executeGraphQL(config, fetchFn, query, { id });
 
     if (result.isFail()) {
-        return Result.fail(result.error);
+        const { GraphQLError } = await import("../../errors.js");
+        const error = result.error;
+        if (error instanceof GraphQLError) {
+            return Result.fail(
+                new GraphQLError(transformFieldError(error.message, fields), error.data?.code)
+            );
+        }
+        return Result.fail(error);
     }
 
     const responseData = result.value;

@@ -260,6 +260,8 @@ describe("SDK GraphQL - CMS Operations", () => {
             });
 
             expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.message).toMatch(/values\.category/);
+            expect(listResult.error?.message).toMatch(/object type/);
         });
 
         it("should list entries with limit and pagination", async () => {

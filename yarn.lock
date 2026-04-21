@@ -15377,6 +15377,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/website-builder-nuxt@workspace:packages/website-builder-nuxt":
+  version: 0.0.0-use.local
+  resolution: "@webiny/website-builder-nuxt@workspace:packages/website-builder-nuxt"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/website-builder-react@npm:0.0.0, @webiny/website-builder-react@workspace:packages/website-builder-react":
   version: 0.0.0-use.local
   resolution: "@webiny/website-builder-react@workspace:packages/website-builder-react"
@@ -15416,6 +15422,12 @@ __metadata:
     pino-pretty: "npm:^13.1.3"
     typescript: "npm:5.9.3"
     vitest: "npm:^4.1.4"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/website-builder-vue@workspace:packages/website-builder-vue":
+  version: 0.0.0-use.local
+  resolution: "@webiny/website-builder-vue@workspace:packages/website-builder-vue"
   languageName: unknown
   linkType: soft
 
