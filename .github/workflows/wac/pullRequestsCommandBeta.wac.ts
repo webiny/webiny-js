@@ -2,7 +2,6 @@ import { createWorkflow } from "github-actions-wac";
 import { BUILD_PACKAGES_RUNNER } from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
 import {
-    createGlobalBuildCacheSteps,
     createInstallBuildSteps,
     createRunBuildCacheSteps,
     createYarnCacheSteps,
@@ -14,7 +13,6 @@ const PR_BRANCH = "${{ needs.prBranch.outputs.pr-branch }}";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: PR_BRANCH });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: PR_BRANCH });
-const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: PR_BRANCH });
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: PR_BRANCH });
 
 export const pullRequestsCommandBeta = createWorkflow({
@@ -74,15 +72,9 @@ export const pullRequestsCommandBeta = createWorkflow({
             name: "Create constants",
             checkout: false,
             outputs: {
-                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
                 "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
             },
             steps: [
-                {
-                    name: "Create global cache key",
-                    id: "global-cache-key",
-                    run: `echo "global-cache-key=${PR_BRANCH}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
-                },
                 {
                     name: "Create workflow run cache key",
                     id: "run-cache-key",
@@ -97,7 +89,6 @@ export const pullRequestsCommandBeta = createWorkflow({
             "runs-on": BUILD_PACKAGES_RUNNER,
             steps: [
                 ...yarnCacheSteps,
-                ...globalBuildCacheSteps,
                 ...installBuildSteps,
                 ...runBuildCacheSteps
             ]

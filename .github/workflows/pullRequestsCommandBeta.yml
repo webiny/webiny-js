@@ -63,18 +63,11 @@ jobs:
       - prBranch
     name: Create constants
     outputs:
-      global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
     steps:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
-      - name: Create global cache key
-        id: global-cache-key
-        run: >-
-          echo "global-cache-key=${{ needs.prBranch.outputs.pr-branch }}-${{
-          runner.os }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX
-          }}" >> $GITHUB_OUTPUT
       - name: Create workflow run cache key
         id: run-cache-key
         run: >-
@@ -102,10 +95,6 @@ jobs:
         with:
           path: ${{ needs.prBranch.outputs.pr-branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v5
-        with:
-          path: ${{ needs.prBranch.outputs.pr-branch }}/.webiny/cached-packages
-          key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ needs.prBranch.outputs.pr-branch }}
