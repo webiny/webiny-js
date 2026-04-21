@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../ai-powerups" },
     { "path": "../api" },
     { "path": "../api-core" },
     { "path": "../api-headless-cms" },
@@ -23,6 +24,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/ai-powerups/*": ["../ai-powerups/src/*"],
+      "@webiny/ai-powerups": ["../ai-powerups/src"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],

@@ -18,10 +18,10 @@ export interface IGenerateContentVm {
 
 export interface IGenerateContentPresenter {
     readonly vm: IGenerateContentVm;
-    init(components: Record<string, ComponentManifest>, createElements: CreateElementsFn): void;
+    init(components: Record<string, any>[], createElements: CreateElementsFn): void;
     setPrompt(value: string): void;
     submit(): Promise<void>;
-    processAiResponse(): Promise<void>;
+    processAiResponse(responseText: string): Promise<void>;
 }
 
 export const GenerateContentPresenter = createAbstraction<IGenerateContentPresenter>(

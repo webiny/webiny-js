@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { generateText } from "ai";
 import type { streamText } from "ai";
 import type { LanguageModel } from "ai";
+import type { FlexibleSchema, ToolSet } from "ai";
 
 // AiSdk
 
@@ -97,4 +98,33 @@ export namespace Ai {
     export type Interface = IAi;
     export type GenerateTextParams = AiGenerateTextParams;
     export type StreamTextParams = AiStreamTextParams;
+}
+
+// AiSdkTool
+
+export interface IAiSdkTool<TInput = any> {
+    readonly name: string;
+    readonly description: string;
+    readonly inputSchema: FlexibleSchema<TInput>;
+    execute(input: TInput): Promise<unknown>;
+}
+
+/** A single tool that can be provided to AI generateText/streamText calls. */
+export const AiSdkTool = createAbstraction<IAiSdkTool>("AiSdkTool");
+
+export namespace AiSdkTool {
+    export type Interface = IAiSdkTool;
+}
+
+// AiSdkTools
+
+export interface IAiSdkTools {
+    getToolSet(): ToolSet;
+}
+
+/** Collection of AI SDK tools. Returns a ready-to-use ToolSet for generateText/streamText. */
+export const AiSdkTools = createAbstraction<IAiSdkTools>("AiSdkTools");
+
+export namespace AiSdkTools {
+    export type Interface = IAiSdkTools;
 }
