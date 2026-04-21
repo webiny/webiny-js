@@ -2,6 +2,7 @@ import type { Plugin } from "@webiny/plugins";
 import { ContextPlugin } from "@webiny/api";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { RunnableTaskDecorator } from "./decorators/RunnableTaskDecorator.js";
+import { SelfCleaningTaskDecorator } from "./decorators/SelfCleaningTaskDecorator.js";
 import { TaskController } from "./features/TaskController/index.js";
 import type { Context } from "~/types.js";
 import { TaskPrivateModel } from "./crud/TaskPrivateModel.js";
@@ -23,6 +24,7 @@ const createTasksCrud = () => {
 
         // Register the RunnableTaskDecorator to wrap all TaskDefinition instances
         context.container.registerDecorator(RunnableTaskDecorator);
+        context.container.registerDecorator(SelfCleaningTaskDecorator);
 
         // Register task definition use cases
         GetTaskDefinitionFeature.register(context.container);
