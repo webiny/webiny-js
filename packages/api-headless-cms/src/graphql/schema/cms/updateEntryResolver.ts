@@ -1,7 +1,7 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
 import type { ExecutionResult } from "graphql";
-import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
+import { getModel, getErrorMessage, buildFieldsSelection, transformFieldErrors } from "./helpers.js";
 
 export interface UpdateEntryRevisionArgs {
     modelId: string;
@@ -42,6 +42,16 @@ export const createUpdateEntryRevisionResolver = () => {
                 query,
                 variables: { revisionId, data }
             })) as ExecutionResult;
+
+            if (result.errors && result.errors.length > 0) {
+                return {
+                    data: null,
+                    error: {
+                        message: transformFieldErrors(result.errors, fields),
+                        code: "UPDATE_ENTRY_ERROR"
+                    }
+                };
+            }
 
             const operationName = `update${model.singularApiName}`;
             return result.data?.[operationName] || { data: null, error: null };

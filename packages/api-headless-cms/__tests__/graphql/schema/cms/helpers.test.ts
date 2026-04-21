@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { transformSortToArray } from "~/graphql/schema/cms/helpers";
 import { transformWhereToNested } from "~/graphql/schema/cms/helpers";
+import { transformFieldErrors } from "~/graphql/schema/cms/helpers";
 
 /**
  * Test the sort transformation helper that converts object format to array format.
@@ -115,6 +116,71 @@ describe("CMS Schema Helpers", () => {
             expect(transformWhereToNested(input)).toEqual({
                 AND: [{ values: { name: "Keyboard" } }, { values: { price: 150 } }]
             });
+        });
+    });
+
+    describe("transformFieldErrors", () => {
+        it("should rewrite unknown-field error using the matching user-supplied path", () => {
+            const errors = [
+                { message: 'Cannot query field "nonExistentField" on type "ProductValues".' }
+            ];
+            const fields = ["id", "values.nonExistentField"];
+
+            const result = transformFieldErrors(errors, fields);
+
+            expect(result).toBe(
+                'Unknown field: "values.nonExistentField" — "nonExistentField" does not exist.'
+            );
+        });
+
+        it("should rewrite object-as-leaf error using the matching user-supplied path", () => {
+            const errors = [
+                {
+                    message:
+                        'Field "category" of type "RefCategory" must have a selection of subfields. Did you mean "category { ... }"?'
+                }
+            ];
+            const fields = ["id", "values.category"];
+
+            const result = transformFieldErrors(errors, fields);
+
+            expect(result).toBe(
+                'Field "values.category" is an object type and requires sub-field selection.'
+            );
+        });
+
+        it("should join multiple transformed errors with a semicolon", () => {
+            const errors = [
+                { message: 'Cannot query field "badField" on type "ProductValues".' },
+                { message: 'Cannot query field "anotherBad" on type "ProductValues".' }
+            ];
+            const fields = ["values.badField", "values.anotherBad"];
+
+            const result = transformFieldErrors(errors, fields);
+
+            expect(result).toBe(
+                'Unknown field: "values.badField" — "badField" does not exist.; Unknown field: "values.anotherBad" — "anotherBad" does not exist.'
+            );
+        });
+
+        it("should return the original message when no field path matches", () => {
+            const errors = [
+                { message: 'Cannot query field "mystery" on type "ProductValues".' }
+            ];
+            const fields = ["id", "values.name"];
+
+            const result = transformFieldErrors(errors, fields);
+
+            expect(result).toBe('Cannot query field "mystery" on type "ProductValues".');
+        });
+
+        it("should return the original message for unrecognised error patterns", () => {
+            const errors = [{ message: "Some unexpected error from the server." }];
+            const fields = ["id", "values.name"];
+
+            const result = transformFieldErrors(errors, fields);
+
+            expect(result).toBe("Some unexpected error from the server.");
         });
     });
 });
