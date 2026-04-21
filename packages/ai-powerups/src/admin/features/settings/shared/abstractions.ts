@@ -1,15 +1,13 @@
 import { createAbstraction } from "@webiny/feature/admin";
 
 export interface ISettingsCache {
-  get(): ISettings | null;
-  set(data: Record<string, any>): void;
+    get(): ISettings | null;
+    set(data: Record<string, any>): void;
 }
 
-export const SettingsCache = createAbstraction<ISettingsCache>(
-  "AiPowerUps/SettingsCache",
-);
+export const SettingsCache = createAbstraction<ISettingsCache>("AiPowerUps/SettingsCache");
 export namespace SettingsCache {
-  export type Interface = ISettingsCache;
+    export type Interface = ISettingsCache;
 }
 
 // export interface ISettings {

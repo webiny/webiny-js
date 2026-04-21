@@ -9,6 +9,7 @@
   "description": "A Webiny AWS project template.",
   "license": "MIT",
   "dependencies": {
+    "@webiny/ai-powerups": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-audit-logs": "0.0.0",
     "@webiny/api-background-tasks-ddb": "0.0.0",
@@ -56,6 +57,7 @@
   "adio": {
     "ignore": {
       "dependencies": [
+        "@webiny/ai-powerups",
         "@webiny/api-aco",
         "@webiny/api-audit-logs",
         "@webiny/api-background-tasks-ddb",

@@ -8,6 +8,7 @@ import { AiImageTaggingFeature } from "~/features/ai/AiImageTaggingFeature.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FileModel as FileModelAbstraction } from "~/domain/file/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { FileModel, FILE_MODEL_ID } from "~/domain/file/file.model.js";
 
 export * from "./modelModifier/CmsModelModifier.js";
@@ -31,7 +32,11 @@ export const createFileManagerContext = () => {
 
         FmPermissionsFeature.register(context.container);
         FileManagerFeature.register(context.container);
-        AiImageTaggingFeature.register(context.container);
+
+        const wcpContext = context.container.resolve(WcpContext);
+        if (wcpContext.canUseAiImageEnrichment()) {
+            AiImageTaggingFeature.register(context.container);
+        }
     });
 
     plugin.name = "file-manager.createContext";

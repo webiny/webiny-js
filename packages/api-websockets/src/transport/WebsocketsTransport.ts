@@ -27,11 +27,10 @@ export class WebsocketsTransport implements IWebsocketsTransport {
                     Data: JSON.stringify(data)
                 });
                 await client.send(command);
-            } catch (ex) {
+            } catch {
                 // console.error(
                 //     `Failed to send message to connection "${connection.connectionId}". Check logs for more information.`
                 // );
-                // console.log(ex);
             }
         }
     }

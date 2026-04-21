@@ -3,13 +3,11 @@ import { ConnectToProperties, Property, useIdGenerator } from "@webiny/react-pro
 
 export interface LayoutRendererConfig {
     name: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     component: React.ComponentType<any>;
 }
 
 export interface LayoutRendererProps {
     name: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     component: React.ComponentType<any>;
 }
 
