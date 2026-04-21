@@ -158,6 +158,43 @@ export const pullRequestsCommandBeta = createWorkflow({
                     ].join("\n")
                 }
             ]
+        }),
+        npmReleaseLatest: createJob({
+            needs: ["prBranch", "constants", "npmReleaseBeta"],
+            name: 'NPM release ("latest" tag)',
+            environment: "release",
+            env: {
+                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
+                NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
+                LATEST_VERSION: "${{ vars.LATEST_VERSION }}"
+            },
+            checkout: { path: PR_BRANCH, ref: PR_BRANCH, "fetch-depth": 0 },
+            steps: [
+                ...yarnCacheSteps,
+                ...runBuildCacheSteps,
+                ...installBuildSteps,
+                ...withCommonParams(
+                    [
+                        {
+                            name: 'Create ".npmrc" file in the project root',
+                            run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
+                        },
+                        {
+                            name: "Set git email",
+                            run: 'git config --global user.email "webiny-bot@webiny.com"'
+                        },
+                        {
+                            name: "Set git username",
+                            run: 'git config --global user.name "webiny-bot"'
+                        },
+                        {
+                            name: 'Version and publish "latest" tag to NPM',
+                            run: "yarn release --type=latest --sourceTag=beta --createGithubRelease=true"
+                        }
+                    ],
+                    { "working-directory": PR_BRANCH }
+                )
+            ]
         })
     }
 });

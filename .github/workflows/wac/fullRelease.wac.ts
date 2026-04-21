@@ -43,12 +43,12 @@ export const fullRelease = createWorkflow({
                 },
                 {
                     name: `Create and push release branch`,
-                    run: `git checkout -b release/${VERSION} && git commit --allow-empty -m "chore: start release ${VERSION}" -m "Empty commit to allow PR creation." && git push origin release/${VERSION}`
+                    run: `git checkout -b release/${VERSION} && git commit --allow-empty -m "chore: start release ${VERSION} [no ci]" -m "Empty commit to allow PR creation." && git push origin release/${VERSION}`
                 },
                 {
                     name: "Open pull request",
                     env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
-                    run: `gh pr create --title "Release ${VERSION}" --body "Release ${VERSION}" --base next --head release/${VERSION}`
+                    run: `gh pr create --title "📦  Release ${VERSION}" --body "Release ${VERSION}\n\n**Docs PR:** https://github.com/webiny/docs.webiny.com/pulls?q=Release+${VERSION}" --base next --head release/${VERSION}`
                 }
             ]
         }),
