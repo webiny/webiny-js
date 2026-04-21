@@ -114,7 +114,8 @@ describe("task lifecycle hooks", () => {
                     output: expect.objectContaining({
                         result: "success"
                     })
-                })
+                }),
+                context: expect.anything()
             });
         });
     });
@@ -173,7 +174,8 @@ describe("task lifecycle hooks", () => {
                     definitionId: "testOnError",
                     taskStatus: TaskDataStatus.FAILED,
                     input: { test: "input" }
-                })
+                }),
+                context: expect.anything()
             });
         });
     });
@@ -227,7 +229,8 @@ describe("task lifecycle hooks", () => {
                     definitionId: "testOnAbort",
                     taskStatus: TaskDataStatus.ABORTED,
                     input: { test: "input" }
-                })
+                }),
+                context: expect.anything()
             });
         });
     });
@@ -302,7 +305,8 @@ describe("task lifecycle hooks", () => {
                     definitionId: "testOnMaxIterations",
                     input: { test: "input" },
                     iterations: 2
-                })
+                }),
+                context: expect.anything()
             });
         });
     });
