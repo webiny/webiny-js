@@ -10,7 +10,7 @@ import { WebsocketService } from "@webiny/api-websockets/features/WebsocketServi
 export const AI_IMAGE_TAGGING_TASK_ID = "fmAiImageTagging";
 
 const AI_PROMPT =
-    'Generate up to 5 descriptive tags for this image. Return only a JSON array of lowercase strings, nothing else. Example: ["nature","landscape","mountain"]';
+    'Analyze this image and return a JSON object with two keys: "tags" (array of up to 5 lowercase descriptive tags) and "description" (one short sentence describing the image). Return only the JSON object, nothing else. Example: {"tags":["nature","landscape","mountain"],"description":"A mountain landscape with a clear blue sky."}';
 
 export interface IAiImageTaggingTaskInput {
     fileId: string;
@@ -81,6 +81,7 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
         }
 
         let tags: string[] = [];
+        let description = "";
         try {
             const aiResult = await this.ai.generateText({
                 model: firstProvider.model,
@@ -88,6 +89,7 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
                     sdkName: firstProvider.model.split("/")[0],
                     apiKey: firstProvider.apiKey
                 },
+
                 messages: [
                     {
                         role: "user",
@@ -105,9 +107,15 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
                 ]
             });
 
+            console.log("aiResult.text", aiResult.text);
             const parsed = JSON.parse(aiResult.text);
-            if (Array.isArray(parsed)) {
-                tags = parsed.filter((t): t is string => typeof t === "string");
+            if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+                if (Array.isArray(parsed.tags)) {
+                    tags = parsed.tags.filter((t: unknown): t is string => typeof t === "string");
+                }
+                if (typeof parsed.description === "string") {
+                    description = parsed.description;
+                }
             }
         } catch (error) {
             return controller.response.error({
@@ -117,17 +125,25 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
 
         const mergedTags = [...new Set([...file.tags, ...tags])];
 
+        console.log("aaa", {
+            id: file.id,
+            tags: mergedTags,
+            description
+        });
         const updateResult = await this.updateFile.execute({
             id: file.id,
-            tags: mergedTags
+            tags: mergedTags,
+            description
         });
 
         if (updateResult.isFail()) {
+            console.log("faijlaaaa", updateResult);
             return controller.response.error({
-                message: `Failed to update file tags: ${updateResult.error.message}`
+                message: `Failed to update file: ${updateResult.error.message}`
             });
         }
 
+        console.log("toooo");
         if (this.websocketService) {
             const connectionsResult = await this.websocketService.listConnections();
             if (connectionsResult.isOk() && connectionsResult.value.length > 0) {
@@ -135,7 +151,8 @@ class AiImageTaggingTaskImpl implements TaskDefinition.Interface<IAiImageTagging
                     action: "fm.file.tags",
                     data: {
                         id: file.id,
-                        tags: mergedTags
+                        tags: mergedTags,
+                        description
                     }
                 });
             }
