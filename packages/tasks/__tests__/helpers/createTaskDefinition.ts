@@ -1,12 +1,18 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { createContextPlugin } from "@webiny/api";
+import type { SelfCleanup } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 interface TaskParams<T> {
     id: string;
     title: string;
     description?: string;
+    selfCleanup?: SelfCleanup;
+    databaseLogs?: boolean;
     run: (params: TaskDefinition.RunParams) => T;
     createInputValidation?: TaskDefinition.Interface["createInputValidation"];
+    onDone?: TaskDefinition.Interface["onDone"];
+    onError?: TaskDefinition.Interface["onError"];
+    onAbort?: TaskDefinition.Interface["onAbort"];
 }
 
 export function createTaskDefinition<T extends TaskDefinition.Result>(params: TaskParams<T>) {
@@ -14,6 +20,8 @@ export function createTaskDefinition<T extends TaskDefinition.Result>(params: Ta
         id = params.id;
         title = params.title;
         description = params.description;
+        selfCleanup = params.selfCleanup;
+        databaseLogs = params.databaseLogs;
 
         async run({ input, controller }: TaskDefinition.RunParams) {
             return params.run({ input, controller });
@@ -23,9 +31,12 @@ export function createTaskDefinition<T extends TaskDefinition.Result>(params: Ta
             if (params.createInputValidation) {
                 return params.createInputValidation({ validator });
             }
-
             return {};
         }
+
+        onDone = params.onDone;
+        onError = params.onError;
+        onAbort = params.onAbort;
     }
 
     const TestTaskDefinition = TaskDefinition.createImplementation({
