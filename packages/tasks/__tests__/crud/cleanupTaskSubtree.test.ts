@@ -50,7 +50,7 @@ const makeContext = (fx: Fixture) => {
     const crud: Partial<ITasksContextCrudObject> & {
         getDefinition: (id: string) => { databaseLogs?: boolean } | null;
     } = {
-        getTask: (async (id: string) => (tasks.get(id) ?? null)) as any,
+        getTask: (async (id: string) => tasks.get(id) ?? null) as any,
         listTasks: (async (params?: any) => {
             const parentId = params?.where?.parentId;
             const items = [...tasks.values()].filter(t => (t as any).parentId === parentId);

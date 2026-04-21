@@ -89,11 +89,7 @@ export type ITaskResult<I = ITaskInput, O extends ITaskOutput = ITaskOutput> =
 
 export type SelfCleanupEvent = "onSuccess" | "onError" | "onAbort";
 
-export type SelfCleanup =
-    | "always"
-    | "never"
-    | SelfCleanupEvent
-    | SelfCleanupEvent[];
+export type SelfCleanup = "always" | "never" | SelfCleanupEvent | SelfCleanupEvent[];
 
 export type ITaskLifecycleHook<
     I extends ITaskInput = ITaskInput,

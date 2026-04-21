@@ -4,18 +4,19 @@ import { TaskDataStatus } from "~/types.js";
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { Context, ITask } from "~/types.js";
 
-const fakeTask = (id = "t1"): ITask => ({
-    id,
-    definitionId: "defA",
-    name: id,
-    input: {},
-    taskStatus: TaskDataStatus.SUCCESS,
-    createdBy: { id: "u", displayName: "u", type: "user" },
-    createdOn: "",
-    savedOn: "",
-    executionName: "",
-    iterations: 0
-}) as unknown as ITask;
+const fakeTask = (id = "t1"): ITask =>
+    ({
+        id,
+        definitionId: "defA",
+        name: id,
+        input: {},
+        taskStatus: TaskDataStatus.SUCCESS,
+        createdBy: { id: "u", displayName: "u", type: "user" },
+        createdOn: "",
+        savedOn: "",
+        executionName: "",
+        iterations: 0
+    }) as unknown as ITask;
 
 const makeContext = () => {
     const cleaned: string[] = [];
@@ -31,19 +32,18 @@ const makeContext = () => {
 
 const makeDefinition = (
     overrides: Partial<TaskDefinition.Interface> = {}
-): TaskDefinition.Interface => ({
-    id: "defA",
-    title: "test",
-    run: async () => ({ status: "done" } as any),
-    ...overrides
-}) as TaskDefinition.Interface;
+): TaskDefinition.Interface =>
+    ({
+        id: "defA",
+        title: "test",
+        run: async () => ({ status: "done" }) as any,
+        ...overrides
+    }) as TaskDefinition.Interface;
 
 describe("SelfCleaningTaskDecorator", () => {
     describe("normalization", () => {
         it("keeps databaseLogs when selfCleanup is undefined", () => {
-            const dec = new SelfCleaningTaskDecoratorImpl(
-                makeDefinition({ databaseLogs: true })
-            );
+            const dec = new SelfCleaningTaskDecoratorImpl(makeDefinition({ databaseLogs: true }));
             expect(dec.databaseLogs).toBe(true);
         });
 

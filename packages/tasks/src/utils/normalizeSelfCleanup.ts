@@ -1,6 +1,6 @@
 import type {
     SelfCleanup,
-    SelfCleanupEvent,
+    SelfCleanupEvent
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const ALL_EVENTS: ReadonlyArray<SelfCleanupEvent> = ["onSuccess", "onError", "onAbort"];
