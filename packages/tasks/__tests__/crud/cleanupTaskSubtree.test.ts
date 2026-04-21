@@ -161,4 +161,20 @@ describe("cleanupTaskSubtree", () => {
         expect(deletedTasks).toEqual(["t1"]);
         expect(deletedLogs).toEqual([]);
     });
+
+    it("does not infinite-loop when the subtree has a cycle", async () => {
+        // Manufacture a cycle: root -> cyc -> root.
+        const root = mkTask("root", "defA");
+        const cyc = mkTask("cyc", "defA", "root");
+        (root as any).parentId = "cyc";
+
+        const { context, deletedTasks } = makeContext({
+            tasks: [root, cyc],
+            logs: [],
+            definitions: { defA: { databaseLogs: false } }
+        });
+
+        await expect(createCleanupTaskSubtree(context)("root")).resolves.toBeUndefined();
+        expect(deletedTasks.sort()).toEqual(["cyc", "root"]);
+    });
 });
