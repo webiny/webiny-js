@@ -78,6 +78,8 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
                     bindings: { inputs: element.inputs }
                 }))
             );
+        } catch (e) {
+            console.error(e);
         } finally {
             runInAction(() => {
                 this._processing = false;
