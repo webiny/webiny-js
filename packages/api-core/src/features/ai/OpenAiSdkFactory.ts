@@ -71,7 +71,7 @@ class OpenAiSdkFactoryImpl implements AiSdkFactoryAbstraction.Interface {
             apiKey: apiKey ?? process.env.WEBINY_API_OPENAI_API_KEY
         });
         return {
-            languageModel: modelId => provider.languageModel(modelId)
+            languageModel: modelId => provider.chat(modelId)
         };
     }
 }

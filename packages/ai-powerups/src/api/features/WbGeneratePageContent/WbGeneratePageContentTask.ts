@@ -36,38 +36,54 @@ class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGener
             return controller.response.aborted();
         }
 
-        console.time("Ask AI");
         const result = await this.generatePageContent.execute({
             prompt: input.prompt,
             components: input.components,
             tools: input.tools
         });
 
+        const identity = this.identityContext.getIdentity();
+
         if (result.isFail()) {
+            await this.sendErrorToUser(identity.id, result.error.message);
+
             return controller.response.error({
                 message: result.error.message
             });
         }
 
         // Send websocket message
-        console.log(result.value);
-        console.timeEnd("Ask AI");
-        const identity = this.identityContext.getIdentity();
         const compressed = await compress(result.value);
         const payload = compressed.toString("base64");
 
+        await this.sendContentToUser(identity.id, payload);
+
+        return controller.response.done("Page content generated successfully.");
+    }
+
+    private async sendContentToUser(identityId: string, payload: string) {
         await this.websocketService.send(
-            { id: identity.id },
+            { id: identityId },
             {
-                action: "aiPowerUps.generatePageContent",
+                action: "aiPowerUps.generatePageContent.content",
                 data: {
                     compression: "gzip",
                     value: payload
                 }
             }
         );
+    }
 
-        return controller.response.done("Page content generated successfully.");
+    private async sendErrorToUser(identityId: string, message: string) {
+        await this.websocketService.send(
+            { id: identityId },
+            {
+                action: "aiPowerUps.generatePageContent.error",
+                data: {
+                    message
+                }
+            }
+        );
     }
 }
 

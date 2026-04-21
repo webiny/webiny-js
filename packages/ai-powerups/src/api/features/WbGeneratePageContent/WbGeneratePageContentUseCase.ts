@@ -1,3 +1,4 @@
+import { stepCountIs } from "ai";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
@@ -48,11 +49,20 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
                     apiKey: firstProvider.apiKey
                 },
                 system,
+                toolChoice: "auto",
                 prompt: params.prompt,
-                ...(Object.keys(sdkTools).length > 0 ? { tools: sdkTools, maxSteps: 5 } : {})
+                ...(Object.keys(sdkTools).length > 0
+                    ? { tools: sdkTools, stopWhen: stepCountIs(10) }
+                    : {})
             });
 
-            const output = stripCodeFence(aiResult.text);
+            // result.text might be empty if the last step was a tool call.
+            // Find the last step that has text content:
+            const text =
+                aiResult.text ||
+                (aiResult.steps.filter(step => step.text.length > 0).pop()?.text ?? "");
+
+            const output = stripCodeFence(text);
 
             return Result.ok(output);
         } catch (error) {

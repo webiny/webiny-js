@@ -9,6 +9,7 @@ import { runInAction } from "mobx";
 class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface {
     private _prompt = "";
     private _submitting = false;
+    private _processing = false;
     private _components: Record<string, any>[] = [];
     private _createElements: CreateElementsFn = () => {};
 
@@ -23,7 +24,8 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
     get vm(): GenerateContentPresenter.ViewModel {
         return {
             prompt: this._prompt,
-            submitting: this._submitting
+            submitting: this._submitting,
+            processing: this._processing
         };
     }
 
@@ -47,7 +49,6 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
                 outputSchema: pick(z.toJSONSchema(tool.outputSchema), ["properties", "type"])
             }));
 
-            console.time("Generate content");
             await this.generatePageContent.execute({
                 prompt: this._prompt,
                 components: toJS(this._components),
@@ -61,12 +62,14 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
     }
 
     async processAiResponse(responseText: string): Promise<void> {
+        this._processing = true;
+        this._submitting = false;
+
         try {
             const aiResponseJson = JSON.parse(responseText);
             const resolved = await this.pipelineRunner.resolve(aiResponseJson);
             const items = Array.isArray(resolved) ? resolved : [resolved];
 
-            console.timeEnd("Generate content");
             this._createElements(
                 items.map((element: { component: string; inputs: Record<string, unknown> }) => ({
                     componentName: element.component,
@@ -77,9 +80,14 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
             );
         } finally {
             runInAction(() => {
-                this._submitting = false;
+                this._processing = false;
             });
         }
+    }
+
+    cancelPrompt(): void {
+        this._processing = false;
+        this._submitting = false;
     }
 }
 

@@ -11,6 +11,17 @@ with all headings, paragraphs, lists, and blockquotes in a single HTML string.
 Create separate Webiny/Lexical elements when it needs to be mixed with other content elements.
 Example: RichText - Banner - RichText - Image - Banner - RichText
 
+### Image Selection
+
+When the page content requires images, use the listImagesByTag tool 
+to search for available images. After receiving the results, select 
+the most appropriate image and reference it in your output using:
+{ "tool": "resolveImage", "params": { "id": "<image_id_from_search>" } }
+
+You MUST generate the full page content as JSON after using any tools. 
+Tool calls are for gathering information — your final response must 
+always be the complete page JSON array.
+
 ### SEO & Content Structure Best Practices
 
 When generating page content, follow these SEO guidelines:

@@ -13,6 +13,7 @@ export type CreateElementsFn = (elements: CreateElementParams[]) => void;
 export interface IGenerateContentVm {
     prompt: string;
     submitting: boolean;
+    processing: boolean;
 }
 
 export interface IGenerateContentPresenter {
@@ -20,6 +21,7 @@ export interface IGenerateContentPresenter {
     init(components: Record<string, any>[], createElements: CreateElementsFn): void;
     setPrompt(value: string): void;
     submit(): Promise<void>;
+    cancelPrompt(): void;
     processAiResponse(responseText: string): Promise<void>;
 }
 

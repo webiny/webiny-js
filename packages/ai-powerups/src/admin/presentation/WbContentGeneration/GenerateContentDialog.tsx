@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { useDialog } from "@webiny/app-admin";
-import { Dialog, OverlayLoader, Textarea } from "@webiny/admin-ui";
+import { Dialog, OverlayLoader, Textarea, useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
 import type { IncomingGenericData } from "@webiny/app-websockets";
 import { useWebsockets } from "@webiny/app-websockets";
@@ -13,13 +13,21 @@ import type { CreateElementParams } from "./abstractions.js";
 
 export const GENERATE_CONTENT_DIALOG = "generate-content";
 
-export const WS_ACTION = "aiPowerUps.generatePageContent";
+export const WS_ACTION_CONTENT = "aiPowerUps.generatePageContent.content";
+export const WS_ACTION_ERROR = "aiPowerUps.generatePageContent.error";
 
 export interface GeneratePageContentMessage extends IncomingGenericData {
-    action: typeof WS_ACTION;
+    action: typeof WS_ACTION_CONTENT;
     data: {
         compression: "gzip";
         value: string;
+    };
+}
+
+export interface GeneratePageContentErrorMessage extends IncomingGenericData {
+    action: typeof WS_ACTION_ERROR;
+    data: {
+        message: string;
     };
 }
 
@@ -29,6 +37,7 @@ export const GenerateContentDialog = observer(() => {
     const vm = presenter.vm;
     const wasSubmitting = useRef(false);
     const websockets = useWebsockets();
+    const toast = useToast();
 
     const components = useSelectFromEditor(state => state.components);
     const { createElement } = useCreateElement();
@@ -60,17 +69,28 @@ export const GenerateContentDialog = observer(() => {
     }, [components, createElements]);
 
     useEffect(() => {
-        const subscription = websockets.onMessage<GeneratePageContentMessage>(
-            WS_ACTION,
+        const contentSubscription = websockets.onMessage<GeneratePageContentMessage>(
+            WS_ACTION_CONTENT,
             async message => {
                 const responseText = await decompressGzipBase64(message.data.value);
-                console.log("responseText", responseText);
                 await presenter.processAiResponse(responseText);
             }
         );
 
+        const errorSubscription = websockets.onMessage<GeneratePageContentErrorMessage>(
+            WS_ACTION_ERROR,
+            async message => {
+                toast.showWarningToast({
+                    title: "Failed to generate content",
+                    description: message.data.message
+                });
+                presenter.cancelPrompt();
+            }
+        );
+
         return () => {
-            subscription.off();
+            contentSubscription.off();
+            errorSubscription.off();
         };
     }, []);
 
@@ -84,6 +104,9 @@ export const GenerateContentDialog = observer(() => {
     const handleSubmit = async () => {
         await presenter.submit();
     };
+
+    const isProcessing = vm.processing;
+    const isSubmitting = vm.submitting;
 
     return (
         <Dialog
@@ -102,7 +125,8 @@ export const GenerateContentDialog = observer(() => {
                 </>
             }
         >
-            {vm.submitting ? <OverlayLoader text={"Generating content..."} /> : null}
+            {isSubmitting ? <OverlayLoader text={"Generating content..."} /> : null}
+            {isProcessing ? <OverlayLoader text={"Processing content..."} /> : null}
             <Textarea
                 label="Prompt"
                 description="Describe the page content you want to generate."
