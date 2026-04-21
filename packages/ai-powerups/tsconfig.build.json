@@ -14,7 +14,6 @@
     { "path": "../project-aws/tsconfig.build.json" },
     { "path": "../tasks/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
-    { "path": "../website-builder-sdk/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
@@ -52,8 +51,6 @@
       "@webiny/tasks": ["../tasks/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
-      "@webiny/website-builder-sdk/*": ["../website-builder-sdk/src/*"],
-      "@webiny/website-builder-sdk": ["../website-builder-sdk/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
