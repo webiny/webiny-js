@@ -87,11 +87,7 @@ export const pullRequestsCommandBeta = createWorkflow({
             needs: ["prBranch", "constants"],
             checkout: { path: PR_BRANCH, ref: PR_BRANCH },
             "runs-on": BUILD_PACKAGES_RUNNER,
-            steps: [
-                ...yarnCacheSteps,
-                ...installBuildSteps,
-                ...runBuildCacheSteps
-            ]
+            steps: [...yarnCacheSteps, ...installBuildSteps, ...runBuildCacheSteps]
         }),
         npmReleaseBeta: createJob({
             needs: ["prBranch", "constants", "build"],
@@ -119,7 +115,7 @@ export const pullRequestsCommandBeta = createWorkflow({
                         {
                             name: "Set git username",
                             run: 'git config --global user.name "webiny-bot"'
-                        },
+                        }
                         // {
                         //     name: 'Version and publish "beta" tag to NPM',
                         //     id: "release",
@@ -132,7 +128,7 @@ export const pullRequestsCommandBeta = createWorkflow({
                         // }
                     ],
                     { "working-directory": PR_BRANCH }
-                ),
+                )
                 // {
                 //     name: "Notify Slack - Beta Release",
                 //     env: {
@@ -149,7 +145,7 @@ export const pullRequestsCommandBeta = createWorkflow({
                 //     ].join("\n")
                 // }
             ]
-        }),
+        })
         // npmReleaseLatest: createJob({
         //     needs: ["prBranch", "constants", "npmReleaseBeta"],
         //     name: 'NPM release ("latest" tag)',
