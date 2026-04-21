@@ -12,6 +12,10 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { BaseError, Result } from "@webiny/feature/api";
 import type { IdInterfaceGenerator, NumericInterfaceGenerator } from "@webiny/api";
+import type {
+    SelfCleanup,
+    SelfCleanupEvent
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 // TODO had to import for augmentation to work, but is there a better way to do this?
 import "./features/TaskController/augmentation.js";
 
@@ -193,6 +197,12 @@ export interface ITasksContextCrudObject {
     ): Promise<IUpdateTaskResponse<T, O>>;
     deleteTask(id: string): Promise<IDeleteTaskResponse>;
     /**
+     * Recursively delete a task, its logs (if any were written), and its entire
+     * descendant subtree. Best-effort: per-record failures are logged and swallowed,
+     * the method never throws.
+     */
+    cleanupTaskSubtree(id: string): Promise<void>;
+    /**
      * Logs
      */
     createLog(task: Pick<ITask, "id">, data: ITaskLogCreateInput): Promise<ITaskLog>;
@@ -260,3 +270,5 @@ export type ITask<
     I extends TaskService.TaskInput = TaskService.TaskInput,
     O extends TaskService.GenericOutput = TaskService.GenericOutput
 > = TaskService.Task<I, O>;
+
+export type { SelfCleanup, SelfCleanupEvent };

@@ -87,10 +87,31 @@ export type ITaskResult<I = ITaskInput, O extends ITaskOutput = ITaskOutput> =
     | ITaskResultError
     | ITaskResultAborted;
 
+export type SelfCleanupEvent = "onSuccess" | "onError" | "onAbort";
+
+export type SelfCleanup =
+    | "always"
+    | "never"
+    | SelfCleanupEvent
+    | SelfCleanupEvent[];
+
 export type ITaskLifecycleHook<
     I extends ITaskInput = ITaskInput,
     O extends ITaskOutput = ITaskOutput
-> = { task: ITask<I, O> };
+> = {
+    task: ITask<I, O>;
+    /**
+     * Tenant context exposed to lifecycle hooks so decorators and user code can
+     * access CRUD and other request-scoped features.
+     *
+     * Typed as `unknown` here intentionally: decorators cannot inject request-scoped
+     * features at construction time in Webiny's IoC model (decorators are resolved
+     * once, contexts are per-request), so we can't narrow this at the abstraction
+     * layer without pulling the concrete `Context` in and creating a circular
+     * package dependency. Callsites inside `packages/tasks` cast to `Context`.
+     */
+    context: unknown;
+};
 
 /**
  * Core TaskDefinition - minimal interface
@@ -105,6 +126,7 @@ export interface ITaskDefinition<
     maxIterations?: number;
     databaseLogs?: boolean;
     isPrivate?: boolean;
+    selfCleanup?: SelfCleanup;
 
     /**
      * Core run method - receives ONLY input params
@@ -113,7 +135,7 @@ export interface ITaskDefinition<
     run(params: ITaskRunParams<I, O>): Promise<ITaskResult<I, O>>;
 
     /**
-     * Optional lifecycle hooks - receive task data, no context
+     * Optional lifecycle hooks - receive task data and the tenant context.
      */
     onBeforeTrigger?(params: ITaskBeforeTriggerParams<I>): Promise<void>;
     onDone?(params: ITaskLifecycleHook<I, O>): Promise<void>;
@@ -192,4 +214,6 @@ export namespace TaskDefinition {
         I extends ITaskInput = ITaskInput,
         O extends ITaskOutput = ITaskOutput
     > = ITaskLifecycleHook<I, O>;
+    export type SelfCleanupEvent = import("./abstractions.js").SelfCleanupEvent;
+    export type SelfCleanup = import("./abstractions.js").SelfCleanup;
 }
