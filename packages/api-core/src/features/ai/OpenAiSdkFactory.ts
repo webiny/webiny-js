@@ -2,7 +2,33 @@ import { createImplementation } from "@webiny/feature/api";
 import { AiSdkFactory as AiSdkFactoryAbstraction } from "./abstractions.js";
 import type { IAiSdk, IAiSdkModel } from "./abstractions.js";
 
+// 'gpt-5' | 'gpt-5-2025-08-07' | 'gpt-5-mini' | 'gpt-5-mini-2025-08-07' | 'gpt-5-nano' | 'gpt-5-nano-2025-08-07' | 'gpt-5-chat-latest' | 'gpt-5.1' | 'gpt-5.1-2025-11-13' | 'gpt-5.1-chat-latest' | 'gpt-5.2' | 'gpt-5.2-2025-12-11' | 'gpt-5.2-chat-latest' | 'gpt-5.2-pro' | 'gpt-5.2-pro-2025-12-11' | 'gpt-5.3-chat-latest' | 'gpt-5.4' | 'gpt-5.4-2026-03-05' | 'gpt-5.4-mini' | 'gpt-5.4-mini-2026-03-17' | 'gpt-5.4-nano' | 'gpt-5.4-nano-2026-03-17' | 'gpt-5.4-pro' | 'gpt-5.4-pro-2026-03-05'
+
 const OPENAI_MODELS: IAiSdkModel[] = [
+    { id: "gpt-5", name: "GPT-5" },
+    { id: "gpt-5-2025-08-07", name: "GPT-5" },
+    { id: "gpt-5-chat-latest", name: "GPT-5" },
+    { id: "gpt-5-mini", name: "GPT-5 Mini" },
+    { id: "gpt-5-mini-2025-08-07", name: "GPT-5 Mini" },
+    { id: "gpt-5-nano", name: "GPT-5 Nano" },
+    { id: "gpt-5-nano-2025-08-07", name: "GPT-5 Nano" },
+    { id: "gpt-5.1", name: "GPT-5.1" },
+    { id: "gpt-5.1-2025-11-13", name: "GPT-5.1" },
+    { id: "gpt-5.1-chat-latest", name: "GPT-5.1" },
+    { id: "gpt-5.2", name: "GPT-5.2" },
+    { id: "gpt-5.2-2025-12-11", name: "GPT-5.2" },
+    { id: "gpt-5.2-chat-latest", name: "GPT-5.2" },
+    { id: "gpt-5.2-pro", name: "GPT-5.2 Pro" },
+    { id: "gpt-5.2-pro-2025-12-11", name: "GPT-5.2 Pro" },
+    { id: "gpt-5.3-chat-latest", name: "GPT-5.3" },
+    { id: "gpt-5.4", name: "GPT-5.4" },
+    { id: "gpt-5.4-2026-03-05", name: "GPT-5.4" },
+    { id: "gpt-5.4-mini", name: "GPT-5.4 Mini" },
+    { id: "gpt-5.4-mini-2026-03-17", name: "GPT-5.4 Mini" },
+    { id: "gpt-5.4-nano", name: "GPT-5.4 Nano" },
+    { id: "gpt-5.4-nano-2026-03-17", name: "GPT-5.4 Nano" },
+    { id: "gpt-5.4-pro", name: "GPT-5.4 Pro" },
+    { id: "gpt-5.4-pro-2026-03-05", name: "GPT-5.4 Pro" },
     { id: "gpt-4.1", name: "GPT-4.1" },
     { id: "gpt-4.1-2025-04-14", name: "GPT-4.1" },
     { id: "gpt-4.1-mini", name: "GPT-4.1 Mini" },
