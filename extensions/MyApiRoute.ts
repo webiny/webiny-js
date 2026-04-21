@@ -7,8 +7,6 @@ class MyApiRouteImpl implements Route.Interface {
     ) {}
 
     async execute(request: Route.Request, reply: Route.Reply) {
-        const aaa = await this.ai.listModels();
-        console.log(aaa);
         const encryptedString = this.encryptionService.encrypt("my-secret");
         return reply.send({ encryptedString });
     }
