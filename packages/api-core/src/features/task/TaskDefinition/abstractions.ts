@@ -1,6 +1,6 @@
 import zod from "zod";
 import { createAbstraction } from "@webiny/feature/api";
-import type { GenericRecord } from "@webiny/api/types";
+import type { Context as ApiContext, GenericRecord } from "@webiny/api/types";
 import type { ITask } from "~/features/task/TaskService/index.js";
 import { TaskController } from "~/features/task/TaskController/index.js";
 
@@ -97,20 +97,21 @@ export type SelfCleanup =
 
 export type ITaskLifecycleHook<
     I extends ITaskInput = ITaskInput,
-    O extends ITaskOutput = ITaskOutput
+    O extends ITaskOutput = ITaskOutput,
+    C extends ApiContext = ApiContext
 > = {
     task: ITask<I, O>;
     /**
      * Tenant context exposed to lifecycle hooks so decorators and user code can
      * access CRUD and other request-scoped features.
      *
-     * Typed as `unknown` here intentionally: decorators cannot inject request-scoped
-     * features at construction time in Webiny's IoC model (decorators are resolved
-     * once, contexts are per-request), so we can't narrow this at the abstraction
-     * layer without pulling the concrete `Context` in and creating a circular
-     * package dependency. Callsites inside `packages/tasks` cast to `Context`.
+     * Typed as a generic defaulting to the base `@webiny/api` `Context`. Consumers
+     * that need the narrower tenant context (e.g. the tasks runtime, with
+     * `context.tasks.*` CRUD) can specialize `C` or cast locally — we cannot name
+     * the concrete context at this layer without pulling heavier packages in and
+     * creating a circular dependency.
      */
-    context: unknown;
+    context: C;
 };
 
 /**
@@ -212,8 +213,9 @@ export namespace TaskDefinition {
     export type BeforeTriggerParams<I = ITaskInput> = ITaskBeforeTriggerParams<I>;
     export type LifecycleHookParams<
         I extends ITaskInput = ITaskInput,
-        O extends ITaskOutput = ITaskOutput
-    > = ITaskLifecycleHook<I, O>;
+        O extends ITaskOutput = ITaskOutput,
+        C extends ApiContext = ApiContext
+    > = ITaskLifecycleHook<I, O, C>;
     export type SelfCleanupEvent = import("./abstractions.js").SelfCleanupEvent;
     export type SelfCleanup = import("./abstractions.js").SelfCleanup;
 }
