@@ -19,6 +19,7 @@ import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { FormModelFeature } from "~/features/formModel/feature.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
 import { AdminConfigPlugin, AdminConfigProvider } from "~/config/AdminConfig.js";
+import { WebinySdkFeature } from "~/features/webinySdk/feature.js";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
@@ -37,6 +38,7 @@ export const Admin = ({ children, createApolloClient, createLegacyPlugins }: Adm
     ApolloClientFeature.register(container, apolloClient);
     SecurityFeature.register(container);
     FormModelFeature.register(container);
+    WebinySdkFeature.register(container);
 
     const ApolloProvider = createApolloProvider(apolloClient);
     const UIProviders = createUiProviders();

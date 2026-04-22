@@ -37,6 +37,20 @@ export class PreviewEvents {
 
     constructor(editor: Editor) {
         this.editor = editor;
+
+        // @ts-ignore 123
+        window["aiCreateElement"] = (input: any) => {
+            const elements = Array.isArray(input) ? input : [input];
+            elements.forEach(element => {
+                $createElement(this.editor, {
+                    componentName: element.component,
+                    bindings: { inputs: element.inputs },
+                    parentId: "root",
+                    index: 0,
+                    slot: "children"
+                });
+            });
+        };
     }
 
     onConnected(messenger: Messenger) {

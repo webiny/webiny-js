@@ -1,15 +1,14 @@
-import { Encryption, Route } from "webiny/api";
+import { Route } from "webiny/api";
 
 class MyApiRouteImpl implements Route.Interface {
-    constructor(private encryptionService: Encryption.Interface) {}
+    constructor() {}
 
     async execute(request: Route.Request, reply: Route.Reply) {
-        const encryptedString = this.encryptionService.encrypt("my-secret");
-        return reply.send({ encryptedString });
+        return reply.send({ message: "Hello world!" });
     }
 }
 
 export default Route.createImplementation({
     implementation: MyApiRouteImpl,
-    dependencies: [Encryption]
+    dependencies: []
 });

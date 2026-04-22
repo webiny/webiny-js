@@ -12,6 +12,7 @@ export interface UpdateFileInput {
     name?: string;
     metadata?: Record<string, any>;
     tags?: string[];
+    description?: string;
     location?: { folderId: string };
     createdOn?: string;
     modifiedOn?: string;

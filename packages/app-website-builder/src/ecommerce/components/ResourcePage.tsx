@@ -14,6 +14,12 @@ import { useEcommerceApi } from "~/features/index.js";
 // ResourcePicker field renderer
 // ---------------------------------------------------------------------------
 
+declare module "@webiny/app-admin/features/formModel/abstractions.js" {
+    interface IFieldRendererRegistry {
+        "resource-picker": { fieldType: "text"; settings?: { rows?: number } };
+    }
+}
+
 interface ResourcePickerRendererConfig {
     pluginName: string;
     resourceType: string;
