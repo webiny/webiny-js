@@ -20,8 +20,7 @@ class UpdateSettingsRepositoryImpl implements UpdateSettingsRepository.Interface
         );
 
         const result = await this.keyValueStore.set(AI_POWER_UPS_SETTINGS, {
-            providers: { presets: providerPresets },
-            personas: { presets: input.personas.presets }
+            providers: { presets: providerPresets }
         });
 
         if (result.isFail()) {
@@ -29,8 +28,7 @@ class UpdateSettingsRepositoryImpl implements UpdateSettingsRepository.Interface
         }
 
         return Result.ok({
-            providers: { presets: input.providers.presets },
-            personas: { presets: input.personas.presets }
+            providers: { presets: input.providers.presets }
         });
     }
 }

@@ -1,13 +1,10 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
-import type { AiProvider, AiPersona, AiPowerUpsSettings } from "~/api/types.js";
+import type { AiProvider, AiPowerUpsSettings } from "~/api/types.js";
 
 export interface UpdateSettingsInput {
     providers: {
         presets: Array<Pick<AiProvider, "name" | "model" | "apiKey"> & { description?: string }>;
-    };
-    personas: {
-        presets: Array<Pick<AiPersona, "name" | "description">>;
     };
 }
 

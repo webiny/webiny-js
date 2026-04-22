@@ -1,6 +1,6 @@
 import { GetSettingsGateway as GatewayAbstraction } from "./abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
-import type { ISettings } from "~/admin/features/settings/shared/abstractions.js";
+import type { IAiPowerUpsSettings } from "~/admin/features/settings/shared/abstractions.js";
 
 const GET_SETTINGS = /* GraphQL */ `
     query GetAiPowerUpsSettings {
@@ -12,14 +12,14 @@ const GET_SETTINGS = /* GraphQL */ `
 
 type GetSettingsResponse = {
     aiPowerUps: {
-        getSettings: ISettings;
+        getSettings: IAiPowerUpsSettings;
     };
 };
 
 class GetSettingsGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
 
-    async execute(): Promise<Record<string, any>> {
+    async execute(): Promise<IAiPowerUpsSettings> {
         const response = await this.client.execute<GetSettingsResponse>({
             query: GET_SETTINGS
         });

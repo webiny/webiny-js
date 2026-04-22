@@ -5,7 +5,7 @@ import { GetSettingsUseCase } from "../../features/settings/getSettings/abstract
 import { UpdateSettingsUseCase } from "../../features/settings/updateSettings/abstractions.js";
 import { AiPowerUpsSettingsPresenter as PresenterAbstraction } from "./abstractions.js";
 import { AiPowerUpsSettingsGroup } from "./settingsGroup.js";
-import type { ISettings } from "~/admin/features/settings/shared/abstractions.js";
+import type { IAiPowerUpsSettings } from "~/admin/features/settings/shared/abstractions.js";
 
 type FieldsFactory = (
     fields: FormModelFactory.FieldBuilderRegistry
@@ -22,7 +22,7 @@ interface CollectedGroup {
 class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface {
     private loading = false;
     private saving = false;
-    private form: FormModel.Interface<ISettings> | null = null;
+    private form: FormModel.Interface<IAiPowerUpsSettings> | null = null;
     private error: string | null = null;
 
     constructor(
@@ -69,7 +69,7 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
             return false;
         }
 
-        const data = await this.form.submit<ISettings>();
+        const data = await this.form.submit<IAiPowerUpsSettings>();
         if (!data) {
             return false;
         }
@@ -121,7 +121,7 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
     private buildForm() {
         const collected = this.collectGroups();
 
-        return this.factory.create<ISettings>({
+        return this.factory.create<IAiPowerUpsSettings>({
             fields: fields => {
                 const result: Record<string, FormModelFactory.FieldBuilder> = {};
                 for (const { group, fieldsFn } of collected) {

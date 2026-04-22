@@ -7,7 +7,9 @@ export const SharedSettingsFeature = createFeature({
     register(container) {
         container.registerInstance(SettingsCache, settingsCache);
     },
-    resolve() {
-        return {};
+    resolve(container) {
+        return {
+            settingsCache: container.resolve(SettingsCache)
+        };
     }
 });
