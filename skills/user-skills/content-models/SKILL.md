@@ -13,6 +13,11 @@ description: >
   list (array) fields via .list() and the singular-vs-plural renderer rule,
   validation (required, unique, email, pattern, minLength, maxLength, gte, predefinedValues),
   single-entry (singleton) models via .singleEntry(), and model/field tags via .tags().
+  Includes the correct `fields` projection syntax when querying entries via the SDK:
+  `ref` fields use double-`values.` nesting (e.g. `values.author.values.name`) because
+  they resolve to another entry, while `object` and `dynamicZone` sub-fields are inline
+  and use a single `values.` (e.g. `values.author.name`) — getting this wrong silently
+  returns null.
 ---
 
 # Creating Content Models via Code
@@ -279,6 +284,71 @@ have distinct names (e.g. `refDialogSingle` → `refDialogMultiple`) — see the
 | `.list()`                       | Make the field accept multiple values (arrays). Requires a multi-value renderer variant — see Field Types table. |
 | `.models([{ modelId: "..." }])` | For `ref()` fields: which models can be referenced |
 | `.tags(["tag1"])`               | Assign tags to a field (e.g., `"$bulk-edit"`)      |
+
+## Querying `ref`, `object`, and `dynamicZone` fields
+
+When you read entries via the Webiny SDK (or GraphQL), the `fields` array tells the API
+which fields to return. **The nesting syntax depends on the field type**, and getting it
+wrong silently returns `null` for the nested value.
+
+### `ref` fields — double `values.` nesting
+
+A reference field returns the **referenced entry**, which itself has its own `values`
+wrapper around its fields. To project a sub-field of a referenced entry, you must
+include the inner `values.` segment.
+
+```typescript
+// article model has: author: fields.ref().models([{ modelId: "author" }])
+const { result } = await cms.articles.list({
+  fields: [
+    "id",
+    "values.title",
+    "values.author.values.name" // ref → double "values."
+    // ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ]
+});
+```
+
+If `author` is a `.list()` ref field, the same rule applies — each item in the returned
+array is an entry with its own `values` wrapper, so you still write
+`values.authors.values.name`.
+
+### `object` and `dynamicZone` fields — no inner `values.`
+
+Object and dynamicZone sub-fields are stored **inline** on the parent entry, with no
+intermediate `values` wrapper. Access sub-fields with a plain dotted path.
+
+```typescript
+// article model has:
+//   author: fields.object().fields(sub => ({ name: sub.text(), bio: sub.longText() }))
+const { result } = await cms.articles.list({
+  fields: [
+    "id",
+    "values.title",
+    "values.author.name", // object → single "values."
+    "values.author.bio"
+    // ^^^^^^^^^^^^^^^^^
+  ]
+});
+```
+
+For `dynamicZone`, address sub-fields through the template name (still no inner
+`values.`):
+
+```typescript
+// blocks: fields.dynamicZone().template("hero", { fields: t => ({ heading: t.text() }) })
+fields: ["values.blocks.hero.heading"];
+```
+
+### Rule of thumb
+
+- **`fields.ref()`** → the field resolves to another entry, so its sub-path goes through
+  `.values.` (e.g. `values.author.values.name`).
+- **`fields.object()` / `fields.dynamicZone()`** → the field is inline, so its sub-path
+  is plain (e.g. `values.author.name`).
+
+Mixing the two up is the most common cause of "the query worked but the field is
+`null`" bugs. If you're unsure, cross-check the field definition in the model file.
 
 ## Full Examples
 
