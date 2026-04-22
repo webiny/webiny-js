@@ -6,27 +6,6 @@ export default {
     parser: {
         plugins: ["jsx", "classProperties", "dynamicImport", "throwExpressions", "typescript"]
     },
-    traverse: ({ path, push }) => {
-        const { node } = path;
-        if (node.type === "CallExpression") {
-            if (
-                get(node, "callee.property.name") === "resolve" &&
-                get(node, "callee.object.name") === "require"
-            ) {
-                const possiblePackage = get(node, "arguments.0.value");
-                if (typeof possiblePackage === "string") {
-                    return push(possiblePackage);
-                }
-            }
-            // Dynamic import() — callee.type is "Import", not a member expression
-            if (get(node, "callee.type") === "Import") {
-                const possiblePackage = get(node, "arguments.0.value");
-                if (typeof possiblePackage === "string") {
-                    return push(possiblePackage);
-                }
-            }
-        }
-    },
     ignore: {
         src: ["~tests", "~"],
         dependencies: [
@@ -37,7 +16,7 @@ export default {
             "@emotion/react",
             "@svgr/webpack",
             "@types/react",
-            "@webiny/cli",
+            //"@webiny/cli",
             "apollo-cache",
             "apollo-client",
             "apollo-link",
