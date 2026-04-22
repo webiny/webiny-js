@@ -135,9 +135,10 @@ export const pullRequestsCommandBeta = createWorkflow({
                         BETA_VERSION: "${{ steps.release.outputs.beta-version }}"
                     },
                     run: [
+                        '[ -z "$SLACK_RELEASE_CHANNEL_WEBHOOK" ] && echo "Slack webhook not configured, skipping." && exit 0',
                         "PROJECT_NAME=webiny-$(echo $BETA_VERSION | tr . -)",
                         'INSTALL_CMD="npx create-webiny-project@${BETA_VERSION} ${PROJECT_NAME}"',
-                        'MSG="Webiny ${BETA_VERSION} is out! :rocket:\\nTo install, run: \\`${INSTALL_CMD}\\`"',
+                        'MSG="Webiny \\`${BETA_VERSION}\\` is out! :rocket:\\nTo install, run: \\`\\`\\`${INSTALL_CMD}\\`\\`\\`"',
                         "curl -s -o /dev/null -X POST \\",
                         '  -H "Content-type: application/json" \\',
                         '  --data "{\\"text\\":\\"${MSG}\\"}" \\',
@@ -194,9 +195,10 @@ export const pullRequestsCommandBeta = createWorkflow({
                         LATEST_VERSION: "${{ steps.release.outputs.latest-version }}"
                     },
                     run: [
+                        '[ -z "$SLACK_RELEASE_CHANNEL_WEBHOOK" ] && echo "Slack webhook not configured, skipping." && exit 0',
                         "PROJECT_NAME=webiny-$(echo $LATEST_VERSION | tr . -)",
                         'INSTALL_CMD="npx create-webiny-project@${LATEST_VERSION} ${PROJECT_NAME}"',
-                        'MSG="Webiny ${LATEST_VERSION} is out! :rocket:\\nTo install, run: \\`${INSTALL_CMD}\\`"',
+                        'MSG="Webiny \\`${LATEST_VERSION}\\` is out! :rocket:\\nTo install, run: \\`\\`\\`${INSTALL_CMD}\\`\\`\\`"',
                         "curl -s -o /dev/null -X POST \\",
                         '  -H "Content-type: application/json" \\',
                         '  --data "{\\"text\\":\\"${MSG}\\"}" \\',

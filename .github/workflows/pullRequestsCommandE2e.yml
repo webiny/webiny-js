@@ -256,9 +256,6 @@ jobs:
             !new-webiny-project/node_modules/**/*
             !new-webiny-project/**/node_modules/**/*
             !new-webiny-project/.yarn/cache/**/*
-      - name: Enable extension whitelabeling
-        working-directory: new-webiny-project
-        run: yarn webiny extension whitelabeling
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev
@@ -433,9 +430,6 @@ jobs:
             !new-webiny-project/node_modules/**/*
             !new-webiny-project/**/node_modules/**/*
             !new-webiny-project/.yarn/cache/**/*
-      - name: Enable extension whitelabeling
-        working-directory: new-webiny-project
-        run: yarn webiny extension whitelabeling
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev
