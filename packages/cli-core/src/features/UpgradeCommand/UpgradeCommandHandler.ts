@@ -16,11 +16,6 @@ interface IUpgradeLine {
     };
 }
 
-interface IOutputOptions {
-    debug: boolean;
-    logLevel: string;
-}
-
 export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstraction.Interface {
     public constructor(private ui: UiService.Interface) {}
 
@@ -87,10 +82,7 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
                 if (!line || !line.trim()) {
                     continue;
                 }
-                this.output(line, {
-                    debug,
-                    logLevel
-                });
+                this.output(line);
             }
         });
 
@@ -105,32 +97,28 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
         }
     }
 
-    private output(line: string, options: IOutputOptions): void {
-        const { debug, logLevel } = options;
+    private output(line: string): void {
         try {
             const json = JSON.parse(line) as IUpgradeLine;
             switch (json.type) {
                 case "debug":
-                    if (!debug && logLevel !== "debug") {
-                        return;
-                    }
                     this.ui.debug(json.message);
                     if (!json.data?.stack) {
                         return;
                     }
                     this.ui.debug(json.data?.stack);
-                    break;
+                    return;
                 case "info":
                     this.ui.info(json.message);
-                    break;
+                    return;
                 case "success":
                 case "done":
                     this.ui.success(json.message);
-                    break;
+                    return;
                 case "warning":
                 case "warn":
                     this.ui.warning(json.message);
-                    break;
+                    return;
                 case "error":
                 case "fatal":
                     this.ui.error(json.message);
@@ -138,15 +126,11 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
                         return;
                     }
                     this.ui.debug(json.data?.stack);
-                    break;
+                    return;
                 default:
                     console.log(json);
             }
         } catch {
-            // Not JSON, let's just print the line then, if its debug mode on.
-            if (!debug && logLevel !== "debug") {
-                return;
-            }
             console.log(line);
         }
     }

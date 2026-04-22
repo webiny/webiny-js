@@ -7,16 +7,8 @@ export interface AiProvider {
     apiKey: string;
 }
 
-export interface AiPersona {
-    name: string;
-    description: string;
-}
-
 export interface AiPowerUpsSettings {
     providers: {
         presets: AiProvider[];
-    };
-    personas: {
-        presets: AiPersona[];
     };
 }

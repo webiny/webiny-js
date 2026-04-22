@@ -16,8 +16,7 @@ class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
 
         if (result.isFail() || !result.value) {
             return Result.ok({
-                providers: { presets: [] },
-                personas: { presets: [] }
+                providers: { presets: [] }
             });
         }
 
@@ -33,8 +32,7 @@ class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
         );
 
         return Result.ok({
-            providers: { presets: providerPresets },
-            personas: { presets: settings.personas?.presets ?? [] }
+            providers: { presets: providerPresets }
         });
     }
 }
