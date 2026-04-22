@@ -1,6 +1,6 @@
 import { UpdateSettingsGateway as GatewayAbstraction } from "./abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
-import type { ISettings } from "~/admin/features/settings/shared/abstractions.js";
+import type { IAiPowerUpsSettings } from "~/admin/features/settings/shared/abstractions.js";
 
 const UPDATE_SETTINGS = /* GraphQL */ `
     mutation UpdateAiPowerUpsSettings($input: JSON!) {
@@ -12,14 +12,14 @@ const UPDATE_SETTINGS = /* GraphQL */ `
 
 type UpdateSettingsResponse = {
     aiPowerUps: {
-        updateSettings: ISettings;
+        updateSettings: IAiPowerUpsSettings;
     };
 };
 
 class UpdateSettingsGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private client: MainGraphQLClient.Interface) {}
 
-    async execute(data: ISettings): Promise<ISettings> {
+    async execute(data: IAiPowerUpsSettings): Promise<IAiPowerUpsSettings> {
         const response = await this.client.execute<UpdateSettingsResponse>({
             query: UPDATE_SETTINGS,
             variables: { input: data }

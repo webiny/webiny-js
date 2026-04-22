@@ -1,13 +1,15 @@
 import { createAbstraction } from "@webiny/feature/admin";
 
-export interface ISettingsCache {
-    get(): ISettings | null;
-    set(data: Record<string, any>): void;
+export interface IAiPowerUpsSettingsCache {
+    get(): IAiPowerUpsSettings | null;
+    set(data: IAiPowerUpsSettings): void;
 }
 
-export const SettingsCache = createAbstraction<ISettingsCache>("AiPowerUps/SettingsCache");
+export const SettingsCache = createAbstraction<IAiPowerUpsSettingsCache>(
+    "AiPowerUps/SettingsCache"
+);
 export namespace SettingsCache {
-    export type Interface = ISettingsCache;
+    export type Interface = IAiPowerUpsSettingsCache;
 }
 
 // export interface ISettings {
@@ -27,4 +29,13 @@ export namespace SettingsCache {
 //     };
 // };
 
-export type ISettings = Record<string, any>;
+export interface IAiPowerUpsSettings {
+    providers: {
+        presets: {
+            name: string;
+            description: string;
+            model: string;
+            apiKey: string;
+        }[];
+    };
+}

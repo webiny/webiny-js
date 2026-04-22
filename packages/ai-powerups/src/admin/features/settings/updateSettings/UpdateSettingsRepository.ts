@@ -3,7 +3,7 @@ import {
     UpdateSettingsGateway
 } from "./abstractions.js";
 import { SettingsCache } from "../shared/abstractions.js";
-import type { ISettings } from "../shared/abstractions.js";
+import type { IAiPowerUpsSettings } from "../shared/abstractions.js";
 
 class UpdateSettingsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -11,7 +11,7 @@ class UpdateSettingsRepositoryImpl implements RepositoryAbstraction.Interface {
         private gateway: UpdateSettingsGateway.Interface
     ) {}
 
-    async execute(data: ISettings): Promise<ISettings> {
+    async execute(data: IAiPowerUpsSettings): Promise<IAiPowerUpsSettings> {
         const result = await this.gateway.execute(data);
         this.cache.set(result);
         return result;
