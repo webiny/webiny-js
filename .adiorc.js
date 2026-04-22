@@ -1,11 +1,7 @@
 import path from "path";
-import get from "lodash/get.js";
 import getWorkspaces from "get-yarn-workspaces";
 
 export default {
-    parser: {
-        plugins: ["jsx", "classProperties", "dynamicImport", "throwExpressions", "typescript"]
-    },
     ignore: {
         src: ["~tests", "~"],
         dependencies: [
