@@ -15806,9 +15806,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"adio@npm:beta":
-  version: 3.0.0-beta.2
-  resolution: "adio@npm:3.0.0-beta.2"
+"adio@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "adio@npm:3.0.0"
   dependencies:
     chalk: "npm:^5.6.2"
     cosmiconfig: "npm:^9.0.1"
@@ -15816,7 +15816,7 @@ __metadata:
     oxc-parser: "npm:^0.64.0"
   bin:
     adio: src/bin/adio.js
-  checksum: 10/fe1839e547128b1769436b785908863d420549e3d67e42e10ccccf4fc67d11314e5c50a1022913e37a8eb6289281d71ad48773914705d7541bb46479c1874c36
+  checksum: 10/5ce6d50584e9f09cab0b329f8026a54d8ae2851c25112ae0170314a9567064c069e9c6c1b23f7dceb6b485f42c5ea3c0e227fadd4ee13de566938fe07ba72a90
   languageName: node
   linkType: hard
 
@@ -29678,7 +29678,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:^4.1.4"
     "@vitest/eslint-plugin": "npm:^1.6.16"
     "@webiny/di": "npm:^0.2.3"
-    adio: "npm:beta"
+    adio: "npm:^3.0.0"
     babel-loader: "npm:^10.1.1"
     babel-plugin-dynamic-import-node: "npm:^2.3.3"
     babel-plugin-macros: "npm:^3.1.0"
