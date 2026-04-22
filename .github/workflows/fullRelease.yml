@@ -17,6 +17,7 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      SLACK_RELEASE_CHANNEL_WEBHOOK: ${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -33,15 +34,37 @@ jobs:
           token: ${{ secrets.GH_TOKEN }}
       - name: Create and push release branch
         run: >-
-          git checkout -b release/${{ github.event.inputs.version }} && git push
-          origin release/${{ github.event.inputs.version }}
+          git checkout -b release/${{ github.event.inputs.version }} && git
+          commit --allow-empty -m "chore: start release ${{
+          github.event.inputs.version }} [no ci]" -m "Empty commit to allow PR
+          creation." && git push origin release/${{ github.event.inputs.version
+          }}
       - name: Open pull request
+        id: pr
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: >-
-          gh pr create --title "Release ${{ github.event.inputs.version }}"
-          --body "Release ${{ github.event.inputs.version }}" --base next --head
-          release/${{ github.event.inputs.version }}
+          PR_URL=$(gh pr create --title "📦  Release ${{
+          github.event.inputs.version }}" --body "Release ${{
+          github.event.inputs.version }}
+
+
+          **Docs PR:**
+          https://github.com/webiny/docs.webiny.com/pulls?q=Release+${{
+          github.event.inputs.version }}" --base next --head release/${{
+          github.event.inputs.version }}) && echo "pr-url=$PR_URL" >>
+          $GITHUB_OUTPUT
+      - name: Notify Slack - Release PR Created
+        env:
+          PR_URL: ${{ steps.pr.outputs.pr-url }}
+        run: >-
+          MSG="📦 Release PR for Webiny ${{ github.event.inputs.version }} has
+          been created: $PR_URL"
+
+          curl -s -o /dev/null -X POST \
+            -H "Content-type: application/json" \
+            --data "{\"text\":\"${MSG}\"}" \
+            "$SLACK_RELEASE_CHANNEL_WEBHOOK"
     runs-on: ubuntu-latest
   createDocsBranch:
     name: Trigger release notes generation (docs.webiny.com)

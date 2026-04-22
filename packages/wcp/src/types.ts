@@ -23,6 +23,9 @@ export interface ILicense {
     canUseRecordLocking: () => boolean;
     canUseWorkflows: () => boolean;
     canUseHcmsFieldPermissions: () => boolean;
+    canUseAiImageEnrichment: () => boolean;
+    canUseAiPageGeneration: () => boolean;
+    canUseAiLexicalGeneration: () => boolean;
 }
 
 export declare type WcpProjectEnvironment = {
@@ -53,7 +56,8 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
     AUDIT_LOGS = "auditLogs",
     RECORD_LOCKING = "recordLocking",
-    FILE_MANAGER = "fileManager"
+    FILE_MANAGER = "fileManager",
+    AI_POWERUPS = "aiPowerups"
 }
 
 export enum MT_OPTIONS_MAX_COUNT_TYPE {
@@ -103,6 +107,14 @@ export interface ProjectPackageFeatures {
     [PROJECT_PACKAGE_FEATURE_NAME.FILE_MANAGER]: {
         enabled: boolean;
         options: { threatDetection: boolean };
+    };
+    [PROJECT_PACKAGE_FEATURE_NAME.AI_POWERUPS]: {
+        enabled: boolean;
+        options: {
+            websiteBuilder?: { pageGeneration?: boolean };
+            fileManager?: { imageEnrichment?: boolean };
+            lexicalGeneration?: boolean;
+        };
     };
 }
 

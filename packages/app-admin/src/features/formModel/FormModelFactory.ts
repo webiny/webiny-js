@@ -4,10 +4,11 @@ import {
     type IFormModelFactory,
     type IFormModelConfig
 } from "./abstractions.js";
+import type { IFormModel } from "./abstractions.js";
 
 class FormModelFactoryImpl implements IFormModelFactory {
-    create(config: IFormModelConfig): FormModel {
-        return new FormModel(config);
+    create<T = Record<string, any>>(config: IFormModelConfig): IFormModel<T> {
+        return new FormModel(config) as IFormModel<T>;
     }
 }
 

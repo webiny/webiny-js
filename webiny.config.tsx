@@ -14,7 +14,6 @@ export const Extensions = () => {
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
             {/*<Admin.Extension src={"@/extensions/LexicalPlugin.tsx"} />*/}
             <MyFeature />
-
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
@@ -27,14 +26,12 @@ export const Extensions = () => {
             <Infra.Aws.Tags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.Aws.Tags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
             <Infra.Aws.DefaultRegion name={"eu-central-1"} />
-
             <Api.Route method={"GET"} path={"/my-api-route"} src={"/extensions/MyApiRoute.ts"} />
             {/*<Infra.EnvVar varName="MY_ENV_VAR" value="myValue" />*/}
             {/*<Infra.Api.LambdaFunction*/}
             {/*    functionSrc="/extensions/myLambdaFunction/handler.ts"*/}
             {/*    pulumiSrc="/extensions/myLambdaFunction/pulumi.ts"*/}
             {/*/>*/}
-
             {/*<Api.Extension src={"/extensions/models/ProductCategoryModel.ts"} />*/}
             {/*<Api.Extension src={"/extensions/models/ProductModel.ts"} />*/}
             {/*<Api.Extension src={"/extensions/models/contactSubmission/ContactSubmissionModel.ts"} />*/}
@@ -42,28 +39,23 @@ export const Extensions = () => {
             {/*<Admin.Extension*/}
             {/*    src={"/extensions/models/contactSubmission/EmailEntryListColumn.tsx"}*/}
             {/*/>*/}
-
             {/*<Api.BuildParam paramName="MY_CUSTOM_BUILD_PARAM" value="customValue" />*/}
             {/*<Api.BuildParam*/}
             {/*    paramName="MY_CUSTOM_BUILD_PARAM-2"*/}
             {/*    value={{ myKey: 2, nested: { foo: "bar" } }}*/}
             {/*/>*/}
-
             {/*<Admin.BuildParam*/}
             {/*    paramName="MY_CUSTOM_ADMIN_BUILD_PARAM-2"*/}
             {/*    value={{ myKey: 2, nested: { foo: "bar" } }}*/}
             {/*/>*/}
             {/*<Admin.BuildParam paramName="MY_CUSTOM_ADMIN_BUILD_PARAM" value="customAdminValue" />*/}
-
             {/* Example: Environment-based conditional configuration */}
             {/*<Infra.Env.Is env="prod">
                 <Infra.Aws.Tags tags={{ ENV: "production" }} />
             </Infra.Env.Is>*/}
-
             {/*<Infra.Env.Is env={["dev", "staging"]}>
                 <Infra.Aws.Tags tags={{ ENV: "non-production" }} />
             </Infra.Env.Is>*/}
-
             {/*<Infra.Admin.CustomDomains
                 domains={["my.domain.com"]}
                 sslMethod="sni-only"
@@ -96,7 +88,6 @@ export const Extensions = () => {
                     }
                 ]}
             />*/}
-
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
             <Project.FeatureFlags
@@ -107,7 +98,6 @@ export const Extensions = () => {
                     recordLocking: false
                 }}
             />
-
             {process.env.WEBINY_CLI_AUTO_INSTALL && (
                 <Project.AutoInstall
                     adminUser={{
@@ -118,18 +108,14 @@ export const Extensions = () => {
                     }}
                 />
             )}
-
             {/* API */}
             {/*<MyIdpExtension />*/}
             <Cognito />
-
             {/* Security 👇 */}
             <Api.Extension src={"/extensions/MyApiKey.ts"} />
             <Api.Extension src={"/extensions/MyApiKeyAfterUpdate.ts"} />
-
             {/* CLI 👇 */}
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
-
             {/* 🚧 WIP 👇 */}
             {/*<AuditLogs.RetentionPeriod days={90} />*/}
         </>

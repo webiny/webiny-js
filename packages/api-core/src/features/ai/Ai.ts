@@ -4,12 +4,21 @@ import { streamText } from "ai";
 import { Ai as AiAbstraction } from "./abstractions.js";
 import { AiSdkFactory } from "./abstractions.js";
 import { AiConnectionFactory } from "./abstractions.js";
-import type { AiGenerateTextParams } from "./abstractions.js";
+import type { AiGenerateTextParams, AiModel, IAiSdkFactory } from "./abstractions.js";
 import type { AiStreamTextParams } from "./abstractions.js";
 import type { IAiSdk } from "./abstractions.js";
 import type { IAiConnection } from "./abstractions.js";
 import type { IAiConnectionInline } from "./abstractions.js";
 import type { LanguageModel } from "ai";
+
+function toAiModel(factory: IAiSdkFactory, modelId: string, modelName: string): AiModel {
+    return {
+        providerId: factory.id,
+        providerName: factory.name,
+        modelId,
+        modelName
+    };
+}
 
 class AiImpl implements AiAbstraction.Interface {
     private sdkCache = new Map<string, IAiSdk>();
@@ -37,21 +46,32 @@ class AiImpl implements AiAbstraction.Interface {
         return streamText({ model: resolvedModel, ...rest } as Parameters<typeof streamText>[0]);
     }
 
-    async listModels(connection?: string | IAiConnectionInline): Promise<string[]> {
-        if (connection !== undefined) {
-            const conn = await this.resolveConnection(undefined, connection);
-            const sdk = await this.getSdk(conn);
-            return sdk.listModels().map(m => `${conn.sdkName}/${m}`);
-        }
-
-        const connections = await this.getConnections();
-        const results = await Promise.all(
-            connections.map(async conn => {
-                const sdk = await this.getSdk(conn);
-                return sdk.listModels().map(m => `${conn.sdkName}/${m}`);
-            })
+    listModels(): Promise<AiModel[]> {
+        return Promise.resolve(
+            this.sdkFactories.flatMap(factory =>
+                factory.models.map(m => toAiModel(factory, m.id, m.name))
+            )
         );
-        return results.flat();
+    }
+
+    async listModelsByConnections(): Promise<AiModel[]> {
+        const connections = await this.getConnections();
+        return connections.flatMap(conn => {
+            const factory = this.sdkFactories.find(f => f.id === conn.sdkName);
+            if (!factory) {
+                return [];
+            }
+            return factory.models.map(m => toAiModel(factory, m.id, m.name));
+        });
+    }
+
+    async listModelsByConnection(connection: string | IAiConnectionInline): Promise<AiModel[]> {
+        const conn = await this.resolveConnection(undefined, connection);
+        const factory = this.sdkFactories.find(f => f.id === conn.sdkName);
+        if (!factory) {
+            return [];
+        }
+        return factory.models.map(m => toAiModel(factory, m.id, m.name));
     }
 
     private async resolveLanguageModel(
@@ -61,14 +81,14 @@ class AiImpl implements AiAbstraction.Interface {
         const slashIndex = modelId.indexOf("/");
         if (slashIndex === -1) {
             throw new Error(
-                `Invalid model ID "${modelId}". Expected format: "<sdkName>/<modelId>" (e.g. "openai/gpt-4o").`
+                `Invalid model ID "${modelId}". Expected format: "<providerId>/<modelId>" (e.g. "openai/gpt-4o").`
             );
         }
 
-        const sdkName = modelId.slice(0, slashIndex);
+        const providerId = modelId.slice(0, slashIndex);
         const modelName = modelId.slice(slashIndex + 1);
 
-        const conn = await this.resolveConnection(sdkName, connection);
+        const conn = await this.resolveConnection(providerId, connection);
         const sdk = await this.getSdk(conn);
         return sdk.languageModel(modelName);
     }
@@ -83,7 +103,7 @@ class AiImpl implements AiAbstraction.Interface {
     }
 
     private async resolveConnection(
-        sdkName: string | undefined,
+        providerId: string | undefined,
         connection?: string | IAiConnectionInline
     ): Promise<IAiConnectionInline> {
         if (typeof connection === "object") {
@@ -103,11 +123,11 @@ class AiImpl implements AiAbstraction.Interface {
             return found;
         }
 
-        const found = connections.find(c => c.sdkName === sdkName);
+        const found = connections.find(c => c.sdkName === providerId);
         if (!found) {
             const known = connections.map(c => `"${c.id}" (${c.sdkName})`).join(", ");
             throw new Error(
-                `No AI connection found for SDK "${sdkName}". Registered connections: ${known}.`
+                `No AI connection found for provider "${providerId}". Registered connections: ${known}.`
             );
         }
         return found;
@@ -124,9 +144,9 @@ class AiImpl implements AiAbstraction.Interface {
             return cached;
         }
 
-        const factory = this.sdkFactories.find(f => f.name === connection.sdkName);
+        const factory = this.sdkFactories.find(f => f.id === connection.sdkName);
         if (!factory) {
-            const known = this.sdkFactories.map(f => `"${f.name}"`).join(", ");
+            const known = this.sdkFactories.map(f => `"${f.id}"`).join(", ");
             throw new Error(
                 `No AI SDK factory found for "${connection.sdkName}". Registered factories: ${known}.`
             );

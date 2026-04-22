@@ -234,6 +234,8 @@ export type ComponentManifest = {
     name: string;
     group?: string;
     label?: string;
+    aiContext?: string;
+    useInAiContentGeneration?: boolean;
     image?: string;
     inputs: ComponentInput[];
     canDrag?: boolean;

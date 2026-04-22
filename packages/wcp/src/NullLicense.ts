@@ -58,4 +58,16 @@ export class NullLicense implements ILicense {
     public canUseWorkflows(): boolean {
         return false;
     }
+
+    canUseAiImageEnrichment(): boolean {
+        return false;
+    }
+
+    canUseAiPageGeneration(): boolean {
+        return false;
+    }
+
+    canUseAiLexicalGeneration(): boolean {
+        return false;
+    }
 }
