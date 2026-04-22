@@ -1,8 +1,3 @@
-import {
-    S3Client,
-    ListObjectsV2Command,
-    GetObjectCommand
-} from "@webiny/aws-sdk/client-s3/index.js";
 import fs from "fs";
 import path from "path";
 
@@ -24,64 +19,68 @@ export class NoObjectsFoundError extends Error {
 export const downloadFolderFromS3 = async (params: DownloadFolderFromS3Params) => {
     const { bucketName, bucketRegion, bucketFolderKey, downloadFolderPath } = params;
 
-    // Prepend v6/ to the folder key
     const s3FolderKey = `v6/${bucketFolderKey}`;
+    const baseUrl = `https://${bucketName}.s3.${bucketRegion}.amazonaws.com`;
 
-    // Configure the S3 client
-    const s3Client = new S3Client({ region: bucketRegion });
+    const listObjects = async (): Promise<string[]> => {
+        const keys: string[] = [];
+        let continuationToken: string | undefined;
 
-    // List all objects in the specified S3 folder
-    const listObjects = async (bucket: string, folderKey: string) => {
-        const command = new ListObjectsV2Command({
-            Bucket: bucket,
-            Prefix: folderKey
-        });
-        const response = await s3Client.send(command);
-        return response.Contents;
+        do {
+            let url = `${baseUrl}/?list-type=2&prefix=${encodeURIComponent(s3FolderKey)}`;
+            if (continuationToken) {
+                url += `&continuation-token=${encodeURIComponent(continuationToken)}`;
+            }
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(
+                    `Failed to list objects: ${response.status} ${response.statusText}`
+                );
+            }
+
+            const xml = await response.text();
+
+            for (const match of xml.matchAll(/<Key>([^<]+)<\/Key>/g)) {
+                keys.push(match[1]);
+            }
+
+            const isTruncated = xml.includes("<IsTruncated>true</IsTruncated>");
+            continuationToken = isTruncated
+                ? xml.match(/<NextContinuationToken>([^<]+)<\/NextContinuationToken>/)?.[1]
+                : undefined;
+        } while (continuationToken);
+
+        return keys;
     };
 
-    // Download an individual file from S3
-    const downloadFile = async (bucket: string, key: string, localPath: string) => {
-        const command = new GetObjectCommand({
-            Bucket: bucket,
-            Key: key
-        });
-
-        const response = await s3Client.send(command);
-
-        return new Promise<void>((resolve, reject) => {
-            const fileStream = fs.createWriteStream(localPath);
-            // @ts-expect-error Body is a stream
-            response.Body.pipe(fileStream);
-            // @ts-expect-error Body is a stream
-            response.Body.on("error", reject);
-            fileStream.on("finish", () => resolve());
-        });
+    const downloadFile = async (key: string, localPath: string): Promise<void> => {
+        const response = await fetch(`${baseUrl}/${key}`);
+        if (!response.ok) {
+            throw new Error(`Failed to download ${key}: ${response.status} ${response.statusText}`);
+        }
+        fs.writeFileSync(localPath, Buffer.from(await response.arrayBuffer()));
     };
 
-    const objects = (await listObjects(bucketName, s3FolderKey)) || [];
-    if (!objects.length) {
+    const keys = await listObjects();
+    if (!keys.length) {
         throw new NoObjectsFoundError(`No objects found in the specified S3 folder.`);
     }
 
-    for (const object of objects) {
-        const s3Key = object.Key!;
-        const relativePath = path.relative(s3FolderKey, s3Key);
+    for (const key of keys) {
+        const relativePath = path.relative(s3FolderKey, key);
         const localFilePath = path.join(downloadFolderPath, relativePath);
 
-        if (s3Key.endsWith("/")) {
-            // It's a directory, create it if it doesn't exist.
+        if (key.endsWith("/")) {
             if (!fs.existsSync(localFilePath)) {
                 fs.mkdirSync(localFilePath, { recursive: true });
             }
         } else {
-            // It's a file, download it.
             const localDirPath = path.dirname(localFilePath);
             if (!fs.existsSync(localDirPath)) {
                 fs.mkdirSync(localDirPath, { recursive: true });
             }
-
-            await downloadFile(bucketName, s3Key, localFilePath);
+            await downloadFile(key, localFilePath);
         }
     }
 };
