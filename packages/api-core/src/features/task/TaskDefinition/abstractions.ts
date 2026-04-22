@@ -1,6 +1,6 @@
 import zod from "zod";
 import { createAbstraction } from "@webiny/feature/api";
-import type { Context as ApiContext, GenericRecord } from "@webiny/api/types";
+import type { GenericRecord } from "@webiny/api/types";
 import type { ITask } from "~/features/task/TaskService/index.js";
 import { TaskController } from "~/features/task/TaskController/index.js";
 
@@ -93,21 +93,9 @@ export type SelfCleanup = "always" | "never" | SelfCleanupEvent | SelfCleanupEve
 
 export type ITaskLifecycleHook<
     I extends ITaskInput = ITaskInput,
-    O extends ITaskOutput = ITaskOutput,
-    C extends ApiContext = ApiContext
+    O extends ITaskOutput = ITaskOutput
 > = {
     task: ITask<I, O>;
-    /**
-     * Tenant context exposed to lifecycle hooks so decorators and user code can
-     * access CRUD and other request-scoped features.
-     *
-     * Typed as a generic defaulting to the base `@webiny/api` `Context`. Consumers
-     * that need the narrower tenant context (e.g. the tasks runtime, with
-     * `context.tasks.*` CRUD) can specialize `C` or cast locally — we cannot name
-     * the concrete context at this layer without pulling heavier packages in and
-     * creating a circular dependency.
-     */
-    context: C;
 };
 
 /**
@@ -209,9 +197,9 @@ export namespace TaskDefinition {
     export type BeforeTriggerParams<I = ITaskInput> = ITaskBeforeTriggerParams<I>;
     export type LifecycleHookParams<
         I extends ITaskInput = ITaskInput,
-        O extends ITaskOutput = ITaskOutput,
-        C extends ApiContext = ApiContext
-    > = ITaskLifecycleHook<I, O, C>;
+        O extends ITaskOutput = ITaskOutput
+    > = ITaskLifecycleHook<I, O>;
+
     export type SelfCleanupEvent = import("./abstractions.js").SelfCleanupEvent;
     export type SelfCleanup = import("./abstractions.js").SelfCleanup;
 }

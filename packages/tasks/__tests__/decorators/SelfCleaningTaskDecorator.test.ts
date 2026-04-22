@@ -2,7 +2,8 @@ import { describe, it, expect, vi } from "vitest";
 import { SelfCleaningTaskDecoratorImpl } from "~/decorators/SelfCleaningTaskDecorator.js";
 import { TaskDataStatus } from "~/types.js";
 import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type { Context, ITask } from "~/types.js";
+import type { CleanupTaskSubtreeUseCase } from "~/features/CleanupTaskSubtree/index.js";
+import type { ITask } from "~/types.js";
 
 const fakeTask = (id = "t1"): ITask =>
     ({
@@ -18,16 +19,14 @@ const fakeTask = (id = "t1"): ITask =>
         iterations: 0
     }) as unknown as ITask;
 
-const makeContext = () => {
+const makeCleanup = () => {
     const cleaned: string[] = [];
-    const context = {
-        tasks: {
-            cleanupTaskSubtree: async (id: string) => {
-                cleaned.push(id);
-            }
+    const cleanupTaskSubtree: CleanupTaskSubtreeUseCase.Interface = {
+        execute: async (id: string) => {
+            cleaned.push(id);
         }
-    } as unknown as Context;
-    return { context, cleaned };
+    };
+    return { cleanupTaskSubtree, cleaned };
 };
 
 const makeDefinition = (
@@ -40,15 +39,23 @@ const makeDefinition = (
         ...overrides
     }) as TaskDefinition.Interface;
 
+const noopCleanup: CleanupTaskSubtreeUseCase.Interface = {
+    execute: async () => {}
+};
+
 describe("SelfCleaningTaskDecorator", () => {
     describe("normalization", () => {
         it("keeps databaseLogs when selfCleanup is undefined", () => {
-            const dec = new SelfCleaningTaskDecoratorImpl(makeDefinition({ databaseLogs: true }));
+            const dec = new SelfCleaningTaskDecoratorImpl(
+                noopCleanup,
+                makeDefinition({ databaseLogs: true })
+            );
             expect(dec.databaseLogs).toBe(true);
         });
 
         it("keeps databaseLogs when selfCleanup is 'never'", () => {
             const dec = new SelfCleaningTaskDecoratorImpl(
+                noopCleanup,
                 makeDefinition({ databaseLogs: true, selfCleanup: "never" })
             );
             expect(dec.databaseLogs).toBe(true);
@@ -56,6 +63,7 @@ describe("SelfCleaningTaskDecorator", () => {
 
         it("forces databaseLogs=false when selfCleanup is a single event", () => {
             const dec = new SelfCleaningTaskDecoratorImpl(
+                noopCleanup,
                 makeDefinition({ databaseLogs: true, selfCleanup: "onSuccess" })
             );
             expect(dec.databaseLogs).toBe(false);
@@ -63,6 +71,7 @@ describe("SelfCleaningTaskDecorator", () => {
 
         it("forces databaseLogs=false when selfCleanup is an array", () => {
             const dec = new SelfCleaningTaskDecoratorImpl(
+                noopCleanup,
                 makeDefinition({
                     databaseLogs: true,
                     selfCleanup: ["onSuccess", "onError"]
@@ -73,6 +82,7 @@ describe("SelfCleaningTaskDecorator", () => {
 
         it("forces databaseLogs=false when selfCleanup is 'always'", () => {
             const dec = new SelfCleaningTaskDecoratorImpl(
+                noopCleanup,
                 makeDefinition({ databaseLogs: true, selfCleanup: "always" })
             );
             expect(dec.databaseLogs).toBe(false);
@@ -81,7 +91,7 @@ describe("SelfCleaningTaskDecorator", () => {
 
     describe("hook exposure", () => {
         it("always exposes onDone / onError / onAbort even if the decoratee has none", () => {
-            const dec = new SelfCleaningTaskDecoratorImpl(makeDefinition());
+            const dec = new SelfCleaningTaskDecoratorImpl(noopCleanup, makeDefinition());
             expect(typeof dec.onDone).toBe("function");
             expect(typeof dec.onError).toBe("function");
             expect(typeof dec.onAbort).toBe("function");
@@ -90,38 +100,42 @@ describe("SelfCleaningTaskDecorator", () => {
 
     describe("cleanup gating", () => {
         it("does NOT trigger cleanup when event is not in the set", async () => {
-            const { context, cleaned } = makeContext();
+            const { cleanupTaskSubtree, cleaned } = makeCleanup();
             const dec = new SelfCleaningTaskDecoratorImpl(
+                cleanupTaskSubtree,
                 makeDefinition({ selfCleanup: "onError" })
             );
-            await dec.onDone!({ task: fakeTask(), context });
+            await dec.onDone!({ task: fakeTask() });
             expect(cleaned).toEqual([]);
         });
 
         it("triggers cleanup on onSuccess when configured", async () => {
-            const { context, cleaned } = makeContext();
+            const { cleanupTaskSubtree, cleaned } = makeCleanup();
             const dec = new SelfCleaningTaskDecoratorImpl(
+                cleanupTaskSubtree,
                 makeDefinition({ selfCleanup: "onSuccess" })
             );
-            await dec.onDone!({ task: fakeTask("t42"), context });
+            await dec.onDone!({ task: fakeTask("t42") });
             expect(cleaned).toEqual(["t42"]);
         });
 
         it("triggers cleanup on onError when configured", async () => {
-            const { context, cleaned } = makeContext();
+            const { cleanupTaskSubtree, cleaned } = makeCleanup();
             const dec = new SelfCleaningTaskDecoratorImpl(
+                cleanupTaskSubtree,
                 makeDefinition({ selfCleanup: ["onError"] })
             );
-            await dec.onError!({ task: fakeTask("t1"), context });
+            await dec.onError!({ task: fakeTask("t1") });
             expect(cleaned).toEqual(["t1"]);
         });
 
         it("triggers cleanup on onAbort when configured", async () => {
-            const { context, cleaned } = makeContext();
+            const { cleanupTaskSubtree, cleaned } = makeCleanup();
             const dec = new SelfCleaningTaskDecoratorImpl(
+                cleanupTaskSubtree,
                 makeDefinition({ selfCleanup: "always" })
             );
-            await dec.onAbort!({ task: fakeTask(), context });
+            await dec.onAbort!({ task: fakeTask() });
             expect(cleaned).toEqual(["t1"]);
         });
     });
@@ -129,14 +143,13 @@ describe("SelfCleaningTaskDecorator", () => {
     describe("hook wrapping", () => {
         it("invokes user's onDone before cleanup", async () => {
             const order: string[] = [];
-            const context = {
-                tasks: {
-                    cleanupTaskSubtree: async () => {
-                        order.push("cleanup");
-                    }
+            const cleanupTaskSubtree: CleanupTaskSubtreeUseCase.Interface = {
+                execute: async () => {
+                    order.push("cleanup");
                 }
-            } as unknown as Context;
+            };
             const dec = new SelfCleaningTaskDecoratorImpl(
+                cleanupTaskSubtree,
                 makeDefinition({
                     selfCleanup: "onSuccess",
                     onDone: async () => {
@@ -144,14 +157,15 @@ describe("SelfCleaningTaskDecorator", () => {
                     }
                 })
             );
-            await dec.onDone!({ task: fakeTask(), context });
+            await dec.onDone!({ task: fakeTask() });
             expect(order).toEqual(["user", "cleanup"]);
         });
 
         it("runs cleanup even when user's hook throws", async () => {
-            const { context, cleaned } = makeContext();
+            const { cleanupTaskSubtree, cleaned } = makeCleanup();
             const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
             const dec = new SelfCleaningTaskDecoratorImpl(
+                cleanupTaskSubtree,
                 makeDefinition({
                     selfCleanup: "onSuccess",
                     onDone: async () => {
@@ -159,7 +173,7 @@ describe("SelfCleaningTaskDecorator", () => {
                     }
                 })
             );
-            await dec.onDone!({ task: fakeTask("t99"), context });
+            await dec.onDone!({ task: fakeTask("t99") });
             expect(cleaned).toEqual(["t99"]);
             errSpy.mockRestore();
         });

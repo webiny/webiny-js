@@ -201,8 +201,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
                  */
                 if (definition.onAbort) {
                     await definition.onAbort({
-                        task: updatedTask,
-                        context
+                        task: updatedTask
                     });
                 }
 

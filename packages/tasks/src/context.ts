@@ -14,6 +14,10 @@ import { createServicePlugins } from "~/service/index.js";
 import { TaskExecutionContextFeature } from "~/features/TaskExecutionContext/feature.js";
 import { GetTaskDefinitionFeature } from "~/features/GetTaskDefinition/feature.js";
 import { ListTaskDefinitionsFeature } from "~/features/ListTaskDefinitions/feature.js";
+import {
+    CleanupTaskSubtreeUseCase,
+    CleanupTaskSubtreeUseCaseImpl
+} from "~/features/CleanupTaskSubtree/index.js";
 import { TestingRunTaskDefinition } from "~/tasks/testingRunTask.js";
 
 const createTasksCrud = () => {
@@ -35,6 +39,13 @@ const createTasksCrud = () => {
             ...createTaskCrud(context),
             ...createServiceCrud(context)
         };
+
+        // The cleanup use case is a thin wrapper around `context.tasks.cleanupTaskSubtree`,
+        // so it must register AFTER the CRUD is wired onto the context.
+        context.container.registerInstance(
+            CleanupTaskSubtreeUseCase,
+            new CleanupTaskSubtreeUseCaseImpl(context)
+        );
     });
 
     plugin.name = "tasks.context";

@@ -189,23 +189,23 @@ describe("selfCleanup integration", () => {
 
     it("user's onDone runs before cleanup fires", async () => {
         const order: string[] = [];
+        const contextRef: { current?: Awaited<ReturnType<ReturnType<typeof createLiveContextFactory>>> } =
+            {};
 
         const plugin = createTaskDefinition({
             id: "cleanupOrderTask",
             title: "cleanupOrderTask",
             selfCleanup: "onSuccess",
             run: async ({ controller }) => controller.response.done("ok"),
-            onDone: async ({ task, context }) => {
-                const ctx = context as Awaited<
-                    ReturnType<ReturnType<typeof createLiveContextFactory>>
-                >;
+            onDone: async ({ task }) => {
                 // Task must still exist while the user's hook runs.
-                const live = await ctx.tasks.getTask(task.id);
+                const live = await contextRef.current!.tasks.getTask(task.id);
                 order.push(live ? "user-saw-task" : "user-task-gone");
             }
         });
         const contextFactory = createLiveContextFactory({ plugins: [plugin] });
         const context = await contextFactory();
+        contextRef.current = context;
 
         const task = await runTask(context, "cleanupOrderTask");
 

@@ -1,7 +1,7 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { SelfCleanupEvent } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { normalizeSelfCleanup } from "~/utils/normalizeSelfCleanup.js";
-import type { Context } from "~/types.js";
+import { CleanupTaskSubtreeUseCase } from "~/features/CleanupTaskSubtree/index.js";
 import { getErrorProperties } from "~/utils/getErrorProperties.js";
 
 type LifecycleHook = TaskDefinition.Interface["onDone"];
@@ -10,7 +10,10 @@ type HookParams = Parameters<NonNullable<LifecycleHook>>[0];
 export class SelfCleaningTaskDecoratorImpl implements TaskDefinition.Interface {
     private readonly events: ReadonlySet<SelfCleanupEvent>;
 
-    public constructor(private decoratee: TaskDefinition.Interface) {
+    public constructor(
+        private readonly cleanupTaskSubtree: CleanupTaskSubtreeUseCase.Interface,
+        private decoratee: TaskDefinition.Interface
+    ) {
         this.events = normalizeSelfCleanup(decoratee.selfCleanup);
     }
 
@@ -84,8 +87,7 @@ export class SelfCleaningTaskDecoratorImpl implements TaskDefinition.Interface {
     }
 
     private async runCleanup(params: HookParams): Promise<void> {
-        const context = params.context as Context;
-        await context.tasks.cleanupTaskSubtree(params.task.id);
+        await this.cleanupTaskSubtree.execute(params.task.id);
     }
 
     private async safeCall(
@@ -107,5 +109,5 @@ export class SelfCleaningTaskDecoratorImpl implements TaskDefinition.Interface {
 
 export const SelfCleaningTaskDecorator = TaskDefinition.createDecorator({
     decorator: SelfCleaningTaskDecoratorImpl,
-    dependencies: []
+    dependencies: [CleanupTaskSubtreeUseCase]
 });
