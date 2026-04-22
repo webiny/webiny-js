@@ -118,6 +118,7 @@ export const Extensions = () => {
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
             {/* 🚧 WIP 👇 */}
             {/*<AuditLogs.RetentionPeriod days={90} />*/}
+            <Admin.Extension src={"/extensions/AdminBranding/AdminBranding.tsx"} />
         </>
     );
 };
