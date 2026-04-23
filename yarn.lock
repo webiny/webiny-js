@@ -19759,17 +19759,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lodash@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "eslint-plugin-lodash@npm:8.0.0"
-  dependencies:
-    lodash: "npm:^4.17.21"
-  peerDependencies:
-    eslint: ">=9.0.0"
-  checksum: 10/c5997c4406a1e886ca2135962dd18bcf650065353a28544848b7d00ec45451eb7c5ae76ece7cd63917c2f5c6b8f6da72cd707d65e6b38e942f7abc9fa44b9f8e
-  languageName: node
-  linkType: hard
-
 "eslint-scope@npm:5.1.1":
   version: 5.1.1
   resolution: "eslint-scope@npm:5.1.1"
@@ -28673,7 +28662,6 @@ __metadata:
     chalk: "npm:^5.6.2"
     cross-env: "npm:^10.1.0"
     deepmerge: "npm:^4.3.1"
-    eslint-plugin-lodash: "npm:^8.0.0"
     execa: "npm:^5.1.1"
     fast-glob: "npm:^3.3.3"
     folder-hash: "npm:^4.1.2"

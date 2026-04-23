@@ -1,7 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["react"],
-  "jsPlugins": ["eslint-plugin-lodash"],
   "categories": {
     "correctness": "off",
     "suspicious": "off"
@@ -64,7 +63,6 @@
     "no-unused-expressions": "off",
     "no-unused-vars": "warn",
     "no-use-before-define": "off",
-    "lodash/import-scope": ["error", "method"],
     "react/display-name": "error",
     "react/jsx-key": "error",
     "react/jsx-no-comment-textnodes": "error",
