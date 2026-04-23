@@ -180,7 +180,7 @@ export const PanoramaViewer = forwardRef<PanoramaViewerHandle, PanoramaViewerPro
                 prevTrackedRef.current = [];
             };
             // config is intentionally read only on mount/imageUrl change
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+            // oxlint-disable-next-line react-hooks/exhaustive-deps
         }, [imageUrl]);
 
         // Sync config changes to the live viewer (without recreating it)

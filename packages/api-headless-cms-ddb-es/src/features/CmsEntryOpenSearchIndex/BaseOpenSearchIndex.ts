@@ -8,7 +8,6 @@ class BaseOpenSearchIndexImpl implements CmsEntryOpenSearchIndex.Interface {
     public constructor() {
         this.body = getBaseConfiguration();
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public canUse(_: CmsEntryOpenSearchIndex.CanUseParams): boolean {
         return true;
     }

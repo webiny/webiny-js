@@ -8,9 +8,9 @@ import type { ITaskInput, ITaskOutput } from "../TaskDefinition/index.js";
  * Import this from @webiny/api-core, but the full interface comes from @webiny/tasks.
  */
 export interface ITaskController<
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line typescript/no-unused-vars
     I extends ITaskInput = ITaskInput,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line typescript/no-unused-vars
     O extends ITaskOutput = ITaskOutput
 > {
     // Empty - augmented by tasks package

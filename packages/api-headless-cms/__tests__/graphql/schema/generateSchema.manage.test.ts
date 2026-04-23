@@ -7,7 +7,7 @@ import { graphql } from "graphql";
 import { introspectionQuery } from "~tests/graphql/schema/__query/introspectionQuery.js";
 import allModels from "~tests/contentAPI/mocks/contentModels";
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+// oxlint-disable-next-line typescript/no-require-imports
 const expectedEmptySchemaExecutionResult = require("./__expected/manage/expectedEmptySchemaExecutionResult.json");
 // const expectedFruitSchemaExecutionResult = require("./__expected/manage/expectedFruitSchemaExecutionResult.json");
 

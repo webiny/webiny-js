@@ -8,7 +8,6 @@ export const sleep = (ms = 1000) =>
     });
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             reloadUntil(callback: () => Promise<boolean> | boolean, options?: any): Chainable<any>;

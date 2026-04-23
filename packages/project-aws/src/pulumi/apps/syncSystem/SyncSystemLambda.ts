@@ -16,7 +16,6 @@ export interface SyncSystemLambdaParams {
 
 export const SyncSystemLambda = createAppModule({
     name: "SyncSystemLambda",
-    // eslint-disable-next-line
     config(app: PulumiApp, _: SyncSystemLambdaParams) {
         const policy = createSyncSystemLambdaPolicy({
             app,
