@@ -2,7 +2,10 @@
   "name": "@webiny/build-tools",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "description": "A collection of utilities for Webiny project.",
   "repository": {
     "type": "git",
@@ -27,7 +30,7 @@
     "@rspack/core": "^1.7.11",
     "@svgr/webpack": "^8.1.0",
     "@swc/plugin-emotion": "^14.8.0",
-    "@tailwindcss/postcss": "^4.2.2",
+    "@tailwindcss/postcss": "^4.2.4",
     "@types/webpack-env": "^1.18.8",
     "chalk": "^5.6.2",
     "chokidar": "^5.0.0",

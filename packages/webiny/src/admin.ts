@@ -8,6 +8,8 @@ export { Plugin } from "@webiny/app/core/Plugin.js";
 export { DevToolsSection } from "@webiny/app-admin/components/index.js";
 export { RegisterFeature } from "@webiny/app-admin/components/RegisterFeature.js";
 export { BuildParam, BuildParams } from "@webiny/app-admin/features/buildParams/index.js";
+export { Tool, ToolPipelineRunner } from "@webiny/app-admin/features/tools/index.js";
+export { ToolsFeature } from "@webiny/app-admin/features/tools/index.js";
 export { AdminConfig } from "@webiny/app-admin/config/AdminConfig.js";
 export { Routes } from "@webiny/app-admin/routes.js";
 export { createFeature, createAbstraction, BaseError } from "@webiny/feature/admin/index.js";

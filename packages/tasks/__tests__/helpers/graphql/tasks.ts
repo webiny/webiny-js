@@ -130,7 +130,7 @@ export interface ITriggerTaskResponse {
 
 export const createTriggerTaskMutation = () => {
     return /* GraphQL */ `
-        mutation TriggerTask($definition: WebinyBackgroundTaskDefinitionEnum!, $input: JSON, $name: String, $delay: Number) {
+        mutation TriggerTask($definition: String!, $input: JSON, $name: String, $delay: Number) {
             backgroundTasks {
                 triggerTask(definition: $definition, input: $input, name: $name, delay: $delay) {
                     data {

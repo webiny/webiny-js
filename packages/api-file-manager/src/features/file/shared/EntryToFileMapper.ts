@@ -19,6 +19,7 @@ export class EntryToFileMapper {
             accessControl: entry.values.accessControl,
             location: { folderId: entry.location?.folderId ?? "root" },
             tags: entry.values.tags || [],
+            description: entry.values.description ?? "",
             extensions: entry.values.extensions
         };
     }

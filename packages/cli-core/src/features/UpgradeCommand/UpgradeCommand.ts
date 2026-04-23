@@ -14,6 +14,7 @@ interface UpgradeCommandParams {
     version?: string;
     registry?: string;
     packageManager?: string;
+    installVersion?: string;
     skipDependencyGuard?: boolean;
 }
 
@@ -82,6 +83,13 @@ class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandPa
                     default: false,
                     description: `Skip the dependency guard that checks for incompatible dependencies before performing the upgrade.`,
                     type: "boolean"
+                },
+                {
+                    name: "install-version",
+                    type: "string",
+                    default: "",
+                    description:
+                        "Install a specific version of Webiny, no matter the version upgrade script is running for. Eg. upgrade script is for 6.5.0 but you want to install 6.5.0-rc.0"
                 }
             ],
             handler: async params => {
@@ -97,6 +105,7 @@ class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandPa
                     debug: params.debug || false,
                     packageManager: params.packageManager || undefined,
                     registry: params.registry || undefined,
+                    installVersion: params.installVersion || undefined,
                     skipDependencyGuard: params.skipDependencyGuard || false,
                     version
                 });

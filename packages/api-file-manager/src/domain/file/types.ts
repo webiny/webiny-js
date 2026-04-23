@@ -26,6 +26,7 @@ export interface File {
         folderId: string;
     };
     tags: string[];
+    description: string;
     createdOn: string;
     modifiedOn: string | undefined;
     savedOn: string;
@@ -55,5 +56,6 @@ export interface FileInput {
         folderId: string;
     };
     tags: string[];
+    description?: string;
     extensions?: Record<string, any>;
 }
