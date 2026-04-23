@@ -183,7 +183,7 @@ export const pullRequests = createWorkflow({
                 {
                     name: "Detect changed files",
                     id: "detect-changed-files",
-                    uses: "dorny/paths-filter@v3",
+                    uses: "dorny/paths-filter@v4",
                     with: {
                         filters: "changed:\n  - 'packages/**/*'\n",
                         "list-files": "json"
