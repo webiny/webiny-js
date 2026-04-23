@@ -206,6 +206,9 @@ export default defineConfig([
     "packages/admin-ui/.storybook/**/*",
     "packages/admin-ui/storybook-static/**/*",
     //"packages/create-webiny-project/**/*",
-    "packages/create-webiny-project/_templates/**/*"
+    "packages/create-webiny-project/_templates/**/*",
+    "packages/project-utils/testing/helpers/lifecycleTracker.ts",
+    "packages/project-utils/testing/tasks/index.ts",
+    "packages/project-utils/testing/tasks/runner.ts"
   ])
 ]);
