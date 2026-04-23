@@ -2,7 +2,10 @@
   "name": "@webiny/mcp",
   "version": "0.0.0",
   "type": "module",
-  "main": "./index.js",
+  "exports": {
+      ".": "./index.js",
+      "./*": "./*"
+  },
   "bin": {
     "webiny-mcp": "./bin.js"
   },

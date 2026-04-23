@@ -2,7 +2,10 @@
   "name": "@webiny/api-headless-cms-scheduler",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+      ".": "./index.js",
+      "./*": "./*"
+  },
   "description": "Schedule for Webiny Headless CMS",
   "keywords": [
     "api-headless-cms-scheduler:base"

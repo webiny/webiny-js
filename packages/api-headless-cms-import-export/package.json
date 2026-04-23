@@ -2,7 +2,10 @@
   "name": "@webiny/api-headless-cms-import-export",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+      ".": "./index.js",
+      "./*": "./*"
+  },
   "description": "Import / Export for Webiny Headless CMS",
   "keywords": [
     "api-headless-cms-import-export:base"

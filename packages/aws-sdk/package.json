@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "type": "module",
   "description": "Wrapper for AWS SDK",
-  "main": "index.js",
+  "exports": {
+      ".": "./index.js",
+      "./*": "./*"
+  },
   "license": "MIT",
   "author": "Webiny Ltd.",
   "dependencies": {

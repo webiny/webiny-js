@@ -2,7 +2,10 @@
   "name": "@webiny/api-website-builder-scheduler",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+      ".": "./index.js",
+      "./*": "./*"
+  },
   "description": "Schedule for Webiny Website Builder",
   "keywords": [
     "api-website-builder-scheduler:base"

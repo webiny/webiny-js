@@ -1,7 +1,10 @@
 {
   "name": "@webiny/api-audit-logs",
   "version": "0.0.0",
-  "main": "index.js",
+  "exports": {
+      ".": "./index.js",
+      "./*": "./*"
+  },
   "type": "module",
   "repository": {
     "type": "git",

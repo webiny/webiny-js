@@ -2,7 +2,10 @@
   "name": "@webiny/api-headless-cms-tasks",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+      ".": "./index.js",
+      "./*": "./*"
+  },
   "description": "Background tasks for Webiny Headless CMS",
   "keywords": [
     "api-headless-cms-tasks:base"

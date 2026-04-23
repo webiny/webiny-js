@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "type": "module",
   "sideEffects": false,
-  "main": "index.js",
+  "exports": {
+      ".": "./index.js",
+      "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"

@@ -4,7 +4,10 @@
   "type": "module",
   "license": "MIT",
   "sideEffects": false,
-  "main": "index.js",
+  "exports": {
+      ".": "./index.js",
+      "./*": "./*"
+  },
   "description": "Security plugins for Cognito",
   "author": "Webiny Ltd.",
   "dependencies": {
