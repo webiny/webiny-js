@@ -5,6 +5,7 @@ import {
     useRegion,
     useEnvContext
 } from "~/services/GetProjectConfigService/EnvContext.js";
+import { useProductionEnvironments } from "~/services/GetProjectConfigService/ProductionEnvironmentsContext.js";
 
 export interface EnvIsProps {
     env?: string | string[];
@@ -75,6 +76,20 @@ export const EnvIsNot: React.FC<EnvIsProps> = ({ env, variant, region, children 
         return null;
     }
 
+    return <>{children}</>;
+};
+
+export const EnvIsProd: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const env = useEnv();
+    const prodEnvs = useProductionEnvironments();
+    if (!prodEnvs.includes(env)) return null;
+    return <>{children}</>;
+};
+
+export const EnvIsNotProd: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const env = useEnv();
+    const prodEnvs = useProductionEnvironments();
+    if (prodEnvs.includes(env)) return null;
     return <>{children}</>;
 };
 

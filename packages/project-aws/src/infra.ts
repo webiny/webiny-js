@@ -37,7 +37,14 @@ import { AwsDefaultRegion } from "./extensions/AwsDefaultRegion.js";
 import { Encryption } from "./extensions/Encryption.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
 import { EnvVar } from "@webiny/project/extensions/index.js";
-import { EnvIs, EnvIsNot, CiIs, CiIsNot } from "@webiny/project/extensions/infra/index.js";
+import {
+    EnvIs,
+    EnvIsNot,
+    EnvIsProd,
+    EnvIsNotProd,
+    CiIs,
+    CiIsNot
+} from "@webiny/project/extensions/infra/index.js";
 
 export const Infra = {
     Encryption,
@@ -53,7 +60,9 @@ export const Infra = {
     },
     Env: {
         Is: EnvIs,
-        IsNot: EnvIsNot
+        IsNot: EnvIsNot,
+        IsProd: EnvIsProd,
+        IsNotProd: EnvIsNotProd
     },
     Ci: {
         Is: CiIs,
