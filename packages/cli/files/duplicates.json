@@ -1,1 +1,1 @@
-[]
+[{"name":"oxfmt","versions":[{"version":"0.45.0","files":[{"file":"/package.json","types":["devDependencies"]}]},{"version":"0.46.0","files":[{"file":"/packages/admin-ui/package.json","types":["devDependencies"]},{"file":"/packages/api-headless-cms/package.json","types":["devDependencies"]},{"file":"/packages/react-properties/package.json","types":["devDependencies"]}]}]}]
