@@ -4,8 +4,8 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-      ".": "./index.js",
-      "./*": "./*"
+    ".": "./index.js",
+    "./*": "./*"
   },
   "repository": {
     "type": "git",

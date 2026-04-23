@@ -4,8 +4,7 @@
   "type": "module",
   "description": "Wrapper for AWS SDK",
   "exports": {
-      ".": "./index.js",
-      "./*": "./*"
+    "./*": "./*"
   },
   "license": "MIT",
   "author": "Webiny Ltd.",

@@ -4,8 +4,7 @@
   "type": "module",
   "description": "Webiny project bootstrap tool.",
   "exports": {
-      ".": "./index.js",
-      "./*": "./*"
+    "./*": "./*"
   },
   "bin": "./bin.js",
   "keywords": [

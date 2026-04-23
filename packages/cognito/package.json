@@ -5,8 +5,8 @@
   "license": "MIT",
   "sideEffects": false,
   "exports": {
-      ".": "./index.js",
-      "./*": "./*"
+    ".": "./index.js",
+    "./*": "./*"
   },
   "description": "Security plugins for Cognito",
   "author": "Webiny Ltd.",
