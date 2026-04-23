@@ -1,6 +1,5 @@
 import React from "react";
 import { AdminConfig, useToggler } from "@webiny/app-admin";
-import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { NexjsConfigDialog } from "./NextjsConfig/NextjsConfigDialog.js";
 
 const { Menu } = AdminConfig;
@@ -11,16 +10,11 @@ export const Extension = React.memo(() => {
     return (
         <>
             <NexjsConfigDialog open={on} onClose={toggleOff} />
-            <Menu.Support
+            <Menu
                 name={"wb.nextjs"}
-                element={
-                    <Menu.Support.Item
-                        text={"Configure Next.js"}
-                        onClick={toggleOn}
-                        icon={<SettingsIcon />}
-                        className={"cursor-pointer"}
-                    />
-                }
+                parent={"wb"}
+                pin={"end"}
+                element={<Menu.Item text={"Configure Next.js"} onClick={toggleOn} />}
             />
         </>
     );
