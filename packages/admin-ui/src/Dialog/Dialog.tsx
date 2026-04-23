@@ -119,13 +119,17 @@ const DialogBase = (props: DialogProps) => {
             <DialogPortal>
                 <div data-role="dialog" className={"z-overlay absolute"}>
                     <DialogOverlay />
-                    <DialogContent {...contentProps}>
-                        <DialogHeader {...headerProps} />
+                    <DialogContent
+                        {...contentProps}
+                        header={<DialogHeader {...headerProps} />}
+                        footer={<DialogFooter {...footerProps} />}
+                        closeButton={
+                            closeButtonProps.show ? (
+                                <CloseDialogIconButton size={closeButtonProps.size} />
+                            ) : undefined
+                        }
+                    >
                         <DialogBody {...bodyProps} />
-                        <DialogFooter {...footerProps} />
-                        {closeButtonProps.show && (
-                            <CloseDialogIconButton size={closeButtonProps.size} />
-                        )}
                     </DialogContent>
                 </div>
             </DialogPortal>
