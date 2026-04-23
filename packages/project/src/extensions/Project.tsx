@@ -27,6 +27,7 @@ export const Project = () => {
             <AdminBeforeWatch src={p("EnsureApiDeployedBeforeAdminWatch.js")} />
             <AdminAfterDeploy src={p("TelemetryNoLongerNewUser.js")} />
             <BeforeDeploy src={p("EnsureTelemetryEnabledForOss.js")} />
+            <BeforeDeploy src={p("ValidateEncryptionBeforeDeploy.js")} />
             <CoreBeforeDeploy src={p("ValidateProductionPulumiState.js")} />
         </>
     );
