@@ -164,9 +164,7 @@ describe("CMS Schema Helpers", () => {
         });
 
         it("should return the original message when no field path matches", () => {
-            const errors = [
-                { message: 'Cannot query field "mystery" on type "ProductValues".' }
-            ];
+            const errors = [{ message: 'Cannot query field "mystery" on type "ProductValues".' }];
             const fields = ["id", "values.name"];
 
             const result = transformFieldErrors(errors, fields);
