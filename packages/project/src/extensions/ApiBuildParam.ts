@@ -121,7 +121,7 @@ export default BuildParam.createImplementation({
                 index = last.getChildIndex() + 1;
             }
 
-            const contextPluginImportPath = "@webiny/handler/plugins/RegisterExtensionPlugin";
+            const contextPluginImportPath = "@webiny/handler/plugins/RegisterExtensionPlugin.js";
             const existingContextPluginImport =
                 source.getImportDeclaration(contextPluginImportPath);
             if (!existingContextPluginImport) {

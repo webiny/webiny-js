@@ -2,6 +2,7 @@ import { stepCountIs } from "ai";
 import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
+import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { WbGeneratePageContentUseCase } from "./abstractions.js";
 import type { WbGeneratePageContentParams } from "./abstractions.js";
@@ -18,7 +19,8 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
     constructor(
         private getSettings: GetSettingsUseCase.Interface,
         private ai: Ai.Interface,
-        private aiSdkTools: AiSdkTools.Interface
+        private aiSdkTools: AiSdkTools.Interface,
+        private encryption: Encryption.Interface
     ) {}
 
     async execute(params: WbGeneratePageContentParams): Promise<Result<string, Error>> {
@@ -36,6 +38,9 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
             );
         }
 
+        // Decrypt at point of use.
+        const apiKey = this.encryption.decrypt(firstProvider.apiKeyEncrypted);
+
         // TODO: configure this in `ai` as default behavior.
         const sdkTools = this.aiSdkTools.getToolSet();
 
@@ -46,7 +51,7 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
                 model: firstProvider.model,
                 connection: {
                     sdkName: firstProvider.model.split("/")[0],
-                    apiKey: firstProvider.apiKey
+                    apiKey
                 },
                 system,
                 toolChoice: "auto",
@@ -78,5 +83,5 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
 export const WbGeneratePageContentUseCaseImplementation =
     WbGeneratePageContentUseCase.createImplementation({
         implementation: WbGeneratePageContentUseCaseImpl,
-        dependencies: [GetSettingsUseCase, Ai, AiSdkTools]
+        dependencies: [GetSettingsUseCase, Ai, AiSdkTools, Encryption]
     });

@@ -12,12 +12,14 @@ import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
 import { BuildParamsFeature } from "~/features/buildParams/feature.js";
 import { EncryptionFeature } from "~/features/encryption/feature.js";
 import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
+import { MaskerFeature } from "~/features/masker/feature.js";
 import { AiFeature } from "~/features/ai/feature.js";
 
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
     register(container: Container, config: ApiCoreStorageOperations) {
         // Register features
+        MaskerFeature.register(container);
         AiFeature.register(container);
         LoggerFeature.register(container);
         EventPublisherFeature.register(container);
