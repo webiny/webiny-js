@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cn, cva } from "~/utils.js";
 import type { DialogProps } from "~/Dialog/index.js";
+import { ScrollArea } from "~/ScrollArea/index.js";
 
 const dialogBodyVariants = cva("", {
     variants: {
@@ -25,5 +26,9 @@ const dialogBodyVariants = cva("", {
 export type DialogBodyProps = Pick<DialogProps, "children" | "bodyPadding" | "size">;
 
 export const DialogBody = ({ bodyPadding, size, children }: DialogBodyProps) => {
-    return <div className={cn(dialogBodyVariants({ size, bodyPadding }))}>{children}</div>;
+    return (
+        <ScrollArea className="flex-auto min-h-0 h-[500px]">
+            <div className={cn(dialogBodyVariants({ size, bodyPadding }))}>{children}</div>
+        </ScrollArea>
+    );
 };

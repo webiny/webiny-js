@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { cn, cva, type VariantProps } from "~/utils.js";
-import { ScrollArea } from "~/ScrollArea/index.js";
 
 const dialogContentVariants = cva(
     [
@@ -69,9 +68,7 @@ const DialogContent = React.forwardRef<
                     {closeButton}
                 </div>
             )}
-            <ScrollArea className="flex-auto min-h-0">
-                <div className={"max-h-[80vh]"}>{children}</div>
-            </ScrollArea>
+            {children}
             {footer && <div className="flex-none">{footer}</div>}
         </DialogPrimitive.Content>
     );
