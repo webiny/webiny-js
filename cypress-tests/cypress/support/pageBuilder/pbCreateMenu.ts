@@ -16,7 +16,6 @@ const CREATE_MENU = /* GraphQL */ `
 `;
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             pbCreateMenu(

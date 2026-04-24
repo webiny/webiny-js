@@ -2,7 +2,10 @@
   "name": "@webiny/api-headless-cms-bulk-actions",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "description": "Webiny Headless CMS bulk actions",
   "keywords": [
     "api-headless-cms-bulk-actions:base"

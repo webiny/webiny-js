@@ -90,8 +90,12 @@ export const HOW_TO_USE: { pattern: string; items: string[] }[] = [
  *           Exact match: "api/cms" matches only "api/cms".
  */
 function matchPattern(categoryId: string, pattern: string): boolean {
-    if (pattern === "*") return true;
-    if (pattern === categoryId) return true;
+    if (pattern === "*") {
+        return true;
+    }
+    if (pattern === categoryId) {
+        return true;
+    }
     const regexStr = pattern
         .replace(/\*\*/g, "\0GLOBSTAR\0")
         .replace(/\*/g, "[^/]*")

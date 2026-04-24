@@ -32,7 +32,9 @@ export function discover(project: Project, repoRoot: string): DiscoveredExport[]
                 continue;
             }
         }
-        if (!sourceFile) continue;
+        if (!sourceFile) {
+            continue;
+        }
 
         const importPath = "webiny/" + srcRelative;
 

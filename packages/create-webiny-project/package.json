@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "type": "module",
   "description": "Webiny project bootstrap tool.",
-  "main": "index.js",
+  "exports": {
+    "./*": "./*"
+  },
   "bin": "./bin.js",
   "keywords": [
     "Webiny"

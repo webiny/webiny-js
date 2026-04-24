@@ -1,4 +1,4 @@
-import { until } from "@webiny/project-utils/testing/helpers/until";
+import { until } from "@webiny/project-utils/testing/helpers/until.js";
 import { fmListFiles } from "./fmListFiles";
 import { fmDeleteFile } from "./fmDeleteFile";
 import { login } from "../login";

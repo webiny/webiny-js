@@ -466,7 +466,7 @@ export const CmsProvider = (props: CmsProviderProps) => {
         },
         updateSingletonEntry: async ({ model, entry, options }) => {
             const mutation = createUpdateSingletonMutation(model);
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            // oxlint-disable-next-line typescript/no-unused-vars
             const { id, ...input } = entry;
             const response = await catchErrorOnExecute(() => {
                 return value.apolloClient.mutate<

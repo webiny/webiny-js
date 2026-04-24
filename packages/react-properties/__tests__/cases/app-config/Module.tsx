@@ -2,7 +2,7 @@
  * Not meant to work, just to show how the config looks like.
  */
 // @ts-nocheck keep it
-/* eslint-disable */
+/* oxlint-disable */
 import React from "react";
 export const FilesRepositorySymbol = Symbol.for("FilesRepositorySymbol");
 export interface IFilesRepository {

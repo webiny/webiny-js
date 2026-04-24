@@ -230,7 +230,6 @@ export class Pulumi {
                 // lock file are matched by the same prefix check.
                 const baseName = entry.endsWith(".lock") ? entry.slice(0, -5) : entry;
                 if (baseName !== requiredPluginDir) {
-                    console.log("DERI", entry);
                     fs.removeSync(path.join(pluginsDir, entry));
                 }
             }

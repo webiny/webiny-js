@@ -21,7 +21,7 @@ type FragmentConfig =
       }
     | { type: "component"; component: string; inputs: Record<string, any> };
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+// oxlint-disable-next-line typescript/no-unsafe-function-type
 function deserializeHandlers(value: string | string[]): Function | Function[] {
     if (Array.isArray(value)) {
         return value.map(s => functionConverter.deserialize(s));

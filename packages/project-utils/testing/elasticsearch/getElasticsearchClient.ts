@@ -11,7 +11,7 @@ import { createElasticsearchClient } from "./createClient";
 import { getDocumentClient, simulateStream } from "../dynamodb";
 import type { PluginCollection } from "../environment";
 import type { OpenSearchContext } from "../../../api-opensearch/src/types";
-import { getOpenSearchIndexPrefix as getOpenSearchIndexPrefix } from "../../../api-opensearch/src/indexPrefix";
+import { getOpenSearchIndexPrefix } from "../../../api-opensearch/src/indexPrefix";
 import { createMockApiLogContextPlugin } from "../mockApiLog";
 
 interface GetElasticsearchClientParams {

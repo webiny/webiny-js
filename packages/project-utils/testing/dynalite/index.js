@@ -12,7 +12,6 @@ export const setupDynalite = async packageRoot => {
 
     setupInitiated = true;
 
-    //eslint-disable-next-line import/dynamic-import-chunkname
     const jestDynalite = await import("jest-dynalite").then(m => m.default ?? m);
     /**
      * Must be a root of this package.

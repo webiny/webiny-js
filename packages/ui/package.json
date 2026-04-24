@@ -2,7 +2,9 @@
   "name": "@webiny/ui",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"

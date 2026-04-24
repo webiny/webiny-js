@@ -14,7 +14,6 @@ const DELETE_MENU_MUTATION = /* GraphQL */ `
 `;
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             pbDeleteMenu(slug: string): Promise<Record<string, any>>;

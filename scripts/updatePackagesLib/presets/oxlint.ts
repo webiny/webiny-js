@@ -1,9 +1,9 @@
 import { createPreset } from "../createPreset";
 
-export const eslint = createPreset(() => {
+export const oxlint = createPreset(() => {
     return {
-        name: "eslint",
-        matching: /eslint/,
+        name: "oxlint",
+        matching: /oxlint/,
         skipResolutions: true,
         caret: true
     };

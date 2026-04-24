@@ -1,3 +1,4 @@
+/* oxlint-disable */
 const cf = require("cloudfront");
 
 const BLUE_GREEN_ROUTER_STORE_ID = "{BLUE_GREEN_ROUTER_STORE_ID}";
