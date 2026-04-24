@@ -45,7 +45,6 @@ export interface User {
 }
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             login(params?: LoginParams): Promise<User>;

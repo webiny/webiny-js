@@ -135,7 +135,9 @@ export const PanoramaViewer = forwardRef<PanoramaViewerHandle, PanoramaViewerPro
 
         const makeDragHandler = useCallback((index: number) => {
             return (e: MouseEvent) => {
-                if (!viewerRef.current) return;
+                if (!viewerRef.current) {
+                    return;
+                }
                 const [pitch, yaw] = viewerRef.current.mouseEventToCoords(e);
                 onHotspotMoveRef.current?.(index, pitch, yaw);
             };
@@ -178,7 +180,7 @@ export const PanoramaViewer = forwardRef<PanoramaViewerHandle, PanoramaViewerPro
                 prevTrackedRef.current = [];
             };
             // config is intentionally read only on mount/imageUrl change
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+            // oxlint-disable-next-line react-hooks/exhaustive-deps
         }, [imageUrl]);
 
         // Sync config changes to the live viewer (without recreating it)

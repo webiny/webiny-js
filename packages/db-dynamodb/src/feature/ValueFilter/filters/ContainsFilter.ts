@@ -39,7 +39,7 @@ const createCompareValues = (value: string) => {
         .replace(/\?/g, `\\?`)
         .replace(/\//g, `\\/`)
         .replace(/:/g, ``)
-        .replace(/\-/g, `\\-`)
+        .replace(/-/g, `\\-`)
         .split(" ")
         .filter(val => {
             return val.length > 0;

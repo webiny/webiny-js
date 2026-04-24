@@ -46,8 +46,8 @@ yarn adio
 # Format changed files
 yarn format > /dev/null 2>&1
 
-# Run eslint
-y eslint
+# Run oxlint
+yarn lint
 
 # Make sure dependencies are in sync
 yarn webiny sync-dependencies
@@ -61,7 +61,7 @@ If any of the steps fail, and you fix anything, you must rerun all scripts from 
 ## Code Conventions
 
 - **Formatting:** oxfmt with project defaults (`.oxfmtrc.json`)
-- **Linting:** ESLint with project config (`.eslintrc`)
+- **Linting:** Oxlint with project config (`.oxlintrc.json`)
 - **Commit style:** Conventional Commits (`feat:`, `fix:`, `chore:`, etc.)
 - **Branch naming:** `claude/issue-<number>` for Claude-generated branches
 - **PR titles:** Mirror the commit style

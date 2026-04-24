@@ -9,7 +9,7 @@ export const ProjectId = defineExtension({
         id: z.string().refine(
             value => {
                 // Allow only alphanumeric characters, dashes, underscores, no spaces, and forward slashes.
-                return /^[a-zA-Z0-9-_\/]+$/.test(value);
+                return /^[a-zA-Z0-9-_/]+$/.test(value);
             },
             {
                 message:

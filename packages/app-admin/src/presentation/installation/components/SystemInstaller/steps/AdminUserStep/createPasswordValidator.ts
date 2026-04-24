@@ -20,7 +20,7 @@ export const createPasswordValidator =
          */
         value = value + "";
 
-        const requireSymbols = /([=+\-^$*.\[\]{}()?"!@#%&/,><':;|_~`])+/;
+        const requireSymbols = /([=+\-^$*.[\]{}()?"!@#%&/,><':;|_~`])+/;
         const requireNumber = /[0-9]/;
         const requireLowercase = /[a-z]/;
         const requireUppercase = /[A-Z]/;
