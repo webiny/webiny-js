@@ -23,12 +23,14 @@ const dialogBodyVariants = cva("", {
     }
 });
 
-export type DialogBodyProps = Pick<DialogProps, "children" | "bodyPadding" | "size">;
+export type DialogBodyProps = Pick<DialogProps, "children" | "bodyPadding" | "scrollable" | "size">;
 
-export const DialogBody = ({ bodyPadding, size, children }: DialogBodyProps) => {
-    return (
-        <ScrollArea className="h-full">
-            <div className={cn(dialogBodyVariants({ size, bodyPadding }))}>{children}</div>
-        </ScrollArea>
-    );
+export const DialogBody = ({ bodyPadding, scrollable = true, size, children }: DialogBodyProps) => {
+    const content = <div className={cn(dialogBodyVariants({ size, bodyPadding }))}>{children}</div>;
+
+    if (!scrollable) {
+        return content;
+    }
+
+    return <ScrollArea className="h-full">{content}</ScrollArea>;
 };
