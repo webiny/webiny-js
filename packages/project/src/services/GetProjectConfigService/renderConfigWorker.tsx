@@ -10,6 +10,7 @@ import { ProjectModel } from "~/models/ProjectModel.js";
 import { toImportSpecifier } from "~/utils/index.js";
 import { EnvProvider } from "./EnvContext.js";
 import { WcpProjectLicenseProvider } from "./WcpProjectLicenseContext.js";
+import { ProductionEnvironmentsCollector } from "./ProductionEnvironmentsContext.js";
 
 const sendError = (err: Error) => {
     const message: RenderConfigWorkerMessageDto = {
@@ -75,9 +76,11 @@ const reactRoot = createRoot(root);
 reactRoot.render(
     <WcpProjectLicenseProvider>
         <EnvProvider>
-            <Properties onChange={onChange}>
-                <Extensions />
-            </Properties>
+            <ProductionEnvironmentsCollector>
+                <Properties onChange={onChange}>
+                    <Extensions />
+                </Properties>
+            </ProductionEnvironmentsCollector>
         </EnvProvider>
     </WcpProjectLicenseProvider>
 );
