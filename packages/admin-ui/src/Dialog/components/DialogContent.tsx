@@ -68,7 +68,7 @@ const DialogContent = React.forwardRef<
                     {closeButton}
                 </div>
             )}
-            <div className="row-start-2 min-h-0 overflow-hidden">{children}</div>
+            <div className="row-start-2 min-h-0 overflow-hidden pr-xs">{children}</div>
             {footer && <div className="row-start-3">{footer}</div>}
         </DialogPrimitive.Content>
     );
