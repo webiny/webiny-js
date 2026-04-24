@@ -4,13 +4,21 @@ import { Select } from "@webiny/admin-ui";
 import type { IFieldVM } from "~/features/formModel/index.js";
 import type { IValueOption } from "~/features/formModel/index.js";
 
-export const SelectRenderer = observer(function SelectRenderer({ field }: { field: IFieldVM }) {
+declare module "../../../features/formModel/abstractions.js" {
+    interface IFieldRendererRegistry {
+        select: { fieldType: "select"; settings: undefined };
+    }
+}
+
+export const SelectRenderer = observer(({ field }: { field: IFieldVM }) => {
     const options: IValueOption[] = field.options ?? [];
 
     return (
         <Select
             label={field.label}
             placeholder={field.placeholder}
+            description={field.description}
+            note={field.note}
             value={(field.value as string) ?? ""}
             onChange={value => field.onChange(value)}
             required={field.required}

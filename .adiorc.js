@@ -12,7 +12,7 @@ export default {
             "@emotion/react",
             "@svgr/webpack",
             "@types/react",
-            "@webiny/cli",
+            //"@webiny/cli",
             "apollo-cache",
             "apollo-client",
             "apollo-link",

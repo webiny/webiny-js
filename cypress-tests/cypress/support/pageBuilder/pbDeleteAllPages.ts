@@ -1,4 +1,4 @@
-import { until } from "@webiny/project-utils/testing/helpers/until";
+import { until } from "@webiny/project-utils/testing/helpers/until.js";
 import { login } from "../login";
 import { pbListPages } from "./pbListPages";
 import { pbDeletePage } from "./pbDeletePage";

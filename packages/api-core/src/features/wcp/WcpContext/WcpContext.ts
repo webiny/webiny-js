@@ -136,6 +136,18 @@ export class WcpContextImpl implements WcpContext.Interface {
         return this.license.canUseHcmsFieldPermissions();
     }
 
+    canUseAiImageEnrichment(): boolean {
+        return this.license.canUseAiImageEnrichment();
+    }
+
+    canUseAiPageGeneration(): boolean {
+        return this.license.canUseAiPageGeneration();
+    }
+
+    canUseAiLexicalGeneration(): boolean {
+        return this.license.canUseAiLexicalGeneration();
+    }
+
     ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL): void {
         if (this.license.canUseFeature(wcpFeatureId)) {
             return;

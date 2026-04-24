@@ -10,7 +10,7 @@ concurrency:
 jobs:
   validateCommits:
     name: Validate commit messages
-    if: github.base_ref != 'dev'
+    if: github.base_ref != 'dev' && !startsWith(github.head_ref, 'release/')
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -23,7 +23,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   validateCommitsDev:
     name: Validate commit messages (dev branch, 'feat' commits not allowed)
-    if: github.base_ref == 'dev'
+    if: github.base_ref == 'dev' && !startsWith(github.head_ref, 'release/')
     steps:
       - uses: actions/setup-node@v5
         with:
@@ -38,6 +38,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   constants:
     name: Create constants
+    if: '!startsWith(github.head_ref, ''release/'')'
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
@@ -67,7 +68,7 @@ jobs:
           "$GITHUB_OUTPUT"
       - name: Detect changed files
         id: detect-changed-files
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         with:
           filters: |
             changed:
@@ -197,6 +198,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
+    if: '!startsWith(github.head_ref, ''release/'')'
     runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@v5

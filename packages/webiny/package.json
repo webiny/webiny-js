@@ -2,7 +2,6 @@
   "name": "webiny",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -64,7 +63,7 @@
   "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
   "exports": {
     "./configs/tsconfig.json": "./configs/tsconfig.json",
-    "./global.ts": "./global.ts",
+    "./global.d.ts": "./global.d.ts",
     "./admin/icons/*": "./admin/icons/*",
     "./admin/ui": "./admin/ui.js",
     "./api/aco/flp": "./api/aco/flp.js",

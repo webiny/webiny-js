@@ -5,7 +5,7 @@ import { FileManagerViewConfig as FileManagerConfig } from "~/index.js";
 import { FileManagerRenderer } from "./FileManagerView/index.js";
 import { FilterByType } from "./filters/FilterByType.js";
 import { ActionDelete, ActionEdit, ActionMove } from "~/components/BulkActions/index.js";
-import { Name, Tags, AccessControl } from "~/components/fields/index.js";
+import { Name, Description, Tags, AccessControl } from "~/components/fields/index.js";
 import {
     CellActions,
     CellAuthor,
@@ -92,6 +92,7 @@ export const FileManagerRendererModule = () => {
                 {/* File Details Fields */}
                 <FileDetails.Field name={"name"} element={<Name />} />
                 <FileDetails.Field name={"tags"} element={<Tags />} />
+                <FileDetails.Field name={"description"} element={<Description />} />
                 <Browser.BulkEditField name={"tags"} element={<Tags />} />
                 <FileDetails.GroupFields value={false} />
                 {/* File Details Actions */}

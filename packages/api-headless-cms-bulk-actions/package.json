@@ -2,7 +2,10 @@
   "name": "@webiny/api-headless-cms-bulk-actions",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "description": "Webiny Headless CMS bulk actions",
   "keywords": [
     "api-headless-cms-bulk-actions:base"
@@ -31,7 +34,7 @@
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.13.2",
     "typescript": "6.0.3",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.5"
   },
   "publishConfig": {
     "access": "public",

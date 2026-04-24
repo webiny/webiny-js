@@ -14,6 +14,8 @@ import { TenancyFeature } from "~/features/tenancy/feature.js";
 import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/feature.js";
 import { TelemetryFeature } from "~/features/telemetry/feature.js";
 import { ErrorOverlayNetworkErrorHandler } from "~/errors/ErrorOverlayNetworkErrorHandler.js";
+import { ToolsFeature } from "~/features/tools/feature.js";
+import { TextToLexicalToolFeature } from "~/presentation/textToLexicalTool/feature.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
@@ -61,6 +63,10 @@ export function createRootContainer() {
     TelemetryFeature.register(container);
 
     container.register(ErrorOverlayNetworkErrorHandler).inSingletonScope();
+
+    ToolsFeature.register(container);
+
+    TextToLexicalToolFeature.register(container);
 
     return container;
 }

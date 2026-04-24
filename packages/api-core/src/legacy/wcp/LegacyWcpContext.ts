@@ -76,6 +76,18 @@ export class LegacyWcpContext implements WcpContextObject {
         return this.getWcpContext().canUseHcmsFieldPermissions();
     }
 
+    canUseAiImageEnrichment(): boolean {
+        return this.getWcpContext().canUseAiImageEnrichment();
+    }
+
+    canUseAiPageGeneration(): boolean {
+        return this.getWcpContext().canUseAiPageGeneration();
+    }
+
+    canUseAiLexicalGeneration(): boolean {
+        return this.getWcpContext().canUseAiLexicalGeneration();
+    }
+
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL): void {
         this.getWcpContext().ensureCanUseFeature(featureId);
     }

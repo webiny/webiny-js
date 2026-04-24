@@ -2,7 +2,10 @@
   "name": "@webiny/api-website-builder-workflows",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "description": "Headless CMS Workflows",
   "keywords": [
     "api-website-builder-workflows:base"
@@ -28,7 +31,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/testing": "0.0.0",
     "typescript": "6.0.3",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.5"
   },
   "publishConfig": {
     "access": "public",

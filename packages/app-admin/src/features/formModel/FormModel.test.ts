@@ -6,6 +6,7 @@ import type {
     IRowNodeVM,
     ITabsNodeVM,
     IElementNodeVM,
+    IObjectFieldVM,
     ILayoutNodeAccessHandle,
     LayoutNodeVM
 } from "./abstractions.js";
@@ -1432,6 +1433,418 @@ describe("FormModel", () => {
                 const data = form.getData();
                 expect(data).toHaveProperty("trackingId");
                 expect(data).toHaveProperty("ogImage");
+            });
+        });
+    });
+
+    describe("object fields (Phase 6)", () => {
+        describe("non-list object field", () => {
+            function createFormWithObject() {
+                return new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title"),
+                        address: fields
+                            .object()
+                            .label("Address")
+                            .fields(f => ({
+                                street: f.text().label("Street").required("Street is required"),
+                                city: f.text().label("City").required("City is required")
+                            }))
+                    }),
+                    layout: layout => [layout.row("title"), layout.row("address")]
+                });
+            }
+
+            it("should create an object field with children", () => {
+                const form = createFormWithObject();
+                const field = form.field("address");
+                expect(field).toBeDefined();
+                expect(field.type).toBe("object");
+            });
+
+            it("should access child fields via dot-notation", () => {
+                const form = createFormWithObject();
+                const street = form.field("address.street");
+                expect(street).toBeDefined();
+                expect(street.type).toBe("text");
+            });
+
+            it("should throw on invalid dot-notation", () => {
+                const form = createFormWithObject();
+                expect(() => form.field("address.zipcode")).toThrow(
+                    'Field "address.zipcode" not found.'
+                );
+            });
+
+            it("should return nested object from getData", () => {
+                const form = createFormWithObject();
+                form.field("address.street").setValue("123 Main St");
+                form.field("address.city").setValue("Springfield");
+
+                const data = form.getData();
+                expect(data.address).toEqual({
+                    street: "123 Main St",
+                    city: "Springfield"
+                });
+            });
+
+            it("should hydrate children from setData", () => {
+                const form = createFormWithObject();
+                form.setData({
+                    title: "Home",
+                    address: { street: "456 Oak Ave", city: "Portland" }
+                });
+
+                expect(form.field("address.street").getValue()).toBe("456 Oak Ave");
+                expect(form.field("address.city").getValue()).toBe("Portland");
+            });
+
+            it("should not be dirty after setData", () => {
+                const form = createFormWithObject();
+                form.setData({
+                    title: "Home",
+                    address: { street: "456 Oak Ave", city: "Portland" }
+                });
+                expect(form.isDirty).toBe(false);
+            });
+
+            it("should be dirty after changing a child field", () => {
+                const form = createFormWithObject();
+                form.setData({
+                    title: "Home",
+                    address: { street: "456 Oak Ave", city: "Portland" }
+                });
+                form.field("address.street").setValue("789 Pine Rd");
+                expect(form.isDirty).toBe(true);
+            });
+
+            it("should validate children recursively", async () => {
+                const form = createFormWithObject();
+                const valid = await form.validate();
+
+                expect(valid).toBe(false);
+                expect(form.errors.length).toBeGreaterThan(0);
+                // The object field itself reports the error
+                expect(form.errors.some(e => e.path === "address")).toBe(true);
+            });
+
+            it("should pass validation when children are valid", async () => {
+                const form = createFormWithObject();
+                form.field("title").setValue("Home");
+                form.field("address.street").setValue("123 Main St");
+                form.field("address.city").setValue("Springfield");
+
+                const valid = await form.validate();
+                expect(valid).toBe(true);
+            });
+
+            it("should expose IObjectFieldVM from field.vm", () => {
+                const form = createFormWithObject();
+                form.field("address.street").setValue("123 Main St");
+                form.field("address.city").setValue("Springfield");
+
+                const vm = form.field("address").vm as IObjectFieldVM;
+                expect(vm.type).toBe("object");
+                expect(vm.isList).toBe(false);
+                expect(vm.fields).toHaveLength(2);
+                expect(vm.fields[0].name).toBe("street");
+                expect(vm.fields[0].value).toBe("123 Main St");
+                expect(vm.fields[1].name).toBe("city");
+                expect(vm.items).toHaveLength(0);
+            });
+
+            it("should render object field in a row via default layout", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        address: fields
+                            .object()
+                            .label("Address")
+                            .fields(f => ({
+                                street: f.text().label("Street"),
+                                city: f.text().label("City")
+                            }))
+                    })
+                });
+
+                const vm = form.vm;
+                expect(vm.layout).toHaveLength(1);
+                expect(vm.layout[0].type).toBe("row");
+                const row = asRow(vm.layout[0]);
+                expect(row.fields[0].type).toBe("object");
+                expect(row.fields[0].name).toBe("address");
+            });
+
+            it("should reset to baseline values", () => {
+                const form = createFormWithObject();
+                form.setData({
+                    title: "Home",
+                    address: { street: "Original St", city: "Original City" }
+                });
+
+                form.field("address.street").setValue("Changed St");
+                expect(form.isDirty).toBe(true);
+
+                form.reset();
+                expect(form.field("address.street").getValue()).toBe("Original St");
+                expect(form.isDirty).toBe(false);
+            });
+
+            it("should submit nested data when valid", async () => {
+                const form = createFormWithObject();
+                form.field("title").setValue("Home");
+                form.field("address.street").setValue("123 Main St");
+                form.field("address.city").setValue("Springfield");
+
+                const result = await form.submit();
+                expect(result).toEqual({
+                    title: "Home",
+                    address: {
+                        street: "123 Main St",
+                        city: "Springfield"
+                    }
+                });
+            });
+        });
+
+        describe("list object field", () => {
+            function createFormWithList() {
+                return new FormModel({
+                    fields: fields => ({
+                        presets: fields
+                            .object()
+                            .label("Presets")
+                            .fields(f => ({
+                                name: f.text().label("Name").required("Name is required"),
+                                model: f.text().label("Model").required("Model is required")
+                            }))
+                            .list()
+                    }),
+                    layout: layout => [layout.row("presets")]
+                });
+            }
+
+            it("should create a list object field", () => {
+                const form = createFormWithList();
+                const field = form.field("presets");
+                expect(field.type).toBe("object");
+            });
+
+            it("should return empty array from getData initially", () => {
+                const form = createFormWithList();
+                expect(form.getData().presets).toEqual([]);
+            });
+
+            it("should add items via the field VM", () => {
+                const form = createFormWithList();
+                const vm = form.field("presets").vm as IObjectFieldVM;
+                expect(vm.isList).toBe(true);
+                expect(vm.items).toHaveLength(0);
+
+                vm.addItem();
+
+                const updatedVm = form.field("presets").vm as IObjectFieldVM;
+                expect(updatedVm.items).toHaveLength(1);
+                expect(updatedVm.items[0].fields).toHaveLength(2);
+                expect(updatedVm.items[0].fields[0].name).toBe("name");
+            });
+
+            it("should hydrate list from setData", () => {
+                const form = createFormWithList();
+                form.setData({
+                    presets: [
+                        { name: "Default", model: "claude-sonnet" },
+                        { name: "Fast", model: "claude-haiku" }
+                    ]
+                });
+
+                const data = form.getData();
+                expect(data.presets).toEqual([
+                    { name: "Default", model: "claude-sonnet" },
+                    { name: "Fast", model: "claude-haiku" }
+                ]);
+            });
+
+            it("should expose items via IObjectFieldVM", () => {
+                const form = createFormWithList();
+                form.setData({
+                    presets: [
+                        { name: "Default", model: "claude-sonnet" },
+                        { name: "Fast", model: "claude-haiku" }
+                    ]
+                });
+
+                const vm = form.field("presets").vm as IObjectFieldVM;
+                expect(vm.items).toHaveLength(2);
+                expect(vm.items[0].fields[0].value).toBe("Default");
+                expect(vm.items[1].fields[1].value).toBe("claude-haiku");
+            });
+
+            it("should remove items via item.remove()", () => {
+                const form = createFormWithList();
+                form.setData({
+                    presets: [
+                        { name: "Default", model: "claude-sonnet" },
+                        { name: "Fast", model: "claude-haiku" }
+                    ]
+                });
+
+                const vm = form.field("presets").vm as IObjectFieldVM;
+                vm.items[0].remove();
+
+                expect(form.getData().presets).toEqual([{ name: "Fast", model: "claude-haiku" }]);
+            });
+
+            it("should remove items via removeItem()", () => {
+                const form = createFormWithList();
+                form.setData({
+                    presets: [
+                        { name: "A", model: "a" },
+                        { name: "B", model: "b" },
+                        { name: "C", model: "c" }
+                    ]
+                });
+
+                const vm = form.field("presets").vm as IObjectFieldVM;
+                vm.removeItem(1);
+
+                expect(form.getData().presets).toEqual([
+                    { name: "A", model: "a" },
+                    { name: "C", model: "c" }
+                ]);
+            });
+
+            it("should validate all items", async () => {
+                const form = createFormWithList();
+                form.setData({
+                    presets: [
+                        { name: "Default", model: "claude-sonnet" },
+                        { name: "", model: "" }
+                    ]
+                });
+
+                const valid = await form.validate();
+                expect(valid).toBe(false);
+            });
+
+            it("should pass validation when all items are valid", async () => {
+                const form = createFormWithList();
+                form.setData({
+                    presets: [
+                        { name: "Default", model: "claude-sonnet" },
+                        { name: "Fast", model: "claude-haiku" }
+                    ]
+                });
+
+                const valid = await form.validate();
+                expect(valid).toBe(true);
+            });
+
+            it("should validate with listSchema", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        presets: fields
+                            .object()
+                            .label("Presets")
+                            .fields(f => ({
+                                name: f.text().label("Name")
+                            }))
+                            .list()
+                            .listSchema(z.array(z.any()).min(2, "At least 2 presets are required"))
+                    })
+                });
+
+                form.setData({ presets: [{ name: "Only one" }] });
+                const valid = await form.validate();
+
+                expect(valid).toBe(false);
+                expect(form.errors[0].message).toBe("At least 2 presets are required");
+            });
+
+            it("should be dirty after adding an item", () => {
+                const form = createFormWithList();
+                form.setData({ presets: [] });
+                expect(form.isDirty).toBe(false);
+
+                const vm = form.field("presets").vm as IObjectFieldVM;
+                vm.addItem();
+                expect(form.isDirty).toBe(true);
+            });
+
+            it("should have stable keys across re-renders", () => {
+                const form = createFormWithList();
+                form.setData({
+                    presets: [
+                        { name: "A", model: "a" },
+                        { name: "B", model: "b" }
+                    ]
+                });
+
+                const vm1 = form.field("presets").vm as IObjectFieldVM;
+                const key0 = vm1.items[0].key;
+                const key1 = vm1.items[1].key;
+
+                // Re-read VM — keys should be the same
+                const vm2 = form.field("presets").vm as IObjectFieldVM;
+                expect(vm2.items[0].key).toBe(key0);
+                expect(vm2.items[1].key).toBe(key1);
+            });
+
+            it("should pass empty list validation when not required", async () => {
+                const form = createFormWithList();
+                const valid = await form.validate();
+                expect(valid).toBe(true);
+            });
+
+            it("should modify item field values via VM onChange", () => {
+                const form = createFormWithList();
+                form.setData({
+                    presets: [{ name: "Default", model: "claude-sonnet" }]
+                });
+
+                const vm = form.field("presets").vm as IObjectFieldVM;
+                vm.items[0].fields[0].onChange("Updated");
+
+                expect((form.getData().presets as any[])[0].name).toBe("Updated");
+            });
+        });
+
+        describe("hasErrors rollup through tabs", () => {
+            it("should report hasErrors in tabs containing object fields", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        title: fields.text().label("Title"),
+                        address: fields
+                            .object()
+                            .label("Address")
+                            .fields(f => ({
+                                street: f.text().label("Street").required("Required")
+                            }))
+                    }),
+                    layout: layout => [
+                        layout.tabs({
+                            id: "settings",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: [layout.row("title")]
+                                },
+                                {
+                                    id: "details",
+                                    label: "Details",
+                                    layout: [layout.row("address")]
+                                }
+                            ]
+                        })
+                    ]
+                });
+
+                form.field("title").setValue("Hello");
+                await form.validate();
+
+                const tabsNode = form.vm.layout[0] as ITabsNodeVM;
+                expect(tabsNode.tabs[0].hasErrors).toBe(false);
+                expect(tabsNode.tabs[1].hasErrors).toBe(true);
             });
         });
     });

@@ -9,8 +9,8 @@ const CreateElement = createCommand<{
     parentId: string;
     // Parent element slot (e.g., `children`, `heroBanner`, `tabsList.0.content`).
     slot: string;
-    // Index within the slot.
-    index: number;
+    // Index within the slot. Omit to append at the end.
+    index?: number;
     // Bindings
     bindings?: ElementFactoryCreateElementParams["bindings"];
 }>("CREATE_ELEMENT");

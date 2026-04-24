@@ -8,7 +8,6 @@ import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { checkPermissions } from "./checkPermissions.js";
 import type { Plugin } from "@webiny/plugins/types.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 interface IGetTaskQueryParams {
@@ -30,18 +29,6 @@ interface ITriggerTaskMutationParams {
 interface IDeleteTaskMutationParams {
     id: string;
 }
-
-const createWebinyBackgroundTaskDefinitionEnum = (items: TaskDefinition.Interface[]): string => {
-    if (items.length === 0) {
-        return "Empty";
-    }
-    return items
-        .filter(item => {
-            return !item.isPrivate;
-        })
-        .map(definition => definition.id)
-        .join("\n");
-};
 
 const createGraphQL = () => {
     const plugin = new ContextPlugin<Context>(async ctx => {
@@ -105,8 +92,6 @@ const createGraphQL = () => {
             fieldRegistry,
             sorters: []
         });
-
-        const taskDefinitions = ctx.tasks.listDefinitions();
 
         const plugin = new GraphQLSchemaPlugin<Context>({
             typeDefs: /* GraphQL */ `
@@ -215,10 +200,6 @@ const createGraphQL = () => {
                     _empty: String
                 }
 
-                enum WebinyBackgroundTaskDefinitionEnum {
-                    ${createWebinyBackgroundTaskDefinitionEnum(taskDefinitions)}
-                }
-
                 extend type Query {
                     backgroundTasks: WebinyBackgroundTaskQuery
                 }
@@ -248,7 +229,7 @@ const createGraphQL = () => {
                 }
 
                 extend type WebinyBackgroundTaskMutation {
-                    triggerTask(definition: WebinyBackgroundTaskDefinitionEnum!, input: JSON, name: String, delay: Number): WebinyBackgroundTaskTriggerResponse!
+                    triggerTask(definition: String!, input: JSON, name: String, delay: Number): WebinyBackgroundTaskTriggerResponse!
                     abortTask(id: ID!, message: String): WebinyBackgroundTaskResponse!
                     deleteTask(id: ID!): WebinyBackgroundTaskDeleteResponse!
                 }
