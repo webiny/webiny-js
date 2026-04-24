@@ -27,7 +27,7 @@ export type DialogBodyProps = Pick<DialogProps, "children" | "bodyPadding" | "si
 
 export const DialogBody = ({ bodyPadding, size, children }: DialogBodyProps) => {
     return (
-        <ScrollArea className="flex-auto min-h-0 h-[500px]">
+        <ScrollArea className="h-full">
             <div className={cn(dialogBodyVariants({ size, bodyPadding }))}>{children}</div>
         </ScrollArea>
     );

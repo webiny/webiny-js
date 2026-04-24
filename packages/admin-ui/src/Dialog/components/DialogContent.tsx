@@ -8,7 +8,7 @@ const dialogContentVariants = cva(
         "translate-x-[-50%] translate-y-[-50%] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
         "focus:outline-none focus-visible:outline-none",
         "max-w-[calc(100vw-var(--spacing-lg))] max-h-[calc(100vh-var(--spacing-lg))] z-dialog",
-        "flex flex-col overflow-hidden"
+        "grid grid-rows-[auto_1fr_auto] overflow-hidden"
     ],
     {
         variants: {
@@ -63,13 +63,13 @@ const DialogContent = React.forwardRef<
             aria-describedby={undefined}
         >
             {(header || closeButton) && (
-                <div className="flex-none relative">
+                <div className="row-start-1 relative">
                     {header}
                     {closeButton}
                 </div>
             )}
-            {children}
-            {footer && <div className="flex-none">{footer}</div>}
+            <div className="row-start-2 min-h-0 overflow-hidden">{children}</div>
+            {footer && <div className="row-start-3">{footer}</div>}
         </DialogPrimitive.Content>
     );
 });
