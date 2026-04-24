@@ -1,21 +1,15 @@
 /**
  * Example: List Users API Gateway Handler
- *
- * This example demonstrates how to create a Lambda handler that:
- * - Implements the ApiGatewayEventHandler interface
- * - Uses dependency injection for services
- * - Exports using createImplementation from @webiny/di
- * - Registers with container.register()
  */
 
-import { createImplementation } from "@webiny/di";
+import { Abstraction } from "@webiny/di";
 import {
     ApiGatewayEventHandler,
     type APIGatewayEvent,
     type APIGatewayProxyResult
 } from "../index.js";
+import type { NextFunction } from "../types.js";
 
-// Example service interfaces (you would define these in your abstractions)
 interface IUserService {
     listUsers(): Promise<Array<{ id: string; name: string; email: string }>>;
 }
@@ -25,83 +19,51 @@ interface ILoggerService {
     error(message: string, ...args: any[]): void;
 }
 
-// Example abstraction declarations (you would define these in your abstractions)
-declare const UserService: any;
-declare const LoggerService: any;
+declare const UserService: Abstraction<IUserService>;
+declare const LoggerService: Abstraction<ILoggerService>;
 
-/**
- * Implementation of the ListUsers handler
- */
-export class ListUsersHandler implements ApiGatewayEventHandler.Interface {
+class ListUsersHandler implements ApiGatewayEventHandler.Interface {
     constructor(
         private userService: IUserService,
         private logger: ILoggerService
     ) {}
 
-    async execute(event: APIGatewayEvent): Promise<APIGatewayProxyResult> {
-        this.logger.info("Handling list users request", {
-            path: event.path,
-            method: event.httpMethod
-        });
+    async execute(event: APIGatewayEvent, next: NextFunction): Promise<APIGatewayProxyResult> {
+        if (event.httpMethod !== "GET" || !event.path.startsWith("/users")) {
+            return next();
+        }
+
+        this.logger.info("Handling list users request", { path: event.path });
 
         try {
-            // Get users from the service
             const users = await this.userService.listUsers();
-
-            // Return successful response
             return {
                 statusCode: 200,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*"
-                },
-                body: JSON.stringify({
-                    success: true,
-                    data: users
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ data: users })
             };
         } catch (error) {
             this.logger.error("Failed to list users", error);
-
-            // Return error response
             return {
                 statusCode: 500,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*"
-                },
-                body: JSON.stringify({
-                    success: false,
-                    error: "Failed to retrieve users"
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ error: "Failed to retrieve users" })
             };
         }
     }
 }
 
-/**
- * Export the implementation using createImplementation from @webiny/di
- */
-export const listUsersHandler = createImplementation({
-    abstraction: ApiGatewayEventHandler,
+export const listUsersHandler = ApiGatewayEventHandler.createImplementation({
     implementation: ListUsersHandler,
     dependencies: [UserService, LoggerService]
 });
 
 /**
- * Example usage in handler file:
+ * Usage:
  *
- * import { createFunction } from "@cloudi/aws";
- * import { listUsersHandler } from "./features/ListUsersFunction.example";
- * import { consoleLogger, dynamoDbUserService } from "./services";
- *
- * export const handler = createFunction((container) => {
- *   // Register services
+ * export const handler = createFunction(async (container) => {
  *   container.register(consoleLogger).inSingletonScope();
  *   container.register(dynamoDbUserService).inSingletonScope();
- *
- *   // Register handler - event will be automatically qualified as API Gateway
  *   container.register(listUsersHandler).inSingletonScope();
  * });
  */
-
