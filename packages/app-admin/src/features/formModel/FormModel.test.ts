@@ -1848,4 +1848,382 @@ describe("FormModel", () => {
             });
         });
     });
+
+    describe("templated object fields (Phase 8a)", () => {
+        function createFormWithTemplatedObject() {
+            return new FormModel({
+                fields: fields => ({
+                    content: fields
+                        .object()
+                        .label("Content")
+                        .templates([
+                            {
+                                id: "hero",
+                                name: "Hero Banner",
+                                fields: f => ({
+                                    heading: f.text().label("Heading").required("Required"),
+                                    image: f.text().label("Image")
+                                })
+                            },
+                            {
+                                id: "text",
+                                name: "Rich Text",
+                                fields: f => ({
+                                    body: f.text().label("Body").required("Required")
+                                })
+                            }
+                        ])
+                })
+            });
+        }
+
+        describe("shape", () => {
+            it("starts with no active template and empty children", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+                expect(field.isTemplated).toBe(true);
+                expect(field.activeTemplateId).toBeNull();
+                expect(field.children.size).toBe(0);
+            });
+
+            it("exposes available templates via VM", () => {
+                const form = createFormWithTemplatedObject();
+                const vm = form.field("content").vm as IObjectFieldVM;
+                expect(vm.isTemplated).toBe(true);
+                expect(vm.availableTemplates).toEqual([
+                    { id: "hero", name: "Hero Banner" },
+                    { id: "text", name: "Rich Text" }
+                ]);
+                expect(vm.activeTemplateId).toBeNull();
+                expect(vm.fields).toEqual([]);
+            });
+
+            it("rejects .fields() alongside .templates() at build time", () => {
+                expect(
+                    () =>
+                        new FormModel({
+                            fields: fields => ({
+                                content: fields
+                                    .object()
+                                    .fields(f => ({ x: f.text() }))
+                                    .templates([
+                                        { id: "a", name: "A", fields: f => ({ y: f.text() }) }
+                                    ])
+                            })
+                        })
+                ).toThrow(/both .fields\(\) and .templates\(\)/);
+            });
+
+            it("rejects duplicate template ids", () => {
+                expect(
+                    () =>
+                        new FormModel({
+                            fields: fields => ({
+                                content: fields.object().templates([
+                                    { id: "a", name: "A1", fields: f => ({ x: f.text() }) },
+                                    { id: "a", name: "A2", fields: f => ({ y: f.text() }) }
+                                ])
+                            })
+                        })
+                ).toThrow(/Duplicate template id "a"/);
+            });
+
+            it("rejects reserved _templateId as template id", () => {
+                expect(
+                    () =>
+                        new FormModel({
+                            fields: fields => ({
+                                content: fields.object().templates([
+                                    {
+                                        id: "_templateId",
+                                        name: "X",
+                                        fields: f => ({ x: f.text() })
+                                    }
+                                ])
+                            })
+                        })
+                ).toThrow(/reserved/);
+            });
+
+            it("rejects _templateId as a child field name in a template", () => {
+                expect(
+                    () =>
+                        new FormModel({
+                            fields: fields => ({
+                                content: fields.object().templates([
+                                    {
+                                        id: "hero",
+                                        name: "Hero",
+                                        fields: f => ({ _templateId: f.text() })
+                                    }
+                                ])
+                            })
+                        })
+                ).toThrow(/reserved field "_templateId"/);
+            });
+
+            it("rejects combining .list() with .templates() in Phase 8a", () => {
+                expect(
+                    () =>
+                        new FormModel({
+                            fields: fields => ({
+                                content: fields
+                                    .object()
+                                    .list()
+                                    .templates([
+                                        { id: "a", name: "A", fields: f => ({ x: f.text() }) }
+                                    ])
+                            })
+                        })
+                ).toThrow(/Phase 8b/);
+            });
+        });
+
+        describe("setTemplate / switching", () => {
+            it("builds children when a template is selected", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+
+                field.setTemplate("hero");
+
+                expect(field.activeTemplateId).toBe("hero");
+                expect(field.children.size).toBe(2);
+                expect(form.field("content.heading").type).toBe("text");
+                expect(form.field("content.image").type).toBe("text");
+            });
+
+            it("discards data when switching to a different template", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+
+                field.setTemplate("hero");
+                form.field("content.heading").setValue("Hello");
+
+                field.setTemplate("text");
+
+                expect(field.activeTemplateId).toBe("text");
+                expect(form.field("content.body")).toBeDefined();
+                expect(() => form.field("content.heading")).toThrow();
+            });
+
+            it("is a no-op when setting the currently active template", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+
+                field.setTemplate("hero");
+                form.field("content.heading").setValue("Preserved");
+                field.setTemplate("hero");
+
+                expect(form.field("content.heading").getValue()).toBe("Preserved");
+            });
+
+            it("throws when setting an unknown template id", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+                expect(() => field.setTemplate("missing")).toThrow(/Template "missing" not found/);
+            });
+
+            it("wires the form reference on newly created children", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                // Setting a value on a child requires _form to be wired for pipelines.
+                expect(() => form.field("content.heading").setValue("OK")).not.toThrow();
+            });
+        });
+
+        describe("getData / setData", () => {
+            it("returns null when no template is active", () => {
+                const form = createFormWithTemplatedObject();
+                expect(form.getData().content).toBeNull();
+            });
+
+            it("includes _templateId and child values when active", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                form.field("content.heading").setValue("Welcome");
+                form.field("content.image").setValue("cover.jpg");
+
+                expect(form.getData().content).toEqual({
+                    _templateId: "hero",
+                    heading: "Welcome",
+                    image: "cover.jpg"
+                });
+            });
+
+            it("hydrates via setData by reading _templateId", () => {
+                const form = createFormWithTemplatedObject();
+                form.setData({
+                    content: { _templateId: "text", body: "Lorem ipsum" }
+                });
+
+                const field = form.field("content") as any;
+                expect(field.activeTemplateId).toBe("text");
+                expect(form.field("content.body").getValue()).toBe("Lorem ipsum");
+            });
+
+            it("setData with null clears the active template", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                form.field("content.heading").setValue("X");
+
+                form.setData({ content: null as any });
+
+                expect(field.activeTemplateId).toBeNull();
+                expect(field.children.size).toBe(0);
+            });
+
+            it("setData ignores unknown template id silently", () => {
+                const form = createFormWithTemplatedObject();
+                form.setData({
+                    content: { _templateId: "nope", foo: "bar" } as any
+                });
+                const field = form.field("content") as any;
+                expect(field.activeTemplateId).toBeNull();
+            });
+        });
+
+        describe("validation", () => {
+            it("required templated object fails validation when no template active", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        content: fields
+                            .object()
+                            .required("Pick a template")
+                            .templates([
+                                {
+                                    id: "hero",
+                                    name: "Hero",
+                                    fields: f => ({ heading: f.text() })
+                                }
+                            ])
+                    })
+                });
+
+                const valid = await form.validate();
+                expect(valid).toBe(false);
+                expect(form.errors.some(e => e.path === "content")).toBe(true);
+            });
+
+            it("required templated object passes when template active with valid children", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        content: fields
+                            .object()
+                            .required("Pick a template")
+                            .templates([
+                                {
+                                    id: "hero",
+                                    name: "Hero",
+                                    fields: f => ({
+                                        heading: f.text().required("Required")
+                                    })
+                                }
+                            ])
+                    })
+                });
+
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                form.field("content.heading").setValue("Hi");
+
+                const valid = await form.validate();
+                expect(valid).toBe(true);
+            });
+
+            it("validates child fields inside active template", async () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                // heading is required; no value set
+                const valid = await form.validate();
+                expect(valid).toBe(false);
+            });
+
+            it("passes validation when object is optional and no template selected", async () => {
+                const form = createFormWithTemplatedObject();
+                const valid = await form.validate();
+                expect(valid).toBe(true);
+            });
+        });
+
+        describe("template visibility", () => {
+            it("filters availableTemplates by reactive visible callback", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        plan: fields.text().defaultValue("free"),
+                        content: fields.object().templates([
+                            {
+                                id: "basic",
+                                name: "Basic",
+                                fields: f => ({ x: f.text() })
+                            },
+                            {
+                                id: "premium",
+                                name: "Premium",
+                                visible: f => f.field("plan").getValue() === "enterprise",
+                                fields: f => ({ y: f.text() })
+                            }
+                        ])
+                    })
+                });
+
+                const vm1 = form.field("content").vm as IObjectFieldVM;
+                expect(vm1.availableTemplates.map(t => t.id)).toEqual(["basic"]);
+
+                form.field("plan").setValue("enterprise");
+                const vm2 = form.field("content").vm as IObjectFieldVM;
+                expect(vm2.availableTemplates.map(t => t.id)).toEqual(["basic", "premium"]);
+            });
+
+            it("hiding a template does not clear an already-active selection", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        plan: fields.text().defaultValue("enterprise"),
+                        content: fields.object().templates([
+                            {
+                                id: "premium",
+                                name: "Premium",
+                                visible: f => f.field("plan").getValue() === "enterprise",
+                                fields: f => ({ y: f.text() })
+                            }
+                        ])
+                    })
+                });
+
+                const field = form.field("content") as any;
+                field.setTemplate("premium");
+                form.field("content.y").setValue("set");
+
+                form.field("plan").setValue("free");
+
+                // Template no longer in picker, but active selection + data preserved.
+                const vm = form.field("content").vm as IObjectFieldVM;
+                expect(vm.availableTemplates).toEqual([]);
+                expect(vm.activeTemplateId).toBe("premium");
+                expect(form.field("content.y").getValue()).toBe("set");
+            });
+        });
+
+        describe("isDirty", () => {
+            it("is not dirty after setData with template", () => {
+                const form = createFormWithTemplatedObject();
+                form.setData({
+                    content: { _templateId: "hero", heading: "Hello", image: "" }
+                });
+                expect(form.isDirty).toBe(false);
+            });
+
+            it("becomes dirty after switching template", () => {
+                const form = createFormWithTemplatedObject();
+                form.setData({
+                    content: { _templateId: "hero", heading: "Hello", image: "" }
+                });
+                (form.field("content") as any).setTemplate("text");
+                expect(form.isDirty).toBe(true);
+            });
+        });
+    });
 });

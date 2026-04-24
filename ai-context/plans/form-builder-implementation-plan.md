@@ -324,10 +324,44 @@ Different page types reconfigure the form. Switching types rebuilds it.
 
 ### Phase 8: Dynamic Zones / Templates
 
-- `.templates()` on object fields
-- `_templateId` discriminator
-- Template visibility and layouts
-- `layout.object("field", { templateId: [...] })` for per-template layouts
+Broken into three sub-phases. 8a is implemented; 8b and 8c remain.
+
+#### Phase 8a: Single-object templates (DONE)
+
+- `.templates([{ id, name, fields, visible? }])` on object fields
+- `_templateId` discriminator in `getData()` / `setValueSilent()`
+- Reactive template `visible` callback filters the picker (does not clear active selection)
+- Atomic add/remove — users pick one template at a time; no piecemeal field edits inside a template
+- Active template can be cleared via `field.onChange(null)` (generic field API — no dedicated "unset template" method)
+- Build-time validation: rejects duplicate template ids, reserved `_templateId`, combining `.fields()` with `.templates()`, and combining `.list()` with `.templates()` (deferred to 8b)
+- `DynamicZoneRenderer` — visual parity with the CMS `SingleValueDynamicZone` (gallery dialog with template cards + active template inside an accordion with delete action + confirmation)
+- `ObjectRenderer` delegates to `DynamicZoneRenderer` when `isTemplated && !isList`
+- Demo route at `/form-model-demo` (app-admin) with a proper Presenter
+
+#### Phase 8b: List templates (dynamic zones)
+
+- Allow `.list().templates([...])` — each list item carries its own `_templateId`
+- Add-item flow: user picks a template from the gallery → new item is appended with that template's children
+- Per-item delete/duplicate/move preserved from Phase 6 list behaviour
+- Visual parity with CMS `MultiValueDynamicZone` (one accordion per item, template icon/name in the header, action row with up/down/duplicate/delete)
+- `IObjectFieldItemVM.templateId` is already typed — needs to be populated and respected by the renderer
+
+#### Phase 8c: Per-template layouts
+
+- `layout.object("field", { templateId: [...] })` — each template can define its own row layout
+- Falls back to default one-field-per-row when a template has no layout entry
+- Layout lives on the parent form (not inside the template definition) so layout concerns stay centralised
+
+#### Phase 8d: Modifier API + orphan handling
+
+- `form.field("x").as("object").templates.add(...)` / `.templates.remove(...)` — modifier-facing API for adding/removing whole templates after the form is built
+- Orphan layout map entries (templates removed but still referenced in `layout.object("field", { templateId: [...] })`) are ignored silently
+- Dev warning suppression for orphan objects/lists (they auto-render per 4c default-layout fallback)
+- Tests covering: add/remove template at runtime, orphan layout entries, orphan warning suppression, interaction with active template (removing the active template clears it via `onChange(null)`)
+
+#### Phase 8e: Integration + real-world verification
+
+- Default field renderers for object/list items with template picker (`@webiny/admin-ui`) — exercised against the existing `/form-model-demo` playground rather than a fresh integration target
 
 ### Phase 9: CMS Model Conversion
 

@@ -9,6 +9,8 @@ import type {
     IObjectFieldBuilder,
     IFieldBuilderRegistry,
     IRule,
+    ITemplate,
+    ITemplateConfig,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
@@ -164,12 +166,16 @@ export class SelectFieldBuilder extends FieldBuilder<"select"> implements ISelec
 }
 
 /**
- * Object field builder with .fields(), .list(), .listSchema() support.
+ * Object field builder with .fields(), .list(), .listSchema(), .templates() support.
+ *
+ * Templates and .fields() are mutually exclusive — an object either defines its own
+ * children directly or delegates to templates. Calling both throws at build time.
  */
 export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjectFieldBuilder {
     private _childBuilders: Record<string, IFieldBuilder> = {};
     private _isList = false;
     private _listSchema?: z.ZodTypeAny;
+    private _templates?: ITemplateConfig[];
 
     constructor() {
         super("object");
@@ -192,13 +198,50 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
         return this;
     }
 
+    templates(templates: ITemplate[]): this {
+        const seen = new Set<string>();
+        this._templates = templates.map(t => {
+            if (t.id === "_templateId") {
+                throw new Error(`Template id "_templateId" is reserved. Choose a different id.`);
+            }
+            if (seen.has(t.id)) {
+                throw new Error(`Duplicate template id "${t.id}".`);
+            }
+            seen.add(t.id);
+
+            const registry = createFieldBuilderRegistry();
+            const childBuilders = t.fields(registry);
+            if ("_templateId" in childBuilders) {
+                throw new Error(
+                    `Template "${t.id}" defines a reserved field "_templateId". ` +
+                        `The discriminator is added automatically.`
+                );
+            }
+            return {
+                id: t.id,
+                name: t.name,
+                childBuilders,
+                visible: t.visible
+            };
+        });
+        return this;
+    }
+
     override build(name: string): IObjectFieldConfig {
+        if (this._templates && Object.keys(this._childBuilders).length > 0) {
+            throw new Error(
+                `Object field "${name}" has both .fields() and .templates() defined. ` +
+                    `Templates are mutually exclusive with .fields(); each template defines its own children.`
+            );
+        }
+
         return {
             ...this._config,
             name,
             childBuilders: this._childBuilders,
             isList: this._isList,
-            listSchema: this._listSchema
+            listSchema: this._listSchema,
+            templates: this._templates
         };
     }
 }

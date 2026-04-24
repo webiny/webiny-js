@@ -12,6 +12,7 @@ import {
     ListItemRenderer,
     AddItemButton
 } from "./ObjectFieldComponents.js";
+import { DynamicZoneRenderer } from "./DynamicZoneRenderer.js";
 
 declare module "../../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -33,6 +34,10 @@ export const ObjectRenderer = observer(({ field }: { field: IFieldVM }) => {
 
     if (field.isList) {
         return <ListObjectRenderer field={field} />;
+    }
+
+    if (field.isTemplated) {
+        return <DynamicZoneRenderer field={field} />;
     }
 
     return <SingleObjectRenderer field={field} />;

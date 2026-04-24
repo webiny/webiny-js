@@ -10,12 +10,17 @@ import type {
     IFormModel,
     IFieldBuilder,
     IRule,
+    ITemplateConfig,
+    ITemplateVM,
     FieldTypeMap,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
     OnBlurCallback
 } from "./abstractions.js";
+
+/** Reserved key used as the template discriminator in templated object data. */
+export const TEMPLATE_DISCRIMINATOR = "_templateId";
 
 function createChildFields(
     childBuilders: Record<string, IFieldBuilder>,
@@ -105,6 +110,8 @@ export class ObjectField implements IObjectField {
     private _form: IFormModel | null = null;
     private _children: Map<string, IField>;
     private _items: ListItem[] = [];
+    private _templates: ITemplateConfig[] = [];
+    private _activeTemplateId: string | null = null;
 
     constructor(config: IObjectFieldConfig) {
         this.config = config;
@@ -113,11 +120,42 @@ export class ObjectField implements IObjectField {
             type: "object",
             renderer: config.renderer ?? "object"
         });
-        this._children = createChildFields(config.childBuilders, null);
+        this._templates = config.templates ?? [];
+
+        if (this._templates.length > 0 && config.isList) {
+            throw new Error(
+                `Object field "${config.name}": combining .list() with .templates() is not yet supported. ` +
+                    `This will be enabled in Phase 8b.`
+            );
+        }
+
+        if (this._templates.length > 0) {
+            // Phase 8a: templated single-object. No active template until explicitly set.
+            this._children = new Map();
+        } else {
+            this._children = createChildFields(config.childBuilders, null);
+        }
 
         makeAutoObservable(this, {
             config: false
         });
+    }
+
+    private _findTemplate(id: string): ITemplateConfig | undefined {
+        return this._templates.find(t => t.id === id);
+    }
+
+    private _rebuildChildrenForTemplate(templateId: string): void {
+        const template = this._findTemplate(templateId);
+        if (!template) {
+            throw new Error(
+                `Template "${templateId}" not found on field "${this.config.name}". ` +
+                    `Available: ${this._templates.map(t => t.id).join(", ") || "(none)"}.`
+            );
+        }
+        const children = createChildFields(template.childBuilders, this._form);
+        this._children = children;
+        this._activeTemplateId = templateId;
     }
 
     // --- Forwarded from _base ---
@@ -197,6 +235,34 @@ export class ObjectField implements IObjectField {
         return this.config.isList;
     }
 
+    get isTemplated(): boolean {
+        return this._templates.length > 0;
+    }
+
+    get activeTemplateId(): string | null {
+        return this._activeTemplateId;
+    }
+
+    get availableTemplates(): ITemplateVM[] {
+        const result: ITemplateVM[] = [];
+        for (const template of this._templates) {
+            if (template.visible && this._form) {
+                if (!template.visible(this._form)) {
+                    continue;
+                }
+            }
+            result.push({ id: template.id, name: template.name });
+        }
+        return result;
+    }
+
+    setTemplate(templateId: string): void {
+        if (this._activeTemplateId === templateId) {
+            return;
+        }
+        this._rebuildChildrenForTemplate(templateId);
+    }
+
     get children(): Map<string, IField> {
         return this._children;
     }
@@ -222,6 +288,15 @@ export class ObjectField implements IObjectField {
         if (this.config.isList) {
             return this._items.map(item => getChildrenData(item.children));
         }
+        if (this.isTemplated) {
+            if (this._activeTemplateId === null) {
+                return null;
+            }
+            return {
+                [TEMPLATE_DISCRIMINATOR]: this._activeTemplateId,
+                ...getChildrenData(this._children)
+            };
+        }
         return getChildrenData(this._children);
     }
 
@@ -241,9 +316,28 @@ export class ObjectField implements IObjectField {
                     this._addItemInternal(itemData);
                 }
             }
-        } else {
-            hydrateChildren(this._children, value as Record<string, unknown>);
+            return;
         }
+        if (this.isTemplated) {
+            if (value === null || value === undefined) {
+                this._activeTemplateId = null;
+                this._children = new Map();
+                return;
+            }
+            const data = value as Record<string, unknown>;
+            const templateId = data[TEMPLATE_DISCRIMINATOR];
+            if (typeof templateId !== "string") {
+                return;
+            }
+            if (!this._findTemplate(templateId)) {
+                return;
+            }
+            this._rebuildChildrenForTemplate(templateId);
+            const { [TEMPLATE_DISCRIMINATOR]: _discarded, ...rest } = data;
+            hydrateChildren(this._children, rest);
+            return;
+        }
+        hydrateChildren(this._children, value as Record<string, unknown>);
     }
 
     addItem(data?: Record<string, unknown>): void {
@@ -334,7 +428,11 @@ export class ObjectField implements IObjectField {
                 : [],
             addItem: () => this.addItem(),
             removeItem: (index: number) => this.removeItem(index),
-            moveItem: (from: number, to: number) => this.moveItem(from, to)
+            moveItem: (from: number, to: number) => this.moveItem(from, to),
+            isTemplated: this.isTemplated,
+            availableTemplates: this.availableTemplates,
+            activeTemplateId: this._activeTemplateId,
+            setTemplate: (templateId: string) => this.setTemplate(templateId)
         };
     }
 
@@ -380,16 +478,26 @@ export class ObjectField implements IObjectField {
                 return false;
             }
             if (!this.config.isList) {
-                const data = this.getData();
-                const hasAnyValue = Object.values(data).some(
-                    v => v !== null && v !== undefined && v !== ""
-                );
-                if (!hasAnyValue) {
-                    this.setValidation({
-                        isValid: false,
-                        message: this.config.requiredMessage || "This field is required."
-                    });
-                    return false;
+                if (this.isTemplated) {
+                    if (this._activeTemplateId === null) {
+                        this.setValidation({
+                            isValid: false,
+                            message: this.config.requiredMessage || "This field is required."
+                        });
+                        return false;
+                    }
+                } else {
+                    const data = this.getData();
+                    const hasAnyValue = Object.values(data).some(
+                        v => v !== null && v !== undefined && v !== ""
+                    );
+                    if (!hasAnyValue) {
+                        this.setValidation({
+                            isValid: false,
+                            message: this.config.requiredMessage || "This field is required."
+                        });
+                        return false;
+                    }
                 }
             }
         }

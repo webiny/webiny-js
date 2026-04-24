@@ -25,6 +25,19 @@ export const Menus = React.memo(() => {
                     />
                 }
             />
+            <Menu
+                name={"formModelDemo"}
+                pin={"start"}
+                element={
+                    <Menu.Link
+                        to={"/form-model-demo"}
+                        text={"FormModel Demo"}
+                        icon={
+                            <Menu.Link.Icon label="FormModel Demo" element={<DashboardIcon />} />
+                        }
+                    />
+                }
+            />
             <HasPermission name={"fm.file"}>
                 <Menu
                     name={"fileManager"}

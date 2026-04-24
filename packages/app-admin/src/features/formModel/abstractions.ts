@@ -108,6 +108,14 @@ export interface IObjectFieldVM extends IFieldVM {
     addItem: () => void;
     removeItem: (index: number) => void;
     moveItem: (fromIndex: number, toIndex: number) => void;
+    /** True when the object has templates defined. */
+    isTemplated: boolean;
+    /** Templates visible in the picker (filtered by each template's reactive `visible`). */
+    availableTemplates: ITemplateVM[];
+    /** Currently active template id (single-object mode), or null if no template picked. */
+    activeTemplateId: string | null;
+    /** Switch to a different template. Discards values not present in the new template. */
+    setTemplate: (templateId: string) => void;
 }
 
 export interface IObjectFieldItemVM {
@@ -116,6 +124,16 @@ export interface IObjectFieldItemVM {
     remove: () => void;
     moveUp: () => void;
     moveDown: () => void;
+    /** The template id of this item, if the parent list is templated. */
+    templateId?: string;
+}
+
+/**
+ * VM exposed for each available template in the picker.
+ */
+export interface ITemplateVM {
+    id: string;
+    name: string;
 }
 
 export interface IField {
@@ -168,15 +186,47 @@ export interface IObjectFieldConfig extends IFieldConfig {
     childBuilders: Record<string, IFieldBuilder>;
     isList: boolean;
     listSchema?: z.ZodTypeAny;
+    templates?: ITemplateConfig[];
+}
+
+/**
+ * Template definition on an object field.
+ * A template is an atomic, named variant of the object's children.
+ *
+ * Modifiers may add or remove whole templates but cannot mutate a template's fields piecemeal.
+ */
+export interface ITemplate {
+    id: string;
+    name: string;
+    fields: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>;
+    /**
+     * Reactive callback — when false, the template is hidden from the picker.
+     * Does not retroactively hide existing items/data.
+     */
+    visible?: (form: IFormModel) => boolean;
+}
+
+/**
+ * Resolved template config (post-build) — `fields` has been materialised into builders.
+ */
+export interface ITemplateConfig {
+    id: string;
+    name: string;
+    childBuilders: Record<string, IFieldBuilder>;
+    visible?: (form: IFormModel) => boolean;
 }
 
 export interface IObjectField extends IField {
     readonly isList: boolean;
     readonly children: Map<string, IField>;
     readonly items: IListItemField[];
+    readonly isTemplated: boolean;
+    readonly activeTemplateId: string | null;
+    readonly availableTemplates: ITemplateVM[];
     addItem(data?: Record<string, unknown>): void;
     removeItem(index: number): void;
     moveItem(fromIndex: number, toIndex: number): void;
+    setTemplate(templateId: string): void;
     getData(): Record<string, unknown> | Record<string, unknown>[];
 }
 
@@ -404,6 +454,9 @@ export namespace FormModel {
     export type ElementNodeVM = IElementNodeVM;
     export type ObjectFieldVM = IObjectFieldVM;
     export type ObjectFieldItemVM = IObjectFieldItemVM;
+    export type Template = ITemplate;
+    export type TemplateConfig = ITemplateConfig;
+    export type TemplateVM = ITemplateVM;
     export type FormError = IFormError;
     export type FormVM = IFormVM;
     export type Interface<T = Record<string, any>> = IFormModel<T>;
@@ -476,6 +529,7 @@ export interface IObjectFieldBuilder extends IFieldBuilder<"object"> {
     fields(fn: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this;
     list(): this;
     listSchema(schema: z.ZodTypeAny): this;
+    templates(templates: ITemplate[]): this;
 }
 
 export interface IFieldBuilderRegistry {
