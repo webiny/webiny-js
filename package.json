@@ -131,7 +131,7 @@
     "format:fix": "oxfmt",
     "format:check": "oxfmt --check",
     "link-workspaces": "node ./scripts/linkWorkspaces.js",
-    "lint": "oxlint",
+    "lint": "oxlint --deny-warnings",
     "lint:fix": "oxlint --fix",
     "mdx-from-folder": "tsx scripts/mdxFromFolder",
     "open": "yarn webiny open",
