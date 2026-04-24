@@ -28,8 +28,12 @@ function collectDeps(paths) {
     for (const field of ["dependencies", "devDependencies"]) {
       const obj = pkg[field] || {};
       for (const [name, ver] of Object.entries(obj)) {
-        if (name.startsWith("@webiny/")) continue;
-        if (!deps.has(name)) deps.set(name, new Set());
+        if (name.startsWith("@webiny/")) {
+          continue;
+        }
+        if (!deps.has(name)) {
+          deps.set(name, new Set());
+        }
         deps.get(name).add(ver);
       }
     }
@@ -43,7 +47,9 @@ async function fetchAge(name, versions) {
     const res = await fetch(`https://registry.npmjs.org/${name}`, {
       headers: { Accept: "application/json" }
     });
-    if (!res.ok) return { name, version: ver, date: null, error: `HTTP ${res.status}` };
+    if (!res.ok) {
+      return { name, version: ver, date: null, error: `HTTP ${res.status}` };
+    }
     const data = await res.json();
 
     const time = data.time || {};
@@ -81,8 +87,12 @@ function formatAge(date) {
   const now = Date.now();
   const diff = now - date.getTime();
   const days = Math.floor(diff / 86400000);
-  if (days < 30) return `${days}d`;
-  if (days < 365) return `${Math.floor(days / 30)}mo`;
+  if (days < 30) {
+    return `${days}d`;
+  }
+  if (days < 365) {
+    return `${Math.floor(days / 30)}mo`;
+  }
   const years = Math.floor(days / 365);
   const months = Math.floor((days % 365) / 30);
   return months > 0 ? `${years}y ${months}mo` : `${years}y`;
@@ -123,7 +133,9 @@ async function main() {
   const claimed = new Set();
 
   for (const r of results) {
-    if (r.name.startsWith("@types/")) continue;
+    if (r.name.startsWith("@types/")) {
+      continue;
+    }
     const group = { main: r, types: null };
     // Find matching @types.
     const scopeMatch = r.name.startsWith("@")

@@ -28,7 +28,7 @@ const ResourcePreviewById = observer(
             actions?: React.ReactNode;
         } & Partial<ResourcePreviewCellProps>
     ) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // oxlint-disable-next-line typescript/no-unused-vars
         const { id, ...rest } = props;
         const store = useLocalObservable(() => ({
             loading: false,
@@ -121,7 +121,7 @@ export const PickResourceList = observer((props: PickResourceListProps) => {
                     text={`+ Select ${capitalize(pluralize(props.resourceName))}`}
                     variant="secondary"
                     onClick={() => {
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        // oxlint-disable-next-line typescript/no-unused-vars
                         const { value, resourcePicker, ...rest } = props;
                         const PickerComponent = resourcePicker || ResourcePicker;
 

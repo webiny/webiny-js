@@ -1,0 +1,134 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react"],
+  "categories": {
+    "correctness": "off",
+    "suspicious": "off"
+  },
+  "env": {
+    "builtin": true
+  },
+  "globals": {
+    "node": "writable",
+    "commonjs": "writable",
+    "window": "writable",
+    "document": "writable"
+  },
+  "ignorePatterns": [
+    ".github/**/*",
+    ".idea/**/*",
+    ".nx/**/*",
+    ".pulumi/**/*",
+    ".stormTests/**/*",
+    ".swc/**/*",
+    ".webiny/**/*",
+    ".yarn/**/*",
+    "ai-context/**/*",
+    "coverage/**/*",
+    "devtools/**/*",
+    "docs/**/*",
+    "extensions/**/*",
+    "scripts/**/*",
+    "testing/**/*",
+    "**/node_modules/",
+    "**/dist/",
+    "**/lib/",
+    "**/build/",
+    "**/.out/",
+    "**/*.d.ts",
+    "idea.js",
+    "packages/**/planning/**/*",
+    "packages/admin-ui/.storybook/**/*",
+    "packages/admin-ui/storybook-static/**/*",
+    "packages/create-webiny-project/_templates/**/*"
+  ],
+  "rules": {
+    "curly": ["error"],
+    "no-array-constructor": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@aws-sdk/*"],
+            "message": "Please use @webiny/aws-sdk instead."
+          },
+          {
+            "group": ["@webiny/*/index.*"],
+            "message": "Do not import index.js/ts/* explicitly. Import the package root instead (e.g. `@webiny/utils`)."
+          }
+        ]
+      }
+    ],
+    "no-unused-expressions": "off",
+    "no-unused-vars": "warn",
+    "no-use-before-define": "off",
+    "react/display-name": "error",
+    "react/jsx-key": "error",
+    "react/jsx-no-comment-textnodes": "error",
+    "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-target-blank": "error",
+    "react/jsx-no-undef": "error",
+    "react/no-children-prop": "error",
+    "react/no-danger-with-children": "error",
+    "react/no-direct-mutation-state": "error",
+    "react/no-find-dom-node": "error",
+    "react/no-is-mounted": "error",
+    "react/no-render-return-value": "error",
+    "react/no-string-refs": "error",
+    "react/no-unescaped-entities": "error",
+    "react/no-unknown-property": "error",
+    "react/no-unsafe": "off",
+    "react/react-in-jsx-scope": "error"
+  },
+  "overrides": [
+    {
+      "files": ["packages/**/*.{ts,tsx}"],
+      "plugins": ["typescript", "react"],
+      "rules": {
+        "typescript/ban-ts-comment": [
+          "error",
+          {
+            "ts-check": true,
+            "ts-ignore": "allow-with-description",
+            "ts-nocheck": "allow-with-description",
+            "ts-expect-error": false
+          }
+        ],
+        "typescript/explicit-function-return-type": "off",
+        "typescript/explicit-module-boundary-types": "off",
+        "typescript/no-duplicate-enum-values": "error",
+        "typescript/no-empty-object-type": [
+          "error",
+          {
+            "allowInterfaces": "always",
+            "allowObjectTypes": "never"
+          }
+        ],
+        "typescript/no-explicit-any": "off",
+        "typescript/no-extra-non-null-assertion": "error",
+        "typescript/no-misused-new": "error",
+        "typescript/no-namespace": "off",
+        "typescript/no-non-null-asserted-optional-chain": "error",
+        "typescript/no-non-null-assertion": "off",
+        "typescript/no-require-imports": "error",
+        "typescript/no-restricted-types": "error",
+        "typescript/no-this-alias": "error",
+        "typescript/no-unnecessary-type-constraint": "error",
+        "typescript/no-unsafe-declaration-merging": "error",
+        "typescript/no-unsafe-function-type": "error",
+        "typescript/no-var-requires": "off",
+        "typescript/no-wrapper-object-types": "error",
+        "typescript/prefer-as-const": "error",
+        "typescript/prefer-namespace-keyword": "error",
+        "typescript/triple-slash-reference": "error"
+      }
+    },
+    {
+      "files": ["packages/aws-sdk/**/*.{ts,tsx,js,jsx}"],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ]
+}

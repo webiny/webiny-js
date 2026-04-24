@@ -50,7 +50,9 @@ window.libpannellum = (function (window, document, undefined) {
         var sides = ["f", "b", "u", "d", "l", "r"];
         var fallbackSides = ["f", "r", "b", "l", "u", "d"];
 
-        if (context) gl = context;
+        if (context) {
+            gl = context;
+        }
 
         /**
          * Initialize renderer.
@@ -71,7 +73,9 @@ window.libpannellum = (function (window, document, undefined) {
          */
         this.init = function (_image, _imageType, haov, vaov, voffset, callback, params) {
             // Default argument for image type
-            if (_imageType === undefined) _imageType = "equirectangular";
+            if (_imageType === undefined) {
+                _imageType = "equirectangular";
+            }
 
             if (
                 _imageType != "equirectangular" &&
@@ -98,13 +102,18 @@ window.libpannellum = (function (window, document, undefined) {
                 }
                 gl.bindBuffer(gl.ARRAY_BUFFER, null);
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-                if (program.texture) gl.deleteTexture(program.texture);
-                if (program.nodeCache)
+                if (program.texture) {
+                    gl.deleteTexture(program.texture);
+                }
+                if (program.nodeCache) {
                     for (var i = 0; i < program.nodeCache.length; i++)
                         gl.deleteTexture(program.nodeCache[i].texture);
+                }
                 if (program.textureLoads) {
                     pendingTextureRequests = [];
-                    while (program.textureLoads.length > 0) program.textureLoads.shift()(false);
+                    while (program.textureLoads.length > 0) {
+                        program.textureLoads.shift()(false);
+                    }
                 }
                 gl.deleteProgram(program);
                 program = undefined;
@@ -129,15 +138,20 @@ window.libpannellum = (function (window, document, undefined) {
             if (imageType == "cubemap") {
                 for (s = 0; s < 6; s++) {
                     if (image[s].width > 0) {
-                        if (cubeImgWidth === undefined) cubeImgWidth = image[s].width;
-                        if (cubeImgWidth != image[s].width)
+                        if (cubeImgWidth === undefined) {
+                            cubeImgWidth = image[s].width;
+                        }
+                        if (cubeImgWidth != image[s].width) {
                             console.log(
                                 "Cube faces have inconsistent widths: " +
                                     cubeImgWidth +
                                     " vs. " +
                                     image[s].width
                             );
-                    } else faceMissing = true;
+                        }
+                    } else {
+                        faceMissing = true;
+                    }
                 }
             }
             function fillMissingFaces(imgSize) {
@@ -157,7 +171,9 @@ window.libpannellum = (function (window, document, undefined) {
                     }
                     var backgroundSquare = new ImageData(imageArray, imgSize, imgSize);
                     for (s = 0; s < 6; s++) {
-                        if (image[s].width == 0) image[s] = backgroundSquare;
+                        if (image[s].width == 0) {
+                            image[s] = backgroundSquare;
+                        }
                     }
                 }
             }
@@ -180,9 +196,12 @@ window.libpannellum = (function (window, document, undefined) {
                 )
             ) {
                 // Enable WebGL on canvas
-                if (!gl)
+                if (!gl) {
                     gl = canvas.getContext("experimental-webgl", { alpha: false, depth: false });
-                if (gl && gl.getError() == 1286) handleWebGLError1286();
+                }
+                if (gl && gl.getError() == 1286) {
+                    handleWebGLError1286();
+                }
             }
 
             // If there is no WebGL, fall back to CSS 3D transform renderer.
@@ -295,15 +314,20 @@ window.libpannellum = (function (window, document, undefined) {
                 };
                 var incLoaded = function () {
                     if (this.width > 0) {
-                        if (fallbackImgSize === undefined) fallbackImgSize = this.width;
-                        if (fallbackImgSize != this.width)
+                        if (fallbackImgSize === undefined) {
+                            fallbackImgSize = this.width;
+                        }
+                        if (fallbackImgSize != this.width) {
                             console.log(
                                 "Fallback faces have inconsistent widths: " +
                                     fallbackImgSize +
                                     " vs. " +
                                     this.width
                             );
-                    } else faceMissing = true;
+                        }
+                    } else {
+                        faceMissing = true;
+                    }
                     loaded++;
                     if (loaded == 6) {
                         fallbackImgSize = this.width;
@@ -334,7 +358,9 @@ window.libpannellum = (function (window, document, undefined) {
                 console.log("Error: no WebGL support detected!");
                 throw { type: "no webgl" };
             }
-            if (imageType == "cubemap") fillMissingFaces(cubeImgWidth);
+            if (imageType == "cubemap") {
+                fillMissingFaces(cubeImgWidth);
+            }
             if (image.basePath) {
                 image.fullpath = image.basePath + image.path;
             } else {
@@ -382,7 +408,9 @@ window.libpannellum = (function (window, document, undefined) {
             if (params !== undefined) {
                 var horizonPitch = isNaN(params.horizonPitch) ? 0 : Number(params.horizonPitch),
                     horizonRoll = isNaN(params.horizonRoll) ? 0 : Number(params.horizonRoll);
-                if (horizonPitch != 0 || horizonRoll != 0) pose = [horizonPitch, horizonRoll];
+                if (horizonPitch != 0 || horizonRoll != 0) {
+                    pose = [horizonPitch, horizonRoll];
+                }
             }
 
             // Set 2d texture binding
@@ -428,10 +456,15 @@ window.libpannellum = (function (window, document, undefined) {
             gl.linkProgram(program);
 
             // Log errors
-            if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) console.log(gl.getShaderInfoLog(vs));
-            if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) console.log(gl.getShaderInfoLog(fs));
-            if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+            if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
+                console.log(gl.getShaderInfoLog(vs));
+            }
+            if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
+                console.log(gl.getShaderInfoLog(fs));
+            }
+            if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
                 console.log(gl.getProgramInfoLog(program));
+            }
 
             // Use WebGL program
             gl.useProgram(program);
@@ -451,7 +484,9 @@ window.libpannellum = (function (window, document, undefined) {
 
             if (imageType != "multires") {
                 // Provide texture coordinates for rectangle
-                if (!texCoordBuffer) texCoordBuffer = gl.createBuffer();
+                if (!texCoordBuffer) {
+                    texCoordBuffer = gl.createBuffer();
+                }
                 gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
                 gl.bufferData(
                     gl.ARRAY_BUFFER,
@@ -593,9 +628,12 @@ window.libpannellum = (function (window, document, undefined) {
                     image.width <= maxWidth &&
                     haov == 2 * Math.PI &&
                     (image.width & (image.width - 1)) == 0
-                )
-                    gl.texParameteri(glBindType, gl.TEXTURE_WRAP_S, gl.REPEAT); // Only supported for power-of-two images in WebGL 1
-                else gl.texParameteri(glBindType, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                ) {
+                    gl.texParameteri(glBindType, gl.TEXTURE_WRAP_S, gl.REPEAT);
+                } // Only supported for power-of-two images in WebGL 1
+                else {
+                    gl.texParameteri(glBindType, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                }
                 gl.texParameteri(glBindType, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                 gl.texParameteri(glBindType, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                 gl.texParameteri(glBindType, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -605,9 +643,15 @@ window.libpannellum = (function (window, document, undefined) {
                 gl.enableVertexAttribArray(program.vertPosLocation);
 
                 // Create buffers
-                if (!cubeVertBuf) cubeVertBuf = gl.createBuffer();
-                if (!cubeVertTexCoordBuf) cubeVertTexCoordBuf = gl.createBuffer();
-                if (!cubeVertIndBuf) cubeVertIndBuf = gl.createBuffer();
+                if (!cubeVertBuf) {
+                    cubeVertBuf = gl.createBuffer();
+                }
+                if (!cubeVertTexCoordBuf) {
+                    cubeVertTexCoordBuf = gl.createBuffer();
+                }
+                if (!cubeVertIndBuf) {
+                    cubeVertIndBuf = gl.createBuffer();
+                }
 
                 // Bind texture coordinate buffer and pass coordinates to WebGL
                 gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertTexCoordBuf);
@@ -658,12 +702,15 @@ window.libpannellum = (function (window, document, undefined) {
                     gl.linkProgram(previewProgram);
 
                     // Log errors
-                    if (!gl.getShaderParameter(previewVs, gl.COMPILE_STATUS))
+                    if (!gl.getShaderParameter(previewVs, gl.COMPILE_STATUS)) {
                         console.log(gl.getShaderInfoLog(previewVs));
-                    if (!gl.getShaderParameter(previewFs, gl.COMPILE_STATUS))
+                    }
+                    if (!gl.getShaderParameter(previewFs, gl.COMPILE_STATUS)) {
                         console.log(gl.getShaderInfoLog(previewFs));
-                    if (!gl.getProgramParameter(previewProgram, gl.LINK_STATUS))
+                    }
+                    if (!gl.getProgramParameter(previewProgram, gl.LINK_STATUS)) {
                         console.log(gl.getProgramInfoLog(previewProgram));
+                    }
 
                     // Use WebGL program
                     gl.useProgram(previewProgram);
@@ -676,7 +723,9 @@ window.libpannellum = (function (window, document, undefined) {
                     gl.enableVertexAttribArray(previewProgram.texCoordLocation);
 
                     // Provide texture coordinates for rectangle
-                    if (!texCoordBuffer) texCoordBuffer = gl.createBuffer();
+                    if (!texCoordBuffer) {
+                        texCoordBuffer = gl.createBuffer();
+                    }
                     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
                     gl.bufferData(
                         gl.ARRAY_BUFFER,
@@ -796,8 +845,9 @@ window.libpannellum = (function (window, document, undefined) {
                                 ? [side, perSide[i].slice(1)]
                                 : perSide[i].split(">");
                         for (var j = 1; j < perLevel.length; j++) {
-                            if (perSide[i].indexOf(">") >= 0)
+                            if (perSide[i].indexOf(">") >= 0) {
                                 var level = shtB83decode(perLevel[j].at(0), 1)[0];
+                            }
                             var maxTileNum =
                                 Math.ceil(
                                     image.cubeResolution /
@@ -809,10 +859,11 @@ window.libpannellum = (function (window, document, undefined) {
                                 perLevel[j].slice(1).length > 0
                                     ? shtB83decode(perLevel[j].slice(1), numTileDigits)
                                     : [0, 0];
-                            for (var k = 0; k < tiles.length / 2; k++)
+                            for (var k = 0; k < tiles.length / 2; k++) {
                                 missingTiles.push(
                                     [side, level, tiles[k * 2], tiles[k * 2 + 1]].toString()
                                 );
+                            }
                         }
                     }
                     image.missingTileList = missingTiles;
@@ -847,7 +898,9 @@ window.libpannellum = (function (window, document, undefined) {
                 // The spec says this is only supposed to simulate losing the WebGL
                 // context, but in practice it tends to actually free the memory.
                 var extension = gl.getExtension("WEBGL_lose_context");
-                if (extension) extension.loseContext();
+                if (extension) {
+                    extension.loseContext();
+                }
             }
         };
 
@@ -861,7 +914,9 @@ window.libpannellum = (function (window, document, undefined) {
             canvas.width = canvas.clientWidth * pixelRatio;
             canvas.height = canvas.clientHeight * pixelRatio;
             if (gl) {
-                if (gl.getError() == 1286) handleWebGLError1286();
+                if (gl.getError() == 1286) {
+                    handleWebGLError1286();
+                }
                 gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
                 if (imageType != "multires") {
                     gl.uniform1f(program.aspectRatio, canvas.clientWidth / canvas.clientHeight);
@@ -876,7 +931,9 @@ window.libpannellum = (function (window, document, undefined) {
             }
         };
         // Initialize canvas size
-        if (canvas) this.resize();
+        if (canvas) {
+            this.resize();
+        }
 
         /**
          * Set renderer horizon pitch and roll.
@@ -888,8 +945,11 @@ window.libpannellum = (function (window, document, undefined) {
         this.setPose = function (horizonPitch, horizonRoll) {
             horizonPitch = isNaN(horizonPitch) ? 0 : Number(horizonPitch);
             horizonRoll = isNaN(horizonRoll) ? 0 : Number(horizonRoll);
-            if (horizonPitch == 0 && horizonRoll == 0) pose = undefined;
-            else pose = [horizonPitch, horizonRoll];
+            if (horizonPitch == 0 && horizonRoll == 0) {
+                pose = undefined;
+            } else {
+                pose = [horizonPitch, horizonRoll];
+            }
         };
 
         /**
@@ -910,9 +970,15 @@ window.libpannellum = (function (window, document, undefined) {
                 i,
                 s,
                 roll = 0;
-            if (params === undefined) params = {};
-            if (params.roll) roll = params.roll;
-            if (params.dynamic) var dynamic = params.dynamic;
+            if (params === undefined) {
+                params = {};
+            }
+            if (params.roll) {
+                roll = params.roll;
+            }
+            if (params.dynamic) {
+                var dynamic = params.dynamic;
+            }
 
             // Apply pitch and roll transformation if applicable
             if (pose !== undefined) {
@@ -960,7 +1026,9 @@ window.libpannellum = (function (window, document, undefined) {
                         -1
                     )
                 );
-                if (v[2] < 0) roll_adj = 2 * Math.PI - roll_adj;
+                if (v[2] < 0) {
+                    roll_adj = 2 * Math.PI - roll_adj;
+                }
                 roll += roll_adj;
             }
 
@@ -1043,7 +1111,9 @@ window.libpannellum = (function (window, document, undefined) {
                 var faces = Object.keys(transforms);
                 for (i = 0; i < 6; i++) {
                     var face = world.querySelector(".pnlm-" + faces[i] + "face");
-                    if (!face) continue; // ignore missing face to support partial cubemap/fallback image
+                    if (!face) {
+                        continue;
+                    } // ignore missing face to support partial cubemap/fallback image
                     face.style.webkitTransform = transform + transforms[faces[i]];
                     face.style.transform = transform + transforms[faces[i]];
                 }
@@ -1200,7 +1270,9 @@ window.libpannellum = (function (window, document, undefined) {
                 // Process one pending image tile
                 // This is synchronized to rendering to avoid dropping frames due
                 // to texture loading happening at an inopportune time.
-                if (program.textureLoads.length > 0) program.textureLoads.shift()(true);
+                if (program.textureLoads.length > 0) {
+                    program.textureLoads.shift()(true);
+                }
 
                 // Draw tiles
                 multiresDraw(!isPreview);
@@ -1210,9 +1282,11 @@ window.libpannellum = (function (window, document, undefined) {
                 if (window.createImageBitmap && params.returnImage == "ImageBitmap") {
                     return createImageBitmap(canvas);
                 } else {
-                    if (params.returnImage.toString().indexOf("image/") == 0)
+                    if (params.returnImage.toString().indexOf("image/") == 0) {
                         return canvas.toDataURL(params.returnImage);
-                    else return canvas.toDataURL("image/png"); // Old default
+                    } else {
+                        return canvas.toDataURL("image/png");
+                    } // Old default
                 }
             }
         };
@@ -1308,13 +1382,16 @@ window.libpannellum = (function (window, document, undefined) {
             if (!program.drawInProgress) {
                 program.drawInProgress = true;
                 // Clear canvas
-                if (clear) gl.clear(gl.COLOR_BUFFER_BIT);
+                if (clear) {
+                    gl.clear(gl.COLOR_BUFFER_BIT);
+                }
 
                 // Determine tiles that need to be drawn
                 var node_paths = {};
                 for (var i = 0; i < program.currentNodes.length; i++) {
-                    if (node_paths[program.currentNodes[i].parentPath] === undefined)
+                    if (node_paths[program.currentNodes[i].parentPath] === undefined) {
                         node_paths[program.currentNodes[i].parentPath] = 0;
+                    }
                     node_paths[program.currentNodes[i].parentPath] +=
                         program.currentNodes[i].textureLoaded > 1;
                 }
@@ -1393,8 +1470,9 @@ window.libpannellum = (function (window, document, undefined) {
                 image.missingTileList !== undefined &&
                 image.missingTileList.indexOf([node.side, node.level, node.x, node.y].toString()) >=
                     0
-            )
+            ) {
                 return;
+            }
 
             if (checkSquareInView(rotPersp, node.vertices)) {
                 // In order to determine if this tile resolution needs to be loaded
@@ -1450,15 +1528,20 @@ window.libpannellum = (function (window, document, undefined) {
                                     2;
                             // Handle edge tiles
                             if (lastTileSize < image.tileResolution) {
-                                if (node.x == numTiles)
+                                if (node.x == numTiles) {
                                     diffX *= image.tileResolution / lastTileSize;
-                                else if (node.y == numTiles)
+                                } else if (node.y == numTiles) {
                                     diffY *= image.tileResolution / lastTileSize;
+                                }
                             }
                             // Handle small tiles that have fewer than four children
                             if (doubleTileSize <= image.tileResolution) {
-                                if (node.x == numTiles) diffX *= 2;
-                                if (node.y == numTiles) diffY *= 2;
+                                if (node.x == numTiles) {
+                                    diffX *= 2;
+                                }
+                                if (node.y == numTiles) {
+                                    diffY *= 2;
+                                }
                             }
                             maxSide = Math.max(maxSide, Math.sqrt(diffX * diffX + diffY * diffY));
                         }
@@ -1466,7 +1549,9 @@ window.libpannellum = (function (window, document, undefined) {
                     // Don't load tile if the largest node side is smaller than
                     // half the tile resolution, since the parent node is smaller
                     // than the parent tile in this case
-                    if (maxSide <= image.tileResolution / 2) return;
+                    if (maxSide <= image.tileResolution / 2) {
+                        return;
+                    }
                 }
 
                 // Calculate central angle between center of view and center of tile
@@ -1556,7 +1641,9 @@ window.libpannellum = (function (window, document, undefined) {
                             }
                             node.numChildren = 2;
                         }
-                        if (node.x == numTiles && node.y == numTiles) node.numChildren = 1;
+                        if (node.x == numTiles && node.y == numTiles) {
+                            node.numChildren = 1;
+                        }
                     } else {
                         node.numChildren = 4;
                     }
@@ -1969,19 +2056,25 @@ window.libpannellum = (function (window, document, undefined) {
                 if (pendingTextureRequests.length) {
                     var req = pendingTextureRequests.shift();
                     til.loadTexture(req.src, req.texture, req.callback);
-                } else textureImageCache[cacheTop++] = til;
+                } else {
+                    textureImageCache[cacheTop++] = til;
+                }
             }
 
-            for (var i = 0; i < cacheTop; i++) textureImageCache[i] = new TextureImageLoader();
+            for (var i = 0; i < cacheTop; i++) {
+                textureImageCache[i] = new TextureImageLoader();
+            }
 
             return function (node, src, callback, _crossOrigin) {
                 crossOrigin = _crossOrigin;
                 var texture = gl.createTexture();
-                if (cacheTop) textureImageCache[--cacheTop].loadTexture(src, texture, callback);
-                else
+                if (cacheTop) {
+                    textureImageCache[--cacheTop].loadTexture(src, texture, callback);
+                } else {
                     pendingTextureRequests.push(
                         new PendingTextureRequest(node, src, texture, callback)
                     );
+                }
                 return texture;
             };
         })();
@@ -2127,11 +2220,21 @@ window.libpannellum = (function (window, document, undefined) {
             var winZ = vpp[2] * vpp[3];
             var ret = [0, 0, 0];
 
-            if (winX < -1) ret[0] = -1;
-            if (winX > 1) ret[0] = 1;
-            if (winY < -1) ret[1] = -1;
-            if (winY > 1) ret[1] = 1;
-            if (winZ < -1 || winZ > 1) ret[2] = 1;
+            if (winX < -1) {
+                ret[0] = -1;
+            }
+            if (winX > 1) {
+                ret[0] = 1;
+            }
+            if (winY < -1) {
+                ret[1] = -1;
+            }
+            if (winY > 1) {
+                ret[1] = 1;
+            }
+            if (winZ < -1 || winZ > 1) {
+                ret[2] = 1;
+            }
             return ret;
         }
 
@@ -2148,9 +2251,13 @@ window.libpannellum = (function (window, document, undefined) {
             var check3 = checkInView(m, v.slice(6, 9));
             var check4 = checkInView(m, v.slice(9, 12));
             var testX = check1[0] + check2[0] + check3[0] + check4[0];
-            if (testX == -4 || testX == 4) return false;
+            if (testX == -4 || testX == 4) {
+                return false;
+            }
             var testY = check1[1] + check2[1] + check3[1] + check4[1];
-            if (testY == -4 || testY == 4) return false;
+            if (testY == -4 || testY == 4) {
+                return false;
+            }
             var testZ = check1[2] + check2[2] + check3[2] + check4[2];
             return testZ != 4;
         }
@@ -2258,14 +2365,17 @@ window.libpannellum = (function (window, document, undefined) {
             // Calculate value at pixel
             var expand = 0,
                 cosidx = 0;
-            for (var i = 1; i <= lmax + 1; i++) cosidx += i;
+            for (var i = 1; i <= lmax + 1; i++) {
+                cosidx += i;
+            }
             for (var l = lmax; l >= 0; l--) {
                 var idx = Math.floor(((l + 1) * l) / 2);
                 // First coefficient is 1 when using 4pi normalization
                 expand += idx != 0 ? flm[idx] * Ylm[idx - 1] : flm[idx];
-                for (var m = 1; m <= l; m++)
+                for (var m = 1; m <= l; m++) {
                     expand +=
                         (flm[++idx] * cosm[m] + flm[idx + cosidx - l - 1] * sinm[m]) * Ylm[idx - 1];
+                }
             }
 
             return Math.round(expand);
@@ -2283,11 +2393,12 @@ window.libpannellum = (function (window, document, undefined) {
                 var ylmLen = shtYlmStr.length / 32;
                 for (var i = 0; i < 32; i++) {
                     shtYlm.push([]);
-                    for (var j = 0; j < ylmLen; j++)
+                    for (var j = 0; j < ylmLen; j++) {
                         shtYlm[i].push(
                             shtDecodeFloat(shtB83decode(shtYlmStr[i * ylmLen + j], 1), 41) *
                                 shtMaxYlm
                         );
+                    }
                 }
             }
 

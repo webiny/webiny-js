@@ -6,7 +6,7 @@ import glob from "fast-glob";
 
 const globToRegex = (pattern: string) => {
     // Escape regex special chars except *
-    const escaped = pattern.replace(/[-\/\\^$+?.()|[\]{}]/g, "\\$&");
+    const escaped = pattern.replace(/[-/\\^$+?.()|[\]{}]/g, "\\$&");
     // Replace * with .* in regex pattern
     const regexStr = "^" + escaped.replace(/\*/g, ".*") + "$";
     return new RegExp(regexStr);

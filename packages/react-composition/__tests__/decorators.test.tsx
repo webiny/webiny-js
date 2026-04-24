@@ -9,7 +9,6 @@ interface BaseComponentProps {
 
 describe("Built-in decorator factory", () => {
     it("with external augmentation", async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const BaseComponent = makeDecoratable("BaseComponent", (_: BaseComponentProps) => {
             return <span>BaseComponent</span>;
         });
@@ -37,7 +36,6 @@ describe("Built-in decorator factory", () => {
 
     it("with built-in augmentation", async () => {
         const WithDefaultDecorator = withDecoratorFactory<{ name: string }>()(
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             makeDecoratable("BaseComponent", (_: BaseComponentProps) => {
                 return <span>BaseComponent</span>;
             })

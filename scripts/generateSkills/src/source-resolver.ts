@@ -25,7 +25,9 @@ export function followReExport(
     exportName: string
 ): SourceFile | undefined {
     const barrelFile = project.getSourceFile(barrelFilePath);
-    if (!barrelFile) return undefined;
+    if (!barrelFile) {
+        return undefined;
+    }
 
     for (const exportDecl of barrelFile.getExportDeclarations()) {
         const namedExports = exportDecl.getNamedExports();
@@ -63,12 +65,16 @@ export function getPackagePath(sourceFile: SourceFile, repoRoot: string): string
 export function getJsDoc(sourceFile: SourceFile, exportName: string): string {
     // Try to find JSDoc directly in this file
     const doc = extractJsDoc(sourceFile, exportName);
-    if (doc) return doc;
+    if (doc) {
+        return doc;
+    }
 
     // If not found, the file may re-export from another file — follow it
     for (const exportDecl of sourceFile.getExportDeclarations()) {
         const targetFile = exportDecl.getModuleSpecifierSourceFile();
-        if (!targetFile) continue;
+        if (!targetFile) {
+            continue;
+        }
 
         // Named re-export: `export { Foo } from "./bar.js"`
         const match = exportDecl
@@ -76,13 +82,17 @@ export function getJsDoc(sourceFile: SourceFile, exportName: string): string {
             .find(ne => ne.getName() === exportName || ne.getAliasNode()?.getText() === exportName);
         if (match) {
             const doc = getJsDoc(targetFile, exportName);
-            if (doc) return doc;
+            if (doc) {
+                return doc;
+            }
         }
 
         // Star re-export: `export * from "./bar.js"`
         if (exportDecl.isNamespaceExport() || exportDecl.getNamedExports().length === 0) {
             const doc = getJsDoc(targetFile, exportName);
-            if (doc) return doc;
+            if (doc) {
+                return doc;
+            }
         }
     }
 
@@ -95,13 +105,19 @@ export function getJsDoc(sourceFile: SourceFile, exportName: string): string {
  */
 export function isTypeExport(sourceFile: SourceFile, exportName: string): boolean {
     // Direct declaration in this file
-    if (sourceFile.getInterface(exportName)) return true;
-    if (sourceFile.getTypeAlias(exportName)) return true;
+    if (sourceFile.getInterface(exportName)) {
+        return true;
+    }
+    if (sourceFile.getTypeAlias(exportName)) {
+        return true;
+    }
 
     // Follow re-exports
     for (const exportDecl of sourceFile.getExportDeclarations()) {
         const targetFile = exportDecl.getModuleSpecifierSourceFile();
-        if (!targetFile) continue;
+        if (!targetFile) {
+            continue;
+        }
 
         const match = exportDecl
             .getNamedExports()
@@ -111,7 +127,9 @@ export function isTypeExport(sourceFile: SourceFile, exportName: string): boolea
         }
 
         if (exportDecl.isNamespaceExport() || exportDecl.getNamedExports().length === 0) {
-            if (isTypeExport(targetFile, exportName)) return true;
+            if (isTypeExport(targetFile, exportName)) {
+                return true;
+            }
         }
     }
 
