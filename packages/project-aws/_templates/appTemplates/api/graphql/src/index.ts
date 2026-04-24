@@ -1,4 +1,4 @@
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
+import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createApiCore } from "@webiny/api-core";
@@ -21,7 +21,7 @@ import { createWebsockets } from "@webiny/api-websockets";
 import { createRecordLocking } from "@webiny/api-record-locking";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
 import { createScheduler } from "@webiny/api-scheduler";
-import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler";
+import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
 import { createWorkflows } from "@webiny/api-workflows";
 import { createHeadlessCmsWorkflows } from "@webiny/api-headless-cms-workflows";
