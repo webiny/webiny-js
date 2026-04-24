@@ -1,3 +1,4 @@
+import { generateAlphaNumericId } from "@webiny/utils";
 import { AiPowerUpsSettingsGroup } from "./AiPowerUpsSettings/settingsGroup.js";
 import {
     ListModelsUseCase,
@@ -25,6 +26,10 @@ class ProviderSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                     itemTitle: (data, index) => String(data.name || `Preset #${index + 1}`)
                 })
                 .fields(f => ({
+                    id: f
+                        .text()
+                        .hidden()
+                        .defaultValue(() => generateAlphaNumericId(10)),
                     name: f.text().label("Name").required("Name is required"),
                     model: f
                         .select()

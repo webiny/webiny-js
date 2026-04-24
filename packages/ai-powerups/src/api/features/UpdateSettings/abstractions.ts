@@ -1,15 +1,9 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
-import type { AiProvider, AiPowerUpsSettings } from "~/api/types.js";
-
-export interface UpdateSettingsInput {
-    providers: {
-        presets: Array<Pick<AiProvider, "name" | "model" | "apiKey"> & { description?: string }>;
-    };
-}
+import type { IAiPowerUpsSettings } from "~/api/types.js";
 
 export interface IUpdateSettingsRepository {
-    execute(input: UpdateSettingsInput): Promise<Result<AiPowerUpsSettings, Error>>;
+    execute(input: IAiPowerUpsSettings): Promise<Result<IAiPowerUpsSettings, Error>>;
 }
 
 export const UpdateSettingsRepository = createAbstraction<IUpdateSettingsRepository>(
@@ -18,11 +12,11 @@ export const UpdateSettingsRepository = createAbstraction<IUpdateSettingsReposit
 
 export namespace UpdateSettingsRepository {
     export type Interface = IUpdateSettingsRepository;
-    export type Return = Promise<Result<AiPowerUpsSettings, Error>>;
+    export type Return = Promise<Result<IAiPowerUpsSettings, Error>>;
 }
 
 export interface IUpdateSettingsUseCase {
-    execute(input: UpdateSettingsInput): Promise<Result<AiPowerUpsSettings, Error>>;
+    execute(input: IAiPowerUpsSettings): Promise<Result<IAiPowerUpsSettings, Error>>;
 }
 
 export const UpdateSettingsUseCase = createAbstraction<IUpdateSettingsUseCase>(
@@ -31,17 +25,17 @@ export const UpdateSettingsUseCase = createAbstraction<IUpdateSettingsUseCase>(
 
 export namespace UpdateSettingsUseCase {
     export type Interface = IUpdateSettingsUseCase;
-    export type Return = Promise<Result<AiPowerUpsSettings, Error>>;
-    export type Params = UpdateSettingsInput;
+    export type Return = Promise<Result<IAiPowerUpsSettings, Error>>;
+    export type Params = IAiPowerUpsSettings;
 }
 
 // Domain events
 export interface AiPowerUpsSettingsBeforeUpdatePayload {
-    input: UpdateSettingsInput;
+    input: IAiPowerUpsSettings;
 }
 
 export interface AiPowerUpsSettingsAfterUpdatePayload {
-    settings: AiPowerUpsSettings;
+    settings: IAiPowerUpsSettings;
 }
 
 export const AiPowerUpsSettingsBeforeUpdateEventHandler = createAbstraction<

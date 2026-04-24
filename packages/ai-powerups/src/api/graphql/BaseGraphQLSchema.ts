@@ -3,6 +3,7 @@ import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { UpdateSettingsUseCase } from "~/api/features/UpdateSettings/index.js";
+import { AiPowerUpsSettingsGraphQLMapper } from "./abstractions.js";
 import {
     WB_GENERATE_PAGE_CONTENT_TASK_ID,
     type IWbGeneratePageContentTaskInput
@@ -59,15 +60,18 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
         builder.addResolver({
             path: "AiPowerUpsQuery.getSettings",
-            dependencies: [GetSettingsUseCase],
-            resolver: (useCase: GetSettingsUseCase.Interface) => {
+            dependencies: [GetSettingsUseCase, AiPowerUpsSettingsGraphQLMapper],
+            resolver: (
+                useCase: GetSettingsUseCase.Interface,
+                mapper: AiPowerUpsSettingsGraphQLMapper.Interface
+            ) => {
                 return async () => {
                     const result = await useCase.execute();
-                    if (result.isOk()) {
-                        return result.value;
+                    if (result.isFail()) {
+                        throw result.error;
                     }
 
-                    throw result.error;
+                    return mapper.toApi(result.value);
                 };
             }
         });
@@ -95,17 +99,32 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
             }
         });
 
-        builder.addResolver<{ input: UpdateSettingsUseCase.Params }>({
+        builder.addResolver<{ input: Record<string, unknown> }>({
             path: "AiPowerUpsMutation.updateSettings",
-            dependencies: [UpdateSettingsUseCase],
-            resolver: (useCase: UpdateSettingsUseCase.Interface) => {
+            dependencies: [
+                GetSettingsUseCase,
+                UpdateSettingsUseCase,
+                AiPowerUpsSettingsGraphQLMapper
+            ],
+            resolver: (
+                getSettings: GetSettingsUseCase.Interface,
+                updateSettings: UpdateSettingsUseCase.Interface,
+                mapper: AiPowerUpsSettingsGraphQLMapper.Interface
+            ) => {
                 return async ({ args }) => {
-                    const result = await useCase.execute(args.input);
+                    const currentResult = await getSettings.execute();
+                    if (currentResult.isFail()) {
+                        throw currentResult.error;
+                    }
+
+                    const assembled = await mapper.fromApi(args.input, currentResult.value);
+                    const result = await updateSettings.execute(assembled);
 
                     if (result.isFail()) {
                         throw result.error;
                     }
-                    return result.value;
+
+                    return mapper.toApi(result.value);
                 };
             }
         });

@@ -13966,6 +13966,7 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     history: "npm:^5.3.0"
     is-hotkey: "npm:^0.2.0"
+    lexical: "npm:^0.43.0"
     lodash: "npm:^4.18.1"
     markdown-to-jsx: "npm:^9.7.16"
     minimatch: "npm:^10.2.5"

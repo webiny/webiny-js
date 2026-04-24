@@ -1,43 +1,42 @@
 import { Result } from "@webiny/feature/api";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import { Encryption } from "@webiny/api-core/features/encryption/index.js";
+import { AiPowerUpsSettingsGroupHandler } from "~/api/features/shared/index.js";
 import { GetSettingsRepository } from "./abstractions.js";
-import type { AiProvider, AiPowerUpsSettings } from "~/api/types.js";
+import type { IAiPowerUpsSettings } from "~/api/types.js";
 import { AI_POWER_UPS_SETTINGS } from "~/api/constants.js";
 
 class GetSettingsRepositoryImpl implements GetSettingsRepository.Interface {
     constructor(
         private keyValueStore: KeyValueStore.Interface,
-        private encryption: Encryption.Interface
+        private handlers: AiPowerUpsSettingsGroupHandler.Interface[]
     ) {}
 
-    async get(): Promise<Result<AiPowerUpsSettings>> {
-        const result = await this.keyValueStore.get<AiPowerUpsSettings>(AI_POWER_UPS_SETTINGS);
+    async get(): Promise<Result<IAiPowerUpsSettings>> {
+        const storeResult =
+            await this.keyValueStore.get<Record<string, unknown>>(AI_POWER_UPS_SETTINGS);
 
-        if (result.isFail() || !result.value) {
-            return Result.ok({
-                providers: { presets: [] }
-            });
+        const raw: Record<string, unknown> =
+            storeResult.isOk() && storeResult.value ? storeResult.value : {};
+
+        const result: Record<string, unknown> = {};
+
+        // Run each handler's mapFromStorage for its section.
+        for (const handler of this.handlers) {
+            result[handler.name] = handler.mapFromStorage(raw[handler.name]);
         }
 
-        const settings = result.value;
+        // Preserve unknown sections (sections without a handler).
+        for (const key of Object.keys(raw)) {
+            if (!(key in result)) {
+                result[key] = raw[key];
+            }
+        }
 
-        const providerPresets = await Promise.all(
-            (settings.providers?.presets ?? []).map(async (provider: AiProvider) => {
-                return {
-                    ...provider,
-                    apiKey: await this.encryption.decrypt(provider.apiKey)
-                };
-            })
-        );
-
-        return Result.ok({
-            providers: { presets: providerPresets }
-        });
+        return Result.ok(result as unknown as IAiPowerUpsSettings);
     }
 }
 
 export const GetSettingsRepositoryImplementation = GetSettingsRepository.createImplementation({
     implementation: GetSettingsRepositoryImpl,
-    dependencies: [KeyValueStore, Encryption]
+    dependencies: [KeyValueStore, [AiPowerUpsSettingsGroupHandler, { multiple: true }]]
 });

@@ -10,7 +10,7 @@ import {
     GetScheduleCommand,
     type SchedulerClient,
     UpdateScheduleCommand
-} from "@webiny/aws-sdk/client-scheduler";
+} from "@webiny/aws-sdk/client-scheduler/index.js";
 import { SCHEDULED_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
 import type { IScheduledActionEventPayload } from "~/createEventHandler.js";
 
