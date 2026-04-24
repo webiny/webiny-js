@@ -60,11 +60,11 @@ export const listUsersHandler = ApiGatewayEventHandler.createImplementation({
 ### 2. Create Your Lambda Handler
 
 ```typescript
-import { createFunction } from "@cloudi/aws";
+import { createEventHandler } from "@cloudi/aws";
 import { listUsersHandler } from "./handlers/ListUsersHandler";
 import { userService } from "./services/UserService";
 
-export const handler = createFunction(async container => {
+export const handler = createEventHandler(async container => {
   container.register(userService).inSingletonScope();
   container.register(listUsersHandler).inSingletonScope();
 });
@@ -123,7 +123,7 @@ Each AWS event type has a dedicated namespace with `.Interface` for type-safe im
 | `EventBridgeEventHandler` | `EventBridgeEvent`    | `EventBridgeResult`     |
 | `RawEventHandler`         | `any`                 | `any`                   |
 
-All namespaces register under the shared `CloudHandler` abstraction so `createFunction` can resolve the full chain from the container.
+All namespaces register under the shared `CloudHandler` abstraction so `createEventHandler` can resolve the full chain from the container.
 
 ### Dependency Injection
 
@@ -178,7 +178,7 @@ const logger = Logger.createImplementation({
 Handle multiple event types in one Lambda. Each handler checks the event and either claims it or calls `next()`:
 
 ```typescript
-export const handler = createFunction(async container => {
+export const handler = createEventHandler(async container => {
   container.register(logger).inSingletonScope();
   container.register(userService).inSingletonScope();
 
@@ -206,7 +206,7 @@ const timingHandler = ApiGatewayEventHandler.createImplementation({
   dependencies: []
 });
 
-export const handler = createFunction(async container => {
+export const handler = createEventHandler(async container => {
   container.register(timingHandler).inSingletonScope(); // runs first
   container.register(listUsersHandler).inSingletonScope(); // claims the event
 });
@@ -218,7 +218,7 @@ Mock dependencies for easy unit testing:
 
 ```typescript
 import { describe, it, expect } from "vitest";
-import { createFunction } from "@cloudi/aws";
+import { createEventHandler } from "@cloudi/aws";
 import { ApiGatewayEventHandler } from "@cloudi/aws";
 
 describe("ListUsersHandler", () => {
@@ -232,7 +232,7 @@ describe("ListUsersHandler", () => {
       dependencies: []
     });
 
-    const handler = createFunction(container => {
+    const handler = createEventHandler(container => {
       container.register(MockUserService);
       container.register(listUsersHandler);
     });
@@ -282,7 +282,7 @@ const logger = Logger.createImplementation({
 
 ### How It Works
 
-1. **Cold start**: `createFunction` runs `setup(container)` once — registers all implementations
+1. **Cold start**: `createEventHandler` runs `setup(container)` once — registers all implementations
 2. **Per invocation**:
    - Current `event` and `context` are registered as instances
    - All `CloudHandler` implementations are resolved from the container
@@ -293,7 +293,7 @@ const logger = Logger.createImplementation({
 ```
 AWS Lambda Invoke
        ↓
-createFunction (warm: skip setup)
+createEventHandler (warm: skip setup)
        ↓
 container.resolveAll(CloudHandler)
        ↓
@@ -315,21 +315,21 @@ src/
 │   ├── CloudHandler.ts     # Base abstraction + ICloudHandler interface
 │   ├── AwsLambdaContext.ts
 │   └── AwsLambdaEvent.ts
-├── createFunction.ts       # Lambda handler factory
+├── createEventHandler.ts       # Lambda handler factory
 ├── types.ts                # NextFunction, FunctionSetup, etc.
 └── index.ts
 ```
 
 ## API Reference
 
-### `createFunction(setup)`
+### `createEventHandler(setup)`
 
 Creates a Lambda handler. `setup` runs once on cold start.
 
 ```typescript
 type FunctionSetup = (container: Container) => Promise<void> | void;
 
-export const handler = createFunction(async container => {
+export const handler = createEventHandler(async container => {
   container.register(myHandler).inSingletonScope();
 });
 ```
@@ -372,7 +372,7 @@ The base `Abstraction<ICloudHandler>` that all event handler namespaces register
 ```typescript
 import { CloudHandler } from "@cloudi/aws";
 
-// Resolve all handlers directly (createFunction does this internally)
+// Resolve all handlers directly (createEventHandler does this internally)
 const handlers = container.resolveAll(CloudHandler);
 ```
 

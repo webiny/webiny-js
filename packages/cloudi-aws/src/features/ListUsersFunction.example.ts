@@ -61,7 +61,7 @@ export const listUsersHandler = ApiGatewayEventHandler.createImplementation({
 /**
  * Usage:
  *
- * export const handler = createFunction(async (container) => {
+ * export const handler = createEventHandler(async (container) => {
  *   container.register(consoleLogger).inSingletonScope();
  *   container.register(dynamoDbUserService).inSingletonScope();
  *   container.register(listUsersHandler).inSingletonScope();

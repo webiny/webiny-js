@@ -58,7 +58,7 @@ export const processOrderHandler = SnsEventHandler.createImplementation({
 /**
  * Usage:
  *
- * export const handler = createFunction(async (container) => {
+ * export const handler = createEventHandler(async (container) => {
  *   container.register(consoleLogger).inSingletonScope();
  *   container.register(dynamoDbOrderService).inSingletonScope();
  *   container.register(processOrderHandler).inSingletonScope();

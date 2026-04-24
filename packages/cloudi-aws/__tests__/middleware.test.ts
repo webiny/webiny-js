@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createFunction } from "~/createFunction.js";
+import { createEventHandler } from "~/createEventHandler.js";
 import type { NextFunction } from "~/types.js";
 import {
     ApiGatewayEventHandler,
@@ -44,7 +44,7 @@ describe("Middleware Pattern", () => {
             dependencies: []
         });
 
-        const handler = createFunction(container => {
+        const handler = createEventHandler(container => {
             container.register(Handler1);
             container.register(Handler2);
             container.register(Handler3);
@@ -73,7 +73,7 @@ describe("Middleware Pattern", () => {
             dependencies: []
         });
 
-        const handler = createFunction(container => {
+        const handler = createEventHandler(container => {
             container.register(ApiHandler);
         });
 
@@ -119,7 +119,7 @@ describe("Middleware Pattern", () => {
             dependencies: []
         });
 
-        const handler = createFunction(container => {
+        const handler = createEventHandler(container => {
             container.register(ApiHandler);
             container.register(SnsHandler);
         });
@@ -142,7 +142,7 @@ describe("Middleware Pattern", () => {
             dependencies: []
         });
 
-        const handler = createFunction(container => {
+        const handler = createEventHandler(container => {
             container.register(ApiHandler);
         });
 

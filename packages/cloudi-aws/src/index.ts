@@ -4,7 +4,7 @@
  * Write cloud (AWS Lambda) functions using Dependency Injection.
  */
 
-export { createFunction } from "./createFunction.js";
+export { createEventHandler } from "./createEventHandler.js";
 export type { FunctionSetup, FunctionHandler, NextFunction } from "./types.js";
 
 export * from "./abstractions/index.js";

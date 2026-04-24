@@ -3,7 +3,7 @@ import type { Context } from "@webiny/aws-sdk/types/index.js";
 import type { FunctionSetup } from "./types.js";
 import { CloudHandler, AwsLambdaContext, AwsLambdaEvent } from "./abstractions/index.js";
 
-export function createFunction(setup: FunctionSetup) {
+export function createEventHandler(setup: FunctionSetup) {
     let container: Container | null = null;
 
     return async (event: any, context?: Context): Promise<any> => {
