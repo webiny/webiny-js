@@ -9,7 +9,7 @@ export const Extensions = () => {
             <Infra.OpenSearch enabled={true} />
             {/* Encryption MUST always be configured for production environments. */}
             <Infra.Env.IsProd>
-                <Infra.Encryption passphrase={process.env.WEBINY_ENCRYPTION_PASSPHRASE} />
+                <Infra.Encryption passphrase={process.env.WEBINY_ENCRYPTION_PASSPHRASE || ""} />
             </Infra.Env.IsProd>
             <Cognito />
         </>
