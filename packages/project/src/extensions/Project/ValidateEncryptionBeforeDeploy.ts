@@ -13,7 +13,7 @@ class ValidateEncryptionBeforeDeployImpl implements BeforeDeploy.Interface {
         private getProjectConfig: GetProjectConfig.Interface
     ) {}
 
-    async execute(_params: BeforeDeploy.Params) {
+    async execute() {
         const { env } = this.projectSdkParamsService.get();
         const prodEnvs = await this.getProductionEnvironments.execute();
 
