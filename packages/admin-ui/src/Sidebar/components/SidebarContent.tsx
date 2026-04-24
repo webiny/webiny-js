@@ -22,7 +22,6 @@ const SidebarContent = ({ className, children, ...props }: React.ComponentProps<
         );
     }
 
-    const bb = 123;
     return (
         <div
             {...props}
