@@ -2,7 +2,10 @@
   "name": "@webiny/api-headless-cms-ddb",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "keywords": [
     "@webiny/api-headless-cms",
     "storage-operations",
