@@ -82,14 +82,18 @@ export const EnvIsNot: React.FC<EnvIsProps> = ({ env, variant, region, children 
 export const EnvIsProd: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const env = useEnv();
     const prodEnvs = useProductionEnvironments();
-    if (!prodEnvs.includes(env)) return null;
+    if (!prodEnvs.includes(env)) {
+        return null;
+    }
     return <>{children}</>;
 };
 
 export const EnvIsNotProd: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const env = useEnv();
     const prodEnvs = useProductionEnvironments();
-    if (prodEnvs.includes(env)) return null;
+    if (prodEnvs.includes(env)) {
+        return null;
+    }
     return <>{children}</>;
 };
 
