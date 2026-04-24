@@ -63,7 +63,7 @@
   "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
   "exports": {
     "./configs/tsconfig.json": "./configs/tsconfig.json",
-    "./global.d.ts": "./global.d.ts",
+    "./global.ts": "./global.ts",
     "./admin/icons/*": "./admin/icons/*",
     "./admin/ui": "./admin/ui.js",
     "./api/aco/flp": "./api/aco/flp.js",

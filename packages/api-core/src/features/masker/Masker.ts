@@ -1,14 +1,19 @@
 import { Masker } from "./abstractions.js";
 
 class MaskerImpl implements Masker.Interface {
-    mask(value: string): string {
-        if (value.length <= 8) {
-            return "\u2022".repeat(value.length);
+    mask(value: string, pattern?: number[]): string {
+        if (!pattern) {
+            return "●".repeat(value.length);
         }
 
-        const prefix = value.slice(0, 8);
-        const suffix = value.slice(-4);
-        return `${prefix}${"\u2022".repeat(12)}${suffix}`;
+        const [start = 0, end = 0] = pattern;
+        if (start + end >= value.length) {
+            return "●".repeat(12);
+        }
+
+        const prefix = value.slice(0, start);
+        const suffix = end > 0 ? value.slice(-end) : "";
+        return `${prefix}${"●".repeat(12)}${suffix}`;
     }
 }
 

@@ -1,7 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 
 export interface IMasker {
-    mask(value: string): string;
+    /**
+     * @param value Value to mask
+     * @param mask Masking pattern. The first number represents visible characters from the start, second - from the end.
+     */
+    mask(value: string, mask?: number[]): string;
 }
 
 export const Masker = createAbstraction<IMasker>("Masker");

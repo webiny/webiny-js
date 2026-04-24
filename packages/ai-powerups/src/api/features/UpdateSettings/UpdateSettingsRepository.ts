@@ -32,7 +32,8 @@ class UpdateSettingsRepositoryImpl implements UpdateSettingsRepository.Interface
             const parseResult = await handler.inputSchema.safeParseAsync(newSettings[handler.name]);
             if (!parseResult.success) {
                 for (const issue of parseResult.error.issues) {
-                    errors.push(`${handler.name}: ${issue.message}`);
+                    const fieldPath = [handler.name, ...issue.path.map(String)].join(".");
+                    errors.push(`${fieldPath}: ${issue.message}`);
                 }
             }
         }

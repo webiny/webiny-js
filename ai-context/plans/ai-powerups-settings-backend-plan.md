@@ -58,12 +58,12 @@ Add a reusable secret-masking DI abstraction to `api-core`.
 
 ### Files
 
-| File | Responsibility |
-|---|---|
-| `abstractions.ts` | `IMasker` interface: `mask(value: string): string`. `Masker` DI abstraction via `createAbstraction("Masker")`. |
-| `Masker.ts` | Default implementation. Short values (≤8 chars): all dots. Longer: preserve first 8 chars + last 4 chars, 12 dots in between. |
-| `feature.ts` | `MaskerFeature` — registers the implementation. |
-| `index.ts` | Re-exports. |
+| File              | Responsibility                                                                                                                |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `abstractions.ts` | `IMasker` interface: `mask(value: string): string`. `Masker` DI abstraction via `createAbstraction("Masker")`.                |
+| `Masker.ts`       | Default implementation. Short values (≤8 chars): all dots. Longer: preserve first 8 chars + last 4 chars, 12 dots in between. |
+| `feature.ts`      | `MaskerFeature` — registers the implementation.                                                                               |
+| `index.ts`        | Re-exports.                                                                                                                   |
 
 ### Masking logic
 
@@ -100,7 +100,7 @@ Replace the hardcoded `AiPowerUpsSettings` interface with an empty interface tha
 
 ```ts
 export interface IAiPowerUpsSettings {
-    // Plugins augment via declaration merging.
+  // Plugins augment via declaration merging.
 }
 ```
 
@@ -114,10 +114,10 @@ Remove the old `AiProvider` and `AiPowerUpsSettings` types.
 
 ```ts
 interface IAiPowerUpsSettingsGroupHandler {
-    readonly name: string;
-    readonly inputSchema: ZodType<unknown>;
-    mapFromStorage(persisted: unknown): unknown;
-    mapToStorage(internal: unknown, existing: unknown | null): Promise<unknown>;
+  readonly name: string;
+  readonly inputSchema: ZodType<unknown>;
+  mapFromStorage(persisted: unknown): unknown;
+  mapToStorage(internal: unknown, existing: unknown | null): Promise<unknown>;
 }
 ```
 
@@ -127,9 +127,9 @@ DI abstraction via `createAbstraction("AiPowerUpsSettingsGroupHandler")`.
 
 ```ts
 interface IAiPowerUpsSettingsGroupGraphQLMapper {
-    readonly name: string;
-    toApi(internal: unknown): unknown | Promise<unknown>;
-    fromApi(api: unknown, existing: unknown | null): unknown | Promise<unknown>;
+  readonly name: string;
+  toApi(internal: unknown): unknown | Promise<unknown>;
+  fromApi(api: unknown, existing: unknown | null): unknown | Promise<unknown>;
 }
 ```
 
@@ -211,21 +211,21 @@ Implement the first (and currently only) settings group plugin.
 
 ```ts
 declare module "@webiny/ai-powerups/api" {
-    interface IAiPowerUpsSettings {
-        providers: {
-            presets: ProviderPreset[];
-        };
-    }
+  interface IAiPowerUpsSettings {
+    providers: {
+      presets: ProviderPreset[];
+    };
+  }
 }
 
 interface ProviderPreset {
-    id: string;
-    name: string;
-    description?: string;
-    model: string;
-    apiKey?: string;           // write-only input slot
-    apiKeyMasked: string;      // read-only, populated by mapFromStorage
-    apiKeyEncrypted: string;   // read-only, for consumers who decrypt at point of use
+  id: string;
+  name: string;
+  description?: string;
+  model: string;
+  apiKey?: string; // write-only input slot
+  apiKeyMasked: string; // read-only, populated by mapFromStorage
+  apiKeyEncrypted: string; // read-only, for consumers who decrypt at point of use
 }
 ```
 
@@ -239,14 +239,16 @@ interface ProviderPreset {
 
 ```ts
 z.object({
-    presets: z.array(z.object({
-        id: z.string().min(1),
-        name: z.string().min(1),
-        description: z.string().optional(),
-        model: z.string().min(1),
-        apiKey: z.string().optional()
-    }))
-})
+  presets: z.array(
+    z.object({
+      id: z.string().min(1),
+      name: z.string().min(1),
+      description: z.string().optional(),
+      model: z.string().min(1),
+      apiKey: z.string().optional()
+    })
+  )
+});
 ```
 
 Note: `apiKey` is optional on the internal write shape — it may be `undefined` (carry forward) or the masked string (unchanged).
@@ -276,12 +278,12 @@ Both `apiKeyEncrypted` and `apiKeyMasked` are persisted. `mapFromStorage` just m
 
 For each preset in `internal.presets`, match against `existing.presets` by `id`:
 
-| Incoming `apiKey` | Action |
-|---|---|
-| `undefined` or absent | Carry forward `apiKeyEncrypted` + `apiKeyMasked` from existing match |
-| Equals `apiKeyMasked` of existing match | Unchanged — carry forward `apiKeyEncrypted` + `apiKeyMasked` |
-| Anything else | New plaintext — `encrypt(apiKey)` → `apiKeyEncrypted`, `mask(apiKey)` → `apiKeyMasked` |
-| No existing match (new preset) | Must have `apiKey` — encrypt + mask |
+| Incoming `apiKey`                       | Action                                                                                 |
+| --------------------------------------- | -------------------------------------------------------------------------------------- |
+| `undefined` or absent                   | Carry forward `apiKeyEncrypted` + `apiKeyMasked` from existing match                   |
+| Equals `apiKeyMasked` of existing match | Unchanged — carry forward `apiKeyEncrypted` + `apiKeyMasked`                           |
+| Anything else                           | New plaintext — `encrypt(apiKey)` → `apiKeyEncrypted`, `mask(apiKey)` → `apiKeyMasked` |
+| No existing match (new preset)          | Must have `apiKey` — encrypt + mask                                                    |
 
 Returns array of persisted-shape objects (without the `apiKey` input slot).
 
@@ -293,13 +295,13 @@ Returns array of persisted-shape objects (without the `apiKey` input slot).
 
 ```ts
 {
-    presets: internal.presets.map(p => ({
-        id: p.id,
-        name: p.name,
-        description: p.description,
-        model: p.model,
-        apiKey: p.apiKeyMasked ?? null
-    }))
+  presets: internal.presets.map(p => ({
+    id: p.id,
+    name: p.name,
+    description: p.description,
+    model: p.model,
+    apiKey: p.apiKeyMasked ?? null
+  }));
 }
 ```
 
@@ -309,13 +311,13 @@ Strips `apiKeyEncrypted`. Exposes masked key as `apiKey`.
 
 ```ts
 {
-    presets: api.presets.map(p => ({
-        id: p.id,
-        name: p.name,
-        description: p.description,
-        model: p.model,
-        apiKey: p.apiKey
-    }))
+  presets: api.presets.map(p => ({
+    id: p.id,
+    name: p.name,
+    description: p.description,
+    model: p.model,
+    apiKey: p.apiKey
+  }));
 }
 ```
 
@@ -418,13 +420,13 @@ No dead code. All consumers use the new type system. The old monolithic settings
 
 ## Phase Summary
 
-| Phase | What | Where | Depends on |
-|---|---|---|---|
-| 1 | Masker DI abstraction | `api-core/features/masker/` | — |
-| 2 | Core abstractions + updated types | `ai-powerups/api/` | — |
-| 3 | Refactor GetSettings + UpdateSettings repositories | `ai-powerups/api/features/` | Phase 2 |
-| 4 | Providers plugin (handler + mapper) | `ai-powerups/api/features/providers/` | Phases 1, 2 |
-| 5 | Refactor GraphQL resolver | `ai-powerups/api/graphql/` | Phases 2, 3 |
-| 6 | Cleanup + consumer updates | `ai-powerups/api/` | Phases 3, 4, 5 |
+| Phase | What                                               | Where                                 | Depends on     |
+| ----- | -------------------------------------------------- | ------------------------------------- | -------------- |
+| 1     | Masker DI abstraction                              | `api-core/features/masker/`           | —              |
+| 2     | Core abstractions + updated types                  | `ai-powerups/api/`                    | —              |
+| 3     | Refactor GetSettings + UpdateSettings repositories | `ai-powerups/api/features/`           | Phase 2        |
+| 4     | Providers plugin (handler + mapper)                | `ai-powerups/api/features/providers/` | Phases 1, 2    |
+| 5     | Refactor GraphQL resolver                          | `ai-powerups/api/graphql/`            | Phases 2, 3    |
+| 6     | Cleanup + consumer updates                         | `ai-powerups/api/`                    | Phases 3, 4, 5 |
 
 Phases 1 and 2 are independent and can be worked in parallel. Phases 3 and 4 can also be parallel (they share Phase 2 but don't depend on each other). Phase 5 depends on the repositories being refactored. Phase 6 is final cleanup after everything else lands.

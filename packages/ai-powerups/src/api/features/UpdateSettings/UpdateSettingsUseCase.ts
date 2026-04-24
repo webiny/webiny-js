@@ -1,4 +1,3 @@
-import { Result } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core/features/eventPublisher/index.js";
 import { UpdateSettingsUseCase, UpdateSettingsRepository } from "./abstractions.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
