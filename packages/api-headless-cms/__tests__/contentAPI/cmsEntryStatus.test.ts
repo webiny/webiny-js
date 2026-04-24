@@ -20,7 +20,7 @@ const categories = [
 
 describe("cms entry status filtering", () => {
     const manageOpts = {
-        path: "manage/en-US"
+        path: "manage"
     };
 
     const {
@@ -37,7 +37,11 @@ describe("cms entry status filtering", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    name: "ico/ico",
+                    type: "ico/ico",
+                    value: "ico/ico"
+                },
                 description: "description"
             }
         });
@@ -56,7 +60,7 @@ describe("cms entry status filtering", () => {
                 modelId: model.modelId,
                 singularApiName: model.singularApiName,
                 pluralApiName: model.pluralApiName,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -79,9 +83,13 @@ describe("cms entry status filtering", () => {
             const title = categories[i];
             const slug = camelCase(title);
             const [response] = await createCategory({
-                data: {
-                    title,
-                    slug
+                variables: {
+                    data: {
+                        values: {
+                            title,
+                            slug
+                        }
+                    }
                 }
             });
             expect(response).toMatchObject({
@@ -89,8 +97,10 @@ describe("cms entry status filtering", () => {
                     createCategory: {
                         data: {
                             id: expect.any(String),
-                            title,
-                            slug,
+                            values: {
+                                title,
+                                slug
+                            },
                             meta: {
                                 status: "draft",
                                 version: 1
@@ -103,30 +113,37 @@ describe("cms entry status filtering", () => {
             if (Number(i) % 2 === 0) {
                 continue;
             }
-            const id = response.data.createCategory.data.id;
+            const id = response.data.createCategory.data!.id;
             const [publishResponse] = await publishCategory({
-                revision: id
+                variables: {
+                    revision: id
+                }
             });
             expect(publishResponse).toMatchObject({
                 data: {
                     publishCategory: {
                         data: {
                             id,
-                            title,
-                            slug,
+                            values: {
+                                title,
+                                slug
+                            },
                             meta: {
                                 status: "published",
                                 version: 1
                             }
-                        }
+                        },
+                        error: null
                     }
                 }
             });
         }
 
         const [listCategoriesResponse] = await listCategories({
-            sort: ["createdOn_ASC"],
-            limit: 100
+            variables: {
+                sort: ["createdOn_ASC"],
+                limit: 100
+            }
         });
 
         expect(listCategoriesResponse).toMatchObject({
@@ -134,8 +151,10 @@ describe("cms entry status filtering", () => {
                 listCategories: {
                     data: categories.map((title, index) => {
                         return {
-                            title,
-                            slug: camelCase(title),
+                            values: {
+                                title,
+                                slug: camelCase(title)
+                            },
                             meta: {
                                 status: Number(index) % 2 === 0 ? "draft" : "published",
                                 version: 1,
@@ -153,10 +172,12 @@ describe("cms entry status filtering", () => {
         });
 
         const [listCategoriesDraftResponse] = await listCategories({
-            sort: ["createdOn_ASC"],
-            limit: 100,
-            where: {
-                status: "draft"
+            variables: {
+                sort: ["createdOn_ASC"],
+                limit: 100,
+                where: {
+                    status: "draft"
+                }
             }
         });
 
@@ -168,8 +189,10 @@ describe("cms entry status filtering", () => {
                 listCategories: {
                     data: draftCategoriesList.map(title => {
                         return {
-                            title,
-                            slug: camelCase(title),
+                            values: {
+                                title,
+                                slug: camelCase(title)
+                            },
                             meta: {
                                 status: "draft",
                                 version: 1,
@@ -187,10 +210,12 @@ describe("cms entry status filtering", () => {
         });
 
         const [listCategoriesPublishedResponse] = await listCategories({
-            sort: ["createdOn_ASC"],
-            limit: 100,
-            where: {
-                status: "published"
+            variables: {
+                sort: ["createdOn_ASC"],
+                limit: 100,
+                where: {
+                    status: "published"
+                }
             }
         });
 
@@ -202,8 +227,10 @@ describe("cms entry status filtering", () => {
                 listCategories: {
                     data: publishedCategoriesList.map(title => {
                         return {
-                            title,
-                            slug: camelCase(title),
+                            values: {
+                                title,
+                                slug: camelCase(title)
+                            },
                             meta: {
                                 status: "published",
                                 version: 1,

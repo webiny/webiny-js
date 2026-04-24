@@ -1,24 +1,21 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsGroup } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
-describe("content model test", () => {
-    const manageHandlerOpts = { path: "manage/en-US" };
+describe("content model unique model id test", () => {
+    const manageHandlerOpts = { path: "manage" };
 
-    const { createContentModelGroupMutation } = useGraphQLHandler(manageHandlerOpts);
+    const manager = useGraphQLHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsGroup;
 
     beforeEach(async () => {
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
+        const result = await setupGroupAndModels({
+            manager,
+            models: undefined
         });
-        contentModelGroup = createCMG.data.createContentModelGroup.data;
+        contentModelGroup = result.group;
     });
 
     it("should not allow creation of a model with an existing modelId", async () => {
@@ -29,7 +26,7 @@ describe("content model test", () => {
             modelId: "event",
             singularApiName: "Event",
             pluralApiName: "Events",
-            group: contentModelGroup.id
+            group: contentModelGroup.slug
         };
 
         const [eventResponse] = await createContentModelMutation({
@@ -41,10 +38,7 @@ describe("content model test", () => {
                 createContentModel: {
                     data: {
                         ...eventData,
-                        group: {
-                            id: contentModelGroup.id,
-                            name: contentModelGroup.name
-                        }
+                        group: contentModelGroup.slug
                     },
                     error: null
                 }
@@ -56,7 +50,7 @@ describe("content model test", () => {
             modelId: "event",
             singularApiName: "Event",
             pluralApiName: "Events",
-            group: contentModelGroup.id
+            group: contentModelGroup.slug
         };
 
         const [response] = await createContentModelMutation({
@@ -68,7 +62,7 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_ID_EXISTS",
+                        code: "Cms/Model/ValidationError",
                         data: {
                             input: "event"
                         },
@@ -87,7 +81,7 @@ describe("content model test", () => {
             modelId: "event",
             singularApiName: "Event",
             pluralApiName: "Events",
-            group: contentModelGroup.id
+            group: contentModelGroup.slug
         };
         const [eventResponse] = await createContentModelMutation({
             data: eventData
@@ -98,10 +92,7 @@ describe("content model test", () => {
                 createContentModel: {
                     data: {
                         ...eventData,
-                        group: {
-                            id: contentModelGroup.id,
-                            name: contentModelGroup.name
-                        }
+                        group: contentModelGroup.slug
                     },
                     error: null
                 }
@@ -113,7 +104,7 @@ describe("content model test", () => {
             modelId: "events",
             singularApiName: "Event",
             pluralApiName: "EventsPlural",
-            group: contentModelGroup.id
+            group: contentModelGroup.slug
         };
 
         const [singularResponse] = await createContentModelMutation({
@@ -125,11 +116,11 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_SINGULAR_API_NAME_EXISTS",
+                        code: "Cms/Model/ValidationError",
                         data: {
                             input: "Event"
                         },
-                        message: 'Content model with singularApiName "Event" already exists.'
+                        message: `Content model with singularApiName "Event" already exists.`
                     }
                 }
             }
@@ -140,7 +131,7 @@ describe("content model test", () => {
             modelId: "events",
             singularApiName: "Events",
             pluralApiName: "EventsPluralized",
-            group: contentModelGroup.id
+            group: contentModelGroup.slug
         };
 
         const [pluralResponse] = await createContentModelMutation({
@@ -152,7 +143,7 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_PLURAL_API_NAME_EXISTS",
+                        code: "Cms/Model/ValidationError",
                         data: {
                             input: "Events"
                         },
@@ -172,7 +163,7 @@ describe("content model test", () => {
                 modelId: "events",
                 singularApiName: "Event",
                 pluralApiName: "Events",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -182,7 +173,7 @@ describe("content model test", () => {
                 modelId: "event",
                 singularApiName: "EventDifferentThanBefore",
                 pluralApiName: "Events",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -191,7 +182,7 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_PLURAL_API_NAME_EXISTS",
+                        code: "Cms/Model/ValidationError",
                         data: {
                             input: "Events"
                         },
@@ -207,7 +198,7 @@ describe("content model test", () => {
                 modelId: "event",
                 singularApiName: "Events",
                 pluralApiName: "EventsWhichIsOk",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -216,7 +207,7 @@ describe("content model test", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_PLURAL_API_NAME_EXISTS",
+                        code: "Cms/Model/ValidationError",
                         data: {
                             input: "Events"
                         },

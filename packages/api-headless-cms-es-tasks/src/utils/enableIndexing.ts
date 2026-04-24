@@ -1,10 +1,10 @@
-import type { Client } from "@webiny/api-elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { configurations } from "@webiny/api-headless-cms-ddb-es/configurations.js";
 
 interface IEnableIndexingParams {
     client: Client;
-    model: Pick<CmsModel, "modelId" | "tenant" | "locale">;
+    model: Pick<CmsModel, "modelId" | "tenant">;
 }
 
 export const enableIndexing = async (params: IEnableIndexingParams) => {

@@ -17,7 +17,7 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
                 name: String!
                 slug: String
                 description: String
-                icon: String!
+                icon: Icon!
             }
 
             type CmsContentModelGroupResponse {
@@ -64,7 +64,7 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
                         if (model.isPrivate === true) {
                             return false;
                         }
-                        return model.group.id === group.id;
+                        return model.group === group.slug;
                     });
                 },
                 totalContentModels: async (group, _, context) => {
@@ -75,7 +75,7 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
                         if (model.isPrivate === true) {
                             return false;
                         }
-                        return model.group === group.id;
+                        return model.group === group.slug;
                     }).length;
                 },
                 plugin: async (group, _, context: CmsContext): Promise<boolean> => {
@@ -146,7 +146,7 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
                 totalContentModels: Int!
                 slug: String!
                 description: String
-                icon: String
+                icon: Icon
                 createdBy: CmsIdentity
 
                 # Returns true if the content model group is registered via a plugin.

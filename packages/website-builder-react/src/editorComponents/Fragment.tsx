@@ -2,19 +2,32 @@ import React from "react";
 import { contentSdk } from "@webiny/website-builder-sdk";
 import { useDocumentFragments } from "~/components/FragmentsProvider.js";
 import type { ComponentProps } from "~/types.js";
+import type { DocumentFragments } from "~/components/FragmentsProvider.js";
 
 type FragmentComponentProps = ComponentProps<{
     name: string;
 }>;
 
+const findFixedFragmentByName = (fragments: DocumentFragments, name: string) => {
+    return fragments
+        .filter(fragment => fragment.type === "fixed")
+        .find(fragment => fragment.name === name);
+};
+
 export const FragmentComponent = ({ inputs }: FragmentComponentProps) => {
     const isEditing = contentSdk.isEditing();
     const fragments = useDocumentFragments();
-    const element = fragments[inputs.name] ?? null;
-    if (!element && isEditing) {
+    const fragment = findFixedFragmentByName(fragments, inputs.name);
+
+    if (!fragment && isEditing) {
         return <FragmentPlaceholder name={inputs.name} />;
     }
-    return <>{element}</>;
+
+    if (fragment) {
+        return <>{fragment.element}</>;
+    }
+
+    return null;
 };
 
 const FragmentPlaceholder = ({ name }: { name: string }) => {

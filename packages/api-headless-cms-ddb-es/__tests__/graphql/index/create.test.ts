@@ -1,7 +1,6 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { useHandler } from "~tests/graphql/handler";
 import type { CmsContext } from "~/types";
-import { createCmsModel } from "@webiny/api-headless-cms";
 import type { CmsGroup, CmsModelCreateInput } from "@webiny/api-headless-cms/types";
 import { configurations } from "~/configurations";
 import { createMappingsSnapshot } from "./mocks/mappingsSnapshot";
@@ -10,7 +9,11 @@ const setupGroup = async (context: CmsContext) => {
     return context.cms.createGroup({
         name: "Test Group",
         description: "Test Group Description",
-        icon: "fa/fas",
+        icon: {
+            type: "fa/fas",
+            name: "fa/fas",
+            value: "fa/fas"
+        },
         slug: "test-group"
     });
 };
@@ -28,7 +31,7 @@ const modelData = {
 const createModelData = (group: CmsGroup): CmsModelCreateInput => {
     return {
         ...modelData,
-        group: group.id
+        group: group.slug
     };
 };
 
@@ -38,8 +41,7 @@ describe("create index", () => {
         const { index } = configurations.es({
             model: {
                 modelId: modelData.modelId,
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             }
         });
         try {
@@ -58,49 +60,6 @@ describe("create index", () => {
         const model = await context.cms.createModel(createModelData(group));
 
         const { index } = configurations.es({ model });
-
-        const mapping = await elasticsearch.indices.getMapping({
-            index
-        });
-        expect(mapping.body[index]).toEqual(createMappingsSnapshot());
-    });
-
-    it("should properly create index when using context.cms.initializeModel method", async () => {
-        const { createContext, elasticsearch } = useHandler({
-            plugins: [
-                createCmsModel({
-                    ...modelData,
-                    fields: [
-                        {
-                            id: "title",
-                            fieldId: "title",
-                            label: "Title",
-                            type: "text",
-                            validation: [],
-                            listValidation: []
-                        }
-                    ],
-                    layout: [["title"]],
-                    group: {
-                        id: "test-group",
-                        name: "Test Group"
-                    }
-                })
-            ]
-        });
-        const context = await createContext();
-
-        const response = await context.cms.initializeModel("contextModel", {});
-
-        expect(response).toEqual(true);
-
-        const { index } = configurations.es({
-            model: {
-                modelId: modelData.modelId,
-                tenant: "root",
-                locale: "en-US"
-            }
-        });
 
         const mapping = await elasticsearch.indices.getMapping({
             index

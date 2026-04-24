@@ -1,17 +1,13 @@
-import type {
-    CmsFieldTypePlugins,
-    CmsModel,
-    CmsModelField
-} from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
-import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
+import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 export interface CreateFilesTypeDefsParams {
     model: CmsModel;
     models: CmsModel[];
-    plugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 const removeFieldRequiredValidation = (field: CmsModelField) => {
@@ -32,7 +28,7 @@ const createUpdateFields = (fields: CmsModelField[]): CmsModelField[] => {
 };
 
 export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string => {
-    const { model, models, plugins: fieldTypePlugins } = params;
+    const { model, models, fieldRegistry } = params;
     const { fields } = model;
 
     const fieldTypes = renderFields({
@@ -40,38 +36,44 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
         model,
         fields,
         type: "manage",
-        fieldTypePlugins
+        fieldRegistry
     });
     const inputCreateFields = renderInputFields({
         models,
         model,
         fields,
-        fieldTypePlugins
+        fieldRegistry
     });
     const inputUpdateFields = renderInputFields({
         models,
         model,
         fields: createUpdateFields(fields),
-        fieldTypePlugins
+        fieldRegistry
     });
     const listFilterFieldsRender = renderListFilterFields({
         model,
         fields: model.fields,
         type: "manage",
-        fieldTypePlugins,
+        fieldRegistry,
         excludeFields: ["entryId", "status"]
     });
 
-    const excludeFromSorterts = ["tags", "aliases"];
-
-    const sortEnumRender = renderSortEnum({
-        model,
-        fields: model.fields.filter(field => !excludeFromSorterts.includes(field.fieldId)),
-        fieldTypePlugins,
-        sorterPlugins: []
-    });
-
     return /* GraphQL */ `
+        type FmFile_Location {
+            folderId: ID!
+        }
+
+        input FmFile_LocationInput {
+            folderId: ID!
+        }
+
+        input FmFile_LocationWhereInput {
+            folderId: ID
+            folderId_in: [ID!]
+            folderId_not: ID
+            folderId_not_in: [ID!]
+        }
+        
         ${fieldTypes.map(f => f.typeDefs).join("\n")}
 
         type FmFile {
@@ -82,6 +84,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
             createdBy: FmCreatedBy!
             modifiedBy: FmCreatedBy
             savedBy: FmCreatedBy!
+            location: FmFile_Location!
             src: String
             ${fieldTypes.map(f => f.fields).join("\n")}
         }
@@ -102,6 +105,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
             createdBy: FmCreatedByInput
             modifiedBy: FmCreatedByInput
             savedBy: FmCreatedByInput
+            location: FmFile_LocationInput
             ${inputCreateFields.map(f => f.fields).join("\n")}
         }
 
@@ -112,6 +116,7 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
             createdBy: FmCreatedByInput
             modifiedBy: FmCreatedByInput
             savedBy: FmCreatedByInput
+            location: FmFile_LocationInput
             ${inputUpdateFields.map(f => f.fields).join("\n")}
         }
 
@@ -121,7 +126,8 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
         }
 
         input FmFileListWhereInput {
-            ${listFilterFieldsRender}
+            ${listFilterFieldsRender.allFiltersAsString()}
+            location: FmFile_LocationWhereInput
             AND: [FmFileListWhereInput!]
             OR: [FmFileListWhereInput!]
         }
@@ -133,7 +139,18 @@ export const createFilesTypeDefs = (params: CreateFilesTypeDefsParams): string =
         }
 
         enum FmFileListSorter {
-            ${sortEnumRender}
+            savedOn_ASC
+            savedOn_DESC
+            createdOn_ASC
+            createdOn_DESC
+            name_ASC
+            name_DESC
+            key_ASC
+            key_DESC
+            type_ASC
+            type_DESC
+            size_ASC
+            size_DESC
         }
 
         input FmTagsListWhereInput {

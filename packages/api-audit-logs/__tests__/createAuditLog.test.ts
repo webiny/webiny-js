@@ -3,7 +3,6 @@ import { getAuditConfig } from "~/utils/getAuditConfig";
 import { useHandler } from "./helpers/useHandler";
 import { ActionType } from "@webiny/common-audit-logs";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index";
-import { attachAuditLogOnCreateEvent } from "~/context/lifecycle.js";
 import { auditAction } from "~tests/mocks/auditAction.js";
 import type { IAuditLog } from "~/storage/types.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
@@ -144,71 +143,5 @@ describe("create audit log", () => {
                 }
             });
         }
-    });
-
-    it("should trigger onBeforeCreate", async () => {
-        const createAuditLog = getAuditConfig(auditAction);
-
-        const { handler } = useHandler({
-            plugins: [
-                attachAuditLogOnCreateEvent(async ({ auditLog, setAuditLog }) => {
-                    const content = JSON.parse(auditLog.content);
-                    setAuditLog({
-                        content: JSON.stringify({
-                            ...content,
-                            moreNumberData: 2,
-                            additionalData: "something else"
-                        })
-                    });
-                })
-            ]
-        });
-        const context = await handler();
-
-        const message = "Some Meaningful Message.";
-        const entityId = "abcdefgh0001";
-        const data: ITestPayloadData = {
-            auditLogData: {
-                someData: true
-            },
-            moreNumberData: 1,
-            evenMoreStringData: "abcdef"
-        };
-
-        const result = await createAuditLog(message, data, entityId, context);
-
-        expect(convertDates(result)).toMatchObject({
-            id: expect.any(String),
-            message,
-            tenant: "root",
-            expiresAt: expect.any(Date),
-            entityId,
-            action: ActionType.CREATE,
-            app: "cms",
-            entity: "user",
-            createdBy: getIdentitySnapshot(context.security.getIdentity()),
-            createdOn: expect.any(Date),
-            content: JSON.stringify({
-                ...data,
-                moreNumberData: 2,
-                additionalData: "something else"
-            }),
-            tags: []
-        });
-
-        const item = await context.auditLogs.getAuditLog(result!.id);
-
-        const content =
-            // @ts-expect-error
-            JSON.parse(item?.content);
-
-        expect(content).toEqual({
-            auditLogData: {
-                someData: true
-            },
-            moreNumberData: 2,
-            evenMoreStringData: "abcdef",
-            additionalData: "something else"
-        });
     });
 });

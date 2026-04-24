@@ -9,8 +9,8 @@ export class Cli {
         this.container = container;
     }
 
-    run(argv: string[]) {
-        return this.container.resolve(RunCliRunnerService).execute(argv);
+    run() {
+        return this.container.resolve(RunCliRunnerService).execute();
     }
 
     static async init(params: CliParamsService.Params = {}) {

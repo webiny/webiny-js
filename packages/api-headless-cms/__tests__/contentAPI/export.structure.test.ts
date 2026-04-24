@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 import type { CmsGroup } from "~tests/types";
 import models from "./mocks/contentModels";
-import type { CmsModel, CmsModelField } from "~/types";
+import type { CmsModel } from "~/types";
+import { createIcon } from "~tests/__helpers/icon.js";
 
 interface JsonResult {
     groups: CmsGroup[];
@@ -11,43 +12,18 @@ interface JsonResult {
 
 const groups: Omit<CmsGroup, "id">[] = [
     {
-        icon: "fas/star",
+        icon: createIcon("fas/star"),
         slug: "group-1",
         name: "Group 1",
         description: "Group 1 description"
     },
     {
-        icon: "fas/star",
+        icon: createIcon("fas/star"),
         slug: "group-2",
         name: "Group 2",
         description: "Group 2 description"
     }
 ];
-
-const fixFields = (fields: CmsModelField[]): CmsModelField[] => {
-    return fields.map(field => {
-        const result = {
-            ...field,
-            helpText: field.helpText || null,
-            placeholderText: field.placeholderText || null
-        };
-        if (result.settings?.fields) {
-            result.settings.fields = fixFields(result.settings.fields);
-        }
-        if (result.predefinedValues) {
-            result.predefinedValues = {
-                ...result.predefinedValues,
-                values: (result.predefinedValues.values || []).map(value => {
-                    return {
-                        ...value,
-                        selected: value.selected || false
-                    };
-                })
-            };
-        }
-        return result;
-    });
-};
 
 describe("export cms structure", () => {
     const insertGroups = async (mutation: (variables: any) => Promise<any>) => {
@@ -67,7 +43,7 @@ describe("export cms structure", () => {
             createContentModelGroupMutation,
             createContentModelMutation
         } = useGraphQLHandler({
-            path: "manage/en-US"
+            path: "manage"
         });
 
         const createdGroups = await insertGroups(createContentModelGroupMutation);
@@ -78,16 +54,13 @@ describe("export cms structure", () => {
                 data: {
                     modelId: model.modelId,
                     name: model.name,
-                    group: {
-                        id: group!.id,
-                        name: group!.name
-                    },
+                    group: group!.slug,
                     layout: model.layout,
                     fields: model.fields,
                     titleFieldId: model.titleFieldId,
                     pluralApiName: model.pluralApiName,
                     singularApiName: model.singularApiName,
-                    icon: model.icon || "fa/fas",
+                    icon: model.icon || createIcon("fa/fas"),
                     description: model.description || ""
                 }
             });
@@ -123,7 +96,7 @@ describe("export cms structure", () => {
         });
         for (const model of createdModels) {
             const jsonModel = json.models.find(m => m.modelId === model.modelId) as CmsModel;
-            const group = createdGroups.find(g => g.id === model.group.id) as CmsGroup;
+            const group = createdGroups.find(g => g.slug === model.group) as CmsGroup;
             expect(jsonModel).toMatchObject({
                 modelId: model.modelId,
                 name: model.name,
@@ -132,12 +105,12 @@ describe("export cms structure", () => {
                 description: model.description,
                 titleFieldId: model.titleFieldId,
                 icon: model.icon,
-                group: group.id,
-                fields: fixFields(model.fields),
+                group: group.slug,
+                fields: model.fields,
                 layout: model.layout
             });
-            expect(jsonModel.imageFieldId).toEqual(model.imageFieldId || undefined);
-            expect(jsonModel.descriptionFieldId).toEqual(model.descriptionFieldId || undefined);
+            expect(jsonModel.imageFieldId).toEqual(model.imageFieldId ?? null);
+            expect(jsonModel.descriptionFieldId).toEqual(model.descriptionFieldId ?? null);
         }
     });
 });

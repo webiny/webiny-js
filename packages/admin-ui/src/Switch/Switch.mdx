@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as SwitchStories from './Switch.stories';
+import * as SwitchStories from "./Switch.stories";
 
 <Meta of={SwitchStories} />
 
@@ -15,8 +15,8 @@ import React, { useState } from "react";
 import { Switch } from "@webiny/admin-ui";
 
 const SwitchExample = () => {
-    const [isChecked, setIsChecked] = useState(false);
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+const [isChecked, setIsChecked] = useState(false);
+const [validation, setValidation] = useState({ isValid: true, message: "" });
 
     const handleChange = (checked: boolean) => {
         setIsChecked(checked);
@@ -41,57 +41,59 @@ const SwitchExample = () => {
             />
         </div>
     );
+
 };
 
 export default SwitchExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Switch/Switch.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Switch/Switch.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={SwitchStories.Documentation} exclude={"onChange"}/>
+<Controls of={SwitchStories.Documentation} exclude={"onChange"} />
 
 ```tsx
 import React, { useState } from "react";
 import { Switch } from "@webiny/admin-ui";
 
 const SwitchExample = () => {
-    const [isChecked, setIsChecked] = useState(false);
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+  const [isChecked, setIsChecked] = useState(false);
+  const [validation, setValidation] = useState({ isValid: true, message: "" });
 
-    const handleChange = (checked: boolean) => {
-        setIsChecked(checked);
+  const handleChange = (checked: boolean) => {
+    setIsChecked(checked);
 
-        if (!checked && true) { // true represents required field
-            setValidation({ isValid: false, message: "This field is required" });
-        } else {
-            setValidation({ isValid: true, message: "" });
-        }
-    };
+    if (!checked && true) {
+      // true represents required field
+      setValidation({ isValid: false, message: "This field is required" });
+    } else {
+      setValidation({ isValid: true, message: "" });
+    }
+  };
 
-    return (
-        <div>
-            <Switch
-                label="Enable feature"
-                description="Enabling this feature will activate additional functionality."
-                note="Note: This setting can be changed at any time."
-                checked={isChecked}
-                required={true}
-                onChange={handleChange}
-                validation={validation}
-            />
-        </div>
-    );
+  return (
+    <div>
+      <Switch
+        label="Enable feature"
+        description="Enabling this feature will activate additional functionality."
+        note="Note: This setting can be changed at any time."
+        checked={isChecked}
+        required={true}
+        onChange={handleChange}
+        validation={validation}
+      />
+    </div>
+  );
 };
 
 export default SwitchExample;

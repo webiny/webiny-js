@@ -1,10 +1,17 @@
-import { AdminBeforeWatch, GetAppStackOutput } from "~/abstractions/index.js";
+import {
+    AdminBeforeWatch,
+    GetAppStackOutput,
+    ProjectSdkParamsService
+} from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 const NO_DEPLOYMENT_CHECKS_FLAG_NAME = "--no-deployment-checks";
 
 class EnsureApiDeployedBeforeAdminWatchImpl implements AdminBeforeWatch.Interface {
-    constructor(private getAppStackOutput: GetAppStackOutput.Interface) {}
+    constructor(
+        private getAppStackOutput: GetAppStackOutput.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
+    ) {}
 
     async execute(params: AdminBeforeWatch.Params) {
         // Just in case, we want to allow users to skip the system requirements check.
@@ -12,13 +19,14 @@ class EnsureApiDeployedBeforeAdminWatchImpl implements AdminBeforeWatch.Interfac
             return;
         }
 
-        const output = await this.getAppStackOutput.execute({ ...params, app: "api" });
+        const output = await this.getAppStackOutput.execute("api");
         const apiDeployed = output && Object.keys(output).length > 0;
         if (apiDeployed) {
             return;
         }
 
-        const cmd = `yarn webiny deploy api --env ${params.env}`;
+        const sdkParams = this.projectSdkParamsService.get();
+        const cmd = `yarn webiny deploy api --env ${sdkParams.env}`;
 
         const error = new Error(`Cannot watch Admin before deploying API.`);
         const message = [
@@ -41,5 +49,5 @@ class EnsureApiDeployedBeforeAdminWatchImpl implements AdminBeforeWatch.Interfac
 
 export const EnsureApiDeployedBeforeAdminWatch = AdminBeforeWatch.createImplementation({
     implementation: EnsureApiDeployedBeforeAdminWatchImpl,
-    dependencies: [GetAppStackOutput]
+    dependencies: [GetAppStackOutput, ProjectSdkParamsService]
 });

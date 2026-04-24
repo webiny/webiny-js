@@ -5,13 +5,13 @@ import { ModelFieldTraverser } from "~/utils";
 import { CmsContext } from "~/types";
 import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
 import { CmsModelToAstConverter } from "~/utils/contentModelAst";
-import { CmsModelInput, createCmsModelPlugin } from "~/plugins";
+import { CmsModelInput, createModelPlugin } from "~/plugins";
 
 describe("model field traverser", () => {
     const { handler } = useHandler({
         plugins: [
             ...createModelPlugins(models.map(model => model.modelId)),
-            createCmsModelPlugin(pageModel as unknown as CmsModelInput)
+            createModelPlugin(pageModel as unknown as CmsModelInput)
         ]
     });
 
@@ -42,9 +42,7 @@ describe("model field traverser", () => {
                       .sort()
                       .join(",")}`
                 : "";
-            result.push(
-                `${field.type}@${path.join(".")}#${field.multipleValues ? "m" : "s"}${ref}`
-            );
+            result.push(`${field.type}@${path.join(".")}#${field.list ? "m" : "s"}${ref}`);
         });
 
         expect(result).toEqual([
@@ -89,9 +87,7 @@ describe("model field traverser", () => {
                       .sort()
                       .join(",")}`
                 : "";
-            result.push(
-                `${field.type}@${path.join(".")}#${field.multipleValues ? "m" : "s"}${ref}`
-            );
+            result.push(`${field.type}@${path.join(".")}#${field.list ? "m" : "s"}${ref}`);
         });
 
         expect(result.sort()).toEqual([

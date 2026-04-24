@@ -1,29 +1,29 @@
 import { describe, it, expect } from "vitest";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
-import { createTaskDefinition } from "~/task";
+import { createTaskDefinition } from "~tests/helpers/createTaskDefinition.js";
 
-describe("definitions crud", () => {
+describe("tasks - definitions crud", () => {
     const handler = useRawHandler({
         plugins: [
             createTaskDefinition({
                 id: "testDefinitionNumber1",
                 title: "Test definition #1",
-                async run({ response }) {
-                    return response.done("successfully ran the task #1");
+                run: ({ controller }) => {
+                    return controller.response.done("successfully ran the task #1");
                 }
             }),
             createTaskDefinition({
                 id: "testDefinitionNumber2",
                 title: "Test definition #2",
-                async run({ response }) {
-                    return response.done("successfully ran the task #2");
+                run: ({ controller }) => {
+                    return controller.response.done("successfully ran the task #2");
                 }
             }),
             createTaskDefinition({
                 id: "testDefinitionNumber3",
                 title: "Test definition #3",
-                async run({ response }) {
-                    return response.done("successfully ran the task #3");
+                run: ({ controller }) => {
+                    return controller.response.done("successfully ran the task #3");
                 }
             })
         ]

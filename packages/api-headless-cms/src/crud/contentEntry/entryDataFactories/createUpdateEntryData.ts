@@ -2,6 +2,7 @@ import type {
     CmsContext,
     CmsEntry,
     CmsEntryStatus,
+    CmsEntryValues,
     CmsModel,
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
@@ -13,24 +14,27 @@ import { referenceFieldsMapping } from "../referenceFieldsMapping.js";
 import { mapAndCleanUpdatedInputData } from "./mapAndCleanUpdatedInputData.js";
 import lodashMerge from "lodash/merge.js";
 import { removeNullValues, removeUndefinedValues } from "@webiny/utils";
-import { getState } from "./state.js";
+import { getSystem } from "./system.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 
-interface CreateEntryRevisionFromDataParams {
+interface UpdateEntryFromDataParams<TValues extends CmsEntryValues = CmsEntryValues> {
     metaInput?: Record<string, any>;
     model: CmsModel;
-    rawInput: UpdateCmsEntryInput;
+    rawInput: UpdateCmsEntryInput<TValues>;
     options?: UpdateCmsEntryOptionsInput;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
-    getLocale: () => I18NLocale;
-    originalEntry: CmsEntry;
+    originalEntry: CmsEntry<TValues>;
 }
 
-export const createUpdateEntryData = async ({
+interface UpdateEntryDataResponse<TValues extends CmsEntryValues = CmsEntryValues> {
+    entry: CmsEntry<TValues>;
+    input: UpdateCmsEntryInput<TValues>;
+}
+
+export const createUpdateEntryData = async <TValues extends CmsEntryValues = CmsEntryValues>({
     model,
     rawInput,
     options,
@@ -38,24 +42,24 @@ export const createUpdateEntryData = async ({
     metaInput,
     getIdentity: getSecurityIdentity,
     originalEntry
-}: CreateEntryRevisionFromDataParams): Promise<{
-    entry: CmsEntry;
-    input: Record<string, any>;
-}> => {
+}: UpdateEntryFromDataParams<TValues>): Promise<UpdateEntryDataResponse<TValues>> => {
     /**
      * Make sure we only work with fields that are defined in the model.
      */
-    const input = mapAndCleanUpdatedInputData(model, rawInput);
+    const cleanedValues = mapAndCleanUpdatedInputData<TValues>(
+        model,
+        rawInput?.values || ({} as TValues)
+    );
 
     await validateModelEntryDataOrThrow({
         context,
         model,
-        data: input,
+        values: cleanedValues,
         entry: originalEntry,
         skipValidators: options?.skipValidators
     });
 
-    const initialValues = {
+    const mergedValues: TValues = {
         /**
          * Existing values from the database, transformed back to original, of course.
          */
@@ -63,13 +67,13 @@ export const createUpdateEntryData = async ({
         /**
          * Add new values.
          */
-        ...input
+        ...cleanedValues
     };
 
-    const values = await referenceFieldsMapping({
+    const values = await referenceFieldsMapping<TValues>({
         context,
         model,
-        input: initialValues,
+        values: mergedValues,
         validateEntries: false
     });
 
@@ -84,7 +88,7 @@ export const createUpdateEntryData = async ({
     /**
      * We always send the full entry to the hooks and storage operations update.
      */
-    const entry: CmsEntry = {
+    const entry: CmsEntry<TValues> = {
         ...originalEntry,
 
         /**
@@ -143,10 +147,11 @@ export const createUpdateEntryData = async ({
         values,
         meta,
         status: transformEntryStatus(originalEntry.status),
-        state: getState({
+        system: getSystem({
             input: rawInput,
             original: originalEntry
-        })
+        }),
+        live: originalEntry.live
     };
 
     const folderId = rawInput.wbyAco_location?.folderId;
@@ -156,7 +161,13 @@ export const createUpdateEntryData = async ({
         };
     }
 
-    return { entry, input };
+    return {
+        entry,
+        input: {
+            ...rawInput,
+            values: structuredClone(values)
+        }
+    };
 };
 
 /**

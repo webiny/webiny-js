@@ -4,8 +4,9 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import { ReactComponent as CloneIcon } from "@webiny/icons/library_add.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/expand_more.svg";
-import { AddTemplateButton, AddTemplateIcon } from "./AddTemplate.js";
+import { AddTemplateButton } from "./AddTemplate.js";
 import { TemplateIcon } from "./TemplateIcon.js";
+import { useFieldEffectiveRules } from "@webiny/app-headless-cms-common";
 import { ParentFieldProvider, useModelField } from "~/admin/hooks/index.js";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields.js";
 import type {
@@ -19,7 +20,10 @@ import type {
 } from "~/types.js";
 import { makeDecoratable } from "@webiny/react-composition";
 import { TemplateProvider } from "~/admin/plugins/fieldRenderers/dynamicZone/TemplateProvider.js";
-import { ParentValueIndexProvider } from "~/admin/components/ModelFieldProvider/index.js";
+import {
+    CanEditField,
+    ParentValueIndexProvider
+} from "~/admin/components/ModelFieldProvider/index.js";
 import { useConfirmationDialog } from "@webiny/app-admin";
 import { Accordion, Tooltip } from "@webiny/admin-ui";
 
@@ -30,14 +34,15 @@ export interface MultiValueItemContainerProps {
     contentModel: CmsModel;
     isFirst: boolean;
     isLast: boolean;
+    disabled?: boolean;
     onMoveUp: () => void;
     onMoveDown: () => void;
     onDelete: () => void;
     onClone: (value: TemplateValue) => void;
     title: React.ReactNode;
     description: string;
-    icon: JSX.Element;
-    actions?: JSX.Element;
+    icon: React.JSX.Element;
+    actions?: React.JSX.Element;
     template: CmsDynamicZoneTemplate;
     children: React.ReactNode;
 }
@@ -75,7 +80,7 @@ export const MultiValueItemContainer = makeDecoratable(
                 title={props.title}
                 description={props.description}
                 icon={props.icon}
-                actions={actions}
+                actions={props.disabled ? null : actions}
             >
                 {children}
             </Accordion.Item>
@@ -136,6 +141,8 @@ const TemplateValueForm = ({
     onClone
 }: TemplateValueFormProps) => {
     const { field } = useModelField();
+    const rules = useFieldEffectiveRules(field);
+    const disabled = !rules.canEdit || rules.disabled;
     const templates = field.settings?.templates || [];
 
     const template: CmsDynamicZoneTemplate | undefined = templates.find(
@@ -160,6 +167,7 @@ const TemplateValueForm = ({
             description={template.description}
             icon={<TemplateIcon icon={template.icon} />}
             template={template}
+            disabled={disabled}
         >
             <MultiValueItem template={template} contentModel={contentModel} Bind={Bind} />
         </MultiValueItemContainer>
@@ -174,7 +182,7 @@ export const MultiValueContainer = makeDecoratable(
     "MultiValueContainer",
     ({ children }: MultiValueContainerProps) => {
         return (
-            <Accordion>
+            <Accordion variant={"container"} className={"gap-md"}>
                 <>{children}</>
             </Accordion>
         );
@@ -211,7 +219,7 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
     const Bind = getBind();
 
     return (
-        <>
+        <div className={"flex flex-col gap-y-lg"}>
             {hasValues ? (
                 <ParentFieldProvider value={bind.value} path={Bind.parentName}>
                     <MultiValueContainer {...props}>
@@ -249,11 +257,9 @@ export const MultiValueDynamicZone = (props: MultiValueDynamicZoneProps) => {
                     </MultiValueContainer>
                 </ParentFieldProvider>
             ) : null}
-            {hasValues ? (
-                <AddTemplateIcon onTemplate={onTemplate} />
-            ) : (
+            <CanEditField>
                 <AddTemplateButton onTemplate={onTemplate} />
-            )}
-        </>
+            </CanEditField>
+        </div>
     );
 };

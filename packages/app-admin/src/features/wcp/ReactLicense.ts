@@ -1,6 +1,5 @@
 import type { DecryptedWcpProjectLicense, ILicense, WcpProject } from "@webiny/wcp/types.js";
 import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
-import { NullLicense } from "@webiny/wcp";
 
 export class ReactLicense implements ILicense {
     private readonly license: ILicense;
@@ -22,11 +21,6 @@ export class ReactLicense implements ILicense {
     }
 
     canUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL): boolean {
-        // For backwards compatibility with projects created prior to 5.29.0 release.
-        if (this.license instanceof NullLicense && featureId === "multiTenancy") {
-            return process.env.REACT_APP_WEBINY_MULTI_TENANCY === "true";
-        }
-
         return this.license.canUseFeature(featureId);
     }
 
@@ -36,6 +30,10 @@ export class ReactLicense implements ILicense {
 
     canUseFolderLevelPermissions(): boolean {
         return this.license.canUseFolderLevelPermissions();
+    }
+
+    canUseHcmsFieldPermissions(): boolean {
+        return this.license.canUseHcmsFieldPermissions();
     }
 
     canUsePrivateFiles(): boolean {
@@ -56,5 +54,21 @@ export class ReactLicense implements ILicense {
 
     public canUseWorkflows(): boolean {
         return this.license.canUseWorkflows();
+    }
+
+    canUseAiImageEnrichment(): boolean {
+        return this.license.canUseAiImageEnrichment();
+    }
+
+    canUseAiPageGeneration(): boolean {
+        return this.license.canUseAiPageGeneration();
+    }
+
+    canUseAiLexicalGeneration(): boolean {
+        return this.license.canUseAiLexicalGeneration();
+    }
+
+    toDto(): DecryptedWcpProjectLicense | null {
+        return this.license.toDto();
     }
 }

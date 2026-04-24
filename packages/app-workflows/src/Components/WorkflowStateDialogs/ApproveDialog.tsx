@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Dialog, Grid, OverlayLoader, Textarea } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon, OverlayLoader, Textarea } from "@webiny/admin-ui";
 import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
 
 interface IApproveDialogProps {
@@ -23,14 +23,19 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
             onOpenChange={hide}
             title={
                 <>
-                    <ApproveIcon className={"fill-success"} />
+                    <Icon
+                        label={"Approve Content?"}
+                        size={"md"}
+                        className={"fill-success"}
+                        icon={<ApproveIcon />}
+                    />
                     Approve Content?
                 </>
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={hide} />
-                    <Dialog.ConfirmButton text={"Approve content"} onClick={onConfirm} />
+                    <Dialog.CancelAction onClick={hide} />
+                    <Dialog.ConfirmAction text={"Approve content"} onClick={onConfirm} />
                 </>
             }
             showCloseButton={true}

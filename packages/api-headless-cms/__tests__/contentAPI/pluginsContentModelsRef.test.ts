@@ -3,8 +3,6 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
 
 const pageModelPlugin = new CmsModelPlugin({
-    locale: "en-US",
-    lockedFields: [],
     modelId: "page",
     name: "Page",
     description: "",
@@ -15,12 +13,12 @@ const pageModelPlugin = new CmsModelPlugin({
     fields: [
         {
             fieldId: "title",
-            helpText: null,
+            help: null,
             id: "jf7h0jsc",
             label: "Title",
             listValidation: [],
-            multipleValues: false,
-            placeholderText: null,
+            list: false,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -34,12 +32,12 @@ const pageModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "contentBlocks",
-            helpText: null,
+            help: null,
             id: "0kbfq0j6",
             label: "Content Blocks",
             listValidation: [],
-            multipleValues: false,
-            placeholderText: null,
+            list: false,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -53,6 +51,7 @@ const pageModelPlugin = new CmsModelPlugin({
                         fieldId: "blocks",
                         id: "lxza895k",
                         label: "Blocks",
+                        storageId: "",
                         renderer: {
                             name: "ref-input"
                         },
@@ -67,7 +66,8 @@ const pageModelPlugin = new CmsModelPlugin({
                             ]
                         },
                         type: "ref",
-                        validation: []
+                        validation: [],
+                        listValidation: []
                     }
                 ],
                 layout: [["lxza895k"]]
@@ -76,31 +76,26 @@ const pageModelPlugin = new CmsModelPlugin({
             validation: []
         }
     ],
-    group: {
-        id: "62f39c13ebe1d800091bf33c",
-        name: "Ungrouped"
-    },
+    group: "62f39c13ebe1d800091bf33c",
     layout: [["jf7h0jsc"], ["0kbfq0j6"]]
 });
 
 const faqModelPlugin = new CmsModelPlugin({
-    lockedFields: [],
     modelId: "faq",
     name: "FAQ",
     titleFieldId: "id",
-    locale: "en-US",
     description: "",
     singularApiName: "FaqModelApiNameRef",
     pluralApiName: "FaqsModelApiNameRefs",
     fields: [
         {
             fieldId: "question",
-            helpText: null,
+            help: null,
             id: "c8pphxf2",
             label: "Question",
             listValidation: [],
-            multipleValues: false,
-            placeholderText: null,
+            list: false,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -114,12 +109,12 @@ const faqModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "answer",
-            helpText: null,
+            help: null,
             id: "477qeutg",
             label: "Answer",
             listValidation: [],
-            multipleValues: false,
-            placeholderText: null,
+            list: false,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -133,12 +128,12 @@ const faqModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "image",
-            helpText: null,
+            help: null,
             id: "7jubpw3w",
             label: "Image",
             listValidation: [],
-            multipleValues: false,
-            placeholderText: null,
+            list: false,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -153,16 +148,11 @@ const faqModelPlugin = new CmsModelPlugin({
             validation: []
         }
     ],
-    group: {
-        id: "62f39c13ebe1d800091bf33c",
-        name: "Ungrouped"
-    },
+    group: "62f39c13ebe1d800091bf33c",
     layout: [["c8pphxf2"], ["477qeutg"], ["7jubpw3w"]]
 });
 
 const faqGroupBannerModelPlugin = new CmsModelPlugin({
-    locale: "en-US",
-    lockedFields: [],
     modelId: "faqGroupBanner",
     name: "FAQ Group Banner",
     tenant: "root",
@@ -173,12 +163,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
     fields: [
         {
             fieldId: "eyebrowText",
-            helpText: null,
+            help: null,
             id: "iqe2aw2g",
             label: "Eyebrow Text",
             listValidation: [],
-            multipleValues: false,
-            placeholderText: null,
+            list: false,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -192,12 +182,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "heading",
-            helpText: null,
+            help: null,
             id: "25kvqahf",
             label: "Heading",
             listValidation: [],
-            multipleValues: false,
-            placeholderText: null,
+            list: false,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -211,12 +201,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "subHeading",
-            helpText: null,
+            help: null,
             id: "an0tmg81",
             label: "Sub Heading",
             listValidation: [],
-            multipleValues: false,
-            placeholderText: null,
+            list: false,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -230,12 +220,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "alternateBackgroundColor",
-            helpText: null,
+            help: null,
             id: "g4ei6uhp",
             label: "Alternate Background Color",
             listValidation: [],
-            multipleValues: false,
-            placeholderText: null,
+            list: false,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -251,12 +241,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "isFaqItemCollapsable",
-            helpText: null,
+            help: null,
             id: "g98nz2mr",
             label: "Is FAQ Item Collapsable",
             listValidation: [],
-            multipleValues: false,
-            placeholderText: null,
+            list: false,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -272,12 +262,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "customId",
-            helpText: null,
+            help: null,
             id: "t03jq8ke",
             label: "Custom ID",
             listValidation: [],
-            multipleValues: false,
-            placeholderText: null,
+            list: false,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -291,12 +281,12 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
         },
         {
             fieldId: "faqGroup",
-            helpText: null,
+            help: null,
             id: "5f0dbgvi",
             label: "FAQ Group",
             listValidation: [],
-            multipleValues: false,
-            placeholderText: null,
+            list: false,
+            placeholder: null,
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -315,10 +305,7 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
             validation: []
         }
     ],
-    group: {
-        id: "62f39c13ebe1d800091bf33c",
-        name: "Ungrouped"
-    },
+    group: "62f39c13ebe1d800091bf33c",
     layout: [
         ["iqe2aw2g"],
         ["25kvqahf"],
@@ -333,7 +320,7 @@ const faqGroupBannerModelPlugin = new CmsModelPlugin({
 describe("content model plugins - nested `ref` field union types", () => {
     const { introspect } = useGraphQLHandler({
         plugins: [pageModelPlugin, faqModelPlugin, faqGroupBannerModelPlugin],
-        path: "read/en-US"
+        path: "read"
     });
 
     it("must generate valid schema for nested `ref` field union", async () => {

@@ -11,19 +11,19 @@ import {
     BLUR_COMMAND,
     COMMAND_PRIORITY_CRITICAL,
     COMMAND_PRIORITY_LOW,
-    SELECTION_CHANGE_COMMAND
+    SELECTION_CHANGE_COMMAND,
+    mergeRegister,
+    $findMatchingParent
 } from "lexical";
-import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { FloatingLinkEditor } from "./FloatingLinkEditor.js";
-import type { LinkEditForm } from "./LinkEditForm.js";
+import { LinkFormProps } from "./types.js";
 
 interface FloatingLinkEditorProps {
-    anchorElem: () => HTMLElement;
-    LinkEditForm?: typeof LinkEditForm;
+    LinkForm: React.FunctionComponent<LinkFormProps>;
 }
 
 export const FloatingLinkEditorController = (props: FloatingLinkEditorProps) => {
-    const { editor } = useRichTextEditor();
+    const { editor, getOverlaysElement } = useRichTextEditor();
     const [isLink, setIsLink] = useState(false);
 
     const debounceSetIsLink = useCallback(debounce(setIsLink, 50), []);
@@ -88,12 +88,7 @@ export const FloatingLinkEditorController = (props: FloatingLinkEditorProps) => 
     }, [editor, updateToolbar]);
 
     return createPortal(
-        <FloatingLinkEditor
-            isVisible={isLink}
-            editor={editor}
-            anchorElem={props.anchorElem()}
-            LinkEditForm={props.LinkEditForm}
-        />,
-        props.anchorElem()
+        <FloatingLinkEditor isVisible={isLink} editor={editor} LinkForm={props.LinkForm} />,
+        getOverlaysElement()
     );
 };

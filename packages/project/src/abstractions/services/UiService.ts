@@ -7,7 +7,7 @@ export interface IUiService {
 
     textBold(text: string): void;
 
-    newLine(): void;
+    emptyLine(): void;
 
     info(text: string, ...args: any[]): void;
 

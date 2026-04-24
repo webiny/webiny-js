@@ -20,7 +20,7 @@ const publishedStep: IInactiveStep = {
     id: "published",
     color: "#5AC74C",
     title: "Published",
-    description: "(The final state for any publish content)"
+    description: "(The final state for all published content)"
 };
 
 export const WorkflowEditorSteps = observer((props: IWorkflowEditorStepsProps) => {
@@ -39,6 +39,7 @@ export const WorkflowEditorSteps = observer((props: IWorkflowEditorStepsProps) =
                     <Step
                         key={`step-${step.id}`}
                         step={step}
+                        notifications={presenter.vm.notifications}
                         onSave={presenter.updateStep}
                         onRemove={presenter.removeStep}
                         onMoveUp={presenter.moveStepUp}
@@ -48,7 +49,7 @@ export const WorkflowEditorSteps = observer((props: IWorkflowEditorStepsProps) =
                     />
                 );
             })}
-            <NewStep onAdd={presenter.addStep} />
+            <NewStep onAdd={presenter.addStep} notifications={presenter.vm.notifications} />
             <InactiveStep step={publishedStep} />
         </div>
     );

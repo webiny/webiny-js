@@ -50,8 +50,8 @@ export const QuerySaverDialog = ({ filter, ...props }: QuerySaverDialogProps) =>
                         title={"Save search filter"}
                         actions={
                             <>
-                                <Dialog.CancelButton onClick={props.onClose} text={"Cancel"} />
-                                <Dialog.ConfirmButton
+                                <Dialog.CancelAction onClick={props.onClose} text={"Cancel"} />
+                                <Dialog.ConfirmAction
                                     onClick={form.submit}
                                     text={"Save and apply"}
                                 />

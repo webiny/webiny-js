@@ -1,22 +1,15 @@
-import type {
-    IPublishPageUseCase,
-    PublishPageParams
-} from "~/features/pages/publishPage/IPublishPageUseCase.js";
-import type { IPublishPageRepository } from "~/features/pages/publishPage/IPublishPageRepository.js";
-import { Page } from "~/domain/Page/index.js";
+import { PublishPageUseCase as UseCaseAbstraction, PublishPageRepository } from "./abstractions.js";
+import { Page } from "~/domain/Page/Page.js";
 
-export class PublishPageUseCase implements IPublishPageUseCase {
-    private repository: IPublishPageRepository;
+class PublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: PublishPageRepository.Interface) {}
 
-    constructor(repository: IPublishPageRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: PublishPageParams) {
-        await this.repository.execute(
-            Page.create({
-                id: params.id
-            })
-        );
+    async execute(params: UseCaseAbstraction.Params) {
+        await this.repository.execute(Page.create({ id: params.id }));
     }
 }
+
+export const PublishPageUseCase = UseCaseAbstraction.createImplementation({
+    implementation: PublishPageUseCaseImpl,
+    dependencies: [PublishPageRepository]
+});

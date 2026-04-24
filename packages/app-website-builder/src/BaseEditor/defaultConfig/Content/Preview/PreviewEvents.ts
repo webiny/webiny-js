@@ -1,28 +1,56 @@
-import type { Editor } from "~/editorSdk/Editor.js";
 import type { Messenger } from "@webiny/website-builder-sdk";
 import {
     type BoxesData,
     type ComponentManifest,
     type EditorViewportInfo,
+    functionConverter,
     mouseTracker,
     type PreviewViewportData,
     type SerializedComponentGroup
 } from "@webiny/website-builder-sdk";
 import defaultImage from "@webiny/icons/extension.svg";
 import { Commands } from "~/BaseEditor/index.js";
+import type { Editor } from "~/editorSdk/Editor.js";
 import { $createElement } from "~/editorSdk/utils/index.js";
-import type { ScrollTracker } from "./ScrollTracker.js";
+
+type FragmentConfig =
+    | {
+          type: "fixed";
+          name: string;
+          element: React.ReactNode;
+      }
+    | { type: "component"; component: string; inputs: Record<string, any> };
+
+// oxlint-disable-next-line typescript/no-unsafe-function-type
+function deserializeHandlers(value: string | string[]): Function | Function[] {
+    if (Array.isArray(value)) {
+        return value.map(s => functionConverter.deserialize(s));
+    }
+    return functionConverter.deserialize(value);
+}
 
 export class PreviewEvents {
     private editor: Editor;
     private editorEventsRegistered = false;
     private messenger: Messenger | undefined;
-    private scrollTracker: ScrollTracker;
     private listeners: Array<() => void> = [];
 
-    constructor(editor: Editor, scrollTracker: ScrollTracker) {
-        this.scrollTracker = scrollTracker;
+    constructor(editor: Editor) {
         this.editor = editor;
+
+        // @ts-ignore 123
+        window["aiCreateElement"] = (input: any) => {
+            const elements = Array.isArray(input) ? input : [input];
+            elements.forEach(element => {
+                $createElement(this.editor, {
+                    componentName: element.component,
+                    bindings: { inputs: element.inputs },
+                    parentId: "root",
+                    index: 0,
+                    slot: "children"
+                });
+            });
+        };
     }
 
     onConnected(messenger: Messenger) {
@@ -65,31 +93,15 @@ export class PreviewEvents {
                     this.getMessenger().send("document.set", event.state);
                 }
             }),
-            // Scroll start
-            this.scrollTracker.onScrollStart(() => {
-                this.editor.updateEditor(state => {
-                    state.showOverlays = false;
-                });
-            }),
-
-            // Scrolling
-            this.scrollTracker.onScroll(event => {
-                this.getMessenger().send("preview.scroll", {
-                    deltaX: event.deltaX,
-                    deltaY: event.deltaY
-                });
-            }),
-
-            // Scroll end
-            this.scrollTracker.onScrollEnd(() => {
-                this.editor.updateEditor(state => {
-                    state.showOverlays = true;
-                });
-            }),
 
             // Element preview
             this.editor.registerCommandHandler(Commands.PreviewPatchElement, payload => {
                 this.getMessenger().send(`element.patch.${payload.elementId}`, payload.patch);
+            }),
+
+            // Forward arbitrary messages to the preview iframe.
+            this.editor.registerCommandHandler(Commands.SendPreviewMessage, ({ type, payload }) => {
+                this.getMessenger().send(type, payload);
             })
         );
     }
@@ -103,7 +115,7 @@ export class PreviewEvents {
         });
 
         messenger.on("document.fragments", payload => {
-            const fragments: string[] = payload.fragments;
+            const fragments: FragmentConfig[] = payload.fragments;
             this.editor.updateEditor(state => {
                 state.fragments = fragments;
             });
@@ -112,20 +124,31 @@ export class PreviewEvents {
 
             if (Object.keys(document.elements).length === 1) {
                 // We only have the default "root" element, create fragment elements.
-                let index = 0;
-                fragments.forEach(fragment => {
+                fragments.forEach((fragment, index) => {
+                    if (fragment.type === "fixed") {
+                        $createElement(this.editor, {
+                            componentName: "Webiny/Fragment",
+                            parentId: "root",
+                            slot: "children",
+                            index,
+                            bindings: {
+                                inputs: {
+                                    name: fragment.name
+                                }
+                            }
+                        });
+                        return;
+                    }
+
                     $createElement(this.editor, {
-                        componentName: "Webiny/Fragment",
+                        componentName: fragment.component,
                         parentId: "root",
                         slot: "children",
                         index,
                         bindings: {
-                            inputs: {
-                                name: fragment
-                            }
+                            inputs: fragment.inputs
                         }
                     });
-                    index++;
                 });
             }
         });
@@ -135,6 +158,7 @@ export class PreviewEvents {
 
             this.editor.updateEditor(state => {
                 state.viewport = {
+                    ...state.viewport,
                     ...viewport,
                     top: iframeBox.top,
                     left: iframeBox.left
@@ -148,6 +172,36 @@ export class PreviewEvents {
         });
 
         messenger.on("preview.component.register", (component: ComponentManifest) => {
+            // Deserialize constraint check functions once on arrival.
+            try {
+                if (component.constraints) {
+                    component.constraints = (component.constraints as any[]).map(c =>
+                        typeof c === "string" ? functionConverter.deserialize(c) : c
+                    );
+                }
+                if (component.descendantConstraints) {
+                    component.descendantConstraints = (
+                        component.descendantConstraints as any[]
+                    ).map(c => (typeof c === "string" ? functionConverter.deserialize(c) : c));
+                }
+                if (component.canDelete && typeof component.canDelete === "string") {
+                    component.canDelete = functionConverter.deserialize(component.canDelete);
+                }
+                if (component.onChange) {
+                    component.onChange = deserializeHandlers(component.onChange as any) as any;
+                }
+                if (component.onDescendantChange) {
+                    component.onDescendantChange = deserializeHandlers(
+                        component.onDescendantChange as any
+                    ) as any;
+                }
+            } catch (e) {
+                console.log(
+                    `Couldn't deserialize ${component.name} component callbacks:`,
+                    e.message
+                );
+            }
+
             this.editor.updateEditor(state => {
                 if (!state.components) {
                     state.components = {};
@@ -185,8 +239,10 @@ export class PreviewEvents {
     }
 
     private getIframeBox() {
-        const iframe = document.getElementById("preview-iframe");
-        if (!iframe) {
+        const previewContainer = document.getElementById("preview-container");
+        const previewBody = document.getElementById("preview-body");
+
+        if (!previewContainer || !previewBody) {
             return {
                 top: 0,
                 left: 0,
@@ -195,13 +251,18 @@ export class PreviewEvents {
             };
         }
 
-        const iframeRect = iframe.getBoundingClientRect();
+        /**
+         * We need to use the `preview-container` to get the exact position from the top (we MUST ignore scroll position).
+         * However, for everything else we use the actual `preview-body`,
+         */
+        const containerRect = previewContainer.getBoundingClientRect();
+        const bodyRect = previewBody.getBoundingClientRect();
 
         return {
-            top: iframeRect.top,
-            left: iframeRect.left,
-            width: iframeRect.width,
-            height: iframeRect.height
+            top: containerRect.top,
+            left: bodyRect.left,
+            width: bodyRect.width,
+            height: bodyRect.height
         };
     }
 

@@ -1,15 +1,17 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
-import { createInitFactory } from "./product/init";
 import { createEntriesFactory } from "./product/entries";
 import { createCategoryFactory } from "./product/category";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
-import { Product, ProductCategory } from "../types";
+import { Product } from "../types";
 import { createGetProduct } from "./product/getProductFactory";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
+import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
 
 describe("complex product conditional filtering", () => {
     const options = {
-        path: "manage/en-US"
+        path: "manage"
     };
 
     const categoryManager = useCategoryManageHandler(options);
@@ -17,16 +19,18 @@ describe("complex product conditional filtering", () => {
 
     const { listProducts } = manager;
 
-    const init = createInitFactory(manager);
-    const createEntries = createEntriesFactory(manager);
     const createCategory = createCategoryFactory(categoryManager);
+    const createEntries = createEntriesFactory(manager);
 
-    let category: ProductCategory;
-    let products: Product[];
+    let category: IManageQueryBaseResponse<ICategoryResponseValues>;
+    let products: IManageQueryBaseResponse<Product>[];
     let getProduct: ReturnType<typeof createGetProduct>;
 
     beforeEach(async () => {
-        await init();
+        await setupGroupAndModels({
+            manager,
+            models: ["product", "category"]
+        });
         category = await createCategory();
         products = await createEntries(category);
         getProduct = createGetProduct(products);
@@ -40,28 +44,40 @@ describe("complex product conditional filtering", () => {
          */
         const [andResponse] = await listProducts({
             where: {
-                title_contains: "ser",
+                values: {
+                    title_contains: "ser"
+                },
                 AND: [
                     {
-                        title_contains: "ser"
+                        values: {
+                            title_contains: "ser"
+                        }
                     },
                     {
-                        price_between: [35000, 100000],
+                        values: {
+                            price_between: [35000, 100000]
+                        },
                         AND: [
                             {
-                                color: "red"
+                                values: {
+                                    color: "red"
+                                }
                             },
                             {
                                 AND: [
                                     {
-                                        inStock: false
+                                        values: {
+                                            inStock: false
+                                        }
                                     }
                                 ]
                             }
                         ]
                     },
                     {
-                        availableOn_gte: "2021-01-01"
+                        values: {
+                            availableOn_gte: "2021-01-01"
+                        }
                     }
                 ]
             }
@@ -87,15 +103,21 @@ describe("complex product conditional filtering", () => {
             where: {
                 OR: [
                     {
-                        price_between: [35000, 100000],
+                        values: {
+                            price_between: [35000, 100000]
+                        },
                         OR: [
                             {
-                                color: "red"
+                                values: {
+                                    color: "red"
+                                }
                             },
                             {
                                 OR: [
                                     {
-                                        title_contains: "ver"
+                                        values: {
+                                            title_contains: "ver"
+                                        }
                                     }
                                 ]
                             }
@@ -104,8 +126,10 @@ describe("complex product conditional filtering", () => {
                     {
                         AND: [
                             {
-                                availableOn_gte: "2021-02-01",
-                                availableOn_lte: "2021-02-02"
+                                values: {
+                                    availableOn_gte: "2021-02-01",
+                                    availableOn_lte: "2021-02-02"
+                                }
                             }
                         ]
                     }
@@ -153,28 +177,40 @@ describe("complex product conditional filtering", () => {
          */
         const [response1] = await listProducts({
             where: {
-                title_contains: "ser",
+                values: {
+                    title_contains: "ser"
+                },
                 AND: [
                     {
-                        title_contains: "ser"
+                        values: {
+                            title_contains: "ser"
+                        }
                     },
                     {
-                        price_between: [100, 200],
+                        values: {
+                            price_between: [100, 200]
+                        },
                         AND: [
                             {
-                                color: "red"
+                                values: {
+                                    color: "red"
+                                }
                             },
                             {
                                 AND: [
                                     {
-                                        inStock: false
+                                        values: {
+                                            inStock: false
+                                        }
                                     }
                                 ]
                             }
                         ]
                     },
                     {
-                        availableOn_gte: "2021-01-01"
+                        values: {
+                            availableOn_gte: "2021-01-01"
+                        }
                     }
                 ]
             }
@@ -186,28 +222,40 @@ describe("complex product conditional filtering", () => {
          */
         const [response2] = await listProducts({
             where: {
-                title_contains: "ser",
+                values: {
+                    title_contains: "ser"
+                },
                 AND: [
                     {
-                        title_contains: "ser"
+                        values: {
+                            title_contains: "ser"
+                        }
                     },
                     {
-                        price_between: [35000, 100000],
+                        values: {
+                            price_between: [35000, 100000]
+                        },
                         AND: [
                             {
-                                color: "red"
+                                values: {
+                                    color: "red"
+                                }
                             },
                             {
                                 AND: [
                                     {
-                                        inStock: false
+                                        values: {
+                                            inStock: false
+                                        }
                                     }
                                 ]
                             }
                         ]
                     },
                     {
-                        availableOn_gte: "2024-01-01"
+                        values: {
+                            availableOn_gte: "2024-01-01"
+                        }
                     }
                 ]
             }
@@ -220,28 +268,40 @@ describe("complex product conditional filtering", () => {
          */
         const [response3] = await listProducts({
             where: {
-                title_contains: "ser",
+                values: {
+                    title_contains: "ser"
+                },
                 AND: [
                     {
-                        title_contains: "ser"
+                        values: {
+                            title_contains: "ser"
+                        }
                     },
                     {
-                        price_between: [35000, 100000],
+                        values: {
+                            price_between: [35000, 100000]
+                        },
                         AND: [
                             {
-                                color: "red"
+                                values: {
+                                    color: "red"
+                                }
                             },
                             {
                                 AND: [
                                     {
-                                        inStock: true
+                                        values: {
+                                            inStock: true
+                                        }
                                     }
                                 ]
                             }
                         ]
                     },
                     {
-                        availableOn_gte: "2021-01-01"
+                        values: {
+                            availableOn_gte: "2021-01-01"
+                        }
                     }
                 ]
             }
@@ -279,15 +339,21 @@ describe("complex product conditional filtering", () => {
             where: {
                 OR: [
                     {
-                        price_between: [200, 300],
+                        values: {
+                            price_between: [200, 300]
+                        },
                         OR: [
                             {
-                                color: "black"
+                                values: {
+                                    color: "black"
+                                }
                             },
                             {
                                 OR: [
                                     {
-                                        title_contains: "version"
+                                        values: {
+                                            title_contains: "version"
+                                        }
                                     }
                                 ]
                             }
@@ -296,8 +362,10 @@ describe("complex product conditional filtering", () => {
                     {
                         OR: [
                             {
-                                availableOn_gte: "2024-02-01",
-                                availableOn_lte: "2024-02-02"
+                                values: {
+                                    availableOn_gte: "2024-02-01",
+                                    availableOn_lte: "2024-02-02"
+                                }
                             }
                         ]
                     }
@@ -315,25 +383,35 @@ describe("complex product conditional filtering", () => {
          */
         const [andResponse] = await listProducts({
             where: {
-                inStock_not: true,
+                values: {
+                    inStock_not: true
+                },
                 AND: [
                     {
-                        color: "red"
+                        values: {
+                            color: "red"
+                        }
                     },
                     {
-                        price_between: [750, 37591],
+                        values: {
+                            price_between: [750, 37591]
+                        },
                         AND: [
                             {
                                 AND: [
                                     {
-                                        inStock: false
+                                        values: {
+                                            inStock: false
+                                        }
                                     }
                                 ]
                             }
                         ]
                     },
                     {
-                        availableOn_gte: "2021-01-01"
+                        values: {
+                            availableOn_gte: "2021-01-01"
+                        }
                     }
                 ]
             }
@@ -360,15 +438,21 @@ describe("complex product conditional filtering", () => {
             where: {
                 OR: [
                     {
-                        price_between: [35000, 100000],
+                        values: {
+                            price_between: [35000, 100000]
+                        },
                         OR: [
                             {
-                                color: "red"
+                                values: {
+                                    color: "red"
+                                }
                             },
                             {
                                 OR: [
                                     {
-                                        title_contains: "ver"
+                                        values: {
+                                            title_contains: "ver"
+                                        }
                                     }
                                 ]
                             }
@@ -377,8 +461,10 @@ describe("complex product conditional filtering", () => {
                     {
                         AND: [
                             {
-                                availableOn_gte: "2021-02-01",
-                                availableOn_lte: "2021-02-02"
+                                values: {
+                                    availableOn_gte: "2021-02-01",
+                                    availableOn_lte: "2021-02-02"
+                                }
                             }
                         ]
                     }
@@ -405,15 +491,21 @@ describe("complex product conditional filtering", () => {
             where: {
                 OR: [
                     {
-                        price_between: [35000, 100000],
+                        values: {
+                            price_between: [35000, 100000]
+                        },
                         OR: [
                             {
-                                color: "red"
+                                values: {
+                                    color: "red"
+                                }
                             },
                             {
                                 OR: [
                                     {
-                                        title_contains: "ver"
+                                        values: {
+                                            title_contains: "ver"
+                                        }
                                     }
                                 ]
                             }
@@ -422,13 +514,17 @@ describe("complex product conditional filtering", () => {
                     {
                         AND: [
                             {
-                                availableOn_gte: "2021-02-01",
-                                availableOn_lte: "2021-02-02"
+                                values: {
+                                    availableOn_gte: "2021-02-01",
+                                    availableOn_lte: "2021-02-02"
+                                }
                             }
                         ]
                     },
                     {
-                        price_between: [880, 900]
+                        values: {
+                            price_between: [880, 900]
+                        }
                     }
                 ]
             }

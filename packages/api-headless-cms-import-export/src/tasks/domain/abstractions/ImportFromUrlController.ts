@@ -1,14 +1,9 @@
 import type {
-    Context,
     ICmsImportExportValidatedAssetsFile,
     ICmsImportExportValidatedContentEntriesFile
 } from "~/types.js";
-import type {
-    ITaskResponseDoneResultOutput,
-    ITaskResponseResult,
-    ITaskRunParams
-} from "@webiny/tasks";
 import type { NonEmptyArray } from "@webiny/api/types.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export enum IImportFromUrlControllerInputStep {
     DOWNLOAD = "download",
@@ -41,7 +36,7 @@ export interface IImportFromUrlControllerInput {
     steps: IImportFromUrlControllerInputSteps;
 }
 
-export interface IImportFromUrlControllerOutput extends ITaskResponseDoneResultOutput {
+export interface IImportFromUrlControllerOutput extends TaskDefinition.TaskOutput {
     /**
      * Should contain all local files created by the import process.
      */
@@ -53,9 +48,8 @@ export interface IImportFromUrlControllerOutput extends ITaskResponseDoneResultO
 }
 
 export interface IImportFromUrlController<
-    C extends Context = Context,
     I extends IImportFromUrlControllerInput = IImportFromUrlControllerInput,
     O extends IImportFromUrlControllerOutput = IImportFromUrlControllerOutput
 > {
-    run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>>;
+    run(params: TaskDefinition.RunParams<I, O>): Promise<TaskDefinition.Result<I, O>>;
 }

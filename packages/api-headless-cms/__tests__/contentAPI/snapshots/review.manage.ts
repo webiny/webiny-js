@@ -2,6 +2,13 @@ export default /* GraphQL */ `
     """
     Product review
     """
+    type ReviewApiModelValues {
+        text: String
+        product: RefField
+        rating: Number
+        author: RefField
+    }
+
     type ReviewApiModel {
         id: ID!
         entryId: String!
@@ -35,12 +42,10 @@ export default /* GraphQL */ `
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
         meta: ReviewApiModelMeta
-        text: String
-        product: RefField
-        rating: Number
-        author: RefField
-        # Advanced Content Organization - make required in 5.38.0
         wbyAco_location: WbyAcoLocation
+        live: CmsEntryLive
+
+        values: ReviewApiModelValues
     }
 
     type ReviewApiModelMeta {
@@ -49,7 +54,7 @@ export default /* GraphQL */ `
         locked: Boolean
 
         status: String
-        state: CmsEntryState
+        system: CmsEntrySystem
         """
         CAUTION: this field is resolved by making an extra query to DB.
         RECOMMENDATION: Use it only with "get" queries (avoid in "list")
@@ -62,6 +67,13 @@ export default /* GraphQL */ `
         Custom meta data stored in the root of the entry object.
         """
         data: JSON
+    }
+
+    input ReviewApiModelInputValues {
+        text: String
+        product: RefFieldInput
+        rating: Number
+        author: RefFieldInput
     }
 
     input ReviewApiModelInput {
@@ -101,22 +113,49 @@ export default /* GraphQL */ `
 
         wbyAco_location: WbyAcoLocationInput
 
+        values: ReviewApiModelInputValues
+    }
+
+    input ReviewApiModelGetWhereInputValues {
         text: String
-        product: RefFieldInput
         rating: Number
-        author: RefFieldInput
     }
 
     input ReviewApiModelGetWhereInput {
         id: ID
         entryId: String
+        values: ReviewApiModelGetWhereInputValues
+    }
+
+    input ReviewApiModelListWhereInputValues {
         text: String
+        text_not: String
+        text_in: [String]
+        text_not_in: [String]
+        text_contains: String
+        text_not_contains: String
+        text_startsWith: String
+        text_not_startsWith: String
+
+        product: RefFieldWhereInput
+
         rating: Number
+        rating_not: Number
+        rating_in: [Number]
+        rating_not_in: [Number]
+        rating_lt: Number
+        rating_lte: Number
+        rating_gt: Number
+        rating_gte: Number
+        # there must be two numbers sent in the array
+        rating_between: [Number!]
+        # there must be two numbers sent in the array
+        rating_not_between: [Number!]
+
+        author: RefFieldWhereInput
     }
 
     input ReviewApiModelListWhereInput {
-        state: ListWhereInputCmsEntryState
-        wbyAco_location: WbyAcoLocationWhereInput
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -284,32 +323,11 @@ export default /* GraphQL */ `
         status_in: [String!]
         status_not_in: [String!]
 
-        text: String
-        text_not: String
-        text_in: [String]
-        text_not_in: [String]
-        text_contains: String
-        text_not_contains: String
-        text_startsWith: String
-        text_not_startsWith: String
+        system: ListWhereInputCmsEntrySystem
+        wbyAco_location: WbyAcoLocationWhereInput
+        live: CmsEntryLiveWhereInput
 
-        product: RefFieldWhereInput
-
-        rating: Number
-        rating_not: Number
-        rating_in: [Number]
-        rating_not_in: [Number]
-        rating_lt: Number
-        rating_lte: Number
-        rating_gt: Number
-        rating_gte: Number
-        # there must be two numbers sent in the array
-        rating_between: [Number!]
-        # there must be two numbers sent in the array
-        rating_not_between: [Number!]
-
-        author: RefFieldWhereInput
-
+        values: ReviewApiModelListWhereInputValues
         AND: [ReviewApiModelListWhereInput!]
         OR: [ReviewApiModelListWhereInput!]
     }
@@ -366,10 +384,10 @@ export default /* GraphQL */ `
         revisionFirstPublishedOn_DESC
         revisionLastPublishedOn_ASC
         revisionLastPublishedOn_DESC
-        text_ASC
-        text_DESC
-        rating_ASC
-        rating_DESC
+        values_text_ASC
+        values_text_DESC
+        values_rating_ASC
+        values_rating_DESC
     }
 
     extend type Query {

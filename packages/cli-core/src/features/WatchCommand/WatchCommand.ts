@@ -1,6 +1,12 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
+import {
+    CliCommandFactory,
+    GetProjectSdkService,
+    StdioService,
+    UiService
+} from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 import chalk from "chalk";
 import { getRandomColorForString } from "./getRandomColorForString.js";
 import { createPrefixer } from "./createPrefixer.js";
@@ -10,14 +16,14 @@ export type IWatchCommandParams = IBaseAppParams;
 const BASE_OPTIONS_GROUP = "Base Options:";
 const LOCAL_AWS_LAMBDA_DEVELOPMENT_GROUP = "Local AWS Lambda Development Options:";
 
-export class WatchCommand implements CliCommand.Interface<IWatchCommandParams> {
+export class WatchCommand implements CliCommandFactory.Interface<IWatchCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private stdioService: StdioService.Interface,
         private uiService: UiService.Interface
     ) {}
 
-    async execute(): Promise<CliCommand.CommandDefinition<IWatchCommandParams>> {
+    async execute(): Promise<CliCommandFactory.CommandDefinition<IWatchCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
         const stdio = this.stdioService;
         const ui = this.uiService;
@@ -39,38 +45,11 @@ export class WatchCommand implements CliCommand.Interface<IWatchCommandParams> {
                 }
             ],
             options: [
-                {
-                    name: "env",
-                    description: "Environment name (dev, prod, etc.)",
-                    type: "string",
-                    group: BASE_OPTIONS_GROUP
-                },
-                {
-                    name: "variant",
-                    description: "Variant of the app to watch",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidVariantName(params.variant);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    },
-                    group: BASE_OPTIONS_GROUP
-                },
-                {
-                    name: "region",
-                    description: "Region to target",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidRegionName(params.region);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    },
-                    group: BASE_OPTIONS_GROUP
-                },
+                ...createBaseAppOptions(projectSdk, {
+                    env: { group: BASE_OPTIONS_GROUP },
+                    variant: { group: BASE_OPTIONS_GROUP },
+                    region: { group: BASE_OPTIONS_GROUP }
+                }),
                 {
                     name: "package",
                     alias: "p",
@@ -190,7 +169,7 @@ export class WatchCommand implements CliCommand.Interface<IWatchCommandParams> {
 }
 
 export const watchCommand = createImplementation({
-    abstraction: CliCommand,
+    abstraction: CliCommandFactory,
     implementation: WatchCommand,
     dependencies: [GetProjectSdkService, StdioService, UiService]
 });

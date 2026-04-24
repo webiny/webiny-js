@@ -1,7 +1,8 @@
-import React from "react";
-import { AdminConfig, useContainer } from "@webiny/app-admin";
-import { HasPermission } from "@webiny/app-security";
+import React, { useEffect } from "react";
+import { AdminConfig, RegisterFeature, useContainer } from "@webiny/app-admin";
+import { useRouter } from "@webiny/app-admin";
 import { ReactComponent as PagesIcon } from "@webiny/icons/table_chart.svg";
+import { ReactComponent as PermissionsIcon } from "@webiny/icons/table_chart.svg";
 import { PageEditor } from "~/modules/pages/PageEditor.js";
 import { PageList } from "~/modules/pages/PageList.js";
 import { useSettingsDialog } from "~/modules/settings/useSettingsDialog.js";
@@ -10,22 +11,69 @@ import { PagesListConfig } from "~/modules/pages/PagesListConfig.js";
 import { RedirectsList } from "~/modules/redirects/RedirectsList.js";
 import { RedirectsListConfig } from "~/modules/redirects/RedirectsListConfig.js";
 import { Routes } from "~/routes.js";
-import { useRouter } from "@webiny/app-admin";
 import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
 import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
+import { Extension as NavigationExtension } from "./presentation/navigation/Extension.js";
+import { NextjsConfigFeature } from "~/presentation/navigation/NextjsConfig/feature.js";
+import { WB_PERMISSIONS_SCHEMA } from "~/constants.js";
+import { WbPermissionsFeature } from "~/features/permissions/feature.js";
+import { HasPermission } from "~/presentation/security/HasPermission.js";
+import { TranslatePageFeature } from "~/features/pages/translatePage/index.js";
+import { DeletePageFeature } from "~/features/pages/deletePage/index.js";
+import { MovePageFeature } from "~/features/pages/movePage/index.js";
+import { PublishPageFeature } from "~/features/pages/publishPage/index.js";
+import { UnpublishPageFeature } from "~/features/pages/unpublishPage/index.js";
+import { DuplicatePageFeature } from "~/features/pages/duplicatePage/index.js";
+import { CreatePageRevisionFromFeature } from "~/features/pages/createPageRevisionFrom/index.js";
+import { UpdatePageFeature } from "~/features/pages/updatePage/index.js";
+import { CreatePageFeature as CreatePageHeadlessFeature } from "~/features/pages/createPage/index.js";
+import { GetPageFeature } from "~/features/pages/getPage/index.js";
+import { GetPageRevisionsFeature } from "~/features/pages/getPageRevisions/index.js";
+import { SelectPagesFeature } from "~/features/pages/selectPages/index.js";
+import { SharedPageInfrastructureFeature } from "~/features/pages/shared/feature.js";
+import { LoadPagesFeature } from "~/features/pages/loadPages/index.js";
+import { CreatePageConfig } from "./presentation/pages/CreatePage/CreatePageConfig.js";
+import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
+import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 
-const { Menu, Route, Dashboard } = AdminConfig;
+const { Security, Menu, Route, Dashboard } = AdminConfig;
 
 export const Extension = () => {
     const router = useRouter();
     const container = useContainer();
 
-    PageListFeature.register(container);
+    useEffect(() => {
+        PageListFeature.register(container);
+    }, []);
 
     return (
         <>
+            <RegisterFeature feature={SharedPageInfrastructureFeature} />
+            <RegisterFeature feature={NextjsConfigFeature} />
+            <RegisterFeature feature={WbPermissionsFeature} />
+            <RegisterFeature feature={TranslatePageFeature} />
+            <RegisterFeature feature={DeletePageFeature} />
+            <RegisterFeature feature={MovePageFeature} />
+            <RegisterFeature feature={PublishPageFeature} />
+            <RegisterFeature feature={UnpublishPageFeature} />
+            <RegisterFeature feature={DuplicatePageFeature} />
+            <RegisterFeature feature={CreatePageRevisionFromFeature} />
+            <RegisterFeature feature={UpdatePageFeature} />
+            <RegisterFeature feature={CreatePageHeadlessFeature} />
+            <RegisterFeature feature={GetPageFeature} />
+            <RegisterFeature feature={GetPageRevisionsFeature} />
+            <RegisterFeature feature={SelectPagesFeature} />
+            <RegisterFeature feature={LoadPagesFeature} />
+            <RegisterFeature feature={CreatePageFeature} />
             <AdminConfig>
-                <HasPermission any={["wb.page", "wb.redirect"]}>
+                <Security.Permissions
+                    name="website-builder"
+                    title="Website Builder"
+                    description="Manage Website Builder permissions."
+                    icon={<PermissionsIcon />}
+                    schema={WB_PERMISSIONS_SCHEMA}
+                />
+                <HasPermission any={["page", "redirect"]}>
                     <Menu
                         name="wb"
                         element={
@@ -42,76 +90,61 @@ export const Extension = () => {
                     />
                 </HasPermission>
 
-                <HasPermission any={["wb.page"]}>
-                    <Menu
-                        name="wb.pagesLabel"
-                        parent="Wb"
-                        pinnable={true}
-                        element={<Menu.Group text={"Pages"} />}
-                    />
-                </HasPermission>
-
-                <HasPermission name={"wb.page"}>
+                <HasPermission entity={"page"}>
                     <Route route={Routes.Pages.List} element={<PageList />} />
                     <Route route={Routes.Pages.Editor} element={<PageEditor />} />
                     <Menu
                         name="wb.pages"
                         parent={"wb"}
-                        pinnable={true}
                         element={
-                            <Menu.Link text={"Pages"} to={router.getLink(Routes.Pages.List)} />
+                            <Menu.Link
+                                text={"Pages"}
+                                to={router.getLink(Routes.Pages.List)}
+                                pinnable={true}
+                            />
                         }
                     />
                     <Dashboard.Widget name="wb.pages" column={"left"} element={<PagesWidget />} />
+                    <NavigationExtension />
                 </HasPermission>
-                <HasPermission name={"wb.redirect"}>
+
+                <HasPermission entity={"redirect"}>
                     <Route route={Routes.Redirects.List} element={<RedirectsList />} />
                     <Menu
                         name="wb.redirects"
                         parent={"wb"}
-                        pinnable={true}
                         element={
                             <Menu.Link
                                 text={"Redirects"}
                                 to={router.getLink(Routes.Redirects.List)}
+                                pinnable={true}
                             />
                         }
                     />
                 </HasPermission>
-                <HasPermission name={"wb.page"}>
-                    <AdminConfig.Dashboard.Widget
-                        name="wb.pages"
-                        column="left"
-                        element={<PagesWidget />}
-                    />
+                <HasPermission entity={"settings"}>
+                    <Menu name="wb.settings" parent="wb" element={<SettingsMenuItem />} />
                 </HasPermission>
-                <HasPermission name={"wb.settings"}>
-                    <Menu
-                        name="wb.settings"
-                        parent="wb"
-                        pinnable={true}
-                        element={<SettingsMenuItem />}
-                    />
+                <HasPermission entity={"integrations"}>
+                    <Menu name="wb.integrations" parent="wb" element={<IntegrationsMenuItem />} />
                 </HasPermission>
-                <Menu
-                    name="wb.integrations"
-                    parent="wb"
-                    pinnable={true}
-                    element={<IntegrationsMenuItem />}
-                />
             </AdminConfig>
             <PagesListConfig />
             <RedirectsListConfig />
+            <CreatePageConfig />
+            <TranslatePageConfig />
         </>
     );
 };
 
+Extension.displayName = "WbExtension";
+
 const SettingsMenuItem = () => {
     const { showSettingsDialog } = useSettingsDialog();
-    return <Menu.Item text={"Settings"} onClick={showSettingsDialog} />;
+    return <Menu.Item text={"Settings"} onClick={showSettingsDialog} pinnable={true} />;
 };
 
 const IntegrationsMenuItem = () => {
     const { showIntegrationsDialog } = useIntegrationsDialog();
-    return <Menu.Item text={"Integrations"} onClick={showIntegrationsDialog} />;
+    return <Menu.Item text={"Integrations"} onClick={showIntegrationsDialog} pinnable={true} />;
 };

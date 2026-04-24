@@ -36,7 +36,7 @@ class WcpInjectTelemetryClientAfterBuildImpl implements ApiAfterBuild.Interface 
         // 1. Download telemetry client code.
         const latestTelemetryClientUrl = this.wcpService
             .getWcpApiUrl()
-            .join("/clients/latest.js")
+            .join("/clients/latest.mjs")
             .toString();
 
         try {
@@ -48,21 +48,18 @@ class WcpInjectTelemetryClientAfterBuildImpl implements ApiAfterBuild.Interface 
                 );
             }
 
-            const telemetryCodeAsString = await response.text().then(text => {
-                // Quick fix, until we make it so that build outputs `.js` files instead of `.cjs`.
-                return text.replace("./_handler.js", "./_handler.cjs");
-            });
+            const telemetryCodeAsString = await response.text();
 
             // 2. Wrap the initially built code with the telemetry client code.
             for (let i = 0; i < handlersPaths.length; i++) {
                 const current = handlersPaths[i];
 
-                // 2.1 Move initially built `handler.cjs` into `_handler.cjs`.
-                const builtHandlerPath = current.join("handler.cjs").toString();
-                const renamedHandlerPath = current.join("_handler.cjs").toString();
+                // 2.1 Move initially built `handler.mjs` into `_handler.mjs`.
+                const builtHandlerPath = current.join("handler.mjs").toString();
+                const renamedHandlerPath = current.join("_handler.mjs").toString();
                 fs.renameSync(builtHandlerPath, renamedHandlerPath);
 
-                // 2.2 Write downloaded telemetry client code as a new `handler.cjs`.
+                // 2.2 Write downloaded telemetry client code as a new `handler.js`.
                 fs.writeFileSync(builtHandlerPath, telemetryCodeAsString);
             }
 

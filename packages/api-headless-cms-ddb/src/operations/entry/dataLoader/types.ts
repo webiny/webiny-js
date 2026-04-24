@@ -1,7 +1,7 @@
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
+import type { IEntryEntity } from "~/definitions/types.js";
 
-export interface DataLoaderParams {
-    entity: Entity<any>;
+export interface IDataLoaderParams {
+    entity: IEntryEntity;
     tenant: string;
-    locale: string;
+    modelId: string;
 }

@@ -16,9 +16,9 @@ const plugin: CmsModelFieldTypePlugin = {
         label: t`Object`,
         description: t`Store nested data structures.`,
         icon: <ObjectIcon />,
-        allowMultipleValues: true,
+        allowList: true,
         allowPredefinedValues: false,
-        multipleValuesLabel: t`Use as a repeatable object`,
+        listLabel: t`Use as a repeatable object`,
         createField() {
             return {
                 type: this.type,
@@ -38,7 +38,9 @@ const plugin: CmsModelFieldTypePlugin = {
         graphql: {
             queryField({ field, model, graphQLTypePrefix }) {
                 const typePrefix = `${graphQLTypePrefix}_${createTypeName(field.fieldId)}`;
-                const fields = (field.settings ? field.settings.fields : []) as CmsModelField[];
+                const fields = (
+                    field.settings ? (field.settings.fields ?? []) : []
+                ) as CmsModelField[];
                 return `{ ${createFieldsList({ model, fields, graphQLTypePrefix: typePrefix })} }`;
             }
         }

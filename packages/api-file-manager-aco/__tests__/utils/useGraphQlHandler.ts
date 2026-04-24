@@ -6,11 +6,8 @@ import {
 } from "@webiny/api-headless-cms";
 import { createHandler } from "@webiny/handler-aws";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createTenancyAndSecurity } from "./tenancySecurity";
-
-import { CREATE_FOLDER, GET_FOLDER } from "~tests/graphql/folder.gql";
-
 import { createAco } from "@webiny/api-aco";
+import { createAcoSdk } from "../../../api-aco/__tests__/utils/createAcoSdk.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getIntrospectionQuery } from "graphql";
@@ -22,6 +19,10 @@ import type { IdentityData } from "@webiny/api-core/features/security/IdentityCo
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { createTenancyAndSecurity } from "./tenancySecurity";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerSdk } from "../../../api-file-manager/__tests__/utils/createFileManagerSdk.js";
+import { createFileManagerAco } from "~/index.js";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -67,13 +68,15 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
             new CmsParametersPlugin(async () => {
                 return {
-                    locale: "en-US",
                     type: "manage"
                 };
             }),
-            createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             createAco({ documentClient }),
+            createFileManagerContext(),
+            createFileManagerGraphQL(),
+            createFileManagerAco(),
             plugins
         ],
         debug: false
@@ -100,26 +103,21 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         return [JSON.parse(response.body), response];
     };
 
-    const folders = {
-        async createFolder(variables = {}, fields: string[] = []) {
-            return invoke({ body: { query: CREATE_FOLDER(fields), variables } });
-        },
-        async getFolder(variables = {}, fields: string[] = []) {
-            return invoke({ body: { query: GET_FOLDER(fields), variables } });
-        }
-    };
+    const fm = createFileManagerSdk(invoke);
+    const aco = createAcoSdk(invoke);
 
     return {
         params,
         handler,
         invoke,
+        fm,
+        aco,
         introspect: () => {
             return invoke({
                 body: {
                     query: getIntrospectionQuery()
                 }
             });
-        },
-        folders
+        }
     };
 };

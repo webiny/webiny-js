@@ -1,8 +1,14 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import type { MatchedRoute, RouteDefinition, OnRouteExit } from "./abstractions.js";
+import type {
+    MatchedRoute,
+    RouteDefinition,
+    RouteTransitionGuardConfig,
+    GuardDisposer,
+    TransitionController
+} from "./abstractions.js";
 import * as Abstractions from "./abstractions.js";
 import { Route, RouteParamsDefinition, RouteParamsInfer } from "./Route.js";
-import { createImplementation } from "@webiny/di";
+import { RouteUrl } from "./RouteUrl.js";
 
 const INIT_ROUTE = { name: "__init__", path: "", pathname: "", params: {} };
 
@@ -10,11 +16,17 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
     private gateway: Abstractions.RouterGateway.Interface;
     private currentRoute: MatchedRoute = INIT_ROUTE;
     private routes: Route<any>[] = [];
+    private pendingTransition: TransitionController | undefined;
+    private forceUnblocked = false;
+    private guardDisposers = new Map<RouteTransitionGuardConfig, GuardDisposer>();
 
     constructor(gateway: Abstractions.RouterGateway.Interface) {
         this.gateway = gateway;
 
-        makeAutoObservable(this);
+        makeAutoObservable(this, {
+            pendingTransition: false,
+            forceUnblocked: false
+        } as any);
     }
 
     getMatchedRoute() {
@@ -36,12 +48,7 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
         route: Route<TParams>,
         params?: TParams extends RouteParamsDefinition ? RouteParamsInfer<TParams> : undefined
     ): string {
-        const routeExists = this.routes.find(existingRoute => existingRoute.name === route.name);
-        if (!routeExists) {
-            this.gateway.addRoute(this.routeWithAction(route));
-            this.routes.push(route);
-        }
-        return this.gateway.generateRouteUrl(route.name, params);
+        return RouteUrl.fromPattern(route.path, params);
     }
 
     goToRoute<TParams extends RouteParamsDefinition | undefined>(
@@ -51,8 +58,66 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
         this.gateway.goToRoute(route.name, params);
     }
 
-    onRouteExit(cb: OnRouteExit): void {
-        this.gateway.onRouteExit(cb);
+    addGuard(config: RouteTransitionGuardConfig): GuardDisposer {
+        const gatewayGuard: RouteTransitionGuardConfig = {
+            guard: () => {
+                if (this.forceUnblocked) {
+                    this.forceUnblocked = false;
+                    return false;
+                }
+                return config.guard();
+            },
+            onBlocked: (controller: TransitionController) => {
+                this.pendingTransition = controller;
+                config.onBlocked(controller);
+            }
+        };
+
+        const disposeGatewayGuard = this.gateway.addGuard(gatewayGuard);
+
+        const dispose = () => {
+            this.guardDisposers.delete(config);
+            disposeGatewayGuard();
+        };
+
+        this.guardDisposers.set(config, dispose);
+        return dispose;
+    }
+
+    isBlocked(): boolean {
+        return this.pendingTransition !== undefined;
+    }
+
+    unblock(): void {
+        this.forceUnblocked = true;
+        if (this.pendingTransition) {
+            this.forceUnblocked = false;
+            const tx = this.pendingTransition;
+            this.pendingTransition = undefined;
+            tx.continue();
+        } else {
+            // No pending transition — expire the flag after the current
+            // call stack so it only covers synchronous navigations that
+            // follow immediately (e.g. router.goToRoute on the next line).
+            setTimeout(() => {
+                this.forceUnblocked = false;
+            }, 0);
+        }
+    }
+
+    confirmTransition(): void {
+        const tx = this.pendingTransition;
+        this.pendingTransition = undefined;
+        if (tx) {
+            tx.continue();
+        }
+    }
+
+    cancelTransition(): void {
+        if (this.pendingTransition) {
+            this.pendingTransition.cancel();
+            this.pendingTransition = undefined;
+        }
     }
 
     destroy() {
@@ -73,7 +138,10 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
             return;
         }
 
-        const params = route.params ? route.params.parse(matchedRoute.params) : matchedRoute.params;
+        const params =
+            typeof route.params?.parse === "function"
+                ? route.params.parse(matchedRoute.params)
+                : matchedRoute.params;
 
         runInAction(() => {
             Object.assign(this.currentRoute, {
@@ -88,8 +156,7 @@ class RouterRepositoryImpl implements Abstractions.RouterRepository.Interface {
     }
 }
 
-export const RouterRepository = createImplementation({
+export const RouterRepository = Abstractions.RouterRepository.createImplementation({
     implementation: RouterRepositoryImpl,
-    abstraction: Abstractions.RouterRepository,
     dependencies: [Abstractions.RouterGateway]
 });

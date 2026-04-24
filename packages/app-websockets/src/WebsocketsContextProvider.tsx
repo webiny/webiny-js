@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTenancy } from "@webiny/app-admin";
-import { useSecurity } from "@webiny/app-security";
+import { useFeature, useTenantContext } from "@webiny/app-admin";
+import { AuthenticationContextFeature } from "@webiny/app-admin/features/security/AuthenticationContext/feature.js";
 import type {
     IncomingGenericData,
     IWebsocketsContext,
@@ -30,20 +30,19 @@ export const WebsocketsContext = React.createContext<IWebsocketsContext>(
 
 interface ICurrentData {
     tenant?: string;
-    locale?: string;
 }
 
 export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps) => {
-    const { tenant } = useTenancy();
-    const { getIdToken } = useSecurity();
+    const { tenant } = useTenantContext();
+    const { authenticationContext } = useFeature(AuthenticationContextFeature);
 
-    const socketsRef = useRef<IWebsocketsManager>();
+    const socketsRef = useRef<IWebsocketsManager | null>(null);
 
     const [current, setCurrent] = useState<ICurrentData>({});
 
     const getToken = useCallback(async () => {
-        return await getIdToken();
-    }, [getIdToken]);
+        return await authenticationContext.getIdToken();
+    }, [authenticationContext]);
 
     const subscriptionManager = useMemo(() => {
         const manager = createWebsocketsSubscriptionManager();
@@ -118,10 +117,7 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             } else if (current.tenant === tenant) {
                 return;
             } else if (socketsRef.current) {
-                await socketsRef.current.close(
-                    WebsocketsCloseCode.NORMAL,
-                    "Changing tenant/locale."
-                );
+                await socketsRef.current.close(WebsocketsCloseCode.NORMAL, "Changing tenant.");
             }
             const url = getUrl();
 

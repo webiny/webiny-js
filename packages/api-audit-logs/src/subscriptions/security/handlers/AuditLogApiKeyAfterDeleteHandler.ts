@@ -1,8 +1,8 @@
 import WebinyError from "@webiny/error";
-import { ApiKeyAfterDeleteHandler } from "@webiny/api-core/features/DeleteApiKey";
+import { ApiKeyAfterDeleteEventHandler } from "@webiny/api-core/features/security/apiKeys/DeleteApiKey/index.js";
+import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import type { AuditLogsContext } from "~/types.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 
 /**
@@ -13,20 +13,19 @@ import type { ApiKey } from "@webiny/api-core/types/security.js";
 const cleanupApiKey = (apiKey: ApiKey): Omit<ApiKey, "token"> => {
     return {
         id: apiKey.id,
+        slug: apiKey.slug,
         createdBy: apiKey.createdBy,
         createdOn: apiKey.createdOn,
         description: apiKey.description,
         name: apiKey.name,
-        permissions: apiKey.permissions,
-        tenant: apiKey.tenant,
-        webinyVersion: apiKey.webinyVersion
+        permissions: apiKey.permissions
     };
 };
 
-export class AuditLogApiKeyAfterDeleteHandler implements ApiKeyAfterDeleteHandler.Interface {
-    constructor(private context: AuditLogsContext) {}
+class AuditLogApiKeyAfterDeleteHandlerImpl implements ApiKeyAfterDeleteEventHandler.Interface {
+    constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: ApiKeyAfterDeleteHandler.Event): Promise<void> {
+    async handle(event: ApiKeyAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { apiKey: initialApiKey } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.DELETE);
@@ -42,3 +41,8 @@ export class AuditLogApiKeyAfterDeleteHandler implements ApiKeyAfterDeleteHandle
         }
     }
 }
+
+export const AuditLogApiKeyAfterDeleteHandler = ApiKeyAfterDeleteEventHandler.createImplementation({
+    implementation: AuditLogApiKeyAfterDeleteHandlerImpl,
+    dependencies: [AuditLogsContext]
+});

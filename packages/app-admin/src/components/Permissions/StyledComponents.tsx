@@ -1,5 +1,5 @@
 import React from "react";
-import { css } from "emotion";
+import { css } from "@emotion/css";
 import { Label } from "@webiny/admin-ui";
 
 export const gridWithPaddingClass = css({

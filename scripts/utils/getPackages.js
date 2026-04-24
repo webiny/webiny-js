@@ -1,15 +1,15 @@
-import readJson from "read-json-sync";
+import { loadJsonFileSync } from "load-json-file";
 import getYarnWorkspaces from "get-yarn-workspaces";
 import chalk from "chalk";
 import fs from "fs-extra";
-import path from "path";
-import glob from "glob";
+import path from "node:path";
+import fastGlob from "fast-glob";
 
 const { yellow } = chalk;
 const { join, basename } = path;
 
 export const PROJECT_ROOT = join(import.meta.dirname || __dirname, "..", "..");
-export const rootPackageJson = readJson(join(PROJECT_ROOT, "package.json"));
+export const rootPackageJson = loadJsonFileSync(join(PROJECT_ROOT, "package.json"));
 
 let packagesCache;
 
@@ -36,10 +36,10 @@ export const getPackages = (args = {}) => {
             const tsConfigBuildJsonPath = path + "/tsconfig.build.json";
 
             let tsConfigJson, tsConfigBuildJson;
-            const packageJson = readJson(packageJsonPath);
+            const packageJson = loadJsonFileSync(packageJsonPath);
 
             try {
-                tsConfigJson = readJson(tsConfigJsonPath);
+                tsConfigJson = loadJsonFileSync(tsConfigJsonPath);
             } catch {
                 if (fs.existsSync(tsConfigJsonPath)) {
                     console.log(
@@ -51,7 +51,7 @@ export const getPackages = (args = {}) => {
             }
 
             try {
-                tsConfigBuildJson = readJson(tsConfigBuildJsonPath);
+                tsConfigBuildJson = loadJsonFileSync(tsConfigBuildJsonPath);
             } catch {
                 if (fs.existsSync(tsConfigBuildJsonPath)) {
                     console.log(
@@ -74,7 +74,7 @@ export const getPackages = (args = {}) => {
             const testsFolderPath = path + "/__tests__";
             let hasTests = false;
             if (fs.existsSync(testsFolderPath)) {
-                const files = glob.sync(`${testsFolderPath}/**/**.test.ts`);
+                const files = fastGlob.sync(`${testsFolderPath}/**/**.test.ts`);
                 hasTests = Array.isArray(files) && files.length;
             }
 

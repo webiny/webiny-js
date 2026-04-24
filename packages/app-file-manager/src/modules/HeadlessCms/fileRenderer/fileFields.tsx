@@ -9,8 +9,9 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import { FileManager } from "@webiny/app-admin";
 import { getSupportedExtensionsLabelHint } from "./utils.js";
 import { EditFileUsingUrl } from "~/components/EditFileUsingUrl/index.js";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import { MultiFilePicker } from "@webiny/admin-ui";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
@@ -19,7 +20,10 @@ interface EditFileRef {
     url: string;
 }
 
-const FieldRenderer = ({ getBind, field }: CmsModelFieldRendererProps) => {
+const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
+    const { field } = useModelField();
+    const rules = useFieldEffectiveRules(field);
+    const disabled = !rules.canEdit || rules.disabled;
     const Bind = getBind();
     const editFileRef = useRef<EditFileRef | null>(null);
 
@@ -77,9 +81,10 @@ const FieldRenderer = ({ getBind, field }: CmsModelFieldRendererProps) => {
                                         return (
                                             <MultiFilePicker
                                                 {...bind}
+                                                disabled={disabled}
                                                 label={field.label}
                                                 validation={validation}
-                                                description={field.helpText}
+                                                description={field.description}
                                                 note={getSupportedExtensionsLabelHint(imagesOnly)}
                                                 values={values}
                                                 onSelectItem={() => selectFiles()}
@@ -99,7 +104,7 @@ const FieldRenderer = ({ getBind, field }: CmsModelFieldRendererProps) => {
 
                                                     editFile(value.url);
                                                 }}
-                                                placeholder={field.placeholderText}
+                                                placeholder={field.placeholder}
                                                 type={"compact"}
                                                 data-testid={`fr.input.filefields.${field.label}`}
                                             />
@@ -123,7 +128,7 @@ export const multipleFiles: CmsModelFieldRendererPlugin = {
         name: t`File Inputs`,
         description: t`Enables selecting multiple files via File Manager.`,
         canUse({ field }) {
-            return field.type === "file" && !!field.multipleValues;
+            return field.type === "file" && !!field.list;
         },
         render(props) {
             return <FieldRenderer {...props} />;

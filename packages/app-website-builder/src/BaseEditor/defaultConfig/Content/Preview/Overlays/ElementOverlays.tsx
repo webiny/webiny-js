@@ -1,12 +1,15 @@
-import React, { Fragment, useCallback, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { useDrop } from "react-dnd";
 import styled from "@emotion/styled";
 
+import type { SlotInput } from "@webiny/website-builder-sdk";
+import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
+import { findMatchingAstNode } from "@webiny/website-builder-sdk";
+
 import { usePreviewData } from "~/BaseEditor/hooks/usePreviewData.js";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 import { ElementOverlay } from "./ElementOverlay.js";
-import type { PreviewViewportInfo, SlotInput } from "@webiny/website-builder-sdk";
 import { useIsDragging } from "../useIsDragging.js";
 import type { Box } from "../Box.js";
 import type { DropEvent } from "../useProximityDropzone.js";
@@ -15,25 +18,15 @@ import { ElementDropLines } from "./ElementDropLines.js";
 import { DropBox } from "./DropBox.js";
 import { useDropZoneManager } from "../DropZoneManagerProvider.js";
 import { mergeRefs } from "../mergeRefs.js";
-import { Commands } from "~/BaseEditor/index.js";
+import { Commands, EditorConfig } from "~/BaseEditor/index.js";
 import type { Editor } from "~/editorSdk/Editor.js";
-import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
-import { findMatchingAstNode } from "@webiny/website-builder-sdk";
+import { ElementOverlayProvider } from "~/BaseEditor/defaultConfig/Content/Preview/Overlays/ElementOverlayProvider.js";
 
 const OverlayContainer = styled("div")({
     overflow: "hidden",
     position: "absolute",
     zIndex: 20
 });
-
-const filterVisibleBoxes = (viewport: PreviewViewportInfo) => {
-    return (box: Box) => {
-        const verticallyVisible = box.top + box.height > 0 && box.top < viewport.height;
-
-        const horizontallyVisible = box.left + box.width > 0 && box.left < viewport.width;
-        return verticallyVisible && horizontallyVisible;
-    };
-};
 
 const filterElements = (box: Box) => {
     return box.type === "element" && box.id !== "root";
@@ -46,11 +39,10 @@ const filterSlots = (box: Box) => {
 export const ElementOverlays = observer(() => {
     const dropzoneManager = useDropZoneManager();
     const editor = useDocumentEditor();
-    const { boxes, viewport } = usePreviewData();
+    const { boxes } = usePreviewData();
     const isDragging = useIsDragging();
-    const { showOverlays, selectedElement, highlightedElement } = useSelectFromEditor(state => {
+    const { selectedElement, highlightedElement } = useSelectFromEditor(state => {
         return {
-            showOverlays: state.showOverlays,
             selectedElement: state.selectedElement,
             highlightedElement: state.highlightedElement
         };
@@ -123,51 +115,39 @@ export const ElementOverlays = observer(() => {
     );
 
     const viewportContainer: React.CSSProperties = {
-        width: `${viewport.width}px`,
-        height: `${viewport.height}px`,
-        display: showOverlays ? "block" : "none",
-        pointerEvents: "auto"
+        display: "block",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: isDragging ? "auto" : "none"
     };
 
+    const slots = boxes.preview.filter(filterSlots);
+
     return (
-        <OverlayContainer
-            ref={mergeRefs(dropRef)}
-            style={{
-                ...viewportContainer,
-                pointerEvents: isDragging ? "auto" : "none"
-            }}
-        >
-            {/* This overlay triggers scroll in case we're hovering above something other than an editable element. */}
-            <div data-role={"element-overlay"} style={viewportContainer}></div>
-            {boxes.preview
-                .filter(filterElements)
-                .filter(filterVisibleBoxes(viewport))
-                .map(box => (
-                    <Fragment key={box.id}>
-                        <ElementOverlay
-                            elementId={box.id}
-                            isSelected={selectedElement === box.id}
-                            isHighlighted={highlightedElement === box.id}
-                            previewBox={box}
-                            editorBox={boxes.editor.get(box.id)!}
-                        >
-                            <>
-                                <ElementDropLines
-                                    isFirst={box.parentIndex === 0}
-                                    isHighlighted={highlightedElement === box.id}
-                                    editorBox={boxes.editor.get(box.id)!}
-                                    previewBox={box}
-                                />
-                            </>
-                        </ElementOverlay>
-                    </Fragment>
-                ))}
-            {boxes.preview
-                .filter(filterSlots)
-                .filter(filterVisibleBoxes(viewport))
-                .map(box => (
-                    <DropBox key={box.id} box={box} onDrop={onDrop} />
-                ))}
+        <OverlayContainer ref={mergeRefs(dropRef)} style={viewportContainer}>
+            {boxes.preview.filter(filterElements).map(box => (
+                <ElementOverlayProvider
+                    key={box.id}
+                    elementId={box.id}
+                    isSelected={selectedElement === box.id}
+                    isHighlighted={highlightedElement === box.id}
+                    box={box}
+                >
+                    <ElementOverlay />
+                    <ElementDropLines
+                        isFirst={box.parentIndex === 0}
+                        previewBox={box}
+                        editorBox={boxes.editor.get(box.id)!}
+                    />
+                    <EditorConfig.ElementOverlay.Elements />
+                </ElementOverlayProvider>
+            ))}
+            {slots.map(slot => (
+                <DropBox key={slot.id} box={slot} onDrop={onDrop} />
+            ))}
         </OverlayContainer>
     );
 });

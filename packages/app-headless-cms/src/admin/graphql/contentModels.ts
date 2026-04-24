@@ -13,8 +13,10 @@ export const FIELDS_FIELDS = `
     type
     label
     tags
-    placeholderText
-    helpText
+    placeholder
+    description
+    note
+    help
     predefinedValues {
         enabled
         values {
@@ -23,7 +25,7 @@ export const FIELDS_FIELDS = `
             selected
         }
     }
-    multipleValues
+    list
     renderer {
         name
         settings
@@ -39,14 +41,18 @@ export const FIELDS_FIELDS = `
         message
     }
     settings
+    rules {
+     type
+     target
+     operator
+     value
+     action
+    }
 `;
 
 export const MODEL_FIELDS = `
     name
-    group {
-        id
-        name
-    }
+    group
     icon
     description
     modelId
@@ -60,7 +66,6 @@ export const MODEL_FIELDS = `
     titleFieldId
     descriptionFieldId
     imageFieldId
-    lockedFields
     layout
     tags
     fields {

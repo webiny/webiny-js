@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import findUp from "find-up";
+import { findUpSync } from "find-up";
 import { dirname } from "path";
 import {
     GetCwdService,
@@ -24,7 +24,7 @@ export class DefaultGetProjectService implements GetProjectService.Interface {
         }
 
         const cwd = this.getCwdService.execute();
-        const webinyConfigFilePathString = findUp.sync("webiny.config.tsx", { cwd });
+        const webinyConfigFilePathString = findUpSync("webiny.config.tsx", { cwd });
         if (!webinyConfigFilePathString) {
             throw new Error(`Could not detect project in given directory (${cwd}).`);
         }

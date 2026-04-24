@@ -2,24 +2,29 @@ import { describe, expect, it } from "vitest";
 import { ContextPlugin } from "@webiny/handler";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { articleModel } from "./mocks/article.model";
-import { CmsModelPlugin } from "~/plugins";
 import type { CmsContext } from "~/types";
+import { EntryBeforePublishEventHandler } from "~/features/contentEntry/PublishEntry/index.js";
 
 describe("onEntryBeforePublish", () => {
     it("should update values before publishing", async () => {
         const { handler, tenant } = useHandler({
             plugins: [
-                new CmsModelPlugin(articleModel),
+                articleModel,
                 new ContextPlugin<CmsContext>(context => {
-                    context.cms.onEntryBeforePublish.subscribe(async ({ model, entry }) => {
-                        if (model.modelId !== "article") {
-                            return;
-                        }
+                    context.container.registerFactory(EntryBeforePublishEventHandler, () => ({
+                        async handle(event) {
+                            const { model, entry } = event.payload;
 
-                        if (entry.values["desiredEmbargoDate"]) {
-                            entry.values["articleEmbargoDate"] = entry.values["desiredEmbargoDate"];
+                            if (model.modelId !== "article") {
+                                return;
+                            }
+
+                            if (entry.values["desiredEmbargoDate"]) {
+                                entry.values["articleEmbargoDate"] =
+                                    entry.values["desiredEmbargoDate"];
+                            }
                         }
-                    });
+                    }));
                 })
             ]
         });
@@ -38,9 +43,11 @@ describe("onEntryBeforePublish", () => {
         }
 
         const entry = await context.cms.createEntry(model, {
-            title: "Article #1",
-            desiredEmbargoDate: null,
-            articleEmbargoDate: null
+            values: {
+                title: "Article #1",
+                desiredEmbargoDate: null,
+                articleEmbargoDate: null
+            }
         });
 
         const publishedEntry = await context.cms.publishEntry(model, entry.id);
@@ -52,7 +59,9 @@ describe("onEntryBeforePublish", () => {
         });
 
         const revision1 = await context.cms.createEntryRevisionFrom(model, publishedEntry.id, {
-            desiredEmbargoDate: "2024-04-20T00:00:00.000Z"
+            values: {
+                desiredEmbargoDate: "2024-04-20T00:00:00.000Z"
+            }
         });
 
         const publishedEntry1 = await context.cms.publishEntry(model, revision1.id);
@@ -63,7 +72,9 @@ describe("onEntryBeforePublish", () => {
         });
 
         const revision2 = await context.cms.createEntryRevisionFrom(model, publishedEntry.id, {
-            desiredEmbargoDate: "2024-04-25T00:00:00.000Z"
+            values: {
+                desiredEmbargoDate: "2024-04-25T00:00:00.000Z"
+            }
         });
 
         const publishedEntry2 = await context.cms.publishEntry(model, revision2.id);

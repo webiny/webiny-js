@@ -1,18 +1,16 @@
-import { Entity, Table } from "@webiny/db-dynamodb/toolbox.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { deleteItem, getClean, put, queryAllClean } from "@webiny/db-dynamodb";
-import { createEntityWriteBatch } from "@webiny/db-dynamodb/utils/entity/EntityWriteBatch.js";
+import { createStandardEntity, createTable } from "@webiny/db-dynamodb";
 
 import { WebinyError } from "@webiny/error";
 import type {
     AcoFolderLevelPermissionsStorageOperations as IAcoFolderLevelPermissionsStorageOperations,
     FolderLevelPermission,
+    StorageOperationsBatchUpdateFlpParams,
     StorageOperationsCreateFlpParams,
     StorageOperationsDeleteFlpParams,
     StorageOperationsGetFlpParams,
     StorageOperationsListFlpsParams,
-    StorageOperationsUpdateFlpParams,
-    StorageOperationsBatchUpdateFlpParams
+    StorageOperationsUpdateFlpParams
 } from "~/flp/flp.types.js";
 import { executeWithRetry } from "@webiny/utils";
 
@@ -20,54 +18,42 @@ interface StorageOperationsConfig {
     documentClient: DynamoDBDocument;
 }
 
-export interface CreateTableParams {
-    name?: string;
-    documentClient: DynamoDBDocument;
-}
-
-interface CreateEntityParams {
-    table: Table<string, string, string>;
-    name: string;
-}
-
 interface CreateKeysParams {
     tenant: string;
-    locale: string;
     id: string;
 }
 
 interface CreateGsiKeysParams {
     tenant: string;
-    locale: string;
     id: string;
     type: string;
     path: string;
     parentId: string;
 }
 
-class FolderLevelPermissionsStorageOperations
-    implements IAcoFolderLevelPermissionsStorageOperations
-{
-    private readonly entity: Entity<any>;
-    private readonly table: Table<string, string, string>;
+class FolderLevelPermissionsStorageOperations implements IAcoFolderLevelPermissionsStorageOperations {
+    private readonly entity;
+    private readonly table;
 
     constructor({ documentClient }: StorageOperationsConfig) {
-        this.table = this.createTable({ documentClient });
+        this.table = createTable({
+            name: String(process.env.DB_TABLE),
+            documentClient
+        });
 
-        this.entity = this.createEntity({
-            table: this.table,
+        this.entity = createStandardEntity<FolderLevelPermission>({
+            table: this.table.table,
             name: "ACO.flp"
         });
     }
 
-    async list({
-        where: { tenant, locale, type, path_startsWith, parentId }
+    public async list({
+        where: { tenant, type, path_startsWith, parentId }
     }: StorageOperationsListFlpsParams): Promise<FolderLevelPermission[]> {
         try {
             if (parentId) {
-                const entries = await queryAllClean<{ data: FolderLevelPermission }>({
-                    entity: this.entity,
-                    partitionKey: `T#${tenant}#L#${locale}#FLP`,
+                const entries = await this.entity.queryAll({
+                    partitionKey: `T#${tenant}#FLP`,
                     options: {
                         index: "GSI2",
                         eq: parentId
@@ -77,9 +63,8 @@ class FolderLevelPermissionsStorageOperations
             }
 
             if (path_startsWith) {
-                const entries = await queryAllClean<{ data: FolderLevelPermission }>({
-                    entity: this.entity,
-                    partitionKey: `T#${tenant}#L#${locale}#AT#${type}#FLP`,
+                const entries = await this.entity.queryAll({
+                    partitionKey: `T#${tenant}#AT#${type}#FLP`,
                     options: {
                         index: "GSI1",
                         beginsWith: path_startsWith
@@ -90,7 +75,6 @@ class FolderLevelPermissionsStorageOperations
 
             throw new WebinyError("Missing required parameters.", "LIST_FLP_MISSING_PARAMETERS", {
                 tenant,
-                locale,
                 type,
                 path_startsWith,
                 parentId
@@ -103,16 +87,12 @@ class FolderLevelPermissionsStorageOperations
         }
     }
 
-    async get({
+    public async get({
         tenant,
-        locale,
         id
     }: StorageOperationsGetFlpParams): Promise<FolderLevelPermission | null> {
         try {
-            const entry = await getClean<{ data: FolderLevelPermission }>({
-                entity: this.entity,
-                keys: this.createKeys({ tenant, locale, id })
-            });
+            const entry = await this.entity.get(this.createKeys({ tenant, id }));
 
             if (!entry) {
                 return null;
@@ -123,24 +103,23 @@ class FolderLevelPermissionsStorageOperations
             throw WebinyError.from(err, {
                 message: "Could not load folder level permission.",
                 code: "GET_FLP_ERROR",
-                data: { tenant, locale, id }
+                data: { tenant, id }
             });
         }
     }
 
-    async create({ data }: StorageOperationsCreateFlpParams): Promise<FolderLevelPermission> {
+    public async create({
+        data
+    }: StorageOperationsCreateFlpParams): Promise<FolderLevelPermission> {
         const keys = {
             ...this.createKeys(data),
             ...this.createGsiKeys(data)
         };
 
         try {
-            await put({
-                entity: this.entity,
-                item: {
-                    ...keys,
-                    data
-                }
+            await this.entity.put({
+                ...keys,
+                data
             });
 
             return data;
@@ -153,7 +132,7 @@ class FolderLevelPermissionsStorageOperations
         }
     }
 
-    async update({
+    public async update({
         data: inputData,
         original
     }: StorageOperationsUpdateFlpParams): Promise<FolderLevelPermission> {
@@ -168,12 +147,9 @@ class FolderLevelPermissionsStorageOperations
                 ...this.createGsiKeys(data)
             };
 
-            await put({
-                entity: this.entity,
-                item: {
-                    ...keys,
-                    data
-                }
+            await this.entity.put({
+                ...keys,
+                data
             });
 
             return data;
@@ -186,30 +162,28 @@ class FolderLevelPermissionsStorageOperations
         }
     }
 
-    async delete({ flp }: StorageOperationsDeleteFlpParams): Promise<void> {
+    public async delete({ flp }: StorageOperationsDeleteFlpParams): Promise<void> {
         const keys = this.createKeys(flp);
 
         try {
-            await deleteItem({
-                entity: this.entity,
-                keys
-            });
+            await this.entity.delete(keys);
         } catch (err) {
             throw WebinyError.from(err, {
                 message: "Could not delete folder level permission.",
                 code: "DELETE_FLP_ERROR",
-                data: { keys, flp }
+                data: {
+                    keys,
+                    flp
+                }
             });
         }
     }
 
-    async batchUpdate({
+    public async batchUpdate({
         items
     }: StorageOperationsBatchUpdateFlpParams): Promise<FolderLevelPermission[]> {
         try {
-            const batch = createEntityWriteBatch({
-                entity: this.entity
-            });
+            const batch = this.entity.createEntityWriter();
 
             const updatedItems: FolderLevelPermission[] = [];
 
@@ -246,75 +220,23 @@ class FolderLevelPermissionsStorageOperations
         }
     }
 
-    private createEntity = (params: CreateEntityParams): Entity<any> => {
-        return new Entity({
-            name: params.name,
-            table: params.table,
-            attributes: {
-                PK: {
-                    partitionKey: true
-                },
-                SK: {
-                    sortKey: true
-                },
-                GSI1_PK: {
-                    type: "string",
-                    required: true
-                },
-                GSI1_SK: {
-                    type: "string",
-                    required: true
-                },
-                GSI2_PK: {
-                    type: "string",
-                    required: true
-                },
-                GSI2_SK: {
-                    type: "string",
-                    required: true
-                },
-                TYPE: {
-                    type: "string"
-                },
-                data: {
-                    type: "map"
-                }
-            }
-        });
-    };
+    private createKeys({ id, tenant }: CreateKeysParams) {
+        return {
+            PK: `T#${tenant}#FLP#${id}`,
+            SK: `A`,
+            TYPE: "aco.flp"
+        };
+    }
 
-    private createTable = ({ name, documentClient }: CreateTableParams) => {
-        return new Table({
-            name: name || String(process.env.DB_TABLE),
-            partitionKey: "PK",
-            sortKey: "SK",
-            DocumentClient: documentClient,
-            indexes: {
-                GSI1: {
-                    partitionKey: "GSI1_PK",
-                    sortKey: "GSI1_SK"
-                },
-                GSI2: {
-                    partitionKey: "GSI2_PK",
-                    sortKey: "GSI2_SK"
-                }
-            },
-            autoExecute: true,
-            autoParse: true
-        });
-    };
-
-    private createKeys = ({ id, tenant, locale }: CreateKeysParams) => ({
-        PK: `T#${tenant}#L#${locale}#FLP#${id}`,
-        SK: `A`
-    });
-
-    private createGsiKeys = ({ tenant, locale, type, path, parentId }: CreateGsiKeysParams) => ({
-        GSI1_PK: `T#${tenant}#L#${locale}#AT#${type}#FLP`,
-        GSI1_SK: path,
-        GSI2_PK: `T#${tenant}#L#${locale}#FLP`,
-        GSI2_SK: parentId
-    });
+    private createGsiKeys({ tenant, type, path, parentId }: CreateGsiKeysParams) {
+        return {
+            GSI1_PK: `T#${tenant}#AT#${type}#FLP`,
+            GSI1_SK: path,
+            GSI2_PK: `T#${tenant}#FLP`,
+            GSI2_SK: parentId,
+            GSI_TENANT: tenant
+        };
+    }
 }
 
 export const createFlpOperations = (params: StorageOperationsConfig) => {

@@ -1,54 +1,52 @@
 import DataLoader from "dataloader";
-import { batchReadAll } from "@webiny/db-dynamodb";
 import type { CmsStorageEntry } from "@webiny/api-headless-cms/types/index.js";
-import { cleanupItems } from "@webiny/db-dynamodb/utils/cleanup.js";
 import { createPartitionKey, createRevisionSortKey } from "~/operations/entry/keys.js";
-import type { DataLoaderParams } from "./types.js";
+import type { IDataLoaderParams } from "./types.js";
 import { parseIdentifier } from "@webiny/utils";
 import { createBatchScheduleFn } from "./createBatchScheduleFn.js";
 
-export const createGetRevisionById = (params: DataLoaderParams) => {
-    const { entity, tenant, locale } = params;
+export const createGetRevisionById = (params: IDataLoaderParams) => {
+    const { entity, tenant, modelId } = params;
 
     return new DataLoader<string, CmsStorageEntry[]>(
-        async (ids: readonly string[]) => {
-            const queries = ids.reduce<Record<string, ReturnType<typeof entity.getBatch>>>(
-                (collection, id) => {
-                    const partitionKey = createPartitionKey({
-                        tenant,
-                        locale,
-                        id
-                    });
-                    const { version } = parseIdentifier(id);
-                    if (version === null) {
-                        return collection;
-                    }
-                    const sortKey = createRevisionSortKey({
-                        version
-                    });
-                    const keys = `${partitionKey}__${sortKey}`;
-                    if (collection[keys]) {
-                        return collection;
-                    }
+        async ids => {
+            const reader = entity.createEntityReader();
 
-                    collection[keys] = entity.getBatch({
-                        PK: partitionKey,
-                        SK: sortKey
-                    });
+            const keys = new Set<string>();
 
-                    return collection;
-                },
-                {}
-            );
+            for (const id of ids) {
+                const partitionKey = createPartitionKey({
+                    tenant,
+                    id
+                });
+                const { version } = parseIdentifier(id);
+                if (version === null) {
+                    continue;
+                }
+                const sortKey = createRevisionSortKey({
+                    version
+                });
+                const key = `${partitionKey}__${sortKey}`;
+                if (keys.has(key)) {
+                    continue;
+                }
+                keys.add(key);
 
-            const records = await batchReadAll<CmsStorageEntry>({
-                table: entity.table,
-                items: Object.values(queries)
+                reader.get({
+                    PK: partitionKey,
+                    SK: sortKey
+                });
+            }
+
+            const items = (await reader.execute()).map(item => {
+                return item.data;
             });
-            const items = cleanupItems(entity, records);
 
             return ids.map(id => {
                 return items.filter(item => {
+                    if (item.modelId !== modelId) {
+                        return false;
+                    }
                     return id === item.id;
                 });
             });

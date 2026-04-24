@@ -1,5 +1,3 @@
-import WebinyError from "@webiny/error";
-import { StorageTransformPlugin } from "~/plugins/StorageTransformPlugin.js";
 import type {
     CmsContext,
     CmsEntry,
@@ -8,41 +6,33 @@ import type {
     CmsModelField
 } from "~/types/index.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
+import { StorageTransform, StorageTransformRegistry } from "~/features/storage/index.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
-export interface GetStoragePluginFactory {
-    (context: Pick<CmsContext, "plugins">): (fieldType: string) => StorageTransformPlugin<any>;
+export interface GetStorageTransformFactory {
+    (context: Pick<CmsContext, "container">): (fieldType: string) => StorageTransform.Interface;
 }
 
-export const getStoragePluginFactory: GetStoragePluginFactory = context => {
-    let defaultStoragePlugin: StorageTransformPlugin;
+export const getStorageTransformFactory: GetStorageTransformFactory = context => {
+    const registry = context.container.resolve(StorageTransformRegistry);
 
-    const plugins = context.plugins
-        .byType<StorageTransformPlugin>(StorageTransformPlugin.type)
-        // we reverse plugins because we want to get latest added only
-        .reverse()
-        .reduce(
-            (collection, plugin) => {
-                /**
-                 * Check if it's a default plugin and set it - always override the previous one.
-                 */
-                if (plugin.fieldType === "*") {
-                    defaultStoragePlugin = plugin;
-                    return collection;
-                }
+    const result: GenericRecord<string, StorageTransform.Interface> = {};
+    let defaultStorageTransform: StorageTransform.Interface;
 
-                /**
-                 * We will just set the plugin for given type.
-                 * The last one will override existing one - so users can override our default ones.
-                 */
-                collection[plugin.fieldType] = plugin;
+    const storageTransforms = registry.getAll().toReversed();
 
-                return collection;
-            },
-            {} as Record<string, StorageTransformPlugin>
-        );
+    for (const storageTransform of storageTransforms) {
+        if (storageTransform.fieldType === "*") {
+            defaultStorageTransform = storageTransform;
+        }
+        result[storageTransform.fieldType] = storageTransform;
+    }
 
-    return (fieldType: string) => {
-        return plugins[fieldType] || defaultStoragePlugin;
+    return (type: string) => {
+        const fieldType = getBaseFieldType({
+            type
+        });
+        return result[fieldType] || defaultStorageTransform;
     };
 };
 
@@ -51,12 +41,12 @@ const doNotTouchProperty = Symbol("__DO_NOT_TOUCH_AS_WE_USE_IT_TO_SKIP_UNNECESSA
 /**
  * This should be used when transforming the whole entry.
  */
-const entryStorageTransform = async (
-    context: Pick<CmsContext, "plugins">,
+const entryStorageTransform = async <T extends CmsEntryValues = CmsEntryValues>(
+    context: Pick<CmsContext, "container">,
     model: CmsModel,
     operation: "toStorage" | "fromStorage",
-    entry: CmsEntry
-): Promise<CmsEntry> => {
+    entry: CmsEntry<T>
+): Promise<CmsEntry<T>> => {
     /**
      * We use this property to skip unnecessary operations.
      */
@@ -65,35 +55,28 @@ const entryStorageTransform = async (
         return entry;
     }
 
-    const getStoragePlugin = getStoragePluginFactory(context);
+    const getStorageTransform = getStorageTransformFactory(context);
 
-    const transformedValues: Record<string, any> = {};
-    for (const field of model.fields) {
-        /**
-         * We can safely skip fields that are not present in the entry values.
-         */
-        if (entry.values.hasOwnProperty(field.fieldId) === false) {
-            continue;
-        }
-        const value = entry.values[field.fieldId];
-
-        const baseType = getBaseFieldType(field);
-        const plugin = getStoragePlugin(baseType);
-        // TODO: remove this once plugins are converted into classes
-        if (typeof plugin[operation] !== "function") {
-            throw new WebinyError(
-                `Missing "${operation}" function in storage plugin "${plugin.name}" for field type "${baseType}"`
-            );
-        }
-
-        transformedValues[field.fieldId] = await plugin[operation]({
-            plugins: context.plugins,
-            model,
-            field,
-            value,
-            getStoragePlugin
+    const fieldValues = model.fields
+        .filter(field => {
+            return entry.values.hasOwnProperty(field.fieldId);
+        })
+        .map(async field => {
+            const key = field.fieldId as keyof T;
+            const value = entry.values[key];
+            const baseType = getBaseFieldType(field);
+            const storageTransform = getStorageTransform(baseType);
+            const transformed = await storageTransform[operation]({
+                model,
+                field,
+                value,
+                getStorageTransform
+            });
+            return [key, transformed] as const;
         });
-    }
+
+    const results = await Promise.all(fieldValues);
+    const transformedValues = Object.fromEntries(results) as T;
 
     const result = {
         ...entry,
@@ -115,7 +98,7 @@ const entryStorageTransform = async (
  * A function that is used in crud to transform entry into the storage type.
  */
 export const entryToStorageTransform = async (
-    context: Pick<CmsContext, "plugins">,
+    context: Pick<CmsContext, "container">,
     model: CmsModel,
     entry: CmsEntry
 ): Promise<CmsEntry> => {
@@ -126,7 +109,7 @@ export const entryToStorageTransform = async (
  * A function that is used to transform the whole entry from storage into its native form.
  */
 export const entryFromStorageTransform = async (
-    context: Pick<CmsContext, "plugins">,
+    context: Pick<CmsContext, "container">,
     model: CmsModel,
     entry: CmsEntry
 ): Promise<CmsEntry> => {
@@ -134,7 +117,7 @@ export const entryFromStorageTransform = async (
 };
 
 interface EntryFieldFromStorageTransformParams {
-    context: Pick<CmsContext, "plugins">;
+    context: Pick<CmsContext, "container">;
     model: CmsModel;
     field: CmsModelField;
     value: any;
@@ -146,41 +129,15 @@ export const entryFieldFromStorageTransform = async <T = any>(
     params: EntryFieldFromStorageTransformParams
 ): Promise<T> => {
     const { context, model, field, value } = params;
-    const getStoragePlugin = getStoragePluginFactory(context);
+    const getStorageTransform = getStorageTransformFactory(context);
 
     const baseType = getBaseFieldType(field);
-    const plugin = getStoragePlugin(baseType);
+    const storageTransform = getStorageTransform(baseType);
 
-    // TODO: remove this once plugins are converted into classes
-    if (typeof plugin.fromStorage !== "function") {
-        throw new WebinyError(
-            `Missing "fromStorage" function in storage plugin "${plugin.name}" for field type "${baseType}"`
-        );
-    }
-
-    return plugin.fromStorage({
-        plugins: context.plugins,
+    return storageTransform.fromStorage({
         model,
         field,
         value,
-        getStoragePlugin
+        getStorageTransform
     });
-};
-
-export interface ICreateTransformEntryCallable {
-    context: Pick<CmsContext, "plugins">;
-}
-
-export interface ITransformEntryCallable<T extends CmsEntryValues = CmsEntryValues> {
-    (model: CmsModel, entry: CmsEntry): Promise<CmsEntry<T>>;
-}
-
-export const createTransformEntryCallable = (
-    params: ICreateTransformEntryCallable
-): ITransformEntryCallable => {
-    const { context } = params;
-
-    return async (model, entry) => {
-        return entryFromStorageTransform(context, model, entry);
-    };
 };

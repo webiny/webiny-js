@@ -11,7 +11,18 @@ import { createBackgroundTaskContext, createBackgroundTaskGraphQL } from "~/inde
 import { createListDefinitionsQuery } from "./graphql/definitions";
 import type { ContextPlugin } from "@webiny/api";
 import type { Context } from "~tests/types";
-import { createListTasksQuery } from "~tests/helpers/graphql/tasks";
+import {
+    createAbortTaskMutation,
+    createGetTaskQuery,
+    createListTasksQuery,
+    createTriggerTaskMutation,
+    type IAbortTaskResponse,
+    IAbortTaskVariables,
+    type IGetTaskResponse,
+    type IGetTaskVariables,
+    type ITriggerTaskResponse,
+    type ITriggerTaskVariables
+} from "~tests/helpers/graphql/tasks";
 import { createListTaskLogsQuery } from "~tests/helpers/graphql/logs";
 import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
@@ -32,12 +43,6 @@ export interface InvokeParams {
 export interface UseHandlerParams {
     plugins?: PluginCollection;
 }
-
-const tenant = {
-    id: "root",
-    name: "Root",
-    parent: null
-};
 
 export const useGraphQLHandler = (params?: UseHandlerParams) => {
     const { plugins = [] } = params || {};
@@ -70,7 +75,7 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
                         return {
                             id: apiKey,
                             name: apiKey,
-                            tenant: tenant.id,
+                            slug: `slug-${apiKey}`,
                             permissions: [],
                             token,
                             createdBy: {
@@ -79,17 +84,14 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
                                 type: "admin"
                             },
                             description: "test",
-                            createdOn: new Date().toISOString(),
-                            webinyVersion: context.WEBINY_VERSION
+                            createdOn: new Date().toISOString()
                         };
                     };
                 }
             } as ContextPlugin<Context>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             graphQLHandlerPlugins(),
             createBackgroundTaskContext(),
@@ -138,6 +140,30 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
         /**
          * Tasks
          */
+        triggerTask: async (variables: ITriggerTaskVariables) => {
+            return invoke<ITriggerTaskResponse>({
+                body: {
+                    query: createTriggerTaskMutation(),
+                    variables
+                }
+            });
+        },
+        abortTask: async (variables: IAbortTaskVariables) => {
+            return invoke<IAbortTaskResponse>({
+                body: {
+                    query: createAbortTaskMutation(),
+                    variables
+                }
+            });
+        },
+        getTask: async (variables: IGetTaskVariables) => {
+            return invoke<IGetTaskResponse>({
+                body: {
+                    query: createGetTaskQuery(),
+                    variables
+                }
+            });
+        },
         listTasks: async (variables: Record<string, any> = {}) => {
             return invoke({
                 body: {

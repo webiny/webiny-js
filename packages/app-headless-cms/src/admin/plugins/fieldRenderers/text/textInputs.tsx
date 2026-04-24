@@ -6,6 +6,11 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import DynamicSection from "../DynamicSection.js";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
 import { DelayedOnChange, Icon, Input } from "@webiny/admin-ui";
+import {
+    CanEditField,
+    useFieldEffectiveRules,
+    useModelField
+} from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -17,15 +22,15 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Text Inputs`,
         description: t`Renders a simple list of text inputs.`,
         canUse({ field }) {
-            return (
-                field.type === "text" &&
-                !!field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
-            );
+            return field.type === "text" && !!field.list && !get(field, "predefinedValues.enabled");
         },
         render(props) {
+            const { field } = useModelField();
+            const rules = useFieldEffectiveRules(field);
+            const disabled = !rules.canEdit || rules.disabled;
+
             return (
-                <DynamicSection {...props}>
+                <DynamicSection {...props} disabled={disabled}>
                     {({ bind, index }) => (
                         <DelayedOnChange
                             value={bind.index.value}
@@ -33,18 +38,21 @@ const plugin: CmsModelFieldRendererPlugin = {
                             onBlur={bind.index.validate}
                         >
                             <Input
+                                disabled={disabled}
                                 validation={bind.index.validation}
                                 onEnter={() => bind.field.appendValue("")}
                                 label={t`Value {number}`({ number: index + 1 })}
-                                placeholder={props.field.placeholderText}
+                                placeholder={props.field.placeholder}
                                 data-testid={`fr.input.texts.${props.field.label}.${index + 1}`}
                                 endIcon={
-                                    <Icon
-                                        icon={<DeleteIcon />}
-                                        label={"Delete"}
-                                        onClick={() => bind.field.removeValue(index)}
-                                        className={"cursor-pointer"}
-                                    />
+                                    <CanEditField>
+                                        <Icon
+                                            icon={<DeleteIcon />}
+                                            label={"Delete"}
+                                            onClick={() => bind.field.removeValue(index)}
+                                            className={"cursor-pointer"}
+                                        />
+                                    </CanEditField>
                                 }
                             />
                         </DelayedOnChange>

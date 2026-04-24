@@ -1,14 +1,19 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsGroup, CmsModel } from "~/types";
-import models from "./mocks/contentModels";
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
 describe("fieldValidations", () => {
-    const manageOpts = { path: "manage/en-US" };
+    const manageOpts = { path: "manage" };
 
-    const { createContentModelMutation, createContentModelGroupMutation } =
-        useGraphQLHandler(manageOpts);
+    const manager = useGraphQLHandler(manageOpts);
+
+    beforeEach(async () => {
+        await setupGroupAndModels({
+            manager,
+            models: ["fruit"]
+        });
+    });
 
     const defaultFruitData = {
         name: "Apple",
@@ -27,73 +32,20 @@ describe("fieldValidations", () => {
         slug: "apple"
     };
 
-    // This function is not directly within `beforeEach` as we don't always setup the same content model.
-    // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsGroup> => {
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
-        });
-        return createCMG.data.createContentModelGroup.data;
-    };
-
-    const setupContentModel = async (contentModelGroup: CmsGroup, name: string) => {
-        const model = models.find(m => m.modelId === name);
-        if (!model) {
-            throw new Error(`Could not find model "${name}".`);
-        }
-        // Create initial record
-        const [create] = await createContentModelMutation({
-            data: {
-                name: model.name,
-                modelId: model.modelId,
-                singularApiName: model.singularApiName,
-                pluralApiName: model.pluralApiName,
-                group: contentModelGroup.id,
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        } else if (create.data.createContentModel.error) {
-            console.error(`[beforeEach] ${create.data.createContentModel.error.message}`);
-            process.exit(1);
-        }
-
-        return create.data.createContentModel.data;
-    };
-    const setupContentModels = async (contentModelGroup: CmsGroup) => {
-        const models: Record<string, CmsModel> = {
-            fruit: null as unknown as CmsModel
-        };
-        for (const name in models) {
-            models[name] = await setupContentModel(contentModelGroup, name);
-        }
-        return models;
-    };
-
     /**
      * testing required, minLength and maxLength of the string
      */
     it(`should return error when validating "name" field`, async () => {
-        const group = await setupContentModelGroup();
-        await setupContentModels(group);
-
         const { createFruit } = useFruitManageHandler({
             ...manageOpts
         });
 
         const [minLengthResponse] = await createFruit({
             data: {
-                ...defaultFruitData,
-                name: "t"
+                values: {
+                    ...defaultFruitData,
+                    name: "t"
+                }
             }
         });
 
@@ -103,7 +55,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "name",
@@ -120,8 +72,10 @@ describe("fieldValidations", () => {
 
         const [maxLengthResponse] = await createFruit({
             data: {
-                ...defaultFruitData,
-                name: "testing really long name"
+                values: {
+                    ...defaultFruitData,
+                    name: "testing really long name"
+                }
             }
         });
 
@@ -131,7 +85,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "name",
@@ -151,17 +105,16 @@ describe("fieldValidations", () => {
      * testing required, gte and lte for each value in the array
      */
     it(`should return error when validating "numbers" field`, async () => {
-        const group = await setupContentModelGroup();
-        await setupContentModels(group);
-
         const { createFruit } = useFruitManageHandler({
             ...manageOpts
         });
 
         const [minLengthResponse] = await createFruit({
             data: {
-                ...defaultFruitData,
-                numbers: [4]
+                values: {
+                    ...defaultFruitData,
+                    numbers: [4]
+                }
             }
         });
 
@@ -171,7 +124,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "numbers",
@@ -188,8 +141,10 @@ describe("fieldValidations", () => {
 
         const [maxLengthResponse] = await createFruit({
             data: {
-                ...defaultFruitData,
-                numbers: [4, 5, 6, 7, 8, 9, 10, 11, 12]
+                values: {
+                    ...defaultFruitData,
+                    numbers: [4, 5, 6, 7, 8, 9, 10, 11, 12]
+                }
             }
         });
 
@@ -199,7 +154,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "numbers",
@@ -216,8 +171,10 @@ describe("fieldValidations", () => {
 
         const [gteResponse] = await createFruit({
             data: {
-                ...defaultFruitData,
-                numbers: [1, 2, 3, 4]
+                values: {
+                    ...defaultFruitData,
+                    numbers: [1, 2, 3, 4]
+                }
             }
         });
 
@@ -227,7 +184,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "numbers",
@@ -244,8 +201,10 @@ describe("fieldValidations", () => {
 
         const [lteResponse] = await createFruit({
             data: {
-                ...defaultFruitData,
-                numbers: [5, 6, 7, 16]
+                values: {
+                    ...defaultFruitData,
+                    numbers: [5, 6, 7, 16]
+                }
             }
         });
 
@@ -255,7 +214,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "numbers",
@@ -290,17 +249,16 @@ describe("fieldValidations", () => {
     it.each(emailPatternTestValues)(
         `should return error when validating "email" field with a pattern - %s`,
         async email => {
-            const group = await setupContentModelGroup();
-            await setupContentModels(group);
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
 
             const [response] = await createFruit({
                 data: {
-                    ...defaultFruitData,
-                    email
+                    values: {
+                        ...defaultFruitData,
+                        email
+                    }
                 }
             });
 
@@ -310,7 +268,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "email",
@@ -346,17 +304,16 @@ describe("fieldValidations", () => {
     it.each(urlPatternTestValues)(
         `should return error when validating "url" field with a pattern - %s`,
         async url => {
-            const group = await setupContentModelGroup();
-            await setupContentModels(group);
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
 
             const [response] = await createFruit({
                 data: {
-                    ...defaultFruitData,
-                    url
+                    values: {
+                        ...defaultFruitData,
+                        url
+                    }
                 }
             });
 
@@ -366,7 +323,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "url",
@@ -396,17 +353,16 @@ describe("fieldValidations", () => {
     it.each(lowerCaseTestValues)(
         `should return error when validating "lowerCase" field - %s`,
         async lowerCase => {
-            const group = await setupContentModelGroup();
-            await setupContentModels(group);
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
 
             const [response] = await createFruit({
                 data: {
-                    ...defaultFruitData,
-                    lowerCase
+                    values: {
+                        ...defaultFruitData,
+                        lowerCase
+                    }
                 }
             });
 
@@ -416,7 +372,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "lowerCase",
@@ -445,17 +401,16 @@ describe("fieldValidations", () => {
     it.each(upperCaseTestValues)(
         `should return error when validating "upperCase" field - %s`,
         async upperCase => {
-            const group = await setupContentModelGroup();
-            await setupContentModels(group);
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
 
             const [response] = await createFruit({
                 data: {
-                    ...defaultFruitData,
-                    upperCase
+                    values: {
+                        ...defaultFruitData,
+                        upperCase
+                    }
                 }
             });
 
@@ -465,7 +420,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "upperCase",
@@ -490,17 +445,16 @@ describe("fieldValidations", () => {
     it.each(dateErrorValidations)(
         `should return error when validating "date" field - %s`,
         async (date, message) => {
-            const group = await setupContentModelGroup();
-            await setupContentModels(group);
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
 
             const [response] = await createFruit({
                 data: {
-                    ...defaultFruitData,
-                    date
+                    values: {
+                        ...defaultFruitData,
+                        date
+                    }
                 }
             });
 
@@ -510,7 +464,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "date",
@@ -535,17 +489,16 @@ describe("fieldValidations", () => {
     it.each(dateTimeErrorValidations)(
         `should return error when validating "dateTime" field - %s`,
         async (dateTime, message) => {
-            const group = await setupContentModelGroup();
-            await setupContentModels(group);
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
 
             const [response] = await createFruit({
                 data: {
-                    ...defaultFruitData,
-                    dateTime: new Date(dateTime).toISOString()
+                    values: {
+                        ...defaultFruitData,
+                        dateTime: new Date(dateTime).toISOString()
+                    }
                 }
             });
 
@@ -555,7 +508,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "dateTime",
@@ -583,17 +536,16 @@ describe("fieldValidations", () => {
     it.each(dateTimeZErrorValidations)(
         `should return error when validating "dateTimeZ" field - %s`,
         async (dateTimeZ, message) => {
-            const group = await setupContentModelGroup();
-            await setupContentModels(group);
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
 
             const [response] = await createFruit({
                 data: {
-                    ...defaultFruitData,
-                    dateTimeZ
+                    values: {
+                        ...defaultFruitData,
+                        dateTimeZ
+                    }
                 }
             });
 
@@ -603,7 +555,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "dateTimeZ",
@@ -628,17 +580,16 @@ describe("fieldValidations", () => {
     it.each(timeErrorValidations)(
         `should return error when validating "time" field - %s`,
         async (time, message) => {
-            const group = await setupContentModelGroup();
-            await setupContentModels(group);
-
             const { createFruit } = useFruitManageHandler({
                 ...manageOpts
             });
 
             const [response] = await createFruit({
                 data: {
-                    ...defaultFruitData,
-                    time
+                    values: {
+                        ...defaultFruitData,
+                        time
+                    }
                 }
             });
 
@@ -648,7 +599,7 @@ describe("fieldValidations", () => {
                         data: null,
                         error: {
                             message: "Validation failed.",
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             data: [
                                 {
                                     fieldId: "time",
@@ -666,9 +617,6 @@ describe("fieldValidations", () => {
     );
 
     it("should return error when slug already exists", async () => {
-        const group = await setupContentModelGroup();
-        await setupContentModels(group);
-
         const { createFruit } = useFruitManageHandler({
             ...manageOpts
         });
@@ -676,7 +624,9 @@ describe("fieldValidations", () => {
          * Should create first fruit without any problems.
          */
         const [createResponse] = await createFruit({
-            data: defaultFruitData
+            data: {
+                values: defaultFruitData
+            }
         });
 
         expect(createResponse).toEqual({
@@ -692,7 +642,9 @@ describe("fieldValidations", () => {
          * Should fail on creating another fruit with same slug.
          */
         const [createAgainResponse] = await createFruit({
-            data: defaultFruitData
+            data: {
+                values: defaultFruitData
+            }
         });
 
         expect(createAgainResponse).toEqual({
@@ -701,7 +653,7 @@ describe("fieldValidations", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "slug",
@@ -718,16 +670,15 @@ describe("fieldValidations", () => {
     });
 
     it("should create a fruit without validation errors", async () => {
-        const group = await setupContentModelGroup();
-        await setupContentModels(group);
-
         const { createFruit, getFruit } = useFruitManageHandler({
             ...manageOpts
         });
 
         const [createResponse] = await createFruit({
             data: {
-                ...defaultFruitData
+                values: {
+                    ...defaultFruitData
+                }
             }
         });
 
@@ -747,33 +698,37 @@ describe("fieldValidations", () => {
                             displayName: "John Doe",
                             type: "admin"
                         },
-                        email: defaultFruitData.email,
-                        lowerCase: defaultFruitData.lowerCase,
                         meta: {
                             locked: false,
                             modelId: "fruit",
                             revisions: [
                                 {
                                     id: expect.any(String),
-                                    name: defaultFruitData.name
+                                    values: {
+                                        name: defaultFruitData.name
+                                    }
                                 }
                             ],
                             status: "draft",
                             title: defaultFruitData.name,
                             version: 1
                         },
-                        name: defaultFruitData.name,
-                        numbers: defaultFruitData.numbers,
-                        upperCase: defaultFruitData.upperCase,
-                        url: defaultFruitData.url,
-                        time: defaultFruitData.time,
-                        date: defaultFruitData.date,
-                        dateTime: defaultFruitData.dateTime,
-                        dateTimeZ: defaultFruitData.dateTimeZ,
-                        rating: null,
-                        isSomething: null,
-                        description: null,
-                        slug: "apple"
+                        values: {
+                            email: defaultFruitData.email,
+                            lowerCase: defaultFruitData.lowerCase,
+                            name: defaultFruitData.name,
+                            numbers: defaultFruitData.numbers,
+                            upperCase: defaultFruitData.upperCase,
+                            url: defaultFruitData.url,
+                            time: defaultFruitData.time,
+                            date: defaultFruitData.date,
+                            dateTime: defaultFruitData.dateTime,
+                            dateTimeZ: defaultFruitData.dateTimeZ,
+                            rating: null,
+                            isSomething: null,
+                            description: null,
+                            slug: "apple"
+                        }
                     },
                     error: null
                 }
@@ -802,33 +757,37 @@ describe("fieldValidations", () => {
                             displayName: "John Doe",
                             type: "admin"
                         },
-                        email: defaultFruitData.email,
-                        lowerCase: defaultFruitData.lowerCase,
                         meta: {
                             locked: false,
                             modelId: "fruit",
                             revisions: [
                                 {
                                     id: apple.id,
-                                    name: defaultFruitData.name
+                                    values: {
+                                        name: defaultFruitData.name
+                                    }
                                 }
                             ],
                             status: "draft",
                             title: defaultFruitData.name,
                             version: 1
                         },
-                        name: defaultFruitData.name,
-                        numbers: defaultFruitData.numbers,
-                        upperCase: defaultFruitData.upperCase,
-                        url: defaultFruitData.url,
-                        time: defaultFruitData.time,
-                        date: defaultFruitData.date,
-                        dateTime: defaultFruitData.dateTime,
-                        dateTimeZ: defaultFruitData.dateTimeZ,
-                        rating: null,
-                        isSomething: null,
-                        description: null,
-                        slug: "apple"
+                        values: {
+                            email: defaultFruitData.email,
+                            lowerCase: defaultFruitData.lowerCase,
+                            name: defaultFruitData.name,
+                            numbers: defaultFruitData.numbers,
+                            upperCase: defaultFruitData.upperCase,
+                            url: defaultFruitData.url,
+                            time: defaultFruitData.time,
+                            date: defaultFruitData.date,
+                            dateTime: defaultFruitData.dateTime,
+                            dateTimeZ: defaultFruitData.dateTimeZ,
+                            rating: null,
+                            isSomething: null,
+                            description: null,
+                            slug: "apple"
+                        }
                     },
                     error: null
                 }

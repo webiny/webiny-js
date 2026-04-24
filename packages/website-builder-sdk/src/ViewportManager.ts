@@ -5,6 +5,8 @@ import { environment } from "~/Environment.js";
 export interface ViewportInfo {
     width: number;
     height: number;
+    scrollWidth: number;
+    scrollHeight: number;
     scrollX: number;
     scrollY: number;
     breakpoint: string;
@@ -107,6 +109,8 @@ export class ViewportManager {
             ? {
                   width: window.innerWidth,
                   height: window.innerHeight,
+                  scrollWidth: window.document.body.scrollWidth,
+                  scrollHeight: window.document.body.scrollHeight,
                   scrollX: window.scrollX,
                   scrollY: window.scrollY
               }
@@ -114,6 +118,8 @@ export class ViewportManager {
                   // During SSR or Next.js build, viewport is not available.
                   height: 0,
                   width: 2000,
+                  scrollHeight: 0,
+                  scrollWidth: 2000,
                   scrollX: 0,
                   scrollY: 0
               };

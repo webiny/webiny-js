@@ -3,17 +3,16 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
-    "@lexical/headless": "^0.35.0",
-    "@lexical/html": "^0.35.0",
+    "@lexical/headless": "^0.43.0",
+    "@lexical/html": "^0.43.0",
     "@webiny/lexical-nodes": "0.0.0",
-    "cheerio": "^1.1.2",
-    "lexical": "^0.35.0"
+    "cheerio": "^1.2.0",
+    "lexical": "^0.43.0"
   },
   "devDependencies": {
-    "@types/jsdom": "^21.1.7",
     "@webiny/build-tools": "0.0.0",
-    "jsdom": "^25.0.1",
-    "vitest": "^3.2.4"
+    "jsdom": "^29.0.2",
+    "vitest": "^4.1.5"
   },
   "publishConfig": {
     "access": "public",

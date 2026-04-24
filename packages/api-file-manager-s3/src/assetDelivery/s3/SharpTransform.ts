@@ -33,7 +33,7 @@ export class SharpTransform implements AssetTransformationStrategy {
         }
 
         // `original` is part of the request, but it won't even get to this point in the execution.
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // oxlint-disable-next-line typescript/no-unused-vars
         const { original, ...options } = assetRequest.getOptions();
 
         const transformedAsset = asset.clone();
@@ -48,7 +48,6 @@ export class SharpTransform implements AssetTransformationStrategy {
     }
 
     private async transformAsset(asset: Asset, options: Omit<AssetRequestOptions, "original">) {
-        console.log("Transform asset", options);
         if (options.width) {
             const { s3, bucket } = this.params;
 

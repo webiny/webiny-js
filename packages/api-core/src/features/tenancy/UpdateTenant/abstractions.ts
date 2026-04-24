@@ -9,6 +9,7 @@ export interface IUpdateTenantUseCase {
     execute(id: string, data: Partial<Tenant>): Promise<Result<Tenant, UpdateTenantError>>;
 }
 
+/** Update an existing tenant. */
 export const UpdateTenantUseCase = createAbstraction<IUpdateTenantUseCase>("UpdateTenantUseCase");
 
 export namespace UpdateTenantUseCase {
@@ -19,6 +20,7 @@ export interface IUpdateTenantRepository {
     update(tenant: Tenant): Promise<Tenant>;
 }
 
+/** Persist tenant updates. */
 export const UpdateTenantRepository =
     createAbstraction<IUpdateTenantRepository>("UpdateTenantRepository");
 
@@ -30,26 +32,29 @@ export interface IUpdateTenantGateway {
     updateTenant(data: Tenant): Promise<Tenant>;
 }
 
+/** Storage gateway for tenant updates. */
 export const UpdateTenantGateway = createAbstraction<IUpdateTenantGateway>("UpdateTenantGateway");
 
 export namespace UpdateTenantGateway {
     export type Interface = IUpdateTenantGateway;
 }
 
-export const TenantBeforeUpdateHandler = createAbstraction<
+/** Hook into tenant lifecycle before a tenant is updated. */
+export const TenantBeforeUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<TenantBeforeUpdatePayload>>
->("TenantBeforeUpdateHandler");
+>("TenantBeforeUpdateEventHandler");
 
-export namespace TenantBeforeUpdateHandler {
+export namespace TenantBeforeUpdateEventHandler {
     export type Interface = IEventHandler<DomainEvent<TenantBeforeUpdatePayload>>;
     export type Event = DomainEvent<TenantBeforeUpdatePayload>;
 }
 
-export const TenantAfterUpdateHandler = createAbstraction<
+/** Hook into tenant lifecycle after a tenant is updated. */
+export const TenantAfterUpdateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<TenantAfterUpdatePayload>>
->("TenantAfterUpdateHandler");
+>("TenantAfterUpdateEventHandler");
 
-export namespace TenantAfterUpdateHandler {
+export namespace TenantAfterUpdateEventHandler {
     export type Interface = IEventHandler<DomainEvent<TenantAfterUpdatePayload>>;
     export type Event = DomainEvent<TenantAfterUpdatePayload>;
 }

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
 import { identityA, identityB, identityC, identityD } from "./security/utils";
 
@@ -16,16 +16,22 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
         const testDate = new Date("2020-01-01T00:00:00.000Z").toISOString();
 
         const { data: rev } = await manageIdentityA.createTestEntry({
-            data: {
-                status: "published",
-                revisionFirstPublishedOn: testDate,
-                revisionLastPublishedOn: testDate,
-                revisionFirstPublishedBy: identityB,
-                revisionLastPublishedBy: identityB,
-                firstPublishedOn: testDate,
-                lastPublishedOn: testDate,
-                firstPublishedBy: identityB,
-                lastPublishedBy: identityB
+            variables: {
+                data: {
+                    status: "published",
+                    revisionFirstPublishedOn: testDate,
+                    revisionLastPublishedOn: testDate,
+                    revisionFirstPublishedBy: identityB,
+                    revisionLastPublishedBy: identityB,
+                    firstPublishedOn: testDate,
+                    lastPublishedOn: testDate,
+                    firstPublishedBy: identityB,
+                    lastPublishedBy: identityB,
+                    values: {
+                        title: "testTitle",
+                        slug: "test-slug"
+                    }
+                }
             }
         });
 
@@ -52,30 +58,44 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
         const testDate3 = new Date("2022-01-01T00:00:00.000Z").toISOString();
 
         const { data: rev } = await manageIdentityA.createTestEntry({
-            data: {
-                status: "published",
-                revisionFirstPublishedOn: testDate1,
-                revisionLastPublishedOn: testDate1,
-                revisionFirstPublishedBy: identityB,
-                revisionLastPublishedBy: identityB,
-                firstPublishedOn: testDate1,
-                lastPublishedOn: testDate1,
-                firstPublishedBy: identityB,
-                lastPublishedBy: identityB
+            variables: {
+                data: {
+                    status: "published",
+                    revisionFirstPublishedOn: testDate1,
+                    revisionLastPublishedOn: testDate1,
+                    revisionFirstPublishedBy: identityB,
+                    revisionLastPublishedBy: identityB,
+                    firstPublishedOn: testDate1,
+                    lastPublishedOn: testDate1,
+                    firstPublishedBy: identityB,
+                    lastPublishedBy: identityB,
+                    values: {
+                        title: "testTitle",
+                        slug: "test-slug"
+                    }
+                }
             }
         });
 
-        const { data: publishedRevWithCustomLastPublishedValues } =
-            await manageIdentityA.createTestEntryFrom({
+        const result = await manageIdentityA.createTestEntryFrom({
+            variables: {
                 revision: rev.id,
                 data: {
                     status: "published",
                     revisionLastPublishedOn: testDate2,
                     revisionLastPublishedBy: identityC,
                     lastPublishedOn: testDate2,
-                    lastPublishedBy: identityC
+                    lastPublishedBy: identityC,
+                    values: {
+                        title: "testTitle - updated",
+                        slug: "test-slug-updated"
+                    }
                 }
-            });
+            }
+        });
+        const { data: publishedRevWithCustomLastPublishedValues, error } = result;
+
+        expect(error).toBeNull();
 
         // Should not see changes in firstPublished-related fields.
         expect(publishedRevWithCustomLastPublishedValues).toMatchObject({
@@ -101,17 +121,23 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
 
         const { data: publishedRevWithAllCustomValues } = await manageIdentityA.createTestEntryFrom(
             {
-                revision: publishedRevWithCustomLastPublishedValues.id,
-                data: {
-                    status: "published",
-                    revisionFirstPublishedOn: testDate3,
-                    revisionLastPublishedOn: testDate3,
-                    revisionFirstPublishedBy: identityD,
-                    revisionLastPublishedBy: identityD,
-                    firstPublishedOn: testDate3,
-                    lastPublishedOn: testDate3,
-                    firstPublishedBy: identityD,
-                    lastPublishedBy: identityD
+                variables: {
+                    revision: publishedRevWithCustomLastPublishedValues.id,
+                    data: {
+                        status: "published",
+                        revisionFirstPublishedOn: testDate3,
+                        revisionLastPublishedOn: testDate3,
+                        revisionFirstPublishedBy: identityD,
+                        revisionLastPublishedBy: identityD,
+                        firstPublishedOn: testDate3,
+                        lastPublishedOn: testDate3,
+                        firstPublishedBy: identityD,
+                        lastPublishedBy: identityD,
+                        values: {
+                            title: "testTitle - updated again",
+                            slug: "test-slug-updated-again"
+                        }
+                    }
                 }
             }
         );
@@ -135,7 +161,9 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
 
         // 1. Manage API.
         const { data: getEntryManage } = await manageIdentityA.getTestEntry({
-            entryId: rev.entryId
+            variables: {
+                entryId: rev.entryId
+            }
         });
 
         expect(getEntryManage).toMatchObject({
@@ -158,7 +186,11 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
 
         // 2. Read API (here we can't get versions directly, so we're just inspecting the revision ID).
         const { data: getEntryRead } = await readIdentityA.getTestEntry({
-            where: { entryId: rev.entryId }
+            variables: {
+                where: {
+                    entryId: rev.entryId
+                }
+            }
         });
         expect(getEntryRead.id).toEndWith("#0003");
 
@@ -167,11 +199,15 @@ describe("Content entries - Entry Meta Fields Overrides", () => {
 
         // Extra check - ensure the previous revision is no longer published.
         const { data: firstPublishedRevision } = await manageIdentityA.getTestEntry({
-            revision: `${rev.entryId}#0001`
+            variables: {
+                revision: `${rev.entryId}#0001`
+            }
         });
 
         const { data: secondPublishedRevision } = await manageIdentityA.getTestEntry({
-            revision: `${rev.entryId}#0002`
+            variables: {
+                revision: `${rev.entryId}#0002`
+            }
         });
 
         expect(firstPublishedRevision.meta.status).toBe("unpublished");

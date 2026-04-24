@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
-import { Accordion, Card, Grid } from "@webiny/admin-ui";
-import type { IWorkflowStep } from "~/types.js";
+import { Accordion, Card, Grid, Icon } from "@webiny/admin-ui";
+import type { IWorkflowNotificationType, IWorkflowStep } from "~/types.js";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
 import { observer } from "mobx-react-lite";
@@ -9,7 +9,7 @@ import { StepFormTitle } from "./Form/StepFormTitle.js";
 import { StepFormColor } from "./Form/StepFormColor.js";
 import { StepFormDescription } from "./Form/StepFormDescription.js";
 import { StepFormTeams } from "./Form/StepFormTeams.js";
-import { StepFormNotifications } from "./Form/StepFormNotifications.js";
+// import { StepFormNotifications } from "./Form/StepFormNotifications.js";
 import { RemoveStep } from "./Step/RemoveStep.js";
 
 export interface IStepProps {
@@ -23,6 +23,7 @@ export interface IStepProps {
     onMoveDown?: (step: Pick<IWorkflowStep, "id">) => void;
     canMoveDown?: (step: Pick<IWorkflowStep, "id">) => boolean;
     open?: boolean;
+    notifications: IWorkflowNotificationType[];
 }
 
 const useEditing = (defaultValue = false) => {
@@ -53,6 +54,7 @@ export const Step = observer(
         onMoveDown,
         canMoveDown,
         open
+        // notifications
     }: IStepProps) => {
         const { editing, stopEditing, startEditing } = useEditing(open);
 
@@ -140,9 +142,9 @@ export const Step = observer(
                                             <Grid.Column span={12}>
                                                 <StepFormTeams />
                                             </Grid.Column>
-                                            <Grid.Column span={12}>
-                                                <StepFormNotifications />
-                                            </Grid.Column>
+                                            {/*<Grid.Column span={12}>*/}
+                                            {/*    <StepFormNotifications items={notifications} />*/}
+                                            {/*</Grid.Column>*/}
                                         </Grid>
                                     </Card>
                                 </>
@@ -164,14 +166,26 @@ export const Step = observer(
                                                     <Accordion.Item.Action
                                                         onClick={moveUp}
                                                         disabled={!canMoveUp(step)}
-                                                        icon={<ArrowUp />}
+                                                        icon={
+                                                            <Icon
+                                                                label={"Move step up"}
+                                                                size={"md"}
+                                                                icon={<ArrowUp />}
+                                                            />
+                                                        }
                                                     />
                                                 )}
                                                 {canMoveDown && (
                                                     <Accordion.Item.Action
                                                         onClick={moveDown}
                                                         disabled={!canMoveDown(step)}
-                                                        icon={<ArrowDown />}
+                                                        icon={
+                                                            <Icon
+                                                                label={"Move step down"}
+                                                                size={"md"}
+                                                                icon={<ArrowDown />}
+                                                            />
+                                                        }
                                                     />
                                                 )}
                                                 <Accordion.Item.Action.Separator />

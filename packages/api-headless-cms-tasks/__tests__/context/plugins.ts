@@ -37,7 +37,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
         name: "Root",
         parent: null
     };
-    const locale = "en-US";
     const {
         permissions,
         identity,
@@ -53,7 +52,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
-        locale,
         plugins: [
             topPlugins,
             createApiCore({
@@ -89,17 +87,14 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
                                 type: "admin"
                             },
                             description: "test",
-                            createdOn: new Date().toISOString(),
-                            webinyVersion: context.WEBINY_VERSION
+                            createdOn: new Date().toISOString()
                         };
                     };
                 }
             } as ContextPlugin<HcmsTasksContext>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createBackgroundTaskContext(),
             createHeadlessCmsGraphQL(),
             plugins,

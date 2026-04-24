@@ -1,17 +1,13 @@
 import WebinyError from "@webiny/error";
-import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
-import {
-    FolderAfterDeleteHandler,
-    type FolderAfterDeletePayload
-} from "@webiny/api-aco/features/folders/DeleteFolder/abstractions";
+import { FolderAfterDeleteEventHandler } from "@webiny/api-aco/features/folder/DeleteFolder/index.js";
+import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import type { AuditLogsContext } from "~/types.js";
 
-export class AuditLogFolderAfterDeleteHandler implements FolderAfterDeleteHandler.Interface {
-    constructor(private context: AuditLogsContext) {}
+class AuditLogFolderAfterDeleteHandlerImpl implements FolderAfterDeleteEventHandler.Interface {
+    constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: DomainEvent<FolderAfterDeletePayload>): Promise<void> {
+    async handle(event: FolderAfterDeleteEventHandler.Event): Promise<void> {
         try {
             const { folder } = event.payload;
             if (folder.type === "PbPage") {
@@ -32,3 +28,8 @@ export class AuditLogFolderAfterDeleteHandler implements FolderAfterDeleteHandle
         }
     }
 }
+
+export const AuditLogFolderAfterDeleteHandler = FolderAfterDeleteEventHandler.createImplementation({
+    implementation: AuditLogFolderAfterDeleteHandlerImpl,
+    dependencies: [AuditLogsContext]
+});

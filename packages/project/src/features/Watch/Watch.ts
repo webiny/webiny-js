@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import {
     BuildAppWorkspaceService,
+    WatchedLambdaFunctionsService,
     GetApp,
     GetProductionEnvironments,
     GetProject,
@@ -8,7 +9,8 @@ import {
     ListAppLambdaFunctionsService,
     ListPackagesService,
     LoggerService,
-    PulumiGetStackExportService,
+    ProjectSdkParamsService,
+    PulumiExportService,
     PulumiGetStackOutputService,
     UiService,
     ValidateProjectConfigService,
@@ -35,8 +37,10 @@ export class DefaultWatch implements Watch.Interface {
         private getProductionEnvironments: GetProductionEnvironments.Interface,
         private ui: UiService.Interface,
         private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface,
-        private pulumiGetStackExportService: PulumiGetStackOutputService.Interface,
-        private buildAppWorkspaceService: BuildAppWorkspaceService.Interface
+        private pulumiExportService: PulumiExportService.Interface,
+        private watchedLambdaFunctionsService: WatchedLambdaFunctionsService.Interface,
+        private buildAppWorkspaceService: BuildAppWorkspaceService.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
     async execute(params: Watch.Params) {
@@ -54,7 +58,7 @@ export class DefaultWatch implements Watch.Interface {
                 : ([params.package].filter(Boolean) as string[]);
 
             const packages = await this.listPackagesService.execute({
-                whitelist: whitelistArray
+                packageWhitelist: whitelistArray
             });
 
             const packagesWatcher = new PackagesWatcher({ packages, params, logger: this.logger });
@@ -71,13 +75,15 @@ export class DefaultWatch implements Watch.Interface {
             );
         }
 
-        if (!params.env) {
+        const sdkParams = this.projectSdkParamsService.get();
+
+        if (!sdkParams.env) {
             throw new Error(`Please specify environment, for example "dev".`);
         }
 
         const productionEnvironments = await this.getProductionEnvironments.execute();
 
-        if (productionEnvironments.includes(params.env)) {
+        if (productionEnvironments.includes(sdkParams.env)) {
             if (!params.allowProduction) {
                 throw new Error(
                     `${chalk.red(
@@ -94,7 +100,7 @@ export class DefaultWatch implements Watch.Interface {
             );
         }
 
-        await this.buildAppWorkspaceService.execute(params, { forceRebuild: true });
+        await this.buildAppWorkspaceService.execute(params.app, { forceRebuild: true });
 
         const ui = this.ui;
         const logger = this.logger;
@@ -136,9 +142,10 @@ export class DefaultWatch implements Watch.Interface {
             : ([params.function].filter(Boolean) as string[]);
 
         const packagesList = await this.listPackagesService.execute({
-            ...params,
-            whitelist: packagesWhitelist
+            appName: app.name,
+            packageWhitelist: packagesWhitelist
         });
+
         const packagesWatcher = new PackagesWatcher({
             packages: packagesList,
             params,
@@ -146,11 +153,10 @@ export class DefaultWatch implements Watch.Interface {
         });
 
         const functionsList = await this.listAppLambdaFunctionsService.execute(app, {
-            ...params,
             whitelist: functionsWhitelist
         });
 
-        const deployCommand = `yarn webiny deploy ${app.name} --env ${params.env}`;
+        const deployCommand = `yarn webiny deploy ${app.name} --env ${sdkParams.env}`;
         const learnMoreLink = "https://webiny.link/local-aws-lambda-development";
         const troubleshootingLink = learnMoreLink + "#troubleshooting";
 
@@ -173,7 +179,6 @@ export class DefaultWatch implements Watch.Interface {
                     troubleshootingLink
                 );
             }
-
             return { packagesWatcher, webinyConfigWatcher };
         }
 
@@ -191,7 +196,7 @@ export class DefaultWatch implements Watch.Interface {
             functionsList.list.map(fn => fn.name)
         );
 
-        ui.newLine();
+        ui.emptyLine();
         const { default: exitHook } = await import(/* webpackChunkName: "exit-hook" */ "exit-hook");
 
         exitHook(() => {
@@ -209,17 +214,15 @@ export class DefaultWatch implements Watch.Interface {
         });
 
         const coreApp = this.getApp.execute("core");
-        const coreStackOutput = await this.pulumiGetStackOutputService.execute<ICoreStackOutput>(
-            coreApp,
-            params
-        );
+        const coreStackOutput =
+            await this.pulumiGetStackOutputService.execute<ICoreStackOutput>(coreApp);
 
         if (!coreStackOutput) {
             throw new Error(
                 `You must deploy the ${chalk.bold(
                     "core"
                 )} app before you can start a watch session. To do that, run: ${chalk.bold(
-                    `yarn webiny deploy core --env ${params.env}`
+                    `yarn webiny deploy core --env ${sdkParams.env}`
                 )}`
             );
         }
@@ -233,19 +236,16 @@ export class DefaultWatch implements Watch.Interface {
         const increaseTimeout = params.increaseTimeout;
         const localExecutionHandshakeTimeout = params.increaseHandshakeTimeout || 5; // Default to 5 seconds.
 
-        // TODO: we need a better solution for this.
-        // We want to ensure a Pulumi refresh is made before the next deploy.
-        // setMustRefreshBeforeDeploy(context);
-
         // Ignore promise, we don't need to wait for this to finish.
         replaceLambdaFunctions({
             app,
+            deploymentId,
             dependencies: {
                 uiService: ui,
                 loggerService: logger,
-                pulumiGetStackExportService: this.pulumiGetStackExportService
+                pulumiExportService: this.pulumiExportService,
+                watchedLambdaFunctionsService: this.watchedLambdaFunctionsService
             },
-            watchParams: params,
             iotEndpoint,
             iotEndpointTopic,
             sessionId,
@@ -258,7 +258,7 @@ export class DefaultWatch implements Watch.Interface {
         if (params.inspect) {
             inspector = await import("inspector");
             inspector!.open(9229, "127.0.0.1");
-            ui.newLine();
+            ui.emptyLine();
 
             exitHook(() => {
                 inspector!.close();
@@ -291,7 +291,9 @@ export const watch = createImplementation({
         GetProductionEnvironments,
         UiService,
         PulumiGetStackOutputService,
-        PulumiGetStackExportService,
-        BuildAppWorkspaceService
+        PulumiExportService,
+        WatchedLambdaFunctionsService,
+        BuildAppWorkspaceService,
+        ProjectSdkParamsService
     ]
 });

@@ -5,14 +5,14 @@ import type { CreateUserInput } from "~/features/users/shared/types.js";
 import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import {
     NotAuthorizedError,
-    UserExistsError,
+    EmailTakenError,
     UserValidationError
 } from "~/features/users/shared/errors.js";
 
 // Use case specific errors
 export interface ICreateUserErrors {
     notAuthorized: NotAuthorizedError;
-    userExists: UserExistsError;
+    userExists: EmailTakenError;
     validation: UserValidationError;
 }
 
@@ -24,12 +24,13 @@ export interface ICreateUser {
     execute(input: CreateUserInput): Promise<Result<AdminUser, CreateUserError>>;
 }
 
-// Abstraction constant
+/** Create a new admin user. */
 export const CreateUserUseCase = createAbstraction<ICreateUser>("CreateUserUseCase");
 
 // Namespace exports
 export namespace CreateUserUseCase {
     export type Interface = ICreateUser;
+    export type Input = CreateUserInput;
     export type Error = CreateUserError;
 }
 

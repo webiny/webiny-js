@@ -22,7 +22,7 @@ interface TagsProps extends FormComponentProps {
     /**
      * Description beneath the input.
      */
-    description?: string;
+    description?: string | React.ReactNode;
 
     /**
      * A className for the root element.

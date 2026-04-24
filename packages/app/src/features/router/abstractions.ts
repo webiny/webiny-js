@@ -27,7 +27,11 @@ export interface IRouterPresenter {
         ...args: RouteParamsArgs<TParams>
     ): string;
     setRouteParams<T extends Record<string, any>>(cb: (params: T) => T): void;
-    onRouteExit(cb: OnRouteExit): void;
+    addTransitionGuard(config: RouteTransitionGuardConfig): GuardDisposer;
+    isTransitionBlocked(): boolean;
+    unblockTransition(): void;
+    confirmTransition(): void;
+    cancelTransition(): void;
     destroy(): void;
 }
 export const RouterPresenter = new Abstraction<IRouterPresenter>("RouterPresenter");
@@ -49,9 +53,7 @@ export interface MatchedRoute<TParams = Record<string, any>> {
     params: TParams;
 }
 
-interface IRouterRepository {
-    onRouteExit(cb: OnRouteExit): void;
-
+export interface IRouterRepository {
     getMatchedRoute(): MatchedRoute | undefined;
 
     getCurrentRoute(): Route<any> | undefined;
@@ -67,6 +69,12 @@ interface IRouterRepository {
     ): string;
 
     registerRoutes(routes: Route[]): void;
+
+    addGuard(config: RouteTransitionGuardConfig): GuardDisposer;
+    isBlocked(): boolean;
+    unblock(): void;
+    confirmTransition(): void;
+    cancelTransition(): void;
 
     destroy(): void;
 }
@@ -90,17 +98,11 @@ export type TransitionController = {
     cancel: () => void;
 };
 
-export interface OnRouteExit {
-    (controller: TransitionController): void;
-}
-
 interface IRouterGateway {
     setRoutes(routes: RouteDefinition[]): void;
-    addRoute(route: RouteDefinition): void;
     goToRoute(name: string, params?: { [k: string]: any }): void;
     pushState(url: string): void;
-    generateRouteUrl(id: string, params?: { [k: string]: any }): string;
-    onRouteExit(cb: OnRouteExit): void;
+    addGuard(config: RouteTransitionGuardConfig): GuardDisposer;
     destroy(): void;
 }
 
@@ -108,4 +110,15 @@ export const RouterGateway = new Abstraction<IRouterGateway>("RouterGateway");
 
 export namespace RouterGateway {
     export type Interface = IRouterGateway;
+}
+
+/***** Route Transition *****/
+
+export type GuardDisposer = () => void;
+
+export interface RouteTransitionGuardConfig {
+    /** Return true to block the transition. */
+    guard: () => boolean;
+    /** Called when this guard blocks a transition. Show a confirmation dialog here. */
+    onBlocked: (controller: TransitionController) => void;
 }

@@ -1,14 +1,10 @@
 import type { CreateGraphQLParams } from "~/graphql/index.js";
 import { createGraphQL as baseCreateGraphQL } from "~/graphql/index.js";
-import { createDefaultModelManager } from "~/modelManager/index.js";
-import { createGraphQLFields } from "~/graphqlFields/index.js";
-import { createValidators } from "~/validators/index.js";
 import {
     createContextParameterPlugin,
     createHeaderParameterPlugin,
     createPathParameterPlugin
 } from "~/parameters/index.js";
-import type { CrudParams } from "~/context.js";
 import { createContextPlugin } from "~/context.js";
 import {
     entryFieldFromStorageTransform,
@@ -17,8 +13,6 @@ import {
 } from "./utils/entryStorage.js";
 import { createFieldConverters } from "~/fieldConverters/index.js";
 import { createExportGraphQL } from "~/export/index.js";
-import { createStorageTransform } from "~/storage/index.js";
-import { createLexicalHTMLRenderer } from "./htmlRenderer/createLexicalHTMLRenderer.js";
 import { createRevisionIdScalarPlugin } from "~/graphql/scalars/RevisionIdScalarPlugin.js";
 import type { Plugin } from "@webiny/plugins/types.js";
 
@@ -40,30 +34,25 @@ export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams 
          * At this point we can create, or not create, CMS GraphQL Schema.
          */
         ...baseCreateGraphQL(params),
-        createExportGraphQL(),
-        createLexicalHTMLRenderer()
+        createExportGraphQL()
     ];
 };
 
-export type ContentContextParams = CrudParams;
-export const createHeadlessCmsContext = (params: ContentContextParams) => {
+export const createHeadlessCmsContext = () => {
     return [
         /**
          * Context for all Lambdas - everything is loaded now.
          */
-        createContextPlugin(params),
-        createDefaultModelManager(),
-        createGraphQLFields(),
-        createFieldConverters(),
-        createValidators(),
-        ...createStorageTransform()
+        createContextPlugin(),
+        createFieldConverters()
     ];
 };
-export * from "~/graphqlFields/index.js";
 export * from "~/plugins/index.js";
 export * from "~/utils/incrementEntryIdVersion.js";
-export * from "~/utils/RichTextRenderer.js";
 export * from "./graphql/handleRequest.js";
-export * from "./utils/contentEntryTraverser/ContentEntryTraverser.js";
+export * from "./features/contentEntry/ContentEntryTraverser/ContentEntryTraverser.js";
+export { ContentEntryTraverserProvider } from "./features/contentEntry/ContentEntryTraverser/abstractions.js";
 export * from "./utils/contentModelAst/index.js";
+export { CmsWhereMapper } from "~/features/whereMapper/abstractions.js";
+export { CmsSortMapper } from "~/features/sortMapper/abstractions.js";
 export { entryToStorageTransform, entryFieldFromStorageTransform, entryFromStorageTransform };

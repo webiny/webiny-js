@@ -39,7 +39,7 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
             return {};
         }
 
-        if (field.multipleValues) {
+        if (field.list) {
             if (Array.isArray(value)) {
                 return {
                     [field.storageId]: value.map(item => {
@@ -115,7 +115,7 @@ export class CmsModelDynamicZoneFieldConverterPlugin extends CmsModelFieldConver
             return {};
         }
 
-        if (field.multipleValues) {
+        if (field.list) {
             const arrayValue = Array.isArray(value) ? value : [];
 
             return {

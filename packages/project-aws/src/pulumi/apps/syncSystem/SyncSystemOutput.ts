@@ -8,9 +8,7 @@ export const SyncSystemOutput = createAppModule({
     name: "SyncSystemOutput",
     config(app) {
         return app.addHandler(async () => {
-            const output = await getSyncSystemOutput({
-                env: app.params.run.env
-            });
+            const output = await getSyncSystemOutput();
 
             const keys = Object.keys(output || {});
 

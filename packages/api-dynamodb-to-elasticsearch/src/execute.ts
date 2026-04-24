@@ -1,13 +1,15 @@
 import {
     createWaitUntilHealthy,
-    ElasticsearchCatClusterHealthStatus,
+    OpenSearchCatClusterHealthStatus,
     UnhealthyClusterError,
     WaitingHealthyClusterAbortedError
-} from "@webiny/api-elasticsearch";
+} from "@webiny/api-opensearch";
 import type { ITimer } from "@webiny/handler-aws";
-import type { ApiResponse } from "@webiny/api-elasticsearch/types.js";
+import type { ApiResponse } from "@webiny/api-opensearch/types.js";
+
 import { WebinyError } from "@webiny/error";
 import type { Context, IOperations } from "./types.js";
+import { shouldShowLogs } from "~/helpers/shouldShowLogs.js";
 
 export interface BulkOperationsResponseBodyItemIndexError {
     reason?: string;
@@ -30,7 +32,7 @@ export interface IExecuteParams {
     timer: ITimer;
     maxRunningTime: number;
     maxProcessorPercent: number;
-    context: Pick<Context, "elasticsearch" | "logger">;
+    context: Pick<Context, "opensearch">;
     operations: Pick<IOperations, "items" | "total">;
 }
 
@@ -45,7 +47,7 @@ const getError = (item: BulkOperationsResponseBodyItem): string | null => {
     return reason;
 };
 
-const checkErrors = (result?: ApiResponse<BulkOperationsResponseBody>): void => {
+const checkErrors = (result?: ApiResponse): void => {
     if (!result || !result.body || !result.body.items) {
         return;
     }
@@ -60,7 +62,7 @@ const checkErrors = (result?: ApiResponse<BulkOperationsResponseBody>): void => 
             continue;
         }
         console.error("Body item with error", item);
-        throw new WebinyError(err, "DYNAMODB_TO_ELASTICSEARCH_ERROR", item);
+        throw new WebinyError(err, "DYNAMODB_TO_OPENSEARCH_ERROR", item);
     }
 };
 
@@ -76,20 +78,37 @@ export const execute = (params: IExecuteParams) => {
         const runningTime = maxRunningTime - remainingTime;
         const maxWaitingTime = remainingTime - 90;
 
-        if (process.env.DEBUG === "true") {
+        if (shouldShowLogs()) {
             console.debug(
                 `The Lambda is already running for ${runningTime}s. Setting Health Check max waiting time: ${maxWaitingTime}s`
             );
         }
 
-        const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
-            minClusterHealthStatus: ElasticsearchCatClusterHealthStatus.Yellow,
+        const healthCheck = createWaitUntilHealthy(context.opensearch, {
+            minClusterHealthStatus: OpenSearchCatClusterHealthStatus.Yellow,
             waitingTimeStep: 30,
             maxProcessorPercent,
             maxWaitingTime
         });
 
-        const log = context.logger.withSource("dynamodbToElasticsearch");
+        // const log = context.logger.withSource("dynamodbToElasticsearch");
+        const log = {
+            notice: (...params: any[]) => {
+                console.log(...params);
+            },
+            debug: (...params: any[]) => {
+                console.debug(...params);
+            },
+            info: (...params: any[]) => {
+                console.info(...params);
+            },
+            warn: (...params: any[]) => {
+                console.warn(...params);
+            },
+            error: (...params: any[]) => {
+                console.error(...params);
+            }
+        };
 
         try {
             await healthCheck.wait({
@@ -122,7 +141,7 @@ export const execute = (params: IExecuteParams) => {
         }
 
         try {
-            const res = await context.elasticsearch.bulk<BulkOperationsResponseBody>({
+            const res = await context.opensearch.bulk({
                 body: operations.items
             });
             checkErrors(res);
@@ -131,7 +150,7 @@ export const execute = (params: IExecuteParams) => {
                 tenant: "root"
             });
 
-            if (process.env.DEBUG !== "true") {
+            if (shouldShowLogs() === false) {
                 throw error;
             }
             const meta = error?.meta || {};
@@ -139,7 +158,7 @@ export const execute = (params: IExecuteParams) => {
             console.error("Bulk error", JSON.stringify(error, null, 2));
             throw error;
         }
-        if (process.env.DEBUG !== "true") {
+        if (shouldShowLogs() === false) {
             return;
         }
         console.info(`Transferred ${operations.total} record operations to Elasticsearch.`);

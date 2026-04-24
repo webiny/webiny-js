@@ -1,106 +1,119 @@
-import { createCmsGroup, createCmsModel } from "~/plugins";
+import { createCmsGroupPlugin, createModelPlugin } from "~/plugins";
+import type { CmsImportStructureParamsData } from "~/export/types.js";
 
-export const exportedGroupsAndModels = {
+export const exportedGroupsAndModels: CmsImportStructureParamsData = {
     groups: [
         {
             id: "64d4c105110b570008736515",
             name: "Blog",
             slug: "blog",
             description: null,
-            icon: "fab/blogger-b"
+            icon: {
+                name: "fab/blogger-b",
+                value: "fab/blogger-b",
+                type: "fab/blogger-b"
+            }
         },
         {
             id: "64d4c105110b570008736516",
             name: "Machines",
             slug: "machines",
             description: null,
-            icon: "fas/location-dot"
+            icon: {
+                name: "fas/location-dot",
+                value: "fas/location-dot",
+                type: "fas/location-dot"
+            }
         }
     ],
     models: [
         {
             modelId: "article",
             name: "Article",
-            group: "64d4c105110b570008736515",
-            icon: "far/newspaper",
+            group: "machines",
+            icon: {
+                name: "far/newspaper",
+                value: "far/newspaper",
+                type: "far/newspaper"
+            },
             singularApiName: "Article",
             pluralApiName: "Articles",
             fields: [
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "text-input" },
-                    helpText: null,
+                    description: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "Title",
                     type: "text",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "s0due9k2",
                     validation: [{ name: "required", message: "Value is required.", settings: {} }],
                     storageId: "text@s0due9k2",
                     fieldId: "title"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "long-text-text-area" },
-                    helpText: null,
+                    description: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "Description",
                     type: "long-text",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "f0aqavgm",
                     validation: [],
                     storageId: "long-text@f0aqavgm",
                     fieldId: "description"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "lexical-text-input" },
-                    helpText: null,
+                    description: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "Body",
                     type: "rich-text",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "jkldufuq",
                     validation: [],
                     storageId: "rich-text@jkldufuq",
                     fieldId: "body"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: { models: [{ modelId: "author" }] },
                     renderer: { name: "ref-advanced-single" },
-                    helpText: null,
+                    description: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "Author",
                     type: "ref",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "ucuyyn1j",
                     validation: [],
                     storageId: "ref@ucuyyn1j",
                     fieldId: "author"
                 },
                 {
-                    multipleValues: true,
+                    list: true,
                     listValidation: [],
                     settings: { models: [{ modelId: "category" }] },
                     renderer: { name: "ref-advanced-multiple" },
-                    helpText: null,
+                    description: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "Categories",
                     type: "ref",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "d5zkt06f",
                     validation: [],
                     storageId: "ref@d5zkt06f",
@@ -114,86 +127,90 @@ export const exportedGroupsAndModels = {
         {
             modelId: "author",
             name: "Author",
-            group: "64d4c105110b570008736515",
-            icon: "fas/person",
+            group: "blog",
+            icon: {
+                name: "fas/person",
+                value: "fas/person",
+                type: "fas/person"
+            },
             singularApiName: "Author",
             pluralApiName: "Authors",
             fields: [
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "text-input" },
-                    helpText: null,
+                    description: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "Name",
                     type: "text",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "dtaqd9fp",
                     validation: [{ name: "required", message: "Value is required.", settings: {} }],
                     storageId: "text@dtaqd9fp",
                     fieldId: "name"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "long-text-text-area" },
-                    helpText: null,
+                    description: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "About",
                     type: "long-text",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "2sof6i8i",
                     validation: [],
                     storageId: "long-text@2sof6i8i",
                     fieldId: "about"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "lexical-text-input" },
-                    helpText: null,
+                    description: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "Biography",
                     type: "rich-text",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "n6uxjar7",
                     validation: [],
                     storageId: "rich-text@n6uxjar7",
                     fieldId: "biography"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: { type: "date" },
                     renderer: { name: "date-time-input" },
-                    helpText: null,
+                    description: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "Date Of Birth",
                     type: "datetime",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "w44xgwwr",
                     validation: [],
                     storageId: "datetime@w44xgwwr",
                     fieldId: "dateOfBirth"
                 },
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "boolean-input" },
-                    helpText: null,
+                    description: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "Is Married",
                     type: "boolean",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "b2a35yc7",
                     validation: [],
                     storageId: "boolean@b2a35yc7",
@@ -207,22 +224,26 @@ export const exportedGroupsAndModels = {
         {
             modelId: "category",
             name: "Category",
-            group: "64d4c105110b570008736515",
-            icon: "fas/location-dot",
+            group: "machines",
+            icon: {
+                name: "fas/location-dot",
+                value: "fas/location-dot",
+                type: "fas/location-dot"
+            },
             singularApiName: "Category",
             pluralApiName: "Categories",
             fields: [
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "text-input" },
-                    helpText: null,
+                    description: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "Title",
                     type: "text",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "3oqcch5d",
                     validation: [
                         { name: "required", message: "Title is a required field.", settings: {} }
@@ -237,22 +258,26 @@ export const exportedGroupsAndModels = {
         {
             modelId: "machines",
             name: "Machines",
-            group: "64d4c105110b570008736516",
-            icon: "fas/location-dot",
+            group: "machines",
+            icon: {
+                name: "fas/location-dot",
+                value: "fas/location-dot",
+                type: "fas/location-dot"
+            },
             singularApiName: "Machine",
             pluralApiName: "Machine",
             fields: [
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "text-input" },
-                    helpText: null,
+                    description: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "Title",
                     type: "text",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "a13r8hgds",
                     validation: [
                         { name: "required", message: "Title is a required field.", settings: {} }
@@ -269,36 +294,41 @@ export const exportedGroupsAndModels = {
 
 export const createModels = () => {
     return [
-        createCmsGroup({
+        createCmsGroupPlugin({
             id: "64d4c105110b570008736516",
             name: "Machines",
             slug: "machines",
             description: null,
-            icon: "fas/location-dot"
+            icon: {
+                name: "fas/location-dot",
+                value: "fas/location-dot",
+                type: "fas/location-dot"
+            }
         }),
-        createCmsModel({
+        createModelPlugin({
             modelId: "machines",
             name: "Machines",
-            group: {
-                id: "64d4c105110b570008736516",
-                name: "Machines"
+            group: "machines",
+            icon: {
+                name: "fas/location-dot",
+                value: "fas/location-dot",
+                type: "fas/location-dot"
             },
-            icon: "fas/location-dot",
             singularApiName: "Machine",
             pluralApiName: "Machines",
             description: "",
             fields: [
                 {
-                    multipleValues: false,
+                    list: false,
                     listValidation: [],
                     settings: {},
                     renderer: { name: "text-input" },
-                    helpText: null,
+                    help: null,
                     predefinedValues: { enabled: false, values: [] },
                     label: "Title",
                     type: "text",
                     tags: [],
-                    placeholderText: null,
+                    placeholder: null,
                     id: "a13r8hgds",
                     validation: [
                         { name: "required", message: "Title is a required field.", settings: {} }

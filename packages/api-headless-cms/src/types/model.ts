@@ -1,6 +1,44 @@
 import type { CmsIdentity } from "./identity.js";
-import type { CmsModelField, CmsModelFieldInput, LockedField } from "./modelField.js";
-import type { CmsModelGroup } from "./modelGroup.js";
+import type { CmsModelField, CmsModelFieldInput, FieldRule } from "./modelField.js";
+import type { CmsIcon } from "~/types/types.js";
+
+export interface CmsTabLayoutTab {
+    id: string;
+    label: string;
+    icon?: CmsIcon | null;
+    layout: CmsModelLayout;
+    rules?: FieldRule[];
+}
+
+export interface CmsTabLayoutDescriptor {
+    type: "tabs";
+    label: string;
+    description?: string | null;
+    help?: string | null;
+    tabs: CmsTabLayoutTab[];
+    rules?: FieldRule[];
+}
+
+export interface CmsSeparatorLayoutDescriptor {
+    type: "separator";
+    label: string;
+    description: string | null | undefined;
+    rules?: FieldRule[];
+}
+
+export interface CmsAlertLayoutDescriptor {
+    type: "alert";
+    label: string;
+    alertType: "info" | "success" | "warning" | "danger";
+    rules?: FieldRule[];
+}
+
+export type CmsModelLayoutCell =
+    | string
+    | CmsTabLayoutDescriptor
+    | CmsSeparatorLayoutDescriptor
+    | CmsAlertLayoutDescriptor;
+export type CmsModelLayout = CmsModelLayoutCell[][];
 
 /**
  * Base CMS Model. Should not be exported and used outside of this package.
@@ -40,17 +78,13 @@ export interface CmsModel {
      */
     tenant: string;
     /**
-     * Locale this model belongs to.
+     * Model group slug.
      */
-    locale: string;
-    /**
-     * Cms Group reference object.
-     */
-    group: CmsModelGroup;
+    group: string;
     /**
      * Icon for the content model.
      */
-    icon?: string | null;
+    icon: CmsIcon | null;
     /**
      * Description for the content model.
      */
@@ -81,15 +115,11 @@ export interface CmsModel {
      * ]
      * ```
      */
-    layout: string[][];
+    layout: CmsModelLayout;
     /**
      * Models can be tagged to give them contextual meaning.
      */
     tags?: string[];
-    /**
-     * List of locked fields. Updated when entry is saved and a field has been used.
-     */
-    lockedFields?: LockedField[];
     /**
      * The field that is used as an entry title.
      * If not specified by the user, the system tries to assign the first available `text` field.
@@ -105,10 +135,6 @@ export interface CmsModel {
      * If not set by the user, the system will try to assign a `file` field which has `imagesOnly` enabled.
      */
     imageFieldId?: string | null;
-    /**
-     * The version of Webiny which this record was stored with.
-     */
-    webinyVersion: string;
 
     /**
      * Is model private?
@@ -180,7 +206,7 @@ export interface CmsModelCreateInput {
      * ]
      * ```
      */
-    layout?: string[][];
+    layout?: CmsModelLayout;
     /**
      * Models can be tagged to give them contextual meaning.
      */
@@ -191,6 +217,7 @@ export interface CmsModelCreateInput {
     titleFieldId?: string | null;
     descriptionFieldId?: string | null;
     imageFieldId?: string | null;
+    icon?: CmsIcon | null;
 }
 
 /**
@@ -199,9 +226,4 @@ export interface CmsModelCreateInput {
  * @category GraphQL params
  * @category CmsModel
  */
-export interface CmsModelCreateFromInput extends CmsModelCreateInput {
-    /**
-     * Locale into which we want to clone the model into.
-     */
-    locale?: string;
-}
+export interface CmsModelCreateFromInput extends CmsModelCreateInput {}

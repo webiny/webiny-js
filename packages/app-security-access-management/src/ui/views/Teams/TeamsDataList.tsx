@@ -175,7 +175,9 @@ export const TeamsDataList = ({ activeId }: TeamsDataListProps) => {
                                 }}
                             >
                                 <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
-                                <ListItemTextSecondary>{item.description}</ListItemTextSecondary>
+                                <ListItemTextSecondary>
+                                    {item.description ?? "(no description)"}
+                                </ListItemTextSecondary>
                             </ListItemText>
 
                             <ListItemMeta>

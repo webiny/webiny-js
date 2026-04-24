@@ -1,14 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type {
     SecurityStorageOperations as ISecurityStorageOperations,
-    Group,
+    Role,
     Team
 } from "~/types/security.js";
 
-/**
- * SecurityStorageOperations abstraction
- * Provides access to all storage operations for security entities
- */
+/** Storage operations for all security entities. */
 export const SecurityStorageOperations = createAbstraction<ISecurityStorageOperations>(
     "SecurityStorageOperations"
 );
@@ -17,28 +14,22 @@ export namespace SecurityStorageOperations {
     export type Interface = ISecurityStorageOperations;
 }
 
-/**
- * GroupsProvider abstraction
- * Provides groups defined via plugins
- */
-export interface IGroupsProvider {
-    (): Promise<Group[]>;
+export interface IRolesProvider {
+    getRoles(): Promise<Role[]>;
 }
 
-export const GroupsProvider = createAbstraction<IGroupsProvider>("GroupsProvider");
+/** Provide roles defined via code-based factories. */
+export const RolesProvider = createAbstraction<IRolesProvider>("RolesProvider");
 
-export namespace GroupsProvider {
-    export type Interface = IGroupsProvider;
+export namespace RolesProvider {
+    export type Interface = IRolesProvider;
 }
 
-/**
- * TeamsProvider abstraction
- * Provides teams defined via plugins
- */
 export interface ITeamsProvider {
-    (): Promise<Team[]>;
+    getTeams(): Promise<Team[]>;
 }
 
+/** Provide teams defined via code-based factories. */
 export const TeamsProvider = createAbstraction<ITeamsProvider>("TeamsProvider");
 
 export namespace TeamsProvider {

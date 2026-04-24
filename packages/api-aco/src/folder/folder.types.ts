@@ -1,15 +1,7 @@
-import type { ListMeta, ListSort, User } from "~/types.js";
+import type { ListSort, User } from "~/types.js";
 import { type FolderPermission } from "~/types.js";
 
-export interface Folder {
-    id: string;
-    entryId: string;
-    createdOn: string;
-    modifiedOn: string | null;
-    savedOn: string;
-    createdBy: User;
-    modifiedBy: User | null;
-    savedBy: User;
+export interface CmsEntryFolder {
     title: string;
     slug: string;
     permissions?: FolderPermission[];
@@ -17,6 +9,16 @@ export interface Folder {
     parentId?: string | null;
     path: string;
     extensions?: Record<string, any>;
+}
+
+export interface Folder extends CmsEntryFolder {
+    id: string;
+    createdOn: string;
+    modifiedOn: string | null;
+    savedOn: string;
+    createdBy: User;
+    modifiedBy: User | null;
+    savedBy: User;
 }
 
 export interface ListFoldersWhere {
@@ -49,8 +51,6 @@ export interface ListFoldersParams {
     after?: string | null;
 }
 
-export type ListAllFoldersParams = Omit<ListFoldersParams, "limit" | "after">;
-
 export interface GetFolderHierarchyParams {
     type: string;
     id: string;
@@ -70,10 +70,6 @@ export interface UpdateFolderParams {
     parentId?: string;
 }
 
-export interface DeleteFolderParams {
-    id: string;
-}
-
 export interface FolderLevelPermissionsTarget<TMeta = Record<string, any>> {
     id: string;
     target: string;
@@ -86,87 +82,6 @@ export interface FolderLevelPermissionsTargetListMeta {
     totalCount: number;
 }
 
-export interface StorageOperationsGetFolderParams {
-    id?: string;
-    slug?: string;
-    type?: string;
-    parentId?: string | null;
-}
-
 export interface GetFolderParams {
     id: string;
-}
-
-export type StorageOperationsListFoldersParams = ListFoldersParams;
-
-export interface StorageOperationsCreateFolderParams {
-    data: CreateFolderParams;
-}
-
-export interface StorageOperationsUpdateFolderParams {
-    id: string;
-    data: UpdateFolderParams;
-}
-
-export type StorageOperationsDeleteFolderParams = DeleteFolderParams;
-
-export interface OnFolderBeforeCreateTopicParams {
-    input: CreateFolderParams;
-}
-
-export interface OnFolderAfterCreateTopicParams {
-    folder: Folder;
-}
-
-export interface OnFolderBeforeUpdateTopicParams {
-    original: Folder;
-    input: Record<string, any>;
-}
-
-export interface OnFolderAfterUpdateTopicParams {
-    original: Folder;
-    folder: Folder;
-    input: Record<string, any>;
-}
-
-export interface OnFolderBeforeDeleteTopicParams {
-    folder: Folder;
-}
-
-export interface OnFolderAfterDeleteTopicParams {
-    folder: Folder;
-}
-
-export interface AcoFolderCrud {
-    get(id: string): Promise<Folder>;
-
-    list(params: ListFoldersParams): Promise<[Folder[], ListMeta]>;
-
-    listFolderLevelPermissionsTargets(): Promise<
-        [FolderLevelPermissionsTarget[], FolderLevelPermissionsTargetListMeta]
-    >;
-
-    listAll(params: ListAllFoldersParams): Promise<[Folder[], ListMeta]>;
-
-    create(data: CreateFolderParams): Promise<Folder>;
-
-    update(id: string, data: UpdateFolderParams): Promise<Folder>;
-
-    delete(id: string): Promise<boolean>;
-
-    getAncestors(folder: Folder): Promise<Folder[]>;
-
-    getFolderHierarchy(params: GetFolderHierarchyParams): Promise<GetFolderHierarchyResponse>;
-}
-
-export interface AcoFolderStorageOperations {
-    getFolder(params: StorageOperationsGetFolderParams): Promise<Folder>;
-
-    listFolders(params: StorageOperationsListFoldersParams): Promise<[Folder[], ListMeta]>;
-
-    createFolder(params: StorageOperationsCreateFolderParams): Promise<Folder>;
-
-    updateFolder(params: StorageOperationsUpdateFolderParams): Promise<Folder>;
-
-    deleteFolder(params: StorageOperationsDeleteFolderParams): Promise<boolean>;
 }

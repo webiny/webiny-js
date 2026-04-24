@@ -5,6 +5,7 @@ import {
     GetApp,
     GetProject,
     GetPulumiService,
+    ProjectSdkParamsService,
     PulumiSelectStackService
 } from "~/abstractions/index.js";
 import {
@@ -22,24 +23,26 @@ export class DefaultDestroyApp implements DestroyApp.Interface {
         private buildAppWorkspaceService: BuildAppWorkspaceService.Interface,
         private getProject: GetProject.Interface,
         private pulumiSelectStackService: PulumiSelectStackService.Interface,
-        private getPulumiService: GetPulumiService.Interface
+        private getPulumiService: GetPulumiService.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
     async execute(params: DestroyApp.Params) {
-        await this.buildAppWorkspaceService.execute(params);
+        await this.buildAppWorkspaceService.execute(params.app);
 
         const app = this.getApp.execute(params.app);
 
-        await this.pulumiSelectStackService.execute(app, params);
+        await this.pulumiSelectStackService.execute(app);
 
         const pulumi = await this.getPulumiService.execute({ app });
         const project = await this.getProject.execute();
+        const sdkParams = this.projectSdkParamsService.get();
 
         const env = createEnvConfiguration({
             configurations: [
-                withRegion(params),
-                withEnv(params),
-                withEnvVariant(params),
+                withRegion({ region: sdkParams.region }),
+                withEnv({ env: sdkParams.env }),
+                withEnvVariant({ variant: sdkParams.variant }),
                 withPulumiConfigPassphrase(),
                 withProjectName({ project })
             ]
@@ -49,7 +52,6 @@ export class DefaultDestroyApp implements DestroyApp.Interface {
             pulumiProcess: pulumi.run({
                 command: "destroy",
                 args: {
-                    debug: params.debug || false,
                     yes: true
                 },
                 execa: { env }
@@ -66,6 +68,7 @@ export const destroyApp = createImplementation({
         BuildAppWorkspaceService,
         GetProject,
         PulumiSelectStackService,
-        GetPulumiService
+        GetPulumiService,
+        ProjectSdkParamsService
     ]
 });

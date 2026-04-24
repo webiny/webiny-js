@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as DialogStories from './Dialog.stories';
+import * as DialogStories from "./Dialog.stories";
 
 <Meta of={DialogStories} />
 
@@ -15,7 +15,7 @@ import React, { useState } from "react";
 import { Dialog, Button } from "@webiny/admin-ui";
 
 const DialogExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -33,8 +33,8 @@ const DialogExample = () => {
                 info={<>Learn more about this <a href={"#"}>here</a>.</>}
                 actions={
                     <>
-                        <Dialog.CancelButton />
-                        <Dialog.ConfirmButton />
+                        <Dialog.CancelAction />
+                        <Dialog.ConfirmAction />
                     </>
                 }
                 showCloseButton={true}
@@ -45,61 +45,62 @@ const DialogExample = () => {
             </Dialog>
         </>
     );
+
 };
 
 export default DialogExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Dialog/Dialog.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Dialog/Dialog.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={DialogStories.Documentation} exclude={["onOpenChange", "trigger"]}/>
+<Controls of={DialogStories.Documentation} exclude={["onOpenChange", "trigger"]} />
 
 ```tsx
 import React, { useState } from "react";
 import { Dialog, Button } from "@webiny/admin-ui";
 
 const DialogExample = () => {
-    const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
-    return (
-        <>
-            <Button
-                variant="primary"
-                text="Open Dialog"
-                onClick={() => setOpen(true)}
-            />
+  return (
+    <>
+      <Button variant="primary" text="Open Dialog" onClick={() => setOpen(true)} />
 
-            <Dialog
-                open={open}
-                onOpenChange={open => setOpen(open)}
-                title="Dialog Title"
-                description="A short dialog description."
-                info={<>Learn more about this <a href={"#"}>here</a>.</>}
-                actions={
-                    <>
-                        <Dialog.CancelButton />
-                        <Dialog.ConfirmButton />
-                    </>
-                }
-                showCloseButton={true}
-                dismissible={true}
-            >
-                This is the dialog content area. You can place any content here including
-                forms, text, images, or other components.
-            </Dialog>
-        </>
-    );
+      <Dialog
+        open={open}
+        onOpenChange={open => setOpen(open)}
+        title="Dialog Title"
+        description="A short dialog description."
+        info={
+          <>
+            Learn more about this <a href={"#"}>here</a>.
+          </>
+        }
+        actions={
+          <>
+            <Dialog.CancelAction />
+            <Dialog.ConfirmAction />
+          </>
+        }
+        showCloseButton={true}
+        dismissible={true}
+      >
+        This is the dialog content area. You can place any content here including forms, text,
+        images, or other components.
+      </Dialog>
+    </>
+  );
 };
 
 export default DialogExample;
@@ -116,7 +117,7 @@ import React, { useState } from "react";
 import { Dialog, Button } from "@webiny/admin-ui";
 
 const ControlledVisibilityExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -137,8 +138,8 @@ const ControlledVisibilityExample = () => {
                 description="A short dialog description."
                 actions={
                     <>
-                        <Dialog.CancelButton />
-                        <Dialog.ConfirmButton />
+                        <Dialog.CancelAction />
+                        <Dialog.ConfirmAction />
                     </>
                 }
             >
@@ -146,6 +147,7 @@ const ControlledVisibilityExample = () => {
             </Dialog>
         </>
     );
+
 };
 
 export default ControlledVisibilityExample;
@@ -158,7 +160,7 @@ import React, { useState } from "react";
 import { Dialog, Button, DropdownMenu } from "@webiny/admin-ui";
 
 const WithDropdownMenuExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -173,8 +175,8 @@ const WithDropdownMenuExample = () => {
                 description="A short dialog description."
                 actions={
                     <>
-                        <Dialog.CancelButton />
-                        <Dialog.ConfirmButton />
+                        <Dialog.CancelAction />
+                        <Dialog.ConfirmAction />
                     </>
                 }
             >
@@ -182,6 +184,7 @@ const WithDropdownMenuExample = () => {
             </Dialog>
         </>
     );
+
 };
 
 export default WithDropdownMenuExample;
@@ -194,7 +197,7 @@ import React, { useState } from "react";
 import { Dialog, Button } from "@webiny/admin-ui";
 
 const WithoutCloseButtonExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -212,8 +215,8 @@ const WithoutCloseButtonExample = () => {
                 showCloseButton={false}
                 actions={
                     <>
-                        <Dialog.CancelButton />
-                        <Dialog.ConfirmButton />
+                        <Dialog.CancelAction />
+                        <Dialog.ConfirmAction />
                     </>
                 }
             >
@@ -221,6 +224,7 @@ const WithoutCloseButtonExample = () => {
             </Dialog>
         </>
     );
+
 };
 
 export default WithoutCloseButtonExample;
@@ -233,7 +237,7 @@ import React, { useState } from "react";
 import { Dialog, Button } from "@webiny/admin-ui";
 
 const AlertDialogExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -251,8 +255,8 @@ const AlertDialogExample = () => {
                 showCloseButton={false}
                 actions={
                     <>
-                        <Dialog.CancelButton text="Cancel" />
-                        <Dialog.ConfirmButton text="Delete" />
+                        <Dialog.CancelAction text="Cancel" />
+                        <Dialog.ConfirmAction text="Delete" />
                     </>
                 }
             >
@@ -261,6 +265,7 @@ const AlertDialogExample = () => {
             </Dialog>
         </>
     );
+
 };
 
 export default AlertDialogExample;
@@ -274,7 +279,7 @@ import { Dialog, Button } from "@webiny/admin-ui";
 import { ReactComponent as DoorbellIcon } from "@webiny/icons/ring_volume.svg";
 
 const WithIconExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -292,8 +297,8 @@ const WithIconExample = () => {
                 icon={<Dialog.Icon icon={<DoorbellIcon />} label="Title icon" />}
                 actions={
                     <>
-                        <Dialog.CancelButton />
-                        <Dialog.ConfirmButton />
+                        <Dialog.CancelAction />
+                        <Dialog.ConfirmAction />
                     </>
                 }
             >
@@ -301,6 +306,7 @@ const WithIconExample = () => {
             </Dialog>
         </>
     );
+
 };
 
 export default WithIconExample;
@@ -313,7 +319,7 @@ import React, { useState } from "react";
 import { Dialog, Button } from "@webiny/admin-ui";
 
 const PreventOutsideDismissExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -331,8 +337,8 @@ const PreventOutsideDismissExample = () => {
                 dismissible={false}
                 actions={
                     <>
-                        <Dialog.CancelButton />
-                        <Dialog.ConfirmButton />
+                        <Dialog.CancelAction />
+                        <Dialog.ConfirmAction />
                     </>
                 }
             >
@@ -341,6 +347,7 @@ const PreventOutsideDismissExample = () => {
             </Dialog>
         </>
     );
+
 };
 
 export default PreventOutsideDismissExample;
@@ -353,7 +360,7 @@ import React, { useState } from "react";
 import { Dialog, Button, Tabs } from "@webiny/admin-ui";
 
 const WithTabsExample = () => {
-    const [open, setOpen] = useState(false);
+const [open, setOpen] = useState(false);
 
     return (
         <>
@@ -371,8 +378,8 @@ const WithTabsExample = () => {
                 bodyPadding={false}
                 actions={
                     <>
-                        <Dialog.CancelButton />
-                        <Dialog.ConfirmButton text="Save" />
+                        <Dialog.CancelAction />
+                        <Dialog.ConfirmAction text="Save" />
                     </>
                 }
             >
@@ -408,6 +415,7 @@ const WithTabsExample = () => {
             </Dialog>
         </>
     );
+
 };
 
 export default WithTabsExample;
@@ -416,10 +424,16 @@ export default WithTabsExample;
 ## Anatomy
 
 ### Dialog Construction
-<img src="/images/storybook/dialog/anatomy.png" alt="Anatomy"/>
+
+<img src="/images/storybook/dialog/anatomy.png" alt="Anatomy" />
 
 ### Overlay and Positioning
-<img src="/images/storybook/dialog/overlay-and-positioning.png" alt="Dialog Overlay and Positioning"/>
+
+<img
+  src="/images/storybook/dialog/overlay-and-positioning.png"
+  alt="Dialog Overlay and Positioning"
+/>
 
 ## Usage
-<img src="/images/storybook/dialog/usage.png" alt="Usage"/>
+
+<img src="/images/storybook/dialog/usage.png" alt="Usage" />

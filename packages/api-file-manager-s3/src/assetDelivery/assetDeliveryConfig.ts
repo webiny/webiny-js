@@ -7,6 +7,7 @@ import { S3AssetResolver } from "~/assetDelivery/s3/S3AssetResolver.js";
 import { S3OutputStrategy } from "~/assetDelivery/s3/S3OutputStrategy.js";
 import { SharpTransform } from "~/assetDelivery/s3/SharpTransform.js";
 import type { AssetDeliveryParams } from "~/assetDelivery/types.js";
+import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 
 export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
     const bucket = process.env.S3_BUCKET as string;
@@ -15,25 +16,24 @@ export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
     const {
         // Presigned URLs last 1 hour
         presignedUrlTtl = 3600,
-        imageResizeWidths = [100, 300, 500, 750, 1000, 1500, 2500],
+        imageResizeWidths = [128, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
         /**
          * Even though Lambda's response payload limit is 6,291,556 bytes, we leave some room for the response envelope.
          * We had situations where a 4.7MB file would cause the payload to go over the limit, so let's be on the safe side.
          */
-        assetStreamingMaxSize = 4718592,
-        ...baseParams
+        assetStreamingMaxSize = 4718592
     } = params;
 
     return [
         // Base asset delivery
-        createBaseAssetDelivery(baseParams),
+        createBaseAssetDelivery(),
         // S3 plugins
         createAssetDeliveryConfig(config => {
             const s3 = new S3({ region });
 
-            config.decorateAssetResolver(() => {
+            config.decorateAssetResolver(({ container }) => {
                 // This resolver loads file information from the `.metadata` file.
-                return new S3AssetResolver(s3, bucket);
+                return new S3AssetResolver(container.resolve(GlobalKeyValueStore), s3, bucket);
             });
 
             config.decorateAssetOutputStrategy(() => {

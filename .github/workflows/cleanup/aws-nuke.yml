@@ -20,6 +20,13 @@ accounts:
       IAMRole:
         - "GitHubActionsWebinyJs"
         - "GitHubActionsWebinyJsAdminAccess"
+      IAMUser:
+        - "webiny-ci"
+      IAMUserPolicyAttachment:
+        - "webiny-ci -> AdministratorAccess"
+      IAMUserAccessKey:
+        - property: UserName
+          value: "webiny-ci"
       IAMPolicy:
         - "DeployWebinyProjectGroup1"
         - "DeployWebinyProjectGroup2"
@@ -31,6 +38,13 @@ accounts:
         - "GitHubActionsWebinyJs -> DeployWebinyProjectGroup3"
         - "GitHubActionsWebinyJs -> DeployWebinyProjectExtra"
         - "GitHubActionsWebinyJsAdminAccess -> AdministratorAccess"
+      IAMOpenIDConnectProvider:
+        - property: Arn
+          type: exact
+          value: "arn:aws:iam::726952677045:oidc-provider/token.actions.githubusercontent.com"
+      Route53HostedZone:
+        - property: Name
+          value: "ci.webiny.com."
 
 resource-types:
   excludes:

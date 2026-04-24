@@ -11,10 +11,10 @@ export const createSimpleMultipleRenderer = (): CmsModelFieldRendererPlugin => {
         name: "cms-editor-field-renderer-ref-multiple-simple",
         renderer: {
             rendererName: "ref-simple-multiple",
-            name: t`Simple checkbox list`,
-            description: t`Renders a list of checkboxes and the user can select multiple related records.`,
+            name: t`Checkboxes`,
+            description: t`Renders a list of checkboxes and the user can select one or more records.`,
             canUse({ field }) {
-                return field.type === "ref" && !!field.multipleValues;
+                return field.type === "ref" && !!field.list;
             },
             render: props => {
                 const { field, getBind } = props;

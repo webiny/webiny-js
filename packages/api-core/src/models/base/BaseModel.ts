@@ -1,11 +1,11 @@
+import { Result } from "@webiny/feature/api";
 import { WebinyError } from "@webiny/error";
 import z from "zod";
-import { Result } from "./Result.js";
 
 type DataProperties<T> = Omit<T, "__schema">;
 
 export type IModelData<T> = {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    // oxlint-disable-next-line typescript/no-unsafe-function-type
     [K in keyof DataProperties<T> as T[K] extends Function ? never : K]: T[K];
 };
 
@@ -44,7 +44,7 @@ export abstract class BaseModel<TModel extends z.ZodObject<any> = any> {
     }
 
     toData(): IModelData<TModel> {
-        if (this.__schema && this.__schema._def?.typeName === "ZodObject") {
+        if (this.__schema && this.__schema.def?.type === "object") {
             const result = {} as IModelData<TModel>;
             const shape = this.__schema.shape;
             for (const key in shape) {
@@ -70,7 +70,7 @@ export abstract class BaseModel<TModel extends z.ZodObject<any> = any> {
             throw new WebinyError({
                 message: "Validation error",
                 code: "DOMAIN_MODEL_VALIDATION_ERROR",
-                data: result.error.errors
+                data: result.error.issues
             });
         }
     }

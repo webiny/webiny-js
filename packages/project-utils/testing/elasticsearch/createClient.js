@@ -1,19 +1,20 @@
 import { logger } from "@webiny/project-utils/testing/logger";
-import { createElasticsearchClient } from "@webiny/api-elasticsearch";
+import { createOpenSearchClient } from "@webiny/api-opensearch";
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || 9200;
-
-const esEndpoint = process.env.ELASTIC_SEARCH_ENDPOINT;
-
+const OPENSEARCH_PORT = process.env.OPENSEARCH_PORT || 9200;
+const esEndpoint = process.env.OPENSEARCH_ENDPOINT;
 const defaultOptions = {
-    node: `http://localhost:${ELASTICSEARCH_PORT}`,
-    auth: {},
+    node: `http://localhost:${OPENSEARCH_PORT}`,
     maxRetries: 10,
     pingTimeout: 500
 };
+const esUsername = process.env.OPENSEARCH_USERNAME;
+const esPassword = process.env.OPENSEARCH_PASSWORD;
+if (esUsername && esPassword) {
+    defaultOptions.auth = { username: esUsername, password: esPassword };
+}
 if (!!esEndpoint) {
     defaultOptions.node = esEndpoint.match(/^http/) === null ? `https://${esEndpoint}` : esEndpoint;
-    defaultOptions.auth = undefined;
 }
 
 const wait = ms => {
@@ -230,7 +231,7 @@ const attachCustomEvents = client => {
 
 module.exports = {
     createElasticsearchClient: (options = {}) => {
-        const client = createElasticsearchClient({
+        const client = createOpenSearchClient({
             ...defaultOptions,
             ...options
         });

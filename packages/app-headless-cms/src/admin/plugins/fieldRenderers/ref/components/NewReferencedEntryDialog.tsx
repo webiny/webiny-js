@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext.js";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders.js";
 import { ContentEntriesProvider } from "~/admin/views/contentEntries/ContentEntriesContext.js";
@@ -37,6 +37,10 @@ interface EntryFormProps {
     setSaveEntry: (cb: SaveEntry) => void;
 }
 
+const baseEntry: Pick<CmsContentEntry, "values"> = {
+    values: {}
+};
+
 const EntryForm = ({ onCreate, setSaveEntry }: EntryFormProps) => {
     const { contentModel, loading } = useContentEntry();
     const { persistEntry } = usePersistEntry({ addItemToListCache: false });
@@ -49,6 +53,10 @@ const EntryForm = ({ onCreate, setSaveEntry }: EntryFormProps) => {
         if (folders.length === 0) {
             loadFolderHierarchy(currentFolderId);
         }
+    }, []);
+
+    const initialEntry = useMemo(() => {
+        return baseEntry;
     }, []);
 
     return (
@@ -70,7 +78,7 @@ const EntryForm = ({ onCreate, setSaveEntry }: EntryFormProps) => {
                         {loading ? <OverlayLoader text={"Creating entry..."} /> : null}
                         <ContentEntryForm
                             header={false}
-                            entry={{}}
+                            entry={initialEntry}
                             persistEntry={persistEntry}
                             onAfterCreate={entry => onCreate(entry)}
                             setSaveEntry={setSaveEntry}

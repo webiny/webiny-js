@@ -1,21 +1,25 @@
 import { describe, expect, it } from "vitest";
 import { useFruitManageHandler } from "~tests/testHelpers/useFruitManageHandler";
-import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
+import { setupGroupAndModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
 import { toSlug } from "~/utils/toSlug";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
+import type { ICategoryResponseValues } from "~tests/testHelpers/category/manage/types.js";
 
 describe("search", () => {
     const categoryManager = useCategoryManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
     const fruitManager = useFruitManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
     const { createFruit, listFruits } = fruitManager;
 
-    const createFruitRecord = async (data: any) => {
+    const createFruitRecord = async (values: Record<string, any>) => {
         const [response] = await createFruit({
-            data
+            data: {
+                values
+            }
         });
 
         if (response.data.createFruit.error) {
@@ -47,8 +51,10 @@ describe("search", () => {
     };
 
     const setupFruits = async (input?: string[]) => {
-        const group = await setupContentModelGroup(fruitManager);
-        await setupContentModels(fruitManager, group, ["fruit", "category"]);
+        await setupGroupAndModels({
+            manager: fruitManager,
+            models: ["fruit", "category"]
+        });
         return createFruits(input);
     };
 
@@ -56,7 +62,9 @@ describe("search", () => {
         await setupFruits();
         const [response] = await listFruits({
             where: {
-                name_contains: "straw-berry"
+                values: {
+                    name_contains: "straw-berry"
+                }
             }
         });
 
@@ -65,7 +73,9 @@ describe("search", () => {
                 listFruits: {
                     data: [
                         {
-                            name: createName("straw-berry")
+                            values: {
+                                name: createName("straw-berry")
+                            }
                         }
                     ],
                     error: null
@@ -104,7 +114,9 @@ describe("search", () => {
          */
         const [appleOnEnd] = await listFruits({
             where: {
-                name_contains: "app w/"
+                values: {
+                    name_contains: "app w/"
+                }
             }
         });
         expect(appleOnEnd).toMatchObject({
@@ -112,7 +124,9 @@ describe("search", () => {
                 listFruits: {
                     data: [
                         {
-                            name: createName(fruits.apple)
+                            values: {
+                                name: createName(fruits.apple)
+                            }
                         }
                     ],
                     meta: {
@@ -127,7 +141,9 @@ describe("search", () => {
 
         const [appleOnStart] = await listFruits({
             where: {
-                name_contains: "w/ le"
+                values: {
+                    name_contains: "w/ le"
+                }
             }
         });
         expect(appleOnStart).toMatchObject({
@@ -135,7 +151,9 @@ describe("search", () => {
                 listFruits: {
                     data: [
                         {
-                            name: createName(fruits.apple)
+                            values: {
+                                name: createName(fruits.apple)
+                            }
                         }
                     ],
                     meta: {
@@ -150,7 +168,9 @@ describe("search", () => {
 
         const [appleInMiddle] = await listFruits({
             where: {
-                name_contains: "p w/ l"
+                values: {
+                    name_contains: "p w/ l"
+                }
             }
         });
         expect(appleInMiddle).toMatchObject({
@@ -158,7 +178,9 @@ describe("search", () => {
                 listFruits: {
                     data: [
                         {
-                            name: createName(fruits.apple)
+                            values: {
+                                name: createName(fruits.apple)
+                            }
                         }
                     ],
                     meta: {
@@ -175,7 +197,9 @@ describe("search", () => {
          */
         const [bananaOnEnd] = await listFruits({
             where: {
-                name_contains: "ana w/"
+                values: {
+                    name_contains: "ana w/"
+                }
             }
         });
         expect(bananaOnEnd).toMatchObject({
@@ -183,7 +207,9 @@ describe("search", () => {
                 listFruits: {
                     data: [
                         {
-                            name: createName(fruits.banana)
+                            values: {
+                                name: createName(fruits.banana)
+                            }
                         }
                     ],
                     meta: {
@@ -198,7 +224,9 @@ describe("search", () => {
 
         const [bananaInMiddle] = await listFruits({
             where: {
-                name_contains: "banana w/"
+                values: {
+                    name_contains: "banana w/"
+                }
             }
         });
         expect(bananaInMiddle).toMatchObject({
@@ -206,7 +234,9 @@ describe("search", () => {
                 listFruits: {
                     data: [
                         {
-                            name: createName(fruits.banana)
+                            values: {
+                                name: createName(fruits.banana)
+                            }
                         }
                     ],
                     meta: {
@@ -223,7 +253,9 @@ describe("search", () => {
          */
         const [orangeOnStart] = await listFruits({
             where: {
-                name_contains: "w/ ora"
+                values: {
+                    name_contains: "w/ ora"
+                }
             }
         });
         expect(orangeOnStart).toMatchObject({
@@ -231,7 +263,9 @@ describe("search", () => {
                 listFruits: {
                     data: [
                         {
-                            name: createName(fruits.orange)
+                            values: {
+                                name: createName(fruits.orange)
+                            }
                         }
                     ],
                     meta: {
@@ -246,7 +280,9 @@ describe("search", () => {
 
         const [orangeInMiddle] = await listFruits({
             where: {
-                name_contains: "w/ orange"
+                values: {
+                    name_contains: "w/ orange"
+                }
             }
         });
         expect(orangeInMiddle).toMatchObject({
@@ -254,7 +290,9 @@ describe("search", () => {
                 listFruits: {
                     data: [
                         {
-                            name: createName(fruits.orange)
+                            values: {
+                                name: createName(fruits.orange)
+                            }
                         }
                     ],
                     meta: {
@@ -271,7 +309,9 @@ describe("search", () => {
          */
         const [grapeOnEnd] = await listFruits({
             where: {
-                name_contains: "gr w/"
+                values: {
+                    name_contains: "gr w/"
+                }
             }
         });
         expect(grapeOnEnd).toMatchObject({
@@ -279,7 +319,9 @@ describe("search", () => {
                 listFruits: {
                     data: [
                         {
-                            name: createName(fruits.grape)
+                            values: {
+                                name: createName(fruits.grape)
+                            }
                         }
                     ],
                     meta: {
@@ -294,7 +336,9 @@ describe("search", () => {
 
         const [grapeOnStart] = await listFruits({
             where: {
-                name_contains: "w/ ape"
+                values: {
+                    name_contains: "w/ ape"
+                }
             }
         });
         expect(grapeOnStart).toMatchObject({
@@ -302,7 +346,9 @@ describe("search", () => {
                 listFruits: {
                     data: [
                         {
-                            name: createName(fruits.grape)
+                            values: {
+                                name: createName(fruits.grape)
+                            }
                         }
                     ],
                     meta: {
@@ -317,7 +363,9 @@ describe("search", () => {
 
         const [grapeInMiddle] = await listFruits({
             where: {
-                name_contains: "r w/ ap"
+                values: {
+                    name_contains: "r w/ ap"
+                }
             }
         });
         expect(grapeInMiddle).toMatchObject({
@@ -325,7 +373,9 @@ describe("search", () => {
                 listFruits: {
                     data: [
                         {
-                            name: createName(fruits.grape)
+                            values: {
+                                name: createName(fruits.grape)
+                            }
                         }
                     ],
                     meta: {
@@ -350,20 +400,32 @@ describe("search", () => {
             cleaning: "Clean Building Day | The Ultimate Cleaning Trick Tips!",
             car: "2001 CarMaker Car type: SVO Reborn? - Burn Epi. 917"
         };
-        const results: any[] = [];
+        const results: IManageQueryBaseResponse<ICategoryResponseValues>[] = [];
         for (const title of Object.values(categories)) {
             const [result] = await categoryManager.createCategory({
-                data: {
-                    title,
-                    slug: toSlug(title)
+                variables: {
+                    data: {
+                        values: {
+                            title,
+                            slug: toSlug(title)
+                        }
+                    }
                 }
             });
-            results.push(result?.data?.createCategory?.data);
+            const category = result.data?.createCategory?.data;
+            const error = result.data?.createCategory?.error;
+            if (!category || error) {
+                console.log(JSON.stringify(error, null, 2));
+                throw new Error(error?.message || "Could not create category.");
+            }
+            results.push(category);
         }
         expect(results).toHaveLength(Object.values(categories).length);
 
         const [initialResponse] = await categoryManager.listCategories({
-            sort: ["createdOn_ASC"]
+            variables: {
+                sort: ["createdOn_ASC"]
+            }
         });
         expect(initialResponse).toMatchObject({
             data: {
@@ -380,8 +442,12 @@ describe("search", () => {
         });
 
         const [appleListResponse] = await categoryManager.listCategories({
-            where: {
-                title_contains: "tasty fruit: apple w/ black dots"
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "tasty fruit: apple w/ black dots"
+                    }
+                }
             }
         });
         expect(appleListResponse).toMatchObject({
@@ -389,7 +455,9 @@ describe("search", () => {
                 listCategories: {
                     data: [
                         {
-                            title: categories.apple
+                            values: {
+                                title: categories.apple
+                            }
                         }
                     ],
                     meta: {
@@ -403,8 +471,12 @@ describe("search", () => {
         });
 
         const [dotsListResponse] = await categoryManager.listCategories({
-            where: {
-                title_contains: "tasty fruit: w/ dots"
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "tasty fruit: w/ dots"
+                    }
+                }
             }
         });
         expect(dotsListResponse).toMatchObject({
@@ -412,10 +484,14 @@ describe("search", () => {
                 listCategories: {
                     data: [
                         {
-                            title: categories.banana
+                            values: {
+                                title: categories.banana
+                            }
                         },
                         {
-                            title: categories.apple
+                            values: {
+                                title: categories.apple
+                            }
                         }
                     ],
                     meta: {
@@ -429,8 +505,12 @@ describe("search", () => {
         });
 
         const [questionMarksListResponse] = await categoryManager.listCategories({
-            where: {
-                title_contains: "autumn fruit: seeds?"
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "autumn fruit: seeds?"
+                    }
+                }
             }
         });
         expect(questionMarksListResponse).toMatchObject({
@@ -438,10 +518,14 @@ describe("search", () => {
                 listCategories: {
                     data: [
                         {
-                            title: categories.tangerine
+                            values: {
+                                title: categories.tangerine
+                            }
                         },
                         {
-                            title: categories.grape
+                            values: {
+                                title: categories.grape
+                            }
                         }
                     ],
                     meta: {
@@ -455,8 +539,12 @@ describe("search", () => {
         });
 
         const [cleaningListResponse] = await categoryManager.listCategories({
-            where: {
-                title_contains: "Clean Building Day | The Ultimate Cleaning Trick Tips!"
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "Clean Building Day | The Ultimate Cleaning Trick Tips!"
+                    }
+                }
             }
         });
         expect(cleaningListResponse).toMatchObject({
@@ -464,7 +552,9 @@ describe("search", () => {
                 listCategories: {
                     data: [
                         {
-                            title: categories.cleaning
+                            values: {
+                                title: categories.cleaning
+                            }
                         }
                     ],
                     meta: {
@@ -478,8 +568,12 @@ describe("search", () => {
         });
 
         const [carListResponse] = await categoryManager.listCategories({
-            where: {
-                title_contains: "2001 CarMaker Car type: SVO Reborn? - Burn Epi. 917"
+            variables: {
+                where: {
+                    values: {
+                        title_contains: "2001 CarMaker Car type: SVO Reborn? - Burn Epi. 917"
+                    }
+                }
             }
         });
         expect(carListResponse).toMatchObject({
@@ -487,7 +581,34 @@ describe("search", () => {
                 listCategories: {
                     data: [
                         {
-                            title: categories.car
+                            values: {
+                                title: categories.car
+                            }
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        const [searchFullTextResponse] = await categoryManager.listCategories({
+            variables: {
+                search: results[0].entryId
+            }
+        });
+        expect(searchFullTextResponse).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: results[0].id,
+                            values: {
+                                title: results[0].values.title
+                            }
                         }
                     ],
                     meta: {

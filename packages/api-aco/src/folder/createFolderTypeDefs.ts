@@ -1,15 +1,12 @@
-import type {
-    CmsFieldTypePlugins,
-    CmsModel,
-    CmsModelField
-} from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields.js";
+import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 export interface CreateFolderTypeDefsParams {
     model: CmsModel;
     models: CmsModel[];
-    plugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 const removeFieldRequiredValidation = (field: CmsModelField) => {
@@ -30,7 +27,7 @@ const createUpdateFields = (fields: CmsModelField[]): CmsModelField[] => {
 };
 
 export const createFolderTypeDefs = (params: CreateFolderTypeDefsParams): string => {
-    const { model, models, plugins: fieldTypePlugins } = params;
+    const { model, models, fieldRegistry } = params;
     const { fields } = model;
 
     const fieldTypes = renderFields({
@@ -38,29 +35,24 @@ export const createFolderTypeDefs = (params: CreateFolderTypeDefsParams): string
         model,
         fields,
         type: "manage",
-        fieldTypePlugins
+        fieldRegistry
     });
     const inputCreateFields = renderInputFields({
         models,
         model,
         fields,
-        fieldTypePlugins
+        fieldRegistry
     });
     const inputUpdateFields = renderInputFields({
         models,
         model,
         fields: createUpdateFields(fields),
-        fieldTypePlugins
+        fieldRegistry
     });
 
     return /* GraphQL */ `
         ${fieldTypes.map(f => f.typeDefs).join("\n")}
        
-        type CompressedResponse {
-            compression: String
-            value: String
-        }
-
         type Folder {
             id: ID!
             # Tells us if the current user can manage folder structure.
@@ -132,11 +124,6 @@ export const createFolderTypeDefs = (params: CreateFolderTypeDefsParams): string
             meta: AcoMeta
         }
 
-        type FoldersListCompressedResponse {
-            data: CompressedResponse
-            error: AcoError
-        }
-        
         type FoldersHierarchyData {
             parents: [Folder]
             siblings: [Folder]
@@ -179,12 +166,6 @@ export const createFolderTypeDefs = (params: CreateFolderTypeDefsParams): string
                 after: String
                 sort: AcoSort
             ): FoldersListResponse
-            listFoldersCompressed(
-                where: FoldersListWhereInput!
-                limit: Int
-                after: String
-                sort: AcoSort
-            ): FoldersListCompressedResponse
             getFolderHierarchy(type: String!, id: ID!): FoldersHierarchyResponse
             listFolderLevelPermissionsTargets: FolderLevelPermissionsTargetsListResponse
         }
@@ -194,6 +175,8 @@ export const createFolderTypeDefs = (params: CreateFolderTypeDefsParams): string
             updateFolder(id: ID!, data: FolderUpdateInput!): FolderResponse
             deleteFolder(id: ID!): AcoBooleanResponse
         }
+        
+        # The base type is dynamically generated from a Folder model
         
         extend type AcoFolder_Permissions {
              inheritedFrom: ID

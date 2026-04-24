@@ -3,6 +3,7 @@ import { Accordion } from "@webiny/admin-ui";
 import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
 import type { DocumentElement } from "@webiny/website-builder-sdk";
 import { Background } from "./Groups/Background.js";
+import { Border } from "./Groups/Border.js";
 import { MarginPadding } from "./Groups/MarginPadding.js";
 import { VisibilityGroup } from "./Groups/VisibilityGroup.js";
 import { useElementComponentManifest } from "~/BaseEditor/defaultConfig/Content/Preview/useElementComponentManifest.js";
@@ -37,6 +38,7 @@ const ElementStyleProperties = ({ element }: { element: DocumentElement }) => {
             {isHidden(StyleSettings.MarginPadding) ? null : (
                 <MarginPadding elementId={element.id} />
             )}
+            {isHidden(StyleSettings.Border) ? null : <Border elementId={element.id} />}
             {isHidden(StyleSettings.Background) ? null : <Background elementId={element.id} />}
             {isHidden(StyleSettings.Visibility) ? null : <VisibilityGroup elementId={element.id} />}
         </Accordion>

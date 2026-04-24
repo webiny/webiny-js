@@ -5,7 +5,6 @@ import type { ApiEndpoint, CmsContext } from "~/types/index.js";
  * Type can be null because it might be that Headless CMS context is loaded on a different Lambda where there is no GraphQL Schema generated.
  */
 export type CmsParametersPluginResponseType = ApiEndpoint | null;
-export type CmsParametersPluginResponseLocale = string;
 
 export interface CmsParametersPluginResponse {
     type: CmsParametersPluginResponseType;

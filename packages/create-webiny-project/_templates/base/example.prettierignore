@@ -1,4 +1,0 @@
-**/build/
-**/dist/
-**/*.d.ts
-**/.pulumi/

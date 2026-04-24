@@ -1,10 +1,11 @@
 import * as React from "react";
 import { Collapsible as CollapsiblePrimitive } from "radix-ui";
-import { cva, type VariantProps, cn } from "~/utils.js";
+import { cva, cn } from "~/utils.js";
+import { useAccordionItemProps } from "./AccordionItem.js";
 
 const accordionContentVariants = cva(
     [
-        "overflow-hidden text-md pl-xxl pr-xxl",
+        "overflow-hidden text-md pr-xxl",
         "transition-all",
         "data-[state=closed]:animate-collapsible-up",
         "data-[state=open]:animate-collapsible-down"
@@ -12,7 +13,8 @@ const accordionContentVariants = cva(
     {
         variants: {
             withIcon: {
-                true: "pl-9"
+                true: "pl-xxl",
+                false: "pl-md"
             },
             withHandle: {
                 true: "pl-5"
@@ -32,21 +34,23 @@ const accordionContentVariants = cva(
     }
 );
 
-export interface AccordionContentProps
-    extends React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Content>,
-        VariantProps<typeof accordionContentVariants> {}
+export interface AccordionContentProps extends React.ComponentPropsWithoutRef<
+    typeof CollapsiblePrimitive.Content
+> {}
 
-export const AccordionContent = ({
-    children,
-    withIcon,
-    withHandle,
-    className,
-    ...props
-}: AccordionContentProps) => (
-    <CollapsiblePrimitive.Content
-        {...props}
-        className={cn(accordionContentVariants({ withHandle, withIcon }), className)}
-    >
-        <div className="pt-sm pb-lg px-md">{children}</div>
-    </CollapsiblePrimitive.Content>
-);
+export const AccordionContent = ({ children, className, ...props }: AccordionContentProps) => {
+    const itemProps = useAccordionItemProps();
+    const withIcon = !!itemProps.icon;
+    const withHandle = !!itemProps.handle;
+
+    return (
+        <CollapsiblePrimitive.Content
+            {...props}
+            className={cn(accordionContentVariants({ withHandle, withIcon }), className)}
+        >
+            <div data-accordion={"content"} className="pt-sm pb-lg">
+                {children}
+            </div>
+        </CollapsiblePrimitive.Content>
+    );
+};

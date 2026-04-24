@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import {
-    CliCommand,
+    CliCommandFactory,
     CommandsRegistryService,
     GetArgvService,
     GetCliRunnerService,
@@ -65,12 +65,12 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
         yargsRunner.fail((invalidParamsMessage, error) => {
             if (invalidParamsMessage) {
                 if (invalidParamsMessage.includes("Not enough non-option arguments")) {
-                    ui.newLine();
+                    ui.emptyLine();
                     ui.error("Command was not invoked as expected.");
                     ui.info(
                         `Some non-optional arguments are missing. See the usage examples printed below.`
                     );
-                    ui.newLine();
+                    ui.emptyLine();
                     yargsRunner.showHelp();
                     process.exit(1);
                 }
@@ -81,19 +81,19 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                         .split(",")
                         .map(v => v.trim());
 
-                    ui.newLine();
+                    ui.emptyLine();
                     ui.error("Command was not invoked as expected.");
                     ui.info(
                         `Missing required argument(s): ${args.join(
                             ", "
                         )}. See the usage examples printed below.`
                     );
-                    ui.newLine();
+                    ui.emptyLine();
                     yargsRunner.showHelp();
                     process.exit(1);
                 }
 
-                ui.newLine();
+                ui.emptyLine();
                 ui.error(invalidParamsMessage);
 
                 process.exit(1);
@@ -113,13 +113,13 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
 
             const argv = this.getArgvService.execute();
             if (argv.showStackTrace && realError.stack) {
-                ui.newLine();
+                ui.emptyLine();
                 ui.debug("Stack trace:");
                 ui.text(realError.stack);
             }
 
             if (error instanceof GracefulError) {
-                ui.newLine();
+                ui.emptyLine();
                 ui.text(bgYellow(bold("💡 How can I resolve this?")));
                 ui.text(error.message);
             }
@@ -139,6 +139,16 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
             } = await command.execute();
 
             let yargsCommand = name;
+            const paramVersionExists = params.some(p => {
+                return p.name === "version";
+            });
+            if (paramVersionExists) {
+                ui.error(
+                    `The command "${name}" cannot have a parameter named "version" as it conflicts with the global --version option.`
+                );
+                process.exit();
+            }
+
             if (params.length > 0) {
                 yargsCommand +=
                     " " +
@@ -154,7 +164,7 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                 yargsCommand,
                 description,
                 yargs => {
-                    params.forEach((param: CliCommand.ParamDefinition<unknown>) => {
+                    params.forEach((param: CliCommandFactory.ParamDefinition<unknown>) => {
                         const { name, required, validation, array, ...rest } = param;
 
                         const yargsParam = yargs.positional(name, {
@@ -168,7 +178,7 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                         }
                     });
 
-                    options.forEach((option: CliCommand.OptionDefinition<unknown>) => {
+                    options.forEach((option: CliCommandFactory.OptionDefinition<unknown>) => {
                         const { name, required, validation, ...rest } = option;
 
                         const yargsOption = yargs.option(name, {

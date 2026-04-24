@@ -1,5 +1,5 @@
 import { createAppModule, type PulumiAppModule } from "@webiny/pulumi";
-import { getStackOutput } from "@webiny/project";
+import { ProjectSdk } from "@webiny/project";
 
 export type CoreOutput = PulumiAppModule<typeof CoreOutput>;
 
@@ -18,10 +18,6 @@ export interface ICoreOutput {
     primaryDynamodbTableName: string;
     primaryDynamodbTableHashKey: string;
     primaryDynamodbTableRangeKey: string;
-    logDynamodbTableArn: string;
-    logDynamodbTableName: string;
-    logDynamodbTableHashKey: string;
-    logDynamodbTableRangeKey: string;
     auditLogsDynamodbTableArn: string;
     auditLogsDynamodbTableName: string;
     auditLogsDynamodbTableHashKey: string;
@@ -31,24 +27,21 @@ export interface ICoreOutput {
     vpcPublicSubnetIds: string[] | undefined;
     vpcPrivateSubnetIds: string[] | undefined;
     vpcSecurityGroupIds: string[] | undefined;
-    elasticsearchDomainArn: string | undefined;
-    elasticsearchDomainEndpoint: string | undefined;
-    elasticsearchDynamodbTableHashKey: string;
-    elasticsearchDynamodbTableRangeKey: string;
-    elasticsearchDynamodbTableArn: string | undefined;
-    elasticsearchDynamodbTableName: string | undefined;
+    opensearchDomainArn: string | undefined;
+    opensearchDomainEndpoint: string | undefined;
+    opensearchDynamodbTableHashKey: string;
+    opensearchDynamodbTableRangeKey: string;
+    opensearchDynamodbTableArn: string | undefined;
+    opensearchDynamodbTableName: string | undefined;
 }
 
 export const CoreOutput = createAppModule({
     name: "CoreOutput",
     config(app) {
         return app.addHandler(async () => {
-            const output = await getStackOutput({
-                app: "core",
-                env: app.params.run.env,
-                variant: app.params.run.variant
-            });
+            const sdk = await ProjectSdk.init();
 
+            const output = await sdk.getAppStackOutput("core");
             if (!output) {
                 throw new Error("Core application is not deployed.");
             }
@@ -59,10 +52,6 @@ export const CoreOutput = createAppModule({
                 primaryDynamodbTableName: output["primaryDynamodbTableName"],
                 primaryDynamodbTableHashKey: output["primaryDynamodbTableHashKey"],
                 primaryDynamodbTableRangeKey: output["primaryDynamodbTableRangeKey"],
-                logDynamodbTableArn: output["logDynamodbTableArn"],
-                logDynamodbTableName: output["logDynamodbTableName"],
-                logDynamodbTableHashKey: output["logDynamodbTableHashKey"],
-                logDynamodbTableRangeKey: output["logDynamodbTableRangeKey"],
                 auditLogsDynamodbTableArn: output["auditLogsDynamodbTableArn"],
                 auditLogsDynamodbTableName: output["auditLogsDynamodbTableName"],
                 auditLogsDynamodbTableHashKey: output["auditLogsDynamodbTableHashKey"],
@@ -77,11 +66,11 @@ export const CoreOutput = createAppModule({
                 vpcPublicSubnetIds: output["vpcPublicSubnetIds"],
                 vpcPrivateSubnetIds: output["vpcPrivateSubnetIds"],
                 vpcSecurityGroupIds: output["vpcSecurityGroupIds"],
-                // These outputs are optional, since Elasticsearch is not always enabled.
-                elasticsearchDomainArn: output["elasticsearchDomainArn"],
-                elasticsearchDomainEndpoint: output["elasticsearchDomainEndpoint"],
-                elasticsearchDynamodbTableArn: output["elasticsearchDynamodbTableArn"],
-                elasticsearchDynamodbTableName: output["elasticsearchDynamodbTableName"]
+                // These outputs are optional, since Opensearch is not always enabled.
+                opensearchDomainArn: output["opensearchDomainArn"],
+                opensearchDomainEndpoint: output["opensearchDomainEndpoint"],
+                opensearchDynamodbTableArn: output["opensearchDynamodbTableArn"],
+                opensearchDynamodbTableName: output["opensearchDynamodbTableName"]
             } as ICoreOutput;
         });
     }

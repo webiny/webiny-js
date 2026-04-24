@@ -20,6 +20,7 @@ export const mockCreateGetWcpProjectLicense = (
                     options: { maxCount: { type: MT_OPTIONS_MAX_COUNT_TYPE.SEAT_BASED } }
                 },
                 advancedPublishingWorkflow: { enabled: false },
+                aiPowerups: { enabled: false },
                 advancedAccessControlLayer: {
                     enabled: false,
                     options: {

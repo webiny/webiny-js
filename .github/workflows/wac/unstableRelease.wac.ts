@@ -9,15 +9,15 @@ import {
     withCommonParams
 } from "./steps";
 
-const DIR_WEBINY_JS = "next";
+const BRANCH_NAME = "${{ github.event.inputs.branch }}";
 
-const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
-const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const installBuildSteps = createInstallBuildSteps({ workingDirectory: BRANCH_NAME });
+const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: BRANCH_NAME });
+const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: BRANCH_NAME });
+const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: BRANCH_NAME });
 
 export const unstableRelease = createWorkflow({
-    name: `Unstable Release`,
+    name: `📦 Unstable Release`,
     on: {
         workflow_dispatch: {
             inputs: {
@@ -41,7 +41,7 @@ export const unstableRelease = createWorkflow({
                 {
                     name: "Create global cache key",
                     id: "global-cache-key",
-                    run: `echo "global-cache-key=${DIR_WEBINY_JS}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
+                    run: `echo "global-cache-key=${BRANCH_NAME}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
                 },
                 {
                     name: "Create workflow run cache key",
@@ -53,7 +53,7 @@ export const unstableRelease = createWorkflow({
         build: createJob({
             name: "Build",
             needs: "constants",
-            checkout: { path: DIR_WEBINY_JS, ref: "${{ github.event.inputs.branch }}" },
+            checkout: { path: BRANCH_NAME, ref: BRANCH_NAME },
             "runs-on": BUILD_PACKAGES_RUNNER,
             steps: [
                 ...yarnCacheSteps,
@@ -62,15 +62,15 @@ export const unstableRelease = createWorkflow({
                 ...runBuildCacheSteps
             ]
         }),
-        npmUnstableRelease: createJob({
+        npmReleaseUnstable: createJob({
             needs: ["constants", "build"],
             name: 'NPM release ("unstable" tag)',
-            environment: "release",
             env: {
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
-                NPM_TOKEN: "${{ secrets.NPM_TOKEN }}"
+                NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
+                UNSTABLE_VERSION: "${{ vars.UNSTABLE_VERSION }}"
             },
-            checkout: { "fetch-depth": 0, ref: "${{ github.event.inputs.branch }}" },
+            checkout: { path: BRANCH_NAME, ref: BRANCH_NAME, "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
@@ -82,12 +82,20 @@ export const unstableRelease = createWorkflow({
                             run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
                         },
                         {
-                            name: "Set git info",
-                            run: 'git config --global user.email "webiny-bot@webiny.com"\ngit config --global user.name "webiny-bot"\n'
+                            name: "Set git email",
+                            run: 'git config --global user.email "webiny-bot@webiny.com"'
                         },
-                        { name: "Version and publish to NPM", run: "yarn release --type=unstable" }
+                        {
+                            name: "Set git username",
+                            run: 'git config --global user.name "webiny-bot"'
+                        },
+                        {
+                            name: 'Version and publish "unstable" tag to NPM',
+                            "working-directory": BRANCH_NAME,
+                            run: "yarn release --type=unstable"
+                        }
                     ],
-                    { "working-directory": DIR_WEBINY_JS }
+                    { "working-directory": BRANCH_NAME }
                 )
             ]
         })

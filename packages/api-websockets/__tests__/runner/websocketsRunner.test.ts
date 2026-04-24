@@ -3,7 +3,7 @@ import { WebsocketsRunner } from "~/runner";
 import { useHandler } from "~tests/helpers/useHandler";
 import { WebsocketsEventValidator } from "~/validator";
 import { MockWebsocketsEventValidator } from "~tests/mocks/MockWebsocketsEventValidator";
-import { WebsocketsContext } from "~/context";
+import { WebsocketsContext } from "~/context/WebsocketsContext.js";
 import { MockWebsocketsTransport } from "~tests/mocks/MockWebsocketsTransport";
 import { WebsocketsEventRoute } from "~/handler/types";
 import { createWebsocketsRoutePlugin } from "~/plugins";
@@ -36,7 +36,7 @@ describe("websockets runner", () => {
                     invalidFields: {
                         requestContext: {
                             code: "invalid_type",
-                            message: "Required",
+                            message: "Invalid input: expected object, received undefined",
                             data: {
                                 path: ["requestContext"]
                             }
@@ -58,42 +58,43 @@ describe("websockets runner", () => {
                     invalidFields: {
                         "requestContext.connectionId": {
                             code: "invalid_type",
-                            message: "Required",
+                            message: "Invalid input: expected string, received undefined",
                             data: {
                                 path: ["requestContext", "connectionId"]
                             }
                         },
                         "requestContext.connectedAt": {
                             code: "invalid_type",
-                            message: "Required",
+                            message: "Invalid input: expected number, received undefined",
                             data: {
                                 path: ["requestContext", "connectedAt"]
                             }
                         },
                         "requestContext.domainName": {
                             code: "invalid_type",
-                            message: "Required",
+                            message: "Invalid input: expected string, received undefined",
                             data: {
                                 path: ["requestContext", "domainName"]
                             }
                         },
                         "requestContext.eventType": {
-                            code: "invalid_type",
-                            message: "Required",
+                            code: "invalid_value",
+                            message:
+                                'Invalid option: expected one of "CONNECT"|"MESSAGE"|"DISCONNECT"',
                             data: {
                                 path: ["requestContext", "eventType"]
                             }
                         },
                         "requestContext.routeKey": {
                             code: "invalid_type",
-                            message: "Required",
+                            message: "Invalid input: expected string, received undefined",
                             data: {
                                 path: ["requestContext", "routeKey"]
                             }
                         },
                         "requestContext.stage": {
                             code: "invalid_type",
-                            message: "Required",
+                            message: "Invalid input: expected string, received undefined",
                             data: {
                                 path: ["requestContext", "stage"]
                             }
@@ -127,8 +128,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -163,8 +163,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -191,8 +190,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -219,8 +217,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -263,8 +260,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(connectResult).toEqual({
@@ -294,8 +290,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({
@@ -333,8 +328,7 @@ describe("websockets runner", () => {
             },
             body: JSON.stringify({
                 token: "aToken",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         });
         expect(result).toEqual({

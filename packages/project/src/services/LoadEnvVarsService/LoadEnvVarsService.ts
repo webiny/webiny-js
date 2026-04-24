@@ -14,7 +14,7 @@ export class DefaultLoadEnvVarsService implements LoadEnvVarsService.Interface {
         const logger = this.loggerService;
 
         const dotEnvFilePath = project.paths.rootFolder.join(".env").toString();
-        const { error } = dotenv.config({ path: dotEnvFilePath });
+        const { error } = dotenv.config({ path: dotEnvFilePath, quiet: true });
         if (error) {
             logger.warn({ err: error, dotEnvFilePath }, `No environment variables file found.`);
         } else {

@@ -1,5 +1,5 @@
 import { type ReactRoute, RouteElementRegistry } from "~/presentation/router/index.js";
-import { RouterFeature } from "~/features/router/index.js";
+import { RouterFeature } from "~/features/router/feature.js";
 import { useFeature } from "~/shared/di/useFeature.js";
 import { useContainer } from "~/shared/di/DiContainerProvider.js";
 
@@ -11,7 +11,11 @@ export const useRouter = () => {
     return {
         goToRoute: presenter.goToRoute.bind(presenter),
         getLink: presenter.getLink.bind(presenter),
-        onRouteExit: presenter.onRouteExit.bind(presenter),
+        addTransitionGuard: presenter.addTransitionGuard.bind(presenter),
+        isTransitionBlocked: presenter.isTransitionBlocked.bind(presenter),
+        unblockTransition: presenter.unblockTransition.bind(presenter),
+        confirmTransition: presenter.confirmTransition.bind(presenter),
+        cancelTransition: presenter.cancelTransition.bind(presenter),
         setRoutes: (routes: ReactRoute[]) => {
             const cleanRoutes = [];
 

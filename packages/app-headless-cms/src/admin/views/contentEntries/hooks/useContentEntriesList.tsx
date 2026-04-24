@@ -2,14 +2,13 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import debounce from "lodash/debounce.js";
 import { useRoute, useRouter } from "@webiny/app-admin";
 import { makeDecoratable } from "@webiny/react-composition";
+import type { FolderDto, ListMeta } from "@webiny/app-aco";
 import { createSort, useAcoList, useNavigateFolder } from "@webiny/app-aco";
-import type { ListMeta } from "@webiny/app-aco";
 import { useContentEntries } from "./useContentEntries.js";
 import type { CmsContentEntry, TableItem } from "~/types.js";
 import type { OnSortingChange, Sorting } from "@webiny/ui/DataTable/index.js";
 import { ROOT_FOLDER } from "~/admin/constants.js";
 import { Routes } from "~/routes.js";
-import type { FolderDto } from "@webiny/app-aco";
 
 interface UpdateSearchCallableParams {
     search: string;
@@ -45,6 +44,7 @@ export interface ContentEntriesListProviderContext {
     setFilters: (data: Record<string, any>) => void;
     selectAll: () => void;
     unselectAll: () => void;
+    refresh: () => Promise<void>;
     isSelectedAll: boolean;
     getWhere: () => Record<string, any>;
     searchQuery: string;
@@ -87,7 +87,8 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         isSelectedAll,
         selectAll,
         unselectAll,
-        getWhere
+        getWhere,
+        refresh
     } = useAcoList<CmsContentEntry>();
 
     const [sorting, setSorting] = useState<Sorting>([]);
@@ -95,16 +96,11 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
 
     const searchQuery = route.params.search ?? "";
 
-    // Search-related logics: update `searchQuery` state and querystring
+    // Search-related logic: update `searchQuery` state and querystring
     const updateSearch = useCallback(
         debounce<UpdateSearchCallable>(({ search }) => {
-            if (!search) {
-                return;
-            }
-
-            setSearchQuery(search);
-
             if (searchQuery !== search) {
+                setSearchQuery(search);
                 goToRoute(Routes.ContentEntries.List, { ...route.params, search });
             }
         }, 500),
@@ -143,18 +139,36 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         if (!sorting?.length) {
             return;
         }
-        const sort = createSort(sorting);
+        const sort = createSort(
+            /**
+             * We need to map sorting IDs to match expected CMS values.
+             */
+            sorting.map(item => {
+                const isField = contentModel.fields.some(field => field.fieldId === item.id);
+                /**
+                 * We only prefix model fields with the "values_" string.
+                 */
+                if (item.id.includes("values_") || !isField) {
+                    return item;
+                }
+                return {
+                    ...item,
+                    id: `values_${item.id}`
+                };
+            })
+        );
         if (!sort) {
             return;
         }
         setListSort(sort);
-    }, [sorting]);
+    }, [sorting, contentModel]);
 
     const navigateTo = useCallback(
         (input?: string) => {
             const folderId = input || currentFolderId || ROOT_FOLDER;
 
-            goToRoute(Routes.ContentEntries.List, { ...route.params, folderId });
+            const params = { ...route.params, id: undefined, folderId };
+            goToRoute(Routes.ContentEntries.List, params);
         },
         [currentFolderId, route]
     );
@@ -201,7 +215,8 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         selectAll,
         unselectAll,
         getWhere,
-        searchQuery
+        searchQuery,
+        refresh
     };
 
     return (

@@ -10,12 +10,13 @@ import type {
     ResponseHeadersSetter
 } from "~/delivery/index.js";
 import { SetResponseHeaders } from "~/delivery/index.js";
-import type { FileManagerContext } from "~/types.js";
 import { NullRequestResolver } from "~/delivery/AssetDelivery/NullRequestResolver.js";
 import { NullAssetResolver } from "~/delivery/AssetDelivery/NullAssetResolver.js";
 import { NullAssetOutputStrategy } from "./NullAssetOutputStrategy.js";
 import { TransformationAssetProcessor } from "./transformation/TransformationAssetProcessor.js";
 import { PassthroughAssetTransformationStrategy } from "./transformation/PassthroughAssetTransformationStrategy.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { Container } from "@webiny/di";
 
 type Setter<TParams, TReturn> = (params: TParams) => TReturn;
 
@@ -24,20 +25,23 @@ export type AssetRequestResolverDecorator = Setter<
     AssetRequestResolver
 >;
 
-export type AssetResolverDecorator = Setter<{ assetResolver: AssetResolver }, AssetResolver>;
+export type AssetResolverDecorator = Setter<
+    { assetResolver: AssetResolver; container: Container },
+    AssetResolver
+>;
 
 export type AssetProcessorDecorator = Setter<
-    { context: FileManagerContext; assetProcessor: AssetProcessor },
+    { context: ApiCoreContext; assetProcessor: AssetProcessor },
     AssetProcessor
 >;
 
 export type AssetTransformationDecorator = Setter<
-    { context: FileManagerContext; assetTransformationStrategy: AssetTransformationStrategy },
+    { context: ApiCoreContext; assetTransformationStrategy: AssetTransformationStrategy },
     AssetTransformationStrategy
 >;
 
 export interface AssetOutputStrategyDecoratorParams {
-    context: FileManagerContext;
+    context: ApiCoreContext;
     assetRequest: AssetRequest;
     asset: Asset;
     assetOutputStrategy: AssetOutputStrategy;
@@ -94,9 +98,9 @@ export class AssetDeliveryConfigBuilder {
     /**
      * @internal
      */
-    getAssetResolver() {
+    getAssetResolver(container: Container) {
         return this.assetResolverDecorators.reduce<AssetResolver>(
-            (value, decorator) => decorator({ assetResolver: value }),
+            (value, decorator) => decorator({ container, assetResolver: value }),
             new NullAssetResolver()
         );
     }
@@ -104,14 +108,14 @@ export class AssetDeliveryConfigBuilder {
     /**
      * @internal
      */
-    getAssetProcessor(context: FileManagerContext) {
+    getAssetProcessor(context: ApiCoreContext) {
         return this.assetProcessorDecorators.reduce<AssetProcessor>(
             (value, decorator) => decorator({ assetProcessor: value, context }),
             new TransformationAssetProcessor(this.getAssetTransformationStrategy(context))
         );
     }
 
-    getAssetOutputStrategy(context: FileManagerContext, assetRequest: AssetRequest, asset: Asset) {
+    getAssetOutputStrategy(context: ApiCoreContext, assetRequest: AssetRequest, asset: Asset) {
         return this.assetOutputStrategyDecorators.reduce<AssetOutputStrategy>(
             (value, decorator) => {
                 return decorator({ context, assetRequest, asset, assetOutputStrategy: value });
@@ -120,7 +124,7 @@ export class AssetDeliveryConfigBuilder {
         );
     }
 
-    getAssetTransformationStrategy(context: FileManagerContext) {
+    getAssetTransformationStrategy(context: ApiCoreContext) {
         return this.assetTransformationStrategyDecorators.reduce<AssetTransformationStrategy>(
             (value, decorator) => decorator({ context, assetTransformationStrategy: value }),
             new PassthroughAssetTransformationStrategy()

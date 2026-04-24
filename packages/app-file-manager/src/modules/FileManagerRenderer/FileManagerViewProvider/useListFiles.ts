@@ -2,8 +2,8 @@ import isEqual from "lodash/isEqual.js";
 import { validateOrGetDefaultDbSort } from "@webiny/app-aco/sorting.js";
 import { useGetDescendantFolders } from "@webiny/app-aco";
 import type { ListMeta } from "@webiny/app-aco/types.js";
-import { useSecurity } from "@webiny/app-security";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import { useSecurity } from "@webiny/app-admin";
+import type { FileItem } from "~/types.js";
 import { useStateIfMounted } from "@webiny/app-admin";
 import type {
     Loading,

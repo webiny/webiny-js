@@ -1,27 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { createGraphQLFields } from "@webiny/api-headless-cms";
-import defaultIndexingPlugin from "~/elasticsearch/indexing/defaultFieldIndexing.js";
-import objectIndexing from "~/elasticsearch/indexing/objectIndexing.js";
-import elasticsearchIndexingPlugins from "~/elasticsearch/indexing/index.js";
-import type {
-    CmsModelField,
-    CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types/index.js";
-import type {
-    CmsModelFieldToElasticsearchFromParams,
-    CmsModelFieldToElasticsearchPlugin,
-    CmsModelFieldToElasticsearchToParams
-} from "~/types.js";
+import { createTestContainer } from "~tests/helpers/createTestContainer";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
+import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 
-const indexingPlugins = elasticsearchIndexingPlugins();
-const fieldTypePlugins = createGraphQLFields();
+const container = createTestContainer();
+const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
+const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
 
-const getFieldIndexPlugin = (fieldType: string) => {
-    return indexingPlugins.find(pl => pl.fieldType === fieldType) || defaultIndexingPlugin();
-};
-
-const getFieldTypePlugin = (fieldType: string) => {
-    return fieldTypePlugins.find(pl => pl.fieldType === fieldType) as CmsModelFieldToGraphQLPlugin;
+const getFieldIndex = (type: string) => {
+    return fieldIndexRegistry.get(type) || fieldIndexRegistry.getDefault();
 };
 
 const objectField: CmsModelField = {
@@ -37,21 +25,27 @@ const objectField: CmsModelField = {
                 storageId: "titleStorageId",
                 type: "text",
                 id: "1",
-                label: "Title"
+                label: "Title",
+                validation: [],
+                listValidation: []
             },
             {
                 fieldId: "number",
                 storageId: "numberStorageId",
                 type: "number",
                 id: "2",
-                label: "Number"
+                label: "Number",
+                validation: [],
+                listValidation: []
             },
             {
                 fieldId: "richText",
                 storageId: "richTextStorageId",
                 type: "rich-text",
                 id: "3",
-                label: "Rich Text"
+                label: "Rich Text",
+                validation: [],
+                listValidation: []
             },
             {
                 fieldId: "settings",
@@ -64,20 +58,24 @@ const objectField: CmsModelField = {
                             storageId: "titleStorageId",
                             type: "text",
                             id: "41",
-                            label: "Settings title"
+                            label: "Settings title",
+                            validation: [],
+                            listValidation: []
                         },
                         {
                             fieldId: "snippet",
                             storageId: "snippetStorageId",
                             type: "rich-text",
                             id: "42",
-                            label: "Settings Rich Text"
+                            label: "Settings Rich Text",
+                            validation: [],
+                            listValidation: []
                         },
                         {
                             fieldId: "options",
                             storageId: "optionsStorageId",
                             type: "object",
-                            multipleValues: true,
+                            list: true,
                             settings: {
                                 fields: [
                                     {
@@ -85,27 +83,37 @@ const objectField: CmsModelField = {
                                         storageId: "titleStorageId",
                                         type: "text",
                                         id: "431",
-                                        label: "Options Title"
+                                        label: "Options Title",
+                                        validation: [],
+                                        listValidation: []
                                     },
                                     {
                                         fieldId: "price",
                                         storageId: "price",
                                         type: "number",
                                         id: "432",
-                                        label: "Options Price"
+                                        label: "Options Price",
+                                        validation: [],
+                                        listValidation: []
                                     }
                                 ]
                             },
                             id: "43",
-                            label: "Settings Object"
+                            label: "Settings Object",
+                            validation: [],
+                            listValidation: []
                         }
                     ]
                 },
                 id: "4",
-                label: "Settings"
+                label: "Settings",
+                validation: [],
+                listValidation: []
             }
         ]
-    }
+    },
+    validation: [],
+    listValidation: []
 };
 
 const input = {
@@ -175,33 +183,31 @@ const expectedRawValue = {
 };
 
 describe("objectIndexing", () => {
+    const plugin = fieldIndexRegistry.get("object")!;
+
     it("toIndex should recursively transform an object", () => {
-        const plugin = objectIndexing() as Required<CmsModelFieldToElasticsearchPlugin>;
         const result = plugin.toIndex({
             value: input,
             rawValue: input,
             field: objectField,
-            getFieldIndexPlugin,
-            getFieldTypePlugin,
-            plugins: {},
-            model: {}
-        } as CmsModelFieldToElasticsearchToParams);
+            getFieldIndex,
+            model: {} as any,
+            fieldRegistry
+        });
 
         expect(result.value).toEqual(expectedValue);
         expect(result.rawValue).toEqual(expectedRawValue);
     });
 
     it("fromIndex should recursively transform an object", () => {
-        const plugin = objectIndexing() as Required<CmsModelFieldToElasticsearchPlugin>;
         const result = plugin.fromIndex({
             value: expectedValue,
             rawValue: expectedRawValue,
             field: objectField,
-            getFieldIndexPlugin,
-            getFieldTypePlugin,
-            plugins: {},
-            model: {}
-        } as CmsModelFieldToElasticsearchFromParams);
+            getFieldIndex,
+            model: {} as any,
+            fieldRegistry
+        });
 
         expect(result).toEqual(input);
     });

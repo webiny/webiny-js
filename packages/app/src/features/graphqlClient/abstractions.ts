@@ -1,18 +1,22 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "@webiny/feature/admin";
 import type { DocumentNode } from "graphql";
 
+type IHeaders = Record<string, string | number | undefined>;
+
 type GraphQLRequest<TVariables = any> = {
+    endpoint: string;
     query: DocumentNode | string;
     variables?: TVariables;
-    headers?: Record<string, string>;
+    headers?: IHeaders;
 };
 
 export interface IGraphQLClient {
-    execute<TVariables = any, TResult = any>(params: GraphQLRequest<TVariables>): Promise<TResult>;
+    execute<TResult = any, TVariables = any>(params: GraphQLRequest<TVariables>): Promise<TResult>;
 }
-export const GraphQLClient = new Abstraction<IGraphQLClient>("GraphQLClient");
+export const GraphQLClient = createAbstraction<IGraphQLClient>("GraphQLClient");
 
 export namespace GraphQLClient {
+    export type Headers = IHeaders;
     export type Interface = IGraphQLClient;
     export type Request<TVariables = any> = GraphQLRequest<TVariables>;
 }

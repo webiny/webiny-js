@@ -1,17 +1,19 @@
 import type {
     IResponseError,
     ITask,
-    ITaskDataInput,
     ITaskLogItemData,
-    ITaskResponseDoneResultOutput,
     ITaskUpdateData,
     TaskDataStatus
 } from "~/types.js";
-import type { GenericRecord } from "@webiny/api/types.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
-export type ITaskManagerStoreUpdateTaskValues<T = ITaskDataInput> = T;
+export type ITaskManagerStoreUpdateTaskValues<
+    T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput
+> = T;
 
-export interface ITaskManagerStoreUpdateTaskValuesCb<T = ITaskDataInput> {
+export interface ITaskManagerStoreUpdateTaskValuesCb<
+    T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput
+> {
     (input: T): T;
 }
 
@@ -19,25 +21,25 @@ export interface ITaskManagerStoreUpdateTaskInputOptions {
     save: boolean;
 }
 
-export type ITaskManagerStoreUpdateTaskInputParam<T = ITaskDataInput> =
-    | ITaskManagerStoreUpdateTaskValuesCb<T>
-    | Partial<ITaskManagerStoreUpdateTaskValues<T>>;
+export type ITaskManagerStoreUpdateTaskInputParam<
+    T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput
+> = ITaskManagerStoreUpdateTaskValuesCb<T> | Partial<ITaskManagerStoreUpdateTaskValues<T>>;
 
 export interface ITaskManagerStoreUpdateTaskParamCb<
-    T = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > {
     (task: ITask<T, O>): ITaskUpdateData<T, O>;
 }
 
 export type ITaskManagerStoreUpdateTask<
-    T = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > = ITaskUpdateData<T, O>;
 
 export type ITaskManagerStoreUpdateTaskParams<
-    T = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > = ITaskManagerStoreUpdateTaskParamCb<T, O> | Partial<ITaskManagerStoreUpdateTask<T, O>>;
 
 export interface ITaskManagerStoreInfoLog {
@@ -76,8 +78,8 @@ export interface ITaskManagerStoreAddLogOptions {
  * Interface should not be used outside the @webiny/tasks package.
  */
 export interface ITaskManagerStorePrivate<
-    T = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > {
     getTask: () => ITask<T, O>;
     getStatus: () => TaskDataStatus;
@@ -93,8 +95,8 @@ export interface ITaskManagerStorePrivate<
      * If definitionId is provided, filter by that parameter.
      */
     listChildTasks<
-        T = GenericRecord,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+        O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
     >(
         definitionId?: string
     ): Promise<ITask<T, O>[]>;
@@ -140,6 +142,6 @@ export interface ITaskManagerStorePrivate<
 }
 
 export type ITaskManagerStore<
-    T = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > = Omit<ITaskManagerStorePrivate<T, O>, "save">;

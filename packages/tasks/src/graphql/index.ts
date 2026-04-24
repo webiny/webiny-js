@@ -1,20 +1,14 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
 import { ContextPlugin } from "@webiny/handler";
-import type {
-    Context,
-    IListTaskLogParams,
-    IListTaskParams,
-    ITask,
-    ITaskDefinition,
-    ITaskLog
-} from "~/types.js";
+import type { Context, IListTaskLogParams, IListTaskParams, ITask, ITaskLog } from "~/types.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
-import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords.js";
 import { emptyResolver, resolve, resolveList } from "./utils.js";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { checkPermissions } from "./checkPermissions.js";
 import type { Plugin } from "@webiny/plugins/types.js";
+import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 interface IGetTaskQueryParams {
     id: string;
@@ -36,18 +30,6 @@ interface IDeleteTaskMutationParams {
     id: string;
 }
 
-const createWebinyBackgroundTaskDefinitionEnum = (items: ITaskDefinition[]): string => {
-    if (items.length === 0) {
-        return "Empty";
-    }
-    return items
-        .filter(item => {
-            return !item.isPrivate;
-        })
-        .map(definition => definition.id)
-        .join("\n");
-};
-
 const createGraphQL = () => {
     const plugin = new ContextPlugin<Context>(async ctx => {
         if (!ctx.tenancy.getCurrentTenant()) {
@@ -57,24 +39,20 @@ const createGraphQL = () => {
         const taskModel = await ctx.tasks.getTaskModel();
         const logModel = await ctx.tasks.getLogModel();
 
-        const models = await ctx.security.withoutAuthorization(async () => {
-            return (await ctx.cms.listModels()).filter(model => {
-                if (model.fields.length === 0) {
-                    return false;
-                } else if (model.isPrivate) {
-                    return false;
-                }
-                return true;
-            });
-        });
-        const fieldTypePlugins = createFieldTypePluginRecords(ctx.plugins);
+        const listModels = ctx.container.resolve(ListModelsUseCase);
+        const fieldRegistry = ctx.container.resolve(CmsModelFieldToGraphQLRegistry);
 
+        const models = await ctx.security.withoutAuthorization(async () => {
+            const modelsResult = await listModels.execute({ includePrivate: false });
+
+            return modelsResult.value.filter(model => model.fields.length > 0);
+        });
         const taskFields = renderFields({
             models,
             model: taskModel,
             fields: taskModel.fields,
             type: "manage",
-            fieldTypePlugins
+            fieldRegistry
         });
 
         const logFields = renderFields({
@@ -82,14 +60,14 @@ const createGraphQL = () => {
             model: logModel,
             fields: logModel.fields.filter(field => field.fieldId !== "task"),
             type: "manage",
-            fieldTypePlugins
+            fieldRegistry
         });
 
         const listTasksFilterFieldsRender = renderListFilterFields({
             model: taskModel,
             fields: taskModel.fields,
             type: "manage",
-            fieldTypePlugins,
+            fieldRegistry,
             excludeFields: ["entryId"]
         });
 
@@ -97,25 +75,23 @@ const createGraphQL = () => {
             model: logModel,
             fields: logModel.fields,
             type: "manage",
-            fieldTypePlugins,
+            fieldRegistry,
             excludeFields: ["entryId"]
         });
 
         const sortTasksEnumRender = renderSortEnum({
             model: taskModel,
             fields: taskModel.fields,
-            fieldTypePlugins,
-            sorterPlugins: []
+            fieldRegistry,
+            sorters: []
         });
 
         const sortLogsEnumRender = renderSortEnum({
             model: logModel,
             fields: logModel.fields,
-            fieldTypePlugins,
-            sorterPlugins: []
+            fieldRegistry,
+            sorters: []
         });
-
-        const taskDefinitions = ctx.tasks.listDefinitions();
 
         const plugin = new GraphQLSchemaPlugin<Context>({
             typeDefs: /* GraphQL */ `
@@ -125,7 +101,7 @@ const createGraphQL = () => {
                     data: JSON
                     stack: String
                 }
-                
+
                 ${taskFields.map(f => f.typeDefs).join("\n")}
                 ${logFields.map(f => f.typeDefs).join("\n")}
 
@@ -158,7 +134,7 @@ const createGraphQL = () => {
                     meta: WebinyBackgroundTaskMeta
                     error: WebinyBackgroundTaskError
                 }
-                
+
                 type WebinyBackgroundTaskLog {
                     id: String!
                     createdOn: DateTime!
@@ -166,7 +142,7 @@ const createGraphQL = () => {
                     task: WebinyBackgroundTask!
                     ${logFields.map(f => f.fields).join("\n")}
                 }
-                
+
                 type WebinyBackgroundTaskLogListResponse {
                     data: [WebinyBackgroundTaskLog!]
                     meta: WebinyBackgroundTaskMeta
@@ -177,7 +153,6 @@ const createGraphQL = () => {
                     id: String!
                     title: String!
                     description: String
-                    fields: JSON
                 }
 
                 type WebinyBackgroundTaskListDefinitionsResponse {
@@ -202,17 +177,17 @@ const createGraphQL = () => {
                 }
 
                 input WebinyBackgroundTaskListWhereInput {
-                    ${listTasksFilterFieldsRender}
+                    ${listTasksFilterFieldsRender.allFiltersAsString() || "_empty: String"}
                 }
-                
+
                 input WebinyBackgroundTaskLogListWhereInput {
-                    ${listLogsFilterFieldsRender}
+                    ${listLogsFilterFieldsRender.allFiltersAsString() || "_empty: String"}
                 }
 
                 enum WebinyBackgroundTaskListSorter {
                     ${sortTasksEnumRender}
                 }
-                
+
                 enum WebinyBackgroundTaskLogListSorter {
                     ${sortLogsEnumRender}
                 }
@@ -223,10 +198,6 @@ const createGraphQL = () => {
 
                 type WebinyBackgroundTaskMutation {
                     _empty: String
-                }
-
-                enum WebinyBackgroundTaskDefinitionEnum {
-                    ${createWebinyBackgroundTaskDefinitionEnum(taskDefinitions)}
                 }
 
                 extend type Query {
@@ -247,7 +218,7 @@ const createGraphQL = () => {
                         search: String
                     ): WebinyBackgroundTaskListResponse!
                     listDefinitions: WebinyBackgroundTaskListDefinitionsResponse!
-                    
+
                     listLogs(
                         where: WebinyBackgroundTaskLogListWhereInput
                         sort: [WebinyBackgroundTaskLogListSorter!]
@@ -258,7 +229,7 @@ const createGraphQL = () => {
                 }
 
                 extend type WebinyBackgroundTaskMutation {
-                    triggerTask(definition: WebinyBackgroundTaskDefinitionEnum!, input: JSON, name: String, delay: Number): WebinyBackgroundTaskTriggerResponse!
+                    triggerTask(definition: String!, input: JSON, name: String, delay: Number): WebinyBackgroundTaskTriggerResponse!
                     abortTask(id: ID!, message: String): WebinyBackgroundTaskResponse!
                     deleteTask(id: ID!): WebinyBackgroundTaskDeleteResponse!
                 }
@@ -321,8 +292,13 @@ const createGraphQL = () => {
                         await checkPermissions(context, {
                             rwd: "w"
                         });
-                        return resolve(async () => {
-                            return await context.tasks.abort(args);
+                        return resolve<ITask>(async () => {
+                            const result = await context.tasks.abort(args);
+                            if (result.isOk()) {
+                                return result.value;
+                            }
+
+                            throw result.error;
                         });
                     },
                     /**
@@ -332,8 +308,13 @@ const createGraphQL = () => {
                         await checkPermissions(context, {
                             rwd: "w"
                         });
-                        return resolve(async () => {
-                            return await context.tasks.trigger(args);
+                        return resolve<ITask>(async () => {
+                            const result = await context.tasks.trigger(args);
+                            if (result.isOk()) {
+                                return result.value;
+                            }
+
+                            throw result.error;
                         });
                     },
                     /**
@@ -372,6 +353,9 @@ const createGraphQL = () => {
                 }
             }
         });
+
+        plugin.name = "tasks.graphql.schema";
+
         ctx.plugins.register(plugin);
     });
 

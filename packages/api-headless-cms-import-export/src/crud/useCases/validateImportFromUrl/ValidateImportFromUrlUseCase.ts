@@ -11,19 +11,20 @@ import { getImportExportFileType } from "~/tasks/utils/helpers/getImportExportFi
 import { parseImportUrlData } from "~/crud/utils/parseImportUrlData.js";
 import type { CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types/index.js";
 import { makeSureModelsAreIdentical } from "~/crud/utils/makeSureModelsAreIdentical.js";
+import { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
 
 export interface IValidateImportFromUrlUseCaseParams {
     getModel: HeadlessCms["getModel"];
-    getModelToAstConverter: HeadlessCms["getModelToAstConverter"];
+    modelToAstConverter: ModelToAstConverter.Interface;
 }
 
 export class ValidateImportFromUrlUseCase implements IValidateImportFromUrlUseCase {
     private readonly getModel: HeadlessCms["getModel"];
-    private readonly getModelToAstConverter: HeadlessCms["getModelToAstConverter"];
+    private readonly modelToAstConverter: ModelToAstConverter.Interface;
 
     public constructor(params: IValidateImportFromUrlUseCaseParams) {
         this.getModel = params.getModel;
-        this.getModelToAstConverter = params.getModelToAstConverter;
+        this.modelToAstConverter = params.modelToAstConverter;
     }
 
     public async execute(
@@ -65,7 +66,7 @@ export class ValidateImportFromUrlUseCase implements IValidateImportFromUrlUseCa
         }
 
         makeSureModelsAreIdentical({
-            getModelToAstConverter: this.getModelToAstConverter,
+            modelToAstConverter: this.modelToAstConverter,
             model,
             target: validatedModel
         });

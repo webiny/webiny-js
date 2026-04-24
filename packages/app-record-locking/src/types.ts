@@ -1,8 +1,8 @@
 import type { CmsContentEntry } from "@webiny/app-headless-cms/types.js";
 import type { GenericRecord } from "@webiny/app/types.js";
 import type { IRecordLockingUnlockEntryResult } from "~/domain/abstractions/IRecordLockingUnlockEntry.js";
-import type { SecurityPermission } from "@webiny/app-security/types.js";
 import type { IRecordLockingUpdateEntryLockResult } from "~/domain/abstractions/IRecordLocking.js";
+import { Identity } from "@webiny/app-admin/domain/Identity.js";
 
 export interface IRecordLockingIdentity {
     id: string;
@@ -17,7 +17,26 @@ export interface IRecordLockingRecordLocked {
     actions: IRecordLockingLockRecordAction[];
 }
 
-export interface IPossiblyRecordLockingRecord extends CmsContentEntry {
+export interface IRecordLockingCmsEntryValuesAction {
+    type: string;
+    message: string;
+    createdBy: Identity;
+    createdOn: string;
+}
+
+export interface IRecordLockingCmsEntryValues {
+    lockedBy: Identity;
+    lockedOn: string;
+    updatedOn: string;
+    expiresOn: string;
+    targetId: string;
+    type: string;
+    actions: IRecordLockingCmsEntryValuesAction;
+}
+
+export interface IPossiblyRecordLockingRecord extends CmsContentEntry<IRecordLockingCmsEntryValues> {
+    $selectable?: boolean;
+    $type?: "RECORD";
     $lockingType?: string;
     $locked?: IRecordLockingRecordLocked | null;
 }
@@ -90,6 +109,6 @@ export interface IRecordLockingError<T = GenericRecord> {
     data?: T;
 }
 
-export interface RecordLockingSecurityPermission extends SecurityPermission {
-    canForceUnlock?: string;
+export interface RecordLockingSecurityPermission extends Identity.Permission {
+    canForceUnlock?: boolean;
 }

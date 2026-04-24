@@ -6,8 +6,9 @@ import {
     commandsRegistryService,
     getArgvService,
     getCliRunnerService,
-    globalOptionsRegistryService,
+    getIsCiService,
     getProjectSdkService,
+    globalOptionsRegistryService,
     loggerService,
     runCliRunnerService,
     stdioService,
@@ -17,32 +18,32 @@ import {
 import {
     aboutCommand,
     buildCommand,
+    configCommand,
     ddbPutItemConditionalCheckFailedGracefulErrorHandler,
     deployCommand,
     destroyCommand,
+    disableTelemetryCommand,
+    enableTelemetryCommand,
+    extensionCommand,
     infoCommand,
-    openCommand,
+    isCi,
+    linkProjectCommand,
+    loginCommand,
+    logLevelGlobalOption,
+    logoutCommand,
     missingFilesInBuildGracefulErrorHandler,
+    openCommand,
     outputCommand,
     pendingOperationsGracefulErrorHandler,
     pulumiCommand,
     refreshCommand,
-    enableTelemetryCommand,
-    disableTelemetryCommand,
+    showLogsGlobalOption,
+    stackTraceGlobalOption,
     syncDepsCommand,
+    UpgradeCommandFeature,
     verifyDepsCommand,
     watchCommand,
-
-    // WCP
-    linkProjectCommand,
-    loginCommand,
-    logoutCommand,
-    whoAmICommand,
-
-    // Global Options
-    showLogsGlobalOption,
-    logLevelGlobalOption,
-    stackTraceGlobalOption
+    whoAmICommand
 } from "./features/index.js";
 
 import chalk from "chalk";
@@ -52,11 +53,12 @@ import {
     GetProjectSdkService,
     UiService
 } from "~/abstractions/index.js";
-import { GracefulError } from "@webiny/project";
+import { GracefulError, toImportSpecifier } from "@webiny/project";
 import {
     commandsWithGracefulErrorHandling,
     deployCommandWithTelemetry
 } from "./decorators/index.js";
+import { CliCommand } from "~/extensions/index.js";
 
 const { bgYellow, bold } = chalk;
 
@@ -66,18 +68,22 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     // Features (commands).
     container.register(aboutCommand).inSingletonScope();
     container.register(buildCommand).inSingletonScope();
+    container.register(configCommand).inSingletonScope();
     container.register(deployCommand).inSingletonScope();
     container.register(pulumiCommand).inSingletonScope();
     container.register(refreshCommand).inSingletonScope();
     container.register(enableTelemetryCommand).inSingletonScope();
     container.register(disableTelemetryCommand).inSingletonScope();
+    container.register(extensionCommand).inSingletonScope();
     container.register(syncDepsCommand).inSingletonScope();
     container.register(verifyDepsCommand).inSingletonScope();
     container.register(destroyCommand).inSingletonScope();
     container.register(infoCommand).inSingletonScope();
+    container.register(isCi).inSingletonScope();
     container.register(openCommand).inSingletonScope();
     container.register(outputCommand).inSingletonScope();
     container.register(watchCommand).inSingletonScope();
+    UpgradeCommandFeature.register(container);
 
     container.register(linkProjectCommand).inSingletonScope();
     container.register(loginCommand).inSingletonScope();
@@ -100,6 +106,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(commandsRegistryService).inSingletonScope();
     container.register(getArgvService).inSingletonScope();
     container.register(getCliRunnerService).inSingletonScope();
+    container.register(getIsCiService).inSingletonScope();
     container.register(globalOptionsRegistryService).inSingletonScope();
     container.register(getProjectSdkService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
@@ -110,7 +117,6 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     // Extensions.
     const ui = container.resolve(UiService);
 
-    // TODO: not sure how I feel about this. We should probably revisit this.
     try {
         // Immediately set CLI instance params via the `CliParamsService`.
         container.resolve(CliParamsService).set(params);
@@ -126,19 +132,28 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
         const project = projectSdk.getProject();
 
         const importFromPath = async (filePath: string) => {
-            let importPath = filePath;
-            if (!path.isAbsolute(filePath)) {
-                // If the path is not absolute, we assume it's relative to the current working directory.
+            let importPath: string;
+            if (filePath.startsWith("/extensions/")) {
+                // Resolve from project root.
                 importPath = project.paths.rootFolder.join(filePath).toString();
+            } else {
+                // Treat as absolute path.
+                importPath = filePath;
             }
 
             const exportName = path.basename(filePath).replace(path.extname(filePath), "");
 
-            const importedModule = await import(importPath);
-            return importedModule[exportName];
+            const importedModule = await import(toImportSpecifier(importPath));
+
+            // Support both default and named exports.
+            // Check for 'default' property existence rather than truthiness.
+            return (
+                ("default" in importedModule && importedModule.default) ||
+                importedModule[exportName]
+            );
         };
 
-        const commands = projectConfig.extensionsByType<any>("Cli/Command");
+        const commands = projectConfig.extensionsByType(CliCommand);
         for (const command of commands) {
             const commandImplementation = await importFromPath(command.params.src);
 
@@ -154,13 +169,13 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
 
         const argv = container.resolve(GetArgvService).execute();
         if (argv.showStackTrace && realError.stack) {
-            ui.newLine();
+            ui.emptyLine();
             ui.debug("Stack trace:");
             ui.text(realError.stack);
         }
 
         if (error && error instanceof GracefulError) {
-            ui.newLine();
+            ui.emptyLine();
             ui.text(bgYellow(bold("💡 How can I resolve this?")));
             ui.text(error.message);
         }

@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import type { ColorState } from "react-color";
+import type { ColorResult } from "react-color";
 
 interface ColorPickerPresenterParams {
     onOpenChange?: (open: boolean) => void;
@@ -14,7 +14,7 @@ interface IColorPickerPresenter {
         value: string;
     };
     init: (params: ColorPickerPresenterParams) => void;
-    setColor: (color: ColorState) => void;
+    setColor: (color: Pick<ColorResult, "hex">) => void;
     setOpen: (open: boolean) => void;
 }
 
@@ -39,12 +39,12 @@ class ColorPickerPresenter implements IColorPickerPresenter {
         this.value = params.value || "";
     }
 
-    setColor = (color: ColorState) => {
+    setColor = (color: Pick<ColorResult, "hex">) => {
         this.value = color.hex;
         this.params?.onValueChange?.(color.hex);
     };
 
-    commitColor = (color: ColorState) => {
+    commitColor = (color: Pick<ColorResult, "hex">) => {
         this.value = color.hex;
         this.params?.onValueCommit?.(color.hex);
     };

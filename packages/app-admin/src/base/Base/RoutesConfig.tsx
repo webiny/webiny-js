@@ -2,8 +2,8 @@ import React from "react";
 import { Dashboard, AdminLayout, NotFound } from "~/index.js";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { Routes } from "~/routes.js";
-
-const { Route } = AdminConfig;
+import { FileManager } from "~/index.js";
+import { Route } from "~/config/AdminConfig/Route.js";
 
 export const RoutesConfig = React.memo(() => {
     return (
@@ -13,6 +13,15 @@ export const RoutesConfig = React.memo(() => {
                 element={
                     <AdminLayout title={"Welcome!"}>
                         <Dashboard />
+                    </AdminLayout>
+                }
+            />
+
+            <Route
+                route={Routes.FileManager}
+                element={
+                    <AdminLayout title={"File Manager"}>
+                        <FileManager overlay={false} show={true} />
                     </AdminLayout>
                 }
             />

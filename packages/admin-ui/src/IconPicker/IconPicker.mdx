@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as IconPickerStories from './IconPicker.stories';
+import * as IconPickerStories from "./IconPicker.stories";
 
 <Meta of={IconPickerStories} />
 
@@ -20,8 +20,8 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 library.add(fas as any);
 
 const IconPickerExample = () => {
-    const [selectedIcon, setSelectedIcon] = useState("");
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+const [selectedIcon, setSelectedIcon] = useState("");
+const [validation, setValidation] = useState({ isValid: true, message: "" });
 
     const handleChange = (newIcon: string) => {
         setSelectedIcon(newIcon);
@@ -52,22 +52,23 @@ const IconPickerExample = () => {
             validation={validation}
         />
     );
+
 };
 
 export default IconPickerExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/IconPicker/IconPicker.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/IconPicker/IconPicker.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={IconPickerStories.Documentation} exclude={"onChange"} />
@@ -82,38 +83,39 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 library.add(fas as any);
 
 const IconPickerExample = () => {
-    const [selectedIcon, setSelectedIcon] = useState("");
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+  const [selectedIcon, setSelectedIcon] = useState("");
+  const [validation, setValidation] = useState({ isValid: true, message: "" });
 
-    const handleChange = (newIcon: string) => {
-        setSelectedIcon(newIcon);
+  const handleChange = (newIcon: string) => {
+    setSelectedIcon(newIcon);
 
-        if (!newIcon && true) { // true represents required field
-            setValidation({ isValid: false, message: "Please select an icon" });
-        } else {
-            setValidation({ isValid: true, message: "" });
-        }
-    };
+    if (!newIcon && true) {
+      // true represents required field
+      setValidation({ isValid: false, message: "Please select an icon" });
+    } else {
+      setValidation({ isValid: true, message: "" });
+    }
+  };
 
-    return (
-        <IconPicker
-            label="Select an Icon"
-            description="Choose an icon for your button"
-            note="Note: The selected icon will be displayed on your button"
-            required={true}
-            icons={[
-                { prefix: "fas", name: "trash-restore-alt" },
-                { prefix: "fas", name: "file-pen" },
-                { prefix: "fas", name: "receipt" },
-                { prefix: "fas", name: "user-circle" },
-                { prefix: "fas", name: "circle-user" }
-                // Add more icons as needed
-            ]}
-            value={selectedIcon}
-            onChange={handleChange}
-            validation={validation}
-        />
-    );
+  return (
+    <IconPicker
+      label="Select an Icon"
+      description="Choose an icon for your button"
+      note="Note: The selected icon will be displayed on your button"
+      required={true}
+      icons={[
+        { prefix: "fas", name: "trash-restore-alt" },
+        { prefix: "fas", name: "file-pen" },
+        { prefix: "fas", name: "receipt" },
+        { prefix: "fas", name: "user-circle" },
+        { prefix: "fas", name: "circle-user" }
+        // Add more icons as needed
+      ]}
+      value={selectedIcon}
+      onChange={handleChange}
+      validation={validation}
+    />
+  );
 };
 
 export default IconPickerExample;
@@ -146,29 +148,29 @@ const definitions = (library as any).definitions;
 const allIcons: IconPickerIconDto[] = [];
 
 Object.keys(definitions)
-    .filter((pack): pack is IconPrefix => validPrefixes.includes(pack as IconPrefix))
-    .forEach((prefix) => {
-        const icons = definitions[prefix];
-        Object.keys(icons).forEach((icon) => {
-            allIcons.push({
-                prefix,
-                name: icon as IconName
-            });
-        });
+  .filter((pack): pack is IconPrefix => validPrefixes.includes(pack as IconPrefix))
+  .forEach(prefix => {
+    const icons = definitions[prefix];
+    Object.keys(icons).forEach(icon => {
+      allIcons.push({
+        prefix,
+        name: icon as IconName
+      });
     });
+  });
 ```
 
 You can then pass the `allIcons` array to the `IconPicker` component:
 
 ```tsx
 <IconPicker
-    label="Select an Icon"
-    description="Choose an icon for your button"
-    note="Note: The selected icon will be displayed on your button"
-    required={true}
-    icons={allIcons}
-    value={selectedIcon}
-    onChange={handleChange}
-    validation={validation}
+  label="Select an Icon"
+  description="Choose an icon for your button"
+  note="Note: The selected icon will be displayed on your button"
+  required={true}
+  icons={allIcons}
+  value={selectedIcon}
+  onChange={handleChange}
+  validation={validation}
 />
 ```

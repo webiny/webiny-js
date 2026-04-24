@@ -6,12 +6,22 @@ import { SidebarMenuSubItemIndentation } from "./SidebarMenuSubItemIndentation.j
 import { SidebarMenuSub } from "./SidebarMenuSub.js";
 import { Icon } from "~/Icon/index.js";
 import { ReactComponent as KeyboardArrowRightIcon } from "@webiny/icons/keyboard_arrow_down.svg";
+import { ReactComponent as PinIcon } from "@webiny/icons/push_pin.svg";
+import { ReactComponent as UnPinIcon } from "@webiny/icons/push_pin_off.svg";
 import { useSidebarMenu } from "./SidebarMenuProvider.js";
 import { type SidebarMenuItemProps } from "./SidebarMenuItem.js";
 import { useSidebar } from "~/Sidebar/index.js";
+import { SidebarMenuItemAction } from "./SidebarMenuItemAction.js";
 
-const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenuItemProps) => {
-    const { currentLevel } = useSidebarMenu();
+const SidebarMenuSubItem = ({
+    children,
+    className,
+    pinnable,
+    action,
+    collapsible = true,
+    ...buttonProps
+}: SidebarMenuItemProps) => {
+    const { currentLevel, parentIcon } = useSidebarMenu();
     const sidebar = useSidebar();
     const [showChevron, setShowChevron] = useState(false);
 
@@ -26,6 +36,82 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
     const toggleSectionExpanded = useCallback(() => {
         sidebar.toggleSectionExpanded(menuItemId);
     }, [isSectionExpanded]);
+
+    const isPinned = sidebar.isItemPinned(menuItemId);
+
+    // Icon to use when this item is pinned
+    const pinnedItemIcon = useMemo(() => {
+        if (buttonProps.pinnedIcon) {
+            return buttonProps.pinnedIcon;
+        }
+
+        return buttonProps.icon || parentIcon;
+    }, [buttonProps.pinnedIcon, buttonProps.icon, parentIcon]);
+
+    // Register when pinned, unregister when unpinned
+    // Re-register when active state changes to keep pinned items in sync
+    React.useEffect(() => {
+        if (pinnable && isPinned) {
+            sidebar.registerPinnedItem({
+                id: menuItemId,
+                text: buttonProps.text,
+                icon: pinnedItemIcon,
+                to: buttonProps.to,
+                onClick: buttonProps.onClick,
+                active: buttonProps.active
+            });
+        } else if (pinnable && !isPinned) {
+            // Only unregister if this item is explicitly unpinned
+            sidebar.unregisterPinnedItem(menuItemId);
+        }
+    }, [pinnable, isPinned, pinnedItemIcon, menuItemId, buttonProps.active]);
+
+    const pinAction = useMemo(() => {
+        if (!pinnable) {
+            return action;
+        }
+
+        const handlePinClick = (e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+
+            if (isPinned) {
+                sidebar.unregisterPinnedItem(menuItemId);
+            } else {
+                sidebar.registerPinnedItem({
+                    id: menuItemId,
+                    text: buttonProps.text,
+                    icon: pinnedItemIcon,
+                    to: buttonProps.to,
+                    onClick: buttonProps.onClick,
+                    active: buttonProps.active
+                });
+            }
+
+            sidebar.toggleItemPinned(menuItemId);
+        };
+
+        const pinButton = (
+            <SidebarMenuItemAction
+                element={isPinned ? <UnPinIcon /> : <PinIcon />}
+                onClick={handlePinClick}
+                showOnHover={true}
+            />
+        );
+
+        // If there's a custom action, combine them
+        // Don't modify the custom action - it should keep its original behavior
+        if (action) {
+            return (
+                <div className="flex items-center gap-xs">
+                    {pinButton}
+                    {action}
+                </div>
+            );
+        }
+
+        return pinButton;
+    }, [pinnable, isPinned, pinnedItemIcon, action, sidebar, menuItemId]);
 
     useEffect(() => {
         if (sidebar.expanded) {
@@ -46,7 +132,7 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
                         lvl={currentLevel}
                         variant={buttonProps.variant}
                     />
-                    <SidebarMenuSubButton {...buttonProps} />
+                    <SidebarMenuSubButton {...buttonProps} action={pinAction} />
                 </>
             );
         }
@@ -64,19 +150,50 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
             />
         ) : null;
 
+        const collapsibleAction = pinnable ? (
+            <div className="flex items-center gap-xs">
+                {pinAction}
+                {chevron}
+            </div>
+        ) : (
+            chevron
+        );
+
+        if (!collapsible) {
+            return (
+                <div className={"flex items-center"}>
+                    <SidebarMenuSubItemIndentation
+                        lvl={currentLevel}
+                        variant={buttonProps.variant}
+                    />
+                    <SidebarMenuSubButton {...buttonProps} />
+                </div>
+            );
+        }
+
         return (
-            <Collapsible.Root className="w-full group/menu-sub-item-collapsible">
+            <Collapsible.Root
+                className="w-full group/menu-sub-item-collapsible"
+                open={isSectionExpanded}
+                onOpenChange={toggleSectionExpanded}
+            >
                 <div className={"flex items-center"}>
                     <SidebarMenuSubItemIndentation
                         lvl={currentLevel}
                         variant={buttonProps.variant}
                     />
                     <Collapsible.Trigger asChild>
-                        <SidebarMenuSubButton {...buttonProps} action={chevron} />
+                        <SidebarMenuSubButton
+                            {...buttonProps}
+                            action={collapsibleAction}
+                            className={
+                                "group-data-[state=open]/menu-sub-item-collapsible:font-semibold!"
+                            }
+                        />
                     </Collapsible.Trigger>
                 </div>
                 <Collapsible.Content>
-                    <SidebarMenuSub>{children}</SidebarMenuSub>
+                    <SidebarMenuSub parentIcon={buttonProps.icon}>{children}</SidebarMenuSub>
                 </Collapsible.Content>
             </Collapsible.Root>
         );
@@ -87,16 +204,21 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
         menuItemId,
         isSectionExpanded,
         toggleSectionExpanded,
-        showChevron
+        showChevron,
+        pinnable,
+        pinAction
     ]);
 
     return (
-        <li
-            data-sidebar="menu-sub-item"
-            className={cn("group/menu-sub-item relative flex", className)}
-        >
-            {sidebarMenuSubButton}
-        </li>
+        <>
+            <li
+                data-sidebar="menu-sub-item"
+                className={cn("group/menu-sub-item relative flex", className)}
+            >
+                {sidebarMenuSubButton}
+            </li>
+            {children && !collapsible ? children : null}
+        </>
     );
 };
 

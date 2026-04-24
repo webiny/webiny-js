@@ -33,36 +33,32 @@ describe("updateUserAction", () => {
             data: {
                 invalidFields: {
                     action: {
-                        code: "invalid_type",
+                        code: "invalid_value",
                         data: {
-                            fatal: undefined,
                             path: ["action"]
                         },
-                        message: "Required"
+                        message: 'Invalid input: expected "updateUser"'
                     },
                     source: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["source"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected object, received undefined"
                     },
                     target: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["target"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected object, received undefined"
                     },
                     username: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["username"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected string, received undefined"
                     }
                 }
             },

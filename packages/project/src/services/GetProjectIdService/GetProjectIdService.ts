@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import { GetProjectConfigService, GetProjectIdService } from "~/abstractions/index.js";
-import { projectId as projectIdExt } from "~/extensions/projectId.js";
+import { ProjectId as ProjectIdExt } from "~/extensions/ProjectId.js";
 
 class DefaultGetProjectIdService implements GetProjectIdService.Interface {
     cachedProjectId: string | null = null;
@@ -12,14 +12,14 @@ class DefaultGetProjectIdService implements GetProjectIdService.Interface {
             return this.cachedProjectId;
         }
 
-        const envProjectId = process.env.WCP_PROJECT_ID;
+        const envProjectId = process.env.WEBINY_PROJECT_ID || process.env.WCP_PROJECT_ID;
         if (envProjectId) {
             this.cachedProjectId = envProjectId;
             return this.cachedProjectId;
         }
 
         const projectConfig = await this.getProjectConfigService.execute();
-        const [projectIdExtension] = projectConfig.extensionsByType(projectIdExt);
+        const [projectIdExtension] = projectConfig.extensionsByType(ProjectIdExt);
 
         if (projectIdExtension) {
             this.cachedProjectId = projectIdExtension.params.id;

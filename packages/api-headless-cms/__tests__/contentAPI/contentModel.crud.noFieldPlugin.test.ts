@@ -1,35 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { CmsGroup, CmsModelFieldToGraphQLPlugin } from "~/types";
+import type { CmsGroup } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 
-const customFieldPlugin = (): CmsModelFieldToGraphQLPlugin => ({
-    name: "cms-model-field-to-graphql-custom-test-field",
-    type: "cms-model-field-to-graphql",
-    fieldType: "custom-test-field",
-    isSortable: false,
-    isSearchable: false,
-    read: {
-        createTypeField({ field }) {
-            return `${field.fieldId}: String`;
-        },
-        createGetFilters({ field }) {
-            return `${field.fieldId}: String`;
-        }
-    },
-    manage: {
-        createTypeField({ field }) {
-            return `${field.fieldId}: String`;
-        },
-        createInputField({ field }) {
-            return `${field.fieldId}: String`;
-        }
-    }
-});
-
 describe("content model test no field plugin", () => {
-    const readHandlerOpts = { path: "read/en-US" };
-    const manageHandlerOpts = { path: "manage/en-US" };
-    const previewHandlerOpts = { path: "preview/en-US" };
+    const manageHandlerOpts = { path: "manage" };
 
     const {
         createContentModelGroupMutation,
@@ -44,7 +18,11 @@ describe("content model test no field plugin", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    type: "ico/ico",
+                    name: "ico/ico",
+                    value: "ico/ico"
+                },
                 description: "description"
             }
         });
@@ -58,7 +36,7 @@ describe("content model test no field plugin", () => {
                 modelId: "testContentModel",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         }).then(async ([response]) => {
             expect(response).toMatchObject({
@@ -117,7 +95,7 @@ describe("content model test no field plugin", () => {
                         updateContentModel: {
                             data: null,
                             error: {
-                                code: "",
+                                code: "Cms/Model/ValidationError",
                                 data: null,
                                 message:
                                     'Cannot update content model because of the unknown "SOMETHING-INVALID-HERE" field.'
@@ -127,96 +105,5 @@ describe("content model test no field plugin", () => {
                 });
             });
         });
-    });
-
-    it("schema generation should not break if an old field type still exists", async () => {
-        const customField = customFieldPlugin();
-        const manageModelAPI = useGraphQLHandler({
-            ...manageHandlerOpts,
-            plugins: [customField]
-        });
-        const manageAPI = useGraphQLHandler(manageHandlerOpts);
-        const readAPI = useGraphQLHandler(readHandlerOpts);
-        const previewAPI = useGraphQLHandler(previewHandlerOpts);
-
-        await manageModelAPI.createContentModelMutation({
-            data: {
-                name: "Event",
-                modelId: "event",
-                singularApiName: "Event",
-                pluralApiName: "Events",
-                group: contentModelGroup.id
-            }
-        });
-
-        await manageModelAPI.updateContentModelMutation({
-            modelId: "event",
-            data: {
-                layout: [["1234"], ["2345"], ["9999"]],
-                fields: [
-                    {
-                        id: "1234",
-                        multipleValues: false,
-                        helpText: "",
-                        label: "Title",
-                        type: "text",
-                        storageId: "title",
-                        validation: [],
-                        listValidation: [],
-                        placeholderText: "placeholder text",
-                        renderer: {
-                            name: "renderer"
-                        }
-                    },
-                    {
-                        id: "2345",
-                        multipleValues: false,
-                        helpText: "",
-                        label: "Slug",
-                        type: "text",
-                        storageId: "slug",
-                        validation: [],
-                        listValidation: [],
-                        placeholderText: "placeholder text",
-                        renderer: {
-                            name: "renderer"
-                        }
-                    },
-                    {
-                        id: "9999",
-                        multipleValues: false,
-                        helpText: "",
-                        label: "Test",
-                        type: "custom-test-field",
-                        storageId: "test",
-                        validation: [],
-                        listValidation: [],
-                        renderer: {
-                            name: "renderer"
-                        }
-                    }
-                ]
-            }
-        });
-
-        await manageAPI.createContentModelMutation({
-            data: {
-                name: "Bug",
-                modelId: "bug",
-                singularApiName: "Bug",
-                pluralApiName: "Bugs",
-                group: contentModelGroup.id
-            }
-        });
-
-        const [manage] = await manageAPI.introspect();
-        const [read] = await readAPI.introspect();
-        const [preview] = await previewAPI.introspect();
-
-        expect(Array.isArray(manage.data.__schema.types)).toBe(true);
-
-        expect(Array.isArray(read.data.__schema.types)).toBe(true);
-
-        expect(Array.isArray(preview.data.__schema.types)).toBe(true);
     });
 });

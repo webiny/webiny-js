@@ -7,11 +7,12 @@ interface FieldValueTransform {
 
 export interface FieldParent {
     fieldId: string;
-    multipleValues?: boolean;
+    list?: boolean;
 }
 
 export interface Field
-    extends Partial<Omit<CmsModelField, "id" | "type" | "storageId" | "fieldId">>,
+    extends
+        Partial<Omit<CmsModelField, "id" | "type" | "storageId" | "fieldId">>,
         Pick<CmsModelField, "id" | "type" | "storageId" | "fieldId"> {
     /**
      * A list od fieldId of all parents of the current field.
@@ -41,9 +42,5 @@ export interface Field
 }
 
 export interface FilterItemFromStorage {
-    <T = any>(
-        field: Partial<CmsModelField> &
-            Pick<CmsModelField, "fieldId" | "storageId" | "id" | "settings" | "type">,
-        value: any
-    ): Promise<T>;
+    <T = any>(field: CmsModelField, value: any): Promise<T>;
 }

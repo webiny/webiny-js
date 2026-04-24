@@ -1,6 +1,6 @@
 import type {
-    IExportContentEntriesControllerInput,
-    IExportContentEntriesControllerOutput
+    IControllerInput,
+    IControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController.js";
 import { convertTaskToCmsExportRecord } from "~/crud/utils/convertTaskToExportRecord.js";
 import type { ITasksContextObject } from "@webiny/tasks";
@@ -30,10 +30,7 @@ export class GetExportContentEntriesUseCase implements IGetExportContentEntriesU
     public async execute(
         params: IGetExportContentEntriesUseCaseExecuteParams
     ): Promise<IGetExportContentEntriesUseCaseExecuteResponse | null> {
-        const task = await this.getTask<
-            IExportContentEntriesControllerInput,
-            IExportContentEntriesControllerOutput
-        >(params.id);
+        const task = await this.getTask<IControllerInput, IControllerOutput>(params.id);
 
         if (task?.definitionId !== EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK) {
             return null;

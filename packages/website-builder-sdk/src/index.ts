@@ -27,4 +27,5 @@ export * from "./InheritanceProcessor.js";
 export * from "./InputBindingsProcessor.js";
 export * from "./StylesBindingsProcessor.js";
 export * from "./ElementFactory.js";
+export * from "./ConstraintEvaluator.js";
 export { StyleSettings } from "./constants.js";

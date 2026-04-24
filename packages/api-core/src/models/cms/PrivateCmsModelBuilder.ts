@@ -52,11 +52,11 @@ class PrivateCmsModelBuilderImpl implements IPrivateCmsModelBuilder {
     }
 }
 
-class PrivateCmsModelConfiguration<TModel extends BaseModel<any>>
-    implements IPrivateCmsModelConfiguration<TModel>
-{
+class PrivateCmsModelConfiguration<
+    TModel extends BaseModel<any>
+> implements IPrivateCmsModelConfiguration<TModel> {
     private metadata: CmsModelMetadata = {};
-    // eslint-disable-next-line
+    // oxlint-disable-next-line
     private modelMethods: Record<string, Function> = {};
     private extensionFields = new Map<string, FieldBuilderConfig>();
 
@@ -100,7 +100,7 @@ class PrivateCmsModelConfiguration<TModel extends BaseModel<any>>
         let finalSchema = baseSchema;
 
         if (this.extensionFields.size > 0) {
-            const extensionsShape: z.ZodRawShape = {};
+            const extensionsShape: Record<string, z.ZodTypeAny> = {};
 
             for (const [fieldId, { zodSchema }] of this.extensionFields) {
                 // Make each extension field optional

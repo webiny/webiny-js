@@ -27,6 +27,7 @@ import {
     CellActions,
     CellAuthor,
     CellCreated,
+    CellLive,
     CellModified,
     CellName,
     CellStatus
@@ -38,9 +39,10 @@ import { ShowConfirmationOnUnpublish } from "~/admin/components/Decorators/ShowC
 import { ShowConfirmationOnDeleteRevision } from "~/admin/components/Decorators/ShowConfirmationOnDeleteRevision.js";
 import { FullScreenContentEntry } from "~/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/index.js";
 import { ShowRevisionList } from "~/admin/components/ContentEntryForm/Header/ShowRevisionsList/index.js";
-import { cmsLegacyEntryEditor } from "~/utils/cmsLegacyEntryEditor.js";
-import { ScheduleEntryMenuItem } from "~/admin/components/ContentEntries/Scheduler/actions/ScheduleEntryAction.js";
 import { AdvancedSearchConfigs } from "@webiny/app-aco/components/AdvancedSearch/AdvancedSearchConfigs";
+import { IsModelPublishable } from "~/admin/components/IsModelPublishable.js";
+import { ContentFormOptionsMenu } from "~/admin/components/ContentEntryForm/Header/ContentFormOptionsMenu/index.js";
+import { RevisionSelector } from "~/admin/components/ContentEntryForm/Header/index.js";
 
 const { Browser } = InternalContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
@@ -50,18 +52,22 @@ export const ContentEntriesModule = () => {
         <>
             <InternalContentEntryListConfig>
                 <AdvancedSearchConfigs />
-                <Browser.Filter name={"status"} element={<FilterByStatus />} />
-                <Browser.BulkAction name={"publish"} element={<ActionPublish />} />
-                <Browser.BulkAction name={"unpublish"} element={<ActionUnpublish />} />
+                <IsModelPublishable>
+                    <Browser.Filter name={"status"} element={<FilterByStatus />} />
+                    <Browser.BulkAction name={"publish"} element={<ActionPublish />} />
+                    <Browser.BulkAction name={"unpublish"} element={<ActionUnpublish />} />
+                </IsModelPublishable>
                 <Browser.BulkAction name={"move"} element={<ActionMove />} />
                 <Browser.BulkAction name={"delete"} element={<ActionDelete />} />
                 <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
                 <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.Folder.Action name={"delete"} element={<DeleteFolder />} />
                 <Browser.Entry.Action name={"edit"} element={<EditEntry />} />
-                <Browser.Entry.Action name={"status"} element={<ChangeEntryStatus />} />
+                <IsModelPublishable>
+                    <Browser.Entry.Action name={"status"} element={<ChangeEntryStatus />} />
+                </IsModelPublishable>
                 <Browser.Entry.Action name={"move"} element={<MoveEntry />} />
-                <Browser.Entry.Action name={"delete"} element={<DeleteEntry />} />
+                <Browser.Entry.Action name={"delete"} element={<DeleteEntry />} after={"$last"} />
                 <Browser.Table.Column
                     name={"name"}
                     header={"Name"}
@@ -69,34 +75,34 @@ export const ContentEntriesModule = () => {
                     sortable={true}
                     hideable={false}
                     size={200}
-                    className={"cms-aco-list-title"}
                 />
-                <Browser.Table.Column
-                    name={"createdBy"}
-                    header={"Author"}
-                    cell={<CellAuthor />}
-                    className={"cms-aco-list-createdBy"}
-                />
+                <Browser.Table.Column name={"createdBy"} header={"Author"} cell={<CellAuthor />} />
                 <Browser.Table.Column
                     name={"createdOn"}
                     header={"Created"}
                     cell={<CellCreated />}
                     sortable={true}
-                    className={"cms-aco-list-createdOn"}
                 />
                 <Browser.Table.Column
                     name={"savedOn"}
                     header={"Modified"}
                     cell={<CellModified />}
                     sortable={true}
-                    className={"cms-aco-list-savedOn"}
                 />
-                <Browser.Table.Column
-                    name={"status"}
-                    header={"Status"}
-                    cell={<CellStatus />}
-                    className={"cms-aco-list-status"}
-                />
+                <IsModelPublishable>
+                    <Browser.Table.Column
+                        name={"status"}
+                        header={"Status"}
+                        cell={<CellStatus />}
+                        truncate={false}
+                    />
+                    <Browser.Table.Column
+                        name={"live"}
+                        header={"Live"}
+                        truncate={false}
+                        cell={<CellLive />}
+                    />
+                </IsModelPublishable>
                 <Browser.Table.Column
                     name={"actions"}
                     header={""}
@@ -104,7 +110,8 @@ export const ContentEntriesModule = () => {
                     size={56}
                     resizable={false}
                     hideable={false}
-                    className={"cms-aco-list-actions text-right"}
+                    truncate={false}
+                    className={"flex justify-center"}
                 />
                 <Browser.AdvancedSearch.FieldRenderer
                     name={"ref"}
@@ -117,19 +124,24 @@ export const ContentEntriesModule = () => {
                 <ShowConfirmationOnUnpublish />
                 <ShowConfirmationOnDelete />
                 <ShowConfirmationOnDeleteRevision />
+                <IsModelPublishable>
+                    <Actions.ButtonAction
+                        name={"revisionSelector"}
+                        element={<RevisionSelector />}
+                    />
+                </IsModelPublishable>
+                <Actions.ButtonAction name={"optionsMenu"} element={<ContentFormOptionsMenu />} />
                 <Actions.ButtonAction name={"save"} element={<SaveContentButton />} />
-                <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
+                <IsModelPublishable>
+                    <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
+                </IsModelPublishable>
                 <Actions.MenuItemAction name={"delete"} element={<DeleteEntryMenuItem />} />
-                <Actions.MenuItemAction name={"schedule"} element={<ScheduleEntryMenuItem />} />
-                {/*
-                    The following Menu Action registration is needed
-                    only when the 'cmsLegacyEntryEditor' feature is NOT enabled.
-                */}
-                <Actions.MenuItemAction
-                    name={"showRevisionsList"}
-                    element={<ShowRevisionList />}
-                    remove={cmsLegacyEntryEditor}
-                />
+                <IsModelPublishable>
+                    <Actions.MenuItemAction
+                        name={"showRevisionsList"}
+                        element={<ShowRevisionList />}
+                    />
+                </IsModelPublishable>
             </ContentEntryEditorConfig>
             <FullScreenContentEntry />
         </>

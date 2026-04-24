@@ -1,18 +1,19 @@
-import { ContextPlugin } from "@webiny/handler";
-import type { Context } from "~/types.js";
-import { attachCmsLifecycleEvents } from "~/cms/index.js";
-import { attachStateLifecycleEvents } from "~/state/index.js";
+import { createContextPlugin } from "@webiny/api";
+import { EntryWorkflowsFeature } from "./features/EntryWorkflows/feature.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
+import { WorkflowsFeature } from "~/features/Workflows/index.js";
 
 export const createHeadlessCmsWorkflows = () => {
-    const plugin = new ContextPlugin<Context>(async context => {
-        if (!context.wcp.canUseWorkflows()) {
-            return;
-        } else if (!context.workflows) {
+    const plugin = createContextPlugin(async context => {
+        const wcpContext = context.container.resolve(WcpContext);
+
+        if (!wcpContext.canUseWorkflows()) {
             return;
         }
 
-        attachCmsLifecycleEvents({ context });
-        attachStateLifecycleEvents({ context });
+        // Register features
+        EntryWorkflowsFeature.register(context.container);
+        WorkflowsFeature.register(context.container);
     });
 
     plugin.name = "headless-cms-workflows.context";

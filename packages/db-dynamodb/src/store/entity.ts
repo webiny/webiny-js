@@ -1,35 +1,14 @@
-/**
- * TODO determine if GSIs are needed
- */
-import { Entity } from "~/toolbox.js";
-import type { Table } from "~/utils/index.js";
+import type { ITable } from "~/utils/index.js";
+import { createGlobalEntity as baseCreateGlobalEntity } from "~/utils/index.js";
+import type { IStoreEntity, IStoreEntityValue } from "~/store/types.js";
 
 export interface ICreateEntityParams {
-    table: Table;
+    table: ITable;
 }
 
-export const createEntity = ({ table }: ICreateEntityParams) => {
-    return new Entity({
-        table,
-        name: "WebinyKeyValue",
-        attributes: {
-            PK: {
-                partitionKey: true
-            },
-            SK: {
-                sortKey: true
-            },
-            TYPE: {
-                type: "string"
-            },
-            key: {
-                type: "string"
-            },
-            value: {
-                type: "string"
-            }
-        },
-        autoExecute: true,
-        autoParse: true
+export const createEntity = ({ table }: ICreateEntityParams): IStoreEntity => {
+    return baseCreateGlobalEntity<IStoreEntityValue>({
+        table: table.table,
+        name: "WebinyKeyValue"
     });
 };

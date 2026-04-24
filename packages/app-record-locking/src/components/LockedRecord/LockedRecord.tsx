@@ -70,9 +70,6 @@ export const LockedRecord = ({ record: lockRecordEntry }: ILockedRecordProps) =>
             </Wrapper>
         );
     } else if (!lockRecordEntry?.lockedBy) {
-        console.log({
-            record
-        });
         return (
             <Wrapper>
                 <Title />
@@ -84,7 +81,7 @@ export const LockedRecord = ({ record: lockRecordEntry }: ILockedRecordProps) =>
                 <LockedRecordForceUnlock
                     id={lockRecordEntry.id}
                     type={record.$lockingType}
-                    title={record.data?.meta?.title}
+                    title={record.meta?.title}
                 />
             </Wrapper>
         );
@@ -101,7 +98,7 @@ export const LockedRecord = ({ record: lockRecordEntry }: ILockedRecordProps) =>
                 id={lockRecordEntry.id}
                 type={record.$lockingType}
                 lockedBy={lockRecordEntry.lockedBy}
-                title={record.data?.meta?.title}
+                title={record.meta?.title}
             />
         </Wrapper>
     );

@@ -11,7 +11,6 @@ import { createSlotInput } from "@webiny/website-builder-sdk";
 
 describe("Component Manifest", () => {
     it("should support input arrays and strict input objects", () => {
-        // eslint-disable-next-line
         const Button = (_: ComponentProps<{ title: string; children: React.ReactNode }>) => {
             return null;
         };
@@ -45,6 +44,7 @@ describe("Component Manifest", () => {
 
         const snapshot = {
             name: "Button",
+            tags: [],
             inputs: [
                 {
                     type: "text",
@@ -67,7 +67,6 @@ describe("Component Manifest", () => {
     });
 
     it("acceptsChildren should satisfy the `children` input requirement", () => {
-        // eslint-disable-next-line
         const Button = (_: ComponentProps<{ children: React.ReactNode }>) => {
             return null;
         };
@@ -80,6 +79,7 @@ describe("Component Manifest", () => {
         expect(manifest).toEqual({
             name: "Button",
             acceptsChildren: true,
+            tags: [],
             inputs: [
                 {
                     type: "slot",
@@ -93,7 +93,6 @@ describe("Component Manifest", () => {
     });
 
     it("`acceptsChildren` should work alongside other inputs", () => {
-        // eslint-disable-next-line
         const Button = (_: ComponentProps<{ title: string; children: React.ReactNode }>) => {
             return null;
         };
@@ -125,6 +124,7 @@ describe("Component Manifest", () => {
         const snapshot = {
             name: "Button",
             acceptsChildren: true,
+            tags: [],
             inputs: [
                 {
                     type: "text",

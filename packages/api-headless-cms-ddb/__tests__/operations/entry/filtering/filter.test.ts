@@ -9,15 +9,21 @@ import { createModel } from "../../helpers/createModel";
 import { createFields } from "~/operations/entry/filtering/createFields";
 import { filter } from "~/operations/entry/filtering";
 import { getSearchableFields } from "@webiny/api-headless-cms/crud/contentEntry/searchableFields";
+import { Container } from "@webiny/di";
+import { GraphQLFeature } from "@webiny/api-headless-cms/features/graphql/index.js";
+import { createTestContainer } from "../../helpers/createTestContainer";
 
-describe("filtering", () => {
+describe("filtering cms ddb", () => {
     let plugins: PluginsContainer;
     let model: CmsModel;
     let fields: Record<string, Field>;
+    let container: Container;
 
     beforeEach(() => {
         plugins = createPluginsContainer();
         model = createModel();
+        container = createTestContainer();
+        GraphQLFeature.register(container);
         fields = createFields({
             plugins,
             fields: model.fields
@@ -51,6 +57,7 @@ describe("filtering", () => {
 
             const createExpressionsParams = {
                 plugins,
+                container,
                 where: {
                     createdOn_gte: createdOn.toISOString()
                 },
@@ -71,12 +78,8 @@ describe("filtering", () => {
                         field: expect.objectContaining({
                             fieldId: "createdOn"
                         }),
-                        plugin: expect.objectContaining({
-                            _params: {
-                                matches: expect.any(Function),
-                                operation: "gte"
-                            },
-                            name: "dynamodb.value.filter.gte"
+                        filter: expect.objectContaining({
+                            operation: "gte"
                         }),
                         negate: false,
                         fieldPathId: "createdOn",
@@ -91,6 +94,7 @@ describe("filtering", () => {
                 items: records,
                 where: createExpressionsParams.where,
                 plugins,
+                container,
                 fields
             });
 
@@ -106,9 +110,12 @@ describe("filtering", () => {
         const result = filter({
             items: records,
             where: {
-                title_contains: "tttt"
+                values: {
+                    title_contains: "tttt"
+                }
             },
             plugins,
+            container,
             fields
         });
 
@@ -131,11 +138,14 @@ describe("filtering", () => {
         const resultBoth = filter({
             items: records,
             where: {
-                options: {
-                    keys_contains: "the modeled entry kkkk"
+                values: {
+                    options: {
+                        keys_contains: "the modeled entry kkkk"
+                    }
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -161,11 +171,14 @@ describe("filtering", () => {
         const resultNumber2 = filter({
             items: records,
             where: {
-                options: {
-                    keys_contains: " - 2"
+                values: {
+                    options: {
+                        keys_contains: " - 2"
+                    }
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -197,11 +210,14 @@ describe("filtering", () => {
         const resultNumber3 = filter({
             items: records,
             where: {
-                options: {
-                    keys_contains: " - 3"
+                values: {
+                    options: {
+                        keys_contains: " - 3"
+                    }
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -214,13 +230,16 @@ describe("filtering", () => {
         const resultRed = filter({
             items: records,
             where: {
-                options: {
-                    variant: {
-                        colors: ["red"]
+                values: {
+                    options: {
+                        variant: {
+                            colors: ["red"]
+                        }
                     }
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -250,13 +269,16 @@ describe("filtering", () => {
         const resultTeal = filter({
             items: records,
             where: {
-                options: {
-                    variant: {
-                        colors: ["teal"]
+                values: {
+                    options: {
+                        variant: {
+                            colors: ["teal"]
+                        }
                     }
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -286,13 +308,16 @@ describe("filtering", () => {
         const resultBoth = filter({
             items: records,
             where: {
-                options: {
-                    variant: {
-                        colors_in: ["teal", "green"]
+                values: {
+                    options: {
+                        variant: {
+                            colors_in: ["teal", "green"]
+                        }
                     }
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -322,13 +347,16 @@ describe("filtering", () => {
         const resultNoneOrange = filter({
             items: records,
             where: {
-                options: {
-                    variant: {
-                        colors_in: ["orange"]
+                values: {
+                    options: {
+                        variant: {
+                            colors_in: ["orange"]
+                        }
                     }
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -337,13 +365,16 @@ describe("filtering", () => {
         const resultNoneEmpty = filter({
             items: records,
             where: {
-                options: {
-                    variant: {
-                        colors_in: []
+                values: {
+                    options: {
+                        variant: {
+                            colors_in: []
+                        }
                     }
                 }
             },
             plugins,
+            container,
             fields
         });
 
@@ -356,7 +387,7 @@ describe("filtering", () => {
         const searchableFields = getSearchableFields({
             fields: model.fields,
             input: [],
-            plugins
+            context: { plugins, container }
         });
         /**
          * Find yellow color items.
@@ -365,6 +396,7 @@ describe("filtering", () => {
             items: records,
             where: {},
             plugins,
+            container,
             fields,
             fullTextSearch: {
                 term: "yellow",
@@ -380,6 +412,7 @@ describe("filtering", () => {
             items: records,
             where: {},
             plugins,
+            container,
             fields,
             fullTextSearch: {
                 term: "white",
@@ -395,6 +428,7 @@ describe("filtering", () => {
             items: records,
             where: {},
             plugins,
+            container,
             fields,
             fullTextSearch: {
                 term: "grey",
@@ -410,6 +444,7 @@ describe("filtering", () => {
             items: records,
             where: {},
             plugins,
+            container,
             fields,
             fullTextSearch: {
                 term: "red",

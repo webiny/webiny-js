@@ -1,7 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { MovePage } from "./MovePage.js";
+import { Container } from "@webiny/di";
 import { WbPageStatus } from "~/constants.js";
 import { Page, pageListCache } from "~/domain/Page/index.js";
+import {
+    MovePageUseCase as UseCaseAbstraction,
+    MovePageGateway as GatewayAbstraction
+} from "./abstractions.js";
+import { MovePageUseCase } from "./MovePageUseCase.js";
+import { MovePageRepository } from "./MovePageRepository.js";
+import { PageListCache } from "~/features/pages/shared/abstractions.js";
 
 describe("MovePage", () => {
     const gateway = {
@@ -17,7 +24,7 @@ describe("MovePage", () => {
                 id: "page-1#0001",
                 entryId: "page-1",
                 status: WbPageStatus.Draft,
-                wbyAco_location: {
+                location: {
                     folderId: "folder-1"
                 },
                 properties: {
@@ -37,7 +44,13 @@ describe("MovePage", () => {
     });
 
     it("should be able to move a page", async () => {
-        const movePage = MovePage.getInstance(gateway);
+        const container = new Container();
+        container.registerInstance(PageListCache, pagesCache);
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(MovePageRepository).inSingletonScope();
+        container.register(MovePageUseCase);
+
+        const movePage = container.resolve(UseCaseAbstraction);
 
         expect(pagesCache.hasItems()).toBeTrue();
         const item = pagesCache.getItem(page => page.id === "page-1#0001");

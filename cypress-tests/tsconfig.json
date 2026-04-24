@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "target": "esnext",
     "skipLibCheck": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "module": "esnext",
     "lib": ["esnext", "dom", "dom.iterable"],
     "resolveJsonModule": true,
@@ -16,7 +17,6 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "emitDeclarationOnly": true,
-    "baseUrl": ".",
     "paths": {},
     "strict": true,
     "noUnusedParameters": false,

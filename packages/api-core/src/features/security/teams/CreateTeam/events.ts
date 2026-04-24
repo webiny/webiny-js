@@ -7,14 +7,16 @@ export class TeamBeforeCreateEvent extends DomainEvent<TeamBeforeCreatePayload> 
     eventType = "team.beforeCreate" as const;
 
     getHandlerAbstraction() {
-        return TeamBeforeCreateHandler;
+        return TeamBeforeCreateEventHandler;
     }
 }
 
-export const TeamBeforeCreateHandler =
-    createAbstraction<IEventHandler<TeamBeforeCreateEvent>>("TeamBeforeCreateHandler");
+/** Hook into team lifecycle before a team is created. */
+export const TeamBeforeCreateEventHandler = createAbstraction<IEventHandler<TeamBeforeCreateEvent>>(
+    "TeamBeforeCreateEventHandler"
+);
 
-export namespace TeamBeforeCreateHandler {
+export namespace TeamBeforeCreateEventHandler {
     export type Interface = IEventHandler<TeamBeforeCreateEvent>;
     export type Event = TeamBeforeCreateEvent;
 }
@@ -23,14 +25,16 @@ export class TeamAfterCreateEvent extends DomainEvent<TeamAfterCreatePayload> {
     eventType = "team.afterCreate" as const;
 
     getHandlerAbstraction() {
-        return TeamAfterCreateHandler;
+        return TeamAfterCreateEventHandler;
     }
 }
 
-export const TeamAfterCreateHandler =
-    createAbstraction<IEventHandler<TeamAfterCreateEvent>>("TeamAfterCreateHandler");
+/** Hook into team lifecycle after a team is created. */
+export const TeamAfterCreateEventHandler = createAbstraction<IEventHandler<TeamAfterCreateEvent>>(
+    "TeamAfterCreateEventHandler"
+);
 
-export namespace TeamAfterCreateHandler {
+export namespace TeamAfterCreateEventHandler {
     export type Interface = IEventHandler<TeamAfterCreateEvent>;
     export type Event = TeamAfterCreateEvent;
 }

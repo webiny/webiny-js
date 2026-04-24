@@ -39,7 +39,7 @@ export const RevisionSelector = () => {
         <DropdownMenu
             trigger={
                 <Button
-                    variant={"secondary"}
+                    variant={"ghost"}
                     disabled={loading}
                     icon={<DownButton />}
                     iconPosition={"end"}

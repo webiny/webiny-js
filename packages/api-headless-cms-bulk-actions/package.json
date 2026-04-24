@@ -2,7 +2,10 @@
   "name": "@webiny/api-headless-cms-bulk-actions",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "description": "Webiny Headless CMS bulk actions",
   "keywords": [
     "api-headless-cms-bulk-actions:base"
@@ -15,6 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/tasks": "0.0.0",
@@ -28,9 +32,9 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "graphql": "^16.12.0",
-    "typescript": "5.9.3",
-    "vitest": "^3.2.4"
+    "graphql": "^16.13.2",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.5"
   },
   "publishConfig": {
     "access": "public",

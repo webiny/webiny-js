@@ -1,10 +1,10 @@
 import WebinyError from "@webiny/error";
-import type { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types.js";
+import type { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
 import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { createLatestRecordType, createPublishedRecordType } from "../recordType.js";
-import { isSharedElasticsearchIndex } from "@webiny/api-elasticsearch";
+import { isSharedOpenSearchIndex as isSharedElasticsearchIndex } from "@webiny/api-opensearch";
 
-export const createBaseQuery = (): ElasticsearchBoolQueryConfig => {
+export const createBaseQuery = (): OpenSearchBoolQueryConfig => {
     return {
         must: [],
         must_not: [],
@@ -25,7 +25,7 @@ interface Params {
  *
  * We add the query.filter terms because we do not need scored search here and it is a bit faster.
  */
-export const createInitialQuery = (params: Params): ElasticsearchBoolQueryConfig => {
+export const createInitialQuery = (params: Params): OpenSearchBoolQueryConfig => {
     const { model, where } = params;
 
     const query = createBaseQuery();
@@ -55,15 +55,6 @@ export const createInitialQuery = (params: Params): ElasticsearchBoolQueryConfig
                 "modelId.keyword": model.modelId
             }
         });
-        /**
-         * TODO determine if we want to search across locales?
-         * This search would anyway work for a single model and when sharing index.
-         */
-        query.filter.push({
-            term: {
-                "locale.keyword": model.locale
-            }
-        });
     }
 
     /**
@@ -90,7 +81,7 @@ export const createInitialQuery = (params: Params): ElasticsearchBoolQueryConfig
     else {
         throw new WebinyError(
             `Cannot call Elasticsearch query when not setting "published" or "latest".`,
-            "ELASTICSEARCH_UNSUPPORTED_QUERY",
+            "OPENSEARCH_UNSUPPORTED_QUERY",
             {
                 where
             }

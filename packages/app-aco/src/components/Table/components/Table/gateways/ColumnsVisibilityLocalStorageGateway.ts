@@ -1,20 +1,21 @@
-import { LocalStorage } from "./LocalStorage.js";
 import type { IColumnsVisibilityGateway } from "./IColumnsVisibilityGateway.js";
+import { LocalStorage } from "@webiny/app/exports/admin/local-storage.js";
 
 export class ColumnsVisibilityLocalStorageGateway implements IColumnsVisibilityGateway {
-    private localStorage: LocalStorage<Record<string, boolean>>;
+    private readonly key: string;
 
-    constructor(namespace: string) {
-        this.localStorage = new LocalStorage<Record<string, boolean>>(
-            `webiny_column_visibility_${namespace}`
-        );
+    constructor(
+        private localStorage: LocalStorage.Interface,
+        namespace: string
+    ) {
+        this.key = `${namespace}/column-visibility`;
     }
 
     get() {
-        return Promise.resolve(this.localStorage.getFromStorage());
+        return Promise.resolve(this.localStorage.get(this.key) ?? {});
     }
 
     async set(value: Record<string, boolean>) {
-        return this.localStorage.setToStorage(value);
+        return this.localStorage.set(this.key, value);
     }
 }

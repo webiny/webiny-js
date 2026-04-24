@@ -1,57 +1,57 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { setupGroupAndModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
-
-interface CategoryParams {
-    title: string;
-    slug: string;
-}
-
-interface Category {
-    id: string;
-    entryId: string;
-    title: string;
-    slug: string;
-    wbyAco_location: {
-        folderId: string;
-    };
-}
+import type {
+    ICategoryInputValues,
+    ICategoryResponseValues
+} from "~tests/testHelpers/category/manage/types.js";
+import type { IManageQueryBaseResponse } from "~tests/testHelpers/types.js";
 
 describe("move content entry to another folder", () => {
     const manager = useCategoryManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
-    const getCategory = async (revision: string): Promise<Category> => {
+    const getCategory = async (revision: string) => {
         return await manager
             .getCategory({
-                revision
+                variables: {
+                    revision
+                }
             })
             .then(result => {
                 const [data] = result;
-                return data.data.getCategory.data;
+                return data.data.getCategory.data!;
             });
     };
 
-    const createCategory = async (data: CategoryParams): Promise<Category> => {
+    const createCategory = async (values: ICategoryInputValues) => {
         return await manager
             .createCategory({
-                data
+                variables: {
+                    data: {
+                        values
+                    }
+                }
             })
             .then(result => {
                 const [data] = result;
-                return data.data.createCategory.data;
+                return data.data.createCategory.data!;
             });
     };
 
-    const createCategoryFrom = async (category: Category) => {
+    const createCategoryFrom = async (
+        category: IManageQueryBaseResponse<ICategoryResponseValues>
+    ) => {
         return await manager
             .createCategoryFrom({
-                revision: category.id
+                variables: {
+                    revision: category.id
+                }
             })
             .then(result => {
                 const [data] = result;
-                return data.data.createCategoryFrom.data;
+                return data.data.createCategoryFrom.data!;
             });
     };
 
@@ -69,16 +69,20 @@ describe("move content entry to another folder", () => {
         });
         expect(category).toMatchObject({
             id: expect.any(String),
-            title: "Fruits",
-            slug: "fruits",
+            values: {
+                title: "Fruits",
+                slug: "fruits"
+            },
             wbyAco_location: {
                 folderId: "root"
             }
         });
 
         const [moveResponse] = await manager.moveCategory({
-            revision: category.id,
-            folderId: "anotherFolder"
+            variables: {
+                revision: category.id,
+                folderId: "anotherFolder"
+            }
         });
         expect(moveResponse).toEqual({
             data: {
@@ -92,22 +96,23 @@ describe("move content entry to another folder", () => {
         const getCategoryResponse = await getCategory(category.id);
         expect(getCategoryResponse).toMatchObject({
             id: category.id,
-            title: category.title,
-            slug: category.slug,
+            values: {
+                title: category.values.title,
+                slug: category.values.slug
+            },
             wbyAco_location: {
                 folderId: "anotherFolder"
             }
         });
 
-        const [listCategoriesResponse] = await manager.listCategories({});
+        const [listCategoriesResponse] = await manager.listCategories();
         expect(listCategoriesResponse).toMatchObject({
             data: {
                 listCategories: {
                     data: [
                         {
                             id: category.id,
-                            title: category.title,
-                            slug: category.slug,
+                            values: category.values,
                             wbyAco_location: {
                                 folderId: "anotherFolder"
                             }
@@ -131,31 +136,41 @@ describe("move content entry to another folder", () => {
         });
         expect(category).toMatchObject({
             id: expect.any(String),
-            title: "Fruits",
-            slug: "fruits"
+            values: {
+                title: "Fruits",
+                slug: "fruits"
+            }
         });
         const category2 = await createCategoryFrom(category);
         expect(category2).toMatchObject({
             id: `${category.entryId}#0002`,
-            title: "Fruits",
-            slug: "fruits"
+            values: {
+                title: "Fruits",
+                slug: "fruits"
+            }
         });
         const category3 = await createCategoryFrom(category);
         expect(category3).toMatchObject({
             id: `${category.entryId}#0003`,
-            title: "Fruits",
-            slug: "fruits"
+            values: {
+                title: "Fruits",
+                slug: "fruits"
+            }
         });
         const category4 = await createCategoryFrom(category);
         expect(category4).toMatchObject({
             id: `${category.entryId}#0004`,
-            title: "Fruits",
-            slug: "fruits"
+            values: {
+                title: "Fruits",
+                slug: "fruits"
+            }
         });
 
         const [moveResponse] = await manager.moveCategory({
-            revision: category4.id,
-            folderId: "yetAnotherFolder"
+            variables: {
+                revision: category4.id,
+                folderId: "yetAnotherFolder"
+            }
         });
         expect(moveResponse).toEqual({
             data: {
@@ -168,8 +183,7 @@ describe("move content entry to another folder", () => {
         const getCategoryResponse = await getCategory(category.id);
         expect(getCategoryResponse).toMatchObject({
             id: category.id,
-            title: category.title,
-            slug: category.slug,
+            values: category.values,
             wbyAco_location: {
                 folderId: "yetAnotherFolder"
             }
@@ -178,8 +192,7 @@ describe("move content entry to another folder", () => {
         const getCategory2Response = await getCategory(category2.id);
         expect(getCategory2Response).toMatchObject({
             id: category2.id,
-            title: category2.title,
-            slug: category2.slug,
+            values: category2.values,
             wbyAco_location: {
                 folderId: "yetAnotherFolder"
             }
@@ -188,8 +201,7 @@ describe("move content entry to another folder", () => {
         const getCategory3Response = await getCategory(category3.id);
         expect(getCategory3Response).toMatchObject({
             id: category3.id,
-            title: category3.title,
-            slug: category3.slug,
+            values: category3.values,
             wbyAco_location: {
                 folderId: "yetAnotherFolder"
             }
@@ -197,22 +209,20 @@ describe("move content entry to another folder", () => {
         const getCategory4Response = await getCategory(category4.id);
         expect(getCategory4Response).toMatchObject({
             id: category4.id,
-            title: category4.title,
-            slug: category4.slug,
+            values: category4.values,
             wbyAco_location: {
                 folderId: "yetAnotherFolder"
             }
         });
 
-        const [listCategoriesResponse] = await manager.listCategories({});
+        const [listCategoriesResponse] = await manager.listCategories();
         expect(listCategoriesResponse).toMatchObject({
             data: {
                 listCategories: {
                     data: [
                         {
                             id: category4.id,
-                            title: category4.title,
-                            slug: category4.slug,
+                            values: category4.values,
                             wbyAco_location: {
                                 folderId: "yetAnotherFolder"
                             }

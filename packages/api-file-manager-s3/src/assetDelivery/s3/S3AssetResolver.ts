@@ -1,38 +1,47 @@
 import type { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import type { AssetRequest, AssetResolver } from "@webiny/api-file-manager";
 import { Asset } from "@webiny/api-file-manager";
-import { S3AssetMetadataReader } from "./S3AssetMetadataReader.js";
-import { S3ContentsReader } from "./S3ContentsReader.js";
+import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import { S3ContentsReader } from "~/assetDelivery/index.js";
+import { ObjectKey } from "~/assetDelivery/threatDetection/ObjectKey.js";
+
+interface AssetMetadata {
+    id: string;
+    tenant: string;
+    size: number;
+    contentType: string;
+    bucketKey: string;
+}
 
 export class S3AssetResolver implements AssetResolver {
-    private readonly s3: S3;
-    private readonly bucket: string;
-
-    constructor(s3: S3, bucket: string) {
-        this.s3 = s3;
-        this.bucket = bucket;
-    }
+    constructor(
+        private keyValueStore: GlobalKeyValueStore.Interface,
+        private s3: S3,
+        private bucket: string
+    ) {}
 
     async resolve(request: AssetRequest): Promise<Asset | undefined> {
-        try {
-            const metadataReader = new S3AssetMetadataReader(this.s3, this.bucket);
-            const metadata = await metadataReader.getMetadata(request.getKey());
+        const fileId = ObjectKey.from(request.getKey()).id();
+        const result = await this.keyValueStore.get<AssetMetadata>(
+            `FileManager/File/${fileId}/Metadata`
+        );
 
-            const asset = new Asset({
-                id: metadata.id,
-                tenant: metadata.tenant,
-                locale: metadata.locale,
-                size: metadata.size,
-                contentType: metadata.contentType,
-                key: request.getKey()
-            });
-
-            asset.setContentsReader(new S3ContentsReader(this.s3, this.bucket));
-
-            return asset;
-        } catch (error) {
-            console.log(`S3AssetResolver failed to read metadata: ${error.message}`);
+        if (result.isFail()) {
             return undefined;
         }
+
+        const metadata = result.value;
+
+        const asset = new Asset({
+            id: metadata.id,
+            tenant: metadata.tenant,
+            size: metadata.size,
+            contentType: metadata.contentType,
+            key: metadata.bucketKey
+        });
+
+        asset.setContentsReader(new S3ContentsReader(this.s3, this.bucket));
+
+        return asset;
     }
 }

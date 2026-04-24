@@ -1,18 +1,17 @@
-import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { GetTeam } from "./abstractions.js";
+import { GetTeamUseCase as Abstraction } from "./abstractions.js";
 import { TeamsRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import type { Team, GetTeamInput } from "../shared/types.js";
 import { NotAuthorizedError } from "../shared/errors.js";
 
-export class GetTeamUseCase {
+class GetTeamUseCaseImpl implements Abstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private repository: TeamsRepository.Interface
     ) {}
 
-    async execute(params: GetTeamInput): Promise<Result<Team, GetTeam.Error>> {
+    async execute(params: GetTeamInput): Promise<Result<Team, Abstraction.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.team");
 
         if (!hasPermission) {
@@ -29,8 +28,7 @@ export class GetTeamUseCase {
     }
 }
 
-export const GetTeamUseCaseImpl = createImplementation({
-    abstraction: GetTeam,
-    implementation: GetTeamUseCase,
+export const GetTeamUseCase = Abstraction.createImplementation({
+    implementation: GetTeamUseCaseImpl,
     dependencies: [IdentityContext, TeamsRepository]
 });

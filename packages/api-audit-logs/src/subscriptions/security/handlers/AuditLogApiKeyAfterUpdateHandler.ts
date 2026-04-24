@@ -1,8 +1,8 @@
 import WebinyError from "@webiny/error";
-import { ApiKeyAfterUpdateHandler } from "@webiny/api-core/features/UpdateApiKey";
+import { ApiKeyAfterUpdateEventHandler } from "@webiny/api-core/features/security/apiKeys/UpdateApiKey/index.js";
+import { AuditLogsContext } from "~/abstractions.js";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import type { AuditLogsContext } from "~/types.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
 
 /**
@@ -13,20 +13,19 @@ import type { ApiKey } from "@webiny/api-core/types/security.js";
 const cleanupApiKey = (apiKey: ApiKey): Omit<ApiKey, "token"> => {
     return {
         id: apiKey.id,
+        slug: apiKey.slug,
         createdBy: apiKey.createdBy,
         createdOn: apiKey.createdOn,
         description: apiKey.description,
         name: apiKey.name,
-        permissions: apiKey.permissions,
-        tenant: apiKey.tenant,
-        webinyVersion: apiKey.webinyVersion
+        permissions: apiKey.permissions
     };
 };
 
-export class AuditLogApiKeyAfterUpdateHandler implements ApiKeyAfterUpdateHandler.Interface {
-    constructor(private context: AuditLogsContext) {}
+class AuditLogApiKeyAfterUpdateHandlerImpl implements ApiKeyAfterUpdateEventHandler.Interface {
+    constructor(private context: AuditLogsContext.Interface) {}
 
-    async handle(event: ApiKeyAfterUpdateHandler.Event): Promise<void> {
+    async handle(event: ApiKeyAfterUpdateEventHandler.Event): Promise<void> {
         try {
             const { updated: initialApiKey, original: initialOriginalApiKey } = event.payload;
             const createAuditLog = getAuditConfig(AUDIT.SECURITY.API_KEY.UPDATE);
@@ -51,3 +50,8 @@ export class AuditLogApiKeyAfterUpdateHandler implements ApiKeyAfterUpdateHandle
         }
     }
 }
+
+export const AuditLogApiKeyAfterUpdateHandler = ApiKeyAfterUpdateEventHandler.createImplementation({
+    implementation: AuditLogApiKeyAfterUpdateHandlerImpl,
+    dependencies: [AuditLogsContext]
+});

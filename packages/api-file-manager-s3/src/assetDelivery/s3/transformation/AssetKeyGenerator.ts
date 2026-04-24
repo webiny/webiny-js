@@ -1,6 +1,5 @@
 import type { Asset } from "@webiny/api-file-manager";
 import * as newUtils from "./utils.js";
-import * as legacyUtils from "./legacyUtils.js";
 
 export class AssetKeyGenerator {
     private utils: typeof newUtils;
@@ -8,7 +7,7 @@ export class AssetKeyGenerator {
 
     constructor(asset: Asset) {
         this.asset = asset;
-        this.utils = asset.getKey().includes("/") ? newUtils : legacyUtils;
+        this.utils = newUtils;
     }
 
     getOptimizedImageKey() {

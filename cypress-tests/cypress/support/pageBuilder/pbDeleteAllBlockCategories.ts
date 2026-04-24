@@ -14,7 +14,6 @@ const MUTATION = /* GraphQL */ `
 `;
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             pbDeleteAllBlockCategories(): Promise<Record<string, any>>;

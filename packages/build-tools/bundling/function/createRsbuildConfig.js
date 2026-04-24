@@ -1,6 +1,7 @@
 import path from "path";
 import rspack from "@rspack/core";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
+import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
 export const createRsbuildConfig = ({ cwd }) => {
     const paths = getPaths(cwd);
@@ -9,20 +10,27 @@ export const createRsbuildConfig = ({ cwd }) => {
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.fn.entryFile } },
         output: {
+            module: true,
             target: "node",
+            sourceMap: {
+                js: process.env.DEBUG === "true" ? "source-map" : false
+            },
             filename: {
                 js: pathData => {
                     if (pathData.chunk?.name === "index") {
-                        return "handler.cjs";
+                        return "handler.mjs";
                     }
-                    return "[name].cjs";
+                    return "[name].mjs";
                 }
             },
             distPath: { root: paths.fn.outputFolder }
         },
+        performance: {
+            printFileSize: false
+        },
         tools: {
             rspack: {
-                externals: [/^@aws-sdk/, /^sharp$/],
+                externals: [/^@aws-sdk/, /^aws-sdk$/, /^sharp$/],
                 plugins: [
                     // This is necessary to enable JSDOM usage in Lambda.
                     // https://rspack.dev/plugins/webpack/ignore-plugin
@@ -42,6 +50,7 @@ export const createRsbuildConfig = ({ cwd }) => {
         },
         mode,
         plugins: [
+            createImportValidatorPlugin(),
             pluginTypeCheck({
                 tsCheckerOptions: {
                     typescript: { configFile: paths.fn.tsConfig },

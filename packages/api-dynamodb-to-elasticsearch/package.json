@@ -2,7 +2,10 @@
   "name": "@webiny/api-dynamodb-to-elasticsearch",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
@@ -13,18 +16,17 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@webiny/api": "0.0.0",
-    "@webiny/api-elasticsearch": "0.0.0",
-    "@webiny/api-log": "0.0.0",
+    "@webiny/api-opensearch": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "p-retry": "^7.0.0"
+    "p-retry": "^8.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
     "@webiny/plugins": "0.0.0",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   },
   "publishConfig": {
     "access": "public",

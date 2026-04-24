@@ -2,7 +2,7 @@ export const pagesTypeDefs = /* GraphQL */ `
     type WbPage {
         id: ID!
         entryId: String!
-        wbyAco_location: WbLocation
+        location: WbLocation
         status: String!
         version: Number!
         locked: Boolean!
@@ -20,15 +20,18 @@ export const pagesTypeDefs = /* GraphQL */ `
         restoredBy: WbIdentity
         firstPublishedBy: WbIdentity
         lastPublishedBy: WbIdentity
+        system: CmsEntrySystem
+        live: CmsEntryLive
         properties: JSON
         metadata: JSON
         bindings: JSON
         elements: JSON
         extensions: JSON
+        languagePaths: JSON
     }
 
     input WbPageCreateInput {
-        wbyAco_location: WbLocationInput
+        location: WbLocationInput
         properties: JSON
         metadata: JSON
         bindings: JSON
@@ -45,7 +48,7 @@ export const pagesTypeDefs = /* GraphQL */ `
     }
 
     input WbPagesListWhereInput {
-        wbyAco_location: WbLocationWhereInput
+        location: WbLocationWhereInput
         latest: Boolean
         published: Boolean
         id: ID
@@ -137,6 +140,10 @@ export const pagesTypeDefs = /* GraphQL */ `
         status_not: String
         status_in: [String!]
         status_not_in: [String!]
+
+        live: CmsEntryLiveWhereInput
+        system: ListWhereInputCmsEntrySystem
+
         AND: [WbPagesListWhereInput!]
         OR: [WbPagesListWhereInput!]
     }
@@ -221,6 +228,13 @@ export const pagesTypeDefs = /* GraphQL */ `
             sort: [WbPageListSorter]
             search: String
         ): WbPagesListResponse
+        listDeletedPages(
+            where: WbPagesListWhereInput
+            limit: Int
+            after: String
+            sort: [WbPageListSorter]
+            search: String
+        ): WbPagesListResponse
         getSettings: WbSettingsResponse
         getIntegrations: WbIntegrationsResponse
     }
@@ -231,9 +245,11 @@ export const pagesTypeDefs = /* GraphQL */ `
         publishPage(id: ID!): WbPageResponse
         unpublishPage(id: ID!): WbPageResponse
         duplicatePage(id: ID!): WbPageResponse
+        translatePage(pageId: ID!, languageCode: String!, folderId: ID!): WbPageResponse
         movePage(id: ID!, folderId: ID!): WbBooleanResponse
         createPageRevisionFrom(id: ID!): WbPageResponse
-        deletePage(id: ID!): WbBooleanResponse
+        deletePage(id: ID!, permanently: Boolean): WbBooleanResponse
+        restorePage(id: ID!): WbPageResponse
         updateSettings(data: WbSettingsInput!): BooleanResponse
         updateIntegrations(data: JSON!): BooleanResponse
     }

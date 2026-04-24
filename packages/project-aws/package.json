@@ -2,7 +2,10 @@
   "name": "@webiny/project-aws",
   "version": "0.0.0",
   "type": "module",
-  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -15,77 +18,36 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.12.0",
-    "@pulumi/pulumi": "^3.210.0",
-    "@pulumi/random": "^4.18.4",
-    "@webiny/api-aco": "0.0.0",
-    "@webiny/api-audit-logs": "0.0.0",
-    "@webiny/api-background-tasks-ddb": "0.0.0",
-    "@webiny/api-background-tasks-os": "0.0.0",
-    "@webiny/api-core": "0.0.0",
-    "@webiny/api-core-ddb": "0.0.0",
-    "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
-    "@webiny/api-elasticsearch": "0.0.0",
-    "@webiny/api-file-manager": "0.0.0",
-    "@webiny/api-file-manager-ddb": "0.0.0",
-    "@webiny/api-file-manager-s3": "0.0.0",
+    "@pulumi/aws": "^7.26.0",
+    "@pulumi/pulumi": "^3.231.0",
+    "@pulumi/random": "^4.19.2",
     "@webiny/api-headless-cms": "0.0.0",
-    "@webiny/api-headless-cms-aco": "0.0.0",
-    "@webiny/api-headless-cms-ddb": "0.0.0",
-    "@webiny/api-headless-cms-ddb-es": "0.0.0",
-    "@webiny/api-headless-cms-scheduler": "0.0.0",
-    "@webiny/api-headless-cms-tasks": "0.0.0",
-    "@webiny/api-headless-cms-tasks-ddb-es": "0.0.0",
-    "@webiny/api-headless-cms-workflows": "0.0.0",
-    "@webiny/api-log": "0.0.0",
-    "@webiny/api-mailer": "0.0.0",
-    "@webiny/api-record-locking": "0.0.0",
-    "@webiny/api-security-cognito": "0.0.0",
-    "@webiny/api-website-builder": "0.0.0",
-    "@webiny/api-website-builder-workflows": "0.0.0",
-    "@webiny/api-websockets": "0.0.0",
-    "@webiny/api-workflows": "0.0.0",
-    "@webiny/app": "0.0.0",
-    "@webiny/app-admin": "0.0.0",
-    "@webiny/app-admin-users-cognito": "0.0.0",
-    "@webiny/app-serverless-cms": "0.0.0",
     "@webiny/aws-layers": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli-core": "0.0.0",
-    "@webiny/data-migration": "0.0.0",
-    "@webiny/db-dynamodb": "0.0.0",
-    "@webiny/handler-aws": "0.0.0",
-    "@webiny/handler-db": "0.0.0",
-    "@webiny/handler-graphql": "0.0.0",
-    "@webiny/migrations": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/pulumi": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "@webiny/wcp": "0.0.0",
-    "chalk": "^4.1.2",
-    "core-js": "3.45.1",
-    "cross-fetch": "^3.2.0",
-    "find-up": "^5.0.0",
+    "chalk": "^5.6.2",
+    "find-up": "^8.0.0",
     "invariant": "^2.2.4",
-    "lodash": "^4.17.21",
-    "mime": "^3.0.0",
-    "ora": "4.1.1",
-    "react": "18.2.0",
-    "regenerator-runtime": "^0.14.1",
-    "zod": "^3.25.76"
+    "lodash": "^4.18.1",
+    "mime": "^4.1.0",
+    "react": "18.3.1",
+    "replace-in-path": "^1.1.0",
+    "ts-morph": "^28.0.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/lodash": "4.17.20",
+    "@types/lodash": "^4.17.24",
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
-    "typescript": "5.9.3"
-  },
-  "webiny": {
-    "exports": {
-      ".": "./extensions"
-    }
+    "typescript": "6.0.3"
   },
   "adio": {
+    "ignoreDirs": [
+      "_templates"
+    ],
     "ignore": {
       "src": [
         "listr2",

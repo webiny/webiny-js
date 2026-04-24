@@ -1,7 +1,6 @@
 import { setContext } from "apollo-link-context";
 import { ApolloLinkPlugin } from "./ApolloLinkPlugin.js";
 import type { ApolloLink } from "apollo-link";
-import { getTenantId } from "~/utils/index.js";
 
 /**
  * Append `x-tenant` header from URL query (necessary for prerendering service).
@@ -9,11 +8,11 @@ import { getTenantId } from "~/utils/index.js";
 export class TenantHeaderLinkPlugin extends ApolloLinkPlugin {
     private readonly tenant: string;
 
-    public constructor(tenant?: string) {
+    public constructor(tenant: string) {
         super();
         this.name = "tenant-header-link";
 
-        this.tenant = tenant || (getTenantId() as string);
+        this.tenant = tenant;
     }
 
     public override createLink(): ApolloLink {

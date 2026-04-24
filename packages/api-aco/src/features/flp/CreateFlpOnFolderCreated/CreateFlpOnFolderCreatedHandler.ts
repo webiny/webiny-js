@@ -1,18 +1,14 @@
-import { WebinyError } from "@webiny/error";
-import type { CreateFlpUseCase } from "../CreateFlp/abstractions.js";
-import { FolderAfterCreateHandler } from "~/features/folders/CreateFolder/abstractions.js";
-import type { FolderAfterCreateEvent } from "~/features/folders/CreateFolder/events.js";
+import { CreateFlpUseCase } from "../CreateFlp/abstractions.js";
+import { FolderAfterCreateEventHandler } from "~/features/folder/CreateFolder/abstractions.js";
+import type { FolderAfterCreateEvent } from "~/features/folder/CreateFolder/events.js";
 import type { ICreateFlpTaskInput } from "~/types.js";
 import { CREATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 
-interface Tasks {
-    trigger: <T>(params: { definition: string; input: T }) => Promise<void>;
-}
-
-export class CreateFlpOnFolderCreatedHandler implements FolderAfterCreateHandler.Interface {
+class CreateFlpOnFolderCreatedHandlerImpl implements FolderAfterCreateEventHandler.Interface {
     constructor(
         private createFlpUseCase: CreateFlpUseCase.Interface,
-        private tasks?: Tasks
+        private tasks?: TaskService.Interface
     ) {}
 
     async handle(event: FolderAfterCreateEvent): Promise<void> {
@@ -27,11 +23,13 @@ export class CreateFlpOnFolderCreatedHandler implements FolderAfterCreateHandler
             } else {
                 await this.createFlpUseCase.execute(folder);
             }
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing FLP creation on folder created",
-                code: "ACO_AFTER_FOLDER_CREATE_FLP_HANDLER"
-            });
+        } catch {
+            // Ignore errors
         }
     }
 }
+
+export const CreateFlpOnFolderCreatedHandler = FolderAfterCreateEventHandler.createImplementation({
+    implementation: CreateFlpOnFolderCreatedHandlerImpl,
+    dependencies: [CreateFlpUseCase, [TaskService, { optional: true }]]
+});

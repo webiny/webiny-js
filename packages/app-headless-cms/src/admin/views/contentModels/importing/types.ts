@@ -10,6 +10,7 @@ export enum ImportAction {
 export interface ValidatedCmsGroup {
     group: {
         id: string;
+        slug: string;
         name: string;
     };
     action: ImportAction;
@@ -38,6 +39,7 @@ export interface InvalidField {
 export interface ImportGroupData {
     id: string;
     name: string;
+    slug: string;
     action?: ImportAction;
     error: CmsErrorResponse | null;
     message?: string;

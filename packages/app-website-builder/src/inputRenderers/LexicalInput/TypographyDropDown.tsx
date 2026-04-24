@@ -25,29 +25,29 @@ export const TypographyDropDown = () => {
     const { rangeSelection } = useCurrentSelection();
 
     const getAllTextStyles = (): TypographyStyle[] => {
-        if (!theme?.styles.typography) {
+        if (!theme?.typography) {
             return [];
         }
-        const headingsStyles = theme.styles.typography?.headings || [];
-        const paragraphStyles = theme.styles.typography?.paragraphs || [];
+        const headingsStyles = theme.typography?.headings || [];
+        const paragraphStyles = theme.typography?.paragraphs || [];
         return [...headingsStyles, ...paragraphStyles];
     };
 
     useEffect(() => {
         // In static toolbar typography, styles always need to be visible.
-        if (theme?.styles) {
+        if (theme?.typography) {
             setStyles(getAllTextStyles());
         }
-    }, [theme?.styles]);
+    }, [theme?.typography]);
 
     const getListStyles = (tag: string): TypographyStyle[] => {
-        const listStyles = theme?.styles.typography.lists?.filter(x => x.tag === tag) || [];
+        const listStyles = theme?.typography.lists?.filter(x => x.tag === tag) || [];
         if (listStyles.length > 0) {
             return listStyles;
         }
 
         const fallbackTag = tag === "ul" ? "ol" : "ul";
-        return theme?.styles.typography.lists?.filter(x => x.tag === fallbackTag) || [];
+        return theme?.typography.lists?.filter(x => x.tag === fallbackTag) || [];
     };
 
     useEffect(() => {
@@ -75,7 +75,7 @@ export const TypographyDropDown = () => {
                 setStyles(getListStyles("ol"));
             }
         } else if ($isQuoteNode(element)) {
-            setStyles(theme?.styles?.typography?.quotes || []);
+            setStyles(theme?.typography?.quotes || []);
         } else {
             setStyles([]);
         }
@@ -87,7 +87,7 @@ export const TypographyDropDown = () => {
                 <DropDown
                     buttonClassName="toolbar-item typography-dropdown"
                     buttonAriaLabel={"Typography formatting options"}
-                    buttonLabel={value?.name || "Typography"}
+                    buttonLabel={value?.label || "Typography"}
                     stopCloseOnClickSelf={true}
                     disabled={false}
                     showScroll={true}
@@ -100,7 +100,7 @@ export const TypographyDropDown = () => {
                             onClick={() => applyTypography(option)}
                             key={option.id}
                         >
-                            <span className="text">{option.name}</span>
+                            <span className="text">{option.label}</span>
                         </DropDownItem>
                     ))}
                 </DropDown>

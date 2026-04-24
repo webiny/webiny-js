@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
 import type {
-    CmsModel,
     CmsModelStorageOperations,
     CmsModelStorageOperationsCreateParams,
     CmsModelStorageOperationsDeleteParams,
@@ -8,26 +7,18 @@ import type {
     CmsModelStorageOperationsListParams,
     CmsModelStorageOperationsUpdateParams
 } from "@webiny/api-headless-cms/types/index.js";
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
-import { getClean } from "@webiny/db-dynamodb/utils/get.js";
-import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup.js";
-import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
-import { queryAllClean } from "@webiny/db-dynamodb/utils/query.js";
-import { deleteItem, put } from "@webiny/db-dynamodb";
 import { convertException } from "@webiny/utils";
+import type { IModelEntity } from "~/definitions/types.js";
 
 interface PartitionKeysParams {
     tenant: string;
-    locale: string;
 }
 const createPartitionKey = (params: PartitionKeysParams): string => {
-    const { tenant, locale } = params;
+    const { tenant } = params;
     if (!tenant) {
         throw new WebinyError(`Missing tenant variable when creating model partitionKey.`);
-    } else if (!locale) {
-        throw new WebinyError(`Missing locale variable when creating model partitionKey.`);
     }
-    return `T#${tenant}#L#${locale}#CMS#CM`;
+    return `T#${tenant}#CMS#CM`;
 };
 
 interface SortKeyParams {
@@ -40,11 +31,13 @@ const createSortKey = (params: SortKeyParams): string => {
 interface Keys {
     PK: string;
     SK: string;
+    GSI_TENANT: string;
 }
 const createKeys = (params: PartitionKeysParams & SortKeyParams): Keys => {
     return {
         PK: createPartitionKey(params),
-        SK: createSortKey(params)
+        SK: createSortKey(params),
+        GSI_TENANT: params.tenant
     };
 };
 
@@ -53,7 +46,7 @@ const createType = (): string => {
 };
 
 interface CreateModelsStorageOperationsParams {
-    entity: Entity<any>;
+    entity: IModelEntity;
 }
 export const createModelsStorageOperations = (
     params: CreateModelsStorageOperationsParams
@@ -66,13 +59,10 @@ export const createModelsStorageOperations = (
         const keys = createKeys(model);
 
         try {
-            await put({
-                entity,
-                item: {
-                    ...cleanupItem(entity, model),
-                    ...keys,
-                    TYPE: createType()
-                }
+            await entity.put({
+                data: model,
+                ...keys,
+                TYPE: createType()
             });
             return model;
         } catch (ex) {
@@ -90,13 +80,10 @@ export const createModelsStorageOperations = (
         const keys = createKeys(model);
 
         try {
-            await put({
-                entity,
-                item: {
-                    ...cleanupItem(entity, model),
-                    ...keys,
-                    TYPE: createType()
-                }
+            await entity.put({
+                data: model,
+                ...keys,
+                TYPE: createType()
             });
             return model;
         } catch (ex) {
@@ -117,10 +104,7 @@ export const createModelsStorageOperations = (
         const keys = createKeys(model);
 
         try {
-            await deleteItem({
-                entity,
-                keys
-            });
+            await entity.delete(keys);
             return model;
         } catch (ex) {
             throw new WebinyError(
@@ -139,10 +123,8 @@ export const createModelsStorageOperations = (
         const keys = createKeys(params);
 
         try {
-            return await getClean<CmsModel>({
-                entity,
-                keys
-            });
+            const result = await entity.get(keys);
+            return result?.data || null;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not get model.",
@@ -157,22 +139,26 @@ export const createModelsStorageOperations = (
 
     const list = async (params: CmsModelStorageOperationsListParams) => {
         const { where } = params;
-        const queryAllParams: QueryAllParams = {
-            entity,
-            partitionKey: createPartitionKey(where),
-            options: {
-                gte: " "
-            }
-        };
+
+        const partitionKey = createPartitionKey(where);
+
         try {
-            return await queryAllClean<CmsModel>(queryAllParams);
+            const result = await entity.queryAll({
+                partitionKey,
+                options: {
+                    gte: " "
+                }
+            });
+            return result.map(item => {
+                return item.data;
+            });
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not list models.",
                 ex.code || "MODEL_LIST_ERROR",
                 {
                     error: ex,
-                    partitionKey: queryAllParams.partitionKey
+                    partitionKey
                 }
             );
         }

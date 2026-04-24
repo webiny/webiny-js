@@ -9,7 +9,11 @@ export interface TenantNameProps {
 const BaseTenantName = ({ value }: TenantNameProps) => {
     const getId = useIdGenerator("Tenant");
 
-    return <Property id={getId("name")} name={"name"} value={value} />;
+    return (
+        <Property id={getId("tenant")} name={"tenant"}>
+            <Property id={getId("name")} name={"name"} value={value} />
+        </Property>
+    );
 };
 
 export const TenantName = makeDecoratable("TenantName", BaseTenantName);

@@ -6,6 +6,7 @@ export interface IDeleteTenantUseCase {
     execute(id: string): Promise<boolean>;
 }
 
+/** Delete a tenant. */
 export const DeleteTenantUseCase = createAbstraction<IDeleteTenantUseCase>("DeleteTenantUseCase");
 
 export namespace DeleteTenantUseCase {
@@ -16,6 +17,7 @@ export interface IDeleteTenantRepository {
     delete(id: string): Promise<void>;
 }
 
+/** Persist tenant deletion. */
 export const DeleteTenantRepository =
     createAbstraction<IDeleteTenantRepository>("DeleteTenantRepository");
 
@@ -27,26 +29,29 @@ export interface IDeleteTenantGateway {
     deleteTenant(id: string): Promise<void>;
 }
 
+/** Storage gateway for tenant deletion. */
 export const DeleteTenantGateway = createAbstraction<IDeleteTenantGateway>("DeleteTenantGateway");
 
 export namespace DeleteTenantGateway {
     export type Interface = IDeleteTenantGateway;
 }
 
-export const TenantBeforeDeleteHandler = createAbstraction<
+/** Hook into tenant lifecycle before a tenant is deleted. */
+export const TenantBeforeDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<TenantBeforeDeletePayload>>
->("TenantBeforeDeleteHandler");
+>("TenantBeforeDeleteEventHandler");
 
-export namespace TenantBeforeDeleteHandler {
+export namespace TenantBeforeDeleteEventHandler {
     export type Interface = IEventHandler<DomainEvent<TenantBeforeDeletePayload>>;
     export type Event = DomainEvent<TenantBeforeDeletePayload>;
 }
 
-export const TenantAfterDeleteHandler = createAbstraction<
+/** Hook into tenant lifecycle after a tenant is deleted. */
+export const TenantAfterDeleteEventHandler = createAbstraction<
     IEventHandler<DomainEvent<TenantAfterDeletePayload>>
->("TenantAfterDeleteHandler");
+>("TenantAfterDeleteEventHandler");
 
-export namespace TenantAfterDeleteHandler {
+export namespace TenantAfterDeleteEventHandler {
     export type Interface = IEventHandler<DomainEvent<TenantAfterDeletePayload>>;
     export type Event = DomainEvent<TenantAfterDeletePayload>;
 }

@@ -1,10 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
-import { CmsGroup } from "~/types";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
 const createIdentity = (permissions: any[] = []): IdentityData => {
     return {
@@ -15,10 +14,6 @@ const createIdentity = (permissions: any[] = []): IdentityData => {
             {
                 name: "cms.settings",
                 rwd: "r"
-            },
-            {
-                name: "content.i18n",
-                locales: ["en-US"]
             },
             {
                 name: "cms.endpoint.manage"
@@ -38,70 +33,24 @@ const createIdentity = (permissions: any[] = []): IdentityData => {
 };
 
 describe("MANAGE - resolvers - api key", () => {
-    let contentModelGroup: CmsGroup;
-
     const API_TOKEN = "aToken";
 
     const headers = {
         authorization: API_TOKEN
     };
 
-    const manageOpts = { path: "manage/en-US" };
-    const readOpts = { path: "read/en-US" };
+    const manageOpts = { path: "manage" };
+    const readOpts = { path: "read" };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation,
-        installMutation
-    } = useGraphQLHandler(manageOpts);
+    const manager = useGraphQLHandler(manageOpts);
 
     beforeEach(async () => {
-        await installMutation();
+        await manager.installMutation();
 
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
+        await setupGroupAndModels({
+            manager,
+            models: ["category"]
         });
-        contentModelGroup = createCMG.data.createContentModelGroup.data;
-
-        const category = models.find(m => m.modelId === "category");
-        if (!category) {
-            throw new Error(`Could not find model "category".`);
-        }
-
-        // Create initial record
-        const [create] = await createContentModelMutation({
-            data: {
-                name: category.name,
-                modelId: category.modelId,
-                singularApiName: category.singularApiName,
-                pluralApiName: category.pluralApiName,
-                group: contentModelGroup.id
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        }
-
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: category.fields,
-                layout: category.layout
-            }
-        });
-
-        if (update.errors) {
-            console.error(`[beforeEach] ${update.errors[0].message}`);
-            process.exit(1);
-        }
     });
 
     it("create, get, list, update and delete entry", async () => {
@@ -122,15 +71,17 @@ describe("MANAGE - resolvers - api key", () => {
             identity
         });
 
-        const [createResponse] = await createCategory(
-            {
+        const [createResponse] = await createCategory({
+            variables: {
                 data: {
-                    title: "Vegetables",
-                    slug: "vegetables"
+                    values: {
+                        title: "Vegetables",
+                        slug: "vegetables"
+                    }
                 }
             },
             headers
-        );
+        });
 
         expect(createResponse).toMatchObject({
             data: {
@@ -138,8 +89,6 @@ describe("MANAGE - resolvers - api key", () => {
                     data: {
                         id: expect.any(String),
                         entryId: expect.any(String),
-                        title: "Vegetables",
-                        slug: "vegetables",
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "a1234567890",
@@ -154,8 +103,10 @@ describe("MANAGE - resolvers - api key", () => {
                             revisions: [
                                 {
                                     id: expect.any(String),
-                                    slug: "vegetables",
-                                    title: "Vegetables",
+                                    values: {
+                                        slug: "vegetables",
+                                        title: "Vegetables"
+                                    },
                                     meta: {
                                         status: "draft",
                                         version: 1
@@ -166,6 +117,10 @@ describe("MANAGE - resolvers - api key", () => {
                             version: 1,
                             title: "Vegetables",
                             data: {}
+                        },
+                        values: {
+                            title: "Vegetables",
+                            slug: "vegetables"
                         }
                     },
                     error: null
@@ -173,14 +128,14 @@ describe("MANAGE - resolvers - api key", () => {
             }
         });
 
-        const category = createResponse.data.createCategory.data;
+        const category = createResponse.data.createCategory.data!;
 
-        const [getResponse] = await getCategory(
-            {
+        const [getResponse] = await getCategory({
+            variables: {
                 revision: category.id
             },
             headers
-        );
+        });
 
         expect(getResponse).toMatchObject({
             data: {
@@ -188,8 +143,6 @@ describe("MANAGE - resolvers - api key", () => {
                     data: {
                         id: category.id,
                         entryId: category.entryId,
-                        title: category.title,
-                        slug: category.slug,
                         createdOn: category.createdOn,
                         createdBy: {
                             id: "a1234567890",
@@ -204,8 +157,10 @@ describe("MANAGE - resolvers - api key", () => {
                             revisions: [
                                 {
                                     id: category.id,
-                                    slug: "vegetables",
-                                    title: "Vegetables",
+                                    values: {
+                                        slug: "vegetables",
+                                        title: "Vegetables"
+                                    },
                                     meta: {
                                         status: "draft",
                                         version: 1
@@ -216,6 +171,10 @@ describe("MANAGE - resolvers - api key", () => {
                             version: 1,
                             title: "Vegetables",
                             data: {}
+                        },
+                        values: {
+                            title: category.values.title,
+                            slug: category.values.slug
                         }
                     },
                     error: null
@@ -223,16 +182,18 @@ describe("MANAGE - resolvers - api key", () => {
             }
         });
 
-        const [updateResponse] = await updateCategory(
-            {
+        const [updateResponse] = await updateCategory({
+            variables: {
                 revision: category.id,
                 data: {
-                    title: "Green vegetables",
-                    slug: "green-vegetables"
+                    values: {
+                        title: "Green vegetables",
+                        slug: "green-vegetables"
+                    }
                 }
             },
             headers
-        );
+        });
 
         expect(updateResponse).toMatchObject({
             data: {
@@ -240,8 +201,6 @@ describe("MANAGE - resolvers - api key", () => {
                     data: {
                         id: expect.any(String),
                         entryId: expect.any(String),
-                        title: "Green vegetables",
-                        slug: "green-vegetables",
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "a1234567890",
@@ -256,8 +215,10 @@ describe("MANAGE - resolvers - api key", () => {
                             revisions: [
                                 {
                                     id: expect.any(String),
-                                    slug: "green-vegetables",
-                                    title: "Green vegetables",
+                                    values: {
+                                        slug: "green-vegetables",
+                                        title: "Green vegetables"
+                                    },
                                     meta: {
                                         status: "draft",
                                         version: 1
@@ -268,6 +229,10 @@ describe("MANAGE - resolvers - api key", () => {
                             version: 1,
                             title: "Green vegetables",
                             data: {}
+                        },
+                        values: {
+                            title: "Green vegetables",
+                            slug: "green-vegetables"
                         }
                     },
                     error: null
@@ -275,9 +240,11 @@ describe("MANAGE - resolvers - api key", () => {
             }
         });
 
-        const updatedCategory = updateResponse.data.updateCategory.data;
+        const updatedCategory = updateResponse.data.updateCategory.data!;
 
-        const [listResponse] = await listCategories({}, headers);
+        const [listResponse] = await listCategories({
+            headers
+        });
 
         expect(listResponse).toMatchObject({
             data: {
@@ -286,8 +253,6 @@ describe("MANAGE - resolvers - api key", () => {
                         {
                             id: expect.any(String),
                             entryId: expect.any(String),
-                            title: updatedCategory.title,
-                            slug: updatedCategory.slug,
                             createdOn: updatedCategory.createdOn,
                             createdBy: {
                                 id: "a1234567890",
@@ -302,8 +267,10 @@ describe("MANAGE - resolvers - api key", () => {
                                 revisions: [
                                     {
                                         id: updatedCategory.id,
-                                        slug: updatedCategory.slug,
-                                        title: updatedCategory.title,
+                                        values: {
+                                            slug: updatedCategory.values.slug,
+                                            title: updatedCategory.values.title
+                                        },
                                         meta: {
                                             status: "draft",
                                             version: 1
@@ -312,8 +279,12 @@ describe("MANAGE - resolvers - api key", () => {
                                 ],
                                 status: "draft",
                                 version: 1,
-                                title: updatedCategory.title,
+                                title: updatedCategory.values.title,
                                 data: {}
+                            },
+                            values: {
+                                title: updatedCategory.values.title,
+                                slug: updatedCategory.values.slug
                             }
                         }
                     ],
@@ -327,12 +298,12 @@ describe("MANAGE - resolvers - api key", () => {
             }
         });
 
-        const [deleteResponse] = await deleteCategory(
-            {
+        const [deleteResponse] = await deleteCategory({
+            variables: {
                 revision: updatedCategory.id
             },
             headers
-        );
+        });
 
         expect(deleteResponse).toEqual({
             data: {
@@ -343,7 +314,9 @@ describe("MANAGE - resolvers - api key", () => {
             }
         });
 
-        const [listAfterDelete] = await listCategories({}, headers);
+        const [listAfterDelete] = await listCategories({
+            headers
+        });
 
         expect(listAfterDelete).toEqual({
             data: {

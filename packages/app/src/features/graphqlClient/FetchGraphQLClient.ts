@@ -1,28 +1,30 @@
 import { createImplementation } from "@webiny/di";
 import { GraphQLClient } from "./abstractions.js";
-import { EnvConfig } from "~/features/envConfig/index.js";
+import { RequestValue } from "~/features/graphqlClient/RequestValue.js";
 
 class GraphQLClientImpl implements GraphQLClient.Interface {
-    private readonly graphqlApiUrl: string;
-
-    constructor(envConfig: EnvConfig.Interface) {
-        this.graphqlApiUrl = envConfig.get("graphqlApiUrl");
-    }
-
-    async execute<TVariables = any, TResult = any>(
+    async execute<TResult = any, TVariables = any>(
         params: GraphQLClient.Request<TVariables>
     ): Promise<TResult> {
-        const { query, variables, headers = {} } = params;
+        const request = RequestValue.from(params);
 
-        const body = JSON.stringify({ query, variables });
+        const body = JSON.stringify({
+            query: request.queryAsString,
+            variables: request.variables,
+            operationName: request.operationName
+        });
 
-        return this.fetch<TResult>(body, headers);
+        return this.fetch<TResult>(request.endpoint, body, request.headers);
     }
 
-    private async fetch<TResult = any>(body: string, headers: Record<string, any>) {
+    private async fetch<TResult = any>(
+        endpoint: string,
+        body: string,
+        headers: GraphQLClient.Headers = {}
+    ): Promise<TResult> {
         let response: Response;
         try {
-            response = await fetch(this.graphqlApiUrl, {
+            response = await fetch(endpoint, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -42,13 +44,12 @@ class GraphQLClientImpl implements GraphQLClient.Interface {
 
         // Check for generic API errors
         if (response.status !== 200) {
-            console.error(json);
-            throw new Error(`Request error: ${JSON.stringify(json.message)}`);
+            throw { message: json.message, code: json.code };
         }
 
         // Check for GraphQL errors
         if (json.errors && json.errors.length > 0) {
-            throw new Error(`GraphQL errors: ${JSON.stringify(json.errors)}`);
+            throw new Error(`GraphQL errors`, { cause: json.errors });
         }
         return json.data as TResult;
     }
@@ -57,5 +58,5 @@ class GraphQLClientImpl implements GraphQLClient.Interface {
 export const FetchGraphQLClient = createImplementation({
     abstraction: GraphQLClient,
     implementation: GraphQLClientImpl,
-    dependencies: [EnvConfig]
+    dependencies: []
 });

@@ -3,17 +3,12 @@ import { createWebsocketsRoutePlugin } from "~/plugins/WebsocketsRoutePlugin.js"
 
 export const createWebsocketsRouteDefaultPlugin = () => {
     const plugin = createWebsocketsRoutePlugin(WebsocketsEventRoute.default, async params => {
-        const { response, getIdentity, getLocale, getTenant } = params;
+        const { response, getIdentity, getTenant } = params;
         const tenant = getTenant();
-        const locale = getLocale();
         const identity = getIdentity();
         if (!tenant) {
             return response.error({
                 message: "Missing tenant."
-            });
-        } else if (!locale) {
-            return response.error({
-                message: "Missing locale."
             });
         } else if (!identity) {
             return response.error({

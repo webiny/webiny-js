@@ -14,18 +14,6 @@ export const renames = [
         next: ".gitattributes"
     },
     {
-        prev: "example.prettierrc.ts",
-        next: ".prettierrc.ts"
-    },
-    {
-        prev: "example.prettierignore",
-        next: ".prettierignore"
-    },
-    {
-        prev: "example.eslint.config.js",
-        next: "eslint.config.js"
-    },
-    {
         prev: "template.package.json",
         next: "package.json"
     }

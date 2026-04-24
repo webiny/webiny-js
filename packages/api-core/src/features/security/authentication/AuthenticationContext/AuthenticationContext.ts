@@ -8,6 +8,7 @@ import {
     AnonymousIdentity,
     AuthenticatedIdentity
 } from "~/features/security/IdentityContext/index.js";
+import { AuthenticationError } from "./errors.js";
 
 class AuthenticationContextImpl implements Abstraction.Interface {
     private authToken?: string;
@@ -20,6 +21,18 @@ class AuthenticationContextImpl implements Abstraction.Interface {
     async authenticate(token: string): Promise<Identity> {
         await this.eventPublisher.publish(new BeforeAuthenticationEvent({ token }));
 
+        try {
+            return await this.processAuthenticators(token);
+        } catch (error) {
+            throw AuthenticationError.from(error);
+        }
+    }
+
+    getAuthToken(): string | undefined {
+        return this.authToken;
+    }
+
+    private async processAuthenticators(token: string): Promise<Identity> {
         // Try each authenticator until one succeeds
         for (const authenticator of this.authenticators) {
             const identityData = await authenticator.authenticate(token);
@@ -37,10 +50,6 @@ class AuthenticationContextImpl implements Abstraction.Interface {
         }
 
         return new AnonymousIdentity();
-    }
-
-    getAuthToken(): string | undefined {
-        return this.authToken;
     }
 }
 

@@ -1,20 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { articleModel } from "./mocks/article.model";
-import { CmsModelPlugin } from "~/plugins";
 import type { CmsModelAst } from "~/types";
 
 describe("Model to AST", () => {
     it("should generate content model AST", async () => {
         const { handler, tenant } = useHandler({
-            plugins: [new CmsModelPlugin(articleModel)]
+            plugins: [articleModel]
         });
 
         const context = await handler({
             path: "/cms/manage/en-US",
             headers: {
                 "x-webiny-cms-endpoint": "manage",
-                "x-webiny-cms-locale": "en-US",
                 "x-tenant": tenant.id
             }
         });
@@ -28,14 +26,14 @@ describe("Model to AST", () => {
 
         const ast = modelAstConverter.toAst(model);
 
-        expect(ast).toEqual({
+        expect(ast).toMatchObject({
             type: "root",
             children: [
                 {
                     type: "field",
                     field: {
                         id: "title",
-                        multipleValues: false,
+                        list: false,
                         label: "Title",
                         type: "text",
                         storageId: "text@title",
@@ -47,7 +45,7 @@ describe("Model to AST", () => {
                     type: "field",
                     field: {
                         id: "body",
-                        multipleValues: false,
+                        list: false,
                         label: "Body",
                         type: "rich-text",
                         storageId: "rich-text@body",
@@ -59,7 +57,7 @@ describe("Model to AST", () => {
                     type: "field",
                     field: {
                         id: "categories",
-                        multipleValues: true,
+                        list: true,
                         label: "Categories",
                         type: "ref",
                         storageId: "ref@categories",
@@ -78,7 +76,7 @@ describe("Model to AST", () => {
                         storageId: "dynamicZone@content",
                         type: "dynamicZone",
                         label: "Content",
-                        multipleValues: true,
+                        list: true,
                         settings: expect.toBeObject()
                     },
                     children: [
@@ -166,7 +164,7 @@ describe("Model to AST", () => {
                                                 fieldId: "seo",
                                                 type: "object",
                                                 label: "SEO",
-                                                multipleValues: true,
+                                                list: true,
                                                 settings: expect.toBeObject()
                                             },
                                             children: [
@@ -212,7 +210,7 @@ describe("Model to AST", () => {
                                                         fieldId: "authors",
                                                         label: "Authors",
                                                         type: "ref",
-                                                        multipleValues: true,
+                                                        list: true,
                                                         settings: {
                                                             models: [
                                                                 {
@@ -243,6 +241,6 @@ describe("Model to AST", () => {
                     ]
                 }
             ]
-        } as CmsModelAst);
+        } as unknown as CmsModelAst);
     });
 });

@@ -1,1 +1,1 @@
-export type * from "./ITrashBinBulkActionsGateway.js";
+export type { ITrashBinBulkActionsGateway } from "./ITrashBinBulkActionsGateway.js";

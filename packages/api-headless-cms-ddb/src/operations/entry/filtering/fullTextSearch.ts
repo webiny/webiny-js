@@ -1,21 +1,21 @@
 import WebinyError from "@webiny/error";
-import type { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import type { Field } from "./types.js";
 import { getValue } from "./getValue.js";
+import { ValueFilter } from "@webiny/db-dynamodb/exports/api/db.js";
 
 interface Params {
     term?: string;
     targetFields?: string[];
     fields: Record<string, Field>;
-    plugin: ValueFilterPlugin;
+    filter: ValueFilter.Interface;
 }
 
 /**
  * Unfortunately we must use the contains plugin directly as plugins do not support multi field searching.
  */
 export const createFullTextSearch = (params: Params) => {
-    const { term, targetFields, fields: fieldDefinitions, plugin } = params;
+    const { term, targetFields, fields: fieldDefinitions, filter } = params;
     if (!term || term.trim().length === 0 || !targetFields || targetFields.length === 0) {
         return null;
     }
@@ -31,11 +31,11 @@ export const createFullTextSearch = (params: Params) => {
                     target
                 });
             }
-            const value = getValue(item.values, target);
+            const value = getValue(item, target);
             if (!value) {
                 continue;
             }
-            if (plugin.matches({ value, compareValue: term }) === true) {
+            if (filter.matches({ value, compareValue: term }) === true) {
                 return true;
             }
         }

@@ -1,12 +1,12 @@
 import React from "react";
 import { useDrop } from "react-dnd";
+import deepEqual from "deep-equal";
 import { cn, Icon } from "@webiny/admin-ui";
 import { ReactComponent as InsertIcon } from "@webiny/icons/add_circle.svg";
 import { ReactComponent as BlockIcon } from "@webiny/icons/block.svg";
 import type { Box } from "~/BaseEditor/defaultConfig/Content/Preview/Box.js";
 import type { DropEvent } from "~/BaseEditor/defaultConfig/Content/Preview/useProximityDropzone.js";
 import { useIsDragging } from "~/BaseEditor/defaultConfig/Content/Preview/useIsDragging.js";
-import deepEqual from "deep-equal";
 
 interface DropBoxProps {
     box: Box;
@@ -17,13 +17,18 @@ export const DropBox = React.memo(
     ({ box, onDrop }: DropBoxProps) => {
         const isDragging = useIsDragging();
 
-        const [{ isOver }, dropRef] = useDrop<
+        const [{ isOver, item }, dropRef] = useDrop<
             any,
             unknown,
-            { item: { name: string }; isOver: boolean }
+            { item: { name: string; id?: string }; isOver: boolean }
         >(() => ({
             accept: "ELEMENT",
             drop: item => {
+                // Prevent dropping the element into itself!
+                if (item?.id === box.parentId) {
+                    return;
+                }
+
                 onDrop({
                     item,
                     target: { parentId: box.parentId, index: 0, slot: box.parentSlot }
@@ -35,7 +40,7 @@ export const DropBox = React.memo(
             })
         }));
 
-        const canAccept = isDragging;
+        const canAccept = isDragging && item?.id !== box.parentId;
         const disabled = "border-neutral-muted fill-neutral-disabled";
         const enabled = "border-success-default fill-success";
         const mouseOver = "border-accent-default fill-accent-default";
@@ -58,7 +63,8 @@ export const DropBox = React.memo(
                     top: box.top,
                     left: box.left,
                     width: box.width,
-                    height: box.height
+                    height: box.height,
+                    pointerEvents: canAccept ? "auto" : "none"
                 }}
             >
                 <Icon

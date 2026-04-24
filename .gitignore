@@ -4,6 +4,8 @@
 .artifacts
 .env*
 .npmrc
+.kiro
+.vscode
 htpasswd
 lerna-debug.log
 npm-debug.log
@@ -17,6 +19,7 @@ yarn-error.log*
 dist/
 lib/
 api/**/build/
+.run/
 apps/**/build/
 .files/
 .changelog
@@ -37,8 +40,8 @@ globalConfig.json
 .graphqlconfig
 schema.graphql
 .tmp/
-.nx/*
 .swc/
+.nx/*
 # yarn2 files
 .yarn/*
 !.yarn/releases
@@ -54,6 +57,9 @@ packages/*/README.md
 *storybook.log
 .normalizedFigmaExport.json
 .normalizedPrimitivesFigmaExport.json
-nextjs
-.claude/
+packages/tasks/tpl/*
+./nextjs
+
+/.local
 CLAUDE.local.md
+.claude/*.local.*

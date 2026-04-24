@@ -17,15 +17,14 @@ class CreateTenantUseCaseImpl implements UseCaseAbstraction.Interface {
         const tenant: Tenant = {
             ...data,
             id: data.id ?? mdbid(),
-            status: data.status || "active",
+            status: "disabled",
             isInstalled: false,
             settings: {
                 ...(data.settings || {})
             },
             savedOn: new Date().toISOString(),
             createdOn: new Date().toISOString(),
-            parent: data.parent || null,
-            webinyVersion: process.env.WEBINY_VERSION
+            parent: data.parent || null
         };
 
         await this.eventPublisher.publish(new TenantBeforeCreateEvent({ tenant, input: data }));

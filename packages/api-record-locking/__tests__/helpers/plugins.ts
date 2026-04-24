@@ -1,17 +1,15 @@
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { ContextPlugin } from "@webiny/api";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import type { Context } from "~/types";
 import type { PermissionsArg } from "./permissions";
 import { createPermissions } from "./permissions";
 import { createRecordLocking } from "~/index";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
-import type { ApiKey } from "@webiny/api-core/types/security.js";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
@@ -43,25 +41,16 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
+    const testProjectLicense = createTestWcpLicense({ recordLocking: true });
+
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
         plugins: [
             topPlugins,
             createApiCore({
-                storageOperations: apiCoreStorage.storageOperations
-            }),
-            new ContextPlugin<Context>(async context => {
-                const wcp = context.wcp;
-                context.wcp.ensureCanUseFeature = featureId => {
-                    if (featureId !== "recordLocking") {
-                        return wcp.ensureCanUseFeature(featureId);
-                    }
-                    return true;
-                };
-                context.wcp.canUseRecordLocking = () => {
-                    return true;
-                };
+                storageOperations: apiCoreStorage.storageOperations,
+                testProjectLicense
             }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
@@ -69,41 +58,10 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                 permissions: createPermissions(permissions),
                 identity
             }),
-            {
-                type: "context",
-                name: "context-security-tenant",
-                async apply(context) {
-                    context.security.getApiKeyByToken = async (
-                        token: string
-                    ): Promise<ApiKey | null> => {
-                        if (!token || token !== "aToken") {
-                            return null;
-                        }
-                        const apiKey = "a1234567890";
-                        return {
-                            id: apiKey,
-                            name: apiKey,
-                            tenant: tenant.id,
-                            permissions: identity?.permissions || [],
-                            token,
-                            createdBy: {
-                                id: "test",
-                                displayName: "test",
-                                type: "admin"
-                            },
-                            description: "test",
-                            createdOn: new Date().toISOString(),
-                            webinyVersion: context.WEBINY_VERSION
-                        };
-                    };
-                }
-            } as ContextPlugin<Context>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             graphQLHandlerPlugins(),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
             createRecordLocking(),
             plugins,

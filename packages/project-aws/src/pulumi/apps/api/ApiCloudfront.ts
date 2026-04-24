@@ -22,12 +22,13 @@ export const ApiCloudfront = createAppModule({
             "Accept",
             "Accept-Language",
             "X-Tenant",
-            "X-I18n-Locale"
+            "X-Webiny-Sdk"
         ];
 
         return app.addResource(aws.cloudfront.Distribution, {
             name: "api-cloudfront",
             config: {
+                httpVersion: "http2and3",
                 waitForDeployment: false,
                 isIpv6Enabled: true,
                 enabled: true,

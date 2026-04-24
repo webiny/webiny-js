@@ -1,62 +1,15 @@
-import type { Table } from "@webiny/db-dynamodb/toolbox.js";
-import { Entity } from "@webiny/db-dynamodb/toolbox.js";
-import type { Attributes } from "~/types.js";
+import { createStandardEntity, type ITable } from "@webiny/db-dynamodb";
+import type { IGroupEntity } from "~/definitions/types.js";
+import type { CmsGroup } from "@webiny/api-headless-cms/types/index.js";
 
-export interface CreateGroupEntityParams {
-    table: Table<string, string, string>;
+interface Params {
+    table: ITable;
     entityName: string;
-    attributes: Attributes;
 }
-export const createGroupEntity = (params: CreateGroupEntityParams): Entity<any> => {
-    const { table, attributes, entityName } = params;
-    return new Entity({
-        name: entityName,
-        table,
-        attributes: {
-            PK: {
-                partitionKey: true
-            },
-            SK: {
-                sortKey: true
-            },
-            TYPE: {
-                type: "string"
-            },
-            webinyVersion: {
-                type: "string"
-            },
-            id: {
-                type: "string"
-            },
-            name: {
-                type: "string"
-            },
-            slug: {
-                type: "string"
-            },
-            locale: {
-                type: "string"
-            },
-            description: {
-                type: "string"
-            },
-            icon: {
-                type: "string"
-            },
-
-            createdBy: {
-                type: "map"
-            },
-            createdOn: {
-                type: "string"
-            },
-            savedOn: {
-                type: "string"
-            },
-            tenant: {
-                type: "string"
-            },
-            ...(attributes || {})
-        }
+export const createGroupEntity = (params: Params): IGroupEntity => {
+    const { table, entityName } = params;
+    return createStandardEntity<CmsGroup>({
+        table: table.table,
+        name: entityName
     });
 };

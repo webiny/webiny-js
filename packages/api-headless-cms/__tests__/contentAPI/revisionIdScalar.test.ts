@@ -1,49 +1,32 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { createContentModelGroup } from "~tests/contentAPI/mocks/contentModelGroup";
-import models from "~tests/contentAPI/mocks/contentModels";
-import type { CmsGroup, CmsModel } from "~/types";
 import { useArticleManageHandler } from "~tests/testHelpers/useArticleManageHandler";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
 describe("revision id scalar", () => {
-    const manageHandlerOpts = { path: "manage/en-US" };
+    const manageHandlerOpts = { path: "manage" };
 
-    const { createContentModelGroupMutation, createContentModelMutation, createArticle } =
-        useArticleManageHandler(manageHandlerOpts);
-
-    let group: CmsGroup;
+    const manager = useArticleManageHandler(manageHandlerOpts);
+    const { createArticle } = manager;
 
     beforeEach(async () => {
-        const [result] = await createContentModelGroupMutation({
-            data: createContentModelGroup()
-        });
-        group = result.data.createContentModelGroup.data;
-
-        const articleModel = models.find(m => m.modelId === "article") as CmsModel;
-
-        await createContentModelMutation({
-            data: {
-                name: articleModel.name,
-                modelId: articleModel.modelId,
-                singularApiName: articleModel.singularApiName,
-                pluralApiName: articleModel.pluralApiName,
-                fields: articleModel.fields,
-                description: "This is a description.",
-                icon: "fa/fas",
-                group: group.id
-            }
+        await setupGroupAndModels({
+            manager,
+            models: ["article"]
         });
     });
 
     it("should fail when sending malformed revision id into the ref field", async () => {
         const [result] = await createArticle({
             data: {
-                category: {
-                    modelId: "category",
-                    id: "abdefghijklmnopqrstuvwxyz"
+                values: {
+                    category: {
+                        modelId: "category",
+                        id: "abdefghijklmnopqrstuvwxyz"
+                    }
                 }
             }
         });
-        const message = `Variable "$data" got invalid value "abdefghijklmnopqrstuvwxyz" at "data.category.id"; Expected type "RevisionId". RevisionId value must be a valid Revision ID property! Example: "abcdef#0001"`;
+        const message = `Variable "$data" got invalid value "abdefghijklmnopqrstuvwxyz" at "data.values.category.id"; Expected type "RevisionId". RevisionId value must be a valid Revision ID property! Example: "abcdef#0001"`;
         expect(result).toMatchObject({
             errors: [
                 {
@@ -52,6 +35,6 @@ describe("revision id scalar", () => {
             ]
         });
         expect(result.errors).toHaveLength(1);
-        expect(result.errors[0].message).toEqual(message);
+        expect(result.errors![0].message).toEqual(message);
     });
 });

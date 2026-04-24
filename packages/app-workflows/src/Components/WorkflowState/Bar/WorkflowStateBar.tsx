@@ -17,6 +17,7 @@ import type { IWorkflow, IWorkflowState } from "~/types.js";
 
 interface IWorkflowStateBarPropsChildrenParams {
     workflow: IWorkflow;
+    stateBar: React.ReactElement;
     state?: IWorkflowState | null;
 }
 interface IWorkflowStateBarPropsChildren {
@@ -31,7 +32,7 @@ export interface IWorkflowStateBarProps {
      *
      * Also, this way we avoid using MobX in the consumers of this component.
      */
-    children?: IWorkflowStateBarPropsChildren | React.ReactElement | React.ReactElement[] | null;
+    children?: IWorkflowStateBarPropsChildren | null;
 }
 
 export const WorkflowStateBar = observer((props: IWorkflowStateBarProps) => {
@@ -43,6 +44,8 @@ export const WorkflowStateBar = observer((props: IWorkflowStateBarProps) => {
     if (!presenter.vm.workflow) {
         return null;
     }
+
+    const stateBar = <WorkflowStateBarComponent presenter={presenter} />;
 
     return (
         <>
@@ -58,10 +61,13 @@ export const WorkflowStateBar = observer((props: IWorkflowStateBarProps) => {
                 <WorkflowStateBarWorkflow />
                 <WorkflowStateBarError />
             </Plugins>
-            <WorkflowStateBarComponent presenter={presenter} />
             {typeof props.children === "function"
-                ? props.children({ state: presenter.vm.state, workflow: presenter.vm.workflow })
-                : props.children}
+                ? props.children({
+                      stateBar,
+                      state: presenter.vm.state,
+                      workflow: presenter.vm.workflow
+                  })
+                : stateBar}
         </>
     );
 });

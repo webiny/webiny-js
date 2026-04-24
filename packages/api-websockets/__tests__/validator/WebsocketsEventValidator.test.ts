@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { WebsocketsEventValidator } from "~/validator/WebsocketsEventValidator";
-import { WebsocketsEventRequestContextEventType } from "~/handler/types";
+import { WebsocketsEventValidator } from "~/validator/WebsocketsEventValidator.js";
+import { WebsocketsEventRequestContextEventType } from "~/handler/types.js";
 
 const connectedAt = new Date().getTime() / 1000;
 
@@ -20,7 +20,6 @@ describe("WebsocketsEventValidator", () => {
             body: JSON.stringify({
                 token: "token",
                 tenant: "tenant",
-                locale: "locale",
                 messageId: "messageId",
                 action: "action",
                 data: {}
@@ -39,7 +38,6 @@ describe("WebsocketsEventValidator", () => {
             body: {
                 token: "token",
                 tenant: "tenant",
-                locale: "locale",
                 messageId: "messageId",
                 action: "action",
                 data: {}
@@ -122,10 +120,9 @@ describe("WebsocketsEventValidator", () => {
                     body: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["body"]
                         },
-                        message: "Expected string, received null"
+                        message: "Invalid input: expected string, received null"
                     }
                 }
             });
@@ -156,7 +153,6 @@ describe("WebsocketsEventValidator", () => {
                     body: {
                         code: "custom",
                         data: {
-                            fatal: true,
                             path: ["body"]
                         },
                         message: expect.stringContaining("Invalid JSON: Unexpected token")
@@ -189,7 +185,6 @@ describe("WebsocketsEventValidator", () => {
                     body: {
                         code: "custom",
                         data: {
-                            fatal: true,
                             path: ["body"]
                         },
                         message: "There must be a body defined when having a message event."
@@ -216,7 +211,6 @@ describe("WebsocketsEventValidator", () => {
                 body: JSON.stringify({
                     token: "token",
                     tenant: "tenant",
-                    locale: "locale",
                     messageId: "messageId",
                     action: "action",
                     data: "not an object"
@@ -230,10 +224,9 @@ describe("WebsocketsEventValidator", () => {
                     data: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["data"]
                         },
-                        message: "Expected object, received string"
+                        message: "Invalid input: expected object, received string"
                     }
                 }
             });

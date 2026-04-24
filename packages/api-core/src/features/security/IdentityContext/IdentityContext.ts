@@ -1,14 +1,14 @@
 import { AsyncLocalStorage } from "async_hooks";
-import minimatch from "minimatch";
+import { minimatch } from "minimatch";
 import { createImplementation } from "@webiny/di";
 import { IdentityContext as Abstraction } from "./abstractions.js";
 import { Identity } from "./Identity.js";
 import { AnonymousIdentity } from "./AnonymousIdentity.js";
-import { AuthorizationContext } from "~/features/security/authorization/AuthorizationContext/index.js";
-import { filterOutCustomWbyAppsPermissions } from "~/features/security/utils/filterOutCustomWbyAppsPermissions.js";
+import { AuthorizationContext } from "../authorization/AuthorizationContext/index.js";
+import { filterOutCustomWbyAppsPermissions } from "../utils/filterOutCustomWbyAppsPermissions.js";
 import type { SecurityPermission } from "~/types/security.js";
-import type { AaclPermission } from "~/features/wcp/WcpContext/types.js";
-import { WcpContext } from "~/features/wcp/WcpContext/index.js";
+import type { AaclPermission } from "../../wcp/WcpContext/types.js";
+import { WcpContext } from "../../wcp/WcpContext/index.js";
 
 const identityStorage = new AsyncLocalStorage<Identity | undefined>();
 
@@ -103,7 +103,8 @@ class IdentityContextImpl implements Abstraction.Interface {
     }
 
     async listPermissions(): Promise<SecurityPermission[]> {
-        const permissions = await this.authorizationContext.loadPermissions();
+        const permissions = await this.authorizationContext.loadPermissions(this.getIdentity());
+        // TODO: extract this into a decorator
         return this.applyAaclLogic(permissions);
     }
 
@@ -122,12 +123,13 @@ class IdentityContextImpl implements Abstraction.Interface {
 
         if (aaclEnabled) {
             // Add AACL metadata permission
-            permissions.push({
-                name: "aacl",
-                teams: teamsEnabled
-            } as AaclPermission);
-
-            return permissions;
+            return [
+                ...permissions,
+                {
+                    name: "aacl",
+                    teams: teamsEnabled
+                } as AaclPermission
+            ];
         }
 
         // If AACL is not enabled, filter out custom Webiny apps permissions

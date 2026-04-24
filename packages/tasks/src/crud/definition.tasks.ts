@@ -1,24 +1,28 @@
 import type { Context, ITasksContextDefinitionObject } from "~/types.js";
-import { TaskDefinitionPlugin } from "~/task/index.js";
-
-const getTaskDefinitionPlugins = (context: Context) => {
-    return context.plugins.byType<TaskDefinitionPlugin>(TaskDefinitionPlugin.type);
-};
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { GetTaskDefinitionUseCase } from "~/features/GetTaskDefinition/index.js";
+import { ListTaskDefinitionsUseCase } from "~/features/ListTaskDefinitions/index.js";
 
 export const createDefinitionCrud = (context: Context): ITasksContextDefinitionObject => {
     return {
-        getDefinition: (id: string) => {
-            const plugins = getTaskDefinitionPlugins(context);
+        getDefinition: <
+            I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+            O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
+        >(
+            id: string
+        ) => {
+            const useCase = context.container.resolve(GetTaskDefinitionUseCase);
+            const result = useCase.execute<I, O>(id);
 
-            for (const plugin of plugins) {
-                if (plugin.getTask().id === id) {
-                    return plugin.getTask();
-                }
+            if (result.isOk()) {
+                return result.value;
             }
+
             return null;
         },
         listDefinitions: () => {
-            return getTaskDefinitionPlugins(context).map(plugin => plugin.getTask());
+            const useCase = context.container.resolve(ListTaskDefinitionsUseCase);
+            return useCase.execute();
         }
     };
 };

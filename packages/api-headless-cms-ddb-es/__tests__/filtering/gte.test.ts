@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types";
 import { createPluginsContainer, createQuery, Query } from "./mocks";
 import { CreateExecFilteringResponse } from "~/operations/entry/elasticsearch/filtering";
 import { createExecFiltering } from "./mocks/filtering";
@@ -18,7 +18,9 @@ describe("greater than or equal filter", () => {
 
     it("should add greater than or equal filter", async () => {
         const where: CmsEntryListWhere = {
-            age_gte: 10
+            values: {
+                age_gte: 10
+            }
         };
 
         execFiltering({

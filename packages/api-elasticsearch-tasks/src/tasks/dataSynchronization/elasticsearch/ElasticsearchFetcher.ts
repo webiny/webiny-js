@@ -1,14 +1,15 @@
-import type { Client } from "@webiny/api-elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import type {
     IElasticsearchFetcher,
     IElasticsearchFetcherFetchParams,
     IElasticsearchFetcherFetchResponse,
     IElasticsearchFetcherFetchResponseItem
 } from "./abstractions/ElasticsearchFetcher.js";
-import type {
-    ElasticsearchSearchResponse,
-    PrimitiveValue
-} from "@webiny/api-elasticsearch/types.js";
+import {
+    type OpenSearchSearchResponse,
+    type PrimitiveValue,
+    getTotalCount
+} from "@webiny/api-opensearch/types.js";
 import { shouldIgnoreEsResponseError } from "./shouldIgnoreEsResponseError.js";
 import { inspect } from "node:util";
 
@@ -27,7 +28,7 @@ export class ElasticsearchFetcher implements IElasticsearchFetcher {
         cursor,
         limit
     }: IElasticsearchFetcherFetchParams): Promise<IElasticsearchFetcherFetchResponse> {
-        let response: ElasticsearchSearchResponse<undefined>;
+        let response: OpenSearchSearchResponse;
         try {
             response = await this.client.search({
                 index,
@@ -74,7 +75,7 @@ export class ElasticsearchFetcher implements IElasticsearchFetcher {
             return {
                 done: true,
                 cursor: undefined,
-                totalCount: total.value,
+                totalCount: getTotalCount(total),
                 items: []
             };
         }
@@ -101,7 +102,7 @@ export class ElasticsearchFetcher implements IElasticsearchFetcher {
         }, []);
 
         return {
-            totalCount: total.value,
+            totalCount: getTotalCount(total),
             cursor: nextCursor,
             done: !nextCursor,
             items

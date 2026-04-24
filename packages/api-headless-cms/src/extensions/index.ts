@@ -1,5 +1,5 @@
-import { onEntryBeforeCreate } from "./entryHooks/index.js";
+import { OnEntryBeforeCreate } from "./entryHooks/index.js";
 
-export const OnEntryBeforeCreate = onEntryBeforeCreate.ReactComponent;
+export { OnEntryBeforeCreate };
 
-export const definitions = [onEntryBeforeCreate.definition];
+export const definitions = [OnEntryBeforeCreate.def];

@@ -1,27 +1,21 @@
 {
   "type": "module",
-  "devDependencies": {
-    "@eslint/js": "^9.35.0",
-    "@types/node": "^22.18.0",
-    "@types/react": "18.2.79",
-    "@types/react-dom": "18.2.25",
+  "dependencies": {
     "@webiny/cli": "latest",
-    "eslint": "^9.35.0",
-    "eslint-plugin-react": "^7.37.5",
-    "globals": "^16.3.0",
-    "prettier": "^3.6.2",
-    "typescript": "5.9.2",
-    "typescript-eslint": "^8.43.0",
+    "@webiny/cognito": "latest",
+    "@webiny/mcp": "latest",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "webiny": "latest"
   },
-  "scripts": {
-    "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
-    "link:fix": "yarn eslint --fix",
-    "format": "prettier \"**/**/*.{js,jsx,ts,tsx,json}\" --config .prettierrc.js",
-    "format:check": "yarn format --check",
-    "format:fix": "yarn format --write"
+  "devDependencies": {
+    "@types/node": "^24.12.2",
+    "@types/react": "18.3.28",
+    "@types/react-dom": "18.3.7",
+    "typescript": "6.0.3"
   },
+  "scripts": {},
   "engines": {
-    "node": "^22.0.0"
+    "node": "^24.0.0"
   }
 }

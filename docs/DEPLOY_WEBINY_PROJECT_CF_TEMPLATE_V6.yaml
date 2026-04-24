@@ -393,6 +393,8 @@ Resources:
               - s3:GetBucketPublicAccessBlock
               - s3:PutBucketPublicAccessBlock
               - s3:PutObject*
+              - s3:PutBucketOwnershipControls
+              - s3:GetBucketOwnershipControls
               - s3:GetObject*
               - s3:DeleteObject*
             Resource: arn:aws:s3:::wby-*
@@ -462,7 +464,7 @@ Resources:
 
             # Had to use "*", as per AWS docs:
             # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonec2.html#amazonec2-actions-as-permissions
-            Resource: *
+            Resource: "*"
             Action:
               - ec2:DescribeAddressesAttribute
 

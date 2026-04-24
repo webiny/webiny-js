@@ -1,13 +1,13 @@
-import type { SecurityPermission } from "@webiny/app-security/types.js";
+import type { Identity } from "@webiny/app-admin/domain/Identity.js";
 
-export interface Group {
+export interface Role {
     id: string;
     name: string;
     description: string;
     slug: string;
     system?: boolean;
     plugin: boolean | null;
-    permissions: SecurityPermission[];
+    permissions: Identity.Permission[];
     createdOn: string;
 }
 
@@ -23,9 +23,10 @@ export interface Team {
 
 export interface ApiKey {
     id: string;
+    slug: string;
     token: string;
     name: string;
     description: string;
-    permissions: SecurityPermission[];
+    permissions: Identity.Permission[];
     createdOn: string;
 }

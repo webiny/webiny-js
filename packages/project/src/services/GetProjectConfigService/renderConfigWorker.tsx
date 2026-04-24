@@ -2,10 +2,15 @@ import "tsx/esm";
 import { Properties, toObject } from "@webiny/react-properties";
 import debounce from "debounce";
 import React from "react";
-import Renderer from "react-test-renderer";
+import { createRoot } from "react-dom/client";
+import { JSDOM } from "jsdom";
 import { serializeError } from "serialize-error";
-import type { RenderConfigWorkerMessageDto, RenderConfigParamsDto } from "./renderConfig.js";
+import type { RenderConfigParamsDto, RenderConfigWorkerMessageDto } from "./renderConfig.js";
 import { ProjectModel } from "~/models/ProjectModel.js";
+import { toImportSpecifier } from "~/utils/index.js";
+import { EnvProvider } from "./EnvContext.js";
+import { WcpProjectLicenseProvider } from "./WcpProjectLicenseContext.js";
+import { ProductionEnvironmentsCollector } from "./ProductionEnvironmentsContext.js";
 
 const sendError = (err: Error) => {
     const message: RenderConfigWorkerMessageDto = {
@@ -14,7 +19,11 @@ const sendError = (err: Error) => {
         data: null
     };
 
-    process.send!(message);
+    if (process.send) {
+        process.send!(message);
+    } else {
+        console.error(message);
+    }
 };
 
 const sendSuccess = (data: Record<string, any> = {}) => {
@@ -24,7 +33,11 @@ const sendSuccess = (data: Record<string, any> = {}) => {
         data
     };
 
-    process.send!(message);
+    if (process.send) {
+        process.send!(message);
+    } else {
+        console.log(message);
+    }
 };
 
 process.on("uncaughtException", err => {
@@ -41,15 +54,33 @@ process.on("unhandledRejection", reason => {
 const { project: projectModelDto } = JSON.parse(process.argv[2]) as RenderConfigParamsDto;
 const project = ProjectModel.fromDto(projectModelDto);
 
-const { Extensions } = await import(project.paths.webinyConfigBaseFile.toString());
+const { Extensions } = await import(
+    toImportSpecifier(project.paths.webinyConfigBaseFile.toString())
+);
 
 const onChange = debounce((value: any) => {
     sendSuccess(toObject(value));
     process.exit(0);
 });
 
-Renderer.create(
-    <Properties onChange={onChange}>
-        <Extensions />
-    </Properties>
+const { window } = new JSDOM(`<div id="root"/>`);
+
+(global as any).window = window;
+
+(global as any).document = window.document;
+
+const root = window.document.getElementById("root")!;
+
+const reactRoot = createRoot(root);
+
+reactRoot.render(
+    <WcpProjectLicenseProvider>
+        <EnvProvider>
+            <ProductionEnvironmentsCollector>
+                <Properties onChange={onChange}>
+                    <Extensions />
+                </Properties>
+            </ProductionEnvironmentsCollector>
+        </EnvProvider>
+    </WcpProjectLicenseProvider>
 );

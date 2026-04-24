@@ -1,56 +1,49 @@
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import WebinyError from "@webiny/error";
-import type { CmsContext } from "~/types.js";
 import {
-    getElasticsearchIndexPrefix,
-    getLastAddedIndexPlugin,
-    isSharedElasticsearchIndex
-} from "@webiny/api-elasticsearch";
-import type { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types.js";
-import { CmsEntryElasticsearchIndexPlugin } from "~/plugins/index.js";
+    getOpenSearchIndexPrefix,
+    isSharedOpenSearchIndex as isSharedElasticsearchIndex
+} from "@webiny/api-opensearch";
+import type { OpenSearchIndexRequestBody } from "@webiny/api-opensearch/types.js";
+import type { CmsEntryOpenSearchIndex } from "~/features/CmsEntryOpenSearchIndex/index.js";
 
 interface ConfigurationsElasticsearch {
     index: string;
 }
 
 export interface CmsElasticsearchParams {
-    model: Pick<CmsModel, "tenant" | "locale" | "modelId">;
+    model: Pick<CmsModel, "tenant" | "modelId">;
 }
 
 export interface ConfigurationsIndexSettingsParams {
-    context: CmsContext;
-    model: Pick<CmsModel, "locale">;
+    indexConfigs: CmsEntryOpenSearchIndex.Interface[];
+    model: Pick<CmsModel, "tenant" | "modelId" | "group">;
 }
 
 export interface Configurations {
     es: (params: CmsElasticsearchParams) => ConfigurationsElasticsearch;
     indexSettings: (
         params: ConfigurationsIndexSettingsParams
-    ) => Partial<ElasticsearchIndexRequestBody>;
+    ) => Partial<OpenSearchIndexRequestBody>;
 }
 
 export const configurations: Configurations = {
     es({ model }) {
-        const { tenant, locale } = model;
+        const { tenant } = model;
 
         if (!tenant) {
             throw new WebinyError(
                 `Missing "tenant" parameter when trying to create Elasticsearch index name.`,
                 "TENANT_ERROR"
             );
-        } else if (!locale) {
-            throw new WebinyError(
-                `Missing "locale" parameter when trying to create Elasticsearch index name.`,
-                "LOCALE_ERROR"
-            );
         }
 
         const sharedIndex = isSharedElasticsearchIndex();
-        const index = [sharedIndex ? "root" : tenant, "headless-cms", locale, model.modelId]
+        const index = [sharedIndex ? "root" : tenant, "headless-cms", model.modelId]
             .join("-")
             .toLowerCase();
 
-        const prefix = getElasticsearchIndexPrefix();
+        const prefix = getOpenSearchIndexPrefix();
 
         if (!prefix) {
             return {
@@ -61,13 +54,11 @@ export const configurations: Configurations = {
             index: prefix + index
         };
     },
-    indexSettings: ({ context, model }) => {
-        const plugin = getLastAddedIndexPlugin<CmsEntryElasticsearchIndexPlugin>({
-            container: context.plugins,
-            type: CmsEntryElasticsearchIndexPlugin.type,
-            locale: model.locale
-        });
-
-        return plugin ? plugin.body : {};
+    indexSettings: ({ indexConfigs, model }) => {
+        const usable = indexConfigs.filter(c => c.canUse({ model }));
+        if (usable.length === 0) {
+            return {};
+        }
+        return usable[usable.length - 1].body;
     }
 };

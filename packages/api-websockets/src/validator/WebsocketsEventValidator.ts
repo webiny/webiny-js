@@ -9,7 +9,7 @@ import { createZodError } from "@webiny/utils";
 
 const validation = zod
     .object({
-        headers: zod.object({}).passthrough().optional(),
+        headers: zod.looseObject({}).optional(),
         requestContext: zod.object({
             connectionId: zod.string(),
             stage: zod.string(),
@@ -64,15 +64,13 @@ const validation = zod
     });
 
 const bodyValidation = zod
-    .object({
+    .looseObject({
         token: zod.string(),
         tenant: zod.string(),
-        locale: zod.string(),
         messageId: zod.string().nullish(),
         action: zod.string(),
-        data: zod.object({}).passthrough().nullish()
+        data: zod.looseObject({}).nullish()
     })
-    .passthrough()
     .optional();
 
 export class WebsocketsEventValidator implements IWebsocketsEventValidator {

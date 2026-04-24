@@ -1,0 +1,42 @@
+/**
+ * Agent adapter: Cursor
+ *
+ * MCP config : .cursor/mcp.json  (project-level)
+ * Hint file  : .cursor/rules/webiny.mdc
+ *
+ * Docs: https://docs.cursor.com/context/model-context-protocol
+ */
+
+import { join } from "path";
+import type { IUi } from "../ui.js";
+import type { AgentPreset } from "./types.js";
+import { writeMcpConfig, writeHintFile, webinyHintBlock, printDone } from "./shared.js";
+
+export const preset: AgentPreset = {
+    slug: "cursor",
+    displayName: "Cursor",
+    configFile: ".cursor/mcp.json",
+    hintFile: ".cursor/rules/*.mdc"
+};
+
+interface InitParams {
+    ui: IUi;
+    cwd: string;
+}
+
+export async function init({ ui, cwd }: InitParams): Promise<void> {
+    ui.info("Setting up for Cursor...");
+
+    writeMcpConfig({
+        ui,
+        configPath: join(cwd, ".cursor", "mcp.json")
+    });
+
+    writeHintFile({
+        ui,
+        hintPath: join(cwd, ".cursor", "rules", "webiny.mdc"),
+        content: webinyHintBlock({ heading: "# Webiny" })
+    });
+
+    printDone({ ui });
+}

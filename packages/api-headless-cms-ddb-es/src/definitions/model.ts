@@ -1,106 +1,16 @@
-import type { Table } from "@webiny/db-dynamodb/toolbox.js";
-import { Entity } from "@webiny/db-dynamodb/toolbox.js";
-import type { Attributes } from "~/types.js";
+import { createStandardEntity, type ITable } from "@webiny/db-dynamodb";
+import type { IModelEntity } from "~/definitions/types.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
-export interface CreateModelEntityParams {
-    table: Table<string, string, string>;
+interface Params {
+    table: ITable;
     entityName: string;
-    attributes: Attributes;
 }
 
-export const createModelEntity = (params: CreateModelEntityParams): Entity<any> => {
-    const { table, attributes, entityName } = params;
-    return new Entity({
-        name: entityName,
-        table,
-        attributes: {
-            PK: {
-                partitionKey: true
-            },
-            SK: {
-                sortKey: true
-            },
-            TYPE: {
-                type: "string",
-                required: true
-            },
-            webinyVersion: {
-                type: "string",
-                required: true
-            },
-            name: {
-                type: "string",
-                required: true
-            },
-            modelId: {
-                type: "string",
-                required: true
-            },
-            singularApiName: {
-                type: "string",
-                required: true
-            },
-            pluralApiName: {
-                type: "string",
-                required: true
-            },
-            locale: {
-                type: "string",
-                required: true
-            },
-            group: {
-                type: "map",
-                required: true
-            },
-            icon: {
-                type: "string"
-            },
-            description: {
-                type: "string"
-            },
-            createdOn: {
-                type: "string",
-                required: true
-            },
-            savedOn: {
-                type: "string",
-                required: true
-            },
-            createdBy: {
-                type: "map",
-                required: true
-            },
-            fields: {
-                type: "list",
-                required: true
-            },
-            layout: {
-                type: "list",
-                required: true
-            },
-            tags: {
-                type: "list",
-                required: false,
-                default: []
-            },
-            lockedFields: {
-                type: "list",
-                required: true
-            },
-            titleFieldId: {
-                type: "string"
-            },
-            descriptionFieldId: {
-                type: "string"
-            },
-            imageFieldId: {
-                type: "string"
-            },
-            tenant: {
-                type: "string",
-                required: true
-            },
-            ...(attributes || {})
-        }
+export const createModelEntity = (params: Params): IModelEntity => {
+    const { table, entityName } = params;
+    return createStandardEntity<CmsModel>({
+        table: table.table,
+        name: entityName
     });
 };

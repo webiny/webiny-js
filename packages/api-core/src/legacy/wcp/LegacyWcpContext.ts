@@ -24,6 +24,10 @@ export class LegacyWcpContext implements WcpContextObject {
         return this.getWcpContext().getProject();
     }
 
+    getProjectWithFeatureFlags(): WcpProject | null {
+        return this.getWcpContext().getProjectWithFeatureFlags();
+    }
+
     getProjectLicense(): ILicense {
         return this.getWcpContext().getProjectLicense();
     }
@@ -68,6 +72,22 @@ export class LegacyWcpContext implements WcpContextObject {
         return this.getWcpContext().canUseWorkflows();
     }
 
+    canUseHcmsFieldPermissions(): boolean {
+        return this.getWcpContext().canUseHcmsFieldPermissions();
+    }
+
+    canUseAiImageEnrichment(): boolean {
+        return this.getWcpContext().canUseAiImageEnrichment();
+    }
+
+    canUseAiPageGeneration(): boolean {
+        return this.getWcpContext().canUseAiPageGeneration();
+    }
+
+    canUseAiLexicalGeneration(): boolean {
+        return this.getWcpContext().canUseAiLexicalGeneration();
+    }
+
     ensureCanUseFeature(featureId: keyof typeof WCP_FEATURE_LABEL): void {
         this.getWcpContext().ensureCanUseFeature(featureId);
     }
@@ -86,5 +106,9 @@ export class LegacyWcpContext implements WcpContextObject {
 
     async decrementTenants(): Promise<void> {
         await this.getWcpContext().decrementTenants();
+    }
+
+    toDto(): DecryptedWcpProjectLicense | null {
+        return this.getWcpContext().toDto();
     }
 }

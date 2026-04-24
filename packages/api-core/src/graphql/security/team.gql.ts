@@ -16,7 +16,7 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             slug: String
             createdOn: DateTime
             description: String
-            groups: [SecurityGroup]
+            roles: [SecurityRole]
             system: Boolean!
             plugin: Boolean
         }
@@ -25,13 +25,13 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
             name: String!
             slug: String!
             description: String
-            groups: [RefInput!]!
+            roles: [RefInput!]!
         }
 
         input SecurityTeamUpdateInput {
             name: String
             description: String
-            groups: [RefInput!]
+            roles: [RefInput!]
         }
 
         type SecurityTeamResponse {
@@ -62,9 +62,9 @@ export default new GraphQLSchemaPlugin<ApiCoreContext>({
     `,
     resolvers: {
         SecurityTeam: {
-            groups: async (team: Team, __, context) => {
+            roles: async (team: Team, __, context) => {
                 try {
-                    return context.security.listGroups({ where: { id_in: team.groups } });
+                    return context.security.listRoles({ where: { id_in: team.roles } });
                 } catch (e) {
                     return new ErrorResponse(e);
                 }

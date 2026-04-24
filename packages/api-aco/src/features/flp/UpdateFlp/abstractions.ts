@@ -13,6 +13,7 @@ export interface IUpdateFlpUseCase {
     execute: (params: UpdateFlpParams) => Promise<void>;
 }
 
+/** Update a folder-level permission. */
 export const UpdateFlpUseCase = createAbstraction<IUpdateFlpUseCase>("UpdateFlpUseCase");
 
 export namespace UpdateFlpUseCase {

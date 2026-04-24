@@ -1,67 +1,46 @@
-import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters/index.js";
+import { registerExtension as registerDynamoDbExtension } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "./dynamoDb/index.js";
-import type { StorageOperationsFactory } from "~/types.js";
+import type { CmsContext, StorageOperationsFactory } from "~/types.js";
 import { ENTITIES } from "~/types.js";
-import { createTable } from "~/definitions/table.js";
-import { createSystemEntity } from "~/definitions/system.js";
 import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
-import { PluginsContainer } from "@webiny/plugins";
-import { createSystemStorageOperations } from "~/operations/system/index.js";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
 import { createModelsStorageOperations } from "~/operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
-
 import { createFilterCreatePlugins } from "~/operations/entry/filtering/plugins/index.js";
-import {
-    CmsEntryFieldFilterPathPlugin,
-    CmsEntryFieldFilterPlugin,
-    CmsEntryFieldSortingPlugin,
-    CmsFieldFilterValueTransformPlugin
-} from "~/plugins/index.js";
-import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin.js";
-import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
-import { CompressorPlugin } from "@webiny/api";
+import { createTable } from "~/definitions/table.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { createFeature } from "@webiny/feature/api/index.js";
+import { StorageOperationsFactory as StorageOperationsFactoryAbstraction } from "@webiny/api-headless-cms/exports/api/cms/storage.js";
+import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 export * from "./plugins/index.js";
 
-export const createStorageOperations: StorageOperationsFactory = params => {
-    const { attributes, table, documentClient, plugins: userPlugins } = params;
+const createDynamoDbStorageOperations: StorageOperationsFactory = params => {
+    const { table, documentClient, plugins, container } = params;
 
     const tableInstance = createTable({
-        table,
+        name: table,
         documentClient
     });
 
     const entities = {
-        system: createSystemEntity({
-            entityName: ENTITIES.SYSTEM,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.SYSTEM] : {}
-        }),
         groups: createGroupEntity({
             entityName: ENTITIES.GROUPS,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.GROUPS] : {}
+            table: tableInstance
         }),
         models: createModelEntity({
             entityName: ENTITIES.MODELS,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.MODELS] : {}
+            table: tableInstance
         }),
         entries: createEntryEntity({
             entityName: ENTITIES.ENTRIES,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.ENTRIES] : {}
+            table: tableInstance
         })
     };
 
-    const plugins = new PluginsContainer([
-        /**
-         * DynamoDB filter plugins for the where conditions.
-         */
-        dynamoDbValueFilters(),
+    plugins.register([
         /**
          * Field plugins for DynamoDB.
          */
@@ -69,57 +48,62 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         /**
          * Filter create plugins.
          */
-        createFilterCreatePlugins(),
-        /**
-         * User defined custom plugins.
-         */
-        ...(userPlugins || [])
+        createFilterCreatePlugins()
     ]);
 
     const entries = createEntriesStorageOperations({
         entity: entities.entries,
+        container,
         plugins
     });
 
     return {
         name: "dynamodb",
-        beforeInit: async context => {
-            const types: string[] = [
-                "cms-model-field-to-graphql",
-                CmsEntryFieldFilterPathPlugin.type,
-                CmsFieldFilterValueTransformPlugin.type,
-                CmsEntryFieldFilterPlugin.type,
-                CmsEntryFieldSortingPlugin.type,
-                ValueFilterPlugin.type,
-                StorageOperationsCmsModelPlugin.type,
-                StorageTransformPlugin.type,
-                CompressorPlugin.type
-            ];
-            /**
-             * Collect all required plugins from parent context.
-             */
-            for (const type of types) {
-                plugins.mergeByType(context.plugins, type);
-            }
-            /**
-             * Pass the plugins to the parent context.
-             */
-            context.plugins.register([dynamoDbPlugins()]);
-
+        beforeInit: async () => {
             entries.dataLoaders.clearAll();
         },
         getEntities: () => entities,
         getTable: () => tableInstance,
-        system: createSystemStorageOperations({
-            entity: entities.system
-        }),
         groups: createGroupsStorageOperations({
             entity: entities.groups,
-            plugins
+            container
         }),
         models: createModelsStorageOperations({
             entity: entities.models
         }),
         entries
     };
+};
+
+class DynamoDbStorageOperationsFactoryImpl
+    implements StorageOperationsFactoryAbstraction.Interface
+{
+    public async create(context: CmsContext) {
+        return createDynamoDbStorageOperations({
+            documentClient: context.db.driver.getClient() as DynamoDBDocument,
+            plugins: context.plugins,
+            container: context.container
+        });
+    }
+}
+
+const DynamoDbStorageOperationsFactory = StorageOperationsFactoryAbstraction.createImplementation({
+    implementation: DynamoDbStorageOperationsFactoryImpl,
+    dependencies: []
+});
+
+const storageOperationsFeature = createFeature({
+    name: "cms.storageOperations.openSearch",
+    register: container => {
+        container.register(DynamoDbStorageOperationsFactory).inSingletonScope();
+    }
+});
+
+export const registerDynamoDbStorageOperations = () => {
+    return [
+        registerDynamoDbExtension(),
+        createRegisterExtensionPlugin(context => {
+            return storageOperationsFeature.register(context.container);
+        })
+    ];
 };

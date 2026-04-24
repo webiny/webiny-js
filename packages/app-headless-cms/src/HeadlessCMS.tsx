@@ -1,7 +1,7 @@
 import React, { Fragment, memo } from "react";
 import type { ApolloClient } from "apollo-client";
 import { plugins } from "@webiny/plugins";
-import { Provider } from "@webiny/app-admin";
+import { Provider, RegisterFeature } from "@webiny/app-admin";
 import { ApolloCacheObjectIdPlugin } from "@webiny/app";
 import { CmsProvider } from "~/admin/contexts/Cms/index.js";
 import apiInformation from "~/admin/plugins/apiInformation/index.js";
@@ -10,6 +10,8 @@ import allPlugins from "~/allPlugins.js";
 import { LexicalEditorCmsPlugin } from "~/admin/components/LexicalCmsEditor/LexicalEditorCmsPlugin.js";
 import { SingletonContentEntryModule } from "~/admin/views/contentEntries/SingletonContentEntryModule.js";
 import { RoutesConfig } from "./admin/RoutesConfig.js";
+import { CmsSecurityPermission } from "~/admin/plugins/permissionRenderer/index.js";
+import { CmsPermissionsFeature } from "~/features/permissions/feature.js";
 
 interface HeadlessCMSProvider {
     children: React.ReactNode;
@@ -64,11 +66,13 @@ const HeadlessCMSExtension = ({ createApolloClient }: HeadlessCMSProps) => {
 
     return (
         <Fragment>
+            <RegisterFeature feature={CmsPermissionsFeature} />
             <RoutesConfig />
             <ContentEntriesModule />
             <SingletonContentEntryModule />
             <Provider hoc={createHeadlessCMSProvider(createApolloClient)} />
             <LexicalEditorCmsPlugin />
+            <CmsSecurityPermission />
         </Fragment>
     );
 };

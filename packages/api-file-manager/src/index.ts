@@ -1,29 +1,42 @@
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { ContextPlugin } from "@webiny/api";
-import type { FileManagerContext } from "~/types.js";
-import { FileManagerContextSetup } from "./FileManagerContextSetup.js";
-import type { AssetDeliveryParams } from "./delivery/setupAssetDelivery.js";
 import { setupAssetDelivery } from "./delivery/setupAssetDelivery.js";
 import { createGraphQLSchemaPlugin } from "./graphql/index.js";
-import { applyThreatScanning } from "./enterprise/applyThreatScanning.js";
-import type { FileManagerConfig } from "./createFileManager/types.js";
 import { FileManagerFeature } from "~/features/FileManagerFeature.js";
+import { FmPermissionsFeature } from "~/features/permissions/feature.js";
+import { AiImageEnrichmentFeature } from "~/features/ai/AiImageEnrichmentFeature.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { FileModel as FileModelAbstraction } from "~/domain/file/abstractions.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
+import { FileModel, FILE_MODEL_ID } from "~/domain/file/file.model.js";
 
 export * from "./modelModifier/CmsModelModifier.js";
-export * from "./plugins/index.js";
 export * from "./delivery/index.js";
 
-export const createFileManagerContext = ({
-    storageOperations
-}: Pick<FileManagerConfig, "storageOperations">) => {
-    const plugin = new ContextPlugin<FileManagerContext>(async context => {
-        const fmContext = new FileManagerContextSetup(context);
-        context.fileManager = await fmContext.setupContext(storageOperations);
+export const createFileManagerContext = () => {
+    const plugin = new ContextPlugin<ApiCoreContext>(async context => {
+        const tenantContext = context.container.resolve(TenantContext);
+        const getModel = context.container.resolve(GetModelUseCase);
 
-        if (context.wcp.canUseFileManagerThreatDetection()) {
-            context.fileManager = applyThreatScanning(context.fileManager);
+        if (!tenantContext.getTenant()) {
+            return;
         }
 
+        context.container.register(FileModel);
+
+        await context.security.withoutAuthorization(async () => {
+            const fileModel = await getModel.execute(FILE_MODEL_ID);
+            context.container.registerInstance(FileModelAbstraction, fileModel.value);
+        });
+
+        FmPermissionsFeature.register(context.container);
         FileManagerFeature.register(context.container);
+
+        const wcpContext = context.container.resolve(WcpContext);
+        if (wcpContext.canUseAiImageEnrichment()) {
+            AiImageEnrichmentFeature.register(context.container);
+        }
     });
 
     plugin.name = "file-manager.createContext";
@@ -35,6 +48,6 @@ export const createFileManagerGraphQL = () => {
     return createGraphQLSchemaPlugin();
 };
 
-export const createAssetDelivery = (config: AssetDeliveryParams) => {
-    return setupAssetDelivery(config);
+export const createAssetDelivery = () => {
+    return setupAssetDelivery();
 };

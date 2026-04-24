@@ -5,6 +5,7 @@ import type { Context } from "~/types";
 import { useHandler } from "~tests/helpers/useHandler";
 import { NotFoundError } from "@webiny/handler-graphql";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
+import { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
 
 describe("validateImportFromUrl", () => {
     const { createContext } = useHandler();
@@ -12,9 +13,7 @@ describe("validateImportFromUrl", () => {
     const getModel = (modelId: string) => {
         return context.cms.getModel(modelId);
     };
-    const getModelToAstConverter = () => {
-        return context.cms.getModelToAstConverter();
-    };
+
     beforeEach(async () => {
         context = await createContext();
     });
@@ -22,7 +21,7 @@ describe("validateImportFromUrl", () => {
     it("should fail on invalid data", async () => {
         expect.assertions(1);
         const useCase = new ValidateImportFromUrlUseCase({
-            getModelToAstConverter,
+            modelToAstConverter: context.container.resolve(ModelToAstConverter),
             getModel
         });
 
@@ -40,7 +39,7 @@ describe("validateImportFromUrl", () => {
     it("should fail on no files found", async () => {
         expect.assertions(1);
         const useCase = new ValidateImportFromUrlUseCase({
-            getModelToAstConverter,
+            modelToAstConverter: context.container.resolve(ModelToAstConverter),
             getModel
         });
 
@@ -59,7 +58,7 @@ describe("validateImportFromUrl", () => {
     it("should fail on invalid file", async () => {
         expect.assertions(2);
         const useCase = new ValidateImportFromUrlUseCase({
-            getModelToAstConverter,
+            modelToAstConverter: context.container.resolve(ModelToAstConverter),
             getModel
         });
         try {
@@ -82,20 +81,20 @@ describe("validateImportFromUrl", () => {
             expect(ex.data).toEqual({
                 invalidFields: {
                     "files.0.get": {
-                        code: "invalid_string",
+                        code: "invalid_format",
                         data: {
                             fatal: undefined,
                             path: ["files", 0, "get"]
                         },
-                        message: "Invalid url"
+                        message: "Invalid URL"
                     },
                     "files.0.head": {
-                        code: "invalid_string",
+                        code: "invalid_format",
                         data: {
                             fatal: undefined,
                             path: ["files", 0, "head"]
                         },
-                        message: "Invalid url"
+                        message: "Invalid URL"
                     }
                 }
             });
@@ -105,7 +104,7 @@ describe("validateImportFromUrl", () => {
     it("should fail if no entries file", async () => {
         expect.assertions(1);
         const useCase = new ValidateImportFromUrlUseCase({
-            getModelToAstConverter,
+            modelToAstConverter: context.container.resolve(ModelToAstConverter),
             getModel
         });
 
@@ -132,7 +131,7 @@ describe("validateImportFromUrl", () => {
     it("should fail if model not found", async () => {
         expect.assertions(1);
         const useCase = new ValidateImportFromUrlUseCase({
-            getModelToAstConverter,
+            modelToAstConverter: context.container.resolve(ModelToAstConverter),
             getModel: () => {
                 throw new NotFoundError("Model not found.");
             }
@@ -161,7 +160,7 @@ describe("validateImportFromUrl", () => {
     it("should fail if model getter fails for some reason", async () => {
         expect.assertions(1);
         const useCase = new ValidateImportFromUrlUseCase({
-            getModelToAstConverter,
+            modelToAstConverter: context.container.resolve(ModelToAstConverter),
             getModel: () => {
                 throw new Error("Unspecified.");
             }
@@ -190,7 +189,7 @@ describe("validateImportFromUrl", () => {
     it("should fail to match models - database model missing fields", async () => {
         expect.assertions(1);
         const useCase = new ValidateImportFromUrlUseCase({
-            getModelToAstConverter,
+            modelToAstConverter: context.container.resolve(ModelToAstConverter),
             getModel: async () => {
                 return {
                     ...categoryModel,
@@ -222,7 +221,7 @@ describe("validateImportFromUrl", () => {
     it("should fail to match models - exported model missing fields", async () => {
         expect.assertions(1);
         const useCase = new ValidateImportFromUrlUseCase({
-            getModelToAstConverter,
+            modelToAstConverter: context.container.resolve(ModelToAstConverter),
             getModel: async () => {
                 return {
                     ...categoryModel
@@ -258,7 +257,7 @@ describe("validateImportFromUrl", () => {
     it("should validate files properly", async () => {
         expect.assertions(1);
         const useCase = new ValidateImportFromUrlUseCase({
-            getModelToAstConverter,
+            modelToAstConverter: context.container.resolve(ModelToAstConverter),
             getModel
         });
 

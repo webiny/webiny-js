@@ -1,17 +1,17 @@
 import { useMemo } from "react";
-import { useSecurity } from "@webiny/app-security";
+import { useIdentity } from "@webiny/app-admin";
 
 export const usePermission = () => {
-    const { identity, getPermission } = useSecurity();
+    const { identity } = useIdentity();
 
     const canForceUnlock = useMemo(() => {
-        const hasFullAccess = !!getPermission("recordLocking.*");
+        const hasFullAccess = !!identity.getPermission("recordLocking.*");
         if (hasFullAccess) {
             return true;
         }
-        const permission = getPermission("recordLocking");
-        return permission?.canForceUnlock === "yes";
-    }, [identity?.permissions]);
+        const permission = identity.getPermission("recordLocking");
+        return permission?.canForceUnlock === true;
+    }, [identity]);
 
     return {
         canForceUnlock

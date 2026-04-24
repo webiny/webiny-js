@@ -28,7 +28,7 @@ const quoteTagNames = ["blockquote", "quoteblock"];
  * */
 export const BaseTypographyActionDropDown = makeDecoratable(
     "BaseTypographyActionDropDown",
-    (): JSX.Element | null => {
+    (): React.JSX.Element | null => {
         useEffect(() => {
             console.log("Default BaseTypographyActionDropDown, please add your own component");
         }, []);
@@ -37,10 +37,12 @@ export const BaseTypographyActionDropDown = makeDecoratable(
 );
 
 interface TypographyActionDropdownProps {
-    element: JSX.Element;
+    element: React.JSX.Element;
 }
 
-const TypographyActionDropDown = ({ element }: TypographyActionDropdownProps): JSX.Element => {
+const TypographyActionDropDown = ({
+    element
+}: TypographyActionDropdownProps): React.JSX.Element => {
     return <Compose component={BaseTypographyActionDropDown} with={() => () => element} />;
 };
 
@@ -50,7 +52,7 @@ export type TypographyAction = React.ComponentType<unknown> & {
 
 export const TypographyAction: TypographyAction = () => {
     const [typography, setTypography] = useState<ActiveTypography>();
-    const { editor, themeEmotionMap } = useRichTextEditor();
+    const { editor, theme } = useRichTextEditor();
     const { element } = useCurrentElement();
     const isParagraphSelected = $isParagraphNode(element);
     const isHeadingSelected = $isHeadingNode(element);
@@ -63,6 +65,7 @@ export const TypographyAction: TypographyAction = () => {
             editor.dispatchCommand<LexicalCommand<TypographyPayload>>(ADD_TYPOGRAPHY_COMMAND, {
                 value
             });
+            return;
         }
 
         if (value.tag === "ol") {
@@ -72,6 +75,7 @@ export const TypographyAction: TypographyAction = () => {
                     themeStyleId: value.id
                 }
             );
+            return;
         }
 
         if (value.tag === "ul") {
@@ -81,6 +85,7 @@ export const TypographyAction: TypographyAction = () => {
                     themeStyleId: value.id
                 }
             );
+            return;
         }
 
         if (quoteTagNames.includes(value.tag)) {
@@ -91,7 +96,7 @@ export const TypographyAction: TypographyAction = () => {
     }, []);
 
     useEffect(() => {
-        if (!element || !themeEmotionMap) {
+        if (!element) {
             return;
         }
 
@@ -101,28 +106,28 @@ export const TypographyAction: TypographyAction = () => {
                 return;
             }
 
-            const style = themeEmotionMap[styleId];
+            const style = theme.getTypographyById(styleId);
             if (style) {
                 setTypography({
                     id: style.id,
-                    name: style.name
+                    label: style.label
                 });
             }
             return;
         }
 
         // list and quote element
-        if (themeEmotionMap && $isListNode(element)) {
+        if ($isListNode(element)) {
             const styleId = element.getStyleId();
             if (!styleId) {
                 return;
             }
 
-            const style = themeEmotionMap[styleId];
+            const style = theme.getTypographyById(styleId);
             if (style) {
                 setTypography({
                     id: style.id,
-                    name: style.name
+                    label: style.label
                 });
             }
         }

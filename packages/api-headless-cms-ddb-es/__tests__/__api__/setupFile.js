@@ -1,26 +1,26 @@
+import { EntryBeforeCreateEventHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { ContextPlugin } from "@webiny/api";
-import {
-    createStorageOperations,
-    createCmsEntryElasticsearchBodyModifierPlugin
-} from "../../dist/index";
-import { configurations } from "../../dist/configurations";
-import { base as baseIndexConfigurationPlugin } from "../../dist/elasticsearch/indices/base";
+import { registerCmsOpenSearchStorageOperations } from "../../src/index";
+import { CmsEntryOpenSearchBodyModifier } from "../../src/features/CmsEntryOpenSearchBodyModifier/index.js";
+import { createRegisterExtensionPlugin } from "@webiny/handler";
+import { configurations } from "../../src/configurations";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
+import {
+    getOpenSearchIndexPrefix as getOpenSearchIndexPrefix,
+    getOpenSearchOperators
+} from "@webiny/api-opensearch";
 
-if (typeof createStorageOperations !== "function") {
+if (typeof registerCmsOpenSearchStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
 
-import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
-
-const prefix = getElasticsearchIndexPrefix();
+const prefix = getOpenSearchIndexPrefix();
 if (!prefix.includes("api-")) {
-    process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${prefix}api-headless-cms-env-`;
+    process.env.OPENSEARCH_INDEX_PREFIX = `${prefix}api-headless-cms-env-`;
 }
 
 setStorageOps("cms", () => {
@@ -44,8 +44,9 @@ setStorageOps("cms", () => {
      * When creating, updating, creating from, publishing, unpublishing and deleting we need to refresh index.
      */
     const createOrRefreshIndexSubscription = new ContextPlugin(async context => {
-        context.waitFor(["cms"], async () => {
-            context.cms.onEntryBeforeCreate.subscribe(async ({ model }) => {
+        context.container.registerFactory(EntryBeforeCreateEventHandler, () => ({
+            async handle(event) {
+                const { model } = event.payload;
                 const index = createIndexName(model);
                 try {
                     const response = await elasticsearchClient.indices.exists({
@@ -61,9 +62,11 @@ setStorageOps("cms", () => {
                         }
                     });
                 } catch {}
-            });
-        });
+            }
+        }));
     });
+    createOrRefreshIndexSubscription.name =
+        "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";
 
     const initializedDbPlugins = dbPlugins({
         table: process.env.DB_TABLE,
@@ -76,31 +79,35 @@ setStorageOps("cms", () => {
         "headlessCmsDdbEs.context.createOrRefreshIndexSubscription";
 
     return {
-        storageOperations: createStorageOperations({
-            documentClient,
-            elasticsearch: elasticsearchClient,
-            plugins: [
-                ...initializedDbPlugins,
-                getElasticsearchOperators(),
-                createCmsEntryElasticsearchBodyModifierPlugin({
-                    modifyBody: ({ body }) => {
-                        if (!body.sort.customSorter) {
-                            return;
-                        }
-                        const order = body.sort.customSorter.order;
-                        delete body.sort.customSorter;
-
-                        body.sort = {
-                            createdOn: {
-                                order,
-                                unmapped_type: "date"
+        storageOperations: {},
+        plugins: [
+            registerCmsOpenSearchStorageOperations(),
+            ...plugins,
+            ...initializedDbPlugins,
+            createOrRefreshIndexSubscription,
+            getOpenSearchOperators(),
+            createRegisterExtensionPlugin(({ container }) => {
+                const FruitBodyModifier = CmsEntryOpenSearchBodyModifier.createImplementation({
+                    implementation: class {
+                        modelId = "fruit";
+                        modifyBody({ body }) {
+                            if (!body.sort.customSorter) {
+                                return;
                             }
-                        };
+                            const order = body.sort.customSorter.order;
+                            delete body.sort.customSorter;
+                            body.sort = {
+                                createdOn: {
+                                    order,
+                                    unmapped_type: "date"
+                                }
+                            };
+                        }
                     },
-                    model: "fruit"
-                })
-            ]
-        }),
-        plugins: [...plugins, ...initializedDbPlugins, createOrRefreshIndexSubscription]
+                    dependencies: []
+                });
+                container.register(FruitBodyModifier);
+            })
+        ]
     };
 });

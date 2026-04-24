@@ -60,9 +60,9 @@ export interface IOnErrorCb {
     (error: IRecordLockingError): void;
 }
 
-class RecordLocking<T extends IPossiblyRecordLockingRecord = IPossiblyRecordLockingRecord>
-    implements IRecordLocking<T>
-{
+class RecordLocking<
+    T extends IPossiblyRecordLockingRecord = IPossiblyRecordLockingRecord
+> implements IRecordLocking<T> {
     private currentRecordType?: string;
     private currentFolderId?: string;
     private currentRecordsCacheKey?: string;
@@ -100,6 +100,7 @@ class RecordLocking<T extends IPossiblyRecordLockingRecord = IPossiblyRecordLock
             const { id: entryId } = parseIdentifier(record.id);
             return {
                 ...record,
+                $type: "RECORD",
                 $lockingType: type,
                 $locked: record.$locked,
                 $selectable: record.$locked ? false : record.$selectable,

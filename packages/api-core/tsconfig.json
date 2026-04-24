@@ -5,11 +5,11 @@
     { "path": "../api" },
     { "path": "../error" },
     { "path": "../feature" },
+    { "path": "../feature-flags" },
     { "path": "../handler" },
     { "path": "../handler-db" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" },
-    { "path": "../project" },
     { "path": "../utils" },
     { "path": "../wcp" },
     { "path": "../db-dynamodb" },
@@ -30,6 +30,8 @@
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
+      "@webiny/feature-flags/*": ["../feature-flags/src/*"],
+      "@webiny/feature-flags": ["../feature-flags/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
@@ -38,8 +40,6 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
-      "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
@@ -48,7 +48,6 @@
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

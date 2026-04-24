@@ -1,7 +1,9 @@
 {
-  "extends": "./tsconfig.build.json",
+  "extends": "webiny/configs/tsconfig.json",
   "compilerOptions": {
-    "noEmit": true,
-    "emitDeclarationOnly": false
-  }
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["webiny-env.d.ts", "webiny.config.tsx", "extensions"]
 }

@@ -1,4 +1,3 @@
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import type { IAuditLog } from "~/storage/types.js";
 import type { IStorageListDefaultParams } from "~/storage/abstractions/Storage.js";
 import { BaseAccessPattern } from "./BaseAccessPattern.js";
@@ -7,9 +6,10 @@ import type {
     IAccessPatternHandles,
     IAccessPatternListResult
 } from "~/storage/abstractions/AccessPattern.js";
+import type { AuditLogsEntity } from "~/storage/entity.js";
 
 export interface IDefaultAccessPatternParams {
-    entity: Entity;
+    entity: AuditLogsEntity;
 }
 
 interface ICreatePartitionKeyParams {

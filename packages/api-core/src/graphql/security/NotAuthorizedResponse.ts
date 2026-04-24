@@ -5,7 +5,9 @@ interface NotAuthorizedResponseArgsType {
     code: string | null;
     data: any | null;
 }
-class NotAuthorizedResponse extends ErrorResponse {
+
+/** GraphQL not-authorized response helper. */
+export class NotAuthorizedResponse extends ErrorResponse {
     constructor({ message, code, data }: Partial<NotAuthorizedResponseArgsType> = {}) {
         super({
             message: message || "Not authorized!",

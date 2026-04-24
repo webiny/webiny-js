@@ -41,7 +41,7 @@ export interface SingleImageUploadProps extends FormComponentProps {
      * It is marked as `optional` because this component is often used in conjunction with <Bind>, which injects the
      * `onChange` into its child element. In that case, that prop is not passed by the developer.
      */
-    onChange?: (value: FileManagerFileItem | null) => void;
+    onChange?: (value: Pick<FileManagerFileItem, "id" | "src"> | null) => void;
 
     /**
      * Optional custom props, passed to the preview image.
@@ -58,12 +58,6 @@ export interface SingleImageUploadProps extends FormComponentProps {
      * @deprecated Provide a custom `renderImagePreview` instead.
      */
     round?: boolean;
-
-    /**
-     * Define the properties that are returned on file(s) selection.
-     * @deprecated Pick the desired file attributes in the `onChange` callback, or `beforeChange` on the `<Bind>` element.
-     */
-    onChangePick?: string[];
 
     /**
      * Render the image preview.

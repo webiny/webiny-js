@@ -1,7 +1,5 @@
 import "tsx";
 import { defineConfig } from "vitest/config";
-import tsconfigPaths from "vite-tsconfig-paths";
-
 import fg from "fast-glob";
 import path from "path";
 import chalk from "chalk";
@@ -67,19 +65,29 @@ const getPackageTestSetup = async (pkg: string) => {
     return await importConfig(setupPath);
 };
 
-export default async () => {
-    // Sanitize ElasticsearchPrefix
-    const esIndexPrefix = sanitizeEsIndexName(process.env.ELASTIC_SEARCH_INDEX_PREFIX);
+export default defineConfig(async () => {
+    // Sanitize Opensearch
+    const osIndexPrefix = sanitizeEsIndexName(process.env.OPENSEARCH_INDEX_PREFIX);
 
-    if (esIndexPrefix) {
-        process.env.ELASTIC_SEARCH_INDEX_PREFIX = esIndexPrefix;
-        process.stdout.write(`\nES index prefix: ${blueBright(esIndexPrefix)}\n\n`);
+    if (osIndexPrefix) {
+        process.env.OPENSEARCH_INDEX_PREFIX = osIndexPrefix;
+        process.stdout.write(`\nOS index prefix: ${blueBright(osIndexPrefix)}\n\n`);
     }
 
     // Loads environment variables defined in the project root ".env" file.
-    const { parsed } = dotenv.config({ path: path.join(import.meta.dirname, "..", ".env") });
+    const { parsed } = dotenv.config({
+        path: path.join(import.meta.dirname, "..", ".env"),
+        quiet: true
+    });
+
     if (parsed) {
-        ["WCP_PROJECT_ID", "WCP_PROJECT_ENVIRONMENT", "WCP_PROJECT_LICENSE"].forEach(key => {
+        [
+            "WEBINY_PROJECT_ID",
+            "WEBINY_PROJECT_API_KEY",
+            "WCP_PROJECT_ID",
+            "WCP_PROJECT_ENVIRONMENT",
+            "WCP_PROJECT_LICENSE"
+        ].forEach(key => {
             delete parsed[key];
             delete process.env[key];
         });
@@ -109,20 +117,14 @@ export default async () => {
 
     project.rootDir = process.cwd();
 
-    return defineConfig({
-        plugins: [
-            tsconfigPaths({
-                // This flag ensures tsconfig templates don't throw errors (e.g. project-aws/_templates).
-                // Ideally, we would want to list all valid packages ONLY, and disable tsconfig auto-discovery.
-                ignoreConfigErrors: true
-            })
-        ],
+    return {
         resolve: {
             alias: {
                 "graphql/language/index.js": "graphql/language/index.js",
                 "graphql/language/ast.js": "graphql/language/ast.js",
                 graphql: "graphql/index.js"
-            }
+            },
+            tsconfigPaths: true
         },
         test: {
             fileParallelism: process.env.CI === "true",
@@ -135,5 +137,5 @@ export default async () => {
             ],
             tsconfig: `${project.dir}/tsconfig.json`
         }
-    });
-};
+    };
+});

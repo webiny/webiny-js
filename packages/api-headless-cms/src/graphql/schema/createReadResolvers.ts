@@ -1,12 +1,13 @@
-import type { CmsFieldTypePlugins, CmsModel } from "~/types/index.js";
+import type { CmsModel } from "~/types/index.js";
 import { resolveGet } from "./resolvers/read/resolveGet.js";
 import { resolveList } from "./resolvers/read/resolveList.js";
 import { createFieldResolversFactory } from "./createFieldResolvers.js";
+import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface CreateReadResolversParams {
     models: CmsModel[];
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 export interface CreateReadResolvers {
@@ -14,12 +15,12 @@ export interface CreateReadResolvers {
     (params: CreateReadResolversParams): any;
 }
 
-export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldTypePlugins }) => {
+export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldRegistry }) => {
     const createFieldResolvers = createFieldResolversFactory({
         endpointType: "read",
         models,
         model,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const fieldResolvers = createFieldResolvers({
@@ -28,15 +29,19 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
         isRoot: true
     });
 
+    const key = model.singularApiName as keyof typeof fieldResolvers;
+    // @ts-expect-error
+    if (!fieldResolvers[key].modelId) {
+        // @ts-expect-error
+        fieldResolvers[key].modelId = () => {
+            return model.modelId;
+        };
+    }
+
     return {
         Query: {
-            [`get${model.singularApiName}`]: resolveGet({ model, fieldTypePlugins }),
-            [`list${model.pluralApiName}`]: resolveList({ model, fieldTypePlugins })
-        },
-        [model.singularApiName]: {
-            modelId: () => {
-                return model.modelId;
-            }
+            [`get${model.singularApiName}`]: resolveGet({ model, fieldRegistry }),
+            [`list${model.pluralApiName}`]: resolveList({ model, fieldRegistry })
         },
         ...fieldResolvers
     };

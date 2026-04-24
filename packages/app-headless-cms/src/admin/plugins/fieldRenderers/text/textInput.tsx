@@ -4,6 +4,7 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import { DelayedOnChange } from "@webiny/ui/DelayedOnChange/index.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { Input } from "@webiny/admin-ui";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -15,13 +16,12 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Text Input`,
         description: t`Renders a simple input with its type set to "text".`,
         canUse({ field }) {
-            return (
-                field.type === "text" &&
-                !field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
-            );
+            return field.type === "text" && !field.list && !get(field, "predefinedValues.enabled");
         },
-        render({ field, getBind }) {
+        render({ getBind }) {
+            const { field } = useModelField();
+            const rules = useFieldEffectiveRules(field);
+            const disabled = !rules.canEdit || rules.disabled;
             const Bind = getBind();
 
             return (
@@ -34,9 +34,12 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 onBlur={bind.validate}
                             >
                                 <Input
+                                    disabled={disabled}
                                     label={field.label}
-                                    placeholder={field.placeholderText}
-                                    description={field.helpText}
+                                    placeholder={field.placeholder}
+                                    description={field.description}
+                                    hint={field.help}
+                                    note={field.note}
                                     data-testid={`fr.input.text.${field.label}`}
                                     validation={bind.validation}
                                 />

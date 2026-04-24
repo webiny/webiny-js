@@ -1,15 +1,15 @@
 import { describe, it, expect, vi } from "vitest";
 import React from "react";
-import prettier from "prettier";
+import { format } from "oxfmt";
 import { render } from "@testing-library/react";
 import { Properties, toObject } from "~/index";
-import { getLastCall } from "~tests/utils";
+import { getLastCall, flush } from "~tests/utils";
 import type { Operation } from "./components";
 import { Query, Field, Variable, InlineFragment } from "./components";
 import { generateQuery } from "./generateQuery";
 
 const prettyGql = async (query: string) => {
-    return await prettier.format(query.trim(), { parser: "graphql" });
+    return (await format("query.graphql", query.trim())).code;
 };
 
 const ListPagesQuery = () => {
@@ -60,12 +60,13 @@ const ModifyListPagesQuery = () => {
     );
 };
 
-const renderElement = (element: JSX.Element): { operations: Operation[] } => {
+const renderElement = async (element: React.JSX.Element): Promise<{ operations: Operation[] }> => {
     const onChange = vi.fn();
 
     const view = <Properties onChange={onChange}>{element}</Properties>;
 
     render(view);
+    await flush();
 
     const properties = getLastCall(onChange);
     return toObject(properties);
@@ -73,7 +74,7 @@ const renderElement = (element: JSX.Element): { operations: Operation[] } => {
 
 describe("GQL Query Builder", () => {
     it("should generate a query definition", async () => {
-        const data = renderElement(
+        const data = await renderElement(
             <>
                 <ListPagesQuery />
                 <ModifyListPagesQuery />
@@ -197,7 +198,7 @@ describe("GQL Query Builder", () => {
     });
 
     it("should generate a GraphQL query string", async () => {
-        const { operations } = renderElement(
+        const { operations } = await renderElement(
             <>
                 <ListPagesQuery />
                 <ModifyListPagesQuery />

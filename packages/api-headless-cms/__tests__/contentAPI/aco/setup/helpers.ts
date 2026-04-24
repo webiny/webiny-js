@@ -1,10 +1,7 @@
-import { ContextPlugin } from "@webiny/api";
-import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
-import type { CmsContext } from "~/types";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export interface PermissionsArg {
     name: string;
-    locales?: string[];
     rwd?: string;
     pw?: string;
     own?: boolean;
@@ -49,10 +46,6 @@ export const createPermissions = (permissions?: PermissionsArg[]): PermissionsAr
         },
         {
             name: "cms.endpoint.preview"
-        },
-        {
-            name: "content.i18n",
-            locales: ["en-US", "de-DE"]
         }
     ];
 };
@@ -62,29 +55,4 @@ export const createIdentity = (identity?: IdentityData) => {
         return getSecurityIdentity();
     }
     return identity;
-};
-
-export const createDummyLocales = () => {
-    return new ContextPlugin<CmsContext>(async context => {
-        const { i18n, security } = context;
-
-        await security.authenticate("");
-
-        await security.withoutAuthorization(async () => {
-            const [items] = await i18n.locales.listLocales({
-                where: {}
-            });
-            if (items.length > 0) {
-                return;
-            }
-            await i18n.locales.createLocale({
-                code: "en-US",
-                default: true
-            });
-            await i18n.locales.createLocale({
-                code: "de-DE",
-                default: true
-            });
-        });
-    });
 };

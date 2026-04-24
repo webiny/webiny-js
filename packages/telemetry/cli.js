@@ -2,7 +2,7 @@ import { globalConfig } from "@webiny/global-config";
 import { isCI } from "ci-info";
 import { WTS } from "wts-client/node.js";
 import baseSendEvent from "./sendEvent.js";
-import readJson from "load-json-file";
+import { loadJsonFileSync } from "load-json-file";
 import path from "path";
 
 export const sendEvent = async ({ event, user, version, properties }) => {
@@ -21,7 +21,7 @@ export const sendEvent = async ({ event, user, version, properties }) => {
     }
 
     const packageJsonPath = path.join(import.meta.dirname, "package.json");
-    const packageJson = await readJson(packageJsonPath);
+    const packageJson = loadJsonFileSync(packageJsonPath);
 
     return baseSendEvent({
         event,
@@ -38,8 +38,8 @@ export const sendEvent = async ({ event, user, version, properties }) => {
 };
 
 const getWcpOrgProjectId = () => {
-    // In CLI, WCP project ID is stored in the `WCP_PROJECT_ID` environment variable.
-    const id = process.env.WCP_PROJECT_ID;
+    // In CLI, project ID is stored in the `WEBINY_PROJECT_ID` or `WCP_PROJECT_ID` environment variable.
+    const id = process.env.WEBINY_PROJECT_ID || process.env.WCP_PROJECT_ID;
     if (typeof id === "string") {
         return id.split("/");
     }

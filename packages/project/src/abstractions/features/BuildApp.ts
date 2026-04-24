@@ -1,8 +1,9 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import { type IBaseAppParams } from "~/abstractions/types.js";
+import { type AppName } from "~/abstractions/types.js";
 import { type IPackagesBuilder } from "~/abstractions/models/index.js";
 
-export interface IBuildAppParams extends IBaseAppParams {
+export interface IBuildAppParams {
+    app: AppName;
     deploymentChecks?: boolean;
 }
 

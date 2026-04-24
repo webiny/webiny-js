@@ -19,7 +19,7 @@ export const defaultParagraphValue = JSON.stringify({
                 format: "",
                 indent: 0,
                 tag: "p",
-                type: "paragraph-element",
+                type: "wby-paragraph",
                 version: 1
             }
         ],
@@ -54,7 +54,7 @@ export const defaultHeadingValue = {
                 styles: [],
                 format: "",
                 indent: 0,
-                type: "heading-element",
+                type: "wby-heading",
                 version: 1,
                 tag: "h1"
             }
@@ -68,9 +68,6 @@ export const defaultHeadingValue = {
 };
 
 export const expectedHeadingRenderedValue = "Heading";
-
-// Simulate the header component with default content like in Page builder
-export const notCorrectValue = "some default text that is not correct value for lexical";
 
 export const LexicalJsonCmsDataInput = JSON.parse(`{
     "root": {
@@ -90,7 +87,7 @@ export const LexicalJsonCmsDataInput = JSON.parse(`{
                 "direction": "ltr",
                 "format": "",
                 "indent": 0,
-                "type": "heading-element",
+                "type": "wby-heading",
                 "version": 1,
                 "tag": "h1",
                 "styles": [
@@ -105,7 +102,7 @@ export const LexicalJsonCmsDataInput = JSON.parse(`{
                 "direction": "ltr",
                 "format": "",
                 "indent": 0,
-                "type": "paragraph-element",
+                "type": "wby-paragraph",
                 "version": 1,
                 "styles": [
                     {
@@ -129,7 +126,7 @@ export const LexicalJsonCmsDataInput = JSON.parse(`{
                 "direction": "ltr",
                 "format": "",
                 "indent": 0,
-                "type": "paragraph-element",
+                "type": "wby-paragraph",
                 "version": 1,
                 "styles": [
                     {
@@ -143,7 +140,7 @@ export const LexicalJsonCmsDataInput = JSON.parse(`{
                 "direction": "ltr",
                 "format": "",
                 "indent": 0,
-                "type": "paragraph-element",
+                "type": "wby-paragraph",
                 "version": 1,
                 "styles": [
                     {
@@ -191,7 +188,7 @@ export const LexicalJsonCmsDataInput = JSON.parse(`{
                 "direction": "ltr",
                 "format": "",
                 "indent": 0,
-                "type": "paragraph-element",
+                "type": "wby-paragraph",
                 "version": 1,
                 "styles": [
                     {
@@ -217,7 +214,7 @@ export const LexicalJsonCmsDataInput = JSON.parse(`{
                         "direction": "ltr",
                         "format": "",
                         "indent": 0,
-                        "type": "webiny-listitem",
+                        "type": "wby-list-item",
                         "version": 1,
                         "value": 1
                     },
@@ -236,7 +233,7 @@ export const LexicalJsonCmsDataInput = JSON.parse(`{
                         "direction": "ltr",
                         "format": "",
                         "indent": 0,
-                        "type": "webiny-listitem",
+                        "type": "wby-list-item",
                         "version": 1,
                         "value": 2
                     },
@@ -255,7 +252,7 @@ export const LexicalJsonCmsDataInput = JSON.parse(`{
                         "direction": "ltr",
                         "format": "",
                         "indent": 0,
-                        "type": "webiny-listitem",
+                        "type": "wby-list-item",
                         "version": 1,
                         "value": 3
                     }
@@ -263,7 +260,7 @@ export const LexicalJsonCmsDataInput = JSON.parse(`{
                 "direction": "ltr",
                 "format": "",
                 "indent": 0,
-                "type": "webiny-list",
+                "type": "wby-list",
                 "version": 1,
                 "themeStyleId": "list",
                 "listType": "bullet",
@@ -275,7 +272,7 @@ export const LexicalJsonCmsDataInput = JSON.parse(`{
                 "direction": null,
                 "format": "",
                 "indent": 0,
-                "type": "paragraph-element",
+                "type": "wby-paragraph",
                 "version": 1,
                 "styles": [
                     {
@@ -289,7 +286,7 @@ export const LexicalJsonCmsDataInput = JSON.parse(`{
                 "direction": "ltr",
                 "format": "",
                 "indent": 0,
-                "type": "paragraph-element",
+                "type": "wby-paragraph",
                 "version": 1,
                 "styles": [
                     {

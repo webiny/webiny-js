@@ -1,16 +1,10 @@
-import type { IUpdatePageUseCase } from "./IUpdatePageUseCase.js";
-import { type UpdatePageParams } from "./IUpdatePageUseCase.js";
-import type { IUpdatePageRepository } from "./IUpdatePageRepository.js";
-import { Page } from "~/domain/Page/index.js";
+import { UpdatePageUseCase as UseCaseAbstraction, UpdatePageRepository } from "./abstractions.js";
+import { Page } from "~/domain/Page/Page.js";
 
-export class UpdatePageUseCase implements IUpdatePageUseCase {
-    private repository: IUpdatePageRepository;
+class UpdatePageUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: UpdatePageRepository.Interface) {}
 
-    constructor(repository: IUpdatePageRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: UpdatePageParams) {
+    async execute(params: UseCaseAbstraction.Params) {
         await this.repository.execute(
             Page.create({
                 id: params.id,
@@ -23,3 +17,8 @@ export class UpdatePageUseCase implements IUpdatePageUseCase {
         );
     }
 }
+
+export const UpdatePageUseCase = UseCaseAbstraction.createImplementation({
+    implementation: UpdatePageUseCaseImpl,
+    dependencies: [UpdatePageRepository]
+});

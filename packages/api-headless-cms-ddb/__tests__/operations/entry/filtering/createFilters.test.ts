@@ -6,14 +6,17 @@ import { createModel } from "../../helpers/createModel";
 import { createFields } from "~/operations/entry/filtering/createFields";
 import { Field } from "~/operations/entry/filtering/types";
 import { createPluginsContainer } from "../../helpers/pluginsContainer";
+import { createTestContainer } from "../../helpers/createTestContainer";
 
 describe("create filters from where conditions", () => {
     let plugins: PluginsContainer;
     let model: CmsModel;
     let fields: Record<string, Field>;
+    let container: ReturnType<typeof createTestContainer>;
 
     beforeEach(() => {
         plugins = createPluginsContainer();
+        container = createTestContainer();
         model = createModel();
         fields = createFields({
             plugins,
@@ -21,20 +24,93 @@ describe("create filters from where conditions", () => {
         });
     });
 
+    it("it should create simple filter by system field", () => {
+        const result = createExpressions({
+            plugins,
+            container,
+            fields,
+            where: {
+                id: "someId"
+            }
+        });
+        const expected: Expression = {
+            condition: "AND",
+            expressions: [],
+            filters: [
+                {
+                    compareValue: "someId",
+                    field: expect.objectContaining({
+                        fieldId: "id"
+                    }),
+                    filter: expect.objectContaining({
+                        operation: "eq"
+                    }),
+                    negate: false,
+                    fieldPathId: "id",
+                    path: "id",
+                    transformValue: expect.any(Function)
+                }
+            ]
+        };
+        expect(result).toEqual(expected);
+    });
+
+    it("should create simple filter by content field", () => {
+        const result = createExpressions({
+            plugins,
+            container,
+            fields,
+            where: {
+                values: {
+                    title: "someTitle"
+                }
+            }
+        });
+        const expected: Expression = {
+            condition: "AND",
+            expressions: [],
+            filters: [
+                {
+                    compareValue: "someTitle",
+                    field: expect.objectContaining({
+                        fieldId: "title",
+                        parents: [
+                            {
+                                fieldId: "values",
+                                list: false
+                            }
+                        ]
+                    }),
+                    filter: expect.objectContaining({
+                        operation: "eq"
+                    }),
+                    negate: false,
+                    fieldPathId: "values.title",
+                    path: "values.title",
+                    transformValue: expect.any(Function)
+                }
+            ]
+        };
+        expect(result).toEqual(expected);
+    });
+
     it("should create simple, non-nested, filters", async () => {
         const result = createExpressions({
             plugins,
+            container,
             fields,
             where: {
                 id_gte: 500,
-                title_not_contains: "webiny",
-                priority_in: [2],
                 createdBy: "123#admin",
-                parent: {
-                    id_in: ["parentIdNumber"]
-                },
-                authors: {
-                    entryId_in: ["authorId1", "authorId2"]
+                values: {
+                    title_not_contains: "webiny",
+                    priority_in: [2],
+                    parent: {
+                        id_in: ["parentIdNumber"]
+                    },
+                    authors: {
+                        entryId_in: ["authorId1", "authorId2"]
+                    }
                 }
             }
         });
@@ -48,12 +124,8 @@ describe("create filters from where conditions", () => {
                     field: expect.objectContaining({
                         fieldId: "id"
                     }),
-                    plugin: expect.objectContaining({
-                        _params: {
-                            matches: expect.any(Function),
-                            operation: "gte"
-                        },
-                        name: "dynamodb.value.filter.gte"
+                    filter: expect.objectContaining({
+                        operation: "gte"
                     }),
                     negate: false,
                     fieldPathId: "id",
@@ -61,19 +133,28 @@ describe("create filters from where conditions", () => {
                     transformValue: expect.any(Function)
                 },
                 {
+                    compareValue: "123#admin",
+                    field: expect.objectContaining({
+                        fieldId: "createdBy"
+                    }),
+                    filter: expect.objectContaining({
+                        operation: "eq"
+                    }),
+                    negate: false,
+                    fieldPathId: "createdBy",
+                    path: "createdBy.id",
+                    transformValue: expect.any(Function)
+                },
+                {
                     compareValue: "webiny",
                     field: expect.objectContaining({
                         fieldId: "title"
                     }),
-                    plugin: expect.objectContaining({
-                        _params: {
-                            matches: expect.any(Function),
-                            operation: "contains"
-                        },
-                        name: "dynamodb.value.filter.contains"
+                    filter: expect.objectContaining({
+                        operation: "contains"
                     }),
                     negate: true,
-                    fieldPathId: "title",
+                    fieldPathId: "values.title",
                     path: "values.title",
                     transformValue: expect.any(Function)
                 },
@@ -82,49 +163,25 @@ describe("create filters from where conditions", () => {
                     field: expect.objectContaining({
                         fieldId: "priority"
                     }),
-                    plugin: expect.objectContaining({
-                        _params: {
-                            matches: expect.any(Function),
-                            operation: "in"
-                        },
-                        name: "dynamodb.value.filter.in"
+                    filter: expect.objectContaining({
+                        operation: "in"
                     }),
                     negate: false,
-                    fieldPathId: "priority",
+                    fieldPathId: "values.priority",
                     path: "values.priority",
                     transformValue: expect.any(Function)
                 },
-                {
-                    compareValue: "123#admin",
-                    field: expect.objectContaining({
-                        fieldId: "createdBy"
-                    }),
-                    plugin: expect.objectContaining({
-                        _params: {
-                            matches: expect.any(Function),
-                            operation: "eq"
-                        },
-                        name: "dynamodb.value.filter.eq"
-                    }),
-                    negate: false,
-                    fieldPathId: "createdBy",
-                    path: "createdBy.id",
-                    transformValue: expect.any(Function)
-                },
+
                 {
                     compareValue: ["parentIdNumber"],
                     field: expect.objectContaining({
                         fieldId: "parent"
                     }),
-                    plugin: expect.objectContaining({
-                        _params: {
-                            matches: expect.any(Function),
-                            operation: "in"
-                        },
-                        name: "dynamodb.value.filter.in"
+                    filter: expect.objectContaining({
+                        operation: "in"
                     }),
                     negate: false,
-                    fieldPathId: "parent",
+                    fieldPathId: "values.parent",
                     path: "values.parent.id",
                     transformValue: expect.any(Function)
                 },
@@ -133,15 +190,11 @@ describe("create filters from where conditions", () => {
                     field: expect.objectContaining({
                         fieldId: "authors"
                     }),
-                    plugin: expect.objectContaining({
-                        _params: {
-                            matches: expect.any(Function),
-                            operation: "in"
-                        },
-                        name: "dynamodb.value.filter.in"
+                    filter: expect.objectContaining({
+                        operation: "in"
                     }),
                     negate: false,
-                    fieldPathId: "authors",
+                    fieldPathId: "values.authors",
                     path: "values.authors.entryId",
                     transformValue: expect.any(Function)
                 }
@@ -154,11 +207,14 @@ describe("create filters from where conditions", () => {
     it("should create complex nested filters", async () => {
         const result = createExpressions({
             plugins,
+            container,
             fields,
             where: {
-                options: {
-                    keys_in: ["key#1", "key#2", "key#3"],
-                    optionId_gte: 250
+                values: {
+                    options: {
+                        keys_in: ["key#1", "key#2", "key#3"],
+                        optionId_gte: 250
+                    }
                 }
             }
         });
@@ -172,15 +228,11 @@ describe("create filters from where conditions", () => {
                     field: expect.objectContaining({
                         fieldId: "keys"
                     }),
-                    plugin: expect.objectContaining({
-                        _params: {
-                            matches: expect.any(Function),
-                            operation: "in"
-                        },
-                        name: "dynamodb.value.filter.in"
+                    filter: expect.objectContaining({
+                        operation: "in"
                     }),
                     negate: false,
-                    fieldPathId: "options.keys",
+                    fieldPathId: "values.options.keys",
                     path: "values.options.keys",
                     transformValue: expect.any(Function)
                 },
@@ -189,15 +241,11 @@ describe("create filters from where conditions", () => {
                     field: expect.objectContaining({
                         fieldId: "optionId"
                     }),
-                    plugin: expect.objectContaining({
-                        _params: {
-                            matches: expect.any(Function),
-                            operation: "gte"
-                        },
-                        name: "dynamodb.value.filter.gte"
+                    filter: expect.objectContaining({
+                        operation: "gte"
                     }),
                     negate: false,
-                    fieldPathId: "options.optionId",
+                    fieldPathId: "values.options.optionId",
                     path: "values.options.optionId",
                     transformValue: expect.any(Function)
                 }

@@ -1,0 +1,81 @@
+import { beforeEach, describe, expect, it } from "vitest";
+import { createModel } from "../mocks/model.js";
+import { createModelField } from "../mocks/field.js";
+import { getConverters, type IConvertersResponse } from "../__helpers/converters.js";
+
+const plainValue = {
+    content: {
+        _templateId: "searchableJsonTemplate",
+        searchableItems: [
+            { name: "Item 1", tags: ["featured", "new"] },
+            { name: "Item 2", tags: ["sale"] },
+            { name: "Item 3", tags: ["popular", "trending"] }
+        ]
+    }
+};
+const convertedValue = {
+    "dynamicZone@contentId": {
+        _templateId: "searchableJsonTemplate",
+        "searchable-json@searchableItemsId": [
+            { name: "Item 1", tags: ["featured", "new"] },
+            { name: "Item 2", tags: ["sale"] },
+            { name: "Item 3", tags: ["popular", "trending"] }
+        ]
+    }
+};
+
+const model = createModel({
+    fields: [
+        createModelField({
+            fieldId: "content",
+            type: "dynamicZone",
+            list: false,
+            settings: {
+                templates: [
+                    {
+                        id: "searchableJsonTemplate",
+                        name: "Searchable JSON Template",
+                        gqlTypeName: "SearchableJsonTemplate",
+                        icon: undefined,
+                        description: "",
+                        fields: [
+                            createModelField({
+                                fieldId: "searchableItems",
+                                type: "searchable-json",
+                                list: true
+                            })
+                        ],
+                        layout: [],
+                        validation: []
+                    }
+                ]
+            }
+        })
+    ]
+});
+
+describe("dynamicZone storage converter - single dynamic zone with multiple searchable-json template", () => {
+    let converters: IConvertersResponse;
+
+    beforeEach(async () => {
+        converters = await getConverters(model);
+    });
+
+    it("should convert single dynamic zone with multiple searchable-json template to and from storage", async () => {
+        const { convertFromStorage, convertToStorage } = converters;
+
+        const storageResult = convertToStorage({
+            fields: model.fields,
+            values: plainValue
+        });
+
+        expect(storageResult).toEqual(convertedValue);
+
+        const fromStorageResult = convertFromStorage({
+            fields: model.fields,
+            values: storageResult
+        });
+
+        expect(fromStorageResult).toEqual(plainValue);
+    });
+});

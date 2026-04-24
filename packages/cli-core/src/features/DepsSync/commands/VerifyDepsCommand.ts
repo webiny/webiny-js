@@ -1,11 +1,12 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
-import loadJsonFile from "load-json-file";
+import { CliCommandFactory, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { loadJsonFileSync } from "load-json-file";
 import { getDuplicatesFilePath, getReferencesFilePath } from "../paths.js";
 import fs from "fs";
 import { createDependencyTree } from "../createDependencyTree.js";
+import type { IDependencyCollection } from "~/features/DepsSync/types.js";
 
-export class VerifyDepsCommand implements CliCommand.Interface<unknown> {
+export class VerifyDepsCommand implements CliCommandFactory.Interface<unknown> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface
@@ -25,7 +26,7 @@ export class VerifyDepsCommand implements CliCommand.Interface<unknown> {
 
                 const tree = createDependencyTree(project);
 
-                const references = {
+                const references: IDependencyCollection = {
                     dependencies: tree.dependencies,
                     devDependencies: tree.devDependencies,
                     peerDependencies: tree.peerDependencies,
@@ -36,8 +37,27 @@ export class VerifyDepsCommand implements CliCommand.Interface<unknown> {
                 ui.info("Checking references file...");
 
                 if (fs.existsSync(referencesFile)) {
-                    const json = loadJsonFile.sync(referencesFile);
+                    const json = loadJsonFileSync<IDependencyCollection>(referencesFile)!;
                     if (JSON.stringify(references) !== JSON.stringify(json)) {
+                        for (const type in references) {
+                            const refDependencies = references[type as keyof typeof references];
+                            const fileDependencies = json[type as keyof typeof json];
+                            for (const dep in refDependencies) {
+                                const refDep = refDependencies[dep];
+                                const fileDep = fileDependencies[dep];
+                                if (!fileDep) {
+                                    console.log("Missing dependency:", refDep.name, "in", type);
+                                    continue;
+                                }
+                                if (JSON.stringify(refDep) !== JSON.stringify(fileDep)) {
+                                    console.log("Mismatch in dependency:", refDep.name, "in", type);
+                                    console.log({
+                                        refDep: JSON.stringify(refDep),
+                                        fileDep: JSON.stringify(fileDep)
+                                    });
+                                }
+                            }
+                        }
                         throw new Error(
                             "References are not in sync. Please run `yarn webiny sync-dependencies` command."
                         );
@@ -51,7 +71,7 @@ export class VerifyDepsCommand implements CliCommand.Interface<unknown> {
                 ui.info("Checking duplicates file...");
 
                 if (fs.existsSync(duplicatesFile)) {
-                    const json = loadJsonFile.sync(duplicatesFile);
+                    const json = loadJsonFileSync(duplicatesFile);
                     if (JSON.stringify(tree.duplicates) !== JSON.stringify(json)) {
                         throw new Error(
                             "Duplicates are not in sync. Please run `yarn webiny sync-dependencies` command."
@@ -74,7 +94,7 @@ export class VerifyDepsCommand implements CliCommand.Interface<unknown> {
 }
 
 export const verifyDepsCommand = createImplementation({
-    abstraction: CliCommand,
+    abstraction: CliCommandFactory,
     implementation: VerifyDepsCommand,
     dependencies: [GetProjectSdkService, UiService]
 });

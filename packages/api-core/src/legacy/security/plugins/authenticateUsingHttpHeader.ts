@@ -7,14 +7,14 @@ export interface GetHeader {
     (context: ApiCoreContext): string | null | undefined;
 }
 
-const defaultGetHeader: GetHeader = context => {
+const getHeader: GetHeader = context => {
     const request = context.container.resolve(Request);
     const header = request.headers["authorization"];
 
     return header ? header.split(" ").pop() : null;
 };
 
-export const authenticateUsingHttpHeader = (getHeader: GetHeader = defaultGetHeader) => {
+export const authenticateUsingHttpHeader = () => {
     return [
         createBeforeHandlerPlugin<ApiCoreContext>(async context => {
             const token = getHeader(context);

@@ -1,9 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 
-/**
- * Logger Service Interface
- */
-export interface ILoggerService {
+export interface ILogger {
     // Basic logging levels
     trace(objOrMsg: object | string, ...args: any[]): void;
     debug(objOrMsg: object | string, ...args: any[]): void;
@@ -16,9 +13,9 @@ export interface ILoggerService {
     log(objOrMsg: object | string, ...args: any[]): void;
 }
 
-export const LoggerService = createAbstraction<ILoggerService>("LoggerService");
+/** Structured logging with multiple log levels. */
+export const Logger = createAbstraction<ILogger>("Logger");
 
-export namespace LoggerService {
-    export type Interface = ILoggerService;
+export namespace Logger {
+    export type Interface = ILogger;
 }
-

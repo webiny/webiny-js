@@ -1,10 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { pageModel } from "../../contentAPI/mocks/pageWithDynamicZonesModel";
-import { CmsModel, CmsModelDynamicZoneField } from "~/types";
-import { createDynamicZoneStorageTransform } from "~/storage/dynamicZone";
-import { createStorageTransform } from "~/storage/index";
-import { getStoragePluginFactory } from "~/utils/entryStorage";
-import { PluginsContainer } from "@webiny/plugins";
+import type { CmsModel, CmsModelDynamicZoneField } from "~/types";
+import { Container } from "@webiny/di";
+import { CompressionFeature } from "@webiny/utils/features/compression/feature.js";
+import { StorageFeature } from "~/features/storage/feature.js";
+import { StorageTransformRegistry } from "~/features/storage/abstractions/StorageTransformRegistry.js";
+
+const container = new Container();
+CompressionFeature.register(container);
+StorageFeature.register(container);
+const registry = container.resolve(StorageTransformRegistry);
+const dzTransform = registry.get("dynamicZone")!;
 
 const field = pageModel.fields.find(f => f.id === "peeeyhtc") as CmsModelDynamicZoneField;
 
@@ -148,7 +154,10 @@ const expectedInitialValue = [
 ];
 const expectedToStorageValue = [
     {
-        text: "Simple Text #1",
+        text: {
+            compression: "gzip",
+            value: expect.any(String)
+        },
         _templateId: "81qiz2v453wx9uque0gox"
     },
     {
@@ -218,39 +227,34 @@ const expectedToStorageValue = [
 ];
 
 describe("dynamic zone storage transform", () => {
-    const plugins = new PluginsContainer(createStorageTransform());
-    const plugin = createDynamicZoneStorageTransform();
-    const getStoragePlugin = getStoragePluginFactory({
-        plugins
-    });
+    const getStorageTransform = (fieldType: string) => {
+        return registry.get(fieldType) || registry.get("*")!;
+    };
 
     it("should properly transform data to storage", async () => {
-        const result = await plugin.toStorage({
+        const result = await dzTransform.toStorage({
             field,
             value: initialValue,
-            getStoragePlugin,
-            model: pageModel as CmsModel,
-            plugins
+            getStorageTransform,
+            model: pageModel as CmsModel
         });
 
         expect(result).toEqual(expectedToStorageValue);
     });
 
     it("should transform data from storage", async () => {
-        const input = await plugin.toStorage({
+        const input = await dzTransform.toStorage({
             field,
             value: initialValue,
-            getStoragePlugin,
-            model: pageModel as CmsModel,
-            plugins
+            getStorageTransform,
+            model: pageModel as CmsModel
         });
 
-        const result = await plugin.fromStorage({
+        const result = await dzTransform.fromStorage({
             field,
             value: input,
-            getStoragePlugin,
-            model: pageModel as CmsModel,
-            plugins
+            getStorageTransform,
+            model: pageModel as CmsModel
         });
         expect(result).toEqual(expectedInitialValue);
     });

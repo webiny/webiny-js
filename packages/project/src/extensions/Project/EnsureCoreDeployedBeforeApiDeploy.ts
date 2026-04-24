@@ -1,18 +1,26 @@
-import { ApiBeforeDeploy, GetAppStackOutput } from "~/abstractions/index.js";
+import {
+    ApiBeforeDeploy,
+    GetAppStackOutput,
+    ProjectSdkParamsService
+} from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 class EnsureCoreDeployedBeforeApiDeployImpl implements ApiBeforeDeploy.Interface {
-    constructor(private getAppStackOutput: GetAppStackOutput.Interface) {}
+    constructor(
+        private getAppStackOutput: GetAppStackOutput.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
+    ) {}
 
-    async execute(params: ApiBeforeDeploy.Params) {
-        const output = await this.getAppStackOutput.execute({ ...params, app: "core" });
+    async execute() {
+        const output = await this.getAppStackOutput.execute("core");
 
         const coreDeployed = output && Object.keys(output).length > 0;
         if (coreDeployed) {
             return;
         }
 
-        const { variant, env } = params;
+        const sdkParams = this.projectSdkParamsService.get();
+        const { variant, env } = sdkParams;
 
         let variantCmd = "";
         if (variant) {
@@ -32,5 +40,5 @@ class EnsureCoreDeployedBeforeApiDeployImpl implements ApiBeforeDeploy.Interface
 
 export const EnsureCoreDeployedBeforeApiDeploy = ApiBeforeDeploy.createImplementation({
     implementation: EnsureCoreDeployedBeforeApiDeployImpl,
-    dependencies: [GetAppStackOutput]
+    dependencies: [GetAppStackOutput, ProjectSdkParamsService]
 });

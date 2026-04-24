@@ -7,8 +7,8 @@ import { Icon, Loader } from "@webiny/admin-ui";
 import { useModels, usePermission } from "@webiny/app-headless-cms/admin/hooks/index.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { createAppName } from "~/utils/appName.js";
+import { normalizeIcon } from "@webiny/app-headless-cms/utils/normalizeIcon.js";
 
 const {
     Admin: { WorkflowsEditor },
@@ -29,10 +29,10 @@ export const CmsWorkflowsEditorMenu = () => {
         <HasWorkflowsEditorPermission>
             <Menu
                 name={"headlessCMS.contentModels.workflows"}
-                pinnable={true}
                 parent={"headlessCMS"}
                 element={
                     <Menu.Link
+                        pinnable={true}
                         text={"Workflows"}
                         to={router.getLink(Routes.ContentModels.Workflows)}
                     />
@@ -50,14 +50,33 @@ const ModelIcon = ({ model }: IModelIconProps) => {
     if (!model.icon) {
         return null;
     }
+
+    const icon = normalizeIcon(model.icon);
+    if (!icon) {
+        return null;
+    }
+
     return (
         <Icon
-            icon={<FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />}
+            icon={<FontAwesomeIcon icon={icon} />}
             label={model.name}
             size={"sm"}
             className={"text-neutral-strong"}
         />
     );
+};
+
+const isAllowed = (model: Pick<CmsModel, "modelId" | "tags">) => {
+    // Exclude models that have the "$publishing:false" tag
+    if (model.tags.includes("$publishing:false")) {
+        return false;
+    }
+    // Exclude single entry models
+    else if (model.tags.includes("singleEntry")) {
+        return false;
+    }
+
+    return true;
 };
 
 export const CmsWorkflowsEditorView = () => {
@@ -68,7 +87,12 @@ export const CmsWorkflowsEditorView = () => {
 
     const apps = useMemo<IWorkflowApplication[]>(() => {
         return models
-            .filter(model => canEdit(model, "cms.contentModel"))
+            .filter(model => {
+                if (isAllowed(model) === false) {
+                    return false;
+                }
+                return canEdit(model, "cms.contentModel");
+            })
             .map(model => {
                 return {
                     id: createAppName(model),

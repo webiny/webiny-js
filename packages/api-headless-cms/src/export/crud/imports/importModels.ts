@@ -19,7 +19,7 @@ export const importModels = async (params: Params) => {
          * There is a possibility that group does not exist.
          */
         const group = groups.find(group => {
-            return group.id === model.model.group;
+            return group.slug === model.model.group;
         });
         if (!group) {
             results.push({
@@ -77,7 +77,7 @@ export const importModels = async (params: Params) => {
                     action: model.action,
                     model: {
                         ...result,
-                        group: group.id
+                        group: group.slug
                     },
                     related: model.related,
                     imported: true
@@ -109,7 +109,7 @@ export const importModels = async (params: Params) => {
                 action: model.action,
                 model: {
                     ...result,
-                    group: group.id
+                    group: group.slug
                 },
                 related: model.related,
                 imported: true

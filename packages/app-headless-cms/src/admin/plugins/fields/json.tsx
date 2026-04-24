@@ -13,9 +13,9 @@ const plugin: CmsModelFieldTypePlugin = {
         label: t`JSON`,
         description: t`Store JSON values.`,
         icon: <JsonIcon />,
-        allowMultipleValues: true,
+        allowList: true,
         allowPredefinedValues: true,
-        multipleValuesLabel: t`Use as a list of JSONs`,
+        listLabel: t`Use as a list of JSONs`,
         hideInAdmin: true,
         createField() {
             return {

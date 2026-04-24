@@ -1,6 +1,5 @@
 import React from "react";
 import type { MenuConfig } from "@webiny/app-admin/config/AdminConfig/Menu.js";
-import { PinnableMenuItem } from "./PinnableMenuItem.js";
 
 export interface MenusProps {
     menus: MenuConfig[];
@@ -34,25 +33,21 @@ export const SidebarMenuItems = (props: MenusProps) => {
             return null;
         }
 
+        const key = [m.parent, m.name].join("-");
+
         const hasChildMenus = allMenus.some(menu => menu.parent === m.name);
         if (hasChildMenus) {
             return React.cloneElement(
                 m.element,
-                { key: m.parent + m.name },
+                { key },
                 <SidebarMenuItems menus={allMenus} where={{ parent: m.name }} />
             );
         }
 
-        const menuItem = React.cloneElement(m.element, { key: m.parent + m.name });
-
-        if (m.pinnable) {
-            return (
-                <PinnableMenuItem key={m.parent + m.name} name={m.name}>
-                    {menuItem}
-                </PinnableMenuItem>
-            );
+        if (m.hideIfEmpty) {
+            return null;
         }
 
-        return menuItem;
+        return React.cloneElement(m.element, { key });
     });
 };

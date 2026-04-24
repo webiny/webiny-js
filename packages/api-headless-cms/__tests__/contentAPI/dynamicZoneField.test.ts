@@ -4,9 +4,18 @@ import { setupGroupAndModels } from "../testHelpers/setup";
 import { usePageManageHandler } from "../testHelpers/usePageManageHandler";
 import { usePageReadHandler } from "../testHelpers/usePageReadHandler";
 import { useAuthorManageHandler } from "~tests/testHelpers/useAuthorManageHandler";
-import type { CmsModel } from "~tests/types";
+import type { TestCmsModel } from "~tests/types";
 import { ContextPlugin } from "@webiny/api";
 import type { CmsContext, CmsEntry } from "~/types";
+import {
+    EntryAfterCreateEventHandler,
+    EntryBeforeCreateEventHandler
+} from "~/features/contentEntry/CreateEntry/events.js";
+import {
+    EntryAfterUpdateEventHandler,
+    EntryBeforeUpdateEventHandler
+} from "~/features/contentEntry/UpdateEntry/events.js";
+import { richTextMock } from "~tests/contentAPI/mocks/richTextValue.js";
 
 const singularPageApiName = pageModel.singularApiName;
 
@@ -17,52 +26,67 @@ const withTemplateId = (data: Record<string, any>) => {
     };
 };
 
-const contentEntryQueryData = {
-    content: [
-        {
-            text: "Simple Text #1",
-            __typename: `${singularPageApiName}_Content_SimpleText`
-        },
-        {
-            title: "Hero Title #1",
-            date: "2021-01-01",
-            time: "12:00:00",
-            dateTimeWithTimezone: "2021-01-01T12:00:00+01:00",
-            dateTimeWithoutTimezone: "2021-01-01T12:00:00.000Z",
-            __typename: `${singularPageApiName}_Content_Hero`
-        },
-        {
-            title: "Hero Title #2",
-            date: "2021-02-05",
-            time: "14:00:00",
-            dateTimeWithTimezone: "2021-02-05T12:00:00+01:00",
-            dateTimeWithoutTimezone: "2021-02-05T12:00:00.000Z",
-            __typename: `${singularPageApiName}_Content_Hero`
-        },
-        {
-            __typename: `${singularPageApiName}_Content_Objecting`,
-            nestedObject: {
-                __typename: `${singularPageApiName}_Content_Objecting_NestedObject`,
-                objectNestedObject: [
-                    {
-                        nestedObjectNestedTitle: "Content Objecting nested title #1",
-                        date: "2021-01-01",
-                        time: "12:00:00",
-                        dateTimeWithTimezone: "2021-01-01T12:00:00+01:00",
-                        dateTimeWithoutTimezone: "2021-01-01T12:00:00.000Z"
-                    },
-                    {
-                        nestedObjectNestedTitle: "Content Objecting nested title #2",
-                        date: "2021-02-05",
-                        time: "14:00:00",
-                        dateTimeWithTimezone: "2021-02-05T12:00:00+01:00",
-                        dateTimeWithoutTimezone: "2021-02-05T12:00:00.000Z"
-                    }
-                ],
-                objectTitle: "Objective title #1"
+const contentEntryQueryData = (type: "manage" | "read" | "preview") => {
+    return {
+        content: [
+            {
+                text: "Simple Text #1",
+                __typename: `${singularPageApiName}_Content_SimpleText`
             },
-            dynamicZone: {
-                __typename: `${singularPageApiName}_Content_Objecting_DynamicZone_SuperNestedObject`,
+            {
+                title: "Hero Title #1",
+                date: "2021-01-01",
+                time: "12:00:00",
+                dateTimeWithTimezone: "2021-01-01T12:00:00+01:00",
+                dateTimeWithoutTimezone: "2021-01-01T12:00:00.000Z",
+                __typename: `${singularPageApiName}_Content_Hero`
+            },
+            {
+                title: "Hero Title #2",
+                date: "2021-02-05",
+                time: "14:00:00",
+                dateTimeWithTimezone: "2021-02-05T12:00:00+01:00",
+                dateTimeWithoutTimezone: "2021-02-05T12:00:00.000Z",
+                __typename: `${singularPageApiName}_Content_Hero`
+            },
+            {
+                __typename: `${singularPageApiName}_Content_Objecting`,
+                nestedObject: {
+                    __typename: `${singularPageApiName}_Content_Objecting_NestedObject`,
+                    objectNestedObject: [
+                        {
+                            nestedObjectNestedTitle: "Content Objecting nested title #1",
+                            date: "2021-01-01",
+                            time: "12:00:00",
+                            dateTimeWithTimezone: "2021-01-01T12:00:00+01:00",
+                            dateTimeWithoutTimezone: "2021-01-01T12:00:00.000Z"
+                        },
+                        {
+                            nestedObjectNestedTitle: "Content Objecting nested title #2",
+                            date: "2021-02-05",
+                            time: "14:00:00",
+                            dateTimeWithTimezone: "2021-02-05T12:00:00+01:00",
+                            dateTimeWithoutTimezone: "2021-02-05T12:00:00.000Z"
+                        }
+                    ],
+                    objectTitle: "Objective title #1"
+                },
+                dynamicZone: {
+                    __typename: `${singularPageApiName}_Content_Objecting_DynamicZone_SuperNestedObject`,
+                    authors: [
+                        {
+                            modelId: "author",
+                            id: "john-doe#0001"
+                        }
+                    ]
+                }
+            },
+            {
+                __typename: `${singularPageApiName}_Content_Author`,
+                author: {
+                    modelId: "author",
+                    id: "john-doe#0001"
+                },
                 authors: [
                     {
                         modelId: "author",
@@ -70,91 +94,64 @@ const contentEntryQueryData = {
                     }
                 ]
             }
+        ],
+        header: {
+            title: "Header #1",
+            image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png",
+            __typename: `${singularPageApiName}_Header_ImageHeader`
         },
-        {
-            __typename: `${singularPageApiName}_Content_Author`,
-            author: {
-                modelId: "author",
-                id: "john-doe#0001"
+        objective: {
+            nestedObject: {
+                objectNestedObject: [
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #1",
+                        date: "2021-01-01",
+                        time: "12:00:00",
+                        dateTimeWithTimezone: "2021-01-01T12:00:00+01:00",
+                        dateTimeWithoutTimezone: "2021-01-01T12:00:00.000Z"
+                    },
+                    {
+                        nestedObjectNestedTitle: "Objective nested title #2",
+                        date: "2021-02-05",
+                        time: "14:00:00",
+                        dateTimeWithTimezone: "2021-02-05T12:00:00+01:00",
+                        dateTimeWithoutTimezone: "2021-02-05T12:00:00.000Z"
+                    }
+                ],
+                objectTitle: "Objective title #1",
+                objectBody: type === "manage" ? richTextMock : richTextMock.html
             },
+            __typename: `${singularPageApiName}_Objective_Objecting`
+        },
+        reference: {
+            author: {
+                id: "john-doe#0001",
+                modelId: "author",
+                __typename: "RefField"
+            },
+            __typename: `${singularPageApiName}_Reference_Author`
+        },
+        references1: {
             authors: [
                 {
+                    id: "john-doe#0001",
                     modelId: "author",
-                    id: "john-doe#0001"
-                }
-            ]
-        }
-    ],
-    header: {
-        title: "Header #1",
-        image: "https://d3bwcib4j08r73.cloudfront.net/files/webiny-serverless-cms.png",
-        __typename: `${singularPageApiName}_Header_ImageHeader`
-    },
-    objective: {
-        nestedObject: {
-            objectNestedObject: [
-                {
-                    nestedObjectNestedTitle: "Objective nested title #1",
-                    date: "2021-01-01",
-                    time: "12:00:00",
-                    dateTimeWithTimezone: "2021-01-01T12:00:00+01:00",
-                    dateTimeWithoutTimezone: "2021-01-01T12:00:00.000Z"
-                },
-                {
-                    nestedObjectNestedTitle: "Objective nested title #2",
-                    date: "2021-02-05",
-                    time: "14:00:00",
-                    dateTimeWithTimezone: "2021-02-05T12:00:00+01:00",
-                    dateTimeWithoutTimezone: "2021-02-05T12:00:00.000Z"
+                    __typename: "RefField"
                 }
             ],
-            objectTitle: "Objective title #1",
-            objectBody: [
-                {
-                    tag: "h1",
-                    content: "Rich Text"
-                },
-                {
-                    tag: "div",
-                    children: [
-                        {
-                            tag: "p",
-                            content: "Testing the rich text storage"
-                        }
-                    ]
-                }
-            ]
+            __typename: `${singularPageApiName}_References1_Authors`
         },
-        __typename: `${singularPageApiName}_Objective_Objecting`
-    },
-    reference: {
-        author: {
-            id: "john-doe#0001",
-            modelId: "author",
-            __typename: "RefField"
-        },
-        __typename: `${singularPageApiName}_Reference_Author`
-    },
-    references1: {
-        authors: [
+        references2: [
             {
-                id: "john-doe#0001",
-                modelId: "author",
-                __typename: "RefField"
+                author: {
+                    id: "john-doe#0001",
+                    modelId: "author",
+                    __typename: "RefField"
+                },
+                __typename: `${singularPageApiName}_References2_Author`
             }
-        ],
-        __typename: `${singularPageApiName}_References1_Authors`
-    },
-    references2: [
-        {
-            author: {
-                id: "john-doe#0001",
-                modelId: "author",
-                __typename: "RefField"
-            },
-            __typename: `${singularPageApiName}_References2_Author`
-        }
-    ]
+        ]
+    };
 };
 
 const contentEntryMutationData = {
@@ -238,21 +235,7 @@ const contentEntryMutationData = {
         Objecting: {
             nestedObject: {
                 objectTitle: "Objective title #1",
-                objectBody: [
-                    {
-                        tag: "h1",
-                        content: "Rich Text"
-                    },
-                    {
-                        tag: "div",
-                        children: [
-                            {
-                                tag: "p",
-                                content: "Testing the rich text storage"
-                            }
-                        ]
-                    }
-                ],
+                objectBody: richTextMock,
                 objectNestedObject: [
                     {
                         nestedObjectNestedTitle: "Objective nested title #1",
@@ -310,7 +293,9 @@ const setupAuthor = async ({ manager }: SetupAuthorParams) => {
     const [authorResponse] = await manager.createAuthor({
         data: {
             id: "john-doe",
-            fullName: "John Doe"
+            values: {
+                fullName: "John Doe"
+            }
         }
     });
 
@@ -326,8 +311,8 @@ type Values = {
 };
 
 describe("dynamicZone field", () => {
-    const manageOpts = { path: "manage/en-US" };
-    const previewOpts = { path: "preview/en-US" };
+    const manageOpts = { path: "manage" };
+    const previewOpts = { path: "preview" };
 
     const eventEntryContent: {
         beforeCreate: CmsEntry<Values> | undefined;
@@ -345,18 +330,38 @@ describe("dynamicZone field", () => {
         if (!context.cms) {
             throw new Error("Missing cms on context.");
         }
-        context.cms.onEntryBeforeCreate.subscribe(async params => {
-            eventEntryContent.beforeCreate = structuredClone(params.entry) as CmsEntry<Values>;
-        });
-        context.cms.onEntryAfterCreate.subscribe(async params => {
-            eventEntryContent.afterCreate = structuredClone(params.entry) as CmsEntry<Values>;
-        });
-        context.cms.onEntryBeforeUpdate.subscribe(async params => {
-            eventEntryContent.beforeUpdate = structuredClone(params.entry) as CmsEntry<Values>;
-        });
-        context.cms.onEntryAfterUpdate.subscribe(async params => {
-            eventEntryContent.afterUpdate = structuredClone(params.entry) as CmsEntry<Values>;
-        });
+
+        context.container.registerFactory(EntryBeforeCreateEventHandler, () => ({
+            async handle(event) {
+                eventEntryContent.beforeCreate = structuredClone(
+                    event.payload.entry
+                ) as CmsEntry<Values>;
+            }
+        }));
+
+        context.container.registerFactory(EntryAfterCreateEventHandler, () => ({
+            async handle(event) {
+                eventEntryContent.afterCreate = structuredClone(
+                    event.payload.entry
+                ) as CmsEntry<Values>;
+            }
+        }));
+
+        context.container.registerFactory(EntryBeforeUpdateEventHandler, () => ({
+            async handle(event) {
+                eventEntryContent.beforeUpdate = structuredClone(
+                    event.payload.entry
+                ) as CmsEntry<Values>;
+            }
+        }));
+
+        context.container.registerFactory(EntryAfterUpdateEventHandler, () => ({
+            async handle(event) {
+                eventEntryContent.afterUpdate = structuredClone(
+                    event.payload.entry
+                ) as CmsEntry<Values>;
+            }
+        }));
     });
 
     const manage = usePageManageHandler({ ...manageOpts, bottomPlugins: [lifecycleEvents] });
@@ -368,7 +373,7 @@ describe("dynamicZone field", () => {
     beforeEach(async () => {
         await setupGroupAndModels({
             manager: manage,
-            models: ["author", pageModel as unknown as CmsModel]
+            models: ["author", pageModel as unknown as TestCmsModel]
         });
         await setupAuthor({
             manager: authorManager
@@ -376,8 +381,13 @@ describe("dynamicZone field", () => {
     });
 
     it("should create a page with dynamic zone fields", async () => {
+        const assertManageContent = contentEntryQueryData("manage");
+        const assertReadContent = contentEntryQueryData("read");
+
         const [createPageResponse] = await manage.createPage({
-            data: contentEntryMutationData
+            data: {
+                values: contentEntryMutationData
+            }
         });
 
         expect(createPageResponse).toEqual({
@@ -385,7 +395,9 @@ describe("dynamicZone field", () => {
                 createPage: {
                     data: {
                         id: expect.any(String),
-                        ...withTemplateId(contentEntryQueryData)
+                        values: {
+                            ...withTemplateId(assertManageContent)
+                        }
                     },
                     error: null
                 }
@@ -394,7 +406,9 @@ describe("dynamicZone field", () => {
 
         const [updatePageResponse] = await manage.updatePage({
             revision: createPageResponse.data.createPage.data.id,
-            data: contentEntryMutationData
+            data: {
+                values: contentEntryMutationData
+            }
         });
 
         expect(updatePageResponse).toEqual({
@@ -402,7 +416,9 @@ describe("dynamicZone field", () => {
                 updatePage: {
                     data: {
                         id: expect.any(String),
-                        ...withTemplateId(contentEntryQueryData)
+                        values: {
+                            ...withTemplateId(assertManageContent)
+                        }
                     },
                     error: null
                 }
@@ -419,7 +435,9 @@ describe("dynamicZone field", () => {
                     data: [
                         {
                             id: page.id,
-                            ...withTemplateId(contentEntryQueryData)
+                            values: {
+                                ...withTemplateId(assertManageContent)
+                            }
                         }
                     ],
                     meta: {
@@ -442,7 +460,9 @@ describe("dynamicZone field", () => {
                 getPage: {
                     data: {
                         id: page.id,
-                        ...withTemplateId(contentEntryQueryData)
+                        values: {
+                            ...withTemplateId(assertManageContent)
+                        }
                     },
                     error: null
                 }
@@ -465,68 +485,82 @@ describe("dynamicZone field", () => {
                 getPage: {
                     data: {
                         id: page.id,
-                        ...contentEntryQueryData,
-                        content: [
-                            ...contentEntryQueryData.content.slice(0, 3),
-                            {
-                                ...contentEntryQueryData.content[3],
-                                dynamicZone: {
+                        values: {
+                            ...assertReadContent,
+                            content: [
+                                ...assertReadContent.content.slice(0, 3),
+                                {
+                                    ...assertReadContent.content[3],
+                                    dynamicZone: {
+                                        authors: [
+                                            {
+                                                entryId: "john-doe",
+                                                id: "john-doe#0001",
+                                                modelId: "author",
+                                                values: {
+                                                    fullName: "John Doe"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    __typename: assertReadContent.content[4].__typename,
+                                    author: {
+                                        entryId: "john-doe",
+                                        id: "john-doe#0001",
+                                        modelId: "author",
+                                        values: {
+                                            fullName: "John Doe"
+                                        }
+                                    },
                                     authors: [
                                         {
                                             entryId: "john-doe",
-                                            fullName: "John Doe",
                                             id: "john-doe#0001",
-                                            modelId: "author"
+                                            modelId: "author",
+                                            values: {
+                                                fullName: "John Doe"
+                                            }
                                         }
                                     ]
                                 }
-                            },
-                            {
-                                __typename: contentEntryQueryData.content[4].__typename,
+                            ],
+                            reference: {
                                 author: {
                                     entryId: "john-doe",
-                                    fullName: "John Doe",
                                     id: "john-doe#0001",
-                                    modelId: "author"
-                                },
+                                    modelId: "author",
+                                    values: {
+                                        fullName: "John Doe"
+                                    }
+                                }
+                            },
+                            references1: {
                                 authors: [
                                     {
                                         entryId: "john-doe",
-                                        fullName: "John Doe",
                                         id: "john-doe#0001",
-                                        modelId: "author"
+                                        modelId: "author",
+                                        values: {
+                                            fullName: "John Doe"
+                                        }
                                     }
                                 ]
-                            }
-                        ],
-                        reference: {
-                            author: {
-                                entryId: "john-doe",
-                                fullName: "John Doe",
-                                id: "john-doe#0001",
-                                modelId: "author"
-                            }
-                        },
-                        references1: {
-                            authors: [
+                            },
+                            references2: [
                                 {
-                                    entryId: "john-doe",
-                                    fullName: "John Doe",
-                                    id: "john-doe#0001",
-                                    modelId: "author"
+                                    author: {
+                                        entryId: "john-doe",
+                                        id: "john-doe#0001",
+                                        modelId: "author",
+                                        values: {
+                                            fullName: "John Doe"
+                                        }
+                                    }
                                 }
                             ]
-                        },
-                        references2: [
-                            {
-                                author: {
-                                    entryId: "john-doe",
-                                    fullName: "John Doe",
-                                    id: "john-doe#0001",
-                                    modelId: "author"
-                                }
-                            }
-                        ]
+                        }
                     },
                     error: null
                 }

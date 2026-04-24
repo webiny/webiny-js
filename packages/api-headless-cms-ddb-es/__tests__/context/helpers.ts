@@ -2,7 +2,6 @@ import { IdentityData } from "@webiny/api-core/features/security/IdentityContext
 
 export interface PermissionsArg {
     name: string;
-    locales?: string[];
     rwd?: string;
     pw?: string;
     own?: boolean;
@@ -47,10 +46,6 @@ export const createPermissions = (permissions?: PermissionsArg[]): PermissionsAr
         },
         {
             name: "cms.endpoint.preview"
-        },
-        {
-            name: "content.i18n",
-            locales: ["en-US", "de-DE"]
         }
     ];
 };

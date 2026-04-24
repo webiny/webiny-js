@@ -1,8 +1,8 @@
 import { createImplementation } from "@webiny/di";
-import findUp from "find-up";
+import { findUpSync } from "find-up";
 import path from "path";
 import { GetProjectVersionService } from "~/abstractions/index.js";
-import readJsonSync from "read-json-sync";
+import { loadJsonFileSync } from "load-json-file";
 import type { PackageJson } from "type-fest";
 
 class DefaultGetProjectVersionService implements GetProjectVersionService.Interface {
@@ -19,11 +19,11 @@ class DefaultGetProjectVersionService implements GetProjectVersionService.Interf
             return this.cachedProjectVersion;
         }
 
-        const pkgJsonPath = findUp.sync("package.json", {
+        const pkgJsonPath = findUpSync("package.json", {
             cwd: path.dirname(import.meta.dirname)
         });
 
-        const pkgJson = pkgJsonPath ? (readJsonSync(pkgJsonPath) as PackageJson) : null;
+        const pkgJson = pkgJsonPath ? (loadJsonFileSync(pkgJsonPath) as PackageJson) : null;
 
         if (pkgJson?.version) {
             this.cachedProjectVersion = pkgJson.version;

@@ -6,6 +6,11 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import DynamicSection from "../DynamicSection.js";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
 import { DelayedOnChange, IconButton, Textarea } from "@webiny/admin-ui";
+import {
+    CanEditField,
+    useFieldEffectiveRules,
+    useModelField
+} from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -19,13 +24,17 @@ const plugin: CmsModelFieldRendererPlugin = {
         canUse({ field }) {
             return (
                 field.type === "long-text" &&
-                !!field.multipleValues &&
+                !!field.list &&
                 !get(field, "predefinedValues.enabled")
             );
         },
         render(props) {
+            const { field } = useModelField();
+            const rules = useFieldEffectiveRules(field);
+            const disabled = !rules.canEdit || rules.disabled;
+
             return (
-                <DynamicSection {...props}>
+                <DynamicSection {...props} disabled={disabled}>
                     {({ bind, index }) => (
                         <div className={"relative"}>
                             <DelayedOnChange
@@ -34,23 +43,26 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 onBlur={bind.index.validate}
                             >
                                 <Textarea
+                                    disabled={disabled}
                                     validation={bind.index.validation}
                                     rows={5}
                                     label={t`Value {number}`({ number: index + 1 })}
-                                    placeholder={props.field.placeholderText}
+                                    placeholder={props.field.placeholder}
                                     data-testid={`fr.input.longTexts.${props.field.label}.${
                                         index + 1
                                     }`}
                                 />
                             </DelayedOnChange>
-                            <div className={"absolute top-xl right-sm z-10"}>
-                                <IconButton
-                                    variant={"ghost"}
-                                    size={"md"}
-                                    icon={<DeleteIcon />}
-                                    onClick={() => bind.field.removeValue(index)}
-                                />
-                            </div>
+                            <CanEditField>
+                                <div className={"absolute top-xl right-sm z-10"}>
+                                    <IconButton
+                                        variant={"ghost"}
+                                        size={"md"}
+                                        icon={<DeleteIcon />}
+                                        onClick={() => bind.field.removeValue(index)}
+                                    />
+                                </div>
+                            </CanEditField>
                         </div>
                     )}
                 </DynamicSection>

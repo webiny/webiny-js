@@ -2,6 +2,16 @@ export default /* GraphQL */ `
     """
     Page
     """
+    type PageModelApiNameValues {
+        content: [PageModelApiName_Content!]
+        header: PageModelApiName_Header
+        objective: PageModelApiName_Objective
+        reference: PageModelApiName_Reference
+        references1: PageModelApiName_References1
+        references2: [PageModelApiName_References2!]
+        ghostObject: PageModelApiName_GhostObject
+    }
+
     type PageModelApiName {
         id: ID!
         entryId: String!
@@ -35,15 +45,10 @@ export default /* GraphQL */ `
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
         meta: PageModelApiNameMeta
-        content: [PageModelApiName_Content!]
-        header: PageModelApiName_Header
-        objective: PageModelApiName_Objective
-        reference: PageModelApiName_Reference
-        references1: PageModelApiName_References1
-        references2: [PageModelApiName_References2!]
-        ghostObject: PageModelApiName_GhostObject
-        # Advanced Content Organization - make required in 5.38.0
         wbyAco_location: WbyAcoLocation
+        live: CmsEntryLive
+
+        values: PageModelApiNameValues
     }
 
     type PageModelApiNameMeta {
@@ -52,7 +57,7 @@ export default /* GraphQL */ `
         locked: Boolean
 
         status: String
-        state: CmsEntryState
+        system: CmsEntrySystem
         """
         CAUTION: this field is resolved by making an extra query to DB.
         RECOMMENDATION: Use it only with "get" queries (avoid in "list")
@@ -452,6 +457,16 @@ export default /* GraphQL */ `
         _empty: String
     }
 
+    input PageModelApiNameInputValues {
+        content: [PageModelApiName_ContentInput]
+        header: PageModelApiName_HeaderInput
+        objective: PageModelApiName_ObjectiveInput
+        reference: PageModelApiName_ReferenceInput
+        references1: PageModelApiName_References1Input
+        references2: [PageModelApiName_References2Input]
+        ghostObject: PageModelApiName_GhostObjectInput
+    }
+
     input PageModelApiNameInput {
         id: ID
 
@@ -489,23 +504,24 @@ export default /* GraphQL */ `
 
         wbyAco_location: WbyAcoLocationInput
 
-        content: [PageModelApiName_ContentInput]
-        header: PageModelApiName_HeaderInput
-        objective: PageModelApiName_ObjectiveInput
-        reference: PageModelApiName_ReferenceInput
-        references1: PageModelApiName_References1Input
-        references2: [PageModelApiName_References2Input]
-        ghostObject: PageModelApiName_GhostObjectInput
+        values: PageModelApiNameInputValues
+    }
+
+    input PageModelApiNameGetWhereInputValues {
+        _empty: String
     }
 
     input PageModelApiNameGetWhereInput {
         id: ID
         entryId: String
+        values: PageModelApiNameGetWhereInputValues
+    }
+
+    input PageModelApiNameListWhereInputValues {
+        ghostObject: PageModelApiName_GhostObjectWhereInput
     }
 
     input PageModelApiNameListWhereInput {
-        state: ListWhereInputCmsEntryState
-        wbyAco_location: WbyAcoLocationWhereInput
         id: ID
         id_not: ID
         id_in: [ID!]
@@ -672,7 +688,12 @@ export default /* GraphQL */ `
         status_not: String
         status_in: [String!]
         status_not_in: [String!]
-        ghostObject: PageModelApiName_GhostObjectWhereInput
+
+        system: ListWhereInputCmsEntrySystem
+        wbyAco_location: WbyAcoLocationWhereInput
+        live: CmsEntryLiveWhereInput
+
+        values: PageModelApiNameListWhereInputValues
         AND: [PageModelApiNameListWhereInput!]
         OR: [PageModelApiNameListWhereInput!]
     }

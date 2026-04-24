@@ -1,53 +1,29 @@
-import type { PluginCollection } from "@webiny/plugins/types.js";
-import { createMailerContext as createMailerContextPlugin } from "~/context.js";
-import { createDummyTransport } from "~/transports/createDummyTransport.js";
-import type { SmtpTransportConfig } from "~/transports/createSmtpTransport.js";
-import { createSmtpTransport } from "~/transports/createSmtpTransport.js";
-import { createTransport } from "~/plugins/index.js";
-import { createSettingsModel } from "~/crud/settings/model.js";
-import { createGraphQL } from "~/graphql/index.js";
+import { createContextPlugin } from "@webiny/api";
+import { EncryptionFeature } from "~/features/Encryption/feature.js";
+import { GetSettingsFeature } from "~/features/GetSettings/feature.js";
+import { SaveSettingsFeature } from "~/features/SaveSettings/feature.js";
+import { DummyTransportFeature } from "~/features/DummyTransport/feature.js";
+import { SmtpTransportFeature } from "~/features/SmtpTransport/feature.js";
+import { MailerServiceFeature } from "~/features/MailerService/feature.js";
+import { SendMailFeature } from "~/features/SendMail/feature.js";
+import { createSettingsGraphQL } from "~/graphql/settings.js";
 
-export * from "~/plugins/index.js";
-export * from "~/transports/index.js";
+export { MailerService } from "./domain/MailerService/abstractions.js";
+export type { IMailerService, IMailerServiceErrors } from "./domain/MailerService/abstractions.js";
 
-export const createMailerContext = (): PluginCollection => {
-    return [
-        /**
-         * Models to use via the CMS
-         */
-        createSettingsModel(),
-        /**
-         * If something is wrong with the smtp mailer, we will initialize the dummy one.
-         */
-        createTransport(async () => {
-            const plugin = await createDummyTransport();
-            plugin.name = "mailer.dummy-default";
-            return plugin;
-        }),
-        /**
-         * Smtp mailer goes into the plugins after the dummy one because plugins are loaded in reverse.
-         */
-        createTransport(async ({ settings }) => {
-            /**
-             * We need to map our settings to the required settings for the SMTP NodeMailer transport.
-             */
-            const config: SmtpTransportConfig = {
-                ...(settings || {})
-            };
-            if (settings) {
-                config.auth = {
-                    user: settings.user,
-                    pass: settings.password
-                };
-            }
-            const plugin = await createSmtpTransport(config);
-            plugin.name = "mailer.smtp-default";
-            return plugin;
-        }),
-        createMailerContextPlugin()
-    ];
+export const createMailerContext = () => {
+    return createContextPlugin(context => {
+        // Register all features
+        EncryptionFeature.register(context.container);
+        DummyTransportFeature.register(context.container);
+        SmtpTransportFeature.register(context.container);
+        GetSettingsFeature.register(context.container);
+        SaveSettingsFeature.register(context.container);
+        MailerServiceFeature.register(context.container);
+        SendMailFeature.register(context.container);
+    });
 };
 
 export const createMailerGraphQL = () => {
-    return [...createGraphQL()];
+    return createSettingsGraphQL();
 };

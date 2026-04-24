@@ -1,10 +1,13 @@
 import execa from "execa";
 import fs from "fs-extra";
-import Listr from "listr";
+import type { ListrTask } from "listr2";
+import { Listr } from "listr2";
 import path from "path";
 import { rimrafSync } from "rimraf";
 import chalk from "chalk";
 import yesno from "yesno";
+import { configureMcp } from "@webiny/mcp";
+import type { IUi } from "@webiny/mcp";
 import { SetupBaseWebinyProject } from "./CreateWebinyProject/projects/base/SetupBaseWebinyProject.js";
 import { SetupAwsWebinyProject } from "./CreateWebinyProject/projects/aws/SetupAwsWebinyProject.js";
 import {
@@ -22,9 +25,37 @@ import {
     SetWebinyPackageVersions
 } from "../services/index.js";
 import { CliParams } from "../types.js";
+import { AwsProjectParams } from "./CreateWebinyProject/projects/aws/types.js";
 import ora from "ora";
 
-const { green, bold } = chalk;
+const { green, bold, cyan, gray, yellow } = chalk;
+
+/* Styled UI for MCP setup output — aligns visually with the rest of CWP output. */
+class CwpUi implements IUi {
+    info(text: string, ...args: any[]): void {
+        console.log(gray(text), ...args);
+    }
+
+    success(text: string, ...args: any[]): void {
+        console.log(`${green("✔")} ${text}`, ...args);
+    }
+
+    error(text: string, ...args: any[]): void {
+        console.error(`${chalk.red("✘")} ${text}`, ...args);
+    }
+
+    warning(text: string, ...args: any[]): void {
+        console.warn(`${yellow("⚠")} ${text}`, ...args);
+    }
+
+    text(text: string): void {
+        console.log(text);
+    }
+
+    emptyLine(): void {
+        console.log();
+    }
+}
 
 export class CreateWebinyProject {
     async execute(cliArgs: CliParams) {
@@ -57,9 +88,14 @@ export class CreateWebinyProject {
         const analytics = new Analytics();
         await analytics.track("start");
 
+        let awsProjectParams: AwsProjectParams = {
+            region: "us-east-1",
+            storageOps: "ddb",
+            aiAgent: "other"
+        };
+
         try {
-            const tasks = new Listr();
-            tasks.add([
+            const taskItems: ListrTask[] = [
                 {
                     // Creates root package.json.
                     title: "Prepare project folder",
@@ -72,10 +108,10 @@ export class CreateWebinyProject {
                         await setupYarn.execute(cliArgs);
                     }
                 }
-            ]);
+            ];
 
             if (isGitAvailable) {
-                tasks.add({
+                taskItems.push({
                     title: `Initialize git`,
                     task: (_, task) => {
                         const initGit = new InitGit();
@@ -88,6 +124,7 @@ export class CreateWebinyProject {
                 });
             }
 
+            const tasks = new Listr(taskItems);
             await tasks.run();
 
             console.log();
@@ -96,7 +133,7 @@ export class CreateWebinyProject {
             setupBaseWebinyProject.execute(cliArgs);
 
             const setupAwsWebinyProject = new SetupAwsWebinyProject();
-            await setupAwsWebinyProject.execute(cliArgs);
+            awsProjectParams = await setupAwsWebinyProject.execute(cliArgs);
 
             const setWebinyPackageVersions = new SetWebinyPackageVersions();
             await setWebinyPackageVersions.execute(cliArgs);
@@ -120,6 +157,20 @@ export class CreateWebinyProject {
                     "Failed while installing project dependencies. Please check the above Yarn logs for more information.",
                     { cause: e }
                 );
+            }
+
+            // Configure MCP server for the selected AI agent.
+            if (awsProjectParams.aiAgent !== "other") {
+                console.log();
+                console.log(
+                    bold(`Configuring MCP server for ${cyan(awsProjectParams.aiAgent)}...`)
+                );
+                console.log();
+                await configureMcp({
+                    agent: awsProjectParams.aiAgent,
+                    ui: new CwpUi(),
+                    cwd: projectRootPath
+                });
             }
 
             await analytics.track("end");
@@ -190,7 +241,17 @@ export class CreateWebinyProject {
                 // is concerned, it succeeded, and it doesn't need to do anything else.
             }
 
+            // For "other" agents, show manual MCP setup instructions after deploy has finished.
+            if (awsProjectParams.aiAgent === "other") {
+                await configureMcp({ instructions: true });
+            }
+
             return;
+        }
+
+        // For "other" agents, show manual MCP setup instructions instead of blocking the deploy step.
+        if (awsProjectParams.aiAgent === "other") {
+            await configureMcp({ instructions: true });
         }
 
         console.log(

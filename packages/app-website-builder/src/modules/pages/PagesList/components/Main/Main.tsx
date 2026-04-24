@@ -7,17 +7,23 @@ import { Header } from "~/modules/pages/PagesList/components/Header/index.js";
 import { BottomInfoBar } from "~/modules/pages/PagesList/components/BottomInfoBar/index.js";
 import { Table } from "~/modules/pages/PagesList/components/Table/index.js";
 import { Empty } from "~/modules/pages/PagesList/components/Empty/index.js";
-import { useCreatePageDialog } from "./CreatePage/CreatePage.js";
 import { useLoadMorePages } from "~/features/pages/index.js";
 import { BulkActions } from "../BulkActions/index.js";
 import { Filters } from "~/modules/pages/PagesList/components/Filters/index.js";
+import { useCreatePageDialog } from "~/presentation/pages/CreatePage/CreatePageDialog.js";
+import { usePermissions } from "~/presentation/security/usePermissions.js";
 
 const Main = () => {
     const { vm } = useDocumentList();
     const { loadMorePages } = useLoadMorePages();
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
+    const openCreatePageDialog = useCreatePageDialog();
+    const wbPermissions = usePermissions();
 
-    const { showCreatePageDialog } = useCreatePageDialog(vm.folderId);
+    const showCreatePageDialog = useCallback(() => {
+        openCreatePageDialog(vm.folderId);
+    }, [openCreatePageDialog, vm.folderId]);
+
     const { getFolderLevelPermission: canManageContent } =
         useGetFolderLevelPermission("canManageContent");
 
@@ -48,12 +54,14 @@ const Main = () => {
         }
     }, 200);
 
+    const canCreatePage = wbPermissions.canCreate("page") && canCreateContent(vm.folderId);
+
     return (
         <div className={"h-full relative overflow-hidden"}>
             <Header
                 title={vm.title}
-                canCreateFolder={canCreateFolder(vm.folderId)}
-                canCreateContent={canCreateContent(vm.folderId)}
+                canCreateFolder={canCreatePage && canCreateFolder(vm.folderId)}
+                canCreateContent={canCreatePage}
                 onCreateFolder={onCreateFolder}
                 onCreateDocument={showCreatePageDialog}
                 isRoot={vm.isRoot}
@@ -71,8 +79,8 @@ const Main = () => {
                     {vm.isEmpty ? (
                         <Empty
                             isSearch={vm.isSearch}
-                            canCreateFolder={canCreateFolder(vm.folderId)}
-                            canCreateContent={canCreateContent(vm.folderId)}
+                            canCreateFolder={canCreatePage && canCreateFolder(vm.folderId)}
+                            canCreateContent={canCreatePage}
                             onCreateFolder={onCreateFolder}
                             onCreateDocument={showCreatePageDialog}
                         />

@@ -3,7 +3,7 @@ import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 import { CmsGroupPlugin, CmsModelPlugin, createCmsGroup } from "~/plugins";
 import { createModels, exportedGroupsAndModels } from "./mocks/exportedGroupsAndModels";
 import { CmsImportAction } from "~/export/types";
-import type { CmsModel } from "~/types";
+import type { CmsGroup, CmsModel } from "~/types";
 
 describe("import cms structure", () => {
     const {
@@ -12,7 +12,7 @@ describe("import cms structure", () => {
         listContentModelsQuery,
         listContentModelGroupsQuery
     } = useGraphQLHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
     it("should return error as there are no groups to validate", async () => {
@@ -37,11 +37,15 @@ describe("import cms structure", () => {
     });
 
     it("should return error as there are no models to validate", async () => {
-        const group = {
+        const group: Omit<CmsGroup, "tenant"> = {
             id: "group-1",
             name: "Group 1",
             slug: "group-1",
-            icon: "fas/star",
+            icon: {
+                name: "fas/star",
+                type: "fas/star",
+                value: "fas/star"
+            },
             description: "Group 1 description"
         };
 
@@ -79,18 +83,29 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "",
             name: "Group 1",
-            icon: "fa/fas"
+            icon: {
+                name: "fas/star",
+                type: "fas/star",
+                value: "fas/star"
+            }
         };
         const group2 = {
             id: "",
             slug: "group-2",
             name: "Group 2",
-            icon: "fa/fas"
+            icon: {
+                name: "fas/star",
+                type: "fas/star",
+                value: "fas/star"
+            }
         };
 
         const [result] = await validateCmsStructureMutation({
             data: {
-                groups: [group1, group2],
+                groups: [group1, group2].map(group => {
+                    const input = structuredClone(group);
+                    return input;
+                }),
                 models: []
             }
         });
@@ -135,20 +150,28 @@ describe("import cms structure", () => {
 
     it("should show errors when trying to validate groups which already exist in the system", async () => {
         const { validateCmsStructureMutation } = useGraphQLHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins: [
                 createCmsGroup({
                     id: "group-1-original",
                     slug: "group-1",
                     name: "Group 1 Original",
-                    icon: "fa/fas",
+                    icon: {
+                        name: "fas/star",
+                        type: "fas/star",
+                        value: "fas/star"
+                    },
                     description: ""
                 }),
                 createCmsGroup({
                     id: "group-2",
                     slug: "group-2-original",
                     name: "Group 2 Original",
-                    icon: "fa/fas",
+                    icon: {
+                        name: "fas/star",
+                        type: "fas/star",
+                        value: "fas/star"
+                    },
                     description: ""
                 })
             ]
@@ -158,19 +181,31 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "group-1",
             name: "Group 1",
-            icon: "fa/fas"
+            icon: {
+                name: "fas/star",
+                type: "fas/star",
+                value: "fas/star"
+            }
         };
         const group2 = {
             id: "group-2",
             slug: "group-2",
             name: "Group 2",
-            icon: "fa/fas"
+            icon: {
+                name: "fas/star",
+                type: "fas/star",
+                value: "fas/star"
+            }
         };
         const group3 = {
             id: "group-3",
             slug: "group-3",
             name: "Group 3",
-            icon: "fa/fas"
+            icon: {
+                name: "fas/star",
+                type: "fas/star",
+                value: "fas/star"
+            }
         };
 
         const [result] = await validateCmsStructureMutation({
@@ -231,13 +266,21 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "group-1",
             name: "Group 1",
-            icon: "fa/fas"
+            icon: {
+                name: "fas/star",
+                type: "fas/star",
+                value: "fas/star"
+            }
         };
         const group2 = {
             id: "group-2",
             slug: "group-2",
             name: "Group 2",
-            icon: "fa/fas"
+            icon: {
+                name: "fas/star",
+                type: "fas/star",
+                value: "fas/star"
+            }
         };
 
         const [result] = await validateCmsStructureMutation({
@@ -282,7 +325,11 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "group-1",
             name: "Group 1",
-            icon: "fa/fas"
+            icon: {
+                name: "fas/star",
+                type: "fas/star",
+                value: "fas/star"
+            }
         };
 
         const model = {
@@ -351,11 +398,6 @@ describe("import cms structure", () => {
                                                 code: "too_small",
                                                 data: expect.any(Object),
                                                 message: expect.any(String)
-                                            },
-                                            layout: {
-                                                code: "too_small",
-                                                data: expect.any(Object),
-                                                message: expect.any(String)
                                             }
                                         }
                                     },
@@ -376,7 +418,11 @@ describe("import cms structure", () => {
             id: "group-1",
             slug: "group-1",
             name: "Group 1",
-            icon: "fa/fas"
+            icon: {
+                name: "fas/star",
+                type: "fas/star",
+                value: "fas/star"
+            }
         };
 
         const model = {
@@ -442,11 +488,6 @@ describe("import cms structure", () => {
                                                 message: expect.any(String)
                                             },
                                             fields: {
-                                                code: "too_small",
-                                                data: expect.any(Object),
-                                                message: expect.any(String)
-                                            },
-                                            layout: {
                                                 code: "too_small",
                                                 data: expect.any(Object),
                                                 message: expect.any(String)
@@ -848,7 +889,7 @@ describe("import cms structure", () => {
             listContentModelsQuery,
             listContentModelGroupsQuery
         } = useGraphQLHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins: [structurePlugins]
         });
 
@@ -876,7 +917,7 @@ describe("import cms structure", () => {
                 validateImportStructure: {
                     data: {
                         groups: exportedGroupsAndModels.groups.map(group => {
-                            const isCodeGroup = codeGroups.includes(group.id);
+                            const isCodeGroup = codeGroups.includes(group.id!);
                             return {
                                 action: isCodeGroup ? CmsImportAction.CODE : CmsImportAction.CREATE,
                                 error: isCodeGroup ? expect.any(Object) : null,
@@ -887,7 +928,7 @@ describe("import cms structure", () => {
                             };
                         }),
                         models: exportedGroupsAndModels.models.map(model => {
-                            const isCodeModel = codeModels.includes(model.modelId);
+                            const isCodeModel = codeModels.includes(model.modelId!);
                             return {
                                 action: isCodeModel ? CmsImportAction.CODE : CmsImportAction.CREATE,
                                 error: isCodeModel ? expect.any(Object) : null,
@@ -907,10 +948,10 @@ describe("import cms structure", () => {
 
         const importData = {
             groups: exportedGroupsAndModels.groups.filter(group => {
-                return !codeGroups.includes(group.id);
+                return !codeGroups.includes(group.id!);
             }),
             models: exportedGroupsAndModels.models.filter(model => {
-                return !codeModels.includes(model.modelId);
+                return !codeModels.includes(model.modelId!);
             })
         };
         const [importResult] = await importCmsStructureMutation({
@@ -958,7 +999,6 @@ describe("import cms structure", () => {
                     /**
                      * Mixed types for importData and pluginGroups but it is ok for testing.
                      */
-                    // @ts-expect-error
                     data: importData.groups.concat(pluginGroups).map(group => {
                         return {
                             id: group.id
@@ -993,7 +1033,7 @@ describe("import cms structure", () => {
                 validateImportStructure: {
                     data: {
                         groups: exportedGroupsAndModels.groups.map(group => {
-                            const isCodeGroup = codeGroups.includes(group.id);
+                            const isCodeGroup = codeGroups.includes(group.id!);
                             return {
                                 action: isCodeGroup ? CmsImportAction.CODE : CmsImportAction.UPDATE,
                                 error: isCodeGroup ? expect.any(Object) : null,
@@ -1004,7 +1044,7 @@ describe("import cms structure", () => {
                             };
                         }),
                         models: exportedGroupsAndModels.models.map(model => {
-                            const isCodeModel = codeModels.includes(model.modelId);
+                            const isCodeModel = codeModels.includes(model.modelId!);
                             return {
                                 action: isCodeModel ? CmsImportAction.CODE : CmsImportAction.UPDATE,
                                 error: isCodeModel ? expect.any(Object) : null,

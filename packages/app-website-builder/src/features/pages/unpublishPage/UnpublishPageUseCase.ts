@@ -1,22 +1,18 @@
-import type {
-    IUnpublishPageUseCase,
-    UnpublishPageParams
-} from "~/features/pages/unpublishPage/IUnpublishPageUseCase.js";
-import type { IUnpublishPageRepository } from "~/features/pages/unpublishPage/IUnpublishPageRepository.js";
-import { Page } from "~/domain/Page/index.js";
+import {
+    UnpublishPageUseCase as UseCaseAbstraction,
+    UnpublishPageRepository
+} from "./abstractions.js";
+import { Page } from "~/domain/Page/Page.js";
 
-export class UnpublishPageUseCase implements IUnpublishPageUseCase {
-    private repository: IUnpublishPageRepository;
+class UnpublishPageUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: UnpublishPageRepository.Interface) {}
 
-    constructor(repository: IUnpublishPageRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: UnpublishPageParams) {
-        await this.repository.execute(
-            Page.create({
-                id: params.id
-            })
-        );
+    async execute(params: UseCaseAbstraction.Params) {
+        await this.repository.execute(Page.create({ id: params.id }));
     }
 }
+
+export const UnpublishPageUseCase = UseCaseAbstraction.createImplementation({
+    implementation: UnpublishPageUseCaseImpl,
+    dependencies: [UnpublishPageRepository]
+});

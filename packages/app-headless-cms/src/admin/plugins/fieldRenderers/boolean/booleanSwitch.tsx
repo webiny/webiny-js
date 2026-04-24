@@ -3,6 +3,7 @@ import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { Switch } from "@webiny/admin-ui";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/boolean");
 
@@ -15,21 +16,25 @@ const plugin: CmsModelFieldRendererPlugin = {
         description: t`Renders a simple switch button.`,
         canUse({ field }) {
             return (
-                field.type === "boolean" &&
-                !field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
+                field.type === "boolean" && !field.list && !get(field, "predefinedValues.enabled")
             );
         },
-        render({ field, getBind }) {
+        render({ getBind }) {
+            const { field } = useModelField();
+            const rules = useFieldEffectiveRules(field);
             const Bind = getBind();
+
+            const disabled = !rules.canEdit || rules.disabled;
 
             return (
                 <Bind>
                     {bindProps => (
                         <Switch
                             {...bindProps}
+                            disabled={disabled}
                             label={field.label}
-                            description={field.helpText}
+                            description={field.description}
+                            note={field.note}
                             data-testid={`fr.input.boolean.${field.label}`}
                         />
                     )}

@@ -5,6 +5,7 @@ import { useNavigateFolder } from "@webiny/app-aco";
 import { makeDecoratable } from "@webiny/react-composition";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/index.js";
 import { cn, Heading, Icon, IconButton, Tooltip } from "@webiny/admin-ui";
+import { IsModelPublishable } from "~/exports/admin/cms.js";
 
 export const ContentEntryFormMeta = makeDecoratable("ContentEntryFormMeta", () => {
     const { entry, contentModel } = useContentEntry();
@@ -49,7 +50,9 @@ export const FullScreenContentEntryHeaderLeft = () => {
                 icon={<BackIcon />}
             />
             <ContentEntryFormTitle />
-            <ContentEntryFormMeta />
+            <IsModelPublishable>
+                <ContentEntryFormMeta />
+            </IsModelPublishable>
         </div>
     );
 };

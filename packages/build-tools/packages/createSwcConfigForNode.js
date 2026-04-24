@@ -1,4 +1,4 @@
-import readJsonSync from "read-json-sync";
+import { loadJsonFileSync } from "load-json-file";
 
 export default ({ path, esm }) => {
     return {
@@ -7,14 +7,14 @@ export default ({ path, esm }) => {
                 "@babel/preset-env",
                 {
                     targets: {
-                        node: "18"
+                        // nodejs - to easily find this with search. there is a lot of "node" in the code
+                        node: 24
                     },
                     modules: esm ? false : "auto",
                     exclude: [
                         "transform-typeof-symbol",
                         "@babel/plugin-proposal-optional-chaining",
                         "@babel/plugin-proposal-nullish-coalescing-operator",
-                        "@babel/plugin-proposal-class-properties",
                         "@babel/plugin-transform-async-to-generator",
                         "@babel/plugin-transform-regenerator",
                         "@babel/plugin-proposal-dynamic-import"
@@ -28,7 +28,8 @@ export default ({ path, esm }) => {
                 "@babel/plugin-transform-runtime",
                 {
                     useESModules: !!esm,
-                    version: readJsonSync(require.resolve("@babel/runtime/package.json")).version
+                    version: loadJsonFileSync(require.resolve("@babel/runtime/package.json"))
+                        .version
                 }
             ],
             [

@@ -5,10 +5,17 @@ import { ReadmeGenerator } from "./generators/ReadmeGenerator";
 import { LockedDepsGenerator } from "./generators/LockedDepsGenerator";
 import { LicenseGenerator } from "./generators/LicenseGenerator";
 import chalk from "chalk";
+import fs from "fs";
+import path from "path";
 
-const packages = getYarnWorkspaces().map((path: string) => {
-    return new WebinyPackage(path);
-});
+const packages = getYarnWorkspaces()
+    .filter((workspacePath: string) => {
+        const packageJsonPath = path.join(workspacePath, "package.json");
+        return fs.existsSync(packageJsonPath);
+    })
+    .map((workspacePath: string) => {
+        return new WebinyPackage(workspacePath);
+    });
 
 const generatorsRegistry = [LockedDepsGenerator, ReadmeGenerator, LicenseGenerator];
 

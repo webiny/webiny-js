@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { GraphQLClient } from "@webiny/app/features/graphqlClient";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import { type InstallationInput, SystemInstallerGateway as Abstraction } from "./abstractions.js";
 
 const IS_SYSTEM_INSTALLED = /* GraphQL */ `
@@ -59,10 +59,10 @@ interface InstallSystemResponse {
 }
 
 class SystemInstallerGraphQLGateway implements Abstraction.Interface {
-    constructor(private client: GraphQLClient.Interface) {}
+    constructor(private client: MainGraphQLClient.Interface) {}
 
     async isSystemInstalled(): Promise<boolean> {
-        const response = await this.client.execute<any, IsSystemInstalledResponse>({
+        const response = await this.client.execute<IsSystemInstalledResponse>({
             query: IS_SYSTEM_INSTALLED
         });
 
@@ -74,7 +74,7 @@ class SystemInstallerGraphQLGateway implements Abstraction.Interface {
     }
 
     async installSystem(data: InstallationInput): Promise<void> {
-        const response = await this.client.execute<any, InstallSystemResponse>({
+        const response = await this.client.execute<InstallSystemResponse>({
             query: INSTALL_SYSTEM,
             variables: {
                 installationInput: data
@@ -82,7 +82,7 @@ class SystemInstallerGraphQLGateway implements Abstraction.Interface {
         });
 
         if (response.system.installSystem.error) {
-            throw new Error(response.system.installSystem.error.message);
+            throw response.system.installSystem.error;
         }
     }
 }
@@ -90,5 +90,5 @@ class SystemInstallerGraphQLGateway implements Abstraction.Interface {
 export const SystemInstallerGateway = createImplementation({
     abstraction: Abstraction,
     implementation: SystemInstallerGraphQLGateway,
-    dependencies: [GraphQLClient]
+    dependencies: [MainGraphQLClient]
 });

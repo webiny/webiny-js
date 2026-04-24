@@ -7,14 +7,16 @@ export class TeamBeforeDeleteEvent extends DomainEvent<TeamBeforeDeletePayload> 
     eventType = "team.beforeDelete" as const;
 
     getHandlerAbstraction() {
-        return TeamBeforeDeleteHandler;
+        return TeamBeforeDeleteEventHandler;
     }
 }
 
-export const TeamBeforeDeleteHandler =
-    createAbstraction<IEventHandler<TeamBeforeDeleteEvent>>("TeamBeforeDeleteHandler");
+/** Hook into team lifecycle before a team is deleted. */
+export const TeamBeforeDeleteEventHandler = createAbstraction<IEventHandler<TeamBeforeDeleteEvent>>(
+    "TeamBeforeDeleteEventHandler"
+);
 
-export namespace TeamBeforeDeleteHandler {
+export namespace TeamBeforeDeleteEventHandler {
     export type Interface = IEventHandler<TeamBeforeDeleteEvent>;
     export type Event = TeamBeforeDeleteEvent;
 }
@@ -23,14 +25,16 @@ export class TeamAfterDeleteEvent extends DomainEvent<TeamAfterDeletePayload> {
     eventType = "team.afterDelete" as const;
 
     getHandlerAbstraction() {
-        return TeamAfterDeleteHandler;
+        return TeamAfterDeleteEventHandler;
     }
 }
 
-export const TeamAfterDeleteHandler =
-    createAbstraction<IEventHandler<TeamAfterDeleteEvent>>("TeamAfterDeleteHandler");
+/** Hook into team lifecycle after a team is deleted. */
+export const TeamAfterDeleteEventHandler = createAbstraction<IEventHandler<TeamAfterDeleteEvent>>(
+    "TeamAfterDeleteEventHandler"
+);
 
-export namespace TeamAfterDeleteHandler {
+export namespace TeamAfterDeleteEventHandler {
     export type Interface = IEventHandler<TeamAfterDeleteEvent>;
     export type Event = TeamAfterDeleteEvent;
 }

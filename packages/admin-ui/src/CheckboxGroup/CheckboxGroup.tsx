@@ -18,6 +18,7 @@ const DecoratableCheckboxGroup = ({
     note,
     required,
     disabled,
+    hint,
     validation,
     ...props
 }: CheckboxGroupProps) => {
@@ -28,6 +29,7 @@ const DecoratableCheckboxGroup = ({
         <div className={"w-full"}>
             <FormComponentLabel
                 text={label}
+                hint={hint}
                 required={required}
                 disabled={disabled}
                 invalid={invalid}
@@ -43,7 +45,7 @@ const DecoratableCheckboxGroup = ({
                 disabled={disabled}
                 className={"mt-none mb-xs-plus"}
             />
-            <CheckboxGroupPrimitive {...props} />
+            <CheckboxGroupPrimitive disabled={disabled} {...props} />
             <FormComponentNote text={note} disabled={disabled} />
         </div>
     );

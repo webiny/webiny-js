@@ -1,10 +1,20 @@
 import { z } from "zod";
 import { BaseModel, type IModelData as ExtractModelData } from "./BaseModel.js";
+import type { $ZodTypeDef } from "zod/v4/core";
 
 export type ModelClass<TModel extends BaseModel<any>> = {
     __schema: TModel["__schema"];
     new (data: ExtractModelData<TModel>): TModel;
     create(data: ExtractModelData<TModel>): TModel;
+};
+
+/**
+ * Custom type to compare Zod types and extract the inner type if it's wrapped in ZodOptional, ZodNullable, or ZodDefault.
+ */
+type InnerType = z.ZodTypeAny & {
+    def: $ZodTypeDef & {
+        innerType?: z.ZodObject<any>;
+    };
 };
 
 export const createModelSchema = <TReturn extends z.ZodRawShape>(
@@ -13,8 +23,23 @@ export const createModelSchema = <TReturn extends z.ZodRawShape>(
     return z.object({ ...factory(z) });
 };
 
+const shouldAssign = (inner: InnerType): boolean => {
+    if (!inner) {
+        return false;
+    } else if (!("def" in inner)) {
+        return false;
+    } else if (inner.def.type === "optional") {
+        return true;
+    } else if (inner.def.type === "nullable") {
+        return true;
+    } else if (inner.def.type === "default") {
+        return true;
+    }
+    return false;
+};
+
 export class ModelBuilder<TModel extends BaseModel<any>> {
-    private methods: Partial<Record<keyof TModel, any>> = {};
+    private readonly methods: Partial<Record<keyof TModel, any>> = {};
 
     constructor(
         private name: string,
@@ -25,19 +50,16 @@ export class ModelBuilder<TModel extends BaseModel<any>> {
 
     extendSchema<TExt extends z.ZodRawShape>(extensionFn: (zod: typeof z) => TExt): this {
         const shape = extensionFn(z);
-        const baseExtensions = (this.schema.shape as any).extensions;
+        const baseExtensions = this.schema.shape.extensions;
 
         let baseExtensionsObject: z.ZodObject<any>;
         if (baseExtensions instanceof z.ZodObject) {
             baseExtensionsObject = baseExtensions;
         } else if (baseExtensions) {
-            let inner = baseExtensions as any;
-            while (
-                inner &&
-                "_def" in inner &&
-                ["ZodOptional", "ZodNullable", "ZodDefault"].includes(inner._def.typeName)
-            ) {
-                inner = inner._def.innerType;
+            let inner = baseExtensions as InnerType;
+
+            while (shouldAssign(inner)) {
+                inner = inner.def.innerType!;
             }
             baseExtensionsObject = inner instanceof z.ZodObject ? inner : z.object({});
         } else {

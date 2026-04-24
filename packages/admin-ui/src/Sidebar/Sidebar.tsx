@@ -11,7 +11,8 @@ import { SidebarMenuRoot } from "./components/items/SidebarMenuRoot.js";
 import { SidebarMenuGroup } from "~/Sidebar/components/items/SidebarMenuGroup.js";
 
 interface SidebarProps
-    extends Omit<React.ComponentPropsWithoutRef<typeof SidebarRoot>, "title">,
+    extends
+        Omit<React.ComponentPropsWithoutRef<typeof SidebarRoot>, "title">,
         Omit<React.ComponentPropsWithoutRef<typeof SidebarContent>, "title"> {
     title?: React.ReactNode;
     icon?: React.ReactNode;
@@ -55,10 +56,10 @@ const SidebarBase = (props: SidebarProps) => {
         <SidebarRoot {...rootProps}>
             <SidebarHeader {...headerProps} />
             <SidebarContent {...contentProps}>
-                <SidebarMenuRoot>{props.children}</SidebarMenuRoot>
+                <SidebarMenuRoot showPinnedItems={true}>{props.children}</SidebarMenuRoot>
             </SidebarContent>
             <SidebarFooter>
-                <SidebarMenuRoot>{footerProps.footer}</SidebarMenuRoot>
+                <SidebarMenuRoot showPinnedItems={false}>{footerProps.footer}</SidebarMenuRoot>
             </SidebarFooter>
         </SidebarRoot>
     );

@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import numberIndexing from "~/elasticsearch/indexing/numberIndexing";
-import {
-    CmsModelFieldToElasticsearchFromParams,
-    CmsModelFieldToElasticsearchPlugin,
-    CmsModelFieldToElasticsearchToParams
-} from "~/types";
+import type { CmsEntryOpenSearchFieldIndex } from "~/features/CmsEntryOpenSearchFieldIndex";
+import { createTestContainer } from "~tests/helpers/createTestContainer";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex";
+
+const container = createTestContainer();
+const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
 
 describe("numberIndexing", () => {
-    const plugin = numberIndexing() as Required<CmsModelFieldToElasticsearchPlugin>;
+    const plugin = fieldIndexRegistry.get("number")!;
 
     const numbers: any[] = [
         [1, 1],
@@ -32,7 +32,7 @@ describe("numberIndexing", () => {
         const result = plugin.toIndex({
             value: num,
             field
-        } as CmsModelFieldToElasticsearchToParams);
+        } as CmsEntryOpenSearchFieldIndex.ToIndex);
 
         expect(result.value).toEqual(expected);
     });
@@ -60,7 +60,7 @@ describe("numberIndexing", () => {
         const result = plugin.fromIndex({
             value: str,
             field
-        } as CmsModelFieldToElasticsearchFromParams);
+        } as CmsEntryOpenSearchFieldIndex.FromIndex);
 
         expect(result).toEqual(expected);
     });

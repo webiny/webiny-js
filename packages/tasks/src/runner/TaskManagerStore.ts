@@ -8,7 +8,6 @@ import type {
     ITaskManagerStoreSetOutputOptions,
     ITaskManagerStoreUpdateTaskInputOptions,
     ITaskManagerStoreUpdateTaskOptions,
-    ITaskResponseDoneResultOutput,
     ITasksContextObject,
     TaskDataStatus
 } from "~/types.js";
@@ -25,7 +24,7 @@ import type {
 import deepEqual from "deep-equal";
 import { getObjectProperties } from "~/utils/getObjectProperties.js";
 import { ObjectUpdater } from "~/utils/ObjectUpdater.js";
-import type { GenericRecord } from "@webiny/api/types.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const getInput = <T extends ITaskDataInput = ITaskDataInput>(
     originalInput: T,
@@ -48,18 +47,17 @@ export interface ITaskManagerStoreParams {
     context: TaskManagerStoreContext;
     task: ITask;
     log: ITaskLog;
-    disableDatabaseLogs?: boolean;
+    databaseLogs: boolean;
 }
 
 export class TaskManagerStore<
     T extends ITaskDataInput = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-> implements ITaskManagerStorePrivate<T, O>
-{
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
+> implements ITaskManagerStorePrivate<T, O> {
     private readonly context: TaskManagerStoreContext;
     private task: ITask<T, O>;
     private taskLog: ITaskLog;
-    private readonly disableDatabaseLogs: boolean;
+    private readonly databaseLogs: boolean;
 
     private readonly taskUpdater = new ObjectUpdater<ITask<T, O>>();
     private readonly taskLogUpdater = new ObjectUpdater<ITaskLog>();
@@ -68,7 +66,7 @@ export class TaskManagerStore<
         this.context = params.context;
         this.task = params.task as ITask<T, O>;
         this.taskLog = params.log;
-        this.disableDatabaseLogs = !!params.disableDatabaseLogs;
+        this.databaseLogs = params.databaseLogs === true;
     }
 
     public getStatus(): TaskDataStatus {
@@ -80,8 +78,8 @@ export class TaskManagerStore<
     }
 
     public async listChildTasks<
-        I = GenericRecord,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+        O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
     >(definitionId?: string): Promise<ITask<I, O>[]> {
         const where: IListTaskParamsWhere = {
             parentId: this.task.id
@@ -167,7 +165,7 @@ export class TaskManagerStore<
         log: ITaskManagerStoreInfoLog,
         options?: ITaskManagerStoreAddLogOptions
     ): Promise<void> {
-        if (this.disableDatabaseLogs) {
+        if (!this.databaseLogs) {
             return;
         }
         this.taskLogUpdater.update({
@@ -194,7 +192,7 @@ export class TaskManagerStore<
         log: ITaskManagerStoreErrorLog,
         options?: ITaskManagerStoreAddLogOptions
     ): Promise<void> {
-        if (this.disableDatabaseLogs) {
+        if (!this.databaseLogs) {
             return;
         }
         /**
@@ -230,7 +228,7 @@ export class TaskManagerStore<
                 this.taskUpdater.fetch()
             );
         }
-        if (this.disableDatabaseLogs) {
+        if (!this.databaseLogs) {
             return;
         }
         if (this.taskLogUpdater.isDirty()) {

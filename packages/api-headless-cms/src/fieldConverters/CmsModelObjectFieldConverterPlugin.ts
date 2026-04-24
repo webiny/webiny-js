@@ -35,7 +35,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
             return {};
         }
 
-        if (field.multipleValues) {
+        if (field.list) {
             if (Array.isArray(value) === false) {
                 return {
                     [field.storageId]: null
@@ -86,65 +86,20 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
         }
 
         return fields.reduce<CmsEntryValues>((output, field) => {
-            const childFields = this.getChildFields({
-                field
-            });
-
-            if (childFields.length > 0) {
-                if (field.multipleValues) {
-                    if (Array.isArray(value[field.fieldId]) === false) {
-                        return output;
-                    }
-                    const values = value[field.fieldId].map((childValue: GenericRecord) => {
-                        return converterCollection.convertToStorage({
-                            fields: childFields.map(child => {
-                                return {
-                                    ...child,
-                                    parent: field
-                                };
-                            }),
-                            values: childValue
-                        });
-                    });
-                    if (values === undefined) {
-                        return output;
-                    }
-                    return {
-                        ...output,
-                        [field.storageId]: values
-                    };
-                }
-                /**
-                 * No need to process child fields if no value is provided.
-                 */
-                if (!value[field.fieldId]) {
-                    return output;
-                }
-                const values = converterCollection.convertToStorage({
-                    fields: childFields.map(child => {
-                        return {
-                            ...child,
-                            parent: field
-                        };
-                    }),
-                    values: value[field.fieldId]
-                });
-                if (values === undefined) {
-                    return output;
-                }
-                return {
-                    ...output,
-                    [field.storageId]: values
-                };
-            }
-
             if (value[field.fieldId] === undefined) {
                 return output;
             }
+            const converter = converterCollection.getConverter(field.type);
+
+            const newValue = converter.convertToStorage({
+                field,
+                value: value[field.fieldId],
+                parent: field.parent
+            });
 
             return {
                 ...output,
-                [field.storageId]: value[field.fieldId]
+                ...newValue
             };
         }, {});
     }
@@ -159,7 +114,7 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
             return {};
         }
 
-        if (field.multipleValues) {
+        if (field.list) {
             if (Array.isArray(value) === false) {
                 return {
                     [field.fieldId]: null
@@ -211,67 +166,24 @@ export class CmsModelObjectFieldConverterPlugin extends CmsModelFieldConverterPl
         }
 
         return fields.reduce<CmsEntryValues>((output, field) => {
-            const childFields = this.getChildFields({
-                field
-            });
-
-            if (childFields.length > 0) {
-                if (field.multipleValues) {
-                    const inputValues = value[
-                        field.storageId
-                    ] as unknown as GenericRecord<string>[];
-                    if (!inputValues || Array.isArray(inputValues) === false) {
-                        return output;
-                    }
-                    const values = inputValues.map(childValue => {
-                        return converterCollection.convertFromStorage({
-                            fields: childFields.map(child => {
-                                return {
-                                    ...child,
-                                    parent: field
-                                };
-                            }),
-                            values: childValue
-                        });
-                    });
-                    if (values === undefined) {
-                        return output;
-                    }
-                    return {
-                        ...output,
-                        [field.fieldId]: values
-                    };
-                }
-                /**
-                 * No need to process child fields if no value is provided.
-                 */
-                if (!value[field.storageId]) {
-                    return output;
-                }
-                const values = converterCollection.convertFromStorage({
-                    fields: childFields.map(child => {
-                        return {
-                            ...child,
-                            parent: field
-                        };
-                    }),
-                    values: value[field.storageId]
-                });
-                if (values === undefined) {
-                    return output;
-                }
-                return {
-                    ...output,
-                    [field.fieldId]: values
-                };
-            }
-
             if (value[field.storageId] === undefined) {
                 return output;
             }
+
+            const converter = converterCollection.getConverter(field.type);
+
+            const newValue = converter.convertFromStorage({
+                field,
+                value: value[field.storageId],
+                parent: field.parent
+            });
+            if (!newValue) {
+                return output;
+            }
+
             return {
                 ...output,
-                [field.fieldId]: value[field.storageId]
+                ...newValue
             };
         }, {});
     }

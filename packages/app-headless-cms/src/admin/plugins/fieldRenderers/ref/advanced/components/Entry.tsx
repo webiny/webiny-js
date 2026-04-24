@@ -1,23 +1,25 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import type {
     CmsReferenceContentEntry,
     CmsReferenceValue
 } from "~/admin/plugins/fieldRenderers/ref/components/types.js";
 import { Image } from "./entry/Image.js";
-import { Title } from "./entry/Title.js";
-import { View } from "./entry/View.js";
-import { Select } from "./entry/Select.js";
-import { Remove } from "./entry/Remove.js";
-import { MoveUp } from "./entry/MoveUp.js";
-import { MoveDown } from "./entry/MoveDown.js";
-import { Excerpt } from "./entry/Excerpt.js";
 import type { CmsModel } from "~/types.js";
+import { Tag, TimeAgo, Text, DropdownMenu, IconButton, Checkbox, cn } from "@webiny/admin-ui";
+import { ReactComponent as MoreVertIcon } from "@webiny/icons/more_vert.svg";
+import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
+import { ReactComponent as RemoveIcon } from "@webiny/icons/close.svg";
+import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
+import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
+import { useRouter } from "@webiny/app";
+import { Routes } from "~/routes.js";
 
 interface EntryProps {
     model: CmsModel;
     entry: CmsReferenceContentEntry;
     onChange: (value: CmsReferenceValue) => void;
     index?: never;
+    disabled?: boolean;
     selected: boolean;
     onMoveUp?: never;
     onMoveDown?: never;
@@ -27,6 +29,7 @@ interface EntryProps {
 
 interface EntryPropsWithRemove {
     onRemove: (entryId: string) => void;
+    disabled?: boolean;
     model: CmsModel;
     entry: CmsReferenceContentEntry;
     index: number;
@@ -38,7 +41,6 @@ interface EntryPropsWithRemove {
 }
 
 export const Entry = ({
-    model,
     entry,
     onChange,
     onRemove,
@@ -46,8 +48,20 @@ export const Entry = ({
     index,
     onMoveUp: onMoveUpClick,
     onMoveDown: onMoveDownClick,
-    placement
+    placement,
+    disabled = false
 }: EntryPropsWithRemove | EntryProps) => {
+    const { getLink } = useRouter();
+
+    const onSelect = useCallback(() => {
+        if (onChange) {
+            onChange({
+                id: entry.id,
+                modelId: entry.model.modelId
+            });
+        }
+    }, [onChange, entry.id, entry.model.modelId]);
+
     const onMoveUp = useCallback(
         (ev: React.MouseEvent) => {
             if (!onMoveUpClick) {
@@ -67,37 +81,133 @@ export const Entry = ({
         [onMoveDownClick, index]
     );
 
-    const icon = model.icon;
+    const entryStatusLabel = entry.status.charAt(0).toUpperCase() + entry.status.slice(1);
+
+    // Did not have `revision` field available in the `getLatestContentEntries`
+    // response, hence the manual extraction from the `id` field.
+    const entryRevision = useMemo(() => {
+        const extractedRevision = entry.id.split("#")[1] || "0001";
+
+        // Remove leading zeros for correct padding.
+        return "v" + Number(extractedRevision).toString();
+    }, [entry.id]);
+
+    const folderId = entry.wbyAco_location?.folderId || entry.location?.folderId || "";
+
+    const link = getLink(Routes.ContentEntries.List, {
+        id: entry.id,
+        modelId: entry.model.modelId,
+        folderId
+    });
 
     return (
-        <div className={"w-full rounded-md bg-neutral-dimmed"}>
-            <div className="flex items-center justify-between gap-sm-extra min-w-0">
-                <Image title={entry.title} src={entry.image} icon={icon} />
-                <div className={"flex flex-col gap-xxs overflow-hidden flex-1 min-w-0"}>
-                    <Title title={entry.title} />
-                    <Excerpt
-                        modelName={entry.model.name}
-                        createdBy={entry.createdBy}
-                        createdOn={entry.createdOn}
-                        status={entry.status}
+        <div
+            data-selected={selected}
+            onClick={onSelect}
+            data-role="ref-field-entry"
+            className={cn(
+                "flex items-center justify-between gap-md w-full rounded-md bg-neutral-light p-sm-extra pr-lg hover:bg-neutral-dimmed border-md border-transparent data-[selected=true]:border-accent-dimmed",
+                { "hover:cursor-pointer": !!onChange }
+            )}
+        >
+            {onChange && !disabled ? (
+                <div>
+                    <Checkbox
+                        checked={selected}
+                        onChange={() => {
+                            // We're not calling the onSelect callback here because
+                            // the parent div already does that on click.
+                        }}
                     />
                 </div>
-                <div className={"flex items-center gap-sm pr-sm-extra h-lg"}>
-                    {placement == "multiRef" && (
+            ) : null}
+            <div
+                className={
+                    "grid grid-cols-[auto_1fr_auto] items-center gap-lg text-sm text-neutral-muted w-full min-w-0"
+                }
+            >
+                <Image title={entry.title} src={entry.image} />
+                <div className={"overflow-hidden"}>
+                    <div>{entry.model.name}</div>
+
+                    <div
+                        title={entry.title}
+                        className={
+                            "text-md text-neutral-primary font-semibold mb-sm text-ellipsis overflow-hidden whitespace-nowrap block"
+                        }
+                    >
+                        {entry.title}
+                    </div>
+
+                    <div>
+                        <span className={"w-[60px] inline-block"}>Created:</span>
+                        <span>
+                            {entry.createdBy.displayName}, <TimeAgo datetime={entry.createdOn} />
+                        </span>
+                    </div>
+                    {/* <div>
+                        <span className={"w-[60px] inline-block"}>Location:</span>
+                        <span>
+                            Home / Content / Preview / ... / Manage / Retail / Local / Products
+                        </span>
+                    </div>*/}
+                </div>
+                <div className={"flex items-center gap-sm"}>
+                    <Tag
+                        content={
+                            <>
+                                {entryStatusLabel}&nbsp;
+                                <Text size={"sm"} className={"text-neutral-muted"}>
+                                    ({entryRevision})
+                                </Text>
+                            </>
+                        }
+                        variant={"neutral-base-outline"}
+                    />
+
+                    {!disabled && placement == "multiRef" ? (
                         <>
-                            <MoveUp
-                                className={onMoveUpClick ? "active" : "disabled"}
-                                onClick={onMoveUp}
-                            />
-                            <MoveDown
-                                className={onMoveDownClick ? "active" : "disabled"}
-                                onClick={onMoveDown}
-                            />
+                            <div className={"flex gap-xs"}>
+                                <IconButton
+                                    disabled={!onMoveUpClick}
+                                    variant={"ghost"}
+                                    size={"sm"}
+                                    icon={<ArrowUp />}
+                                    onClick={onMoveUp}
+                                />
+                                <IconButton
+                                    disabled={!onMoveDownClick}
+                                    variant={"ghost"}
+                                    size={"sm"}
+                                    icon={<ArrowDown />}
+                                    onClick={onMoveDown}
+                                />
+                            </div>
                         </>
-                    )}
-                    <View entry={entry} />
-                    {onChange && <Select entry={entry} onChange={onChange} selected={selected} />}
-                    {onRemove && <Remove entry={entry} onRemove={onRemove} />}
+                    ) : null}
+
+                    {!disabled ? (
+                        <DropdownMenu
+                            trigger={
+                                <IconButton variant={"ghost"} size={"sm"} icon={<MoreVertIcon />} />
+                            }
+                        >
+                            <DropdownMenu.Link
+                                icon={<OpenInNewIcon />}
+                                text={"Open in new tab"}
+                                to={link}
+                                target={"_blank"}
+                            />
+
+                            {onRemove && (
+                                <DropdownMenu.Item
+                                    icon={<RemoveIcon />}
+                                    text={placement === "multiRef" ? "Remove from list" : "Remove"}
+                                    onClick={() => onRemove(entry.id)}
+                                />
+                            )}
+                        </DropdownMenu>
+                    ) : null}
                 </div>
             </div>
         </div>

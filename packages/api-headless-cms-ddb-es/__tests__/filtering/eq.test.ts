@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { CreateExecFilteringResponse } from "~/operations/entry/elasticsearch/filtering";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types";
 import { createPluginsContainer, createQuery, Query } from "./mocks";
 import { createExecFiltering } from "./mocks/filtering";
 
@@ -18,7 +18,9 @@ describe("equals filter", () => {
 
     it("should add equal filter - null", async () => {
         const where: CmsEntryListWhere = {
-            title: null
+            values: {
+                title: null
+            }
         };
 
         execFiltering({
@@ -45,7 +47,9 @@ describe("equals filter", () => {
     it("should add equal filter - string", async () => {
         const title = "Webiny Serverless";
         const where: CmsEntryListWhere = {
-            title
+            values: {
+                title
+            }
         };
 
         execFiltering({
@@ -71,7 +75,9 @@ describe("equals filter", () => {
 
     it("should add equal filter - boolean", async () => {
         const where: CmsEntryListWhere = {
-            isMarried: true
+            values: {
+                isMarried: true
+            }
         };
 
         execFiltering({
@@ -97,7 +103,9 @@ describe("equals filter", () => {
 
     it("should add equal filter - number", async () => {
         const where: CmsEntryListWhere = {
-            age: 2
+            values: {
+                age: 2
+            }
         };
 
         execFiltering({

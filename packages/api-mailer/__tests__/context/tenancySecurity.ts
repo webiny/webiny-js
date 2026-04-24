@@ -1,12 +1,11 @@
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { createPermissions } from "./helpers";
-import type { MailerContext } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { SecurityPermission } from "@webiny/api-core/types/security";
-import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { createApiCore } from "@webiny/api-core";
-import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { ApiCoreContext, ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 interface Config {
     permissions: SecurityPermission[];
@@ -20,7 +19,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
         createApiCore({
             storageOperations: apiCoreStorage.storageOperations
         }),
-        new ContextPlugin<MailerContext>(context => {
+        new ContextPlugin<ApiCoreContext>(context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
                 name: "Root",
@@ -32,7 +31,6 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                 },
                 isInstalled: true,
                 tags: [],
-                webinyVersion: context.WEBINY_VERSION,
                 createdOn: new Date().toISOString(),
                 savedOn: new Date().toISOString()
             });
@@ -58,7 +56,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                 return permissions || [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<MailerContext>(context => {
+        new BeforeHandlerPlugin<ApiCoreContext>(context => {
             const { headers = {} } = context.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);

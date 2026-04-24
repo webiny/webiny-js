@@ -75,14 +75,12 @@ class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async create(user: AdminUser): Promise<Result<AdminUser, RepositoryAbstraction.Error>> {
         try {
-            // Delete password field before storing!
-            // @ts-expect-error - password is optional and has to be removed
-            delete user["password"];
-
             const result = await this.storageOperations.createUser({ user });
 
             // Prime the cache with the new user
-            this.loaders.getUser.clear(result.id).prime(result.id, result);
+            const tenant = this.tenantContext.getTenant().id;
+            const key = { tenant, id: result.id };
+            this.loaders.getUser.clear(key).prime(key, result);
 
             return Result.ok(result);
         } catch (error) {

@@ -10,11 +10,10 @@ name: 📦 Release
         description: Branch to release from
         required: true
         default: next
-        type: choice
-        options:
-          - next
-          - dev
-          - v5-dev
+      tag:
+        description: NPM tag (in most cases, "beta" is what you need)
+        required: false
+        default: beta
 jobs:
   constants:
     name: Create constants
@@ -22,10 +21,10 @@ jobs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - uses: actions/checkout@v4
+          node-version: 24
+      - uses: actions/checkout@v5
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -46,18 +45,18 @@ jobs:
     needs: constants
     runs-on: webiny-build-packages
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - uses: actions/checkout@v4
+          node-version: 24
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
@@ -67,7 +66,7 @@ jobs:
       - name: Build packages
         run: yarn build
         working-directory: ${{ github.event.inputs.branch }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -78,7 +77,7 @@ jobs:
     needs:
       - constants
       - build
-    name: NPM release ("beta" tag)
+    name: NPM release ("${{ github.event.inputs.tag }}" tag)
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -86,19 +85,19 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       BETA_VERSION: ${{ vars.BETA_VERSION }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - uses: actions/checkout@v4
+          node-version: 24
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
           fetch-depth: 0
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -119,7 +118,7 @@ jobs:
         working-directory: ${{ github.event.inputs.branch }}
       - name: Version and publish "beta" tag to NPM
         working-directory: ${{ github.event.inputs.branch }}
-        run: yarn release --type=beta
+        run: yarn release --type=beta --tag=${{ github.event.inputs.tag }}
     runs-on: ubuntu-latest
   npmReleaseLatest:
     needs:
@@ -134,19 +133,19 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       LATEST_VERSION: ${{ vars.LATEST_VERSION }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - uses: actions/checkout@v4
+          node-version: 24
+      - uses: actions/checkout@v5
         with:
           path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
           fetch-depth: 0
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ${{ github.event.inputs.branch }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
@@ -167,5 +166,7 @@ jobs:
         working-directory: ${{ github.event.inputs.branch }}
       - name: Version and publish "latest" tag to NPM
         working-directory: ${{ github.event.inputs.branch }}
-        run: yarn release --type=latest
+        run: >-
+          yarn release --type=latest --sourceTag=${{ github.event.inputs.tag }}
+          --createGithubRelease=true
     runs-on: ubuntu-latest

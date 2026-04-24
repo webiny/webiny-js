@@ -47,7 +47,7 @@ export namespace LocalStorageConfig {
 }
 
 /** Service: thin façade, delegates to repository for consumers. */
-export interface ILocalStorageService {
+export interface ILocalStorage {
     get<T = string>(key: string): T | undefined;
     set<T = string>(key: string, value: T): void;
     remove(key: string): void;
@@ -55,8 +55,8 @@ export interface ILocalStorageService {
     keys(): string[];
 }
 
-export const LocalStorageService = new Abstraction<ILocalStorageService>("LocalStorageService");
+export const LocalStorage = new Abstraction<ILocalStorage>("LocalStorage");
 
-export namespace LocalStorageService {
-    export type Interface = ILocalStorageService;
+export namespace LocalStorage {
+    export type Interface = ILocalStorage;
 }

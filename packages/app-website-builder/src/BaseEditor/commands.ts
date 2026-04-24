@@ -9,8 +9,8 @@ const CreateElement = createCommand<{
     parentId: string;
     // Parent element slot (e.g., `children`, `heroBanner`, `tabsList.0.content`).
     slot: string;
-    // Index within the slot.
-    index: number;
+    // Index within the slot. Omit to append at the end.
+    index?: number;
     // Bindings
     bindings?: ElementFactoryCreateElementParams["bindings"];
 }>("CREATE_ELEMENT");
@@ -44,6 +44,8 @@ const PreviewPatchElement = createCommand<{ elementId: string; patch: any[] }>(
     "PREVIEW_PATCH_ELEMENT"
 );
 
+const SendPreviewMessage = createCommand<{ type: string; payload?: any }>("SEND_PREVIEW_MESSAGE");
+
 export const Commands = {
     CreateElement,
     DeleteElement,
@@ -53,5 +55,6 @@ export const Commands = {
     HighlightElement,
     RefreshPreview,
     PreviewPatchElement,
+    SendPreviewMessage,
     SetTheme
 };

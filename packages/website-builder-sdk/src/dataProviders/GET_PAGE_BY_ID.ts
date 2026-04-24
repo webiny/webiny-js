@@ -7,6 +7,8 @@ export const GET_PAGE_BY_ID = /* GraphQL*/ `
                     properties
                     elements
                     bindings
+                    extensions
+                    languagePaths
                 }
                 error {
                     code

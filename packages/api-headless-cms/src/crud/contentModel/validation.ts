@@ -40,8 +40,30 @@ const fieldSystemFields: string[] = [
 
 const str = zod.string().trim();
 const shortString = str.max(255);
+const longString = str.max(255);
 const optionalShortString = shortString.optional();
-const optionalNullishShortString = optionalShortString.nullish();
+const optionalLongString = longString.optional();
+const optionalNullishShortString = optionalShortString.nullish().default(null);
+const optionalNullishLongString = optionalLongString.nullish().default(null);
+
+const icon = zod
+    .looseObject({
+        type: zod.string(),
+        name: zod.string(),
+        value: zod.string().optional()
+    })
+    .optional()
+    .nullish()
+    .default(null)
+    .transform(value => {
+        if (typeof value === "string") {
+            return {
+                type: "icon",
+                name: value
+            };
+        }
+        return value;
+    });
 
 const fieldSchema = zod.object({
     id: shortString,
@@ -68,11 +90,13 @@ const fieldSchema = zod.object({
             }
         }),
     label: shortString,
-    helpText: optionalShortString.optional().nullish().default(null),
-    placeholderText: optionalShortString.optional().nullable().default(null),
+    help: optionalNullishLongString,
+    description: optionalNullishShortString,
+    note: optionalNullishShortString,
+    placeholder: optionalNullishShortString,
     type: shortString,
     tags: zod.array(shortString).optional().default([]),
-    multipleValues: zod
+    list: zod
         .boolean()
         .optional()
         .nullish()
@@ -105,7 +129,7 @@ const fieldSchema = zod.object({
     renderer: zod
         .object({
             name: shortString,
-            settings: zod.object({}).passthrough().nullish().optional()
+            settings: zod.looseObject({}).nullish().optional()
         })
         .optional()
         .nullable()
@@ -116,8 +140,7 @@ const fieldSchema = zod.object({
                 name: shortString,
                 message: optionalShortString.default("Value is required."),
                 settings: zod
-                    .object({})
-                    .passthrough()
+                    .looseObject({})
                     .optional()
                     .nullish()
                     .transform(value => {
@@ -136,8 +159,7 @@ const fieldSchema = zod.object({
                 name: shortString,
                 message: optionalShortString.default("Value is required."),
                 settings: zod
-                    .object({})
-                    .passthrough()
+                    .looseObject({})
                     .optional()
                     .nullish()
                     .transform(value => {
@@ -151,8 +173,7 @@ const fieldSchema = zod.object({
         .default([])
         .transform(value => value || []),
     settings: zod
-        .object({})
-        .passthrough()
+        .looseObject({})
         .optional()
         .nullish()
         .transform(value => {
@@ -204,6 +225,33 @@ const refinementModelIdValidationMessage = (value?: string) => {
     };
 };
 
+const refineSingularApiName = (value: string, ctx: zod.RefinementCtx) => {
+    if (!apiNameRefinementValidation(value)) {
+        ctx.addIssue({
+            code: zod.ZodIssueCode.custom,
+            ...refinementSingularValidationMessage(value)
+        });
+    }
+};
+
+const refinePluralApiName = (value: string, ctx: zod.RefinementCtx) => {
+    if (!apiNameRefinementValidation(value)) {
+        ctx.addIssue({
+            code: zod.ZodIssueCode.custom,
+            ...refinementPluralValidationMessage(value)
+        });
+    }
+};
+
+const refineModelId = (value: string, ctx: zod.RefinementCtx) => {
+    if (!refinementModelIdValidation(value)) {
+        ctx.addIssue({
+            code: zod.ZodIssueCode.custom,
+            ...refinementModelIdValidationMessage(value)
+        });
+    }
+};
+
 const modelIdTransformation = (value?: string) => {
     if (!value) {
         return value;
@@ -219,19 +267,15 @@ export const createModelCreateValidation = () => {
     return zod.object({
         name: shortString,
         modelId: optionalShortString.transform(modelIdTransformation),
-        singularApiName: shortString
-            .min(1)
-            .refine(apiNameRefinementValidation, refinementSingularValidationMessage),
-        pluralApiName: shortString
-            .min(1)
-            .refine(apiNameRefinementValidation, refinementPluralValidationMessage),
+        singularApiName: shortString.min(1).superRefine(refineSingularApiName),
+        pluralApiName: shortString.min(1).superRefine(refinePluralApiName),
         description: optionalNullishShortString.transform(value => {
             return value || "";
         }),
         group: shortString,
-        icon: optionalNullishShortString,
+        icon,
         fields: zod.array(fieldSchema).default([]),
-        layout: zod.array(zod.array(shortString)).default([]),
+        layout: zod.array(zod.array(zod.any())).default([]),
         tags: zod.array(shortString).optional(),
         titleFieldId: optionalShortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
@@ -242,31 +286,22 @@ export const createModelCreateValidation = () => {
 
 export const createModelImportValidation = () => {
     return zod.object({
-        name: shortString.min(1).refine(
-            value => {
-                return value.match(/[a-zA-Z]/) !== null;
-            },
-            value => {
-                return {
+        name: shortString.min(1).superRefine((value, ctx) => {
+            if (value.match(/[a-zA-Z]/) === null) {
+                ctx.addIssue({
+                    code: zod.ZodIssueCode.custom,
                     message: `The name "${value}" is not valid.`
-                };
+                });
             }
-        ),
-        modelId: shortString
-            .min(1)
-            .refine(refinementModelIdValidation, refinementModelIdValidationMessage)
-            .transform(modelIdTransformation),
-        singularApiName: shortString
-            .min(1)
-            .refine(apiNameRefinementValidation, refinementSingularValidationMessage),
-        pluralApiName: shortString
-            .min(1)
-            .refine(apiNameRefinementValidation, refinementPluralValidationMessage),
+        }),
+        modelId: shortString.min(1).superRefine(refineModelId).transform(modelIdTransformation),
+        singularApiName: shortString.min(1).superRefine(refineSingularApiName),
+        pluralApiName: shortString.min(1).superRefine(refinePluralApiName),
         description: optionalNullishShortString,
         group: shortString,
-        icon: optionalNullishShortString,
+        icon,
         fields: zod.array(fieldSchema).min(1),
-        layout: zod.array(zod.array(shortString)).min(1),
+        layout: zod.array(zod.array(zod.any())),
         tags: zod.array(shortString).optional(),
         titleFieldId: shortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
@@ -278,41 +313,32 @@ export const createModelCreateFromValidation = () => {
     return zod.object({
         name: shortString,
         modelId: optionalShortString.transform(modelIdTransformation),
-        singularApiName: shortString.refine(
-            apiNameRefinementValidation,
-            refinementSingularValidationMessage
-        ),
-        pluralApiName: shortString.refine(
-            apiNameRefinementValidation,
-            refinementPluralValidationMessage
-        ),
+        singularApiName: shortString.superRefine(refineSingularApiName),
+        pluralApiName: shortString.superRefine(refinePluralApiName),
         description: optionalNullishShortString,
         group: shortString,
-        icon: optionalNullishShortString,
-        locale: optionalShortString
+        icon
     });
 };
 
 export const createModelUpdateValidation = () => {
     return zod.object({
         name: optionalShortString,
-        singularApiName: optionalShortString.refine(value => {
-            if (!value) {
-                return true;
+        singularApiName: optionalShortString.superRefine((value, ctx) => {
+            if (value) {
+                refineSingularApiName(value, ctx);
             }
-            return apiNameRefinementValidation(value);
-        }, refinementSingularValidationMessage),
-        pluralApiName: optionalShortString.refine(value => {
-            if (!value) {
-                return true;
+        }),
+        pluralApiName: optionalShortString.superRefine((value, ctx) => {
+            if (value) {
+                refinePluralApiName(value, ctx);
             }
-            return apiNameRefinementValidation(value);
-        }, refinementPluralValidationMessage),
+        }),
         description: optionalNullishShortString,
         group: optionalShortString,
-        icon: optionalNullishShortString,
+        icon,
         fields: zod.array(fieldSchema),
-        layout: zod.array(zod.array(shortString)),
+        layout: zod.array(zod.array(zod.any())),
         titleFieldId: optionalShortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
         imageFieldId: optionalShortString.nullish(),

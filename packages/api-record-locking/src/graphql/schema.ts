@@ -1,60 +1,63 @@
-import { resolve, resolveList } from "~/utils/resolve.js";
-import type { Context } from "~/types.js";
+import { resolve, resolveList } from "./resolve.js";
 import type { IGraphQLSchemaPlugin } from "@webiny/handler-graphql";
-import { createGraphQLSchemaPlugin, NotFoundError } from "@webiny/handler-graphql";
+import { createGraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
-import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
-import { checkPermissions } from "~/utils/checkPermissions.js";
+import { checkPermissions } from "./checkPermissions.js";
+import { IsEntryLockedUseCase } from "~/features/IsEntryLocked/abstractions.js";
+import { GetLockRecordUseCase } from "~/features/GetLockRecord/abstractions.js";
+import { GetLockedEntryLockRecordUseCase } from "~/features/GetLockedEntryLockRecord/abstractions.js";
+import { ListLockRecordsUseCase } from "~/features/ListLockRecords/abstractions.js";
+import { ListAllLockRecordsUseCase } from "~/features/ListAllLockRecords/abstractions.js";
+import { LockEntryUseCase } from "~/features/LockEntry/abstractions.js";
+import { UpdateEntryLockUseCase } from "~/features/UpdateEntryLock/abstractions.js";
+import { UnlockEntryUseCase } from "~/features/UnlockEntry/abstractions.js";
+import { UnlockEntryRequestUseCase } from "~/features/UnlockEntryRequest/abstractions.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { CmsModel } from "@webiny/api-headless-cms/types/model.js";
+import type { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 interface Params {
-    context: Pick<Context, "plugins" | "recordLocking" | "security" | "cms">;
+    model: CmsModel;
+    models: CmsModel[];
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 export const createGraphQLSchema = async (
     params: Params
-): Promise<IGraphQLSchemaPlugin<Context>> => {
-    const context = params.context;
+): Promise<IGraphQLSchemaPlugin<ApiCoreContext>> => {
+    const model = params.model;
 
-    const model = await context.recordLocking.getModel();
-
-    const models = await context.security.withoutAuthorization(async () => {
-        return (await context.cms.listModels()).filter(model => {
-            if (model.fields.length === 0) {
-                return false;
-            } else if (model.isPrivate) {
-                return false;
-            }
-            return true;
-        });
+    const models = params.models.filter(model => {
+        return model.fields.length > 0;
     });
 
-    const fieldTypePlugins = createFieldTypePluginRecords(context.plugins);
+    const fieldRegistry = params.fieldRegistry;
 
     const recordLockingFields = renderFields({
         models,
         model,
         fields: model.fields,
         type: "manage",
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const listFilterFieldsRender = renderListFilterFields({
         model,
         fields: model.fields,
         type: "manage",
-        fieldTypePlugins,
+        fieldRegistry,
         excludeFields: ["entryId"]
     });
 
     const sortEnumRender = renderSortEnum({
         model,
         fields: model.fields,
-        fieldTypePlugins,
-        sorterPlugins: []
+        fieldRegistry,
+        sorters: []
     });
 
-    const plugin = createGraphQLSchemaPlugin<Context>({
+    const plugin = createGraphQLSchemaPlugin<ApiCoreContext>({
         typeDefs: /* GraphQL */ `
             ${recordLockingFields.map(f => f.typeDefs).join("\n")}
 
@@ -135,7 +138,7 @@ export const createGraphQLSchema = async (
             }
 
             input RecordLockingListWhereInput {
-                ${listFilterFieldsRender}
+                ${listFilterFieldsRender.allFiltersAsString()}
             }
 
             enum RecordLockingListSorter {
@@ -199,45 +202,67 @@ export const createGraphQLSchema = async (
                 async isEntryLocked(_, args, context) {
                     return resolve(async () => {
                         await checkPermissions(context);
-                        return context.recordLocking.isEntryLocked({
+                        const useCase = context.container.resolve(IsEntryLockedUseCase);
+                        const result = await useCase.execute({
                             id: args.id,
                             type: args.type
                         });
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     });
                 },
                 async getLockRecord(_, args, context) {
                     return resolve(async () => {
                         await checkPermissions(context);
-                        const result = await context.recordLocking.getLockRecord({
+                        const useCase = context.container.resolve(GetLockRecordUseCase);
+                        const result = await useCase.execute({
                             id: args.id,
                             type: args.type
                         });
-                        if (result) {
-                            return result;
+                        if (result.isFail()) {
+                            throw result.error;
                         }
-                        throw new NotFoundError("Lock record not found.");
+                        return result.value;
                     });
                 },
                 async getLockedEntryLockRecord(_, args, context) {
                     return resolve(async () => {
                         await checkPermissions(context);
-                        return await context.recordLocking.getLockedEntryLockRecord({
+                        const useCase = context.container.resolve(GetLockedEntryLockRecordUseCase);
+                        const result = await useCase.execute({
                             id: args.id,
                             type: args.type
                         });
+                        // Returns null if not found/expired/locked by current user
+                        if (result.isFail()) {
+                            return null;
+                        }
+                        return result.value;
                     });
                 },
 
                 async listLockRecords(_, args, context) {
                     return resolveList(async () => {
                         await checkPermissions(context);
-                        return await context.recordLocking.listLockRecords(args);
+                        const useCase = context.container.resolve(ListLockRecordsUseCase);
+                        const result = await useCase.execute(args);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     });
                 },
                 listAllLockRecords(_, args, context) {
                     return resolveList(async () => {
                         await checkPermissions(context);
-                        return await context.recordLocking.listAllLockRecords(args);
+                        const useCase = context.container.resolve(ListAllLockRecordsUseCase);
+                        const result = await useCase.execute(args);
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     });
                 }
             },
@@ -245,38 +270,58 @@ export const createGraphQLSchema = async (
                 async lockEntry(_, args, context) {
                     return resolve(async () => {
                         await checkPermissions(context);
-                        return context.recordLocking.lockEntry({
+                        const useCase = context.container.resolve(LockEntryUseCase);
+                        const result = await useCase.execute({
                             id: args.id,
                             type: args.type
                         });
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     });
                 },
                 async updateEntryLock(_, args, context) {
                     return resolve(async () => {
                         await checkPermissions(context);
-                        return context.recordLocking.updateEntryLock({
+                        const useCase = context.container.resolve(UpdateEntryLockUseCase);
+                        const result = await useCase.execute({
                             id: args.id,
                             type: args.type
                         });
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     });
                 },
                 async unlockEntry(_, args, context) {
                     return resolve(async () => {
                         await checkPermissions(context);
-                        return await context.recordLocking.unlockEntry({
+                        const useCase = context.container.resolve(UnlockEntryUseCase);
+                        const result = await useCase.execute({
                             id: args.id,
                             type: args.type,
                             force: args.force
                         });
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     });
                 },
                 async unlockEntryRequest(_, args, context) {
                     return resolve(async () => {
                         await checkPermissions(context);
-                        return await context.recordLocking.unlockEntryRequest({
+                        const useCase = context.container.resolve(UnlockEntryRequestUseCase);
+                        const result = await useCase.execute({
                             id: args.id,
                             type: args.type
                         });
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+                        return result.value;
                     });
                 }
             }

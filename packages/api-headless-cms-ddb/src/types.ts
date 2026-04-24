@@ -1,14 +1,18 @@
-import type { Plugin } from "@webiny/plugins/types.js";
+import { type Plugin, PluginsContainer } from "@webiny/plugins/types.js";
 import type {
+    CmsContext,
     CmsEntryStorageOperations as BaseCmsEntryStorageOperations,
     CmsModel,
     CmsModelField,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types/index.js";
-import type { TableConstructor } from "@webiny/db-dynamodb/toolbox.js";
-import type { AttributeDefinition } from "@webiny/db-dynamodb/toolbox.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { Entity, Table } from "@webiny/db-dynamodb/toolbox.js";
+import type { IEntryEntity, IGroupEntity, IModelEntity } from "~/definitions/types.js";
+import type { ITable } from "@webiny/db-dynamodb";
+
+export type { CmsContext };
+
+export type { IGroupEntity, IModelEntity, IEntryEntity };
 
 interface CmsFieldFilterValueTransformParams {
     /**
@@ -34,29 +38,28 @@ export interface CmsFieldFilterValueTransformPlugin extends Plugin {
     transform: (params: CmsFieldFilterValueTransformParams) => any;
 }
 
-export type Attributes = Record<string, AttributeDefinition>;
-
 export enum ENTITIES {
-    SYSTEM = "CmsSystem",
     GROUPS = "CmsGroups",
     MODELS = "CmsModels",
     ENTRIES = "CmsEntries"
 }
 
-export interface TableModifier {
-    (table: TableConstructor<string, string, string>): TableConstructor<string, string, string>;
-}
-
 export interface StorageOperationsFactoryParams {
     documentClient: DynamoDBDocument;
-    table?: TableModifier;
-    attributes?: Record<ENTITIES, Attributes>;
-    plugins?: Plugin[] | Plugin[][];
+    table?: string;
+    plugins: PluginsContainer;
+    container: CmsContext["container"];
+}
+
+export interface IHeadlessCmsStorageOperationsGetEntitiesResult {
+    groups: IGroupEntity;
+    models: IModelEntity;
+    entries: IEntryEntity;
 }
 
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations {
-    getTable: () => Table<string, string, string>;
-    getEntities: () => Record<"system" | "groups" | "models" | "entries", Entity<any>>;
+    getTable: () => ITable;
+    getEntities: () => IHeadlessCmsStorageOperationsGetEntitiesResult;
 }
 
 export interface StorageOperationsFactory {
@@ -64,12 +67,12 @@ export interface StorageOperationsFactory {
 }
 
 export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations {
-    dataLoaders: DataLoadersHandlerInterface;
+    dataLoaders: IDataLoadersHandler;
 }
 
 export interface DataLoadersHandlerInterfaceClearAllParams {
-    model: Pick<CmsModel, "tenant" | "locale">;
+    model: Pick<CmsModel, "tenant">;
 }
-export interface DataLoadersHandlerInterface {
+export interface IDataLoadersHandler {
     clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;
 }

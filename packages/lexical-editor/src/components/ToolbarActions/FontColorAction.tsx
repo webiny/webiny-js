@@ -8,7 +8,7 @@ import { getSelectedNode } from "~/utils/getSelectedNode.js";
 import { useDeriveValueFromSelection } from "~/hooks/useCurrentSelection.js";
 import { useRichTextEditor } from "~/hooks/index.js";
 
-export const FontColorPicker = makeDecoratable("FontColorPicker", (): JSX.Element | null => {
+export const FontColorPicker = makeDecoratable("FontColorPicker", (): React.JSX.Element | null => {
     useEffect(() => {
         console.log("Default FontColorPicker, please add your own component");
     }, []);
@@ -16,10 +16,10 @@ export const FontColorPicker = makeDecoratable("FontColorPicker", (): JSX.Elemen
 });
 
 interface FontActionColorPicker {
-    element: JSX.Element;
+    element: React.JSX.Element;
 }
 
-const FontActionColorPicker = ({ element }: FontActionColorPicker): JSX.Element => {
+const FontActionColorPicker = ({ element }: FontActionColorPicker): React.JSX.Element => {
     return <Compose component={FontColorPicker} with={() => () => element} />;
 };
 

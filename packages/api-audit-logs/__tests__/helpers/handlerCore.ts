@@ -10,11 +10,9 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import type { AuditLogsContext } from "~/types";
 import { createAco } from "@webiny/api-aco";
 import { createAuditLogs } from "~/index";
-import type { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 import { createFileManagerContext } from "@webiny/api-file-manager";
 import { createMailerContext } from "@webiny/api-mailer";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { createAcoAuditLogsContext } from "~/context/index.js";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiKey } from "@webiny/api-core/types/security.js";
@@ -50,7 +48,6 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
 
     const documentClient = getDocumentClient();
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = createTestWcpLicense();
@@ -59,6 +56,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
+        documentClient,
         plugins: [
             topPlugins,
             createApiCore({
@@ -84,7 +82,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
                         return {
                             id: apiKey,
                             name: apiKey,
-                            tenant: tenant.id,
+                            slug: tenant.id,
                             permissions: createPermissions(permissions),
                             token,
                             createdBy: {
@@ -93,24 +91,20 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
                                 type: "admin"
                             },
                             description: "test",
-                            createdOn: new Date().toISOString(),
-                            webinyVersion: context.WEBINY_VERSION
+                            createdOn: new Date().toISOString()
                         };
                     };
                 }
             } as ContextPlugin<AuditLogsContext>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
+            createHeadlessCmsContext(),
             createMailerContext(),
-            createFileManagerContext({
-                storageOperations: fileManagerStorage.storageOperations
-            }),
+            createFileManagerContext(),
             createHeadlessCmsGraphQL(),
             createWebsiteBuilder(),
             createAco({ documentClient }),
             createAuditLogs(),
-            createAcoAuditLogsContext(),
             plugins,
             graphQLHandlerPlugins(),
             bottomPlugins

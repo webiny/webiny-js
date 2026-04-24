@@ -39,6 +39,7 @@ import { createHandlerCore } from "./plugins";
 import { acceptIncomingChanges } from "./acceptIncommingChanges";
 import { StorageOperationsCmsModelPlugin } from "~/plugins";
 import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/valueKeyStorageConverter";
+import { ContextPlugin } from "@webiny/api";
 import { createOutputBenchmarkLogs } from "~tests/testHelpers/outputBenchmarkLogs";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type {
@@ -53,6 +54,7 @@ import {
     CMS_VALIDATE_STRUCTURE_MUTATION
 } from "~tests/testHelpers/graphql/structure";
 import { defaultIdentity } from "~tests/testHelpers/tenancySecurity";
+import type { CmsContext } from "~/types/index.js";
 
 export type GraphQLHandlerParams = CreateHandlerCoreParams;
 
@@ -65,6 +67,11 @@ export interface InvokeParams {
     headers?: Record<string, string>;
 }
 
+export interface IBaseGraphQLResponse<T = any> {
+    data: T;
+    errors?: Error[];
+}
+
 export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
     const { identity, path } = params;
 
@@ -74,13 +81,22 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         core.plugins.concat([...createOutputBenchmarkLogs(), acceptIncomingChanges()])
     );
 
-    const storageOperationsCmsModelPlugin = new StorageOperationsCmsModelPlugin(
-        createCmsModelFieldConvertersAttachFactory(plugins)
-    );
+    const storageOperationsCmsModelPlugin = new ContextPlugin<CmsContext>(async context => {
+        context.plugins.register(
+            new StorageOperationsCmsModelPlugin(createCmsModelFieldConvertersAttachFactory(context))
+        );
+    });
     plugins.register(storageOperationsCmsModelPlugin);
 
+    let capturedContext: CmsContext;
+
     const handler = createHandler({
-        plugins: plugins.all(),
+        plugins: [
+            ...plugins.all(),
+            new ContextPlugin<CmsContext>(async context => {
+                capturedContext = context;
+            })
+        ],
         debug: false
     });
 
@@ -89,24 +105,24 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         body,
         headers = {},
         ...rest
-    }: InvokeParams): Promise<[T, any]> => {
-        const response = await handler(
-            {
-                /**
-                 * If no path defined, use /graphql as we want to make request to main api
-                 */
-                path: path ? `/cms/${path}` : "/graphql",
-                httpMethod,
-                headers: {
-                    ["x-tenant"]: "root",
-                    ["Content-Type"]: "application/json",
-                    ...headers
-                },
-                body: JSON.stringify(body),
-                ...rest
-            } as unknown as APIGatewayEvent,
-            {} as unknown as LambdaContext
-        );
+    }: InvokeParams): Promise<[IBaseGraphQLResponse<T>, any]> => {
+        const event = {
+            /**
+             * If no path defined, use /graphql as we want to make request to main api
+             */
+            path: path ? `/cms/${path}` : "/graphql",
+            httpMethod,
+            headers: {
+                ["x-tenant"]: "root",
+                ["content-type"]: "application/json",
+                ...headers
+            },
+            ...rest
+        } as unknown as APIGatewayEvent;
+        if (body) {
+            event.body = JSON.stringify(body);
+        }
+        const response = await handler(event, {} as unknown as LambdaContext);
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body || "{}"), response];
     };
@@ -118,6 +134,7 @@ export const useGraphQLHandler = (params: GraphQLHandlerParams = {}) => {
         identity: identity || defaultIdentity,
         plugins,
         storageOperations: core.storageOperations,
+        getContext: () => capturedContext,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
         },

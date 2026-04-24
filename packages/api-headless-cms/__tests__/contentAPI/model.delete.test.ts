@@ -1,95 +1,49 @@
-import { describe, expect, it } from "vitest";
-import { CmsGroup } from "~/types";
-import models from "./mocks/contentModels";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
+import type { CmsModel } from "~/types/index.js";
 
 describe("model delete", () => {
-    const manageOpts = { path: "manage/en-US" };
+    const manageOpts = { path: "manage" };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        deleteContentModelMutation,
-        createContentModelGroupMutation
-    } = useGraphQLHandler(manageOpts);
+    const manager = useGraphQLHandler(manageOpts);
 
-    const setupGroup = async (): Promise<CmsGroup> => {
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
+    const { deleteContentModelMutation } = manager;
+
+    let model: Pick<CmsModel, "modelId">;
+
+    beforeEach(async () => {
+        const result = await setupGroupAndModels({
+            manager,
+            models: ["category"]
         });
-        return createCMG.data.createContentModelGroup.data;
-    };
-
-    const setupCategoryModel = async (group: CmsGroup) => {
-        const model = models.find(m => m.modelId === "category");
-        if (!model) {
-            throw new Error(`Could not find model "category".`);
-        }
-
-        const [create] = await createContentModelMutation({
-            data: {
-                name: model.name,
-                modelId: model.modelId,
-                singularApiName: model.singularApiName,
-                pluralApiName: model.pluralApiName,
-                group: group.id
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        } else if (create.data.createContentModel.error) {
-            console.error(create.data.createContentModel.error);
-            process.exit(1);
-        }
-
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-        if (update.errors) {
-            console.error(`[beforeEach] ${update.errors[0].message}`);
-            process.exit(1);
-        } else if (update.data.updateContentModel.error) {
-            console.error(update.data.updateContentModel.error);
-            process.exit(1);
-        }
-
-        return update.data.updateContentModel.data;
-    };
+        model = result.getModel("category");
+    });
 
     it("should be able to delete model when there are no more entries", async () => {
         const { createCategory, deleteCategory } = useCategoryManageHandler({
             ...manageOpts
         });
 
-        const group = await setupGroup();
-        const model = await setupCategoryModel(group);
-
         const createPromises = [];
         for (let i = 0; i < 1; i++) {
             createPromises.push(
                 createCategory({
-                    data: {
-                        title: `Category #${i}`,
-                        slug: `category-${i}`
+                    variables: {
+                        data: {
+                            values: {
+                                title: `Category #${i}`,
+                                slug: `category-${i}`
+                            }
+                        }
                     }
                 })
             );
         }
         const categories = await Promise.all(createPromises).then(responses => {
             return responses.map(([response]) => {
-                return response.data.createCategory.data;
+                return response.data.createCategory.data!;
             });
         });
 
@@ -102,10 +56,8 @@ describe("model delete", () => {
                 deleteContentModel: {
                     data: null,
                     error: {
-                        code: "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED",
-                        data: {
-                            model: expect.any(Object)
-                        },
+                        code: "Cms/Model/CannotDeleteHasEntries",
+                        data: null,
                         message: `Cannot delete content model "category" because there are existing entries.`
                     }
                 }
@@ -116,7 +68,9 @@ describe("model delete", () => {
         for (const category of categories) {
             deletePromises.push(
                 deleteCategory({
-                    revision: category.id
+                    variables: {
+                        revision: category.id
+                    }
                 })
             );
         }

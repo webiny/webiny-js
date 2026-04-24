@@ -12,6 +12,7 @@ export interface ITenantContext {
     withTenant<TReturn>(tenant: Tenant, cb: (tenant: Tenant) => Promise<TReturn>): Promise<TReturn>;
 }
 
+/** Provides access to the current tenant and tenant-scoped execution. */
 export const TenantContext = createAbstraction<ITenantContext>("TenantContext");
 
 export namespace TenantContext {

@@ -15,7 +15,7 @@ export const createAdvancedMultipleRenderer = (): CmsModelFieldRendererPlugin =>
             name: t`Detailed view with modal search`,
             description: t`Renders preview cards of the selected records. User can browse through records using a modal dialog.`,
             canUse({ field }) {
-                return field.type === "ref" && !!field.multipleValues;
+                return field.type === "ref" && !!field.list;
             },
             render: props => {
                 const { field, getBind, Label, contentModel } = props;

@@ -13,7 +13,7 @@ const steppedProgressIndicatorVariants = cva(
                     "bg-primary-base border-sm border-solid border-neutral-muted"
                 ],
                 [ProgressItemState.COMPLETED]: "bg-primary",
-                [ProgressItemState.COMPLETED_AFFIRMATIVE]: "bg-success-default"
+                [ProgressItemState.COMPLETED_AFFIRMATIVE]: "bg-success"
             },
             disabled: {
                 true: "bg-neutral-dimmed! border-none!"
@@ -36,7 +36,8 @@ const steppedProgressIndicatorVariants = cva(
 );
 
 interface SteppedProgressIndicatorProps
-    extends React.HTMLAttributes<HTMLDivElement>,
+    extends
+        React.HTMLAttributes<HTMLDivElement>,
         VariantProps<typeof steppedProgressIndicatorVariants> {}
 
 const SteppedProgressIndicator = ({

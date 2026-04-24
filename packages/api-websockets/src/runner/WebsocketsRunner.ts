@@ -24,18 +24,16 @@ import type {
 } from "~/response/index.js";
 import type { IWebsocketsTransportSendConnection } from "~/transport/index.js";
 import type { IWebsocketsIdentity } from "~/context/index.js";
-import { getLocale as getMockLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 
 type MiddlewareParams<C extends Context = Context> = Pick<
     IWebsocketsRoutePluginCallableParams<C>,
     "context" | "event" | "registry"
 >;
 
-interface IWebsocketsRunnerRespondParams
-    extends Pick<
-        IWebsocketsEventRequestContext,
-        "connectionId" | "domainName" | "stage" | "eventType"
-    > {
+interface IWebsocketsRunnerRespondParams extends Pick<
+    IWebsocketsEventRequestContext,
+    "connectionId" | "domainName" | "stage" | "eventType"
+> {
     messageId?: string;
     result: IWebsocketsResponseOkResult | IWebsocketsResponseErrorResult;
 }
@@ -171,10 +169,6 @@ export class WebsocketsRunner implements IWebsocketsRunner {
             return identity || null;
         };
 
-        const getLocale = () => {
-            return getMockLocale().code;
-        };
-
         const action = middleware<MiddlewareParams, IWebsocketsRunnerResponse>(
             plugins.map(plugin => {
                 return async (params, next) => {
@@ -183,7 +177,6 @@ export class WebsocketsRunner implements IWebsocketsRunner {
                         event: params.event,
                         context: params.context,
                         getTenant,
-                        getLocale,
                         getIdentity,
                         response: this.response,
                         next

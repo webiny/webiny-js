@@ -1,0 +1,96 @@
+import type { ApolloClient } from "apollo-client";
+import gql from "graphql-tag";
+import zod from "zod";
+import { createZodError } from "@webiny/utils/createZodError.js";
+import { schedulerEntrySchema } from "./schema/schedulerEntry.js";
+import { createSchedulerEntryFields } from "./graphql/fields.js";
+import type {
+    IGetScheduledActionGateway,
+    IGetScheduledActionGatewayExecuteParams
+} from "./abstractions/GetScheduledActionGateway.js";
+import type { SchedulerEntry, SchedulerErrorResponse } from "~/types.js";
+
+export const createGetScheduledActionQuery = () => {
+    return gql`
+        query GetTargetScheduledActionQuery($namespace: String!, $id: ID!) {
+            scheduler {
+                getTargetScheduledAction(namespace: $namespace, id: $id) {
+                    data {
+                        ${createSchedulerEntryFields()}
+                    }
+                    error {
+                        message
+                        code
+                        data
+                        stack
+                    }
+                }
+            }
+        }
+    `;
+};
+
+interface SchedulerGetGraphQLQueryResponse {
+    scheduler: {
+        getTargetScheduledAction: {
+            data: SchedulerEntry | null;
+            error: SchedulerErrorResponse | null;
+        };
+    };
+}
+
+const schema = zod.object({
+    data: schedulerEntrySchema
+});
+
+export class SchedulerGetGraphQLGateway implements IGetScheduledActionGateway {
+    private readonly client: ApolloClient<any>;
+
+    public constructor(client: ApolloClient<any>) {
+        this.client = client;
+    }
+
+    public async execute(params: IGetScheduledActionGatewayExecuteParams) {
+        const { data: response, errors } = await this.client.query<
+            SchedulerGetGraphQLQueryResponse,
+            IGetScheduledActionGatewayExecuteParams
+        >({
+            query: createGetScheduledActionQuery(),
+            variables: {
+                namespace: params.namespace,
+                id: params.id
+            },
+            fetchPolicy: "network-only"
+        });
+
+        const result = response?.scheduler?.getTargetScheduledAction;
+        if (!result || errors?.length) {
+            console.error({
+                errors
+            });
+            throw new Error("Network error while getting scheduled action.");
+        } else if (result.error) {
+            console.error({
+                error: result.error
+            });
+            throw new Error(result.error.message || "Could not fetch scheduled action.");
+        } else if (!result.data) {
+            return null;
+        }
+
+        const validated = await schema.safeParseAsync(result);
+        if (!validated.success) {
+            const err = createZodError(validated.error);
+            console.error(err);
+            console.log(
+                JSON.stringify({
+                    err,
+                    ex: validated.error
+                })
+            );
+            throw err;
+        }
+
+        return validated.data.data;
+    }
+}

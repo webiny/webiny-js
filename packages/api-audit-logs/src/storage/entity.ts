@@ -1,6 +1,35 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { Entity, Table } from "@webiny/db-dynamodb/toolbox.js";
+import type { IEntity, IStandardEntityAttributes } from "@webiny/db-dynamodb";
+import { createEntity as baseCreateEntity, createTable } from "@webiny/db-dynamodb";
 import type { GenericRecord } from "@webiny/api/types.js";
+import type { IStorageAuditLog } from "~/storage/types.js";
+
+export interface IAuditLogsEntityAttributes extends Omit<
+    IStandardEntityAttributes<IStorageAuditLog>,
+    "GSI1_SK" | "GSI2_SK" | "expiresAt"
+> {
+    GSI1_PK: string;
+    GSI1_SK: number;
+    GSI2_PK: string;
+    GSI2_SK: number;
+    GSI3_PK: string;
+    GSI3_SK: number;
+    GSI4_PK: string;
+    GSI4_SK: number;
+    GSI5_PK: string;
+    GSI5_SK: number;
+    GSI6_PK: string;
+    GSI6_SK: number;
+    GSI7_PK: string;
+    GSI7_SK: number;
+    GSI8_PK: string;
+    GSI8_SK: number;
+    GSI9_PK: string;
+    GSI9_SK: number;
+    expiresAt: number;
+}
+
+export type AuditLogsEntity = IEntity<IAuditLogsEntityAttributes>;
 
 export interface ICreateEntityParams {
     client: DynamoDBDocument;
@@ -9,8 +38,8 @@ export interface ICreateEntityParams {
 }
 
 export interface ICreateEntityResult {
-    entity: Entity;
-    table: Table<string, string, string>;
+    entity: AuditLogsEntity;
+    table: ReturnType<typeof createTable>;
 }
 
 const createTableGSIIndexes = (count: number) => {
@@ -30,25 +59,27 @@ export const createEntity = (params: ICreateEntityParams): ICreateEntityResult =
     if (!name) {
         throw new Error("Missing env.DB_TABLE_AUDIT_LOGS environment variable.");
     }
-    const table = new Table({
+    const table = createTable({
+        documentClient: client,
         name,
-        partitionKey: "PK",
-        sortKey: "SK",
-        DocumentClient: client,
-        indexes: createTableGSIIndexes(gsiAmount),
-        autoExecute: true,
-        autoParse: true
+        indexes: {
+            ...createTableGSIIndexes(gsiAmount)
+        }
     });
 
-    const entity = new Entity({
+    const entity = baseCreateEntity<IAuditLogsEntityAttributes>({
         name: "AuditLogs",
-        table,
+        table: table.table,
         attributes: {
             PK: {
                 partitionKey: true
             },
             SK: {
                 sortKey: true
+            },
+            GSI_TENANT: {
+                type: "string",
+                required: true
             },
             GSI1_PK: {
                 type: "string",

@@ -23,6 +23,10 @@ const DefaultCellActions = () => {
         );
     }
 
+    if (documentConfig.actions.length === 0) {
+        return null;
+    }
+
     return (
         <PageProvider page={row.data}>
             <OptionsMenu actions={documentConfig.actions} />

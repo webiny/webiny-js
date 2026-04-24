@@ -1,6 +1,6 @@
-import type { IPackageJson, IVersionedPackage } from "./types";
-import loadJsonFile from "load-json-file";
-import writeJsonFile from "write-json-file";
+import type { IVersionedPackage, PackageJson } from "./types";
+import { loadJsonFileSync } from "load-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import execa from "execa";
 
 export interface IResolutionPackagesParams {
@@ -32,8 +32,11 @@ export class ResolutionPackages {
             throw new Error(`Cannot execute addToPackageJson() twice.`);
         }
         this.addedToResolutions = [];
-        const rootPackageJson = loadJsonFile.sync<IPackageJson>(this.path);
+        const rootPackageJson = loadJsonFileSync<PackageJson>(this.path);
         for (const pkg of this.packages) {
+            if (!rootPackageJson.resolutions) {
+                rootPackageJson.resolutions = {};
+            }
             if (!rootPackageJson.resolutions[pkg.name]) {
                 rootPackageJson.resolutions[pkg.name] = `^${pkg.latestVersion.raw}`;
                 this.addedToResolutions.push(pkg);
@@ -46,7 +49,7 @@ export class ResolutionPackages {
             }
             rootPackageJson.devDependencies[pkg.name] = `^${pkg.latestVersion.raw}`;
         }
-        writeJsonFile.sync(this.path, rootPackageJson);
+        writeJsonFileSync(this.path, rootPackageJson);
         await execa("yarn");
     }
 
@@ -54,13 +57,13 @@ export class ResolutionPackages {
         if (this.skip || !this.addedToResolutions?.length) {
             return;
         }
-        const rootPackageJsonUp = loadJsonFile.sync<IPackageJson>(this.path);
+        const rootPackageJsonUp = loadJsonFileSync<PackageJson>(this.path);
         if (!rootPackageJsonUp.resolutions) {
             return;
         }
         for (const pkg of this.packages) {
             delete rootPackageJsonUp.resolutions[pkg.name];
         }
-        writeJsonFile.sync(this.path, rootPackageJsonUp);
+        writeJsonFileSync(this.path, rootPackageJsonUp);
     }
 }

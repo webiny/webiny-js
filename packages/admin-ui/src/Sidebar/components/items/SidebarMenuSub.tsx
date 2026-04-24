@@ -2,11 +2,15 @@ import React from "react";
 import { cn } from "~/utils.js";
 import { SidebarMenuProvider, useSidebarMenu } from "./SidebarMenuProvider.js";
 
-const SidebarMenuSub = ({ className, ...props }: React.HTMLAttributes<HTMLUListElement>) => {
+interface SidebarMenuSubProps extends React.HTMLAttributes<HTMLUListElement> {
+    parentIcon?: React.ReactNode;
+}
+
+const SidebarMenuSub = ({ className, parentIcon, ...props }: SidebarMenuSubProps) => {
     const parentSidebarMenu = useSidebarMenu();
 
     return (
-        <SidebarMenuProvider level={parentSidebarMenu.nextLevel}>
+        <SidebarMenuProvider level={parentSidebarMenu.nextLevel} parentIcon={parentIcon}>
             <ul
                 data-sidebar="menu-sub"
                 className={cn(

@@ -5,14 +5,14 @@ import type { CmsContext } from "~/types";
 import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
 import type { CmsModelToAstConverter } from "~/utils/contentModelAst";
 import type { CmsModelInput } from "~/plugins";
-import { createCmsModelPlugin } from "~/plugins";
+import { createModelPlugin } from "~/plugins";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("model field traverser", () => {
     const { handler } = useHandler({
         plugins: [
             ...createModelPlugins(models.map(model => model.modelId)),
-            createCmsModelPlugin(pageModel as unknown as CmsModelInput)
+            createModelPlugin(pageModel as unknown as CmsModelInput)
         ]
     });
 
@@ -43,9 +43,7 @@ describe("model field traverser", () => {
                       .sort()
                       .join(",")}`
                 : "";
-            result.push(
-                `${field.type}@${path.join(".")}#${field.multipleValues ? "m" : "s"}${ref}`
-            );
+            result.push(`${field.type}@${path.join(".")}#${field.list ? "m" : "s"}${ref}`);
         });
 
         expect(result).toEqual([
@@ -77,7 +75,7 @@ describe("model field traverser", () => {
     });
 
     // TODO: update the test
-    it.skip("should properly traverse through model fields - page builder", async () => {
+    it("should properly traverse through model fields - page builder", async () => {
         const model = await context.cms.getModel(pageModel.modelId);
         const ast = converter.toAst(model);
         const traverser = new ModelFieldTraverser();
@@ -91,12 +89,22 @@ describe("model field traverser", () => {
                       .sort()
                       .join(",")}`
                 : "";
-            result.push(
-                `${field.type}@${path.join(".")}#${field.multipleValues ? "m" : "s"}${ref}`
-            );
+            result.push(`${field.type}@${path.join(".")}#${field.list ? "m" : "s"}${ref}`);
         });
 
         expect(result.sort()).toEqual([
+            "datetime@content.content.date#s",
+            "datetime@content.content.dateTimeWithTimezone#s",
+            "datetime@content.content.dateTimeWithoutTimezone#s",
+            "datetime@content.content.nestedObject.objectNestedObject.date#s",
+            "datetime@content.content.nestedObject.objectNestedObject.dateTimeWithTimezone#s",
+            "datetime@content.content.nestedObject.objectNestedObject.dateTimeWithoutTimezone#s",
+            "datetime@content.content.nestedObject.objectNestedObject.time#s",
+            "datetime@content.content.time#s",
+            "datetime@objective.objective.nestedObject.objectNestedObject.date#s",
+            "datetime@objective.objective.nestedObject.objectNestedObject.dateTimeWithTimezone#s",
+            "datetime@objective.objective.nestedObject.objectNestedObject.dateTimeWithoutTimezone#s",
+            "datetime@objective.objective.nestedObject.objectNestedObject.time#s",
             "dynamicZone@content#m",
             "dynamicZone@content.content#m",
             "dynamicZone@content.content#m",

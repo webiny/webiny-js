@@ -1,5 +1,11 @@
 "use client";
-import type { ComponentGroup, IContentSdk, PublicPage } from "./types.js";
+import type {
+    ComponentGroup,
+    IContentSdk,
+    ListPagesOptions,
+    ListPagesResult,
+    PublicPage
+} from "./types.js";
 import { Messenger, MessageOrigin } from "./messenger/index.js";
 import { logger } from "./Logger.js";
 import { PreviewViewport } from "./PreviewViewport.js";
@@ -59,8 +65,8 @@ export class EditingSdk implements IContentSdk {
         return this.documentStore.getDocument();
     }
 
-    public async listPages(): Promise<PublicPage[]> {
-        return this.liveSdk.listPages();
+    public async listPages(options?: ListPagesOptions): Promise<ListPagesResult> {
+        return this.liveSdk.listPages(options);
     }
 
     registerComponentGroup(group: ComponentGroup) {
@@ -100,10 +106,6 @@ export class EditingSdk implements IContentSdk {
         this.messenger.on("document.patch", patch => {
             this.documentStore.applyPatch(patch);
         });
-
-        this.messenger.on("preview.scroll", data => {
-            window.scrollBy(data.deltaX, data.deltaY);
-        });
     }
 
     private initPositionReporting(): void {
@@ -140,7 +142,7 @@ export class EditingSdk implements IContentSdk {
             return;
         }
 
-        const newBoxes = this.previewViewport.getVisibleBoxes();
+        const newBoxes = this.previewViewport.getBoxes();
         const hash = hashObject.hash(newBoxes);
         if (hash === this.lastBoxesHash) {
             return;
@@ -149,7 +151,7 @@ export class EditingSdk implements IContentSdk {
         this.lastBoxesHash = hash;
         // Send positions to the editor
         this.messenger.send("preview.viewport", {
-            boxes: this.previewViewport.getVisibleBoxes(),
+            boxes: this.previewViewport.getBoxes(),
             viewport: this.previewViewport.getViewport()
         });
     }

@@ -13,6 +13,7 @@ import { MultiValueDynamicZone } from "./MultiValueDynamicZone.js";
 import { AccordionRenderSettings, getAccordionRenderSettings } from "../AccordionRenderSettings.js";
 import { makeDecoratable } from "@webiny/react-composition";
 import { Accordion, FormComponentErrorMessage } from "@webiny/admin-ui";
+import { ReactComponent as HorizontalRuleIcon } from "@webiny/icons/horizontal_rule.svg";
 
 const noBottomPadding = css`
     > .webiny-ui-accordion-item__content {
@@ -29,7 +30,7 @@ export type DynamicZoneContainerProps = {
     title?: string;
     description?: string;
     className?: string;
-    actions?: JSX.Element;
+    actions?: React.JSX.Element;
 };
 
 export const DynamicZoneContainer = makeDecoratable(
@@ -41,18 +42,25 @@ export const DynamicZoneContainer = makeDecoratable(
                 validation: { isValid, message }
             },
             title = field.label,
-            description = field.helpText,
+            description = field.description,
             className,
             children
         } = props;
 
-        const defaultClassName = field.multipleValues ? noBottomPadding : undefined;
+        const defaultClassName = field.list ? noBottomPadding : undefined;
         const { open } = getAccordionRenderSettings(field);
 
         return (
             <>
-                <Accordion>
+                <Accordion background={"base"} variant={"container"}>
                     <Accordion.Item
+                        icon={
+                            <Accordion.Item.Icon
+                                color={"accent"}
+                                label="Accordion Item"
+                                icon={<HorizontalRuleIcon />}
+                            />
+                        }
                         title={title}
                         description={description}
                         className={className || defaultClassName}
@@ -79,7 +87,7 @@ const DynamicZoneContent = ({ field, getBind, contentModel }: CmsModelFieldRende
 
     const Bind = getBind();
 
-    const Component = field.multipleValues ? MultiValueDynamicZone : SingleValueDynamicZone;
+    const Component = field.list ? MultiValueDynamicZone : SingleValueDynamicZone;
 
     return (
         <Bind>

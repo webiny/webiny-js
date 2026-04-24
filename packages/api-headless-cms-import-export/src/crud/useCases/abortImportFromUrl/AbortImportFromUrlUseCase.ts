@@ -38,7 +38,7 @@ export class AbortImportFromUrlUseCase implements IAbortImportFromUrlUseCase {
                 IImportFromUrlControllerInput,
                 IImportFromUrlControllerOutput
             >(params);
-            return convertTaskToImportRecord(result);
+            return convertTaskToImportRecord(result.value);
         } catch (ex) {
             console.log("Could not abort the task.");
             console.error(ex);

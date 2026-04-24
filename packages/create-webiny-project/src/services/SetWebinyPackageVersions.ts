@@ -1,5 +1,5 @@
-import loadJsonFile from "load-json-file";
-import writeJsonFile from "write-json-file";
+import { loadJsonFileSync } from "load-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import { GetCwpVersion } from "./GetCwpVersion.js";
 import { GetProjectRootPath } from "./GetProjectRootPath.js";
 import { CliParams } from "../types.js";
@@ -14,7 +14,7 @@ export class SetWebinyPackageVersions {
         const cwpVersion = await getCwpVersion.execute();
 
         const projectPackageJsonPath = path.join(projectRootPath, "package.json");
-        const projectPackageJson = loadJsonFile.sync<Record<string, any>>(projectPackageJsonPath);
+        const projectPackageJson = loadJsonFileSync<Record<string, any>>(projectPackageJsonPath);
 
         for (const dependency in projectPackageJson.dependencies) {
             if (this.isWebinyDependency(dependency)) {
@@ -28,7 +28,7 @@ export class SetWebinyPackageVersions {
             }
         }
 
-        writeJsonFile.sync(projectPackageJsonPath, projectPackageJson);
+        writeJsonFileSync(projectPackageJsonPath, projectPackageJson);
     }
 
     private isWebinyDependency(depName: string): boolean {

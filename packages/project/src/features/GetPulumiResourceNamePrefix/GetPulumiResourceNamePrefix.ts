@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import { GetProjectConfigService, GetPulumiResourceNamePrefix } from "~/abstractions/index.js";
-import { pulumiResourceNamePrefix as pulumiResourceNamePrefixExtension } from "~/extensions/pulumi/index.js";
+import { PulumiResourceNamePrefix as PulumiResourceNamePrefixExt } from "~/extensions/pulumi/index.js";
 
 export class DefaultGetPulumiResourceNamePrefix implements GetPulumiResourceNamePrefix.Interface {
     constructor(private getProjectConfigService: GetProjectConfigService.Interface) {}
@@ -9,7 +9,7 @@ export class DefaultGetPulumiResourceNamePrefix implements GetPulumiResourceName
 
         let pulumiResourceNamePrefix = "wby-";
         const [pulumiResourceNamePrefixExt] = projectConfig.extensionsByType(
-            pulumiResourceNamePrefixExtension
+            PulumiResourceNamePrefixExt
         );
 
         if (pulumiResourceNamePrefixExt) {

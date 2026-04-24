@@ -1,70 +1,77 @@
 import type DataLoader from "dataloader";
 import WebinyError from "@webiny/error";
-import type { CmsModel, CmsStorageEntry } from "@webiny/api-headless-cms/types/index.js";
+import type {
+    CmsEntryValues,
+    CmsModel,
+    CmsStorageEntry
+} from "@webiny/api-headless-cms/types/index.js";
 import type { CacheKeyParams } from "~/operations/entry/dataLoader/DataLoaderCache.js";
 import { DataLoaderCache } from "~/operations/entry/dataLoader/DataLoaderCache.js";
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import type { DataLoaders } from "~/operations/entry/dataLoader/index.js";
 import { getDataLoaderFactory } from "~/operations/entry/dataLoader/index.js";
 import { parseIdentifier } from "@webiny/utils";
-import type {
-    DataLoadersHandlerInterface,
-    DataLoadersHandlerInterfaceClearAllParams
-} from "~/types.js";
+import type { DataLoadersHandlerInterfaceClearAllParams, IDataLoadersHandler } from "~/types.js";
+import type { IEntryEntity } from "~/definitions/types.js";
 
 interface DataLoaderParams {
-    model: Pick<CmsModel, "tenant" | "locale" | "modelId">;
+    model: Pick<CmsModel, "tenant" | "modelId">;
     ids: readonly string[];
 }
 
 interface GetLoaderParams {
-    model: Pick<CmsModel, "tenant" | "locale" | "modelId">;
+    model: Pick<CmsModel, "tenant" | "modelId">;
 }
 
-interface DataLoadersHandlerParams {
-    entity: Entity<any>;
+interface IDataLoadersHandlerParams {
+    entity: IEntryEntity;
 }
 
 export interface ClearAllParams {
-    model: Pick<CmsModel, "tenant" | "locale" | "modelId">;
+    model: Pick<CmsModel, "tenant" | "modelId">;
 }
 
-export class DataLoadersHandler implements DataLoadersHandlerInterface {
-    private readonly entity: Entity<any>;
-    private readonly cache: DataLoaderCache = new DataLoaderCache();
+export class DataLoadersHandler implements IDataLoadersHandler {
+    private readonly entity;
+    private readonly cache = new DataLoaderCache();
 
-    public constructor(params: DataLoadersHandlerParams) {
+    public constructor(params: IDataLoadersHandlerParams) {
         this.entity = params.entity;
     }
 
-    public async getAllEntryRevisions(params: DataLoaderParams): Promise<CmsStorageEntry[]> {
-        const ids = params.ids.map(id => {
-            const { id: entryId } = parseIdentifier(id);
-            return entryId;
-        });
-        return await this.loadMany("getAllEntryRevisions", params, ids);
-    }
-
-    public async getRevisionById(params: DataLoaderParams): Promise<CmsStorageEntry[]> {
-        return await this.loadMany("getRevisionById", params, params.ids);
-    }
-
-    public async getPublishedRevisionByEntryId(
+    public async getAllEntryRevisions<T extends CmsEntryValues = CmsEntryValues>(
         params: DataLoaderParams
-    ): Promise<CmsStorageEntry[]> {
+    ): Promise<CmsStorageEntry<T>[]> {
         const ids = params.ids.map(id => {
             const { id: entryId } = parseIdentifier(id);
             return entryId;
         });
-        return await this.loadMany("getPublishedRevisionByEntryId", params, ids);
+        return await this.loadMany<T>("getAllEntryRevisions", params, ids);
     }
 
-    public async getLatestRevisionByEntryId(params: DataLoaderParams): Promise<CmsStorageEntry[]> {
+    public async getRevisionById<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]> {
+        return await this.loadMany<T>("getRevisionById", params, params.ids);
+    }
+
+    public async getPublishedRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]> {
         const ids = params.ids.map(id => {
             const { id: entryId } = parseIdentifier(id);
             return entryId;
         });
-        return await this.loadMany("getLatestRevisionByEntryId", params, ids);
+        return await this.loadMany<T>("getPublishedRevisionByEntryId", params, ids);
+    }
+
+    public async getLatestRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
+        params: DataLoaderParams
+    ): Promise<CmsStorageEntry<T>[]> {
+        const ids = params.ids.map(id => {
+            const { id: entryId } = parseIdentifier(id);
+            return entryId;
+        });
+        return await this.loadMany<T>("getLatestRevisionByEntryId", params, ids);
     }
 
     /**
@@ -75,7 +82,7 @@ export class DataLoadersHandler implements DataLoadersHandlerInterface {
         const { model } = params;
         const cacheParams: CacheKeyParams = {
             tenant: model.tenant,
-            locale: model.locale,
+            modelId: model.modelId,
             name
         };
         let loader = this.cache.getDataLoader(cacheParams);
@@ -86,22 +93,22 @@ export class DataLoadersHandler implements DataLoadersHandlerInterface {
         loader = factory({
             entity: this.entity,
             tenant: model.tenant,
-            locale: model.locale
+            modelId: model.modelId
         });
         this.cache.setDataLoader(cacheParams, loader);
         return loader;
     }
 
-    private async loadMany(
+    private async loadMany<T extends CmsEntryValues = CmsEntryValues>(
         loader: DataLoaders,
         params: GetLoaderParams,
         ids: readonly string[]
-    ): Promise<CmsStorageEntry[]> {
-        let results: any[] = [];
+    ): Promise<CmsStorageEntry<T>[]> {
+        let results: CmsStorageEntry<T>[] = [];
         try {
             results = await this.getLoader(loader, params).loadMany(ids);
             if (Array.isArray(results) === true) {
-                return results.reduce((acc, res) => {
+                return results.reduce<CmsStorageEntry<T>[]>((acc, res) => {
                     if (Array.isArray(res) === false) {
                         if (res && res.message) {
                             throw new WebinyError(res.message, res.code, {

@@ -12,7 +12,7 @@ export const Delete = () => {
     return (
         <OptionsMenuItem
             icon={<DeleteIcon />}
-            label={"Delete"}
+            label={"Trash"}
             onAction={openDeletePageConfirmationDialog}
             className={"text-destructive-primary! [&_svg]:fill-destructive"}
         />

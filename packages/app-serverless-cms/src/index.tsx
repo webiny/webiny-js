@@ -10,8 +10,6 @@ export {
     LayoutRenderer,
     LoginScreen,
     LoginScreenRenderer,
-    LocaleSelector,
-    LocaleSelectorRenderer,
     Brand,
     BrandRenderer,
     Provider,
@@ -45,9 +43,7 @@ export type {
     LoginScreenProps
 } from "@webiny/app-admin";
 
-export { HasPermission, useSecurity, usePermission } from "@webiny/app-security";
-
-export { useTenancy } from "@webiny/app-admin";
+export { useTenantContext } from "@webiny/app-admin";
 export type { Tenant } from "@webiny/app-admin";
 
 export * from "./apolloClientFactory.js";

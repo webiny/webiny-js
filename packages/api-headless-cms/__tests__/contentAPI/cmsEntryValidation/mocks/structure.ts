@@ -1,5 +1,4 @@
-import type { CmsApiModel } from "~/plugins";
-import { createCmsGroup, createCmsModel } from "~/plugins";
+import { type CmsApiModel, createModelPlugin } from "~/plugins";
 import type { CmsModel } from "~/types";
 import { createFields, createLayout } from "./fields";
 
@@ -19,22 +18,13 @@ const createModel = (model: Partial<Omit<CmsModel, "group">> & Pick<CmsModel, "g
 };
 
 export const createValidationStructure = (input: Partial<Omit<CmsModel, "group">> = {}) => {
-    const cmsGroupPlugin = createCmsGroup({
-        id: "validationstructuregroup",
-        name: "Validation structure",
-        slug: "validationstructuregroup",
-        description: "Validation structure group description",
-        icon: "fas/star"
-    });
-    const group = cmsGroupPlugin.contentModelGroup;
     const model = createModel({
         ...input,
-        group
+        group: "validationstructuregroup"
     });
-    const cmsModelPlugin = createCmsModel(model);
+    const cmsModelPlugin = createModelPlugin(model);
     return {
-        plugins: [cmsGroupPlugin, cmsModelPlugin],
-        model,
-        group
+        plugins: [cmsModelPlugin],
+        model
     };
 };

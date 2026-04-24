@@ -7,13 +7,6 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 import { until } from "@webiny/project-utils/testing/helpers/until";
 
 import {
-    CREATE_FOLDER,
-    DELETE_FOLDER,
-    GET_FOLDER,
-    LIST_FOLDERS,
-    UPDATE_FOLDER
-} from "~tests/graphql/folder.gql";
-import {
     CREATE_RECORD,
     DELETE_RECORD,
     GET_RECORD,
@@ -22,22 +15,7 @@ import {
     MOVE_RECORD,
     UPDATE_RECORD
 } from "~tests/graphql/record.gql";
-import {
-    CREATE_FILTER,
-    DELETE_FILTER,
-    GET_FILTER,
-    LIST_FILTERS,
-    UPDATE_FILTER
-} from "~tests/graphql/filter.gql";
-import {
-    CREATE_FILE,
-    CREATE_FILES,
-    DELETE_FILE,
-    GET_FILE,
-    LIST_FILES,
-    LIST_TAGS as LIST_FILE_TAGS,
-    UPDATE_FILE
-} from "~tests/graphql/file";
+
 import {
     CREATE_CONTENT_MODEL,
     CREATE_CONTENT_MODEL_GROUP,
@@ -51,22 +29,17 @@ import {
 import { createAco } from "~/index";
 import { createIdentity } from "./identity";
 import { getIntrospectionQuery } from "graphql";
-import { GET_APP_MODEL } from "~tests/graphql/app.gql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import {
-    createFileManagerContext,
-    createFileManagerGraphQL,
-    FilePhysicalStoragePlugin
-} from "@webiny/api-file-manager";
-import type { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { createAcoSdk } from "~tests/utils/createAcoSdk.js";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -79,7 +52,6 @@ export interface UseGQLHandlerParams {
 interface InvokeParams {
     httpMethod?: "POST";
     type?: string;
-    locale?: string;
     body: {
         query: string;
         variables?: Record<string, any>;
@@ -92,7 +64,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
@@ -109,22 +80,10 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
                 permissions,
                 identity: identity === undefined ? createIdentity() : identity
             }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
-            createFileManagerContext({
-                storageOperations: fileManagerStorage.storageOperations
-            }),
+            createFileManagerContext(),
             createFileManagerGraphQL(),
-            /**
-             * Mock physical file storage plugin.
-             */
-            new FilePhysicalStoragePlugin({
-                upload: async () => {},
-
-                delete: async () => {}
-            }),
             createHeadlessCmsGraphQL(),
             createAco({ documentClient }),
             plugins
@@ -156,14 +115,13 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const invokeCms = async ({
         httpMethod = "POST",
         type = "manage",
-        locale = "en-US",
         body,
         headers = {},
         ...rest
     }: InvokeParams) => {
         const response = await handler(
             {
-                path: `/cms/${type}/${locale}`,
+                path: `/cms/${type}`,
                 httpMethod,
                 headers: {
                     ["x-tenant"]: "root",
@@ -178,42 +136,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];
-    };
-
-    const aco = {
-        async createFolder(variables = {}, fields: string[] = []) {
-            return invoke({ body: { query: CREATE_FOLDER(fields), variables } });
-        },
-        async updateFolder(variables = {}, fields: string[] = []) {
-            return invoke({ body: { query: UPDATE_FOLDER(fields), variables } });
-        },
-        async deleteFolder(variables = {}) {
-            return invoke({ body: { query: DELETE_FOLDER, variables } });
-        },
-        async listFolders(variables = {}, fields: string[] = []) {
-            return invoke({ body: { query: LIST_FOLDERS(fields), variables } });
-        },
-        async getFolder(variables = {}, fields: string[] = []) {
-            return invoke({ body: { query: GET_FOLDER(fields), variables } });
-        },
-        async getAppModel(variables: { id: string }) {
-            return invoke({ body: { query: GET_APP_MODEL, variables } });
-        },
-        async createFilter(variables = {}) {
-            return invoke({ body: { query: CREATE_FILTER, variables } });
-        },
-        async updateFilter(variables = {}) {
-            return invoke({ body: { query: UPDATE_FILTER, variables } });
-        },
-        async deleteFilter(variables = {}) {
-            return invoke({ body: { query: DELETE_FILTER, variables } });
-        },
-        async listFilters(variables = {}) {
-            return invoke({ body: { query: LIST_FILTERS, variables } });
-        },
-        async getFilter(variables = {}) {
-            return invoke({ body: { query: GET_FILTER, variables } });
-        }
     };
 
     const search = {
@@ -237,31 +159,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         },
         async listTags(variables = {}) {
             return invoke({ body: { query: LIST_TAGS, variables } });
-        }
-    };
-
-    const fm = {
-        // Files
-        async createFile(variables: Record<string, any>, fields: string[] = []) {
-            return invoke({ body: { query: CREATE_FILE(fields), variables } });
-        },
-        async updateFile(variables: Record<string, any>, fields: string[] = []) {
-            return invoke({ body: { query: UPDATE_FILE(fields), variables } });
-        },
-        async createFiles(variables: Record<string, any>, fields: string[] = []) {
-            return invoke({ body: { query: CREATE_FILES(fields), variables } });
-        },
-        async deleteFile(variables: Record<string, any>) {
-            return invoke({ body: { query: DELETE_FILE, variables } });
-        },
-        async getFile(variables: Record<string, any>, fields: string[] = []) {
-            return invoke({ body: { query: GET_FILE(fields), variables } });
-        },
-        async listFiles(variables = {}, fields: string[] = []) {
-            return invoke({ body: { query: LIST_FILES(fields), variables } });
-        },
-        async listTags(variables = {}) {
-            return invoke({ body: { query: LIST_FILE_TAGS, variables } });
         }
     };
 
@@ -328,6 +225,8 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         }
     };
 
+    const aco = createAcoSdk(invoke);
+
     return {
         until,
         params,
@@ -335,7 +234,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
         invoke,
         aco,
         search,
-        fm,
         cms,
         async introspect() {
             return invoke({

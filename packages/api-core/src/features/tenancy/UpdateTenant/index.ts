@@ -3,7 +3,7 @@ export {
     UpdateTenantUseCase,
     UpdateTenantRepository,
     UpdateTenantGateway,
-    TenantBeforeUpdateHandler,
-    TenantAfterUpdateHandler
+    TenantBeforeUpdateEventHandler,
+    TenantAfterUpdateEventHandler
 } from "./abstractions.js";
 export { TenantBeforeUpdateEvent, TenantAfterUpdateEvent } from "./events.js";

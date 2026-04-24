@@ -1,4 +1,4 @@
-import { openSearch as openSearchExt } from "~/pulumi/extensions/openSearch.js";
+import { OpenSearch as openSearchExt } from "~/pulumi/extensions/OpenSearch.js";
 import { type IProjectConfigModel } from "@webiny/project/abstractions/models/index.js";
 
 export const getOsConfigFromExtension = (projectConfig: IProjectConfigModel) => {
@@ -8,13 +8,18 @@ export const getOsConfigFromExtension = (projectConfig: IProjectConfigModel) => 
         return undefined;
     }
 
-    const { enabled, domainName, indexPrefix, sharedIndexes } = openSearchExtension.params;
+    const { enabled, endpoint, domainName, indexPrefix, sharedIndexes, username, password } =
+        openSearchExtension.params;
     if (enabled === false) {
         return false;
     }
 
-    if (domainName || indexPrefix || sharedIndexes) {
+    if (endpoint || domainName || indexPrefix || sharedIndexes || username || password) {
         const openSearch: Omit<typeof openSearchExtension.params, "enabled"> = {};
+        if (endpoint) {
+            openSearch.endpoint = endpoint;
+        }
+
         if (domainName) {
             openSearch.domainName = domainName;
         }
@@ -25,6 +30,14 @@ export const getOsConfigFromExtension = (projectConfig: IProjectConfigModel) => 
 
         if (sharedIndexes) {
             openSearch.sharedIndexes = sharedIndexes;
+        }
+
+        if (username) {
+            openSearch.username = username;
+        }
+
+        if (password) {
+            openSearch.password = password;
         }
 
         return openSearch;

@@ -1,10 +1,11 @@
+import fs from "fs";
 import path from "path";
 import { pluginReact } from "@rsbuild/plugin-react";
 import { pluginSvgr } from "@rsbuild/plugin-svgr";
 import { pluginSass } from "@rsbuild/plugin-sass";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import tailwindcss from "@tailwindcss/postcss";
-import fs from "fs";
+import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
 export const createRsbuildConfig = ({ cwd }) => {
     const paths = getPaths(cwd);
@@ -12,32 +13,58 @@ export const createRsbuildConfig = ({ cwd }) => {
     const mode = getMode();
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
-        source: { entry: { index: paths.admin.entryFile }, define: envVars },
+        source: {
+            entry: {
+                index: paths.admin.entryFile
+            },
+            define: envVars
+        },
+        resolve: {
+            alias: {
+                // This is a temporary fix, until we sort out the `react-butterfiles` dependency.
+                "react-butterfiles": "@webiny/app/react-butterfiles"
+            }
+        },
         output: { distPath: { root: paths.admin.outputFolder } },
         mode,
         dev: { hmr: true },
+        performance: {
+            printFileSize: false
+        },
         tools: {
             postcss: (_, { addPlugins }) => {
-                addPlugins(
+                addPlugins([
+                    createInjectTailwindSourcePlugin(
+                        path.join(paths.projectRootFolder, "extensions")
+                    ),
                     tailwindcss({
                         base: getTailwindBasePath(paths.projectRootFolder)
                     })
-                );
+                ]);
+            },
+            rspack: {
+                watchOptions: {
+                    // Wait for dependency builds to finish before triggering a recompilation.
+                    aggregateTimeout: 500,
+                    ignored: ["**/node_modules/**", "**/.git/**"]
+                }
             }
         },
         server: { port: 3001 },
         html: {
-            title: "Webiny",
-            favicon: paths.admin.faviconFile
+            template: paths.projectRootFolder + "/public/index.html"
         },
         plugins: [
+            createImportValidatorPlugin(),
             pluginTypeCheck({
                 tsCheckerOptions: {
                     typescript: { configFile: paths.admin.tsConfig },
                     async: mode === "development"
                 }
             }),
-            pluginReact(),
+            pluginReact({
+                splitChunks: false
+            }),
             pluginSass(),
             pluginSvgr({
                 mixedImport: true,
@@ -46,7 +73,7 @@ export const createRsbuildConfig = ({ cwd }) => {
                     svgoConfig: {
                         plugins: [
                             {
-                                name: "preset-default",
+                                name: "pres" + "et-default",
                                 params: { overrides: { removeViewBox: false } }
                             }
                         ]
@@ -61,12 +88,6 @@ const getPaths = cwd => {
     const adminRootFolderPath = cwd;
     const adminOutputFolderPath = path.join(adminRootFolderPath, "build");
     const adminEntryFilePath = path.join(adminRootFolderPath, "src", "index.tsx");
-    const adminFaviconFilePath = path.join(
-        adminRootFolderPath,
-        "public",
-        "favicons",
-        "favicon.ico"
-    );
 
     const adminTsConfigFilePath = path.join(adminRootFolderPath, "tsconfig.json");
 
@@ -76,8 +97,7 @@ const getPaths = cwd => {
             rootFolder: adminRootFolderPath,
             tsConfig: adminTsConfigFilePath,
             outputFolder: adminOutputFolderPath,
-            entryFile: adminEntryFilePath,
-            faviconFile: adminFaviconFilePath
+            entryFile: adminEntryFilePath
         }
     };
 };
@@ -93,6 +113,17 @@ const getTailwindBasePath = projectRootFolderPath => {
 
     return path.join(projectRootFolderPath, "node_modules", "@webiny");
 };
+
+/*
+    Injects an `@source` directive into the Tailwind CSS AST at build time, pointing to the
+    given absolute path. https://tailwindcss.com/docs/functions-and-directives#source-directive
+*/
+const createInjectTailwindSourcePlugin = sourcePath => ({
+    postcssPlugin: "inject-tailwind-source",
+    Once(root) {
+        root.prepend(`@source "${sourcePath}";`);
+    }
+});
 
 const getEnvVars = () => {
     const raw = Object.keys(process.env)

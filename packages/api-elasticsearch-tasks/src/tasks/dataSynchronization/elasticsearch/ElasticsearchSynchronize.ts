@@ -1,4 +1,4 @@
-import { batchReadAll } from "@webiny/db-dynamodb";
+import { batchReadAll } from "@webiny/db-dynamodb/utils/batch/batchRead.js";
 import { createSynchronizationBuilder } from "@webiny/api-dynamodb-to-elasticsearch";
 import type { IGetElasticsearchEntityTypeParams } from "~/tasks/dataSynchronization/entities/index.js";
 import {
@@ -6,18 +6,14 @@ import {
     getElasticsearchEntityType,
     getTable
 } from "~/tasks/dataSynchronization/entities/index.js";
-import type { ITimer } from "@webiny/handler-aws";
-import type { Context } from "~/types.js";
+import type { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 import type {
     IElasticsearchSynchronize,
     IElasticsearchSynchronizeExecuteParams,
     IElasticsearchSynchronizeExecuteResponse
 } from "./abstractions/ElasticsearchSynchronize.js";
-
-export interface IElasticsearchSynchronizeParams {
-    timer: ITimer;
-    context: Context;
-}
+import { SynchronizationContext } from "~/abstractions/SynchronizationContext.js";
+import { DbRegistry } from "~/abstractions/DbRegistry.js";
 
 interface IDynamoDbItem {
     PK: string;
@@ -25,13 +21,11 @@ interface IDynamoDbItem {
 }
 
 export class ElasticsearchSynchronize implements IElasticsearchSynchronize {
-    private readonly timer: ITimer;
-    private readonly context: Context;
-
-    public constructor(params: IElasticsearchSynchronizeParams) {
-        this.timer = params.timer;
-        this.context = params.context;
-    }
+    public constructor(
+        private controller: TaskController.Interface,
+        private dbRegistry: DbRegistry.Interface,
+        private context: SynchronizationContext.Interface
+    ) {}
 
     public async execute(
         params: IElasticsearchSynchronizeExecuteParams
@@ -45,12 +39,12 @@ export class ElasticsearchSynchronize implements IElasticsearchSynchronize {
 
         const table = getTable({
             type: "es",
-            context: this.context
+            dbRegistry: this.dbRegistry
         });
 
         const readableItems = items.map(item => {
             const entity = this.getEntity(item);
-            return entity.item.getBatch({
+            return entity.item.entity.getBatch({
                 PK: item.PK,
                 SK: item.SK
             });
@@ -62,8 +56,8 @@ export class ElasticsearchSynchronize implements IElasticsearchSynchronize {
         });
 
         const elasticsearchSyncBuilder = createSynchronizationBuilder({
-            timer: this.timer,
-            context: this.context
+            context: this.context,
+            timer: this.controller.runtime
         });
         /**
          * We need to find the items we have in the Elasticsearch but not in the DynamoDB-Elasticsearch table.
@@ -95,7 +89,7 @@ export class ElasticsearchSynchronize implements IElasticsearchSynchronize {
         const type = getElasticsearchEntityType(params);
         return getElasticsearchEntity({
             type,
-            context: this.context
+            dbRegistry: this.dbRegistry
         });
     }
 }

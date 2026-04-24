@@ -1,0 +1,92 @@
+name: Pull Requests
+
+on:
+  pull_request:
+    branches: [dev]
+
+jobs:
+  build-test-static:
+    name: Build and run static analysis
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - uses: actions/checkout@v2
+
+      # Install and cache dependencies.
+      - uses: actions/cache@v4
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      # Run static code analysis.
+      - name: Check code formatting
+        run: yarn format
+
+      - name: Lint
+        run: yarn lint
+
+  deploy:
+    name: Deploy to PR environment
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: write
+    needs: build-test-static
+    runs-on: ubuntu-latest
+    # We use "dev" environment variables here, but, if needed, a separate set of
+    # variables and a separate pull requests-related AWS account can be used too.
+    env:
+      NODE_OPTIONS: --max_old_space_size=4096
+      AWS_REGION: ${{ secrets.DEV_AWS_REGION }}
+      OPENSEARCH_DOMAIN_NAME: ${{ secrets.DEV_OPENSEARCH_DOMAIN_NAME }}
+      OPENSEARCH_INDEX_PREFIX: pr${{ github.event.pull_request.number }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.DEV_PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.DEV_PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.DEV_WEBINY_PULUMI_BACKEND_PULL_REQUESTS }}
+      WEBINY_PROJECT_ID: ${{ secrets.DEV_WEBINY_PROJECT_ID }}
+      WEBINY_PROJECT_API_KEY: ${{ secrets.DEV_WEBINY_PROJECT_API_KEY }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.DEV_AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.DEV_AWS_REGION }}
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - uses: actions/checkout@v2
+
+      # Install and cache dependencies.
+      - uses: actions/cache@v4
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      # Deploy to a short-lived environment (will be destroyed once the PR is closed).
+      - name: Deploy core
+        run: yarn webiny deploy core --env pr${{ github.event.pull_request.number }}
+
+      - name: Deploy API
+        run: yarn webiny deploy api --env pr${{ github.event.pull_request.number }}
+
+      - name: Deploy Admin
+        run: yarn webiny deploy admin --env pr${{ github.event.pull_request.number }}
+
+      # Add additional steps if needed. For example, if you have additional E2E
+      # tests done with Cypress (https://www.cypress.io/), you can run them here.

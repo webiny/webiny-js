@@ -1,11 +1,14 @@
-import React, { useMemo, useRef } from "react";
-import { ElementOverlays } from "./Overlays/ElementOverlays.js";
-import { ConnectEditorToPreview } from "~/DocumentEditor/ConnectEditorToPreview.js";
+import React, { useEffect, useMemo, useRef } from "react";
 import type { Messenger } from "@webiny/website-builder-sdk";
-import { useResponsiveContainer } from "~/BaseEditor/defaultConfig/Content/Preview/useResponsiveContainer.js";
-import { OverlayLoader } from "@webiny/admin-ui";
+import { cn, OverlayLoader } from "@webiny/admin-ui";
 import type { ViewportManager } from "@webiny/website-builder-sdk";
 import { observer } from "mobx-react-lite";
+import { ElementOverlays } from "./Overlays/ElementOverlays.js";
+import { ConnectEditorToPreview } from "~/DocumentEditor/ConnectEditorToPreview.js";
+import { useResponsiveContainer } from "~/BaseEditor/defaultConfig/Content/Preview/useResponsiveContainer.js";
+import { usePreviewData } from "~/BaseEditor/hooks/usePreviewData.js";
+import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
+import { PreviewContainer } from "./PreviewContainer.js";
 
 interface IframeProps {
     url: string;
@@ -17,7 +20,25 @@ interface IframeProps {
 
 export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
+    const previewBodyRef = useRef<HTMLDivElement>(null);
     const previewWidth = useResponsiveContainer(props.viewportManager);
+    const { viewport } = usePreviewData();
+    const editor = useSelectFromEditor(state => ({
+        isReadOnly: state.isReadOnly,
+        reservedHeight: state.uiReservedSpace.height
+    }));
+
+    const isReadOnly = editor.isReadOnly;
+
+    // When preview width changes, we need to force calculation of the iframe scrollHeight
+    // by reducing the height of its parent div to the current viewport height.
+    // Otherwise, the iframe grows to fill the parent div, and will not report the correct content height.
+    useEffect(() => {
+        if (previewBodyRef.current) {
+            const minHeight = `calc(100vh - ${editor.reservedHeight}px)`;
+            previewBodyRef.current.style.minHeight = minHeight;
+        }
+    }, [previewWidth]);
 
     const iframeUrl = useMemo(() => {
         const localUrl = new URL(url);
@@ -26,11 +47,7 @@ export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
     }, [url, timestamp]);
 
     return (
-        <div
-            key={iframeUrl}
-            className={"relative flex flex-col items-center"}
-            data-role={"responsive-container"}
-        >
+        <PreviewContainer key={iframeUrl}>
             <ConnectEditorToPreview iframeRef={iframeRef} onConnected={props.onConnected} />
             {props.showLoading ? (
                 <OverlayLoader
@@ -40,23 +57,33 @@ export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
                     className={"bg-neutral-base"}
                 />
             ) : null}
-            {/* Height = viewport height - top bar - address bar - breadcrumbs. */}
+            {/* Content wrapper - sized by iframe content */}
             <div
-                className="min-h-[calc(100vh-43px-50px-31px)] max-h-[calc(100vh-43px-50px)] box-border  overflow-hidden"
-                style={{ width: previewWidth }}
+                id={"preview-body"}
+                ref={previewBodyRef}
+                className={
+                    "outline outline-neutral-dimmed shadow-sm transition-[width,min-height] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] "
+                }
+                style={{
+                    position: "relative",
+                    width: `${previewWidth}px`,
+                    minHeight: `${viewport.scrollHeight}px`
+                }}
             >
-                <ElementOverlays />
+                {!isReadOnly ? <ElementOverlays /> : null}
                 <iframe
+                    scrolling="no"
                     id={"preview-iframe"}
-                    className={
-                        "w-full bg-white border-none overflow-scroll min-h-[inherit] pointer-events-none"
-                    }
+                    className={cn(
+                        "absolute block top-0 left-0 w-full w-h-full bg-white border-none min-h-[inherit]",
+                        isReadOnly ? "pointer-events-auto" : "pointer-events-none"
+                    )}
                     src={iframeUrl}
                     ref={iframeRef}
                     sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms"
                 />
             </div>
-        </div>
+        </PreviewContainer>
     );
 });
 

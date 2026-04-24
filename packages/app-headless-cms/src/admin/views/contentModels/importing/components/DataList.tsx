@@ -7,7 +7,7 @@ const getGroupModels = (group: ImportGroupData, models?: ImportModelData[] | nul
     if (!models) {
         return [];
     }
-    return models.filter(model => model.group === group.id);
+    return models.filter(model => model.group === group.slug);
 };
 
 export const DataList = () => {
@@ -15,6 +15,7 @@ export const DataList = () => {
     if (!groups) {
         return null;
     }
+
     return (
         <>
             {groups.map((group, index) => {

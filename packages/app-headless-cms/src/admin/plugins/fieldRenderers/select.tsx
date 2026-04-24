@@ -3,6 +3,7 @@ import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { Select } from "@webiny/admin-ui";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -14,9 +15,12 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Select Box`,
         description: t`Renders a select box, allowing selection of a single value.`,
         canUse({ field }) {
-            return !field.multipleValues && !!get(field, "predefinedValues.enabled");
+            return !field.list && !!get(field, "predefinedValues.enabled");
         },
-        render({ field, getBind }) {
+        render({ getBind }) {
+            const { field } = useModelField();
+            const rules = useFieldEffectiveRules(field);
+            const disabled = !rules.canEdit || rules.disabled;
             const Bind = getBind();
 
             const { values: options = [] } = field.predefinedValues || {};
@@ -28,12 +32,15 @@ const plugin: CmsModelFieldRendererPlugin = {
                         <Bind.ValidationContainer>
                             <Select
                                 {...bind}
+                                disabled={disabled}
                                 label={field.label}
-                                description={field.helpText}
+                                description={field.description}
+                                note={field.note}
+                                hint={field.help}
                                 options={options}
-                                placeholder={field.placeholderText}
+                                placeholder={field.placeholder}
                                 data-testid={`fr.input.select.${field.label}`}
-                                value={String(value)}
+                                value={typeof value !== "undefined" ? String(value) : undefined}
                                 onChange={value => {
                                     if (field.type === "number") {
                                         onChange(Number(value));

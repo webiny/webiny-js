@@ -1,17 +1,31 @@
-import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/UpdateApiKey";
+import { ApiKeyAfterUpdateEventHandler } from "webiny/api/security/api-key";
+import { Logger, BuildParams } from "webiny/api";
 
-// TODO: conclude this is the import path we want to use
-import { LoggerService } from "webiny/api/features/Logger";
-
-class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
-    constructor(private logger: LoggerService.Interface) {}
+class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateEventHandler.Interface {
+    constructor(
+        private logger: Logger.Interface,
+        private buildParams: BuildParams.Interface
+    ) {}
 
     async handle() {
-        this.logger.warn("An API key was updated!");
+        this.logger.debug("An API key was updated!");
+
+        // Read build params
+        const param1 = this.buildParams.get<string>("MY_CUSTOM_BUILD_PARAM");
+        const param2 = this.buildParams.get<{ myKey: number; nested: { foo: string } }>(
+            "MY_CUSTOM_BUILD_PARAM-2"
+        );
+
+        console.log("---- Build Params ----");
+
+        console.log(`Build param 1: ${param1}`);
+        console.log(`Build param 2:`, param2);
     }
 }
 
-export const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation({
+const MyApiKeyAfterUpdate = ApiKeyAfterUpdateEventHandler.createImplementation({
     implementation: MyApiKeyAfterUpdateImpl,
-    dependencies: [LoggerService]
+    dependencies: [Logger, BuildParams]
 });
+
+export default MyApiKeyAfterUpdate;

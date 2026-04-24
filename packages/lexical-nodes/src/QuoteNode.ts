@@ -8,10 +8,8 @@ import type {
     NodeKey,
     Spread
 } from "lexical";
-import { $applyNodeReplacement } from "lexical";
-import type { EditorTheme, ThemeEmotionMap } from "@webiny/lexical-theme";
-import { findTypographyStyleByHtmlTag } from "@webiny/lexical-theme";
-import { addClassNamesToElement } from "@lexical/utils";
+import { $applyNodeReplacement, addClassNamesToElement } from "lexical";
+import { Theme } from "@webiny/lexical-theme";
 import type { SerializedQuoteNode as BaseSerializedQuoteNode } from "@lexical/rich-text";
 import { QuoteNode as BaseQuoteNode } from "@lexical/rich-text";
 import type { ThemeStyleValue, TypographyStylesNode } from "~/types.js";
@@ -59,12 +57,9 @@ export class QuoteNode extends BaseQuoteNode implements TypographyStylesNode {
         return this.__className;
     }
 
-    private setDefaultTypography(themeEmotionMap: ThemeEmotionMap) {
+    private setDefaultTypography(theme: Theme) {
         // For some time in v5 we had `quoteblock` as tag name :facepalm: We must not break it.
-        const typographyStyle = findTypographyStyleByHtmlTag(
-            ["blockquote", "quoteblock"],
-            themeEmotionMap
-        );
+        const typographyStyle = theme.getTypographyByTag(["blockquote", "quoteblock"]);
 
         if (typographyStyle) {
             this.__styleId = typographyStyle.id;
@@ -86,7 +81,7 @@ export class QuoteNode extends BaseQuoteNode implements TypographyStylesNode {
 
     override createDOM(config: EditorConfig): HTMLElement {
         const element = super.createDOM(config);
-        return this.updateElementWithThemeClasses(element, config.theme as EditorTheme);
+        return this.updateElementWithThemeClasses(element, Theme.from(config.theme));
     }
 
     override exportDOM(editor: LexicalEditor): DOMExportOutput {
@@ -141,13 +136,9 @@ export class QuoteNode extends BaseQuoteNode implements TypographyStylesNode {
         };
     }
 
-    protected updateElementWithThemeClasses(element: HTMLElement, theme: EditorTheme): HTMLElement {
-        if (!theme?.emotionMap) {
-            return element;
-        }
-
+    protected updateElementWithThemeClasses(element: HTMLElement, theme: Theme): HTMLElement {
         if (!this.__styleId || !this.__className) {
-            this.setDefaultTypography(theme.emotionMap);
+            this.setDefaultTypography(theme);
         }
 
         if (this.__className) {

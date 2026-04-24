@@ -3,7 +3,12 @@ import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg"
 import { IconButton, DropdownMenu } from "@webiny/admin-ui";
 import { OptionsMenuItemProvider } from "./useOptionsMenuItem.js";
 
+type IconButtonProps = React.ComponentProps<typeof IconButton>;
+
 export interface OptionsMenuProps {
+    variant?: IconButtonProps["variant"];
+    size?: IconButtonProps["size"];
+    iconSize?: IconButtonProps["iconSize"];
     actions: {
         name: string;
         element: React.ReactElement;
@@ -20,9 +25,9 @@ export const OptionsMenu = (props: OptionsMenuProps) => {
     const trigger = props.trigger || (
         <IconButton
             icon={<MoreVerticalIcon />}
-            size={"sm"}
-            iconSize={"lg"}
-            variant={"ghost"}
+            size={props.size ?? "md"}
+            iconSize={props.iconSize ?? "default"}
+            variant={props.variant ?? "ghost"}
             data-testid={props["data-testid"] || "more-options-icon"}
         />
     );

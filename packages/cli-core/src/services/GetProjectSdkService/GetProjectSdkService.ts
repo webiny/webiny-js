@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { getProjectSdk } from "@webiny/project";
+import { ProjectSdk } from "@webiny/project";
 import { CliParamsService, GetArgvService, GetProjectSdkService } from "~/abstractions/index.js";
 
 export class DefaultGetProjectSdkService implements GetProjectSdkService.Interface {
@@ -11,7 +11,11 @@ export class DefaultGetProjectSdkService implements GetProjectSdkService.Interfa
     async execute() {
         const cliParams = this.cliParamsService.get();
         const argv = this.getArgvService.execute();
-        return getProjectSdk({
+
+        // Extract env/variant/region from argv and pass to ProjectSdk.init()
+        // ProjectSdk.init() handles caching internally based on these parameters
+        return ProjectSdk.init({
+            ...argv,
             cwd: cliParams.cwd,
             logging: {
                 streamToStdout: argv.showLogs,

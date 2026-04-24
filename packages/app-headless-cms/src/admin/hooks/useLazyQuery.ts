@@ -4,7 +4,7 @@ import type { DocumentNode } from "graphql";
 import type { OperationVariables } from "@apollo/react-common";
 import type { LazyQueryHookOptions, QueryTuple } from "@apollo/react-hooks/lib/types.js";
 
-const useLazyQuery = function <TData = any, TVariables = OperationVariables>(
+export const useLazyQuery = function <TData = any, TVariables = OperationVariables>(
     query: DocumentNode,
     options: LazyQueryHookOptions<TData, TVariables> = {}
 ): QueryTuple<TData, TVariables> {

@@ -1,12 +1,12 @@
-import { describe, expect, it } from "vitest";
-import models from "./mocks/contentModels";
-import type { CmsEntry, CmsGroup, CmsModel } from "~/types";
+import { beforeEach, describe, expect, it } from "vitest";
+import type { CmsEntry, CmsModel } from "~/types";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { createMockCmsEntry } from "~tests/helpers/createMockCmsEntry";
+import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
 const manageOpts = {
-    path: "manage/en-US"
+    path: "manage"
 };
 
 const createMetaData = () => {
@@ -36,61 +36,22 @@ const createMetaData = () => {
 };
 
 describe("Content Entry Meta Field", () => {
-    const {
-        listCategories,
-        getCategory,
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation,
-        storageOperations
-    } = useCategoryManageHandler(manageOpts);
+    const manager = useCategoryManageHandler(manageOpts);
 
-    const setup = async () => {
-        const [createDefaultGroupResponse] = await createContentModelGroupMutation({
-            data: {
-                name: "Default group",
-                slug: "default-group",
-                icon: "ico/ico",
-                description: "description"
-            }
+    const { listCategories, getCategory } = manager;
+
+    let model: CmsModel;
+
+    beforeEach(async () => {
+        const result = await setupGroupAndModels({
+            manager,
+            models: ["category"]
         });
-        const group: CmsGroup = createDefaultGroupResponse.data.createContentModelGroup.data;
-
-        const targetModel = models.find(m => m.modelId === "category");
-        if (!targetModel) {
-            throw new Error("Could not find model `category`.");
-        }
-        const [createModelResponse] = await createContentModelMutation({
-            data: {
-                name: targetModel.name,
-                modelId: targetModel.modelId,
-                singularApiName: targetModel.singularApiName,
-                pluralApiName: targetModel.pluralApiName,
-                group: group.id
-            }
-        });
-
-        const [updateModelResponse] = await updateContentModelMutation({
-            modelId: createModelResponse.data.createContentModel.data.modelId,
-            data: {
-                fields: targetModel.fields,
-                layout: targetModel.layout
-            }
-        });
-        const model: CmsModel = {
-            ...updateModelResponse.data.updateContentModel.data,
-            tenant: "root",
-            locale: "en-US"
-        };
-
-        return {
-            model,
-            group
-        };
-    };
+        model = result.getModel("category");
+    });
 
     it("storage operations - should have meta field data in the retrieved record", async () => {
-        const { model } = await setup();
+        const storageOperations = manager.getContext().cms.storageOperations;
         const entryId = generateAlphaNumericLowerCaseId(8);
         const entry = createMockCmsEntry({
             id: `${entryId}#0001`,
@@ -107,7 +68,6 @@ describe("Content Entry Meta Field", () => {
                 displayName: "admin"
             },
             modelId: model.modelId,
-            locale: model.locale,
             tenant: model.tenant,
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
@@ -183,9 +143,12 @@ describe("Content Entry Meta Field", () => {
         });
 
         const [getCategoryResponse] = await getCategory({
-            revision: entry.id
+            variables: {
+                revision: entry.id
+            }
         });
 
+        expect(getCategoryResponse.errors).toBeUndefined();
         expect(getCategoryResponse).toMatchObject({
             data: {
                 getCategory: {
@@ -201,7 +164,7 @@ describe("Content Entry Meta Field", () => {
             }
         });
 
-        const [listCategoriesResponse] = await listCategories({});
+        const [listCategoriesResponse] = await listCategories();
 
         expect(listCategoriesResponse).toMatchObject({
             data: {

@@ -1,92 +1,92 @@
-import type { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types.js";
-import { normalizeValue } from "@webiny/api-elasticsearch";
-import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import type { PluginsContainer } from "@webiny/plugins";
-import {
-    CmsEntryElasticsearchFullTextSearchPlugin,
-    createCmsEntryElasticsearchFullTextSearchPlugin
-} from "~/plugins/index.js";
+import type { OpenSearchBoolQueryConfig } from "@webiny/api-opensearch/types.js";
+import { normalizeValue } from "@webiny/api-opensearch";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsEntryOpenSearchFullTextSearch } from "~/features/CmsEntryOpenSearchFullTextSearch/index.js";
+import type { ModelFields } from "~/operations/entry/elasticsearch/types.js";
 
 /**
- * Our default plugin is working with the AND operator for the multiple words query string.
+ * Our default implementation works with the AND operator for the multiple words query string.
  */
-const defaultPlugin = createCmsEntryElasticsearchFullTextSearchPlugin({
+const defaultFullTextSearch: CmsEntryOpenSearchFullTextSearch.Interface = {
     apply: params => {
         const { query, term, fields, createFieldPath, prepareTerm } = params;
 
         query.must.push({
             query_string: {
                 allow_leading_wildcard: true,
-                fields: fields.map(createFieldPath),
+                fields: Object.values(fields).map(createFieldPath),
                 query: `*${prepareTerm(term)}*`,
                 default_operator: "and"
             }
         });
     }
-});
-defaultPlugin.name = "headless-cms.elasticsearch.entry.fullTextSearch.default";
+};
 
-interface GetPluginParams {
-    container: PluginsContainer;
+interface GetFullTextSearchParams {
+    fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
     model: CmsModel;
 }
-const getPlugin = (params: GetPluginParams): CmsEntryElasticsearchFullTextSearchPlugin => {
-    const { container, model } = params;
+const getFullTextSearch = (
+    params: GetFullTextSearchParams
+): CmsEntryOpenSearchFullTextSearch.Interface => {
+    const { fullTextSearches, model } = params;
     /**
-     * We need to reverse the plugins, so we can take the last one first - possibility to override existing plugins.
+     * We need to reverse the list, so we can take the last one first - possibility to override existing implementations.
      */
-    const plugins = container
-        .byType<CmsEntryElasticsearchFullTextSearchPlugin>(
-            CmsEntryElasticsearchFullTextSearchPlugin.type
-        )
-        .reverse();
+    const reversed = [...fullTextSearches].reverse();
     /**
-     * We need to find the most specific plugin for the given model.
-     * Also, we need to use the first possible plugin if the specific one is not found.
+     * We need to find the most specific implementation for the given model.
+     * Also, we need to use the first possible implementation if the specific one is not found.
      */
-    let plugin: CmsEntryElasticsearchFullTextSearchPlugin | null = null;
-    for (const pl of plugins) {
-        const models = pl.models || [];
+    let fallback: CmsEntryOpenSearchFullTextSearch.Interface | null = null;
+    for (const item of reversed) {
+        const models = item.models || [];
         /**
-         * We take the first available plugin for the given model.
+         * We take the first available implementation for the given model.
          */
         if (models.includes(model.modelId)) {
-            return pl;
-        }
-        /**
-         * Then we set the first possible plugin, which has no models defined, as the default one.
-         * It is important not to set the plugin which has models defined as they are specifically for the targeted model.
-         */
-        //
-        else if (!plugin && models.length === 0) {
-            plugin = pl;
+            return item;
+        } else if (!fallback && models.length === 0) {
+            /**
+             * Then we set the first possible implementation, which has no models defined, as the default one.
+             * It is important not to set the one which has models defined as they are specifically for the targeted model.
+             */
+            fallback = item;
         }
     }
 
-    return plugin || defaultPlugin;
+    return fallback || defaultFullTextSearch;
 };
 
 interface Params {
-    plugins: PluginsContainer;
+    fullTextSearches: CmsEntryOpenSearchFullTextSearch.Interface[];
     model: CmsModel;
-    query: ElasticsearchBoolQueryConfig;
+    query: OpenSearchBoolQueryConfig;
     term?: string;
-    fields: CmsModelField[];
+    fields: ModelFields;
 }
 export const applyFullTextSearch = (params: Params): void => {
-    const { plugins, query, term, fields, model } = params;
-    if (!term || term.length === 0 || fields.length === 0) {
+    const { fullTextSearches, query, term, fields, model } = params;
+    const keys = Object.keys(fields);
+    if (!term || term.length === 0 || keys.length === 0) {
         return;
     }
 
-    const plugin = getPlugin({
-        container: plugins,
+    const fullTextSearch = getFullTextSearch({
+        fullTextSearches,
         model
     });
 
-    plugin.apply({
+    fullTextSearch.apply({
         model,
-        createFieldPath: field => `values.${field.storageId}`,
+        createFieldPath: field => {
+            if (typeof field.path === "function") {
+                return field.path(term);
+            } else if (field.systemField) {
+                return field.path || field.field.storageId;
+            }
+            return `values.${field.path || field.field.storageId}`;
+        },
         fields,
         query,
         term,

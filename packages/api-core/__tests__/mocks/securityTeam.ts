@@ -3,13 +3,13 @@ const mocks = {
         name: "Team-A",
         slug: "team-a",
         description: "A: Dolor odit et quia animi ipsum nostrum nesciunt.",
-        groups: []
+        roles: []
     },
     teamB: {
         name: "Team-B",
         slug: "team-b",
         description: "B: Dolor odit et quia animi ipsum nostrum nesciunt.",
-        groups: []
+        roles: []
     }
 };
 

@@ -1,15 +1,15 @@
-import type { CmsGroup } from "~/types";
+import type { CmsGroup, CmsModel } from "~/types";
 import allModels from "../contentAPI/mocks/contentModels";
 import type { useGraphQLHandler } from "./useGraphQLHandler";
-import type { CmsModel } from "../types";
+import type { TestCmsModel } from "../types";
 
 interface SetupContentModelParams {
     manager: ReturnType<typeof useGraphQLHandler>;
-    model: CmsModel;
+    model: TestCmsModel;
     group: CmsGroup;
 }
 
-export const setupContentModel = async (params: SetupContentModelParams) => {
+const setupContentModel = async (params: SetupContentModelParams) => {
     const { manager, model, group } = params;
     const [createResponse] = await manager.createContentModelMutation({
         data: {
@@ -17,7 +17,9 @@ export const setupContentModel = async (params: SetupContentModelParams) => {
             modelId: model.modelId,
             singularApiName: model.singularApiName,
             pluralApiName: model.pluralApiName,
-            group: group.id
+            group: group.slug,
+            fields: model.fields,
+            layout: model.layout
         }
     });
 
@@ -30,29 +32,14 @@ export const setupContentModel = async (params: SetupContentModelParams) => {
         process.exit(1);
     }
 
-    const [updateResponse] = await manager.updateContentModelMutation({
-        modelId: createResponse.data.createContentModel.data.modelId,
-        data: {
-            fields: model.fields,
-            layout: model.layout
-        }
-    });
-
-    if (updateResponse.errors) {
-        console.log(`[setupContentModel] ${updateResponse.errors[0].message}`);
-        process.exit(updateResponse.errors[0].message);
-    } else if (updateResponse.data.updateContentModel.error) {
-        console.log(`[setupContentModel] ${updateResponse.data.updateContentModel.error.message}`);
-        process.exit(updateResponse.data.updateContentModel.error.message);
-    }
-    return updateResponse.data.updateContentModel.data;
+    return createResponse.data.createContentModel.data;
 };
 
-export const getModel = (item: CmsModel | string): CmsModel => {
+export const getModel = (item: TestCmsModel | string): TestCmsModel => {
     if (typeof item === "string") {
         const model = allModels.find(m => m.modelId === item);
         if (!model) {
-            console.log(`[setupContentModel] There is no model "${name}" defined.`);
+            console.log(`[setupContentModel] There is no model "${item}" defined.`);
             process.exit(1);
         }
         return model;
@@ -62,14 +49,24 @@ export const getModel = (item: CmsModel | string): CmsModel => {
 
 interface SetupGroupAndModelsParams {
     manager: ReturnType<typeof useGraphQLHandler>;
-    models: (CmsModel | string)[] | undefined;
+    models: (TestCmsModel | string)[] | "*" | undefined;
 }
 
 export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => {
     const { manager, models: initialModels } = params;
     const group = await setupContentModelGroup(manager);
 
-    const models = initialModels || allModels.map(m => m.modelId);
+    if (!initialModels) {
+        return {
+            group,
+            models: [],
+            getModel(modelId: string) {
+                console.log(`[setupGroupAndModels] There is no model "${modelId}" defined.`);
+                process.exit(1);
+            }
+        };
+    }
+    const models = initialModels === "*" ? allModels : initialModels;
 
     const results: CmsModel[] = [];
     for (const item of models) {
@@ -83,11 +80,19 @@ export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => 
     }
     return {
         models: results,
+        getModel(modelId: string) {
+            const model = results.find(m => m.modelId === modelId);
+            if (!model) {
+                console.log(`[setupGroupAndModels] There is no model "${modelId}" defined.`);
+                process.exit(1);
+            }
+            return model;
+        },
         group
     };
 };
 
-export interface SetupContentModelGroupGqlVars {
+interface SetupContentModelGroupGqlVars {
     data: {
         name: string;
         slug: string;
@@ -96,7 +101,7 @@ export interface SetupContentModelGroupGqlVars {
     };
 }
 
-export const setupContentModelGroup = async (
+const setupContentModelGroup = async (
     manager: ReturnType<typeof useGraphQLHandler>,
     vars?: SetupContentModelGroupGqlVars
 ): Promise<CmsGroup> => {
@@ -122,26 +127,26 @@ export const setupContentModelGroup = async (
     return response.data.createContentModelGroup.data;
 };
 
-export const setupContentModels = async (
-    manager: ReturnType<typeof useGraphQLHandler>,
-    group: CmsGroup,
-    modelsList: string[]
-): Promise<Record<string, any>> => {
-    const items = modelsList.reduce<Record<string, any>>((acc, m) => ({ ...acc, [m]: null }), {});
-    for (const name in items) {
-        if (items.hasOwnProperty(name) === false) {
-            continue;
-        }
-        const model = allModels.find(m => m.modelId === name);
-        if (!model) {
-            console.log(`[setupContentModel] There is no model "${name}" defined.`);
-            process.exit(1);
-        }
-        items[name] = await setupContentModel({
-            manager,
-            group,
-            model
-        });
-    }
-    return items;
-};
+// export const setupContentModels = async (
+//     manager: ReturnType<typeof useGraphQLHandler>,
+//     group: CmsGroup,
+//     modelsList: string[]
+// ): Promise<Record<string, any>> => {
+//     const items = modelsList.reduce<Record<string, any>>((acc, m) => ({ ...acc, [m]: null }), {});
+//     for (const name in items) {
+//         if (items.hasOwnProperty(name) === false) {
+//             continue;
+//         }
+//         const model = allModels.find(m => m.modelId === name);
+//         if (!model) {
+//             console.log(`[setupContentModel] There is no model "${name}" defined.`);
+//             process.exit(1);
+//         }
+//         items[name] = await setupContentModel({
+//             manager,
+//             group,
+//             model
+//         });
+//     }
+//     return items;
+// };

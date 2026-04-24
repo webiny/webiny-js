@@ -1,28 +1,36 @@
 import { createFeature } from "@webiny/feature/api";
 import { Container } from "@webiny/di";
-import { SettingsDomain } from "~/domain/settings/index.js";
 import { EventPublisherFeature } from "~/features/eventPublisher/feature.js";
 import { LoggerFeature } from "~/features/logger/feature.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { SystemFeature } from "~/features/system/SystemFeature.js";
 import { TenancyFeature } from "./features/tenancy/TenancyFeature.js";
 import { AdminUsersFeature } from "~/features/users/AdminUsersFeature.js";
-import { SettingsFeature } from "~/features/settings/index.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
+import { IdpAuthenticatorFeature } from "~/idp/feature.js";
+import { KeyValueStoreFeature } from "~/features/keyValueStore/feature.js";
+import { BuildParamsFeature } from "~/features/buildParams/feature.js";
+import { EncryptionFeature } from "~/features/encryption/feature.js";
+import { FeatureFlagsFeature } from "~/features/featureFlags/feature.js";
+import { MaskerFeature } from "~/features/masker/feature.js";
+import { AiFeature } from "~/features/ai/feature.js";
 
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
     register(container: Container, config: ApiCoreStorageOperations) {
-        // Register domain models
-        SettingsDomain.register(container);
-
         // Register features
+        MaskerFeature.register(container);
+        AiFeature.register(container);
         LoggerFeature.register(container);
         EventPublisherFeature.register(container);
+        BuildParamsFeature.register(container);
+        EncryptionFeature.register(container);
+        FeatureFlagsFeature.register(container);
         TenancyFeature.register(container, config.tenancyStorageOperations);
         SecurityFeature.register(container, config.securityStorageOperations);
         AdminUsersFeature.register(container, config.usersStorageOperations);
-        SettingsFeature.register(container, config.settingsStorageOperations);
+        KeyValueStoreFeature.register(container, config.keyValueStorageOperations);
         SystemFeature.register(container);
+        IdpAuthenticatorFeature.register(container);
     }
 });

@@ -1,15 +1,10 @@
 import React from "react";
-import mime from "mime/lite.js";
 import { Separator } from "@webiny/admin-ui";
 
 import type { SupportedFileTypesProps } from "./SupportedFileTypes.js";
-import SupportedFileTypes from "./SupportedFileTypes.js";
+import { SupportedFileTypes } from "./SupportedFileTypes.js";
 import type { ListStatusProps } from "./ListStatus.js";
 import ListStatus from "./ListStatus.js";
-
-mime.define({ "image/x-icon": ["ico"] }, true);
-mime.define({ "image/jpg": ["jpg"] }, true);
-mime.define({ "image/vnd.microsoft.icon": ["ico"] }, true);
 
 type BottomInfoBarProps = SupportedFileTypesProps & ListStatusProps;
 

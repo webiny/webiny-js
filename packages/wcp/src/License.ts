@@ -39,6 +39,10 @@ export class License implements ILicense {
         return this.license;
     }
 
+    toDto(): DecryptedWcpProjectLicense {
+        return this.license;
+    }
+
     getProject(): WcpProject | null {
         return {
             orgId: this.license.orgId,
@@ -72,6 +76,15 @@ export class License implements ILicense {
             .folderLevelPermissions;
     }
 
+    canUseHcmsFieldPermissions() {
+        if (!this.canUseAacl()) {
+            return false;
+        }
+
+        return this.license.package.features.advancedAccessControlLayer.options
+            .hcmsFieldPermissions;
+    }
+
     canUsePrivateFiles() {
         if (!this.canUseAacl()) {
             return false;
@@ -94,5 +107,22 @@ export class License implements ILicense {
 
     public canUseWorkflows(): boolean {
         return this.canUseFeature("advancedPublishingWorkflow");
+    }
+
+    canUseAiImageEnrichment(): boolean {
+        return (
+            this.license.package.features.aiPowerups?.options?.fileManager?.imageEnrichment === true
+        );
+    }
+
+    canUseAiPageGeneration(): boolean {
+        return (
+            this.license.package.features.aiPowerups?.options?.websiteBuilder?.pageGeneration ===
+            true
+        );
+    }
+
+    canUseAiLexicalGeneration(): boolean {
+        return this.license.package.features.aiPowerups?.options?.lexicalGeneration === true;
     }
 }

@@ -1,31 +1,18 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { Entity, Table } from "@webiny/db-dynamodb/toolbox.js";
+import { createStandardEntity, createTable } from "@webiny/db-dynamodb";
+import type { IWebsocketsConnectionRegistryData } from "./abstractions/IWebsocketsConnectionRegistry.js";
 
 const name = "SocketsConnectionRegistry";
 
 export const createEntity = (documentClient: DynamoDBDocument) => {
-    const table = new Table({
+    const table = createTable({
         name: String(process.env.DB_TABLE),
-        partitionKey: "PK",
-        sortKey: "SK",
-        DocumentClient: documentClient,
-        indexes: {
-            GSI1: {
-                partitionKey: "GSI1_PK",
-                sortKey: "GSI1_SK"
-            },
-            GSI2: {
-                partitionKey: "GSI2_PK",
-                sortKey: "GSI2_SK"
-            }
-        },
-        autoExecute: true,
-        autoParse: true
+        documentClient
     });
 
-    return new Entity({
+    return createStandardEntity<IWebsocketsConnectionRegistryData>({
         name,
-        table,
+        table: table.table,
         attributes: {
             PK: {
                 partitionKey: true
@@ -34,23 +21,29 @@ export const createEntity = (documentClient: DynamoDBDocument) => {
                 sortKey: true
             },
             GSI1_PK: {
-                type: "string"
+                type: "string",
+                required: true
             },
             GSI1_SK: {
-                type: "string"
+                type: "string",
+                required: true
             },
             GSI2_PK: {
-                type: "string"
+                type: "string",
+                required: true
             },
             GSI2_SK: {
-                type: "string"
+                type: "string",
+                required: true
             },
             TYPE: {
                 type: "string",
-                default: name
+                default: name,
+                required: true
             },
             data: {
-                type: "map"
+                type: "map",
+                required: true
             }
         }
     });

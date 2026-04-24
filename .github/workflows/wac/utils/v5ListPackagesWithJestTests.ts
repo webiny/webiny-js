@@ -69,10 +69,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
         return [
             { cmd: "packages/api-file-manager --storage=ddb", storage: "ddb" },
             {
-                cmd: "packages/api-file-manager --storage=ddb-es,ddb",
-                storage: "ddb-es"
-            },
-            {
                 cmd: "packages/api-file-manager --storage=ddb-os,ddb",
                 storage: "ddb-os"
             }
@@ -83,10 +79,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
         return [
             { cmd: "packages/api-file-manager-aco --storage=ddb", storage: "ddb" },
             {
-                cmd: "packages/api-file-manager-aco --storage=ddb-es,ddb",
-                storage: "ddb-es"
-            },
-            {
                 cmd: "packages/api-file-manager-aco --storage=ddb-os,ddb",
                 storage: "ddb-os"
             }
@@ -95,7 +87,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
 
     "api-form-builder": () => {
         return [
-            { cmd: "packages/api-form-builder --storage=ddb-es,ddb", storage: "ddb-es" },
             { cmd: "packages/api-form-builder --storage=ddb-os,ddb", storage: "ddb-os" },
             { cmd: "packages/api-form-builder --storage=ddb", storage: "ddb" }
         ];
@@ -103,10 +94,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
 
     "api-form-builder-so-ddb-es": () => {
         return [
-            {
-                cmd: "packages/api-form-builder-so-ddb-es --storage=ddb-es,ddb",
-                storage: "ddb-es"
-            },
             {
                 cmd: "packages/api-form-builder-so-ddb-es --storage=ddb-os,ddb",
                 storage: "ddb-os"
@@ -116,10 +103,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
 
     "api-page-builder": () => {
         return [
-            ...shardPackageTestExecution({
-                cmd: "packages/api-page-builder --storage=ddb-es,ddb",
-                storage: "ddb-es"
-            }),
             ...shardPackageTestExecution({
                 cmd: "packages/api-page-builder --storage=ddb-os,ddb",
                 storage: "ddb-os"
@@ -132,10 +115,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     },
     "api-page-builder-so-ddb-es": () => {
         return [
-            {
-                cmd: "packages/api-page-builder-so-ddb-es --storage=ddb-es,ddb",
-                storage: "ddb-es"
-            },
             {
                 cmd: "packages/api-page-builder-so-ddb-es --storage=ddb-os,ddb",
                 storage: "ddb-os"
@@ -159,7 +138,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     "api-mailer": () => {
         return [
             { cmd: "packages/api-mailer --storage=ddb", storage: "ddb" },
-            { cmd: "packages/api-mailer --storage=ddb-es,ddb", storage: "ddb-es" },
             { cmd: "packages/api-mailer --storage=ddb-os,ddb", storage: "ddb-os" }
         ];
     },
@@ -171,10 +149,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
                 storage: "ddb"
             }),
             ...shardPackageTestExecution({
-                cmd: "packages/api-headless-cms --storage=ddb-es,ddb",
-                storage: "ddb-es"
-            }),
-            ...shardPackageTestExecution({
                 cmd: "packages/api-headless-cms --storage=ddb-os,ddb",
                 storage: "ddb-os"
             })
@@ -184,10 +158,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
         return [
             { cmd: "packages/api-headless-cms-import-export --storage=ddb", storage: "ddb" },
             {
-                cmd: "packages/api-headless-cms-import-export --storage=ddb-es,ddb",
-                storage: "ddb-es"
-            },
-            {
                 cmd: "packages/api-headless-cms-import-export --storage=ddb-os,ddb",
                 storage: "ddb-os"
             }
@@ -195,10 +165,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     },
     "api-headless-cms-ddb-es": () => {
         return [
-            {
-                cmd: "packages/api-headless-cms-ddb-es --storage=ddb-es,ddb",
-                storage: "ddb-es"
-            },
             {
                 cmd: "packages/api-headless-cms-ddb-es --storage=ddb-os,ddb",
                 storage: "ddb-os"
@@ -208,17 +174,12 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     "api-headless-cms-aco": () => {
         return [
             { cmd: "packages/api-headless-cms-aco --storage=ddb", storage: "ddb" },
-            { cmd: "packages/api-headless-cms-aco --storage=ddb-es,ddb", storage: "ddb-es" },
             { cmd: "packages/api-headless-cms-aco --storage=ddb-os,ddb", storage: "ddb-os" }
         ];
     },
     "api-headless-cms-bulk-actions": () => {
         return [
             { cmd: "packages/api-headless-cms-bulk-actions --storage=ddb", storage: "ddb" },
-            {
-                cmd: "packages/api-headless-cms-bulk-actions --storage=ddb-es,ddb",
-                storage: "ddb-es"
-            },
             {
                 cmd: "packages/api-headless-cms-bulk-actions --storage=ddb-os,ddb",
                 storage: "ddb-os"
@@ -235,24 +196,18 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     "api-aco": () => {
         return [
             { cmd: "packages/api-aco --storage=ddb", storage: "ddb" },
-            { cmd: "packages/api-aco --storage=ddb-es,ddb", storage: "ddb-es" },
             { cmd: "packages/api-aco --storage=ddb-os,ddb", storage: "ddb-os" }
         ];
     },
     "api-audit-logs": () => {
         return [
             { cmd: "packages/api-audit-logs --storage=ddb", storage: "ddb" },
-            { cmd: "packages/api-audit-logs --storage=ddb-es,ddb", storage: "ddb-es" },
             { cmd: "packages/api-audit-logs --storage=ddb-os,ddb", storage: "ddb-os" }
         ];
     },
     "api-page-builder-aco": () => {
         return [
             { cmd: "packages/api-page-builder-aco --storage=ddb", storage: "ddb" },
-            {
-                cmd: "packages/api-page-builder-aco --storage=ddb-es,ddb",
-                storage: "ddb-es"
-            },
             {
                 cmd: "packages/api-page-builder-aco --storage=ddb-os,ddb",
                 storage: "ddb-os"
@@ -269,10 +224,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     migrations: () => {
         return [
             {
-                cmd: "packages/migrations --storage=ddb-es,ddb",
-                storage: ["ddb-es"]
-            },
-            {
                 cmd: "packages/migrations --storage=ddb-os,ddb",
                 storage: ["ddb-os"]
             }
@@ -280,10 +231,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     },
     "api-elasticsearch": () => {
         return [
-            {
-                cmd: "packages/api-elasticsearch --storage=ddb-es,ddb",
-                storage: ["ddb-es"]
-            },
             {
                 cmd: "packages/api-elasticsearch --storage=ddb-os,ddb",
                 storage: ["ddb-os"]
@@ -293,10 +240,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     "api-dynamodb-to-elasticsearch": () => {
         return [
             {
-                cmd: "packages/api-dynamodb-to-elasticsearch --storage=ddb-es,ddb",
-                storage: ["ddb-es"]
-            },
-            {
                 cmd: "packages/api-dynamodb-to-elasticsearch --storage=ddb-os,ddb",
                 storage: ["ddb-os"]
             }
@@ -304,10 +247,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     },
     "api-headless-cms-es-tasks": () => {
         return [
-            {
-                cmd: "packages/api-headless-cms-es-tasks --storage=ddb-es,ddb",
-                storage: ["ddb-es"]
-            },
             {
                 cmd: "packages/api-headless-cms-es-tasks --storage=ddb-os,ddb",
                 storage: ["ddb-os"]
@@ -318,10 +257,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
         return [
             { cmd: "packages/tasks --storage=ddb", storage: "ddb" },
             {
-                cmd: "packages/tasks --storage=ddb-es,ddb",
-                storage: "ddb-es"
-            },
-            {
                 cmd: "packages/tasks --storage=ddb-os,ddb",
                 storage: "ddb-os"
             }
@@ -330,10 +265,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     "api-elasticsearch-tasks": () => {
         return [
             {
-                cmd: "packages/api-elasticsearch-tasks --storage=ddb-es,ddb",
-                storage: "ddb-es"
-            },
-            {
                 cmd: "packages/api-elasticsearch-tasks --storage=ddb-os,ddb",
                 storage: "ddb-os"
             }
@@ -341,7 +272,6 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     },
     "api-serverless-cms": () => {
         return [
-            { cmd: "packages/api-serverless-cms --storage=ddb-es,ddb", storage: "ddb-es" },
             { cmd: "packages/api-serverless-cms --storage=ddb-os,ddb", storage: "ddb-os" },
             { cmd: "packages/api-serverless-cms --storage=ddb", storage: "ddb" }
         ];

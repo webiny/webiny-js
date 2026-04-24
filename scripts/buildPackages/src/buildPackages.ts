@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import yargs from "yargs";
-import writeJson from "write-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import { Listr, ListrTask } from "listr2";
 import { getBatches } from "./getBatches";
 import { META_FILE_PATH } from "./constants";
@@ -12,6 +12,7 @@ import execa from "execa";
 
 import { hideBin } from "yargs/helpers";
 import { PackageBuildError } from "./PackageBuildError";
+import { queueMetaWrite } from "./writeMetaQueue";
 
 const argv = yargs(hideBin(process.argv)).parse();
 
@@ -103,9 +104,13 @@ export const buildPackages = async () => {
 
                                         // Store package hash
                                         const sourceHash = await getPackageSourceHash(pkg);
-                                        metaJson.packages[pkg.packageJson.name] = { sourceHash };
-
-                                        await writeJson(META_FILE_PATH, metaJson);
+                                        await queueMetaWrite(async () => {
+                                            const currentMeta = getBuildMeta();
+                                            currentMeta.packages[pkg.packageJson.name] = {
+                                                sourceHash
+                                            };
+                                            return writeJsonFileSync(META_FILE_PATH, currentMeta);
+                                        });
                                     } catch (err) {
                                         ctx.skip = true;
                                         throw new PackageBuildError(pkg, err);
@@ -117,6 +122,7 @@ export const buildPackages = async () => {
                         const batchTasks = task.newListr(subtasks, {
                             concurrent: buildInParallel,
                             exitOnError: false,
+                            collectErrors: "minimal",
                             rendererOptions: { showErrorMessage: false }
                         });
 
@@ -126,7 +132,21 @@ export const buildPackages = async () => {
             }),
             {
                 concurrent: false,
-                rendererOptions: { showTimer: true, collapse: true }
+                collectErrors: "minimal",
+                rendererOptions: {
+                    timer: {
+                        condition: true,
+                        field: duration => {
+                            return `${Math.round(duration / 1000)}s`;
+                        },
+                        format: () => {
+                            return time => {
+                                return time || "";
+                            };
+                        }
+                    },
+                    collapseSubtasks: true
+                }
             }
         );
 
@@ -134,14 +154,14 @@ export const buildPackages = async () => {
 
         const duration = (Date.now() - start) / 1000;
 
-        if (tasks.err.length) {
+        if (tasks.errors.length) {
             console.log();
             console.log(
-                `Error building ${red(tasks.err.length)} package(s). Check the logs below.`
+                `Error building ${red(tasks.errors.length)} package(s). Check the logs below.`
             );
             console.log();
 
-            tasks.err.forEach(listrError => {
+            tasks.errors.forEach(listrError => {
                 const pkgBuildError = listrError.error as PackageBuildError;
                 console.log(red("✖ " + pkgBuildError.getPackage().name));
                 console.log(pkgBuildError.getBuildError().message);

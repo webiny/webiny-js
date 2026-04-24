@@ -1,78 +1,71 @@
-import type { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types/index.js";
-import type { PluginsContainer } from "@webiny/plugins";
+import type { CmsContext, CmsModelField } from "~/types/index.js";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface BuildParams {
     input: string[];
     fields: CmsModelField[];
-    plugins: Record<string, CmsModelFieldToGraphQLPlugin>;
+    registry: CmsModelFieldToGraphQLRegistry.Interface;
     parents: string[];
 }
 const buildSearchableFieldList = (params: BuildParams): string[] => {
-    const { input, plugins, fields, parents } = params;
-    return fields.reduce<string[]>((result, field) => {
-        /**
-         * We need to check if the field is full text searchable, and for that we need a plugin for the field type.
-         */
-        const plugin = plugins[field.type];
-        if (!plugin) {
-            return result;
-        }
-        /**
-         * There is a possibility that searchable fields exist in nested object field, so check that as well.
-         */
-        const childFields = field.settings?.fields || [];
-        if (childFields.length > 0) {
+    const { input, registry, fields, parents } = params;
+    return fields.reduce<string[]>(
+        (result, field) => {
+            const fieldImpl = registry.get(field.type);
+            if (!fieldImpl) {
+                return result;
+            }
             /**
-             * So we build a list of searchable child fields and push it into the main result set.
+             * There is a possibility that searchable fields exist in nested object field, so check that as well.
              */
-            const childResults = buildSearchableFieldList({
-                fields: childFields,
-                parents: [...parents, field.fieldId],
-                plugins,
-                input
-            });
+            const childFields = field.settings?.fields || [];
+            if (childFields.length > 0) {
+                const childResults = buildSearchableFieldList({
+                    fields: childFields,
+                    parents: [...parents, field.fieldId],
+                    registry,
+                    input
+                });
 
-            result.push(...childResults);
+                result.push(...childResults);
+                return result;
+            }
+            /**
+             * If not searchable, continue further.
+             */
+            if (!fieldImpl.isFullTextSearchable || field.settings?.disableFullTextSearch === true) {
+                return result;
+            }
+
+            /**
+             * Combine all parent paths with the current one and push it.
+             */
+            const path = [...parents, field.fieldId].join(".");
+            result.push(path);
+
             return result;
-        }
+        },
         /**
-         * If not searchable, continue further.
+         * We always add id and entry id.
          */
-        if (!plugin.fullTextSearch || field.settings?.disableFullTextSearch === true) {
-            return result;
-        }
-
-        /**
-         * Combine all parent paths with the current one and push it.
-         */
-        const path = [...parents, field.fieldId].join(".");
-        result.push(path);
-
-        return result;
-    }, []);
+        ["id", "entryId"]
+    );
 };
 
 interface Params {
     input: string[];
     fields: CmsModelField[];
-    plugins: PluginsContainer;
+    context: Pick<CmsContext, "container">;
 }
 export const getSearchableFields = (params: Params): string[] => {
-    const { plugins, input, fields } = params;
-    const fieldPluginMap = plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce(
-            (collection, field) => {
-                collection[field.fieldType] = field;
-                return collection;
-            },
-            {} as Record<string, CmsModelFieldToGraphQLPlugin>
-        );
+    const { context, input, fields } = params;
+
+    const registry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
 
     return buildSearchableFieldList({
         fields,
         input,
-        plugins: fieldPluginMap,
-        parents: []
+        registry,
+        parents: ["values"]
     });
 };

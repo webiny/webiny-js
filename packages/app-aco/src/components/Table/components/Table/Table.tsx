@@ -12,6 +12,7 @@ import { TablePresenter } from "./TablePresenter.js";
 import { TableInner } from "./TableInner.js";
 import type { TableRow } from "~/types.js";
 import { ColumnConfig } from "~/config/table/Column.js";
+import { useLocalStorage } from "@webiny/app";
 
 export interface TableProps<T> {
     columns: ColumnConfig[];
@@ -27,6 +28,8 @@ export interface TableProps<T> {
 }
 
 export const Table = <T extends TableRow>({ columns, namespace, ...props }: TableProps<T>) => {
+    const localStorage = useLocalStorage();
+
     const columnsRepo = useMemo(() => {
         return columnsRepositoryFactory.getRepository(
             namespace,
@@ -35,7 +38,10 @@ export const Table = <T extends TableRow>({ columns, namespace, ...props }: Tabl
     }, [namespace, columns]);
 
     const visibilityRepo = useMemo(() => {
-        const columnsVisibilityLocalStorage = new ColumnsVisibilityLocalStorageGateway(namespace);
+        const columnsVisibilityLocalStorage = new ColumnsVisibilityLocalStorageGateway(
+            localStorage,
+            namespace
+        );
 
         return columnsVisibilityRepositoryFactory.getRepository(
             namespace,

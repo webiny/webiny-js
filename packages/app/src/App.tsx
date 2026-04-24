@@ -1,4 +1,12 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+    createContext,
+    Fragment,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState
+} from "react";
 import {
     compose,
     CompositionProvider,
@@ -6,7 +14,6 @@ import {
     DecoratorsCollection,
     GenericComponent
 } from "@webiny/react-composition";
-import { DebounceRender } from "./core/DebounceRender.js";
 import { PluginsProvider } from "./core/Plugins.js";
 import { RouterWithConfig, useRouterConfig } from "./config/RouterConfig.js";
 import { AppContainer } from "./AppContainer.js";
@@ -14,13 +21,12 @@ import { RouteContent } from "~/presentation/router/components/RouteContent.js";
 import { useRouter } from "~/router.js";
 
 interface State {
-    plugins: JSX.Element[];
+    plugins: React.JSX.Element[];
     providers: Decorator<GenericComponent<ProviderProps>>[];
 }
 
 interface AppContext extends State {
     addProvider(hoc: Decorator<GenericComponent<ProviderProps>>): void;
-
     addPlugin(plugin: React.ReactNode): void;
 }
 
@@ -39,8 +45,8 @@ export const useApp = () => {
 };
 
 export interface AppProps {
-    debounceRender?: number;
     routes?: Array<any>;
+    plugins?: any[];
     providers?: Array<Decorator<GenericComponent<ProviderProps>>>;
     decorators?: DecoratorsCollection;
     children?: React.ReactNode | React.ReactNode[];
@@ -53,9 +59,9 @@ interface ProviderProps {
 type ComponentWithChildren = React.ComponentType<{ children?: React.ReactNode }>;
 
 export const AppBase = React.memo(
-    ({ debounceRender = 50, routes = [], providers = [], children }: AppProps) => {
+    ({ routes = [], plugins = [], providers = [], children }: AppProps) => {
         const [state, setState] = useState<State>({
-            plugins: [],
+            plugins,
             providers
         });
 
@@ -72,7 +78,7 @@ export const AppBase = React.memo(
             });
         }, []);
 
-        const addPlugin = useCallback((element: JSX.Element) => {
+        const addPlugin = useCallback((element: React.JSX.Element) => {
             setState(state => {
                 return {
                     ...state,
@@ -108,7 +114,7 @@ export const AppBase = React.memo(
         const Providers = useMemo(() => {
             return React.memo(
                 compose(...(state.providers || []))(({ children }: ProviderProps) => {
-                    return <DebounceRender wait={debounceRender}>{children}</DebounceRender>;
+                    return <>{children}</>;
                 })
             );
         }, [state.providers.length]) as ComponentWithChildren;
@@ -120,13 +126,15 @@ export const AppBase = React.memo(
                 {children}
                 <AppContainer>
                     <Providers>
-                        <PluginsProvider>{state.plugins}</PluginsProvider>
-                        <DebounceRender wait={debounceRender}>
-                            <RouterWithConfig>
-                                <AppRouter />
-                                <RouteContent />
-                            </RouterWithConfig>
-                        </DebounceRender>
+                        <PluginsProvider>
+                            {state.plugins.map((plugin, index) => (
+                                <Fragment key={index}>{plugin}</Fragment>
+                            ))}
+                        </PluginsProvider>
+                        <RouterWithConfig>
+                            <AppRouter />
+                            <RouteContent />
+                        </RouterWithConfig>
                     </Providers>
                 </AppContainer>
             </AppContext.Provider>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { stepValidation } from "~/validation/step.js";
+import { stepValidation } from "~/graphql/validation/step.js";
 
 describe("step validation", () => {
     it("should validate a workflow step with all required fields", async () => {
@@ -23,7 +23,9 @@ describe("step validation", () => {
             notifications: [{ id: "notification1" }]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.errors[0].message).toBe("Required");
+        expect(result.error!.issues[0].message).toBe(
+            "Invalid input: expected string, received undefined"
+        );
     });
 
     it("should fail validation if 'title' is missing", async () => {
@@ -35,7 +37,9 @@ describe("step validation", () => {
             notifications: [{ id: "notification1" }]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.errors[0].message).toBe("Required");
+        expect(result.error!.issues[0].message).toBe(
+            "Invalid input: expected string, received undefined"
+        );
     });
 
     it("should fail validation if 'color' is missing", async () => {
@@ -47,7 +51,9 @@ describe("step validation", () => {
             notifications: [{ id: "notification1" }]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.errors[0].message).toBe("Required");
+        expect(result.error!.issues[0].message).toBe(
+            "Invalid input: expected string, received undefined"
+        );
     });
 
     it("should fail validation if 'teams' is empty", async () => {
@@ -60,7 +66,7 @@ describe("step validation", () => {
             notifications: [{ id: "notification1" }]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.errors[0].message).toBe("You must select at least one team.");
+        expect(result.error!.issues[0].message).toBe("You must select at least one team.");
     });
 
     it("should pass validation if 'description' is missing", async () => {
@@ -146,7 +152,7 @@ describe("step validation", () => {
             notifications: [{ id: "notification1" }]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.errors[0].message).toBe("Team ID is required.");
+        expect(result.error!.issues[0].message).toBe("Team ID is required.");
     });
 
     it("should fail validation if 'notifications' contains an invalid entry", async () => {
@@ -159,6 +165,6 @@ describe("step validation", () => {
             notifications: [{ id: "" }]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.errors[0].message).toBe("Notification ID is required.");
+        expect(result.error!.issues[0].message).toBe("Notification ID is required.");
     });
 });

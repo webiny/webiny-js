@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { createImplementation } from "@webiny/di";
-import { LocalStorageService } from "@webiny/app/features/localStorage";
+import { LocalStorage } from "@webiny/app/features/localStorage";
 import { EnvConfig } from "@webiny/app/features/envConfig";
 import { License, NullLicense } from "@webiny/wcp";
 import type { ILicense, DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
@@ -16,7 +16,7 @@ class WcpServiceImpl implements Abstraction.Interface {
 
     constructor(
         private gateway: WcpGateway.Interface,
-        private localStorage: LocalStorageService.Interface,
+        private localStorage: LocalStorage.Interface,
         private envConfig: EnvConfig.Interface
     ) {
         makeAutoObservable(this, {}, { autoBind: true });
@@ -92,5 +92,5 @@ class WcpServiceImpl implements Abstraction.Interface {
 export const WcpService = createImplementation({
     abstraction: Abstraction,
     implementation: WcpServiceImpl,
-    dependencies: [WcpGateway, LocalStorageService, EnvConfig]
+    dependencies: [WcpGateway, LocalStorage, EnvConfig]
 });

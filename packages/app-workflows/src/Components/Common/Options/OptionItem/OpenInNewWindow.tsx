@@ -8,7 +8,7 @@ export interface IWorkflowStateOptionsOpenInNewWindowProps {
 
 export const WorkflowStateOptionsOpenInNewWindow = makeDecoratable(
     "WorkflowStateOptionsOpenInNewWindow",
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line typescript/no-unused-vars
     (props: IWorkflowStateOptionsOpenInNewWindowProps) => {
         return <>Implement your decoration of WorkflowStateOptionsOpenInNewWindow</>;
     }

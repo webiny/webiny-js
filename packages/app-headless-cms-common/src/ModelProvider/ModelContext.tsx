@@ -1,4 +1,5 @@
 import React from "react";
+import { DevToolsSection } from "@webiny/app-admin";
 import type { CmsModel } from "~/types/index.js";
 
 export type ModelContext = CmsModel;
@@ -11,5 +12,10 @@ export interface ModelProviderProps {
 }
 
 export const ModelProvider = ({ model, children }: ModelProviderProps) => {
-    return <ModelContext.Provider value={model}>{children}</ModelContext.Provider>;
+    return (
+        <ModelContext.Provider value={model}>
+            <DevToolsSection name={"Model"} group="CMS" data={model} views={"raw"} />
+            {children}
+        </ModelContext.Provider>
+    );
 };

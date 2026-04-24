@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
  * Tests in this file will use real data and Elasticsearch instance.
  */
 import { useHandler } from "~tests/helpers/useHandler";
-import { ResponseContinueResult, ResponseDoneResult } from "@webiny/tasks/response";
-import type { ITaskEvent } from "@webiny/tasks/handler/types";
 import { TaskDataStatus } from "@webiny/tasks/types";
+import { createRunner } from "@webiny/project-utils/testing/tasks";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition";
 
-const createContextTaskAndEvent = async (handler: ReturnType<typeof useHandler>) => {
+const createContextAndTask = async (handler: ReturnType<typeof useHandler>) => {
     const context = await handler.rawHandle();
 
     const task = await context.tasks.createTask({
@@ -21,19 +21,13 @@ const createContextTaskAndEvent = async (handler: ReturnType<typeof useHandler>)
         }
     });
 
-    const event: ITaskEvent = {
-        webinyTaskId: task.id,
-        webinyTaskDefinitionId: task.definitionId,
-        executionName: "someExecutionName",
-        tenant: "root",
-        stateMachineId: "someStateMachineId",
-        endpoint: "manage"
-    };
+    const taskDefinitions = context.container.resolveAll(TaskDefinition);
+    const taskDefinition = taskDefinitions.find(td => td.id === "elasticsearchReindexing")!;
 
     return {
         context,
         task,
-        event
+        taskDefinition
     };
 };
 
@@ -41,93 +35,22 @@ describe("reindexing", () => {
     it("should return a done response - no items at all to reindex", async () => {
         const handler = useHandler({});
 
-        const { context, task, event } = await createContextTaskAndEvent(handler);
+        const { context, task, taskDefinition } = await createContextAndTask(handler);
 
-        const result = await handler.handle(event);
-        expect(result).toBeInstanceOf(ResponseDoneResult);
-        expect(result).toEqual(
-            new ResponseDoneResult({
-                webinyTaskId: task.id,
-                webinyTaskDefinitionId: task.definitionId,
-                tenant: "root",
-                message: "No more items to process - no last evaluated keys."
-            })
-        );
+        const runner = createRunner({
+            context,
+            task: taskDefinition,
+            onContinue: async () => {}
+        });
+
+        const result = await runner({ webinyTaskId: task.id });
+
+        expect(result.status).toBe("done");
+        expect(result.webinyTaskId).toBe(task.id);
 
         const updatedTask = await context.tasks.getTask(task.id);
 
-        expect(updatedTask).toEqual({
-            ...task,
-            input: {
-                ...task.input,
-                settings: {}
-            },
-            executionName: "someExecutionName",
-            savedOn: expect.toBeDateString(),
-            startedOn: expect.toBeDateString(),
-            finishedOn: expect.toBeDateString(),
-            taskStatus: TaskDataStatus.SUCCESS,
-            iterations: 1
-        });
-    });
-
-    it("should return a continue response - mock lambda timeout", async () => {
-        const handler = useHandler({});
-
-        const { context, task, event } = await createContextTaskAndEvent(handler);
-
-        const result = await handler.handle(event, {
-            getRemainingTimeInMillis: () => 100
-        });
-
-        expect(result).toEqual(
-            new ResponseContinueResult({
-                webinyTaskId: task.id,
-                webinyTaskDefinitionId: task.definitionId,
-                tenant: "root",
-                input: {}
-            })
-        );
-
-        const updatedTask = await context.tasks.getTask(task.id);
-
-        expect(updatedTask).toEqual({
-            ...task,
-            executionName: "someExecutionName",
-            savedOn: expect.toBeDateString(),
-            startedOn: expect.toBeDateString(),
-            finishedOn: undefined,
-            taskStatus: TaskDataStatus.RUNNING,
-            iterations: 1
-        });
-        /**
-         * Should end the task when there are no more items to process.
-         */
-        const resultAfterContinue = await handler.handle(event);
-
-        expect(resultAfterContinue).toEqual(
-            new ResponseDoneResult({
-                webinyTaskId: task.id,
-                webinyTaskDefinitionId: task.definitionId,
-                tenant: "root",
-                message: "No more items to process - no last evaluated keys."
-            })
-        );
-
-        const updatedTaskAfterContinue = await context.tasks.getTask(task.id);
-
-        expect(updatedTaskAfterContinue).toEqual({
-            ...task,
-            input: {
-                ...task.input,
-                settings: {}
-            },
-            executionName: "someExecutionName",
-            savedOn: expect.toBeDateString(),
-            startedOn: expect.toBeDateString(),
-            finishedOn: expect.toBeDateString(),
-            taskStatus: TaskDataStatus.SUCCESS,
-            iterations: 2
-        });
+        expect(updatedTask?.taskStatus).toBe(TaskDataStatus.SUCCESS);
+        expect(updatedTask?.iterations).toBe(1);
     });
 });

@@ -1,7 +1,6 @@
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { DynamoDBRecord } from "@webiny/handler-aws/types.js";
-import type { ElasticsearchContext } from "@webiny/api-elasticsearch/types.js";
-import type { Context as LoggerContext } from "@webiny/api-log/types.js";
+import type { DynamoDBRecord, Context as HandlerContext } from "@webiny/handler-aws/types.js";
+import type { OpenSearchContext } from "@webiny/api-opensearch/types.js";
 
 export interface IOperationsBuilderBuildParams {
     records: DynamoDBRecord[];
@@ -33,4 +32,4 @@ export interface IOperations {
     delete(params: IDeleteOperationParams): void;
 }
 
-export interface Context extends ElasticsearchContext, Pick<LoggerContext, "logger"> {}
+export interface Context extends OpenSearchContext, HandlerContext {}

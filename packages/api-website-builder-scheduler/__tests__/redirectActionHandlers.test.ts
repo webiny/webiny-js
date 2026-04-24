@@ -1,0 +1,118 @@
+import { beforeEach, describe, expect, it } from "vitest";
+import { useHandler } from "./__mocks/context/useHandler.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { createMockScheduleClient } from "./__mocks/scheduleClient.js";
+import { createWebsiteBuilderScheduler } from "~/index.js";
+import {
+    CreateRedirectUseCase,
+    GetRedirectByIdUseCase
+} from "@webiny/api-website-builder/exports/api/website-builder/redirect.js";
+import {
+    ExecuteScheduledActionUseCase,
+    ListScheduledActionsUseCase
+} from "@webiny/api-scheduler/exports/api/scheduler.js";
+import { WEBSITE_BUILDER_NAMESPACE } from "~/constants.js";
+import {
+    SchedulePublishRedirectUseCase,
+    ScheduleUnpublishRedirectUseCase
+} from "~/exports/api/website-builder/scheduler.js";
+
+describe("Redirect Action Handlers", () => {
+    let context: ApiCoreContext;
+
+    beforeEach(async () => {
+        const contextHandler = useHandler({
+            plugins: [createWebsiteBuilderScheduler()],
+            getScheduleClient: () => {
+                return createMockScheduleClient();
+            }
+        });
+        context = await contextHandler.handler();
+    });
+
+    it("should enable a redirect (publish)", async () => {
+        const container = context.container;
+
+        const createRedirect = container.resolve(CreateRedirectUseCase);
+        const getRedirectById = container.resolve(GetRedirectByIdUseCase);
+        const schedulePublishRedirect = container.resolve(SchedulePublishRedirectUseCase);
+        const listScheduledActions = container.resolve(ListScheduledActionsUseCase);
+        const executeScheduledAction = container.resolve(ExecuteScheduledActionUseCase);
+
+        const redirectResult = await createRedirect.execute({
+            redirectFrom: "/old-path",
+            redirectTo: "/new-path",
+            redirectType: "301",
+            isEnabled: false,
+            location: { folderId: "root" }
+        });
+
+        expect(redirectResult.isFail()).toBe(false);
+        const redirect = redirectResult.value!;
+        expect(redirect.isEnabled).toBe(false);
+
+        const publishActionResult = await schedulePublishRedirect.execute({
+            id: redirect.id,
+            scheduleFor: new Date(Date.now() + 100000)
+        });
+
+        expect(publishActionResult.isFail()).toBe(false);
+
+        const actionsResponse = await listScheduledActions.execute({
+            where: { namespace_startsWith: WEBSITE_BUILDER_NAMESPACE }
+        });
+        expect(actionsResponse.value.items).toHaveLength(1);
+
+        await executeScheduledAction.execute({
+            id: publishActionResult.value!.scheduledAction.id,
+            namespace: publishActionResult.value!.scheduledAction.namespace
+        });
+
+        const enabledRedirect = await getRedirectById.execute(redirect.id);
+        expect(enabledRedirect.value!.isEnabled).toBe(true);
+    });
+
+    it("should disable a redirect (unpublish)", async () => {
+        const container = context.container;
+
+        const createRedirect = container.resolve(CreateRedirectUseCase);
+        const getRedirectById = container.resolve(GetRedirectByIdUseCase);
+        const schedulePublishRedirect = container.resolve(SchedulePublishRedirectUseCase);
+        const scheduleUnpublishRedirect = container.resolve(ScheduleUnpublishRedirectUseCase);
+        const executeScheduledAction = container.resolve(ExecuteScheduledActionUseCase);
+
+        const redirectResult = await createRedirect.execute({
+            redirectFrom: "/another-old",
+            redirectTo: "/another-new",
+            redirectType: "301",
+            isEnabled: false,
+            location: { folderId: "root" }
+        });
+
+        const redirect = redirectResult.value!;
+
+        const publishResult = await schedulePublishRedirect.execute({
+            id: redirect.id,
+            scheduleFor: new Date(Date.now() + 100000)
+        });
+        await executeScheduledAction.execute({
+            id: publishResult.value!.scheduledAction.id,
+            namespace: publishResult.value!.scheduledAction.namespace
+        });
+
+        const enabledRedirect = await getRedirectById.execute(redirect.id);
+        expect(enabledRedirect.value!.isEnabled).toBe(true);
+
+        const unpublishResult = await scheduleUnpublishRedirect.execute({
+            id: redirect.id,
+            scheduleFor: new Date(Date.now() + 1000000)
+        });
+        await executeScheduledAction.execute({
+            id: unpublishResult.value!.scheduledAction.id,
+            namespace: unpublishResult.value!.scheduledAction.namespace
+        });
+
+        const disabledRedirect = await getRedirectById.execute(redirect.id);
+        expect(disabledRedirect.value!.isEnabled).toBe(false);
+    });
+});

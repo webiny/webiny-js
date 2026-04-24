@@ -7,8 +7,8 @@ export interface FieldConfig {
     fieldId: string;
     type: string;
     label?: string;
-    helpText?: string;
-    placeholderText?: string;
+    help?: string;
+    placeholder?: string;
     validation?: ValidationRule[];
     settings?: Record<string, any>;
     zodSchema: z.ZodTypeAny;

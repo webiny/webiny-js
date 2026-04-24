@@ -1,9 +1,7 @@
 import { expect } from "vitest";
 import path from "path";
 import { ContextPlugin } from "@webiny/api";
-import elasticsearchClientContextPlugin, {
-    getElasticsearchOperators
-} from "@webiny/api-elasticsearch";
+import { createOpenSearchContext, getOpenSearchOperators } from "@webiny/api-opensearch";
 import { logger } from "../logger";
 import { createHandler } from "@webiny/handler-aws";
 import { createEventHandler as createDynamoDBToElasticsearchEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
@@ -12,8 +10,8 @@ import type { ElasticsearchClient } from "./createClient";
 import { createElasticsearchClient } from "./createClient";
 import { getDocumentClient, simulateStream } from "../dynamodb";
 import type { PluginCollection } from "../environment";
-import type { ElasticsearchContext } from "../../../api-elasticsearch/src/types";
-import { getElasticsearchIndexPrefix } from "../../../api-elasticsearch/src/indexPrefix";
+import type { OpenSearchContext } from "../../../api-opensearch/src/types";
+import { getOpenSearchIndexPrefix } from "../../../api-opensearch/src/indexPrefix";
 import { createMockApiLogContextPlugin } from "../mockApiLog";
 
 interface GetElasticsearchClientParams {
@@ -57,24 +55,22 @@ export class ElasticsearchClientConfig {
     public constructor(prefix: string) {
         if (prefix !== "") {
             // Prefix will only be handled once, for the first processed storage operations.
-            const indexPrefix = getElasticsearchIndexPrefix();
+            const indexPrefix = getOpenSearchIndexPrefix();
             if (!indexPrefix.includes("api-")) {
-                process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${indexPrefix}${prefix}`;
+                process.env.OPENSEARCH_INDEX_PREFIX = `${indexPrefix}${prefix}`;
             }
         }
 
-        logger.debug(`ES index prefix = "%s"`, getElasticsearchIndexPrefix());
+        logger.debug(`ES index prefix = "%s"`, getOpenSearchIndexPrefix());
 
         const documentClient = getDocumentClient();
         this.elasticsearchClient = createElasticsearchClient();
-        const elasticsearchClientContext = elasticsearchClientContextPlugin(
-            this.elasticsearchClient
-        );
+        const elasticsearchClientContext = createOpenSearchContext(this.elasticsearchClient);
 
         /**
          * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
          */
-        const simulationContext = new ContextPlugin<ElasticsearchContext>(async context => {
+        const simulationContext = new ContextPlugin<OpenSearchContext>(async context => {
             await elasticsearchClientContext.apply(context);
         });
 
@@ -97,7 +93,7 @@ export class ElasticsearchClientConfig {
             }
         });
 
-        this.plugins = [elasticsearchClientContext, ...getElasticsearchOperators()];
+        this.plugins = [elasticsearchClientContext, ...getOpenSearchOperators()];
     }
 
     setOnBeforeEach(name: string, cb: OnBeforeEach) {

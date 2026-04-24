@@ -28,11 +28,12 @@ export const StateHandlingPlugin = (props: OnChangeProps) => {
                 if (typeof props.onChange === "function") {
                     const editorState = editor.getEditorState();
                     const isEditorEmpty = $isRootTextContentEmpty(editor.isComposing(), true);
-                    const newValue = JSON.stringify(editorState.toJSON());
 
                     if (!value && isEditorEmpty) {
                         return;
                     }
+
+                    const newValue = JSON.stringify(editorState.toJSON());
 
                     if (newValue !== lastEmittedRef.current) {
                         lastEmittedRef.current = newValue;

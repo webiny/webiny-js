@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
-import richTextIndexingPlugin from "~/elasticsearch/indexing/richTextIndexing";
-import { CmsModelField, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
-import { PluginsContainer } from "@webiny/plugins";
-import { CmsModelFieldToElasticsearchPlugin } from "~/types";
+import type { CmsModelField } from "@webiny/api-headless-cms/types";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex";
+import { createTestContainer } from "~tests/helpers/createTestContainer";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
+
+const container = createTestContainer();
+const fieldIndexRegistry = container.resolve(CmsEntryOpenSearchFieldIndexRegistry);
+const fieldRegistry = container.resolve(CmsModelFieldToGraphQLRegistry);
 
 const mockValue = [
     {
@@ -14,11 +18,11 @@ const mockModel: any = {};
 
 const mockField: CmsModelField = {
     id: "textField",
-    type: "text",
+    type: "rich-text",
     label: "Text",
     validation: [],
     listValidation: [],
-    multipleValues: false,
+    list: false,
     renderer: {
         name: "any"
     },
@@ -28,52 +32,42 @@ const mockField: CmsModelField = {
         enabled: false,
         values: []
     },
-    placeholderText: "text",
-    helpText: "text"
+    placeholder: "text",
+    help: "text"
 };
 
-const getFieldTypePlugin = (): CmsModelFieldToGraphQLPlugin => {
-    return null as unknown as CmsModelFieldToGraphQLPlugin;
-};
-
-const getFieldIndexPlugin = () => {
-    return null as unknown as CmsModelFieldToElasticsearchPlugin;
+const getFieldIndex = (type: string) => {
+    return fieldIndexRegistry.get(type) || fieldIndexRegistry.getDefault();
 };
 
 describe("richTextIndexing", () => {
-    it("toIndex should return transformed objects", () => {
-        const plugin = richTextIndexingPlugin() as Required<CmsModelFieldToElasticsearchPlugin>;
+    const plugin = fieldIndexRegistry.get("rich-text")!;
 
+    it("toIndex should return transformed objects", () => {
         const result = plugin.toIndex({
             value: mockValue,
             rawValue: mockValue,
             field: mockField,
             model: mockModel,
-            plugins: new PluginsContainer(),
-            getFieldTypePlugin,
-            getFieldIndexPlugin
+            getFieldIndex,
+            fieldRegistry
         });
 
-        // here we receive new values and rawValues objects that are populated, in rawValues case, and values being without given storageId
         expect(result).toEqual({
             rawValue: mockValue
         });
     });
 
     it("fromIndex should return transformed objects", () => {
-        const plugin = richTextIndexingPlugin() as Required<CmsModelFieldToElasticsearchPlugin>;
         const result = plugin.fromIndex({
             value: undefined,
             rawValue: mockValue,
             field: mockField,
             model: mockModel,
-            plugins: new PluginsContainer(),
-            getFieldTypePlugin,
-            getFieldIndexPlugin
+            getFieldIndex,
+            fieldRegistry
         });
 
-        // we receive a bit different output than in toIndex since here we take field from rawValues and put it into values obj
-        // it is being merged into new entry after that
         expect(result).toEqual(mockValue);
     });
 });

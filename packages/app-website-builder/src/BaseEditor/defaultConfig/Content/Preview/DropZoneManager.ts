@@ -10,6 +10,7 @@ export interface DropZoneProximity {
 interface DropzoneEntry {
     id: string;
     box: Box;
+    canAccept?: () => boolean;
     onProximityChange: (proximity: DropZoneProximity | null) => void;
 }
 
@@ -61,33 +62,78 @@ export class DropZoneManager {
     }
 
     tick() {
+        const scrollYOffset = this.getScrollOffset();
         const threshold = 10;
         const mouseX = this.mouse.x;
-        const mouseY = this.mouse.y;
+        const mouseY = this.mouse.y + scrollYOffset;
 
         let matchedId: string | null = null;
         let matchedPosition: DropPosition = null;
         let matchedBox: Box | null = null;
 
-        for (const [id, { box }] of this.zones) {
+        // Collect all candidate matches with their canAccept callback.
+        const candidates: { id: string; box: Box; position: number; canAccept?: () => boolean }[] =
+            [];
+
+        for (const [id, { box, canAccept }] of this.zones) {
             const isWithinX = mouseX >= box.left && mouseX <= box.right;
 
             if (!isWithinX) {
                 continue;
             }
 
-            if (mouseY >= box.top - threshold && mouseY <= box.top + threshold) {
-                matchedId = id;
-                matchedPosition = 0; // before
-                matchedBox = box;
-                break;
+            if (Math.abs(mouseY - box.top) <= threshold) {
+                candidates.push({ id, box, position: 0, canAccept });
             }
 
-            if (mouseY >= box.bottom - threshold && mouseY <= box.bottom + threshold) {
-                matchedId = id;
-                matchedPosition = 1; // after
-                matchedBox = box;
-                break;
+            if (Math.abs(mouseY - box.bottom) <= threshold) {
+                candidates.push({ id, box, position: 1, canAccept });
+            }
+        }
+
+        if (candidates.length > 0) {
+            // Filter to only eligible candidates.
+            const eligible = candidates.filter(c => !c.canAccept || c.canAccept());
+
+            if (eligible.length > 0) {
+                const uniqueDepths = [...new Set(eligible.map(c => c.box.depth))].sort(
+                    (a, b) => b - a
+                );
+
+                if (uniqueDepths.length === 1) {
+                    const winner = eligible[0];
+                    matchedId = winner.id;
+                    matchedPosition = winner.position;
+                    matchedBox = winner.box;
+                } else {
+                    // Use X position to select depth band among eligible candidates only.
+                    let rangeLeft = Infinity;
+                    let rangeRight = -Infinity;
+                    for (const c of eligible) {
+                        rangeLeft = Math.min(rangeLeft, c.box.left);
+                        rangeRight = Math.max(rangeRight, c.box.right);
+                    }
+
+                    const centerX = (rangeLeft + rangeRight) / 2;
+                    const halfWidth = (rangeRight - rangeLeft) / 2;
+
+                    // 0 at center, 1 at edges.
+                    const distFromCenter =
+                        halfWidth > 0 ? Math.abs(mouseX - centerX) / halfWidth : 0;
+
+                    // Map distance to depth index: center → 0 (deepest), edges → last (shallowest).
+                    const depthIndex = Math.min(
+                        Math.floor(distFromCenter * uniqueDepths.length),
+                        uniqueDepths.length - 1
+                    );
+
+                    const winner = eligible.find(c => c.box.depth === uniqueDepths[depthIndex]);
+                    if (winner) {
+                        matchedId = winner.id;
+                        matchedPosition = winner.position;
+                        matchedBox = winner.box;
+                    }
+                }
             }
         }
 
@@ -103,5 +149,14 @@ export class DropZoneManager {
                 );
             }
         }
+    }
+
+    private getScrollOffset() {
+        const container = document.getElementById("preview-container");
+        if (!container) {
+            return 0;
+        }
+
+        return container.scrollTop;
     }
 }

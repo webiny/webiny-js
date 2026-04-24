@@ -2,7 +2,7 @@ import React from "react";
 import { Image } from "./components/Image.js";
 import type { ImageComponentPlugin } from "~/types.js";
 
-const SUPPORTED_IMAGE_RESIZE_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
+const SUPPORTED_IMAGE_RESIZE_WIDTHS = [128, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840];
 
 /**
  * Width of the image should not be just any random number. For optimization reasons,

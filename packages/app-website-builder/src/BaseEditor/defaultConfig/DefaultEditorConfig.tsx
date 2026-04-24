@@ -1,6 +1,5 @@
 import React from "react";
 import { ReactComponent as TouchIcon } from "@webiny/icons/touch_app.svg";
-import { Breadcrumbs } from "./Content/Breadcrumbs/index.js";
 import { EditorConfig } from "~/BaseEditor/config/index.js";
 import { InfoMessage } from "./Sidebar/InfoMessage.js";
 import { StyleSettingsGroup } from "./Sidebar/StyleSettings/StyleSettingsGroup.js";
@@ -11,7 +10,7 @@ import { NavigatorTab } from "./Toolbar/Navigator/NavigatorTab.js";
 import { CommandHandlers } from "~/BaseEditor/commandHandlers/index.js";
 import { ElementSettings } from "./Sidebar/ElementSettings/ElementSettings.js";
 import { ElementInputRenderers } from "./ElementInputRenderers.js";
-import { DocumentPreview } from "./Content/Preview/DocumentPreview.js";
+import { ContentPreviewConfig } from "./Content/ContentPreviewConfig.js";
 
 const { Ui } = EditorConfig;
 
@@ -29,11 +28,10 @@ const ClickToActivate = () => {
 export const DefaultEditorConfig = React.memo(() => {
     return (
         <>
+            <CommandHandlers />
             <EditorConfig>
-                <CommandHandlers />
                 <ElementInputRenderers />
-                <Ui.Content.Element name={"breadcrumbs"} element={<Breadcrumbs />} />
-                <Ui.Content.Element name={"preview"} element={<DocumentPreview />} />
+                <ContentPreviewConfig />
                 <Ui.Toolbar.Element
                     name={"insertElements"}
                     group={"tabs"}

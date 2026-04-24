@@ -9,11 +9,7 @@ export const ApiOutput = createAppModule({
     name: "ApiOutput",
     config(app) {
         return app.addHandler(async () => {
-            const output = await getStackOutput<IDefaultStackOutput>({
-                app: "api",
-                env: app.params.run.env,
-                variant: app.params.run.variant
-            });
+            const output = await getStackOutput<IDefaultStackOutput>("api");
 
             if (!output) {
                 throw new Error("API application is not deployed.");
@@ -31,7 +27,6 @@ export const ApiOutput = createAppModule({
                 region: output["region"],
                 websocketApiId: output["websocketApiId"],
                 websocketApiUrl: output["websocketApiUrl"],
-                migrationLambdaArn: output["migrationLambdaArn"],
                 graphqlLambdaName: output["graphqlLambdaName"],
                 backgroundTaskLambdaArn: output["backgroundTaskLambdaArn"],
                 backgroundTaskStepFunctionArn: output["backgroundTaskStepFunctionArn"],

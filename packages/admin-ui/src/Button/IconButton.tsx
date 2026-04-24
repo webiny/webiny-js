@@ -44,7 +44,7 @@ const iconButtonVariants = cva(
                 ],
                 ghost: [
                     "bg-transparent fill-neutral-xstrong",
-                    "hover:bg-neutral-dimmed",
+                    "hover:bg-neutral-dark/5",
                     "active:bg-neutral-muted",
                     "aria-disabled:fill-neutral-strong hover:aria-disabled:bg-transparent active:aria-disabled:bg-transparent"
                 ],
@@ -121,7 +121,8 @@ const iconButtonVariants = cva(
 );
 
 interface IconButtonProps
-    extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">,
+    extends
+        Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">,
         VariantProps<typeof iconButtonVariants> {
     icon?: React.ReactNode;
     asChild?: boolean;

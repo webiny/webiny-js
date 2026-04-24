@@ -1,36 +1,22 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { DelayedOnChange, FormComponentLabel } from "@webiny/admin-ui";
-import { createLexicalStateTransformer } from "@webiny/lexical-converter";
+import React, { useCallback, useEffect, useState } from "react";
+import { Dialog, FormComponentLabel } from "@webiny/admin-ui";
 import { CompositionScope } from "@webiny/app-admin";
-import { Dialog } from "@webiny/admin-ui";
-import { FloatingLinkEditorPlugin, LexicalEditorConfig } from "@webiny/lexical-editor";
+import type { RichTextValueWithHtml } from "@webiny/app-admin";
 import { LexicalEditor } from "./LexicalEditor.js";
 import type { ElementInputRendererProps } from "~/BaseEditor/index.js";
 import {
     ExpandedEditorProvider,
     useExpandedEditor
 } from "~/inputRenderers/LexicalInput/ExpandedEditor.js";
-import { LinkEditForm } from "~/inputRenderers/LexicalInput/LinkEditForm.js";
-
-const { Plugin } = LexicalEditorConfig;
 
 type LexicalInputRendererProps = Omit<ElementInputRendererProps, "onChange" | "metadata"> & {
-    onChange: (value: string) => void;
+    onChange: (value: RichTextValueWithHtml) => void;
 };
 
 export const LexicalInputRenderer = (props: ElementInputRendererProps) => {
-    const transformer = useMemo(() => {
-        return createLexicalStateTransformer();
-    }, []);
-
-    const onChange = (lexicalValue: string) => {
+    const onChange = (lexicalValue: RichTextValueWithHtml) => {
         props.onChange(({ value }) => {
-            const html = transformer.toHtml(lexicalValue);
-
-            value.set({
-                state: lexicalValue,
-                html
-            });
+            value.set(lexicalValue);
         });
     };
 
@@ -66,8 +52,8 @@ const EditorDialog = (props: EditorDialogProps) => {
             showCloseButton={false}
             actions={
                 <>
-                    <Dialog.CancelButton onClick={props.onClose} />
-                    <Dialog.ConfirmButton
+                    <Dialog.CancelAction onClick={props.onClose} />
+                    <Dialog.ConfirmAction
                         text={"Save Changes"}
                         onClick={() => {
                             props.onChange(localValue);
@@ -77,25 +63,7 @@ const EditorDialog = (props: EditorDialogProps) => {
             }
         >
             <CompositionScope name={"expanded"}>
-                <DelayedOnChange value={localValue} onChange={setLocalValue}>
-                    {({ value, onChange }) => <LexicalEditor value={value} onChange={onChange} />}
-                </DelayedOnChange>
-                <LexicalEditorConfig>
-                    <Plugin
-                        name={"floatingLinkEditor"}
-                        element={
-                            <FloatingLinkEditorPlugin
-                                anchorElem={() => {
-                                    return (
-                                        document.getElementById("lexical-editor-dialog") ??
-                                        document.body
-                                    );
-                                }}
-                                LinkEditForm={LinkEditForm}
-                            />
-                        }
-                    />
-                </LexicalEditorConfig>
+                <LexicalEditor value={localValue} onChange={setLocalValue} />
             </CompositionScope>
         </Dialog>
     );
@@ -121,15 +89,11 @@ const ExpandableLexicalInputRenderer = ({
         <>
             <FormComponentLabel text={label} />
             <CompositionScope name={"compact"}>
-                <DelayedOnChange value={value.state} onChange={onChange}>
-                    {({ value, onChange }) => (
-                        <LexicalEditor value={value} onChange={onChange} key={input.name} />
-                    )}
-                </DelayedOnChange>
+                <LexicalEditor value={value} onChange={onChange} key={input.name} />
             </CompositionScope>
             <EditorDialog
                 open={isExpanded}
-                value={value.state}
+                value={value}
                 onChange={applyChanges}
                 onClose={() => setExpanded(false)}
                 input={input}

@@ -8,7 +8,9 @@ const createFieldFactory: FieldFactory = base => {
             type: "text",
             storageId: "text@textFieldId",
             fieldId: "textField",
-            multipleValues: false,
+            list: false,
+            validation: [],
+            listValidation: [],
             ...base,
             ...field
         };
@@ -36,10 +38,4 @@ export const createTextFieldWithoutFieldId = createFieldFactory({
     label: "Field without fieldId",
     storageId: "text@fieldWithoutFieldId",
     fieldId: ""
-});
-export const createTextFieldWithoutStorageId = createFieldFactory({
-    id: "fieldWithoutStorageId",
-    label: "Field without storageId",
-    storageId: "",
-    fieldId: "fieldWithoutStorageId"
 });

@@ -4,7 +4,7 @@ import type { DocumentNode } from "graphql";
 import type { OperationVariables } from "@apollo/react-common";
 import type { MutationHookOptions, MutationTuple } from "@apollo/react-hooks/lib/types.js";
 
-const useMutation = function <TData = any, TVariables = OperationVariables>(
+export const useMutation = function <TData = any, TVariables = OperationVariables>(
     mutation: DocumentNode,
     options: MutationHookOptions<TData, TVariables> = {}
 ): MutationTuple<TData, TVariables> {

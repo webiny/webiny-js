@@ -3,6 +3,7 @@ import type { Context } from "~/types.js";
 import { createGroupData } from "./group.js";
 import { createCarsModel } from "./model.js";
 import { createIndex } from "~/utils/index.js";
+import { CmsEntryOpenSearchIndex } from "@webiny/api-headless-cms-ddb-es/exports/api/cms/opensearch.js";
 
 interface ICreateModelAndGroupParams {
     context: Context;
@@ -40,8 +41,8 @@ export const createModelAndGroup = async (
     }
     await createIndex({
         model,
-        client: context.elasticsearch,
-        plugins: context.plugins
+        client: context.opensearch,
+        indexConfigs: context.container.resolveAll(CmsEntryOpenSearchIndex)
     });
 
     return {

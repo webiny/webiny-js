@@ -16,6 +16,7 @@ import { entryFieldFromStorageTransform } from "~/utils/entryStorage.js";
 import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
+import { ListLatestEntriesUseCase } from "~/features/contentEntry/ListEntries/index.js";
 
 interface EntriesByModel {
     [key: string]: string[];
@@ -337,7 +338,7 @@ export const createContentEntriesSchema = ({
     }).join("\n");
 
     const plugin = createCmsGraphQLSchemaPlugin({
-        // Had to remove /* GraphQL */ because prettier would not format the code correctly.
+        // Had to remove /* GraphQL */ because it causes issues with oxfmt formatting.
         typeDefs: `
             type CmsModelMeta {
                 modelId: String!
@@ -440,17 +441,22 @@ export const createContentEntriesSchema = ({
                     const getters = models
                         .filter(model => modelIds.includes(model.modelId))
                         .map(async model => {
-                            const modelManager = await context.cms.getEntryManager(model.modelId);
+                            const listLatest =
+                                await context.container.resolve(ListLatestEntriesUseCase);
                             const where: CmsEntryListWhere = {};
 
-                            const [items] = await modelManager.listLatest({
+                            const result = await listLatest.execute(model, {
                                 limit,
                                 where,
                                 search: !!query ? query : undefined,
                                 fields: fields || []
                             });
-
-                            return items.map((entry: CmsEntry) => {
+                            // TODO figure a better way to handle errors in parallel execution
+                            if (result.isFail()) {
+                                throw result.error;
+                            }
+                            const { entries } = result.value;
+                            return entries.map((entry: CmsEntry) => {
                                 return createCmsEntryRecord(model, entry);
                             });
                         });

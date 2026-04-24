@@ -13,7 +13,7 @@ export interface IContentEntryLockerProps {
     entry: CmsContentEntry;
     model: CmsModel;
     onEntryUnlocked: () => void;
-    onDisablePrompt: (flag: boolean) => void;
+    onDisablePrompt: () => void;
     children: React.ReactElement;
 }
 
@@ -23,18 +23,6 @@ export interface IKickOutWebsocketsMessage extends IncomingGenericData {
         user: IRecordLockingIdentity;
     };
 }
-interface IForceUnlockedProps {
-    user: IRecordLockingIdentity;
-}
-const ForceUnlocked = ({ user }: IForceUnlockedProps) => {
-    return (
-        <>
-            The entry you were editing was forcefully unlocked by{" "}
-            <strong>{user.displayName || "Unknown user"}</strong>. Unfortunately, this means you
-            lost the unsaved changes.
-        </>
-    );
-};
 
 export const ContentEntryLocker = ({
     onEntryUnlocked,
@@ -59,17 +47,23 @@ export const ContentEntryLocker = ({
             `recordLocking.entry.kickOut.${entryId}`,
             async incoming => {
                 const { user } = incoming.data;
-                onDisablePrompt(true);
+                onDisablePrompt();
                 removeEntryLock({
                     id: entryId,
                     $lockingType: model.modelId
                 });
                 showDialog({
                     title: "Entry was forcefully unlocked!",
-                    content: <ForceUnlocked user={user} />,
+                    content: (
+                        <>
+                            The entry you were editing was forcefully unlocked by{" "}
+                            <strong>{user.displayName || "Unknown user"}</strong>. Unfortunately,
+                            this means you lost the unsaved changes.
+                        </>
+                    ),
                     acceptLabel: "Ok",
                     onClose: undefined,
-                    cancelLabel: undefined
+                    cancelLabel: null
                 });
                 onEntryUnlocked();
             }
@@ -105,7 +99,7 @@ export const ContentEntryLocker = ({
                     content: result.error.message,
                     acceptLabel: "Ok",
                     onClose: undefined,
-                    cancelLabel: undefined
+                    cancelLabel: null
                 });
                 onEntryUnlocked();
                 return;

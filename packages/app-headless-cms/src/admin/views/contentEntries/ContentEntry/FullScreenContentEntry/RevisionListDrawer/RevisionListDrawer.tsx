@@ -1,17 +1,11 @@
 import React from "react";
-// @ts-expect-error
-import { useHotkeys } from "react-hotkeyz";
+import { useHotkeys } from "@webiny/app-admin";
 import { RevisionsList } from "~/admin/views/contentEntries/ContentEntry/RevisionsList/RevisionsList.js";
-import { cmsLegacyEntryEditor } from "~/utils/cmsLegacyEntryEditor.js";
 import { useFullScreenContentEntry } from "../useFullScreenContentEntry.js";
 import { Drawer } from "@webiny/admin-ui";
 
 export const RevisionListDrawer = () => {
     const { isRevisionListOpen, openRevisionList } = useFullScreenContentEntry();
-
-    if (cmsLegacyEntryEditor) {
-        return null;
-    }
 
     useHotkeys({
         zIndex: 55,

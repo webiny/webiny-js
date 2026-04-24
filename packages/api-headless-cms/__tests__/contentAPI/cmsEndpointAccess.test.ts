@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { CmsGroup, CmsModel } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
@@ -8,14 +8,10 @@ import models from "./mocks/contentModels";
 describe("Endpoint access", () => {
     let contentModelGroup: CmsGroup;
 
-    const manageOpts = { path: "manage/en-US" };
-    const readOpts = { path: "read/en-US" };
-    const previewOpts = { path: "preview/en-US" };
+    const manageOpts = { path: "manage" };
+    const readOpts = { path: "read" };
+    const previewOpts = { path: "preview" };
     const defaultPermissions = [
-        {
-            name: "content.i18n",
-            locales: ["en-US"]
-        },
         {
             name: "cms.settings"
         },
@@ -51,7 +47,11 @@ describe("Endpoint access", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    name: "ico/ico",
+                    value: "ico/ico",
+                    type: "ico/ico"
+                },
                 description: "description"
             }
         });
@@ -64,7 +64,7 @@ describe("Endpoint access", () => {
                 modelId: model.modelId,
                 singularApiName: model.singularApiName,
                 pluralApiName: model.pluralApiName,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 

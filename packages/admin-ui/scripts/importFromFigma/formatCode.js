@@ -1,14 +1,10 @@
 import fs from "fs";
-import prettier from "prettier";
+import { format } from "oxfmt";
 
 const formatCode = async filePath => {
-    const options = await prettier.resolveConfig(filePath);
     const fileContentRaw = fs.readFileSync(filePath).toString("utf8");
-    const fileContentFormatted = await prettier.format(fileContentRaw, {
-        ...options,
-        filepath: filePath
-    });
-    fs.writeFileSync(filePath, fileContentFormatted);
+    const result = await format(filePath, fileContentRaw);
+    fs.writeFileSync(filePath, result.code);
 };
 
 export { formatCode };

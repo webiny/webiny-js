@@ -27,9 +27,6 @@ export interface TenantInstallationInput {
     installationInput: AppInstallationData[];
 }
 
-/**
- * App Installer Abstraction
- */
 export interface IAppInstaller<TData = Record<string, any>> {
     readonly alwaysRun?: boolean;
     readonly appName: string;
@@ -48,21 +45,20 @@ export interface IAppInstaller<TData = Record<string, any>> {
     uninstall(tenant: Tenant): Promise<void>;
 }
 
+/** Install an application on a tenant with rollback support. */
 export const AppInstaller = createAbstraction<IAppInstaller>("AppInstaller");
 
 export namespace AppInstaller {
     export type Interface<T = any> = IAppInstaller<T>;
 }
 
-/**
- * Use Case Abstraction
- */
 export interface IInstallTenantUseCase {
     execute(
         input: TenantInstallationInput
     ): Promise<Result<void, IInstallTenantErrors[keyof IInstallTenantErrors]>>;
 }
 
+/** Run all app installers for a tenant. */
 export const InstallTenantUseCase =
     createAbstraction<IInstallTenantUseCase>("InstallTenantUseCase");
 
@@ -72,13 +68,12 @@ export namespace InstallTenantUseCase {
     export type Errors = IInstallTenantErrors[keyof IInstallTenantErrors];
 }
 
-/**
- * Event Handler Abstraction
- */
-export const TenantInstalledHandler =
-    createAbstraction<IEventHandler<DomainEvent<TenantInstalledPayload>>>("TenantInstalledHandler");
+/** Hook into tenant lifecycle after a tenant is installed. */
+export const TenantInstalledEventHandler = createAbstraction<
+    IEventHandler<DomainEvent<TenantInstalledPayload>>
+>("TenantInstalledEventHandler");
 
-export namespace TenantInstalledHandler {
+export namespace TenantInstalledEventHandler {
     export type Interface = IEventHandler<DomainEvent<TenantInstalledPayload>>;
     export type Event = DomainEvent<TenantInstalledPayload>;
 }

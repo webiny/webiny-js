@@ -1,51 +1,20 @@
 import type { z } from "zod";
 import type { History } from "history";
-import UniversalRouter, {
-    RouterContext,
-    RouteParams as UniversalRouteParams
-} from "universal-router";
-import generateUrls from "universal-router/generateUrls";
-import type { MatchedRoute, RouteDefinition, OnRouteExit } from "./abstractions.js";
+import type { RouteDefinition, RouteTransitionGuardConfig, GuardDisposer } from "./abstractions.js";
 import { RouterGateway } from "./abstractions.js";
-
-type RouteResolveResult = [MatchedRoute, RouteDefinition["onMatch"]];
-
-interface RouteDefinitionWithAction extends RouteDefinition {
-    action(context: RouterContext, params: UniversalRouteParams): RouteResolveResult;
-}
+import { RouteUrl } from "./RouteUrl.js";
+import { Router } from "./Router.js";
 
 export class HistoryRouterGateway implements RouterGateway.Interface {
     private readonly history: History;
-    private readonly routes: RouteDefinitionWithAction[] = [];
-    private readonly router: UniversalRouter<RouteResolveResult>;
-    private readonly urlGenerator: ReturnType<typeof generateUrls>;
+    private readonly router: Router;
     private stopListening: () => void;
     private unblock: (() => void) | undefined;
-    private currentRoute: MatchedRoute | undefined;
+    private guards = new Set<RouteTransitionGuardConfig>();
 
     constructor(history: History, baseUrl: string) {
         this.history = history;
-        this.router = new UniversalRouter<RouteResolveResult>(this.routes, {
-            baseUrl,
-            resolveRoute: (context, params) => {
-                if (!context.path) {
-                    return context.next();
-                }
-
-                if (!context.route.action) {
-                    return undefined;
-                }
-
-                return context.route.action(context, params);
-            },
-            errorHandler: () => undefined
-        });
-
-        this.urlGenerator = generateUrls(this.router, {
-            stringifyQueryParams: (params: any) => {
-                return new URLSearchParams(params as Record<string, any>).toString();
-            }
-        });
+        this.router = new Router(baseUrl);
 
         this.stopListening = history.listen(async ({ location }) => {
             const queryParams = Object.fromEntries(new URLSearchParams(location.search).entries());
@@ -53,30 +22,33 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
         });
     }
 
-    onRouteExit(cb: OnRouteExit): void {
-        this.guardRouteExit(cb);
+    addGuard(config: RouteTransitionGuardConfig): GuardDisposer {
+        const hadGuards = this.guards.size > 0;
+        this.guards.add(config);
+        if (!hadGuards) {
+            this.installBlocker();
+        }
+        return () => {
+            this.guards.delete(config);
+            if (this.guards.size === 0) {
+                this.removeBlocker();
+            }
+        };
     }
 
     goToRoute(name: string, params: z.ZodTypeAny): void {
-        this.history.push(this.generateRouteUrl(name, params));
-    }
+        const route = this.router.findRoute(name);
+        if (!route) {
+            console.warn(`Route "${name}" not found.`);
+            return;
+        }
 
-    generateRouteUrl(id: string, params: any = {}): string {
-        return this.urlGenerator(id, params);
+        const baseUrl = this.router.getBaseUrl();
+        this.history.push(RouteUrl.fromPattern(route.path, params, baseUrl));
     }
 
     setRoutes(routes: RouteDefinition[]) {
-        routes.forEach(route => {
-            const index = this.routes.findIndex(r => r.name === route.name);
-
-            if (index > -1) {
-                this.routes[index] = this.routeWithAction(route);
-            } else {
-                this.routes.push(this.routeWithAction(route));
-            }
-        });
-
-        this.sortRoutes(this.routes);
+        this.router.setRoutes(routes);
 
         const queryParams = Object.fromEntries(
             new URLSearchParams(this.history.location.search).entries()
@@ -85,111 +57,85 @@ export class HistoryRouterGateway implements RouterGateway.Interface {
         this.resolvePathname(currentPathname, queryParams);
     }
 
-    addRoute(route: RouteDefinition): void {
-        this.routes.push(this.routeWithAction(route));
-        this.sortRoutes(this.routes);
-    }
-
     destroy(): void {
         this.stopListening();
-        this.unblock && this.unblock();
+        this.removeBlocker();
+        this.guards.clear();
     }
 
     pushState(url: string): void {
         this.history.push(url);
     }
 
-    private routeWithAction(route: RouteDefinition): RouteDefinitionWithAction {
-        return {
-            ...route,
-            path: route.path === "*" ? "(.*)" : route.path,
-            action: (context, params) => {
-                const matchedRoute = {
-                    name: route.name,
-                    path: route.path,
-                    pathname: context.pathname,
-                    params: { ...params, ...context.queryParams }
-                };
-
-                const onMatch = async (matchedRoute: MatchedRoute) => {
-                    route.onMatch(matchedRoute);
-                };
-
-                return [matchedRoute, onMatch];
-            }
-        };
-    }
-
     private async resolvePathname(pathname: string, queryParams?: Record<string, unknown>) {
-        const result = await this.router.resolve({ pathname, queryParams });
+        const result = this.router.resolve(pathname, queryParams);
         if (!result) {
             return;
         }
 
-        const [matchedRoute, onMatch] = result;
-
-        this.currentRoute = matchedRoute;
+        const { matchedRoute, onMatch } = result;
 
         onMatch(matchedRoute);
     }
 
-    private sortRoutes(routes: RouteDefinition[]) {
-        const INDEX_PATH = "/";
-        const MATCH_ALL = "(.*)";
-
-        routes.sort((a, b) => {
-            const pathA = a.path || MATCH_ALL;
-            const pathB = b.path || MATCH_ALL;
-
-            // This will sort paths at the very bottom of the list
-            if (pathA === INDEX_PATH && pathB === MATCH_ALL) {
-                return -1;
+    private findBlockingGuard(): RouteTransitionGuardConfig | undefined {
+        for (const config of this.guards) {
+            if (config.guard()) {
+                return config;
             }
-
-            // This will push * and / to the bottom of the list
-            if (pathA === MATCH_ALL || pathA === INDEX_PATH) {
-                return 1;
-            }
-
-            // This will push * and / to the bottom of the list
-            if ([MATCH_ALL, INDEX_PATH].includes(pathB)) {
-                return -1;
-            }
-
-            return 0;
-        });
+        }
+        return undefined;
     }
 
-    private guardRouteExit(onRouteExit: OnRouteExit): void {
+    private installBlocker(): void {
         if (this.unblock) {
-            // Remove existing blocker before installing a new one.
             this.unblock();
         }
 
         this.unblock = this.history.block(tx => {
-            let resolved = false;
+            const blockingGuard = this.findBlockingGuard();
+            if (blockingGuard) {
+                let resolved = false;
 
-            onRouteExit({
-                continue: () => {
-                    if (!resolved) {
-                        resolved = true;
-                        // We need to unblock the transition before retying.
-                        if (this.unblock) {
-                            this.unblock();
-                            this.unblock = undefined;
+                blockingGuard.onBlocked({
+                    continue: () => {
+                        if (!resolved) {
+                            resolved = true;
+                            this.removeBlockerAndRetry(tx);
                         }
-                        // Perform transition.
-                        tx.retry();
+                    },
+                    cancel: () => {
+                        resolved = true;
+                        // Do nothing — history v5 already reverted the URL.
                     }
-                },
-                cancel: () => {
-                    resolved = true;
-                    // Do nothing.
-                }
-            });
-
-            // Block the transition until `continue` is called.
-            return false;
+                });
+            } else {
+                this.removeBlockerAndRetry(tx);
+            }
         });
+    }
+
+    private removeBlocker(): void {
+        if (this.unblock) {
+            this.unblock();
+            this.unblock = undefined;
+        }
+    }
+
+    private removeBlockerAndRetry(tx: { retry: () => void }): void {
+        // We must remove the blocker before retrying because history v5's
+        // allowTx() always returns false when any blocker is registered.
+        this.removeBlocker();
+
+        // Listen for the next navigation to complete, then reinstall the
+        // blocker only if guards are still active.
+        const unlisten = this.history.listen(() => {
+            unlisten();
+            if (this.guards.size > 0) {
+                this.installBlocker();
+            }
+        });
+
+        tx.retry();
     }
 }

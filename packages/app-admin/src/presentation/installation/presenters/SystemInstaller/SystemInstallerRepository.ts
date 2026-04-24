@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { LocalStorageService } from "@webiny/app/features/localStorage";
+import { LocalStorage } from "@webiny/app/features/localStorage";
 import {
     SystemInstallerRepository as Abstraction,
     SystemInstallerGateway,
@@ -10,7 +10,7 @@ const LOCAL_STORAGE_KEY = "system/installed";
 
 class SystemInstallerRepositoryImpl implements Abstraction.Interface {
     constructor(
-        private localStorage: LocalStorageService.Interface,
+        private localStorage: LocalStorage.Interface,
         private gateway: SystemInstallerGateway.Interface
     ) {}
 
@@ -34,5 +34,5 @@ class SystemInstallerRepositoryImpl implements Abstraction.Interface {
 export const SystemInstallerRepository = createImplementation({
     abstraction: Abstraction,
     implementation: SystemInstallerRepositoryImpl,
-    dependencies: [LocalStorageService, SystemInstallerGateway]
+    dependencies: [LocalStorage, SystemInstallerGateway]
 });

@@ -1,16 +1,21 @@
 import { createBrowserHistory } from "history";
 import { Container } from "@webiny/di";
-import { RouterFeature } from "@webiny/app/features/router/feature.js";
 import { DefaultRouteElementRegistry } from "@webiny/app/presentation/router/RouteElementRegistry.js";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
+import { RouterFeature } from "@webiny/app/features/router/feature.js";
 import { HistoryRouterGateway } from "@webiny/app/features/router/HistoryRouterGateway.js";
-import { EnvConfigFeature } from "@webiny/app/features/envConfig";
-import { GraphQLClientFeature } from "@webiny/app/features/graphqlClient";
-import { LocalStorageFeature } from "@webiny/app/features/localStorage";
+import { EnvConfigFeature } from "@webiny/app/features/envConfig/feature.js";
+import { GraphQLClientFeature } from "@webiny/app/features/graphqlClient/feature.js";
+import { MainGraphQLClientFeature } from "@webiny/app/features/mainGraphQLClient/feature.js";
+import { LocalStorageFeature } from "@webiny/app/features/localStorage/feature.js";
+import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/feature.js";
 import { WcpFeature } from "~/features/wcp/feature.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
-import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/index.js";
-import { TelemetryFeature } from "~/features/telemetry/index.js";
+import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/feature.js";
+import { TelemetryFeature } from "~/features/telemetry/feature.js";
+import { ErrorOverlayNetworkErrorHandler } from "~/errors/ErrorOverlayNetworkErrorHandler.js";
+import { ToolsFeature } from "~/features/tools/feature.js";
+import { TextToLexicalToolFeature } from "~/presentation/textToLexicalTool/feature.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
@@ -24,13 +29,13 @@ export function createRootContainer() {
     EnvConfigFeature.register(container, {
         deploymentId,
         apiUrl: String(process.env.REACT_APP_API_URL),
-        debug: process.env.REACT_APP_DEBUG === "true",
+        debug: process.env.WEBINY_ADMIN_DEBUG === "true",
         graphqlApiUrl: String(process.env.REACT_APP_GRAPHQL_API_URL),
         telemetryEnabled: process.env.REACT_APP_WEBINY_TELEMETRY === "true",
         telemetryUserId: process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID,
         trashBinRetentionPeriodDays: trashBinRetention,
-        wcpProjectId: process.env.REACT_APP_WCP_PROJECT_ID,
-        webinyVersion: String(process.env.REACT_APP_WEBINY_VERSION),
+        wcpProjectId:
+            process.env.REACT_APP_WEBINY_PROJECT_ID || process.env.REACT_APP_WCP_PROJECT_ID,
         websocketUrl: String(process.env.REACT_APP_WEBSOCKET_URL)
     });
 
@@ -41,7 +46,11 @@ export function createRootContainer() {
 
     RouterFeature.register(container);
 
+    EventPublisherFeature.register(container);
+
     GraphQLClientFeature.register(container, { batching: true, retry: true });
+
+    MainGraphQLClientFeature.register(container);
 
     LocalStorageFeature.register(container, { prefix: `webiny/${deploymentId}` });
 
@@ -52,6 +61,12 @@ export function createRootContainer() {
     SystemInstallerFeature.register(container);
 
     TelemetryFeature.register(container);
+
+    container.register(ErrorOverlayNetworkErrorHandler).inSingletonScope();
+
+    ToolsFeature.register(container);
+
+    TextToLexicalToolFeature.register(container);
 
     return container;
 }

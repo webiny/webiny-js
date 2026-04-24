@@ -1,7 +1,7 @@
 import type { IGetDefaultPermissions } from "./IGetDefaultPermissions.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
-import type { IdentityContext } from "@webiny/api-core/features/IdentityContext";
-import { ListUserTeamsUseCase } from "@webiny/api-core/features/ListUserTeams";
+import type { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { ListUserTeamsUseCase } from "@webiny/api-core/features/users/ListUserTeams/index.js";
 import type { Team } from "@webiny/api-core/types/security.js";
 
 export class GetDefaultPermissionsWithTeams implements IGetDefaultPermissions {
@@ -37,7 +37,7 @@ export class GetDefaultPermissionsWithTeams implements IGetDefaultPermissions {
             for (const identityTeam of identityTeams) {
                 // Check if the team has permissions for the folder.
                 const teamPermission = permissions.find(
-                    p => p.target === `team:${identityTeam.id}`
+                    p => p.target === `team:${identityTeam.slug}`
                 );
 
                 if (teamPermission) {
@@ -45,7 +45,7 @@ export class GetDefaultPermissionsWithTeams implements IGetDefaultPermissions {
                     permissions.push({
                         target: `admin:${identity.id}`,
                         level: teamPermission.level,
-                        inheritedFrom: "team:" + identityTeam.id
+                        inheritedFrom: "team:" + identityTeam.slug
                     });
                 }
             }

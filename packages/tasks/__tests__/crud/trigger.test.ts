@@ -1,17 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
-import { createMockTaskDefinition, createMockTaskDefinitions } from "~tests/mocks/definition";
+import { createMockTaskDefinitions, MOCK_TASK_DEFINITION_ID } from "~tests/mocks/definition";
 import { createMockIdentity } from "~tests/mocks/identity";
-import type { ITaskDataInput } from "~/types";
 import { TaskDataStatus } from "~/types";
+import { createTaskDefinition } from "~tests/helpers/createTaskDefinition.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 
-interface IMockDefinitionInput extends ITaskDataInput {
-    file: string;
-    page: number;
-    take: boolean;
-}
-
-describe("trigger crud", () => {
+describe("tasks - trigger crud", () => {
     const handler = useRawHandler({
         plugins: [...createMockTaskDefinitions()]
     });
@@ -19,7 +14,9 @@ describe("trigger crud", () => {
     it("should trigger a task", async () => {
         const context = await handler.handle();
 
-        const result = await context.tasks.trigger({
+        const service = context.container.resolve(TaskService);
+
+        const result = await service.trigger({
             definition: "myCustomTaskNumber1",
             name: "A test of triggering task",
             input: {
@@ -28,7 +25,9 @@ describe("trigger crud", () => {
             }
         });
 
-        expect(result).toEqual({
+        expect(result.isOk()).toBeTrue();
+
+        expect(result.value).toEqual({
             id: expect.toBeString(),
             name: "A test of triggering task",
             definitionId: "myCustomTaskNumber1",
@@ -49,7 +48,28 @@ describe("trigger crud", () => {
     });
 
     it("should validate input before triggering the task", async () => {
-        const definition = createMockTaskDefinition<IMockDefinitionInput>({
+        const definition = createTaskDefinition({
+            id: MOCK_TASK_DEFINITION_ID,
+            title: "A custom task defined via method",
+            run({ input, controller }) {
+                try {
+                    if (controller.runtime.isCloseToTimeout()) {
+                        return controller.response.continue({
+                            ...input
+                        });
+                    }
+                    return controller.response.done("Task done!", {
+                        withSomeBoolean: true,
+                        withSomeNumber: 1,
+                        withSomeString: "yes!",
+                        withSomeObject: {
+                            testingObject: "yes!"
+                        }
+                    });
+                } catch (ex) {
+                    return controller.response.error(ex);
+                }
+            },
             createInputValidation: ({ validator }) => {
                 return {
                     file: validator.string(),
@@ -67,14 +87,14 @@ describe("trigger crud", () => {
 
         try {
             const result = await context.tasks.trigger({
-                definition: definition.id,
+                definition: MOCK_TASK_DEFINITION_ID,
                 name: "A test of triggering task",
                 input: {
                     wrongValueKey: "wrong",
                     anotherWrongValueKey: "wrong again"
                 }
             });
-            expect(result).toEqual("Should not reach this point.");
+            expect(result.value).toEqual("Should not reach this point.");
         } catch (ex) {
             expect(ex.message).toEqual("Validation failed.");
             expect(ex.data).toEqual({
@@ -82,26 +102,23 @@ describe("trigger crud", () => {
                     file: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["file"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected string, received undefined"
                     },
                     page: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["page"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected number, received undefined"
                     },
                     take: {
                         code: "invalid_type",
                         data: {
-                            fatal: undefined,
                             path: ["take"]
                         },
-                        message: "Required"
+                        message: "Invalid input: expected boolean, received undefined"
                     }
                 }
             });
@@ -115,11 +132,11 @@ describe("trigger crud", () => {
 
         try {
             const result = await context.tasks.trigger({
-                definition: definition.id,
+                definition: MOCK_TASK_DEFINITION_ID,
                 name: "A test of triggering task",
                 input
             });
-            expect(result).toMatchObject({
+            expect(result.value).toMatchObject({
                 id: expect.any(String),
                 input
             });

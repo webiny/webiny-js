@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
-import type { CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js";
-import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin.js";
+import type { CmsContext, CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js";
 import type { CmsFieldFilterValueTransformPlugin } from "~/types.js";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { Field } from "./types.js";
@@ -9,18 +8,18 @@ import { extractWhereParams } from "./where.js";
 import { transformValue } from "./transform.js";
 import { CmsEntryFieldFilterPlugin } from "~/plugins/CmsEntryFieldFilterPlugin.js";
 import { getWhereValues } from "~/operations/entry/filtering/values.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
+import { ValueFilter } from "@webiny/db-dynamodb/feature/ValueFilter/index.js";
+import { ValueFilterRegistry } from "@webiny/db-dynamodb/exports/api/db.js";
 
 interface CreateExpressionParams {
     where: Partial<CmsEntryListWhere>;
     condition: ExpressionCondition;
 }
 
-interface CreateExpressionCb {
-    (params: CreateExpressionParams): Expression;
-}
-
-interface Params {
+interface ICreateExpressionsParams {
     plugins: PluginsContainer;
+    container: CmsContext["container"];
     where: Partial<CmsEntryListWhere>;
     fields: Record<string, Field>;
 }
@@ -37,19 +36,16 @@ export interface Filter {
     field: Field;
     path: string;
     fieldPathId: string;
-    plugin: ValueFilterPlugin;
+    filter: ValueFilter.Interface;
     negate: boolean;
     compareValue: any;
     transformValue: <I = any, O = any>(value: I) => O;
 }
 
-export const createExpressions = (params: Params): Expression => {
-    const { where, plugins, fields } = params;
-    const filterPlugins = getMappedPlugins<ValueFilterPlugin>({
-        plugins,
-        type: ValueFilterPlugin.type,
-        property: "operation"
-    });
+export const createExpressions = (params: ICreateExpressionsParams): Expression => {
+    const { where, plugins, fields, container } = params;
+    const valueFilterRegistry = container.resolve(ValueFilterRegistry);
+
     const transformValuePlugins = getMappedPlugins<CmsFieldFilterValueTransformPlugin>({
         plugins,
         type: "cms-field-filter-value-transform",
@@ -64,20 +60,23 @@ export const createExpressions = (params: Params): Expression => {
     const defaultFilterCreatePlugin = fieldFilterCreatePlugins["*"] as CmsEntryFieldFilterPlugin;
 
     const getFilterCreatePlugin = (type: string) => {
-        const filterCreatePlugin = fieldFilterCreatePlugins[type] || defaultFilterCreatePlugin;
+        const fieldType = getBaseFieldType({
+            type
+        });
+        const filterCreatePlugin = fieldFilterCreatePlugins[fieldType] || defaultFilterCreatePlugin;
         if (filterCreatePlugin) {
             return filterCreatePlugin;
         }
         throw new WebinyError(
-            `There is no filter create plugin for the field type "${type}".`,
+            `There is no filter create plugin for the field type "${fieldType}".`,
             "MISSING_FILTER_CREATE_PLUGIN",
             {
-                type
+                fieldType
             }
         );
     };
 
-    const createExpression: CreateExpressionCb = ({ where, condition }) => {
+    const createExpression = ({ where, condition }: CreateExpressionParams): Expression => {
         const expression: Expression = {
             filters: [],
             expressions: [],
@@ -85,7 +84,7 @@ export const createExpressions = (params: Params): Expression => {
         };
 
         for (const key in where) {
-            const value = where[key];
+            const value = where[key as keyof typeof where];
             if (value === undefined) {
                 continue;
             }
@@ -158,8 +157,10 @@ export const createExpressions = (params: Params): Expression => {
              */
             const filterCreatePlugin = getFilterCreatePlugin(field.type);
 
+            const fieldType = getBaseFieldType(field);
+
             const transformValuePlugin: CmsFieldFilterValueTransformPlugin =
-                transformValuePlugins[field.type];
+                transformValuePlugins[fieldType];
 
             const transformValueCallable = (value: any) => {
                 if (!transformValuePlugin) {
@@ -174,7 +175,7 @@ export const createExpressions = (params: Params): Expression => {
             const result = filterCreatePlugin.create({
                 key,
                 value,
-                valueFilterPlugins: filterPlugins,
+                valueFilterRegistry,
                 transformValuePlugins,
                 getFilterCreatePlugin,
                 operation,

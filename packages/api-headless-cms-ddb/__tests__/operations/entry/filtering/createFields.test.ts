@@ -5,553 +5,7 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 import { createModel } from "../../helpers/createModel";
 import { Field } from "~/operations/entry/filtering/types";
 import { createPluginsContainer } from "../../helpers/pluginsContainer";
-
-const expectedSystemFields: Record<string, Field> = {
-    id: {
-        id: "id",
-        parents: [],
-        type: "text",
-        storageId: "id",
-        fieldId: "id",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "ID"
-    },
-    entryId: {
-        id: "entryId",
-        parents: [],
-        type: "text",
-        storageId: "entryId",
-        fieldId: "entryId",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Entry ID"
-    },
-    revisionCreatedOn: {
-        id: "revisionCreatedOn",
-        parents: [],
-        type: "datetime",
-        storageId: "revisionCreatedOn",
-        fieldId: "revisionCreatedOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision Created On"
-    },
-    revisionModifiedOn: {
-        id: "revisionModifiedOn",
-        parents: [],
-        type: "datetime",
-        storageId: "revisionModifiedOn",
-        fieldId: "revisionModifiedOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision Modified On"
-    },
-    revisionSavedOn: {
-        id: "revisionSavedOn",
-        parents: [],
-        type: "datetime",
-        storageId: "revisionSavedOn",
-        fieldId: "revisionSavedOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision Saved On"
-    },
-    revisionDeletedOn: {
-        id: "revisionDeletedOn",
-        parents: [],
-        type: "datetime",
-        storageId: "revisionDeletedOn",
-        fieldId: "revisionDeletedOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision Deleted On"
-    },
-    revisionRestoredOn: {
-        id: "revisionRestoredOn",
-        parents: [],
-        type: "datetime",
-        storageId: "revisionRestoredOn",
-        fieldId: "revisionRestoredOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision Restored On"
-    },
-    revisionFirstPublishedOn: {
-        id: "revisionFirstPublishedOn",
-        parents: [],
-        type: "datetime",
-        storageId: "revisionFirstPublishedOn",
-        fieldId: "revisionFirstPublishedOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision First Published On"
-    },
-    revisionLastPublishedOn: {
-        id: "revisionLastPublishedOn",
-        parents: [],
-        type: "datetime",
-        storageId: "revisionLastPublishedOn",
-        fieldId: "revisionLastPublishedOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision Last Published On"
-    },
-    createdOn: {
-        id: "createdOn",
-        parents: [],
-        type: "datetime",
-        storageId: "createdOn",
-        fieldId: "createdOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Created On"
-    },
-    modifiedOn: {
-        id: "modifiedOn",
-        parents: [],
-        type: "datetime",
-        storageId: "modifiedOn",
-        fieldId: "modifiedOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Modified On"
-    },
-    deletedOn: {
-        id: "deletedOn",
-        parents: [],
-        type: "datetime",
-        storageId: "deletedOn",
-        fieldId: "deletedOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Deleted On"
-    },
-    restoredOn: {
-        id: "restoredOn",
-        parents: [],
-        type: "datetime",
-        storageId: "restoredOn",
-        fieldId: "restoredOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Restored On"
-    },
-    savedOn: {
-        id: "savedOn",
-        parents: [],
-        type: "datetime",
-        storageId: "savedOn",
-        fieldId: "savedOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Saved On"
-    },
-    firstPublishedOn: {
-        id: "firstPublishedOn",
-        parents: [],
-        type: "datetime",
-        storageId: "firstPublishedOn",
-        fieldId: "firstPublishedOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "First Published On"
-    },
-    lastPublishedOn: {
-        id: "lastPublishedOn",
-        parents: [],
-        type: "datetime",
-        storageId: "lastPublishedOn",
-        fieldId: "lastPublishedOn",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Last Published On"
-    },
-    revisionCreatedBy: {
-        id: "revisionCreatedBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "revisionCreatedBy",
-        fieldId: "revisionCreatedBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision Created By",
-        settings: {
-            path: "revisionCreatedBy.id"
-        }
-    },
-    revisionModifiedBy: {
-        id: "revisionModifiedBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "revisionModifiedBy",
-        fieldId: "revisionModifiedBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision Modified By",
-        settings: {
-            path: "revisionModifiedBy.id"
-        }
-    },
-    revisionSavedBy: {
-        id: "revisionSavedBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "revisionSavedBy",
-        fieldId: "revisionSavedBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision Saved By",
-        settings: {
-            path: "revisionSavedBy.id"
-        }
-    },
-    revisionDeletedBy: {
-        id: "revisionDeletedBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "revisionDeletedBy",
-        fieldId: "revisionDeletedBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision Deleted By",
-        settings: {
-            path: "revisionDeletedBy.id"
-        }
-    },
-    revisionRestoredBy: {
-        id: "revisionRestoredBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "revisionRestoredBy",
-        fieldId: "revisionRestoredBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision Restored By",
-        settings: {
-            path: "revisionRestoredBy.id"
-        }
-    },
-    revisionFirstPublishedBy: {
-        id: "revisionFirstPublishedBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "revisionFirstPublishedBy",
-        fieldId: "revisionFirstPublishedBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision First Published By",
-        settings: {
-            path: "revisionFirstPublishedBy.id"
-        }
-    },
-    revisionLastPublishedBy: {
-        id: "revisionLastPublishedBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "revisionLastPublishedBy",
-        fieldId: "revisionLastPublishedBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Revision Last Published By",
-        settings: {
-            path: "revisionLastPublishedBy.id"
-        }
-    },
-    createdBy: {
-        id: "createdBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "createdBy",
-        fieldId: "createdBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Created By",
-        settings: {
-            path: "createdBy.id"
-        }
-    },
-    modifiedBy: {
-        id: "modifiedBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "modifiedBy",
-        fieldId: "modifiedBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Modified By",
-        settings: {
-            path: "modifiedBy.id"
-        }
-    },
-    savedBy: {
-        id: "savedBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "savedBy",
-        fieldId: "savedBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Saved By",
-        settings: {
-            path: "savedBy.id"
-        }
-    },
-    deletedBy: {
-        id: "deletedBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "deletedBy",
-        fieldId: "deletedBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Deleted By",
-        settings: {
-            path: "deletedBy.id"
-        }
-    },
-    restoredBy: {
-        id: "restoredBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "restoredBy",
-        fieldId: "restoredBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Restored By",
-        settings: {
-            path: "restoredBy.id"
-        }
-    },
-    firstPublishedBy: {
-        id: "firstPublishedBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "firstPublishedBy",
-        fieldId: "firstPublishedBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "First Published By",
-        settings: {
-            path: "firstPublishedBy.id"
-        }
-    },
-    lastPublishedBy: {
-        id: "lastPublishedBy",
-        parents: [],
-        type: "plainObject",
-        storageId: "lastPublishedBy",
-        fieldId: "lastPublishedBy",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Last Published By",
-        settings: {
-            path: "lastPublishedBy.id"
-        }
-    },
-    meta: {
-        id: "meta",
-        parents: [],
-        type: "plainObject",
-        storageId: "meta",
-        fieldId: "meta",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Meta"
-    },
-    wbyAco_location: {
-        id: "wbyAco_location",
-        parents: [],
-        type: "object",
-        storageId: "location",
-        label: "Location",
-        fieldId: "wbyAco_location",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        settings: {
-            fields: [
-                {
-                    fieldId: "folderId",
-                    id: "folderId",
-                    label: "Folder ID",
-                    settings: {
-                        path: "location.folderId"
-                    },
-                    storageId: "folderId",
-                    type: "text"
-                }
-            ]
-        }
-    },
-    "wbyAco_location.folderId": {
-        id: "folderId",
-        parents: [
-            {
-                fieldId: "wbyAco_location",
-                multipleValues: undefined
-            }
-        ],
-        type: "text",
-        label: "Folder ID",
-        storageId: "folderId",
-        fieldId: "folderId",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        settings: {
-            path: "location.folderId"
-        }
-    },
-    version: {
-        id: "version",
-        parents: [],
-        type: "number",
-        storageId: "version",
-        fieldId: "version",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Version"
-    },
-    state: {
-        createPath: expect.any(Function),
-        fieldId: "state",
-        id: "state",
-        label: "State",
-        parents: [],
-        settings: {
-            fields: [
-                {
-                    fieldId: "stepId",
-                    id: "stepId",
-                    label: "Step ID",
-                    storageId: "stepId",
-                    type: "text"
-                },
-                {
-                    fieldId: "stepName",
-                    id: "stepName",
-                    label: "Step Name",
-                    storageId: "stepName",
-                    type: "text"
-                },
-                {
-                    fieldId: "state",
-                    id: "state",
-                    label: "State",
-                    storageId: "state",
-                    type: "text"
-                }
-            ]
-        },
-        storageId: "object@state",
-        system: true,
-        transform: expect.any(Function),
-        type: "object"
-    },
-    "state.state": {
-        createPath: expect.any(Function),
-        fieldId: "state",
-        id: "state",
-        label: "State",
-        parents: [
-            {
-                fieldId: "state",
-                multipleValues: undefined
-            }
-        ],
-        storageId: "state",
-        system: true,
-        transform: expect.any(Function),
-        type: "text"
-    },
-    "state.stepId": {
-        createPath: expect.any(Function),
-        fieldId: "stepId",
-        id: "stepId",
-        label: "Step ID",
-        parents: [
-            {
-                fieldId: "state",
-                multipleValues: undefined
-            }
-        ],
-        storageId: "stepId",
-        system: true,
-        transform: expect.any(Function),
-        type: "text"
-    },
-    "state.stepName": {
-        createPath: expect.any(Function),
-        fieldId: "stepName",
-        id: "stepName",
-        label: "Step Name",
-        parents: [
-            {
-                fieldId: "state",
-                multipleValues: undefined
-            }
-        ],
-        storageId: "stepName",
-        system: true,
-        transform: expect.any(Function),
-        type: "text"
-    },
-    status: {
-        id: "status",
-        parents: [],
-        type: "text",
-        storageId: "status",
-        fieldId: "status",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Status"
-    },
-    wbyDeleted: {
-        id: "wbyDeleted",
-        parents: [],
-        type: "boolean",
-        storageId: "wbyDeleted",
-        fieldId: "wbyDeleted",
-        createPath: expect.any(Function),
-        system: true,
-        transform: expect.any(Function),
-        label: "Deleted"
-    }
-};
+import { expectedSystemFields } from "./mocks/expectedSystemFields.js";
 
 interface ExpectedFields {
     [key: string]: Field;
@@ -577,7 +31,21 @@ describe("create system and model fields", () => {
             fields: testModel.fields
         });
 
-        expect(result).toEqual(expectedSystemFields);
+        for (const expectedKey in expectedSystemFields) {
+            expect(result).toHaveProperty(expectedKey);
+            const value = result[expectedKey];
+            const expectedValue = expectedSystemFields[expectedKey];
+            expect(value).toMatchObject(expectedValue);
+        }
+
+        for (const resultKey in result) {
+            expect(expectedSystemFields).toHaveProperty(resultKey);
+            const value = result[resultKey];
+            const expectedValue = expectedSystemFields[resultKey];
+            expect(value).toMatchObject(expectedValue);
+        }
+
+        expect(result).toMatchObject(expectedSystemFields);
     });
 
     it("should create system fields and model fields all the nested fields", async () => {
@@ -588,89 +56,136 @@ describe("create system and model fields", () => {
 
         const expected: ExpectedFields = {
             ...expectedSystemFields,
-            settings: {
+            values: {
+                id: "values",
+                parents: [],
+                type: "object",
+                storageId: "values",
+                fieldId: "values",
+                createPath: expect.any(Function),
+                system: true,
+                list: false,
+                transform: expect.any(Function),
+                label: "Values",
+                settings: expect.any(Object)
+            },
+            "values.settings": {
                 createPath: expect.any(Function),
                 fieldId: "settings",
                 id: "settings",
                 label: "Settings",
-                multipleValues: false,
-                parents: [],
+                list: false,
+                parents: [
+                    {
+                        fieldId: "values",
+                        list: false
+                    }
+                ],
                 storageId: "searchableJson@settings",
                 system: false,
                 transform: expect.any(Function),
                 type: "searchable-json"
             },
-            title: {
+            "values.title": {
                 id: "title",
-                parents: [],
+                parents: [
+                    {
+                        fieldId: "values",
+                        list: false
+                    }
+                ],
                 type: "text",
                 storageId: "text@titleStorageId",
                 fieldId: "title",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: false,
+                list: false,
                 transform: expect.any(Function),
                 label: "Title"
             },
-            priority: {
+            "values.priority": {
                 createPath: expect.any(Function),
                 fieldId: "priority",
                 id: "priority",
                 label: "Priority",
-                multipleValues: false,
-                parents: [],
+                list: false,
+                parents: [
+                    {
+                        fieldId: "values",
+                        list: false
+                    }
+                ],
                 storageId: "number@priorityStorageId",
                 system: false,
                 transform: expect.any(Function),
                 type: "number"
             },
-            parent: {
+            "values.parent": {
                 createPath: expect.any(Function),
                 fieldId: "parent",
                 id: "parent",
                 label: "Parent",
-                multipleValues: false,
-                parents: [],
+                list: false,
+                parents: [
+                    {
+                        fieldId: "values",
+                        list: false
+                    }
+                ],
                 storageId: "ref@parentStorageId",
                 system: false,
                 transform: expect.any(Function),
                 type: "ref"
             },
-            authors: {
+            "values.authors": {
                 createPath: expect.any(Function),
                 fieldId: "authors",
                 id: "authors",
                 label: "Authors",
-                multipleValues: true,
-                parents: [],
+                list: true,
+                parents: [
+                    {
+                        fieldId: "values",
+                        list: false
+                    }
+                ],
                 storageId: "ref@authorsStorageId",
                 system: false,
                 transform: expect.any(Function),
                 type: "ref"
             },
-            options: {
+            "values.options": {
                 id: "options",
-                parents: [],
+                parents: [
+                    {
+                        fieldId: "values",
+                        list: false
+                    }
+                ],
                 type: "object",
                 storageId: "object@optionsStorageId",
                 fieldId: "options",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: true,
+                list: true,
                 transform: expect.any(Function),
                 label: "Options",
                 settings: expect.any(Object)
             },
-            "options.keys": {
+            "values.options.keys": {
                 createPath: expect.any(Function),
                 fieldId: "keys",
                 id: "keys",
                 label: "Keys",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
+                        fieldId: "values",
+                        list: false
+                    },
+                    {
                         fieldId: "options",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 storageId: "text@keysStorageId",
@@ -678,16 +193,20 @@ describe("create system and model fields", () => {
                 transform: expect.any(Function),
                 type: "text"
             },
-            "options.optionId": {
+            "values.options.optionId": {
                 createPath: expect.any(Function),
                 fieldId: "optionId",
                 id: "optionId",
                 label: "Option ID",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
+                        fieldId: "values",
+                        list: false
+                    },
+                    {
                         fieldId: "options",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 storageId: "number@optionIdStorageId",
@@ -695,11 +214,15 @@ describe("create system and model fields", () => {
                 transform: expect.any(Function),
                 type: "number"
             },
-            "options.variant": {
+            "values.options.variant": {
                 parents: [
                     {
+                        fieldId: "values",
+                        list: false
+                    },
+                    {
                         fieldId: "options",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 id: "variant",
@@ -708,20 +231,24 @@ describe("create system and model fields", () => {
                 fieldId: "variant",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: false,
+                list: false,
                 transform: expect.any(Function),
                 label: "Variant",
                 settings: expect.any(Object)
             },
-            "options.variant.colors": {
+            "values.options.variant.colors": {
                 parents: [
                     {
+                        fieldId: "values",
+                        list: false
+                    },
+                    {
                         fieldId: "options",
-                        multipleValues: true
+                        list: true
                     },
                     {
                         fieldId: "variant",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 id: "colors",
@@ -730,19 +257,23 @@ describe("create system and model fields", () => {
                 fieldId: "colors",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: true,
+                list: true,
                 transform: expect.any(Function),
                 label: "Variant Colors"
             },
-            "options.variant.number": {
+            "values.options.variant.number": {
                 parents: [
                     {
+                        fieldId: "values",
+                        list: false
+                    },
+                    {
                         fieldId: "options",
-                        multipleValues: true
+                        list: true
                     },
                     {
                         fieldId: "variant",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 id: "number",
@@ -751,28 +282,37 @@ describe("create system and model fields", () => {
                 fieldId: "number",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: false,
+                list: false,
                 transform: expect.any(Function),
                 label: "Variant Number"
             },
-            info: {
-                parents: [],
+            "values.info": {
+                parents: [
+                    {
+                        fieldId: "values",
+                        list: false
+                    }
+                ],
                 id: "info",
                 type: "object",
                 storageId: "object@infoStorageId",
                 fieldId: "info",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: false,
+                list: false,
                 transform: expect.any(Function),
                 label: "Info",
                 settings: expect.any(Object)
             },
-            "info.images": {
+            "values.info.images": {
                 parents: [
                     {
+                        fieldId: "values",
+                        list: false
+                    },
+                    {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 id: "images",
@@ -781,20 +321,24 @@ describe("create system and model fields", () => {
                 fieldId: "images",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: true,
+                list: true,
                 transform: expect.any(Function),
                 label: "Images",
                 settings: expect.any(Object)
             },
-            "info.images.file": {
+            "values.info.images.file": {
                 parents: [
                     {
+                        fieldId: "values",
+                        list: false
+                    },
+                    {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "images",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 id: "file",
@@ -803,19 +347,23 @@ describe("create system and model fields", () => {
                 fieldId: "file",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: false,
+                list: false,
                 transform: expect.any(Function),
                 label: "File"
             },
-            "info.images.tags": {
+            "values.info.images.tags": {
                 parents: [
                     {
+                        fieldId: "values",
+                        list: false
+                    },
+                    {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "images",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 id: "tags",
@@ -824,29 +372,33 @@ describe("create system and model fields", () => {
                 fieldId: "tags",
                 createPath: expect.any(Function),
                 system: false,
-                multipleValues: true,
+                list: true,
                 transform: expect.any(Function),
                 label: "Tags",
                 settings: expect.any(Object)
             },
-            "info.images.tags.slug": {
+            "values.info.images.tags.slug": {
                 createPath: expect.any(Function),
                 fieldId: "slug",
                 id: "slug",
                 label: "Slug",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
+                        fieldId: "values",
+                        list: false
+                    },
+                    {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "images",
-                        multipleValues: true
+                        list: true
                     },
                     {
                         fieldId: "tags",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 storageId: "text@infoImagesTagsSlugStorageId",
@@ -854,24 +406,28 @@ describe("create system and model fields", () => {
                 transform: expect.any(Function),
                 type: "text"
             },
-            "info.images.tags.title": {
+            "values.info.images.tags.title": {
                 createPath: expect.any(Function),
                 fieldId: "title",
                 id: "title",
                 label: "Title",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
+                        fieldId: "values",
+                        list: false
+                    },
+                    {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "images",
-                        multipleValues: true
+                        list: true
                     },
                     {
                         fieldId: "tags",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 storageId: "text@infoImagesTagsTitleStorageId",
@@ -879,20 +435,24 @@ describe("create system and model fields", () => {
                 transform: expect.any(Function),
                 type: "text"
             },
-            "info.images.title": {
+            "values.info.images.title": {
                 createPath: expect.any(Function),
                 fieldId: "title",
                 id: "title",
                 label: "Title",
-                multipleValues: false,
+                list: false,
                 parents: [
                     {
+                        fieldId: "values",
+                        list: false
+                    },
+                    {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     },
                     {
                         fieldId: "images",
-                        multipleValues: true
+                        list: true
                     }
                 ],
                 storageId: "text@infoImagesTitleStorageId",
@@ -900,16 +460,20 @@ describe("create system and model fields", () => {
                 transform: expect.any(Function),
                 type: "text"
             },
-            "info.keywords": {
+            "values.info.keywords": {
                 createPath: expect.any(Function),
                 fieldId: "keywords",
                 id: "keywords",
                 label: "Keywords",
-                multipleValues: true,
+                list: true,
                 parents: [
                     {
+                        fieldId: "values",
+                        list: false
+                    },
+                    {
                         fieldId: "info",
-                        multipleValues: false
+                        list: false
                     }
                 ],
                 storageId: "text@infoKeywordsStorageId",
@@ -918,7 +482,20 @@ describe("create system and model fields", () => {
                 type: "text"
             }
         };
+        for (const expectedKey in expected) {
+            expect(result).toHaveProperty(expectedKey);
+            const value = result[expectedKey];
+            const expectedValue = expected[expectedKey];
+            expect(value).toMatchObject(expectedValue);
+        }
 
-        expect(result).toEqual(expected);
+        for (const resultKey in result) {
+            expect(expected).toHaveProperty(resultKey);
+            const value = result[resultKey];
+            const expectedValue = expected[resultKey];
+            expect(value).toMatchObject(expectedValue);
+        }
+
+        expect(result).toMatchObject(expected);
     });
 });

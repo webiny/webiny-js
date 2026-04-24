@@ -1,42 +1,59 @@
-import { createTaskDefinition } from "@webiny/tasks";
+import { createContextPlugin } from "@webiny/api";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type {
     Context,
     IElasticsearchIndexingTaskValues,
     IElasticsearchTaskConfig
 } from "~/types.js";
+import { getClients } from "~/helpers/getClients.js";
 
-export const createElasticsearchReindexingTask = (params?: IElasticsearchTaskConfig) => {
-    return createTaskDefinition<Context, IElasticsearchIndexingTaskValues>({
-        id: "elasticsearchReindexing",
-        title: "Elasticsearch reindexing",
-        run: async ({ context, isCloseToTimeout, response, input, isAborted, store, timer }) => {
-            const { Manager } = await import(
-                /* webpackChunkName: "Manager" */
-                "../Manager.js"
-            );
-            const { IndexManager } = await import(
-                /* webpackChunkName: "IndexManager" */ "~/settings/index.js"
-            );
-            const { ReindexingTaskRunner } = await import(
-                /* webpackChunkName: "ReindexingTaskRunner" */ "./ReindexingTaskRunner.js"
-            );
+class ElasticsearchReindexingTask implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues> {
+    id = "elasticsearchReindexing";
+    title = "Elasticsearch reindexing";
 
-            const manager = new Manager<IElasticsearchIndexingTaskValues>({
-                elasticsearchClient: params?.elasticsearchClient,
-                documentClient: params?.documentClient,
-                response,
-                context,
-                isAborted,
-                isCloseToTimeout,
-                store,
-                timer
-            });
+    constructor(
+        private elasticsearchClient: IElasticsearchTaskConfig["elasticsearchClient"],
+        private documentClient: IElasticsearchTaskConfig["documentClient"]
+    ) {}
 
-            const indexManager = new IndexManager(manager.elasticsearch, input.settings || {});
-            const reindexing = new ReindexingTaskRunner(manager, indexManager);
-
-            const keys = input.keys || undefined;
-            return reindexing.exec(keys, input.limit || 100);
+    async run({ input, controller }: TaskDefinition.RunParams<IElasticsearchIndexingTaskValues>) {
+        if (controller.runtime.isAborted()) {
+            return controller.response.aborted();
         }
+
+        const { Manager } = await import(
+            /* webpackChunkName: "Manager" */
+            "../Manager.js"
+        );
+
+        const { IndexManager } = await import(
+            /* webpackChunkName: "IndexManager" */ "~/settings/index.js"
+        );
+        const { ReindexingTaskRunner } = await import(
+            /* webpackChunkName: "ReindexingTaskRunner" */ "./ReindexingTaskRunner.js"
+        );
+
+        const manager = new Manager<IElasticsearchIndexingTaskValues>({
+            elasticsearchClient: this.elasticsearchClient,
+            documentClient: this.documentClient,
+            controller
+        });
+
+        const indexManager = new IndexManager(manager.elasticsearch, input.settings || {});
+        const reindexing = new ReindexingTaskRunner(manager, indexManager);
+
+        const keys = input.keys || undefined;
+        return await reindexing.exec(keys, input.limit || 100);
+    }
+}
+
+export const createElasticsearchReindexingTask = (params?: Partial<IElasticsearchTaskConfig>) => {
+    return createContextPlugin<Context>(context => {
+        const { documentClient, elasticsearchClient } = getClients(context, params);
+
+        context.container.registerFactory(
+            TaskDefinition,
+            () => new ElasticsearchReindexingTask(elasticsearchClient, documentClient)
+        );
     });
 };

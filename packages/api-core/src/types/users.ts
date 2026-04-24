@@ -18,16 +18,19 @@ export interface BaseUserAttributes {
 
     // Required field, but, note that some users coming with a 3rd party IdP might not
     // be able to provide it. In that case, we assign the identity's ID as the email.
-    // Check `api-security-okta` package for an example.
+    // Check `okta` package for an example.
     email: string;
 
-    groups?: string[];
+    roles?: string[];
     teams?: string[];
 
     // Optional fields.
     firstName?: string;
     lastName?: string;
-    avatar?: Record<string, any> | null;
+    avatar?: {
+        id: string;
+        src: string;
+    } | null;
 
     // Tells us if the entry has been created based on an identity coming from an external IdP.
     external?: boolean;
@@ -39,10 +42,6 @@ export interface CreateUserInput extends Omit<BaseUserAttributes, "id" | "displa
 
     // Display name can be provided, but it's not required. If not provided, it will be auto-generated.
     displayName?: string;
-
-    // At the moment, this field is only used by the default Cognito IdP setup.
-    // Other IdPs (Auth0, Okta) do not require this field to be present.
-    password?: string;
 }
 
 export type UpdateUserInput = Partial<Omit<CreateUserInput, "id">>;
@@ -51,7 +50,6 @@ export interface AdminUser extends BaseUserAttributes {
     tenant: string;
     createdOn: string;
     createdBy: CreatedBy | null | undefined;
-    webinyVersion: string;
 }
 
 export interface GetUserParams {

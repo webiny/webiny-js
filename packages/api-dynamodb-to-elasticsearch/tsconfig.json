@@ -3,8 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api" },
-    { "path": "../api-elasticsearch" },
-    { "path": "../api-log" },
+    { "path": "../api-opensearch" },
     { "path": "../aws-sdk" },
     { "path": "../error" },
     { "path": "../handler-aws" },
@@ -20,10 +19,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
-      "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
-      "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
-      "@webiny/api-log/*": ["../api-log/src/*"],
-      "@webiny/api-log": ["../api-log/src"],
+      "@webiny/api-opensearch/*": ["../api-opensearch/src/*"],
+      "@webiny/api-opensearch": ["../api-opensearch/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/error/*": ["../error/src/*"],
@@ -34,7 +31,6 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

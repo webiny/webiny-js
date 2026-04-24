@@ -6,12 +6,12 @@ import type {
     Context as LambdaContext
 } from "@webiny/aws-sdk/types/index.js";
 import type { Context } from "~/types.js";
-import { TaskResponseStatus } from "~/types.js";
 import type { HandlerParams, ITaskRawEvent } from "~/handler/types.js";
 import { TaskRunner } from "~/runner/index.js";
 import type WebinyError from "@webiny/error";
 import { timerFactory } from "@webiny/handler-aws/utils/index.js";
 import { TaskEventValidation } from "~/runner/TaskEventValidation.js";
+import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface HandlerCallable {
     (event: ITaskRawEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
@@ -38,31 +38,34 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
             return payload.body;
         });
 
-        app.setErrorHandler<WebinyError>(async (error, _, reply) => {
-            app.__webiny_raw_result = {
-                error: {
-                    message: error.message,
-                    code: error.code,
-                    data: error.data
-                },
-                status: TaskResponseStatus.ERROR
-            };
-            return reply.send();
+        await app.register(async taskApp => {
+            taskApp.setErrorHandler<WebinyError>(async (error, _, reply) => {
+                app.__webiny_raw_result = {
+                    error: {
+                        message: error.message,
+                        code: error.code,
+                        data: error.data
+                    },
+                    status: TaskResultStatus.ERROR
+                };
+                return reply.send();
+            });
+
+            taskApp.post(url, async (_, reply) => {
+                const handler = new TaskRunner(
+                    /**
+                     * We can safely cast because we know that the context is of type tasks/Context
+                     */
+                    app.webiny as Context,
+                    timerFactory(context),
+                    new TaskEventValidation()
+                );
+
+                app.__webiny_raw_result = await handler.run(event);
+                return reply.send({});
+            });
         });
 
-        app.post(url, async (_, reply) => {
-            const handler = new TaskRunner(
-                /**
-                 * We can safely cast because we know that the context is of type tasks/Context
-                 */
-                app.webiny as Context,
-                timerFactory(context),
-                new TaskEventValidation()
-            );
-
-            app.__webiny_raw_result = await handler.run(event);
-            return reply.send({});
-        });
         return execute({
             app,
             url,
@@ -71,8 +74,6 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
                 headers: {
                     ["x-tenant"]: event.tenant,
                     ["x-webiny-cms-endpoint"]: event.endpoint,
-                    ["x-webiny-cms-locale"]: "en-US",
-                    ["x-i18n-locale"]: "en-US",
                     ["accept-language"]: "en-US"
                 }
             }

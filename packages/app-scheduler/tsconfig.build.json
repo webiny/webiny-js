@@ -1,0 +1,48 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../admin-ui/tsconfig.build.json" },
+    { "path": "../app-aco/tsconfig.build.json" },
+    { "path": "../app-admin/tsconfig.build.json" },
+    { "path": "../app-headless-cms-common/tsconfig.build.json" },
+    { "path": "../app-utils/tsconfig.build.json" },
+    { "path": "../form/tsconfig.build.json" },
+    { "path": "../react-composition/tsconfig.build.json" },
+    { "path": "../react-properties/tsconfig.build.json" },
+    { "path": "../ui/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/admin-ui/*": ["../admin-ui/src/*"],
+      "@webiny/admin-ui": ["../admin-ui/src"],
+      "@webiny/app-aco/*": ["../app-aco/src/*"],
+      "@webiny/app-aco": ["../app-aco/src"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-headless-cms-common/*": ["../app-headless-cms-common/src/*"],
+      "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
+      "@webiny/app-utils/*": ["../app-utils/src/*"],
+      "@webiny/app-utils": ["../app-utils/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"],
+      "@webiny/react-properties/*": ["../react-properties/src/*"],
+      "@webiny/react-properties": ["../react-properties/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
+    }
+  }
+}

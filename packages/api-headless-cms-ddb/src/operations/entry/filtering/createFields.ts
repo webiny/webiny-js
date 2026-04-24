@@ -5,6 +5,7 @@ import type { PluginsContainer } from "@webiny/plugins";
 import type { CmsFieldFilterValueTransformPlugin } from "~/types.js";
 import { CmsEntryFieldFilterPathPlugin } from "~/plugins/index.js";
 import { getMappedPlugins } from "./mapPlugins.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 interface Params {
     fields: CmsModelField[];
@@ -26,10 +27,10 @@ interface AddFieldsToCollectionParams {
 const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollection => {
     const { fields, parents, transformValuePlugins, valuePathPlugins, system } = params;
     return fields.reduce<FieldCollection>((collection, field) => {
-        const transformPlugin = transformValuePlugins[field.type];
-        const valuePathPlugin = valuePathPlugins[field.type];
+        const fieldType = getBaseFieldType(field);
+        const transformPlugin = transformValuePlugins[fieldType];
+        const valuePathPlugin = valuePathPlugins[fieldType];
 
-        const basePath = system ? [] : ["values"];
         /**
          * The required fieldId is a product of all of its parents and its own fieldId.
          */
@@ -37,7 +38,7 @@ const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollec
             ...parents,
             {
                 fieldId: field.fieldId,
-                multipleValues: field.multipleValues
+                list: field.list
             }
         ]
             .map(f => f.fieldId)
@@ -58,8 +59,8 @@ const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollec
                     return valuePathPlugin.createPath(params);
                 }
 
-                return basePath
-                    .concat(parents.map(parent => parent.fieldId))
+                return parents
+                    .map(parent => parent.fieldId)
                     .concat([params.field.fieldId])
                     .join(".");
             },
@@ -84,7 +85,7 @@ const createFieldCollection = (params: AddFieldsToCollectionParams): FieldCollec
                 ...parents,
                 {
                     fieldId: field.fieldId,
-                    multipleValues: field.multipleValues
+                    list: field.list
                 }
             ],
             transformValuePlugins,
@@ -126,7 +127,12 @@ export const createFields = (params: Params) => {
         fields,
         transformValuePlugins,
         valuePathPlugins,
-        parents: [],
+        parents: [
+            {
+                fieldId: "values",
+                list: false
+            }
+        ],
         system: false
     });
 

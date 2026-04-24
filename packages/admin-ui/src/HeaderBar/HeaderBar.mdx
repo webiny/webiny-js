@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as HeaderBarStories from './HeaderBar.stories';
+import * as HeaderBarStories from "./HeaderBar.stories";
 
 <Meta of={HeaderBarStories} />
 
@@ -16,11 +16,12 @@ import { HeaderBar, Button, IconButton, Avatar, Text } from "@webiny/admin-ui";
 import { ReactComponent as KeyboardArrowRightIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 
 const HeaderBarExample = () => {
-    const StartContent = () => (
-        <Text size={"sm"} className={"text-neutral-dimmed"}>
-            {"Headless CMS / Articles / The best article ever"}
-        </Text>
-    );
+const StartContent = () => (
+
+<Text size={"sm"} className={"text-neutral-dimmed"}>
+  {"Headless CMS / Articles / The best article ever"}
+</Text>
+);
 
     const MiddleContent = () => <>Content in the middle</>;
 
@@ -56,22 +57,23 @@ const HeaderBarExample = () => {
             end={<EndContent />}
         />
     );
+
 };
 
 export default HeaderBarExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/HeaderBar/HeaderBar.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/HeaderBar/HeaderBar.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={HeaderBarStories.Documentation} />
@@ -82,47 +84,36 @@ import { HeaderBar, Button, IconButton, Avatar, Text } from "@webiny/admin-ui";
 import { ReactComponent as KeyboardArrowRightIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 
 const HeaderBarExample = () => {
-    const StartContent = () => (
-        <Text size={"sm"} className={"text-neutral-dimmed"}>
-            {"Headless CMS / Articles / The best article ever"}
-        </Text>
-    );
+  const StartContent = () => (
+    <Text size={"sm"} className={"text-neutral-dimmed"}>
+      {"Headless CMS / Articles / The best article ever"}
+    </Text>
+  );
 
-    const MiddleContent = () => <>Content in the middle</>;
+  const MiddleContent = () => <>Content in the middle</>;
 
-    const EndContent = () => (
-        <div className={"flex gap-x-sm"}>
-            <Button variant={"ghost"} size={"md"} text={"Root tenant"} />
-            <div
-                className={
-                    "flex items-center rounded-md " +
-"gap-xxs py-xs px-xs bg-neutral-light"
-                }
-            >
-                <Avatar
-                    size={"sm"}
-                    variant={"strong"}
-                    image={<Avatar.Image src={"https://i.pravatar.cc/300"} />}
-                    fallback={<Avatar.Fallback delayMs={0}>W</Avatar.Fallback>}
-                />
-                <IconButton
-                    variant={"ghost"}
-                    size={"xs"}
-                    color={"neutral-strong"}
-                    icon={<KeyboardArrowRightIcon />}
-                    onClick={() => console.log("clicked")}
-                />
-            </div>
-        </div>
-    );
-
-    return (
-        <HeaderBar
-            start={<StartContent />}
-            middle={<MiddleContent />}
-            end={<EndContent />}
+  const EndContent = () => (
+    <div className={"flex gap-x-sm"}>
+      <Button variant={"ghost"} size={"md"} text={"Root tenant"} />
+      <div className={"flex items-center rounded-md " + "gap-xxs py-xs px-xs bg-neutral-light"}>
+        <Avatar
+          size={"sm"}
+          variant={"strong"}
+          image={<Avatar.Image src={"https://i.pravatar.cc/300"} />}
+          fallback={<Avatar.Fallback delayMs={0}>W</Avatar.Fallback>}
         />
-    );
+        <IconButton
+          variant={"ghost"}
+          size={"xs"}
+          color={"neutral-strong"}
+          icon={<KeyboardArrowRightIcon />}
+          onClick={() => console.log("clicked")}
+        />
+      </div>
+    </div>
+  );
+
+  return <HeaderBar start={<StartContent />} middle={<MiddleContent />} end={<EndContent />} />;
 };
 
 export default HeaderBarExample;
@@ -137,13 +128,15 @@ import React from "react";
 import { HeaderBar, Text } from "@webiny/admin-ui";
 
 const StartContentOnlyExample = () => {
-    const StartContent = () => (
-        <Text size={"sm"} className={"text-neutral-dimmed"}>
-            {"Headless CMS / Articles / The best article ever"}
-        </Text>
-    );
+const StartContent = () => (
+
+<Text size={"sm"} className={"text-neutral-dimmed"}>
+  {"Headless CMS / Articles / The best article ever"}
+</Text>
+);
 
     return <HeaderBar start={<StartContent />} />;
+
 };
 
 export default StartContentOnlyExample;
@@ -156,9 +149,10 @@ import React from "react";
 import { HeaderBar } from "@webiny/admin-ui";
 
 const MiddleContentOnlyExample = () => {
-    const MiddleContent = () => <>Content in the middle</>;
+const MiddleContent = () => <>Content in the middle</>;
 
     return <HeaderBar middle={<MiddleContent />} />;
+
 };
 
 export default MiddleContentOnlyExample;
@@ -172,33 +166,34 @@ import { HeaderBar, Button, IconButton, Avatar } from "@webiny/admin-ui";
 import { ReactComponent as KeyboardArrowRightIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 
 const EndContentOnlyExample = () => {
-    const EndContent = () => (
-        <div className={"flex gap-x-sm"}>
-            <Button variant={"ghost"} size={"md"} text={"Root tenant"} />
-            <div
-                className={
-                    "flex items-center rounded-md gap-xxs
-                    py-xs px-xs bg-neutral-light"
-                }
-            >
-                <Avatar
-                    size={"sm"}
-                    variant={"strong"}
-                    image={<Avatar.Image src={"https://i.pravatar.cc/300"} />}
-                    fallback={<Avatar.Fallback delayMs={0}>W</Avatar.Fallback>}
-                />
-                <IconButton
-                    variant={"ghost"}
-                    size={"xs"}
-                    color={"neutral-strong"}
-                    icon={<KeyboardArrowRightIcon />}
-                    onClick={() => console.log("clicked")}
-                />
-            </div>
-        </div>
-    );
+const EndContent = () => (
+
+<div className={"flex gap-x-sm"}>
+<Button variant={"ghost"} size={"md"} text={"Root tenant"} />
+<div
+className={
+"flex items-center rounded-md gap-xxs
+py-xs px-xs bg-neutral-light"
+} >
+<Avatar
+size={"sm"}
+variant={"strong"}
+image={<Avatar.Image src={"https://i.pravatar.cc/300"} />}
+fallback={<Avatar.Fallback delayMs={0}>W</Avatar.Fallback>}
+/>
+<IconButton
+variant={"ghost"}
+size={"xs"}
+color={"neutral-strong"}
+icon={<KeyboardArrowRightIcon />}
+onClick={() => console.log("clicked")}
+/>
+</div>
+</div>
+);
 
     return <HeaderBar end={<EndContent />} />;
+
 };
 
 export default EndContentOnlyExample;
@@ -212,11 +207,12 @@ import { HeaderBar, Button, IconButton, Avatar, Text } from "@webiny/admin-ui";
 import { ReactComponent as KeyboardArrowRightIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 
 const StartEndContentOnlyExample = () => {
-    const StartContent = () => (
-        <Text size={"sm"} className={"text-neutral-dimmed"}>
-            {"Headless CMS / Articles / The best article ever"}
-        </Text>
-    );
+const StartContent = () => (
+
+<Text size={"sm"} className={"text-neutral-dimmed"}>
+  {"Headless CMS / Articles / The best article ever"}
+</Text>
+);
 
     const EndContent = () => (
         <div className={"flex gap-x-sm"}>
@@ -244,6 +240,7 @@ const StartEndContentOnlyExample = () => {
     );
 
     return <HeaderBar start={<StartContent />} end={<EndContent />} />;
+
 };
 
 export default StartEndContentOnlyExample;
@@ -257,11 +254,12 @@ import { HeaderBar, Button, IconButton, Avatar, Text } from "@webiny/admin-ui";
 import { ReactComponent as KeyboardArrowRightIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 
 const MoreStartContentExample = () => {
-    const StartContent = () => (
-        <Text size={"sm"} className={"text-neutral-dimmed"}>
-            {"Headless CMS / Articles / The best article ever"}
-        </Text>
-    );
+const StartContent = () => (
+
+<Text size={"sm"} className={"text-neutral-dimmed"}>
+  {"Headless CMS / Articles / The best article ever"}
+</Text>
+);
 
     const MiddleContent = () => <>Content in the middle</>;
 
@@ -303,6 +301,7 @@ const MoreStartContentExample = () => {
             end={<EndContent />}
         />
     );
+
 };
 
 export default MoreStartContentExample;

@@ -1,4 +1,4 @@
-import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { expect } from "vitest";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
@@ -80,7 +80,7 @@ export const expectNotAuthorized = (
     expect(testData).toEqual({
         data: null,
         error: {
-            code: "NOT_AUTHORIZED",
+            code: errorData?.code ?? "NOT_AUTHORIZED",
             message: errorData?.message ?? "Not authorized!",
             data: null
         }

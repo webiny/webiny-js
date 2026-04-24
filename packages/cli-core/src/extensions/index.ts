@@ -1,6 +1,6 @@
-import { cliCommand } from "./CliCommand.js";
-import { cliCommandDecorator } from "~/extensions/CliCommandDecorator.js";
+import { CliCommand } from "./CliCommand.js";
+import { CliCommandDecorator } from "~/extensions/CliCommandDecorator.js";
 
-export const CliCommand = cliCommand.ReactComponent;
+export { CliCommand };
 
-export const definitions = [cliCommand.definition, cliCommandDecorator.definition];
+export const definitions = [CliCommand.def, CliCommandDecorator.def];

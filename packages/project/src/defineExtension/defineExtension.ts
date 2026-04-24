@@ -3,10 +3,12 @@ import { createExtensionDefinition } from "./createExtensionDefinition.js";
 import { createExtensionReactComponent } from "./createExtensionReactComponent.js";
 import { type z } from "zod";
 
-export interface DefinitionAndComponentPair<TParamsSchema extends z.ZodTypeAny> {
-    definition: ReturnType<typeof createExtensionDefinition<TParamsSchema>>;
-    ReactComponent: ReturnType<typeof createExtensionReactComponent<TParamsSchema>>;
-}
+export type ExtensionComponent<TParamsSchema extends z.ZodTypeAny> = ReturnType<
+    typeof createExtensionReactComponent<TParamsSchema>
+> & {
+    def: ReturnType<typeof createExtensionDefinition<TParamsSchema>>;
+    getDefinition: () => ReturnType<typeof createExtensionDefinition<TParamsSchema>>;
+};
 
 export function defineExtension<TParamsSchema extends z.ZodTypeAny>(
     extensionParams: DefineExtensionParams<TParamsSchema>
@@ -14,5 +16,10 @@ export function defineExtension<TParamsSchema extends z.ZodTypeAny>(
     const definition = createExtensionDefinition<TParamsSchema>(extensionParams);
     const ReactComponent = createExtensionReactComponent<TParamsSchema>(extensionParams);
 
-    return { ReactComponent, definition } as DefinitionAndComponentPair<TParamsSchema>;
+    // Attach properties to the React component
+    const component = ReactComponent as ExtensionComponent<TParamsSchema>;
+    component.def = definition;
+    component.getDefinition = () => definition;
+
+    return component;
 }

@@ -1,17 +1,17 @@
+/**
+ * TODO: this schema is not currently used in tests.
+ * Once we enable file extensions, this will become relevant again.
+ */
 export default /* GraphQL */ `
     type FmFile_Location {
-        folderId: String
+        folderId: ID!
     }
 
     input FmFile_LocationWhereInput {
-        folderId: String
-        folderId_not: String
-        folderId_in: [String]
-        folderId_not_in: [String]
-        folderId_contains: String
-        folderId_not_contains: String
-        folderId_startsWith: String
-        folderId_not_startsWith: String
+        folderId: ID
+        folderId_not: ID
+        folderId_in: [ID!]
+        folderId_not_in: [ID!]
     }
 
     type FmFile_Meta {
@@ -124,7 +124,6 @@ export default /* GraphQL */ `
         size: Number
         meta: FmFile_Meta
         tags: [String]
-        aliases: [String]
         accessControl: FmFile_AccessControl
         extensions: FmFile_Extensions
     }
@@ -171,7 +170,6 @@ export default /* GraphQL */ `
         size: Number
         meta: FmFile_MetaInput
         tags: [String!]
-        aliases: [String!]
         accessControl: FmFile_AccessControlInput
         extensions: FmFile_ExtensionsInput
     }
@@ -190,7 +188,6 @@ export default /* GraphQL */ `
         size: Number
         meta: FmFile_MetaInput
         tags: [String]
-        aliases: [String]
         accessControl: FmFile_AccessControlInput
         extensions: FmFile_ExtensionsInput
     }
@@ -411,15 +408,6 @@ export default /* GraphQL */ `
         tags_not_contains: String
         tags_startsWith: String
         tags_not_startsWith: String
-
-        aliases: String
-        aliases_not: String
-        aliases_in: [String]
-        aliases_not_in: [String]
-        aliases_contains: String
-        aliases_not_contains: String
-        aliases_startsWith: String
-        aliases_not_startsWith: String
 
         accessControl: FmFile_AccessControlWhereInput
         extensions: FmFile_ExtensionsWhereInput

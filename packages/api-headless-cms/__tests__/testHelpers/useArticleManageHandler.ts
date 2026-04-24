@@ -24,22 +24,26 @@ const fields = `
         status
         revisions {
             id
-            title
+            values {
+                title
+            }
         }
     }
     # user defined fields
-    title
-    body
-    categories {
-        modelId
-        entryId
-        id
-    }
-    category {
-        modelId
-        entryId
-        id
-    }
+   values {
+        title
+        body
+        categories {
+            modelId
+            entryId
+            id
+        }
+        category {
+            modelId
+            entryId
+            id
+        }
+   }
 `;
 
 const errorFields = `

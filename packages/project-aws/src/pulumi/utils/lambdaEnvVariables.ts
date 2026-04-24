@@ -5,9 +5,24 @@ type EnvVariables = Record<string, string | pulumi.Output<string>>;
 
 const variablesRegistry: EnvVariables = {};
 
+if (process.env.DEBUG === "true") {
+    variablesRegistry.NODE_OPTIONS = "--enable-source-maps";
+}
+
 export let sealEnvVariables: () => void;
 
-const magicPrefixes = ["WEBINY_", "WEBINY_API_", "WCP_", "OKTA_", "AUTH0_"];
+const magicPrefixes = [
+    "WEBINY_",
+    "WEBINY_API_",
+    // Added WCP vars separately. We don't need any other `WCP_PROJECT_` variables, apart from these.
+    // WEBINY_PROJECT_API_KEY is the new naming (preferred), WCP_PROJECT_ENVIRONMENT_API_KEY is for backward compatibility.
+    // This will be later removed because we'll be using `Api.BuildParam` extension.
+    "WEBINY_PROJECT_API_KEY",
+    "WCP_PROJECT_ENVIRONMENT",
+    "WCP_PROJECT_ENVIRONMENT_API_KEY",
+    "OKTA_",
+    "AUTH0_"
+];
 
 const variablesPromise = new Promise<EnvVariables>(resolve => {
     sealEnvVariables = () => {

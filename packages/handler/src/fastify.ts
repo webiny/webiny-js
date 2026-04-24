@@ -13,7 +13,6 @@ import type {
 import { Context } from "~/Context.js";
 import WebinyError from "@webiny/error";
 import { RoutePlugin } from "./plugins/RoutePlugin.js";
-import { createHandlerClient } from "@webiny/handler-client";
 import fastifyCookie from "@fastify/cookie";
 import fastifyCompress from "@fastify/compress";
 import { ContextPlugin } from "@webiny/api";
@@ -38,6 +37,8 @@ import { OnRequestTimeoutPlugin } from "~/plugins/OnRequestTimeoutPlugin.js";
 import { OnRequestResponseSendPlugin } from "~/plugins/OnRequestResponseSendPlugin.js";
 import { Request } from "./abstractions/Request.js";
 import { Reply } from "./abstractions/Reply.js";
+import { RegisterExtensionPlugin } from "~/plugins/RegisterExtensionPlugin.js";
+import { RegisterExtensions } from "~/PreHandler/RegisterExtensions.js";
 
 const modifyResponseHeaders = (
     app: FastifyInstance,
@@ -55,7 +56,12 @@ const modifyResponseHeaders = (
         plugin.modify(request, headers);
     });
 
-    reply.headers(headers.getHeaders());
+    // Exclude 'set-cookie' header to avoid duplication.
+    // Cookies are managed by @fastify/cookie and calling reply.headers() with 'set-cookie' duplicates them.
+    const headersToSet = headers.getHeaders();
+    delete headersToSet["set-cookie"];
+
+    reply.headers(headersToSet);
 };
 
 export interface CreateHandlerParams {
@@ -144,6 +150,7 @@ export const createHandler = (params: CreateHandlerParams) => {
     const app = fastify({
         bodyLimit: 536870912, // 512MB
         disableRequestLogging: true,
+        allowErrorHandlerOverride: true,
         ...(params.options || {})
     });
 
@@ -226,13 +233,7 @@ export const createHandler = (params: CreateHandlerParams) => {
     };
     let context: Context;
 
-    const plugins = new PluginsContainer([
-        /**
-         * We must have handlerClient by default.
-         * And it must be one of the first context plugins applied.
-         */
-        createHandlerClient()
-    ]);
+    const plugins = new PluginsContainer([]);
     plugins.merge(params.plugins || []);
 
     try {
@@ -254,6 +255,28 @@ export const createHandler = (params: CreateHandlerParams) => {
      * We are attaching our custom context to webiny variable on the fastify app, so it is accessible everywhere.
      */
     app.decorate("webiny", context);
+
+    /**
+     * To prevent Unsupported Media Type errors on OPTIONS requests with a body,
+     * we need to have a custom parser
+     */
+    app.addContentTypeParser(
+        "application/json",
+        { parseAs: "string", bodyLimit: 1024 * 1024 },
+        (req, body, done) => {
+            if (req.method === "OPTIONS") {
+                done(null, undefined);
+                return;
+            }
+
+            try {
+                const json = typeof body === "string" ? body : body.toString("utf8");
+                done(null, JSON.parse(json));
+            } catch (err) {
+                done(err as Error);
+            }
+        }
+    );
 
     /**
      * With this we ensure that an undefined request body is not parsed on OPTIONS requests,
@@ -304,7 +327,12 @@ export const createHandler = (params: CreateHandlerParams) => {
             ModifyResponseHeadersPlugin.type
         );
 
+        const registerExtensionPlugins = app.webiny.plugins.byType<RegisterExtensionPlugin>(
+            RegisterExtensionPlugin.type
+        );
+
         const preHandler = new PreHandler([
+            new RegisterExtensions(registerExtensionPlugins),
             new SetDefaultHeaders(definedRoutes),
             new ProcessHandlerOnRequestPlugins(handlerOnRequestPlugins),
             new IfNotOptionsRequest([
@@ -345,6 +373,31 @@ export const createHandler = (params: CreateHandlerParams) => {
             console.warn("Reply already sent, cannot send the result (handler:setErrorHandler).");
             return reply;
         }
+
+        if (error.code?.startsWith("Authentication/")) {
+            return reply
+                .status(401)
+                .headers({ "Cache-Control": "no-store" })
+                .send(
+                    JSON.stringify({
+                        message: error.message,
+                        code: error.code
+                    })
+                );
+        }
+
+        if (error.code === "Tenancy/TenantDisabled") {
+            return reply
+                .status(503)
+                .headers({ "Cache-Control": "no-store" })
+                .send(
+                    JSON.stringify({
+                        message: error.message,
+                        code: error.code
+                    })
+                );
+        }
+
         return reply
             .status(500)
             .headers({

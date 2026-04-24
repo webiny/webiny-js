@@ -1,5 +1,5 @@
-import glob from "glob";
-import loadJsonFile from "load-json-file";
+import fastGlob from "fast-glob";
+import { loadJsonFileSync } from "load-json-file";
 
 const excludedPackages = ["@webiny/di"];
 
@@ -10,7 +10,7 @@ const stripWebinyPath = p => {
 };
 const dependencyObjects = ["dependencies", "devDependencies", "peerDependencies"];
 const hasWebinyPackageVersion = pkg => {
-    const packageJson = loadJsonFile.sync(`${pkg}/package.json`);
+    const packageJson = loadJsonFileSync(`${pkg}/package.json`);
     for (const obj of dependencyObjects) {
         const packages = packageJson[obj];
         if (!packages) {
@@ -33,12 +33,12 @@ const hasWebinyPackageVersion = pkg => {
 };
 
 const getPackageName = packageJsonFile => {
-    const packageJson = loadJsonFile.sync(packageJsonFile);
+    const packageJson = loadJsonFileSync(packageJsonFile);
     return packageJson.name;
 };
 
 const checkPackageNodeModules = () => {
-    const packages = glob.sync(target);
+    const packages = fastGlob.sync(target);
     for (let pkg of packages) {
         pkg = pkg.replace("/package.json", "");
         const name = stripWebinyPath(pkg);
@@ -47,7 +47,7 @@ const checkPackageNodeModules = () => {
             console.log(`[VERSION] ${name} has Webiny packages with version value not 0.0.0`);
             continue;
         }
-        const subpackages = glob.sync(`${pkg}/node_modules/*/package.json`);
+        const subpackages = fastGlob.sync(`${pkg}/node_modules/*/package.json`);
         if (subpackages.length !== 0) {
             console.log(
                 `[SUBPACKAGES] "${name}" has ${subpackages.length} subpackages: ${subpackages

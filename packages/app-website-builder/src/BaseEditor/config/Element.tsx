@@ -6,13 +6,13 @@ export interface ElementConfig {
     name: string;
     group: string;
     scope: string;
-    element: JSX.Element;
+    element: React.JSX.Element;
 }
 
 export interface ElementProps {
     name: string;
     id?: string;
-    element?: JSX.Element | null;
+    element?: React.JSX.Element | null;
     /**
      * `group` is a public prop that can be used by external developers to logically group elements.
      * For example: "actions", "buttons", etc.

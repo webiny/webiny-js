@@ -86,7 +86,7 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
                 }
             });
         },
-        disconnectTenant: async (tenant: string, locale?: string) => {
+        disconnectTenant: async (tenant: string) => {
             return invoke<
                 IDisconnectTenantConnectionsResponse,
                 IDisconnectTenantConnectionsVariables
@@ -94,8 +94,7 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
                 body: {
                     query: DISCONNECT_TENANT_CONNECTIONS,
                     variables: {
-                        tenant,
-                        locale
+                        tenant
                     }
                 }
             });

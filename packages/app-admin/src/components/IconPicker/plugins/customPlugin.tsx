@@ -49,8 +49,7 @@ const IconFilePicker = ({ onUpload, onChange }: IconFilePickerProps) => {
             onChange={onChange}
             scope="scope:iconPicker"
             accept={["image/svg+xml"]}
-        >
-            {({ showFileManager }) => (
+            render={({ showFileManager }) => (
                 <Button
                     variant={"primary"}
                     text={"Browse"}
@@ -59,15 +58,9 @@ const IconFilePicker = ({ onUpload, onChange }: IconFilePickerProps) => {
                     }}
                 />
             )}
-        </FileManager>
+        ></FileManager>
     );
 };
-
-function getNameOrId(file: FileManagerFileItem): string {
-    const name = (file.meta || []).find(obj => obj.key === "name");
-
-    return name ? name.value : file.id;
-}
 
 const CustomIconTab = observer(() => {
     const presenter = useIconPicker();
@@ -78,22 +71,18 @@ const CustomIconTab = observer(() => {
     };
 
     const onIconFileSelect = (file: FileManagerFileItem) => {
-        const name = getNameOrId(file);
-
         presenter.setIcon({
             type: "custom",
-            name,
+            name: file.name,
             value: file.src
         });
         presenter.closeMenu();
     };
 
     const onIconFileUpload = (file: FileManagerFileItem) => {
-        const name = getNameOrId(file);
-
         const icon = {
             type: "custom",
-            name,
+            name: file.name,
             value: file.src
         };
 

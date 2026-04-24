@@ -10,9 +10,6 @@ export const customAuthorizer = () => {
             return [
                 { something: "custom" },
                 { name: "custom" },
-                { name: "content.i18n", locales: ["en-US"] },
-                { name: "pb.*" },
-                { name: "pb.category" },
                 { name: "fb.form" },
                 { name: "fm.file", own: true, rwd: "rwd" },
                 { name: "fm.settings" },
@@ -24,10 +21,9 @@ export const customAuthorizer = () => {
                 { name: "cms.contentModelGroup", own: false, rwd: "r", pw: "", groups: {} },
                 { name: "cms.contentEntry", own: true, rwd: "rwd", pw: "p" },
                 { name: "security.*" },
-                { name: "security.group" },
+                { name: "security.role" },
                 { name: "security.apiKey" },
                 { name: "adminUsers.*" },
-                { name: "i18n.*" },
                 { name: "*" }
             ];
         });

@@ -1,13 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { CreatePage } from "~/features/pages/createPage/CreatePage.js";
+import { Container } from "@webiny/di";
 import { pageListCache } from "~/domain/Page/index.js";
+import {
+    CreatePageUseCase as UseCaseAbstraction,
+    CreatePageGateway as GatewayAbstraction
+} from "./abstractions.js";
+import { CreatePageUseCase } from "./CreatePageUseCase.js";
+import { CreatePageRepository } from "./CreatePageRepository.js";
+import { PageListCache } from "~/features/pages/shared/abstractions.js";
 
 describe("CreatePage", () => {
     const gateway = {
         execute: vi.fn().mockResolvedValue({
             id: "page-1#0001",
             entryId: "page-1",
-            wbyAco_location: {
+            location: {
                 folderId: "folder-1"
             },
             properties: {
@@ -31,7 +38,13 @@ describe("CreatePage", () => {
     });
 
     it("should be able to create a new page", async () => {
-        const createPage = CreatePage.getInstance(gateway);
+        const container = new Container();
+        container.registerInstance(PageListCache, pageCache);
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(CreatePageRepository).inSingletonScope();
+        container.register(CreatePageUseCase);
+
+        const createPage = container.resolve(UseCaseAbstraction);
 
         expect(pageCache.hasItems()).toBeFalse();
 

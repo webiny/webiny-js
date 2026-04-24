@@ -20,6 +20,7 @@ export interface ICreateTenantUseCase {
     ): Promise<Result<Tenant, ICreateTenantErrors[keyof ICreateTenantErrors]>>;
 }
 
+/** Create a new tenant. */
 export const CreateTenantUseCase = createAbstraction<ICreateTenantUseCase>("CreateTenantUseCase");
 
 export namespace CreateTenantUseCase {
@@ -34,6 +35,7 @@ export interface ICreateTenantRepository {
     create(tenant: Tenant): Promise<Tenant>;
 }
 
+/** Persist a newly created tenant. */
 export const CreateTenantRepository =
     createAbstraction<ICreateTenantRepository>("CreateTenantRepository");
 
@@ -48,29 +50,29 @@ export interface ICreateTenantGateway {
     createTenant(data: Tenant): Promise<Tenant>;
 }
 
+/** Storage gateway for tenant creation. */
 export const CreateTenantGateway = createAbstraction<ICreateTenantGateway>("CreateTenantGateway");
 
 export namespace CreateTenantGateway {
     export type Interface = ICreateTenantGateway;
 }
 
-/**
- * Event Handlers
- */
-export const TenantBeforeCreateHandler = createAbstraction<
+/** Hook into tenant lifecycle before a tenant is created. */
+export const TenantBeforeCreateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<TenantBeforeCreatePayload>>
->("TenantBeforeCreateHandler");
+>("TenantBeforeCreateEventHandler");
 
-export namespace TenantBeforeCreateHandler {
+export namespace TenantBeforeCreateEventHandler {
     export type Interface = IEventHandler<DomainEvent<TenantBeforeCreatePayload>>;
     export type Event = DomainEvent<TenantBeforeCreatePayload>;
 }
 
-export const TenantAfterCreateHandler = createAbstraction<
+/** Hook into tenant lifecycle after a tenant is created. */
+export const TenantAfterCreateEventHandler = createAbstraction<
     IEventHandler<DomainEvent<TenantAfterCreatePayload>>
->("TenantAfterCreateHandler");
+>("TenantAfterCreateEventHandler");
 
-export namespace TenantAfterCreateHandler {
+export namespace TenantAfterCreateEventHandler {
     export type Interface = IEventHandler<DomainEvent<TenantAfterCreatePayload>>;
     export type Event = DomainEvent<TenantAfterCreatePayload>;
 }

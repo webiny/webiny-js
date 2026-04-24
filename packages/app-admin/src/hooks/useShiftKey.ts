@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import isHotkey from "is-hotkey";
+import { isHotkey } from "is-hotkey";
 
 export function useShiftKey() {
     const [pressed, setPressed] = useState(false);

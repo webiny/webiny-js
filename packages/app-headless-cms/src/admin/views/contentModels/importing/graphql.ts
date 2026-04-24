@@ -1,5 +1,6 @@
 import gql from "graphql-tag";
 import type {
+    CmsEditorFieldsLayout,
     CmsErrorResponse,
     CmsModelField
 } from "@webiny/app-headless-cms-common/types/index.js";
@@ -34,6 +35,7 @@ export const VALIDATE_IMPORT_STRUCTURE = gql`
                     group {
                         id
                         name
+                        slug
                     }
                     action
                     ${ERROR}
@@ -71,7 +73,7 @@ export interface ImportStructureVariablesModel {
     group: string;
     icon?: string;
     description?: string;
-    layout: string[][];
+    layout: CmsEditorFieldsLayout;
     fields: CmsModelField[];
     titleFieldId: string;
     descriptionFieldId?: string;
@@ -90,6 +92,7 @@ export interface ImportStructureResponseDataGroup {
     group: {
         id: string;
         name: string;
+        slug: string;
     };
     action: ImportAction;
     error: CmsErrorResponse | null;

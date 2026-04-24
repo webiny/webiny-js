@@ -1,31 +1,28 @@
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
     createPersonEntries,
     createPersonModel,
     deletePersonModel
 } from "~tests/storageOperations/helpers";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
-import { createStorageOperationsContext } from "~tests/storageOperations/context";
+import type { HeadlessCmsStorageOperations } from "~/types";
 
 describe("field unique values listing", () => {
-    const { storageOperations, plugins } = useGraphQLHandler({
-        path: "manage/en-US"
+    const handler = useGraphQLHandler({
+        path: "manage"
     });
+
+    let storageOperations: HeadlessCmsStorageOperations;
 
     /**
-     * We must load CMS GraphQL field plugins for the storage operations to work.
-     * This is specifically for DDB and DDB+ES storage operations.
-     * Some others might not need them...
+     * Storage operations are created by a DI factory during context initialization.
+     * We invoke a query to trigger context init, then capture the storage operations.
      */
-    beforeAll(async () => {
-        await storageOperations.beforeInit(
-            await createStorageOperationsContext({
-                plugins
-            })
-        );
-    });
-
     beforeEach(async () => {
+        await handler.isInstalledQuery();
+        const context = handler.getContext();
+        storageOperations = context.cms.storageOperations;
+
         await deletePersonModel({
             storageOperations
         });
@@ -43,20 +40,17 @@ describe("field unique values listing", () => {
         const results = await createPersonEntries({
             amount,
             storageOperations,
-            maxRevisions: 0,
-            plugins
+            maxRevisions: 0
         });
         const moreResults = await createPersonEntries({
             amount,
             storageOperations,
-            maxRevisions: 0,
-            plugins
+            maxRevisions: 0
         });
         const evenMoreResults = await createPersonEntries({
             amount,
             storageOperations,
-            maxRevisions: 0,
-            plugins
+            maxRevisions: 0
         });
         for (const entryId in moreResults) {
             results[entryId] = moreResults[entryId];

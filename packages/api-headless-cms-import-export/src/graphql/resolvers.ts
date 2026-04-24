@@ -24,7 +24,7 @@ const validateListExportContentEntries = zod.object({
 });
 
 const validateImportFromUrl = zod.object({
-    data: zod.string().or(zod.object({}).passthrough())
+    data: zod.string().or(zod.looseObject({}))
 });
 
 const getValidateImportFromUrl = zod.object({
@@ -48,7 +48,7 @@ const abortImportFromUrl = zod.object({
 const validateExportContentEntriesInput = zod.object({
     exportAssets: zod.boolean().optional().default(false),
     limit: zod.number().optional(),
-    where: zod.object({}).passthrough().optional().default({}),
+    where: zod.looseObject({}).optional().default({}),
     sort: zod.array(zod.string()).optional()
 });
 /**

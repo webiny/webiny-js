@@ -2,12 +2,15 @@ import {
     useContextHandler,
     type UseContextHandlerParams,
     useGraphQLHandler,
-    type UseGraphQLHandlerParams
+    type UseGraphQLHandlerParams,
+    FULL_ACCESS_TEAM_ID
 } from "@webiny/testing";
-import { Context } from "~/types.js";
 import { createWorkflows } from "~/index.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { WORKFLOW_MODEL_ID, WORKFLOW_STATE_MODEL_ID } from "~/constants.js";
+import { GetUserTeamsUseCase } from "~/features/internal/GetUserTeams/index.js";
+import { Result } from "@webiny/feature/api";
+import { ContextPlugin } from "@webiny/api";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
     CANCEL_WORKFLOW_STATE_MUTATION,
@@ -55,11 +58,44 @@ import {
     STORE_WORKFLOW_MUTATION,
     TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION
 } from "./graphql.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+
+class GetUserTeamsUseCaseDecorator implements GetUserTeamsUseCase.Interface {
+    constructor(
+        private identityContext: IdentityContext.Interface,
+        private decoratee: GetUserTeamsUseCase.Interface
+    ) {}
+
+    async execute(userId: string) {
+        const identity = this.identityContext.getIdentity();
+
+        // Return teams from identity if userId matches current identity
+        if (identity.id === userId && identity.teams) {
+            return Result.ok(identity.teams.map(teamId => ({ id: teamId })));
+        }
+
+        // Otherwise return full access team as default
+        return Result.ok([{ id: FULL_ACCESS_TEAM_ID }]);
+    }
+}
+
+const GetUserTeamsTestMock = GetUserTeamsUseCase.createDecorator({
+    decorator: GetUserTeamsUseCaseDecorator,
+    dependencies: [IdentityContext]
+});
 
 export const createContextHandler = async (params: UseContextHandlerParams = {}) => {
     const plugins = new PluginsContainer(params.plugins || []);
+
+    // Register mock GetUserTeamsUseCase for testing
+    plugins.register(
+        new ContextPlugin(async context => {
+            context.container.registerDecorator(GetUserTeamsTestMock);
+        })
+    );
+
     plugins.register(createWorkflows());
-    const handler = useContextHandler<Context>({
+    const handler = useContextHandler({
         ...params,
         permissions: [
             {
@@ -83,6 +119,14 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
 export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     const plugins = new PluginsContainer(params.plugins || []);
     plugins.register(createWorkflows());
+
+    // Register mock GetUserTeamsUseCase for testing
+    plugins.register(
+        new ContextPlugin(async context => {
+            context.container.registerDecorator(GetUserTeamsTestMock);
+        })
+    );
+
     const handler = useGraphQLHandler({
         ...params,
         permissions: [

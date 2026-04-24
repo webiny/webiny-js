@@ -1,4 +1,5 @@
 import inquirer from "inquirer";
+import { discoverAgents } from "@webiny/mcp";
 import { StorageOps } from "./types.js";
 import { availableAwsRegions } from "./availableAwsRegions.js";
 
@@ -7,8 +8,8 @@ const STORAGE_OPTIONS: Record<StorageOps, { value: StorageOps; name: string }> =
         value: "ddb",
         name: "DynamoDB (for small and medium sized projects)"
     },
-    "ddb-os,ddb": {
-        value: "ddb-os,ddb",
+    "ddb-os": {
+        value: "ddb-os",
         name: "Amazon DynamoDB + Amazon OpenSearch (for larger projects)"
     }
 };
@@ -19,9 +20,18 @@ export const runInteractivePrompt = async () => {
     );
     console.log();
 
+    const agents = await discoverAgents();
+    const agentChoices = [
+        ...Array.from(agents.values()).map(a => ({
+            value: a.preset.slug,
+            name: a.preset.displayName
+        })),
+        { value: "other", name: "Other / not listed" }
+    ];
+
     return inquirer.prompt([
         {
-            type: "list",
+            type: "select",
             name: "region",
             default: "us-east-1",
             message: "Please choose the AWS region in which your project will be deployed:",
@@ -29,11 +39,18 @@ export const runInteractivePrompt = async () => {
             choices: availableAwsRegions
         },
         {
-            type: "list",
+            type: "select",
             name: "storageOps",
             default: "ddb",
             message: `Please choose the database setup you wish to use with your project:`,
             choices: Object.values(STORAGE_OPTIONS)
+        },
+        {
+            type: "select",
+            name: "aiAgent",
+            default: "claude",
+            message: "Please choose the AI agent you will use with your project:",
+            choices: agentChoices
         }
     ]);
 };

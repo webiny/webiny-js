@@ -2,12 +2,13 @@ import React, { useCallback, useState } from "react";
 import { ReactComponent as Add } from "@webiny/icons/add.svg";
 import { Step } from "./Step.js";
 import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
-import type { IWorkflowStep, IWorkflowStepTeam } from "~/types.js";
-import { Button, Grid } from "@webiny/admin-ui";
+import type { IWorkflowNotificationType, IWorkflowStep, IWorkflowStepTeam } from "~/types.js";
+import { Button, Grid, Icon } from "@webiny/admin-ui";
 import { NonEmptyArray } from "@webiny/app/types.js";
 
 export interface IAddNewStepProps {
     onAdd: (step: IWorkflowStep) => void;
+    notifications: IWorkflowNotificationType[];
 }
 
 const createWorkflowStep = (): IWorkflowStep => {
@@ -22,7 +23,7 @@ const createWorkflowStep = (): IWorkflowStep => {
 };
 
 export const NewStep = (props: IAddNewStepProps) => {
-    const { onAdd } = props;
+    const { onAdd, notifications } = props;
     const [step, setStep] = useState<IWorkflowStep | null>(null);
 
     const onClick = useCallback(() => {
@@ -49,6 +50,7 @@ export const NewStep = (props: IAddNewStepProps) => {
                 onSave={onSave}
                 step={step}
                 open={true}
+                notifications={notifications}
             />
         );
     }
@@ -61,7 +63,11 @@ export const NewStep = (props: IAddNewStepProps) => {
                     "text-center p-sm-extra border-sm border-dashed border-neutral-muted rounded-lg"
                 }
             >
-                <Button variant={"ghost"} onClick={onClick} icon={<Add />}>
+                <Button
+                    variant={"ghost"}
+                    onClick={onClick}
+                    icon={<Icon label={"Add"} size={"sm"} icon={<Add />} />}
+                >
                     Add new custom step
                 </Button>
             </Grid.Column>

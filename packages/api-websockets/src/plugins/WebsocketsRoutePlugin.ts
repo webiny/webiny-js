@@ -20,7 +20,6 @@ export interface IWebsocketsRoutePluginCallableParams<
     context: C;
     response: IWebsocketsResponse;
     getTenant: () => string | null;
-    getLocale: () => string | null;
     getIdentity: () => IWebsocketsIdentity | null;
     next: () => Promise<R>;
 }

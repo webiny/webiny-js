@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { createContextHandler } from "./contextHandler";
+import { SendMailUseCase } from "~/features/SendMail/abstractions.js";
 import { TransportSendData } from "~/types";
 
 vi.mock("nodemailer", () => {
@@ -36,11 +37,12 @@ describe("Mailer Transporter CRUD", () => {
     const { handle } = createContextHandler();
 
     beforeEach(() => {
-        process.env.WEBINY_MAILER_HOST = "dummy-host.webiny";
-        process.env.WEBINY_MAILER_USER = "user";
-        process.env.WEBINY_MAILER_PASSWORD = "password";
-        process.env.WEBINY_MAILER_REPLY_TO = "replyTo@dummy-host.webiny";
-        process.env.WEBINY_MAILER_FROM = "from@dummy-host.webiny";
+        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
+        process.env.WEBINY_API_MAILER_HOST = "dummy-host.webiny";
+        process.env.WEBINY_API_MAILER_USER = "user";
+        process.env.WEBINY_API_MAILER_PASSWORD = "password";
+        process.env.WEBINY_API_MAILER_REPLY_TO = "replyTo@dummy-host.webiny";
+        process.env.WEBINY_API_MAILER_FROM = "from@dummy-host.webiny";
     });
 
     it(`should throw error before sending because of missing "to"`, async () => {
@@ -57,18 +59,11 @@ describe("Mailer Transporter CRUD", () => {
             html
         };
 
-        const result = await context.mailer.sendMail(params);
+        const sendMail = context.container.resolve(SendMailUseCase);
+        const result = await sendMail.execute(params);
 
-        expect(result).toMatchObject({
-            result: null,
-            error: {
-                message: "Error while validating e-mail params.",
-                code: "VALIDATION_ERROR",
-                data: {
-                    data: params
-                }
-            }
-        });
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Mailer/SendMail/Validation");
     });
 
     it(`should throw error before sending because of missing "from"`, async () => {
@@ -85,18 +80,11 @@ describe("Mailer Transporter CRUD", () => {
             html
         };
 
-        const result = await context.mailer.sendMail(params);
+        const sendMail = context.container.resolve(SendMailUseCase);
+        const result = await sendMail.execute(params);
 
-        expect(result).toMatchObject({
-            result: null,
-            error: {
-                message: "Error while validating e-mail params.",
-                code: "VALIDATION_ERROR",
-                data: {
-                    data: params
-                }
-            }
-        });
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Mailer/SendMail/Validation");
     });
 
     it(`should throw error before sending because of missing "subject"`, async () => {
@@ -113,18 +101,11 @@ describe("Mailer Transporter CRUD", () => {
             html
         };
 
-        const result = await context.mailer.sendMail(params);
+        const sendMail = context.container.resolve(SendMailUseCase);
+        const result = await sendMail.execute(params);
 
-        expect(result).toMatchObject({
-            result: null,
-            error: {
-                message: "Error while validating e-mail params.",
-                code: "VALIDATION_ERROR",
-                data: {
-                    data: params
-                }
-            }
-        });
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Mailer/SendMail/Validation");
     });
 
     it(`should throw error before sending because of missing both "text" and "html"`, async () => {
@@ -141,18 +122,11 @@ describe("Mailer Transporter CRUD", () => {
             html: ""
         };
 
-        const result = await context.mailer.sendMail(params);
+        const sendMail = context.container.resolve(SendMailUseCase);
+        const result = await sendMail.execute(params);
 
-        expect(result).toMatchObject({
-            result: null,
-            error: {
-                message: "Error while validating e-mail params.",
-                code: "VALIDATION_ERROR",
-                data: {
-                    data: params
-                }
-            }
-        });
+        expect(result.isFail()).toBe(true);
+        expect(result.error.code).toBe("Mailer/SendMail/Validation");
     });
 
     it("should send an email", async () => {
@@ -169,28 +143,13 @@ describe("Mailer Transporter CRUD", () => {
             html
         };
 
-        const result = await context.mailer.sendMail(params);
-        expect(result).toEqual({
+        const sendMail = context.container.resolve(SendMailUseCase);
+        const result = await sendMail.execute(params);
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value).toEqual({
             result: "ok",
             error: null
-        });
-    });
-
-    it("should use dummy transporter because of non-existing settings", async () => {
-        delete process.env.WEBINY_MAILER_HOST;
-        delete process.env.WEBINY_MAILER_USER;
-        delete process.env.WEBINY_MAILER_PASSWORD;
-        delete process.env.WEBINY_MAILER_REPLY_TO;
-        delete process.env.WEBINY_MAILER_FROM;
-
-        const context = await handle();
-
-        const result = await context.mailer.getTransport();
-
-        expect(result).toEqual({
-            name: "mailer.dummy-default",
-            send: expect.any(Function),
-            getAllSent: expect.any(Function)
         });
     });
 });

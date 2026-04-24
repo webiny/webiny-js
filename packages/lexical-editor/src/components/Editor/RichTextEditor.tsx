@@ -1,6 +1,4 @@
-import React, { Fragment, useRef, useState } from "react";
-import { css } from "emotion";
-import type { CSSObject } from "@emotion/react";
+import React, { Fragment, useId, useRef, useState } from "react";
 import type { Klass, LexicalNode } from "lexical";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
@@ -10,8 +8,7 @@ import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { makeDecoratable } from "@webiny/react-composition";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import type { EditorTheme, ThemeEmotionMap } from "@webiny/lexical-theme";
-import { createTheme, toTypographyEmotionMap } from "@webiny/lexical-theme";
+import type { EditorTheme } from "@webiny/lexical-theme";
 import { allNodes } from "@webiny/lexical-nodes";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext.js";
 import { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin.js";
@@ -24,33 +21,37 @@ import {
 } from "~/components/LexicalEditorConfig/LexicalEditorConfig.js";
 import { StateHandlingPlugin } from "~/plugins/StateHandlingPlugin.js";
 
+export type InitialEditorConfig = React.ComponentProps<typeof LexicalComposer>["initialConfig"] & {
+    editorId: string;
+};
+
 export interface RichTextEditorProps {
     children?: React.ReactNode | React.ReactNode[];
     classes?: string;
+    disabled?: boolean;
     contentEditableStyles?: React.CSSProperties;
     focus?: boolean;
     height?: number | string;
     nodes?: Klass<LexicalNode>[];
     onBlur?: (editorState: LexicalValue) => void;
-    onChange?: (json: LexicalValue) => void;
+    onChange?: (value: LexicalValue) => void;
     placeholder?: string;
     placeholderStyles?: React.CSSProperties;
     staticToolbar?: React.ReactNode;
     styles?: React.CSSProperties;
     tag?: string;
     theme: EditorTheme;
-    themeEmotionMap?: ThemeEmotionMap;
     toolbarActionPlugins?: ToolbarActionPlugin[];
-    themeStylesTransformer?: (cssObject: Record<string, any>) => CSSObject;
     toolbar?: React.ReactNode;
     value: LexicalValue | null | undefined;
+    configRef?: React.MutableRefObject<InitialEditorConfig | undefined>;
     width?: number | string;
 }
 
 const BaseRichTextEditor = ({
+    onChange,
     toolbar,
     staticToolbar,
-    onChange,
     nodes,
     placeholder,
     children,
@@ -58,22 +59,20 @@ const BaseRichTextEditor = ({
     focus,
     styles,
     width,
+    disabled = false,
     height,
     contentEditableStyles,
     placeholderStyles,
     ...props
 }: RichTextEditorProps) => {
-    const themeEmotionMap =
-        props.themeEmotionMap ??
-        toTypographyEmotionMap(css, props.theme, props.themeStylesTransformer);
-
-    const editorTheme = useRef(createTheme(props.theme));
+    const editorTheme = useRef(props.theme);
     const config = useLexicalEditorConfig();
     const { historyState } = useSharedHistoryContext();
     const placeholderElem = (
         <Placeholder styles={placeholderStyles}>{placeholder || "Enter text..."}</Placeholder>
     );
     const scrollRef = useRef(null);
+
     const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(
         undefined
     );
@@ -94,15 +93,27 @@ const BaseRichTextEditor = ({
     ));
 
     const initialConfig = {
-        editorState: null,
+        editorId: useId(),
+        editable: !disabled,
         namespace: "webiny",
         onError: () => {
             // Ignore errors. We don't want to break the app because of errors caused by config/value updates.
             // These are usually resolved in the next component render cycle.
         },
         nodes: [...allNodes, ...configNodes, ...(nodes || [])],
-        theme: { ...editorTheme.current, emotionMap: themeEmotionMap }
+        theme: {
+            ...editorTheme.current.tokens,
+            // I'm not aware of a better way to pass custom data to nodes.
+            // For now, we're using Lexical's theme to pass colors and typography.
+            $colors: editorTheme.current.colors,
+            $typography: editorTheme.current.typography,
+            $cacheKey: JSON.stringify(editorTheme.current)
+        }
     };
+
+    if (props.configRef) {
+        props.configRef.current = initialConfig;
+    }
 
     return (
         /**
@@ -116,10 +127,10 @@ const BaseRichTextEditor = ({
             <LexicalComposer initialConfig={initialConfig} key={initialConfig.nodes.length}>
                 <RichTextEditorProvider
                     theme={props.theme}
-                    themeEmotionMap={themeEmotionMap}
                     toolbarActionPlugins={props.toolbarActionPlugins}
                 >
-                    {staticToolbar ? staticToolbar : null}
+                    {staticToolbar && !disabled ? staticToolbar : null}
+                    <div data-role={"overlays"} className={"relative"}></div>
                     <div
                         /* This className is necessary for targeting of editor container from CSS files. */
                         className={"editor-shell"}
@@ -132,7 +143,10 @@ const BaseRichTextEditor = ({
                         }}
                     >
                         {/* State plugins. */}
-                        <StateHandlingPlugin value={props.value} onChange={onChange} />
+                        <StateHandlingPlugin
+                            value={props.value}
+                            onChange={disabled ? undefined : onChange}
+                        />
                         <ClearEditorPlugin />
                         <HistoryPlugin externalHistoryState={historyState} />
                         {/* Event plugins. */}
@@ -146,6 +160,7 @@ const BaseRichTextEditor = ({
                                 <div className="editor-scroller" style={{ ...sizeStyle }}>
                                     <div className="editor" ref={onRef}>
                                         <ContentEditable
+                                            disabled={disabled}
                                             style={{ outline: 0, ...contentEditableStyles }}
                                         />
                                     </div>
@@ -155,7 +170,7 @@ const BaseRichTextEditor = ({
                             ErrorBoundary={LexicalErrorBoundary}
                         />
                         {/* Toolbar. */}
-                        {floatingAnchorElem && toolbar}
+                        {disabled ? null : floatingAnchorElem && toolbar}
                     </div>
                 </RichTextEditorProvider>
             </LexicalComposer>
@@ -173,3 +188,7 @@ export const RichTextEditor = makeDecoratable("RichTextEditor", (props: RichText
         </LexicalEditorWithConfig>
     );
 });
+
+export namespace RichTextEditor {
+    export type InitialConfig = InitialEditorConfig;
+}

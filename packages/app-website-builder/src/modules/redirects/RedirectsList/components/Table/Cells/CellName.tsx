@@ -7,6 +7,7 @@ import type { RedirectTableRow } from "~/modules/redirects/RedirectsList/present
 import { RedirectListConfig } from "~/modules/redirects/configs/index.js";
 import { FolderCellName } from "~/modules/shared/FolderCellName.js";
 import { useEditRedirectDialog } from "~/modules/redirects/RedirectsList/index.js";
+import { usePermissions } from "~/presentation/security/usePermissions.js";
 
 interface DocumentCellRowTitleProps {
     document: RedirectTableRow["data"];
@@ -14,12 +15,17 @@ interface DocumentCellRowTitleProps {
 
 const DocumentCellRowTitle = ({ document }: DocumentCellRowTitleProps) => {
     const { showEditRedirectDialog } = useEditRedirectDialog();
+    const permissions = usePermissions();
 
     return (
         <div className={"flex flex-col gap-y-[3px]"}>
             <div
                 className={"flex w-full items-center cursor-pointer"}
-                onClick={() => showEditRedirectDialog(document.id)}
+                onClick={() => {
+                    if (permissions.canEdit("redirect")) {
+                        showEditRedirectDialog(document.id);
+                    }
+                }}
             >
                 <Icon
                     size={"sm"}

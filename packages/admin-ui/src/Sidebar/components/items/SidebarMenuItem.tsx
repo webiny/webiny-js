@@ -10,6 +10,7 @@ import { LinkProps } from "~/index.js";
 export interface SidebarMenuItemBaseProps {
     text: React.ReactNode;
     className?: string;
+    collapsible?: boolean;
     children?: React.ReactNode;
     onClick?: React.MouseEventHandler;
     icon?: React.ReactNode;
@@ -17,6 +18,8 @@ export interface SidebarMenuItemBaseProps {
     variant?: "group-label";
     active?: boolean;
     disabled?: boolean;
+    pinnable?: boolean;
+    pinnedIcon?: React.ReactNode;
 }
 
 type SidebarMenuItemButtonProps = SidebarMenuItemBaseProps & {
@@ -24,6 +27,7 @@ type SidebarMenuItemButtonProps = SidebarMenuItemBaseProps & {
     route?: never;
     params?: never;
 };
+
 type SidebarMenuItemGroupProps = SidebarMenuItemButtonProps;
 type SidebarMenuItemLinkProps = SidebarMenuItemBaseProps & LinkProps;
 

@@ -1,6 +1,7 @@
+import zod from "zod";
 import React, { useEffect, useCallback, useRef, useMemo } from "react";
 import camelCase from "lodash/camelCase.js";
-import { Grid, Switch, Input, Label } from "@webiny/admin-ui";
+import { Grid, Switch, Input, Textarea } from "@webiny/admin-ui";
 import { validation } from "@webiny/validation";
 import { Tags } from "@webiny/ui/Tags/index.js";
 import { useForm, Bind } from "@webiny/form";
@@ -8,12 +9,23 @@ import { useModelFieldEditor } from "~/admin/components/FieldEditor/index.js";
 import { useModelEditor } from "~/admin/hooks/index.js";
 import { useModelField } from "~/admin/hooks/index.js";
 
+const fieldIdSchema = zod
+    .string()
+    .max(100)
+    .regex(/^!?[a-zA-Z]/, {
+        message: `Must not start with a number.`
+    })
+    .regex(/^(^[a-zA-Z0-9]+)$/, {
+        message: `Must be alphanumeric string.`
+    });
+
 const GeneralTab = () => {
     const form = useForm();
     const { field, fieldPlugin } = useModelField();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const { data: contentModel } = useModelEditor();
-    const { getField } = useModelFieldEditor();
+    const editorContext = useModelFieldEditor();
+    const { getField } = editorContext;
 
     // Had problems with autofocusing the "label" field. A couple of comments on this.
     // 1. It's probably caused by the Tabs component which wraps this component.
@@ -42,23 +54,36 @@ const GeneralTab = () => {
     );
 
     const fieldIdValidator = useCallback((fieldId: string) => {
-        if (fieldId.trim().toLowerCase() !== "id") {
-            return true;
-        }
+        const result = fieldIdSchema.safeParse(fieldId);
 
-        throw new Error(`Cannot use "id" as Field ID.`);
+        if (!result.success) {
+            throw new Error(result.error.issues[0].message);
+        }
     }, []);
 
     const uniqueFieldIdValidator = useCallback((fieldId: string) => {
+        // Check the current context.
         const existingField = getField({ fieldId });
-        if (!existingField) {
-            return false;
+        if (existingField && existingField.id !== field.id) {
+            throw new Error("Please enter a unique Field ID.");
         }
 
-        if (existingField.id === field.id) {
-            return true;
+        // If we're inside a layout field (e.g. a tab), also check the parent context
+        // where hoisted fields live. A layout field context has a parent with no
+        // registered field type plugin (synthetic parent).
+        const parent = editorContext.parentEditorContext;
+        if (
+            parent &&
+            editorContext.parent &&
+            !editorContext.getFieldPlugin(editorContext.parent.type)
+        ) {
+            const parentField = parent.getField({ fieldId });
+            if (parentField && parentField.id !== field.id) {
+                throw new Error("Please enter a unique Field ID.");
+            }
         }
-        throw new Error("Please enter a unique Field ID.");
+
+        return true;
     }, []);
 
     let additionalSettings: React.ReactNode | null = null;
@@ -118,10 +143,10 @@ const GeneralTab = () => {
                 </Grid.Column>
 
                 <Grid.Column span={6}>
-                    <Bind name={"multipleValues"}>
+                    <Bind name={"list"}>
                         <Switch
-                            label={fieldPlugin.field.multipleValuesLabel}
-                            disabled={!fieldPlugin.field.allowMultipleValues}
+                            label={fieldPlugin.field.listLabel}
+                            disabled={!fieldPlugin.field.allowList}
                             data-testid={`cms.editor.field.settings.general.switch-multiplevalues`}
                         />
                     </Bind>
@@ -137,18 +162,42 @@ const GeneralTab = () => {
                 </Grid.Column>
 
                 <Grid.Column span={12}>
-                    <Bind name={"helpText"}>
+                    <Bind name={"description"}>
                         <Input
-                            label={<Label text={"Help text"} description={"(optional)"} />}
+                            label={"Description"}
+                            description={"This text will be shown below the label (optional)"}
                             size={"lg"}
-                            data-testid={`cms.editor.field.settings.general.helptext`}
+                            data-testid={`cms.editor.field.settings.general.description`}
+                        />
+                    </Bind>
+                </Grid.Column>
+                <Grid.Column span={12}>
+                    <Bind name={"note"}>
+                        <Input
+                            label={"Note"}
+                            description={"This text will be shown below the input (optional)"}
+                            size={"lg"}
+                            data-testid={`cms.editor.field.settings.general.note`}
+                        />
+                    </Bind>
+                </Grid.Column>
+                <Grid.Column span={12}>
+                    <Bind name={"help"}>
+                        <Textarea
+                            label={"Help"}
+                            description={"This text will be shown in a tooltip (optional)"}
+                            size={"lg"}
+                            data-testid={`cms.editor.field.settings.general.help`}
                         />
                     </Bind>
                 </Grid.Column>
                 <Grid.Column span={12}>
                     <Bind name={"tags"}>
                         <Tags
-                            label={<Label text={"Tags"} description={"(optional)"} />}
+                            label={"Tags"}
+                            description={
+                                "Field tags are useful for developers and are not visible in the UI (optional)"
+                            }
                             protectedTags={fieldPlugin.field.tags}
                             data-testid={`cms.editor.field.settings.general.tags`}
                         />

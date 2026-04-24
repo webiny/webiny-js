@@ -1,4 +1,5 @@
 import type { CmsIdentity } from "./identity.js";
+import type { CmsIcon } from "~/types/types.js";
 
 /**
  * @category Database model
@@ -39,17 +40,13 @@ export interface CmsGroup {
      */
     tenant: string;
     /**
-     * Locale this group belongs to.
-     */
-    locale: string;
-    /**
      * Description for the group.
      */
     description: string | null;
     /**
      * Icon for the group. In a form of "ico/ico".
      */
-    icon: string;
+    icon: CmsIcon | null;
     /**
      * CreatedBy reference object.
      */
@@ -62,10 +59,7 @@ export interface CmsGroup {
      * Date group was created or changed on.
      */
     savedOn?: string;
-    /**
-     * Which Webiny version was this record stored with.
-     */
-    webinyVersion: string;
+
     /**
      * Is group private?
      * This is meant to be used for some internal groups - will not be visible in the schema.

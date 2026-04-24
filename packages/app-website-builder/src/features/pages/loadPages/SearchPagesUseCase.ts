@@ -1,27 +1,18 @@
-import type {
-    ISearchPagesUseCase,
-    SearchPagesUseCaseParams
-} from "~/features/pages/loadPages/ISearchPagesUseCase.js";
-import type { IListPagesRepository } from "~/features/pages/loadPages/IListPagesRepository.js";
+import { SearchPagesUseCase as UseCaseAbstraction, ListPagesRepository } from "./abstractions.js";
 
-export class SearchPagesUseCase implements ISearchPagesUseCase {
-    private repository: IListPagesRepository;
+class SearchPagesUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: ListPagesRepository.Interface) {}
 
-    constructor(repository: IListPagesRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: SearchPagesUseCaseParams) {
+    async execute(params: UseCaseAbstraction.Params) {
         let where = {};
-
         if (params.folderIds.length > 0) {
-            where = {
-                wbyAco_location: {
-                    folderId_in: params.folderIds
-                }
-            };
+            where = { location: { folderId_in: params.folderIds } };
         }
-
         await this.repository.searchPages(params.query, where);
     }
 }
+
+export const SearchPagesUseCase = UseCaseAbstraction.createImplementation({
+    implementation: SearchPagesUseCaseImpl,
+    dependencies: [ListPagesRepository]
+});

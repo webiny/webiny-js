@@ -3,26 +3,24 @@ import { NavigationRenderer, useAdminConfig } from "@webiny/app-admin";
 import { Sidebar } from "@webiny/admin-ui";
 import { SidebarMenuItems } from "./SidebarMenuItems.js";
 import { SimpleLink } from "@webiny/app-admin";
-import { PinnedMenuItems } from "./PinnedMenuItems.js";
 
 export const Navigation = NavigationRenderer.createDecorator(() => {
     return function Navigation() {
-        const { menus, tenant } = useAdminConfig();
+        const { menus, title, logo } = useAdminConfig();
 
-        const title = <SimpleLink to={"/"}>{tenant.name}</SimpleLink>;
+        const titleElement = <SimpleLink to={"/"}>{title}</SimpleLink>;
         const icon = (
             <SimpleLink to={"/"}>
-                <Sidebar.Icon element={tenant.logo} label={"Webiny"} />
+                <Sidebar.Icon element={logo.squareLogo} label={"Webiny"} />
             </SimpleLink>
         );
 
         return (
             <Sidebar
-                title={title}
+                title={titleElement}
                 icon={icon}
                 footer={<SidebarMenuItems menus={menus} where={{ tags: ["footer"] }} />}
             >
-                <PinnedMenuItems menuItems={menus} />
                 <SidebarMenuItems menus={menus} />
             </Sidebar>
         );

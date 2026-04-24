@@ -21,7 +21,9 @@ const convertDefaultValue = (field: CmsModelField, value: any): string | number 
 
 export const useDefaultValues = (model: CmsModel) => {
     return useMemo(() => {
-        const values: Partial<CmsContentEntry> = {};
+        const entry: Partial<CmsContentEntry> & Required<Pick<CmsContentEntry, "values">> = {
+            values: {}
+        };
         /**
          * Assign the default values:
          * * check the settings.defaultValue
@@ -31,13 +33,13 @@ export const useDefaultValues = (model: CmsModel) => {
             /**
              * When checking if defaultValue is set in settings, we do the undefined check because it can be null, 0, empty string, false, etc...
              */
-            const { settings, multipleValues = false } = field;
+            const { settings, list = false } = field;
             if (settings && settings.defaultValue !== undefined) {
                 /**
                  * Special type of field is the boolean one.
                  * We MUST set true/false for default value.
                  */
-                values[field.fieldId] = convertDefaultValue(field, settings.defaultValue);
+                entry.values[field.fieldId] = convertDefaultValue(field, settings.defaultValue);
                 continue;
             }
             /**
@@ -54,24 +56,24 @@ export const useDefaultValues = (model: CmsModel) => {
             /**
              * When field is not a multiple values one, we find the first possible default selected value and set it as field value.
              */
-            if (!multipleValues) {
+            if (!list) {
                 const selectedValue = predefinedValues.values.find(({ selected }) => {
                     return !!selected;
                 });
                 if (selectedValue) {
-                    values[field.fieldId] = convertDefaultValue(field, selectedValue.value);
+                    entry.values[field.fieldId] = convertDefaultValue(field, selectedValue.value);
                 }
                 continue;
             }
             /**
              *
              */
-            values[field.fieldId] = predefinedValues.values
+            entry.values[field.fieldId] = predefinedValues.values
                 .filter(({ selected }) => !!selected)
                 .map(({ value }) => {
                     return convertDefaultValue(field, value);
                 });
         }
-        return values;
+        return entry;
     }, [model.modelId]);
 };

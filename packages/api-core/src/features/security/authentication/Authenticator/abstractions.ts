@@ -5,6 +5,7 @@ export interface IAuthenticator {
     authenticate(token: string): Promise<IdentityData | null>;
 }
 
+/** Convert an authentication token into identity data. */
 export const Authenticator = createAbstraction<IAuthenticator>("Authenticator");
 
 export namespace Authenticator {

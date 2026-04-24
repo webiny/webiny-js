@@ -5,9 +5,7 @@
     { "path": "../admin-ui" },
     { "path": "../app" },
     { "path": "../app-admin" },
-    { "path": "../app-security" },
     { "path": "../form" },
-    { "path": "../plugins" },
     { "path": "../ui" },
     { "path": "../validation" }
   ],
@@ -20,27 +18,16 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/admin-ui/*": ["../admin-ui/src/*"],
       "@webiny/admin-ui": ["../admin-ui/src"],
-      "@webiny/app/features/envConfig": ["../app/src/features/envConfig/index.js"],
-      "@webiny/app/features/localStorage": ["../app/src/features/localStorage/index.js"],
-      "@webiny/app/features/router": ["../app/src/features/router/index.js"],
-      "@webiny/app/features/graphqlClient": ["../app/src/features/graphqlClient/index.js"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
-      "@webiny/app-admin/features/wcp": ["../app-admin/src/features/wcp/index.js"],
-      "@webiny/app-admin/features/tenancy": ["../app-admin/src/features/tenancy/index.js"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/app-security/*": ["../app-security/src/*"],
-      "@webiny/app-security": ["../app-security/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

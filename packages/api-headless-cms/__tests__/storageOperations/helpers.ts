@@ -10,12 +10,9 @@ import { createIdentifier, generateAlphaNumericLowerCaseId, mdbid } from "@webin
 import crypto from "crypto";
 import type { PluginsContainer } from "@webiny/plugins";
 
-const webinyVersion = "0.0.0";
-
 const baseGroup = new CmsGroupPlugin({
     name: "Base group",
     tenant: "root",
-    locale: "en-US",
     id: "group",
     slug: "group",
     description: "",
@@ -35,7 +32,7 @@ const personModelFields: Record<string, CmsModelField> = {
         storageId: `text@${nameId}`,
         fieldId: "name",
         label: "Name",
-        multipleValues: false,
+        list: false,
         type: "text"
     },
     dateOfBirth: {
@@ -43,7 +40,7 @@ const personModelFields: Record<string, CmsModelField> = {
         storageId: `datetime@${dateOfBirthId}`,
         fieldId: "dateOfBirth",
         label: "Date Of Birth",
-        multipleValues: false,
+        list: false,
         type: "datetime",
         settings: {
             type: "date"
@@ -54,7 +51,7 @@ const personModelFields: Record<string, CmsModelField> = {
         storageId: `number@${childrenId}`,
         fieldId: "children",
         label: "Children",
-        multipleValues: false,
+        list: false,
         type: "number"
     },
     married: {
@@ -62,7 +59,7 @@ const personModelFields: Record<string, CmsModelField> = {
         storageId: "married",
         fieldId: `boolean@${marriedId}`,
         label: "Married",
-        multipleValues: false,
+        list: false,
         type: "boolean"
     },
     biography: {
@@ -70,7 +67,7 @@ const personModelFields: Record<string, CmsModelField> = {
         storageId: "biography",
         fieldId: `text@${biographyId}`,
         label: "Biography",
-        multipleValues: false,
+        list: false,
         type: "text"
     }
 };
@@ -85,15 +82,13 @@ export const createPersonModel = (): CmsModel => {
             name: baseGroup.contentModelGroup.name
         },
         modelId: "personEntriesModel",
-        locale: "en-US",
         tenant: "root",
         titleFieldId: personModelFields.name.id,
         fields: Object.values(personModelFields),
         layout: Object.values(personModelFields).map(field => {
             return [field.id];
         }),
-        description: "",
-        webinyVersion
+        description: ""
     };
 };
 
@@ -112,7 +107,7 @@ interface CreatePersonEntriesParams {
     amount: number;
     storageOperations: HeadlessCmsStorageOperations;
     maxRevisions?: number;
-    plugins: PluginsContainer;
+    plugins?: PluginsContainer;
 }
 
 export interface PersonEntriesResult {
@@ -145,9 +140,7 @@ export const createPersonEntries = async (
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
             modelId: personModel.modelId,
-            locale: personModel.locale,
             tenant: personModel.tenant,
-            webinyVersion: personModel.webinyVersion,
             locked: false,
             status: "draft",
             values: {
@@ -181,9 +174,7 @@ export const createPersonEntries = async (
                 createdOn: new Date().toISOString(),
                 savedOn: new Date().toISOString(),
                 modelId: personModel.modelId,
-                locale: personModel.locale,
                 tenant: personModel.tenant,
-                webinyVersion: personModel.webinyVersion,
                 locked: false,
                 status: "draft",
                 values: {

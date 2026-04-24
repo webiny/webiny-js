@@ -39,46 +39,47 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
 
         registerDefaultPlugins(app.webiny);
 
-        app.setErrorHandler<WebinyError>(async (error, _, reply) => {
-            app.__webiny_raw_result = {
-                error: {
-                    message: error.message,
-                    code: error.code,
-                    data: error.data
-                },
-                statusCode: 200
-            };
-            return reply.send({});
+        await app.register(async wsApp => {
+            wsApp.setErrorHandler<WebinyError>(async (error, _, reply) => {
+                app.__webiny_raw_result = {
+                    error: {
+                        message: error.message,
+                        code: error.code,
+                        data: error.data
+                    },
+                    statusCode: 200
+                };
+                return reply.send({});
+            });
+
+            wsApp.post(url, async (_, reply) => {
+                const { validator, response } = params;
+                const context = app.webiny as Context;
+                const handler = new WebsocketsRunner(
+                    context,
+                    context.websockets.registry,
+                    validator || new WebsocketsEventValidator(),
+                    response || new WebsocketsResponse()
+                );
+
+                const result = await handler.run(event);
+
+                app.__webiny_raw_result = {
+                    statusCode: result.statusCode,
+                    headers: {
+                        "sec-websocket-protocol": "webiny-ws-v1"
+                    }
+                };
+
+                return reply.send();
+            });
         });
 
-        app.post(url, async (_, reply) => {
-            const { validator, response } = params;
-            const context = app.webiny as Context;
-            const handler = new WebsocketsRunner(
-                context,
-                context.websockets.registry,
-                validator || new WebsocketsEventValidator(),
-                response || new WebsocketsResponse()
-            );
-
-            const result = await handler.run(event);
-
-            app.__webiny_raw_result = {
-                statusCode: result.statusCode,
-                headers: {
-                    "sec-websocket-protocol": "webiny-ws-v1"
-                }
-            };
-
-            return reply.send();
-        });
-
-        const { tenant, locale, endpoint, token } = getEventValues(event);
+        const { tenant, endpoint, token } = getEventValues(event);
 
         const headers = {
             Authorization: `Bearer ${token}`,
             ["x-tenant"]: tenant,
-            ["x-webiny-cms-locale"]: locale,
             ["x-webiny-cms-endpoint"]: endpoint,
             ...event.headers
         };

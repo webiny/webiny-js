@@ -2,10 +2,10 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { ApiKey, UpdateApiKeyInput } from "../shared/types.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
-import { NotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
+import { ApiKeyNotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
 
 export interface IUpdateApiKeyErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: ApiKeyNotAuthorizedError;
     validation: ApiKeyValidationError;
 }
 
@@ -15,9 +15,10 @@ export interface IUpdateApiKey {
     execute(id: string, input: UpdateApiKeyInput): Promise<Result<ApiKey, UpdateApiKeyError>>;
 }
 
-export const UpdateApiKey = createAbstraction<IUpdateApiKey>("UpdateApiKey");
+/** Update an existing API key. */
+export const UpdateApiKeyUseCase = createAbstraction<IUpdateApiKey>("UpdateApiKeyUseCase");
 
-export namespace UpdateApiKey {
+export namespace UpdateApiKeyUseCase {
     export type Interface = IUpdateApiKey;
     export type Error = UpdateApiKeyError;
 }

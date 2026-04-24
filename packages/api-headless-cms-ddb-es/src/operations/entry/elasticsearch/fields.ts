@@ -1,28 +1,18 @@
 import WebinyError from "@webiny/error";
-import type { PluginsContainer } from "@webiny/plugins";
-import type {
-    CmsModel,
-    CmsModelField,
-    CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types/index.js";
-import type { CmsModelFieldToElasticsearchPlugin } from "~/types.js";
+import type { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import type { ModelFieldParent, ModelFields } from "./types.js";
-import { CmsElasticsearchModelFieldPlugin } from "~/plugins/index.js";
 import {
     ENTRY_META_FIELDS,
     isDateTimeEntryMetaField,
     isIdentityEntryMetaField
 } from "@webiny/api-headless-cms/constants.js";
-
-type PartialCmsModelField = Partial<CmsModelField> &
-    Pick<CmsModelField, "storageId" | "fieldId" | "type">;
-const createSystemField = (field: PartialCmsModelField): CmsModelField => {
-    return {
-        ...field,
-        id: field.fieldId,
-        label: field.fieldId
-    };
-};
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
+import { liveFields } from "./fields/live.js";
+import { createSystemField } from "./fields/createSystemField.js";
+import { stateFields } from "./fields/state.js";
+import { locationFields } from "./fields/location.js";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/features/graphql/index.js";
+import { CmsEntryOpenSearchFieldIndexRegistry } from "~/features/CmsEntryOpenSearchFieldIndex/index.js";
 
 const createSystemFields = (): ModelFields => {
     const onMetaFields = ENTRY_META_FIELDS.filter(isDateTimeEntryMetaField).reduce(
@@ -103,49 +93,7 @@ const createSystemFields = (): ModelFields => {
         ...onMetaFields,
         ...byMetaFields,
 
-        wbyAco_location: {
-            type: "object",
-            systemField: true,
-            searchable: true,
-            sortable: true,
-            field: createSystemField({
-                storageId: "location",
-                fieldId: "wbyAco_location",
-                type: "object",
-                settings: {
-                    fields: [
-                        {
-                            id: "folderId",
-                            fieldId: "folderId",
-                            storageId: "folderId",
-                            type: "text",
-                            label: "Folder ID"
-                        }
-                    ]
-                }
-            }),
-            parents: []
-        },
-        "wbyAco_location.folderId": {
-            type: "text",
-            systemField: true,
-            searchable: true,
-            sortable: true,
-            field: createSystemField({
-                id: "folderId",
-                fieldId: "folderId",
-                storageId: "folderId",
-                type: "text",
-                label: "Folder ID"
-            }),
-            parents: [
-                {
-                    fieldId: "wbyAco_location",
-                    type: "object",
-                    storageId: "location"
-                }
-            ]
-        },
+        ...locationFields,
         version: {
             type: "number",
             unmappedType: undefined,
@@ -202,103 +150,8 @@ const createSystemFields = (): ModelFields => {
             }),
             parents: []
         },
-        state: {
-            type: "object",
-            systemField: true,
-            searchable: true,
-            sortable: false,
-            field: createSystemField({
-                storageId: "object@state",
-                fieldId: "state",
-                type: "object",
-                settings: {
-                    fields: [
-                        {
-                            id: "stepId",
-                            fieldId: "stepId",
-                            storageId: "text@stepId",
-                            type: "text",
-                            label: "Step ID"
-                        },
-                        {
-                            id: "stepName",
-                            fieldId: "stepName",
-                            storageId: "text@stepName",
-                            type: "text",
-                            label: "Step Name"
-                        },
-                        {
-                            id: "state",
-                            fieldId: "state",
-                            storageId: "text@state",
-                            type: "text",
-                            label: "State"
-                        }
-                    ]
-                }
-            }),
-            parents: []
-        },
-        "state.stepId": {
-            type: "text",
-            systemField: true,
-            searchable: true,
-            sortable: false,
-            parents: [
-                {
-                    fieldId: "state",
-                    type: "object",
-                    storageId: "object@state"
-                }
-            ],
-            field: createSystemField({
-                id: "stepId",
-                fieldId: "stepId",
-                storageId: "text@stepId",
-                type: "text",
-                label: "Step ID"
-            })
-        },
-        "state.stepName": {
-            type: "text",
-            systemField: true,
-            searchable: true,
-            sortable: false,
-            parents: [
-                {
-                    fieldId: "state",
-                    type: "object",
-                    storageId: "object@state"
-                }
-            ],
-            field: createSystemField({
-                id: "stepName",
-                fieldId: "stepName",
-                storageId: "text@stepName",
-                type: "text",
-                label: "Step Name"
-            })
-        },
-        "state.state": {
-            type: "text",
-            systemField: true,
-            searchable: true,
-            sortable: false,
-            parents: [
-                {
-                    fieldId: "state",
-                    type: "object",
-                    storageId: "object@state"
-                }
-            ],
-            field: createSystemField({
-                id: "state",
-                fieldId: "state",
-                storageId: "text@state",
-                type: "text",
-                label: "State"
-            })
-        }
+        ...stateFields,
+        ...liveFields
     };
 };
 
@@ -310,50 +163,12 @@ interface FieldTypePlugin {
     unmappedType?: (field: Pick<CmsModelField, "fieldId" | "type">) => string | undefined;
     searchable: boolean;
     sortable: boolean;
-    fullTextSearch?: boolean;
+    isFullTextSearchable?: boolean;
 }
 
 interface FieldTypePlugins {
     [key: string]: FieldTypePlugin;
 }
-
-interface BuildCustomFieldsParams {
-    fields: CmsElasticsearchModelFieldPlugin[];
-    fieldTypePlugins: FieldTypePlugins;
-}
-
-const buildCustomFields = (params: BuildCustomFieldsParams) => {
-    const { fields, fieldTypePlugins } = params;
-
-    return fields.reduce<ModelFields>((collection, field) => {
-        const typePlugin = fieldTypePlugins[field.fieldType];
-        if (!typePlugin) {
-            return collection;
-        }
-        let unmappedType: string | undefined = undefined;
-        if (typePlugin.unmappedType) {
-            unmappedType = typePlugin.unmappedType(field);
-        }
-
-        collection[field.fieldId] = {
-            type: field.fieldType,
-            field: createSystemField({
-                storageId: field.fieldId,
-                fieldId: field.fieldId,
-                type: field.fieldType
-            }),
-            unmappedType,
-            fullTextSearch: field.searchable ? typePlugin.fullTextSearch : false,
-            searchable: field.searchable || typePlugin.searchable,
-            sortable: field.sortable || typePlugin.sortable,
-            systemField: false,
-            path: field.path,
-            parents: []
-        };
-
-        return collection;
-    }, {});
-};
 
 interface BuildParams {
     plugins: FieldTypePlugins;
@@ -365,12 +180,13 @@ const buildFieldsList = (params: BuildParams): ModelFields => {
     const { plugins, fields, parents } = params;
 
     return fields.reduce<ModelFields>((result, field) => {
-        const plugin = plugins[field.type];
+        const fieldType = getBaseFieldType(field);
+        const plugin = plugins[fieldType];
         if (!plugin) {
             throw new WebinyError(`There is no plugin for field type "${field.type}".`);
         }
 
-        const { searchable, sortable, unmappedType, fullTextSearch } = plugin;
+        const { searchable, sortable, unmappedType, isFullTextSearchable: fullTextSearch } = plugin;
         /**
          * If a field has child fields, go through them and add them to a result.
          */
@@ -387,7 +203,7 @@ const buildFieldsList = (params: BuildParams): ModelFields => {
                     {
                         fieldId: field.fieldId,
                         storageId: field.storageId,
-                        type: field.type
+                        type: fieldType
                     }
                 ]
             });
@@ -397,7 +213,7 @@ const buildFieldsList = (params: BuildParams): ModelFields => {
         const identifier = [...parents.map(p => p.fieldId), field.fieldId].join(".");
 
         result[identifier] = {
-            type: field.type,
+            type: fieldType,
             parents,
             searchable,
             sortable,
@@ -411,56 +227,55 @@ const buildFieldsList = (params: BuildParams): ModelFields => {
     }, {});
 };
 
-interface Params {
-    plugins: PluginsContainer;
+interface ICreateModelFieldsParams {
     model: CmsModel;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    fieldIndexRegistry: CmsEntryOpenSearchFieldIndexRegistry.Interface;
 }
 
-export const createModelFields = ({ plugins, model }: Params) => {
+export const createModelFields = ({
+    model,
+    fieldRegistry,
+    fieldIndexRegistry
+}: ICreateModelFieldsParams) => {
     const fields = model.fields;
-    const fieldDefinitionPlugins = plugins
-        .byType<CmsElasticsearchModelFieldPlugin>(CmsElasticsearchModelFieldPlugin.type)
-        .filter(plugin => {
-            return plugin.canBeApplied(model.modelId);
-        });
     /**
-     * Collect all unmappedType from elastic plugins.
+     * Collect all unmappedType from field index registry.
      */
-    const unmappedTypes = plugins
-        .byType<CmsModelFieldToElasticsearchPlugin>("cms-model-field-to-elastic-search")
-        .reduce<UnmappedFieldTypes>((acc, plugin) => {
-            if (!plugin.unmappedType) {
+    const unmappedTypes = fieldIndexRegistry
+        .getAll()
+        .reduce<UnmappedFieldTypes>((acc, fieldIndex) => {
+            if (!fieldIndex.unmappedType) {
                 return acc;
             }
-            acc[plugin.fieldType] = plugin.unmappedType;
+            acc[fieldIndex.fieldType] = fieldIndex.unmappedType;
             return acc;
         }, {});
     /**
      * Collect all field types from the plugins.
      */
-    const fieldTypePlugins = plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce<FieldTypePlugins>((types, plugin) => {
-            const { fieldType, fullTextSearch } = plugin;
-            types[fieldType] = {
-                unmappedType: unmappedTypes[fieldType],
-                searchable: plugin.isSearchable,
-                sortable: plugin.isSortable,
-                fullTextSearch
-            };
-            return types;
-        }, {});
+    const fieldTypePlugins = fieldRegistry.getAll().reduce<FieldTypePlugins>((types, field) => {
+        types[field.fieldType] = {
+            unmappedType: unmappedTypes[field.fieldType],
+            searchable: field.isSearchable,
+            sortable: field.isSortable,
+            isFullTextSearchable: field.isFullTextSearchable
+        };
+        return types;
+    }, {});
 
     return {
         ...createSystemFields(),
-        ...buildCustomFields({
-            fields: fieldDefinitionPlugins,
-            fieldTypePlugins
-        }),
         ...buildFieldsList({
             fields,
             plugins: fieldTypePlugins,
-            parents: []
+            parents: [
+                {
+                    fieldId: "values",
+                    type: "object",
+                    storageId: "values"
+                }
+            ]
         })
     };
 };

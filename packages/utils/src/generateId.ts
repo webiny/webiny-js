@@ -1,11 +1,5 @@
-import { nanoid, customAlphabet } from "nanoid";
-/**
- * Package nanoid-dictionary is missing types
- */
-// @ts-expect-error
-import nanoIdDictionary from "nanoid-dictionary";
-
-const { lowercase, uppercase, alphanumeric, numbers } = nanoIdDictionary;
+import { customAlphabet, nanoid } from "nanoid";
+import { alphanumeric, lowercase, numbers, uppercase } from "nanoid-dictionary";
 
 const DEFAULT_SIZE = 21;
 

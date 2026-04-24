@@ -25,7 +25,7 @@ export const createCarsModel = () => {
                     fieldId: "carsVehicle",
                     type: "text",
                     label: "Vehicle",
-                    helpText: "Make Model Year and Trim",
+                    help: "Make Model Year and Trim",
                     renderer: { name: "text-input" },
                     validation: [
                         {
@@ -39,7 +39,7 @@ export const createCarsModel = () => {
                     fieldId: "vehicleNmb",
                     type: "number",
                     label: "VehicleNumber",
-                    helpText: "A unique vehicle number",
+                    help: "A unique vehicle number",
                     renderer: { name: "text-input" },
                     validation: [
                         {
@@ -403,7 +403,7 @@ export const createCarsModel = () => {
                     fieldId: "features",
                     type: "object",
                     label: "Features",
-                    multipleValues: false,
+                    list: false,
                     renderer: { name: "object" },
                     settings: {
                         layout: [
@@ -427,7 +427,7 @@ export const createCarsModel = () => {
                                 fieldId: "exteriorCategory",
                                 type: "object",
                                 label: "Exterior",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -436,7 +436,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -448,7 +448,7 @@ export const createCarsModel = () => {
                                 fieldId: "interiorCategory",
                                 type: "object",
                                 label: "Interior",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -457,7 +457,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -469,7 +469,7 @@ export const createCarsModel = () => {
                                 fieldId: "comfortAndConvenienceCategory",
                                 type: "object",
                                 label: "Comfort & Convenience",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -478,7 +478,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -490,7 +490,7 @@ export const createCarsModel = () => {
                                 fieldId: "dimensionsCategory",
                                 type: "object",
                                 label: "Dimensions",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -499,7 +499,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -511,7 +511,7 @@ export const createCarsModel = () => {
                                 fieldId: "engineCategory",
                                 type: "object",
                                 label: "Engine",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -520,7 +520,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -532,7 +532,7 @@ export const createCarsModel = () => {
                                 fieldId: "fuelEconomyCategory",
                                 type: "object",
                                 label: "Fuel Economy",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -541,7 +541,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -553,7 +553,7 @@ export const createCarsModel = () => {
                                 fieldId: "hybridAndElectricCategory",
                                 type: "object",
                                 label: "Hybrid & Electric",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -562,7 +562,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -574,7 +574,7 @@ export const createCarsModel = () => {
                                 fieldId: "infotainmentCategory",
                                 type: "object",
                                 label: "Infotainment",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -583,7 +583,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -595,7 +595,7 @@ export const createCarsModel = () => {
                                 fieldId: "pricingCategory",
                                 type: "object",
                                 label: "Pricing",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -604,7 +604,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -616,7 +616,7 @@ export const createCarsModel = () => {
                                 fieldId: "safetyAndDriverAssistCategory",
                                 type: "object",
                                 label: "Safety & Driver Assist",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -625,7 +625,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -637,7 +637,7 @@ export const createCarsModel = () => {
                                 fieldId: "suspensionCategory",
                                 type: "object",
                                 label: "Suspension",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -646,7 +646,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -658,7 +658,7 @@ export const createCarsModel = () => {
                                 fieldId: "transmissionCategory",
                                 type: "object",
                                 label: "Transmission",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -667,7 +667,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -679,7 +679,7 @@ export const createCarsModel = () => {
                                 fieldId: "warrantyCategory",
                                 type: "object",
                                 label: "Warranty",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "object" },
                                 settings: {
                                     layout: ["nameAndAvailability"],
@@ -688,7 +688,7 @@ export const createCarsModel = () => {
                                             id: "nameAndAvailability",
                                             fieldId: "nameAndAvailability",
                                             type: "text",
-                                            multipleValues: true,
+                                            list: true,
                                             label: "Name : Availability",
                                             renderer: { name: "text-inputs" }
                                         }
@@ -725,13 +725,13 @@ export const createCarsModel = () => {
                                 fieldId: "trimName",
                                 type: "text",
                                 label: "TrimName",
-                                multipleValues: false,
+                                list: false,
                                 renderer: { name: "text-input" }
                             },
                             {
                                 id: "bodyStyle",
                                 fieldId: "bodyStyle",
-                                multipleValues: false,
+                                list: false,
                                 type: "text",
                                 label: "BodyStyle",
                                 renderer: { name: "text-input" }
@@ -739,7 +739,7 @@ export const createCarsModel = () => {
                             {
                                 id: "driveTrain",
                                 fieldId: "driveTrain",
-                                multipleValues: false,
+                                list: false,
                                 type: "text",
                                 label: "Drivetrain",
                                 renderer: { name: "text-input" }
@@ -747,7 +747,7 @@ export const createCarsModel = () => {
                             {
                                 id: "seatingCapacity",
                                 fieldId: "seatingCapacity",
-                                multipleValues: false,
+                                list: false,
                                 type: "text",
                                 label: "SeatingCapacity",
                                 renderer: { name: "text-input" }
@@ -755,7 +755,7 @@ export const createCarsModel = () => {
                             {
                                 id: "specWidth",
                                 fieldId: "specWidth",
-                                multipleValues: false,
+                                list: false,
                                 type: "text",
                                 label: "Width",
                                 renderer: { name: "text-input" }
@@ -763,7 +763,7 @@ export const createCarsModel = () => {
                             {
                                 id: "specLength",
                                 fieldId: "specLength",
-                                multipleValues: false,
+                                list: false,
                                 type: "text",
                                 label: "Length",
                                 renderer: { name: "text-input" }
@@ -771,7 +771,7 @@ export const createCarsModel = () => {
                             {
                                 id: "specHeight",
                                 fieldId: "specHeight",
-                                multipleValues: false,
+                                list: false,
                                 type: "text",
                                 label: "Height",
                                 renderer: { name: "text-input" }
@@ -780,7 +780,7 @@ export const createCarsModel = () => {
                                 id: "specWheelase",
                                 fieldId: "specWheelbase",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "Wheelbase",
                                 renderer: { name: "text-input" }
                             },
@@ -788,7 +788,7 @@ export const createCarsModel = () => {
                                 id: "frontHeadroom",
                                 fieldId: "frontHeadroom",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "FrontHeadroom",
                                 renderer: { name: "text-input" }
                             },
@@ -796,7 +796,7 @@ export const createCarsModel = () => {
                                 id: "rearHeadroom",
                                 fieldId: "rearHeadroom",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "RearHeadroom",
                                 renderer: { name: "text-input" }
                             },
@@ -804,7 +804,7 @@ export const createCarsModel = () => {
                                 id: "frontShoulderRoom",
                                 fieldId: "frontShoulderRoom",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "FrontShoulderRoom",
                                 renderer: { name: "text-input" }
                             },
@@ -812,7 +812,7 @@ export const createCarsModel = () => {
                                 id: "rearShoulderRoom",
                                 fieldId: "rearShoulderRoom",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "RearShoulderRoom",
                                 renderer: { name: "text-input" }
                             },
@@ -820,7 +820,7 @@ export const createCarsModel = () => {
                                 id: "frontLegroom",
                                 fieldId: "frontLegroom",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "FrontLegroom",
                                 renderer: { name: "text-input" }
                             },
@@ -828,7 +828,7 @@ export const createCarsModel = () => {
                                 id: "rearLegroom",
                                 fieldId: "rearLegroom",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "RearLegroom",
                                 renderer: { name: "text-input" }
                             },
@@ -836,7 +836,7 @@ export const createCarsModel = () => {
                                 id: "groundClearance",
                                 fieldId: "groundClearance",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "GroundClearance",
                                 renderer: { name: "text-input" }
                             },
@@ -844,7 +844,7 @@ export const createCarsModel = () => {
                                 id: "curbWeight",
                                 fieldId: "curbWeight",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "CurbWeight",
                                 renderer: { name: "text-input" }
                             },
@@ -852,7 +852,7 @@ export const createCarsModel = () => {
                                 id: "cargoCapacity",
                                 fieldId: "cargoCapacity",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "CargoCapacity",
                                 renderer: { name: "text-input" }
                             },
@@ -860,7 +860,7 @@ export const createCarsModel = () => {
                                 id: "specGvwr",
                                 fieldId: "specGvwr",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "GVWR",
                                 renderer: { name: "text-input" }
                             },
@@ -868,7 +868,7 @@ export const createCarsModel = () => {
                                 id: "payloadCapacity",
                                 fieldId: "payloadCapacity",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "PayloadCapacity",
                                 renderer: { name: "text-input" }
                             },
@@ -876,7 +876,7 @@ export const createCarsModel = () => {
                                 id: "towingCapacity",
                                 fieldId: "towingCapacity",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "TowingCapacity",
                                 renderer: { name: "text-input" }
                             },
@@ -884,7 +884,7 @@ export const createCarsModel = () => {
                                 id: "engineName",
                                 fieldId: "engineName",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "EngineName",
                                 renderer: { name: "text-input" }
                             },
@@ -892,7 +892,7 @@ export const createCarsModel = () => {
                                 id: "specHorsepower",
                                 fieldId: "specHorsepower",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "Horsepower",
                                 renderer: { name: "text-input" }
                             },
@@ -900,14 +900,14 @@ export const createCarsModel = () => {
                                 id: "specTorque",
                                 fieldId: "specTorque",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "Torque",
                                 renderer: { name: "text-input" }
                             },
                             {
                                 id: "fuelType",
                                 fieldId: "fuelType",
-                                multipleValues: false,
+                                list: false,
                                 type: "text",
                                 label: "FuelType",
                                 renderer: { name: "text-input" }
@@ -916,7 +916,7 @@ export const createCarsModel = () => {
                                 id: "stdEpaMpg",
                                 fieldId: "stdEpaMpg",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "StdEpaMpg",
                                 renderer: { name: "text-input" }
                             },
@@ -924,7 +924,7 @@ export const createCarsModel = () => {
                                 id: "transmissionName",
                                 fieldId: "transmissionName",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "TransmissionName",
                                 renderer: { name: "text-input" }
                             },
@@ -932,7 +932,7 @@ export const createCarsModel = () => {
                                 id: "transmissionType",
                                 fieldId: "transmissionType",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "TransmissionType",
                                 renderer: { name: "text-input" }
                             },
@@ -940,7 +940,7 @@ export const createCarsModel = () => {
                                 id: "drivingRange",
                                 fieldId: "drivingRange",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "DrivingRange",
                                 renderer: { name: "text-input" }
                             },
@@ -948,7 +948,7 @@ export const createCarsModel = () => {
                                 id: "cylinderConfiguration",
                                 fieldId: "cylinderConfiguration",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "CylinderConfiguration",
                                 renderer: { name: "text-input" }
                             },
@@ -956,7 +956,7 @@ export const createCarsModel = () => {
                                 id: "numberOfCylinders",
                                 fieldId: "numberOfCylinders",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "NumberOfCylinders",
                                 renderer: { name: "text-input" }
                             },
@@ -964,7 +964,7 @@ export const createCarsModel = () => {
                                 id: "specTonnage",
                                 fieldId: "specTonnage",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "Tonnage",
                                 renderer: { name: "text-input" }
                             },
@@ -972,7 +972,7 @@ export const createCarsModel = () => {
                                 id: "stdMpgWithUnits",
                                 fieldId: "stdMpgWithUnits",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "StdMpg With Units",
                                 renderer: { name: "text-input" }
                             },
@@ -980,7 +980,7 @@ export const createCarsModel = () => {
                                 id: "heroLabel1",
                                 fieldId: "heroLabel1",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "Hero Label1",
                                 renderer: { name: "text-input" }
                             },
@@ -988,7 +988,7 @@ export const createCarsModel = () => {
                                 id: "heroValue1",
                                 fieldId: "heroValue1",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "Hero Value1",
                                 renderer: { name: "text-input" }
                             },
@@ -996,7 +996,7 @@ export const createCarsModel = () => {
                                 id: "vehicleClass",
                                 fieldId: "vehicleClass",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "VehicleClass",
                                 renderer: { name: "text-input" }
                             },
@@ -1004,7 +1004,7 @@ export const createCarsModel = () => {
                                 id: "engineType",
                                 fieldId: "engineType",
                                 type: "text",
-                                multipleValues: false,
+                                list: false,
                                 label: "Engine Type",
                                 renderer: { name: "text-input" }
                             }

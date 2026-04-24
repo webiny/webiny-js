@@ -1,15 +1,13 @@
 import set from "lodash/set.js";
 import type { Resolvers } from "@webiny/handler-graphql/types.js";
 import WebinyError from "@webiny/error";
-import type {
-    ApiEndpoint,
-    CmsContext,
-    CmsFieldTypePlugins,
-    CmsModel,
-    CmsModelField
-} from "~/types/index.js";
+import type { ApiEndpoint, CmsContext, CmsModel, CmsModelField } from "~/types/index.js";
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
+import type {
+    CmsModelFieldToGraphQL,
+    CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
 
 interface CreateFieldResolvers {
     graphQLType: string;
@@ -22,7 +20,7 @@ interface CreateFieldResolversFactoryParams {
     endpointType: ApiEndpoint;
     models: CmsModel[];
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 /**
@@ -30,15 +28,15 @@ interface CreateFieldResolversFactoryParams {
  * This way they will always be in the function scope, and we can only pass "fields".
  */
 export const createFieldResolversFactory = (factoryParams: CreateFieldResolversFactoryParams) => {
-    const { endpointType, models, model, fieldTypePlugins } = factoryParams;
+    const { endpointType, models, model, fieldRegistry } = factoryParams;
     return function createFieldResolvers(params: CreateFieldResolvers) {
         const { graphQLType, fields, isRoot = false, extraResolvers = {} } = params;
 
-        const fieldResolvers = { ...extraResolvers };
+        const fieldResolvers: Resolvers<any> = {};
         const typeResolvers = {};
 
         for (const field of fields) {
-            const plugin = fieldTypePlugins[getBaseFieldType(field)];
+            const plugin = fieldRegistry.get(getBaseFieldType(field));
             if (!plugin) {
                 continue;
             }
@@ -53,11 +51,11 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                         field
                     }
                 );
-            } else if (field.settings?.showInApi === false) {
-                return null;
             }
 
-            const createResolver = plugin[endpointType]?.createResolver || null;
+            const api: CmsModelFieldToGraphQL.ReadApi | CmsModelFieldToGraphQL.ManageApi =
+                endpointType === "manage" ? plugin.manage : plugin.read;
+            const createResolver = api?.createResolver || null;
 
             let resolver: any;
             const fieldResolver = createResolver
@@ -67,7 +65,7 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                       model,
                       field,
                       createFieldResolvers,
-                      fieldTypePlugins
+                      fieldRegistry
                   })
                 : null;
 
@@ -85,15 +83,29 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
             }
 
             const { fieldId } = field;
+            /**
+             * Figure out a better way to extract value from parent.
+             * // TODO fix
+             */
+            const getValue = (parent: any) => {
+                if (!parent?.values || !parent?.values[fieldId]) {
+                    return {
+                        isRoot: false,
+                        value: parent?.[fieldId]
+                    };
+                }
+                return {
+                    isRoot: true,
+                    value: parent.values[fieldId]
+                };
+            };
+
             fieldResolvers[fieldId] = async (parent, args, context: CmsContext, info) => {
                 /**
                  * This is required because due to ref field can be requested without the populated data.
                  * At that point there is no .values  no fieldId property on the parent
                  */
-                const value =
-                    parent?.values?.[fieldId] === undefined
-                        ? parent?.[fieldId]
-                        : parent?.values?.[fieldId];
+                const { isRoot: valueIsRoot, value } = getValue(parent);
                 if (value === undefined) {
                     return undefined;
                 }
@@ -102,19 +114,45 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
                     context,
                     model,
                     field,
-                    value: isRoot ? parent.values?.[fieldId] : parent[fieldId]
+                    value
                 });
 
-                set(isRoot ? parent.values : parent, fieldId, transformedValue);
+                set(
+                    valueIsRoot && parent.values ? parent.values : parent,
+                    fieldId,
+                    transformedValue
+                );
 
                 if (!resolver) {
-                    return isRoot ? parent.values[fieldId] : parent[fieldId];
+                    return valueIsRoot && parent.values[fieldId]
+                        ? parent.values[fieldId]
+                        : parent[fieldId];
                 }
 
-                return await resolver(isRoot ? parent.values : parent, args, context, info);
+                return await resolver(valueIsRoot ? parent.values : parent, args, context, info);
             };
         }
 
-        return { [graphQLType]: fieldResolvers, ...typeResolvers };
+        /**
+         * Difference between root and non-root (object and dz, etc... fields) is that root has a values wrapper.
+         * Subtypes must not have it.
+         */
+        if (!isRoot) {
+            return {
+                [graphQLType]: {
+                    ...fieldResolvers,
+                    ...extraResolvers
+                },
+                ...typeResolvers
+            };
+        }
+
+        return {
+            [graphQLType]: {
+                ...extraResolvers
+            },
+            [`${graphQLType}Values`]: fieldResolvers,
+            ...typeResolvers
+        };
     };
 };

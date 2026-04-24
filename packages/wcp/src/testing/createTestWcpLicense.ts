@@ -4,6 +4,7 @@ import { MT_OPTIONS_MAX_COUNT_TYPE, PROJECT_PACKAGE_FEATURE_NAME } from "~/types
 interface LicenseOptions {
     recordLocking?: boolean;
     folderLevelPermissions?: boolean;
+    hcmsFieldPermissions?: boolean;
 }
 
 export const createTestWcpLicense = (options?: LicenseOptions): DecryptedWcpProjectLicense => {
@@ -17,7 +18,8 @@ export const createTestWcpLicense = (options?: LicenseOptions): DecryptedWcpProj
                     options: {
                         teams: true,
                         folderLevelPermissions: options?.folderLevelPermissions ?? true,
-                        privateFiles: true
+                        privateFiles: true,
+                        hcmsFieldPermissions: options?.hcmsFieldPermissions ?? true
                     }
                 },
                 [PROJECT_PACKAGE_FEATURE_NAME.MT]: {
@@ -48,6 +50,10 @@ export const createTestWcpLicense = (options?: LicenseOptions): DecryptedWcpProj
                     options: {
                         threatDetection: false
                     }
+                },
+                [PROJECT_PACKAGE_FEATURE_NAME.AI_POWERUPS]: {
+                    enabled: false,
+                    options: {}
                 }
             }
         }

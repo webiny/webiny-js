@@ -1,5 +1,5 @@
-import React from "react";
-import { Table as AcoTable } from "@webiny/app-aco";
+import React, { useMemo } from "react";
+import { Table as AcoTable, createRecordsData } from "@webiny/app-aco";
 import type { TableRow } from "~/modules/redirects/RedirectsList/presenters/index.js";
 import { useDocumentList } from "~/modules/redirects/RedirectsList/useDocumentList.js";
 import { useSortRedirects } from "~/features/redirects/index.js";
@@ -12,6 +12,10 @@ export const Table = () => {
     const { selectRedirects } = useSelectRedirects();
     const { browser } = useRedirectListConfig();
 
+    const selected = useMemo<TableRow[]>(() => {
+        return createRecordsData(vm.selected);
+    }, [vm.selected]);
+
     return (
         <AcoTable<TableRow>
             columns={browser.table.columns}
@@ -19,10 +23,12 @@ export const Table = () => {
             loading={vm.isLoading}
             sorting={vm.sorting}
             onSortingChange={sort => sortRedirects(sort)}
-            onSelectRow={documents => selectRedirects(documents)}
-            selected={vm.selected}
+            onSelectRow={documents => {
+                selectRedirects(documents);
+            }}
+            selected={selected}
             nameColumnId={"redirectFrom"}
-            namespace={"wbRedirect"}
+            namespace={"wb/redirect/list"}
         />
     );
 };

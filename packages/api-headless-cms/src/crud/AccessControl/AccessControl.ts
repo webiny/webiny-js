@@ -10,10 +10,10 @@ import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
 
 export interface AccessControlParams {
-    getIdentity: () => SecurityIdentity | Promise<SecurityIdentity>;
-    getGroupsPermissions: () => CmsGroupPermission[] | Promise<CmsGroupPermission[]>;
-    getModelsPermissions: () => CmsModelPermission[] | Promise<CmsModelPermission[]>;
-    getEntriesPermissions: () => CmsEntryPermission[] | Promise<CmsEntryPermission[]>;
+    getIdentity: () => Promise<SecurityIdentity>;
+    getGroupsPermissions: () => Promise<CmsGroupPermission[]>;
+    getModelsPermissions: () => Promise<CmsModelPermission[]>;
+    getEntriesPermissions: () => Promise<CmsEntryPermission[]>;
     listAllGroups: () => Promise<CmsGroup[]>;
 }
 
@@ -34,7 +34,7 @@ interface CanAccessModelParams extends GetModelsAccessControlListParams {
 }
 
 interface GetEntriesAccessControlListParams {
-    model: Pick<CmsModel, "modelId" | "createdBy" | "group" | "locale" | "authorization">;
+    model: Pick<CmsModel, "modelId" | "createdBy" | "group" | "authorization">;
     entry?: Pick<CmsEntry, "entryId" | "createdBy">;
 }
 
@@ -62,14 +62,14 @@ interface IModelAuthorizationDisabledParams {
 }
 
 export class AccessControl {
-    getIdentity: AccessControlParams["getIdentity"];
-    getGroupsPermissions: AccessControlParams["getGroupsPermissions"];
-    getModelsPermissions: AccessControlParams["getModelsPermissions"];
-    getEntriesPermissions: AccessControlParams["getEntriesPermissions"];
-    listAllGroupsCallback: AccessControlParams["listAllGroups"];
+    private getIdentity: AccessControlParams["getIdentity"];
+    private getGroupsPermissions: AccessControlParams["getGroupsPermissions"];
+    private getModelsPermissions: AccessControlParams["getModelsPermissions"];
+    private getEntriesPermissions: AccessControlParams["getEntriesPermissions"];
+    private listAllGroupsCallback: AccessControlParams["listAllGroups"];
 
     private fullAccessPermissions: string[];
-    private allGroups: null | CmsGroup[] | Promise<CmsGroup[]>;
+    private allGroups: null | Promise<CmsGroup[]>;
 
     constructor({
         getIdentity,
@@ -116,35 +116,17 @@ export class AccessControl {
         return true;
     }
 
-    async ensureCanAccessGroup(params: CanAccessGroupParams = {}) {
-        const canAccess = await this.canAccessGroup(params);
-        if (canAccess) {
-            return;
-        }
-
-        if ("group" in params) {
-            let groupName = "(could not determine name)";
-            if (params.group?.name) {
-                groupName = `"${params.group.name}"`;
-            }
-
-            throw new NotAuthorizedError(`Not allowed to access content model group ${groupName}.`);
-        }
-
-        throw new NotAuthorizedError(`Not allowed to access content model groups.`);
-    }
-
-    async canAccessNonOwnedGroups(params: GetGroupsAccessControlListParams) {
+    private async canAccessNonOwnedGroups(params: GetGroupsAccessControlListParams) {
         const acl = await this.getGroupsAccessControlList(params);
         return acl.some(ace => ace.canAccessNonOwned);
     }
 
-    async canAccessOnlyOwnedGroups(params: GetGroupsAccessControlListParams) {
+    private async canAccessOnlyOwnedGroups(params: GetGroupsAccessControlListParams) {
         const canAccessNonOwned = await this.canAccessNonOwnedGroups(params);
         return !canAccessNonOwned;
     }
 
-    async getGroupsAccessControlList(
+    private async getGroupsAccessControlList(
         params: GetGroupsAccessControlListParams
     ): Promise<AccessControlList> {
         if (await this.hasFullAccessToGroups()) {
@@ -184,11 +166,11 @@ export class AccessControl {
                     }
 
                     const { groups } = groupsPermissions;
-                    if (!Array.isArray(groups[group.locale])) {
+                    if (!Array.isArray(groups)) {
                         continue;
                     }
 
-                    if (!groups[group.locale].includes(group.id)) {
+                    if (!groups.includes(group.id)) {
                         continue;
                     }
                 }
@@ -204,7 +186,7 @@ export class AccessControl {
         return acl;
     }
 
-    async hasFullAccessToGroups() {
+    private async hasFullAccessToGroups() {
         const permissions = await this.getGroupsPermissions();
         return permissions.some(p => this.fullAccessPermissions.filter(Boolean).includes(p.name));
     }
@@ -238,7 +220,7 @@ export class AccessControl {
         return true;
     }
 
-    async ensureCanAccessModel(params: CanAccessModelParams = {}) {
+    private async ensureCanAccessModel(params: CanAccessModelParams = {}) {
         const canAccess = await this.canAccessModel(params);
         if (canAccess) {
             return;
@@ -256,17 +238,17 @@ export class AccessControl {
         throw new NotAuthorizedError(`Not allowed to access content models.`);
     }
 
-    async canAccessNonOwnedModels(params: GetModelsAccessControlListParams) {
+    private async canAccessNonOwnedModels(params: GetModelsAccessControlListParams) {
         const acl = await this.getModelsAccessControlList(params);
         return acl.some(ace => ace.canAccessNonOwned);
     }
 
-    async canAccessOnlyOwnedModels(params: GetModelsAccessControlListParams) {
+    private async canAccessOnlyOwnedModels(params: GetModelsAccessControlListParams) {
         const canAccessNonOwned = await this.canAccessNonOwnedModels(params);
         return !canAccessNonOwned;
     }
 
-    async getModelsAccessControlList(
+    private async getModelsAccessControlList(
         params: GetModelsAccessControlListParams
     ): Promise<AccessControlList> {
         if (await this.hasFullAccessToModels(params)) {
@@ -295,7 +277,7 @@ export class AccessControl {
                         continue;
                     }
 
-                    const group = await this.getGroup(model.group.id);
+                    const group = await this.getGroup(model.group);
                     if (!group) {
                         continue;
                     }
@@ -327,11 +309,11 @@ export class AccessControl {
                         continue;
                     }
 
-                    if (!Array.isArray(groupsPermissions.groups[model.locale])) {
+                    if (!Array.isArray(groupsPermissions.groups)) {
                         continue;
                     }
 
-                    if (!groupsPermissions.groups[model.locale].includes(model.group.id)) {
+                    if (!groupsPermissions.groups.includes(model.group)) {
                         continue;
                     }
                 }
@@ -385,11 +367,11 @@ export class AccessControl {
                         continue;
                     }
 
-                    if (!Array.isArray(models[params.model.locale])) {
+                    if (!Array.isArray(models)) {
                         continue;
                     }
 
-                    if (!models[params.model.locale].includes(params.model.modelId)) {
+                    if (!models.includes(params.model.modelId)) {
                         continue;
                     }
                 }
@@ -405,7 +387,7 @@ export class AccessControl {
         return acl;
     }
 
-    async hasFullAccessToModels(params: GetModelsAccessControlListParams) {
+    private async hasFullAccessToModels(params: GetModelsAccessControlListParams) {
         const { model } = params;
         if (model) {
             if (this.modelAuthorizationDisabled({ model })) {
@@ -454,7 +436,7 @@ export class AccessControl {
         return true;
     }
 
-    async ensureCanAccessEntry(params: CanAccessEntryParams) {
+    private async ensureCanAccessEntry(params: CanAccessEntryParams) {
         const canAccess = await this.canAccessEntry(params);
         if (!canAccess) {
             if (params.entry) {
@@ -469,7 +451,7 @@ export class AccessControl {
         }
     }
 
-    async canAccessNonOwnedEntries(params: GetEntriesAccessControlListParams) {
+    private async canAccessNonOwnedEntries(params: GetEntriesAccessControlListParams) {
         const acl = await this.getEntriesAccessControlList(params);
         return acl.some(ace => ace.canAccessNonOwned);
     }
@@ -479,13 +461,14 @@ export class AccessControl {
         return !canAccessNonOwned;
     }
 
-    async getEntriesAccessControlList(
+    private async getEntriesAccessControlList(
         params: GetEntriesAccessControlListParams
     ): Promise<EntriesAccessControlList> {
         if (await this.hasFullAccessToEntries(params)) {
             return [{ rwd: "rwd", pw: "pu", canAccessNonOwned: true, canAccessOnlyOwned: false }];
         }
 
+        // We need a map of groups slugs to ids, to perform checks on models
         const { model } = params;
         const groupsPermissionsList = await this.getGroupsPermissions();
         const acl: EntriesAccessControlList = [];
@@ -512,7 +495,7 @@ export class AccessControl {
             }
 
             if (groupPermissions.own) {
-                const group = await this.getGroup(model.group.id);
+                const group = await this.getGroup(model.group);
                 if (!group) {
                     continue;
                 }
@@ -540,11 +523,11 @@ export class AccessControl {
             if (groupPermissions.groups) {
                 const { groups } = groupPermissions;
 
-                if (!Array.isArray(groups[model.locale])) {
+                if (!Array.isArray(groups)) {
                     continue;
                 }
 
-                if (!groups[model.locale].includes(model.group.id)) {
+                if (!groups.includes(model.group)) {
                     continue;
                 }
             }
@@ -569,11 +552,11 @@ export class AccessControl {
             }
 
             if (relatedModelsPermissions.models) {
-                if (!Array.isArray(relatedModelsPermissions.models[model.locale])) {
+                if (!Array.isArray(relatedModelsPermissions.models)) {
                     continue;
                 }
 
-                if (!relatedModelsPermissions.models[model.locale].includes(model.modelId)) {
+                if (!relatedModelsPermissions.models.includes(model.modelId)) {
                     continue;
                 }
             }
@@ -628,7 +611,7 @@ export class AccessControl {
         return acl;
     }
 
-    async hasFullAccessToEntries(params: GetEntriesAccessControlListParams) {
+    private async hasFullAccessToEntries(params: GetEntriesAccessControlListParams) {
         if (this.modelAuthorizationDisabled(params)) {
             return true;
         }
@@ -650,7 +633,7 @@ export class AccessControl {
         return false;
     }
 
-    async listAllGroups(): Promise<CmsGroup[]> {
+    private async listAllGroups(): Promise<CmsGroup[]> {
         if (this.allGroups === null) {
             this.allGroups = this.listAllGroupsCallback();
         }
@@ -658,8 +641,8 @@ export class AccessControl {
         return this.allGroups;
     }
 
-    async getGroup(id: string): Promise<CmsGroup | undefined> {
+    private async getGroup(slug: string): Promise<CmsGroup | undefined> {
         const groups = await this.listAllGroups();
-        return groups.find(group => group.id === id);
+        return groups.find(group => group.slug === slug);
     }
 }

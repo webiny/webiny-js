@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { mergeRegister } from "@lexical/utils";
 import {
     $getSelection,
     $isElementNode,
     $isRangeSelection,
+    mergeRegister,
     COMMAND_PRIORITY_LOW,
     PASTE_COMMAND
 } from "lexical";

@@ -18,7 +18,7 @@ export const WorkflowStateOptionsApprove = (props: IWorkflowStateOptionsApproveP
     }
     return (
         <DropdownMenu.Item
-            icon={<Icon icon={<ApproveIcon />} label={"Approve"} />}
+            icon={<Icon icon={<ApproveIcon />} label={"Approve"} size={"sm"} />}
             text={"Approve"}
             onClick={onClick}
         />

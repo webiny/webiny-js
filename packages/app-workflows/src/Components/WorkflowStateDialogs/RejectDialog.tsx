@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Dialog, Grid, OverlayLoader, Textarea } from "@webiny/admin-ui";
+import { Dialog, Grid, Icon, OverlayLoader, Textarea } from "@webiny/admin-ui";
 import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
 
 interface IRejectDialogProps {
@@ -60,14 +60,18 @@ export const RejectDialog = (props: IRejectDialogProps) => {
             onOpenChange={hide}
             title={
                 <>
-                    <RejectIcon className={"fill-destructive"} />
+                    <Icon
+                        label={"Reject Content?"}
+                        size={"md"}
+                        icon={<RejectIcon className={"fill-destructive"} />}
+                    />
                     Reject Content?
                 </>
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={hide} />
-                    <Dialog.ConfirmButton
+                    <Dialog.CancelAction onClick={hide} />
+                    <Dialog.ConfirmAction
                         disabled={!validation.isValid}
                         text={"Reject content"}
                         onClick={onConfirm}

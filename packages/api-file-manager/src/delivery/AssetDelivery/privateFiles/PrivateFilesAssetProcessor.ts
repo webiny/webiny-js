@@ -1,4 +1,5 @@
-import type { File, FileManagerContext } from "~/types.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { File } from "~/domain/file/types.js";
 import type { Asset, AssetProcessor, AssetRequest } from "~/delivery/index.js";
 import type { AssetAuthorizer } from "./AssetAuthorizer.js";
 import { NotAuthorizedOutputStrategy } from "./NotAuthorizedOutputStrategy.js";
@@ -6,18 +7,19 @@ import { RedirectToPublicUrlOutputStrategy } from "./RedirectToPublicUrlOutputSt
 import { RedirectToPrivateUrlOutputStrategy } from "./RedirectToPrivateUrlOutputStrategy.js";
 import { PrivateCache } from "./PrivateCache.js";
 import { PublicCache } from "./PublicCache.js";
+import { GetFileUseCase } from "~/features/file/GetFile/index.js";
 
 interface MaybePrivate {
     private?: boolean;
 }
 
 export class PrivateFilesAssetProcessor implements AssetProcessor {
-    private readonly context: FileManagerContext;
+    private readonly context: ApiCoreContext;
     private assetProcessor: AssetProcessor;
     private assetAuthorizer: AssetAuthorizer;
 
     constructor(
-        context: FileManagerContext,
+        context: ApiCoreContext,
         assetAuthorizer: AssetAuthorizer,
         assetProcessor: AssetProcessor
     ) {
@@ -28,10 +30,17 @@ export class PrivateFilesAssetProcessor implements AssetProcessor {
 
     async process(assetRequest: AssetRequest, asset: Asset): Promise<Asset> {
         const id = asset.getId();
-        const { security, fileManager } = this.context;
+        const { security } = this.context;
+        const getFile = this.context.container.resolve(GetFileUseCase);
 
         // Get file from File Manager by `id`.
-        const file = await security.withoutAuthorization(() => fileManager.getFile(id));
+        const file = await security.withoutAuthorization(async () => {
+            const fileResult = await getFile.execute(id);
+            if (fileResult.isFail()) {
+                throw fileResult.error;
+            }
+            return fileResult.value;
+        });
 
         const isPrivateFile = this.isPrivate(file);
 

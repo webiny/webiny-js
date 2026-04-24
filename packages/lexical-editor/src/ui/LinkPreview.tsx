@@ -55,7 +55,7 @@ function LinkPreviewContent({
     url
 }: Readonly<{
     url: string;
-}>): JSX.Element | null {
+}>): React.JSX.Element | null {
     const { preview } = useSuspenseRequest(url);
     if (preview === null) {
         return null;
@@ -80,7 +80,7 @@ function LinkPreviewContent({
     );
 }
 
-function Glimmer(props: { style: CSSProperties; index: number }): JSX.Element {
+function Glimmer(props: { style: CSSProperties; index: number }): React.JSX.Element {
     return (
         <div
             className="CustomLinkPreview__glimmer"
@@ -97,7 +97,7 @@ export function LinkPreview({
     url
 }: Readonly<{
     url: string;
-}>): JSX.Element {
+}>): React.JSX.Element {
     return (
         <Suspense
             fallback={

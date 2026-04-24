@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import pick from "lodash/pick.js";
 import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { Form } from "@webiny/form";
+import { Bind, Form, useForm, useGenerateSlug } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import {
     SimpleForm,
@@ -17,10 +17,10 @@ import {
 import { CREATE_TEAM, LIST_TEAMS, READ_TEAM, UPDATE_TEAM } from "./graphql.js";
 import isEmpty from "lodash/isEmpty.js";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { GroupsMultiAutocomplete } from "~/components/GroupsMultiAutocomplete/index.js";
 import type { Team } from "~/types.js";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { Alert, Button, Grid, Input, OverlayLoader, Textarea } from "@webiny/admin-ui";
+import { RolesMultiAutocomplete } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 
 const t = i18n.ns("app-security/admin/teams/form");
@@ -69,7 +69,7 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
                       {
                           variables: {
                               id: formData.id,
-                              data: pick(formData, ["name", "description", "groups"])
+                              data: pick(formData, ["name", "description", "roles"])
                           }
                       }
                   ]
@@ -77,7 +77,7 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
                       create,
                       {
                           variables: {
-                              data: pick(formData, ["name", "slug", "description", "groups"])
+                              data: pick(formData, ["name", "slug", "description", "roles"])
                           }
                       }
                   ];
@@ -100,7 +100,7 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
     const data = loading ? {} : get(getQuery, "data.security.team.data", {});
 
     const systemTeam = data.system;
-    const pluginTeam = data.plugin;
+    const pluginTeam = data.plugin ?? false;
     const canModifyTeam = !systemTeam && !pluginTeam;
 
     const showEmptyView = !newEntry && !loading && isEmpty(data);
@@ -126,81 +126,18 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
 
     return (
         <Form data={data} onSubmit={onSubmit}>
-            {({ data, form, Bind }) => {
+            {({ data, form }) => {
                 return (
                     <SimpleForm>
                         {loading && <OverlayLoader />}
                         <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
                         <SimpleFormContent>
-                            <Grid>
-                                <>
-                                    {systemTeam && (
-                                        <Grid.Column span={12}>
-                                            <Alert type={"info"} title={"Permissions are locked"}>
-                                                This is a protected system team and you can&apos;t
-                                                modify its permissions.
-                                            </Alert>
-                                        </Grid.Column>
-                                    )}
-                                    {pluginTeam && (
-                                        <Grid.Column span={12}>
-                                            <Alert type={"info"} title={"Important"}>
-                                                This team is registered via an extension, and cannot
-                                                be modified.
-                                            </Alert>
-                                        </Grid.Column>
-                                    )}
-                                </>
-                                <Grid.Column span={6}>
-                                    <Bind
-                                        name="name"
-                                        validators={validation.create("required,minLength:3")}
-                                    >
-                                        <Input
-                                            size={"lg"}
-                                            disabled={!canModifyTeam}
-                                            label={t`Name`}
-                                            data-testid="admin.am.team.new.name"
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={6}>
-                                    <Bind
-                                        name="slug"
-                                        validators={validation.create("required,minLength:3")}
-                                    >
-                                        <Input
-                                            size={"lg"}
-                                            disabled={!canModifyTeam || !newEntry}
-                                            label={t`Slug`}
-                                            data-testid="admin.am.team.new.slug"
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <Bind
-                                        name="description"
-                                        validators={validation.create("maxLength:500")}
-                                    >
-                                        <Textarea
-                                            size={"lg"}
-                                            disabled={!canModifyTeam}
-                                            label={t`Description`}
-                                            rows={3}
-                                            data-testid="admin.am.team.new.description"
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <Bind name="groups" validators={validation.create("required")}>
-                                        <GroupsMultiAutocomplete
-                                            disabled={!canModifyTeam}
-                                            label={t`Roles`}
-                                            data-testid="admin.am.team.new.groups"
-                                        />
-                                    </Bind>
-                                </Grid.Column>
-                            </Grid>
+                            <FormContent
+                                pluginTeam={pluginTeam}
+                                systemTeam={systemTeam}
+                                canModifyTeam={canModifyTeam}
+                                newEntry={newEntry}
+                            />
                         </SimpleFormContent>
                         <SimpleFormFooter>
                             <Button
@@ -224,5 +161,85 @@ export const TeamsForm = ({ newEntry, id }: TeamsFormProps) => {
                 );
             }}
         </Form>
+    );
+};
+
+interface FormContentProps {
+    systemTeam: boolean;
+    pluginTeam: boolean;
+    canModifyTeam: boolean;
+    newEntry: boolean;
+}
+
+const FormContent = (props: FormContentProps) => {
+    const { newEntry, pluginTeam, systemTeam, canModifyTeam } = props;
+
+    const form = useForm();
+    const { generateSlug } = useGenerateSlug(form, "name", "slug");
+
+    return (
+        <Grid>
+            <>
+                {systemTeam && (
+                    <Grid.Column span={12}>
+                        <Alert type={"info"} title={"Permissions are locked"}>
+                            This is a protected system team and you can&apos;t modify its
+                            permissions.
+                        </Alert>
+                    </Grid.Column>
+                )}
+                {pluginTeam && (
+                    <Grid.Column span={12}>
+                        <Alert type={"info"} title={"Important"}>
+                            This team is registered via an extension, and cannot be modified.
+                        </Alert>
+                    </Grid.Column>
+                )}
+            </>
+            <Grid.Column span={6}>
+                <Bind name="name" validators={validation.create("required,minLength:1")}>
+                    <Input
+                        required
+                        onBlur={generateSlug}
+                        disabled={!canModifyTeam}
+                        label={t`Name`}
+                        data-testid="admin.am.team.new.name"
+                    />
+                </Bind>
+            </Grid.Column>
+            <Grid.Column span={6}>
+                <Bind name="slug" validators={validation.create("required,minLength:1")}>
+                    <Input
+                        required
+                        disabled={!canModifyTeam || !newEntry}
+                        label={t`Slug`}
+                        data-testid="admin.am.team.new.slug"
+                    />
+                </Bind>
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind
+                    name="description"
+                    validators={validation.create("maxLength:500")}
+                    defaultValue={""}
+                >
+                    <Textarea
+                        disabled={!canModifyTeam}
+                        label={t`Description`}
+                        rows={3}
+                        data-testid="admin.am.team.new.description"
+                    />
+                </Bind>
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind name="roles" validators={validation.create("required")}>
+                    <RolesMultiAutocomplete
+                        disabled={!canModifyTeam}
+                        label={t`Roles`}
+                        data-testid="admin.am.team.new.roles"
+                    />
+                </Bind>
+            </Grid.Column>
+        </Grid>
     );
 };

@@ -1,8 +1,8 @@
-import writeJsonFile from "write-json-file";
+import { writeJsonFileSync } from "write-json-file";
 import { IProjectModel } from "@webiny/project";
 import { UiService } from "~/abstractions/services/index.js";
 import { getDuplicatesFilePath, getReferencesFilePath } from "./paths.js";
-import type { IDependencyTree } from "./types.js";
+import type { IDependencyCollection, IDependencyTree } from "./types.js";
 
 export interface ICreateReferenceFileDi {
     uiService: UiService.Interface;
@@ -22,24 +22,22 @@ export const createReferenceFile = (
         return;
     }
 
+    const json: IDependencyCollection = {
+        dependencies: tree.dependencies,
+        devDependencies: tree.devDependencies,
+        peerDependencies: tree.peerDependencies,
+        resolutions: tree.resolutions,
+        references: tree.references
+    };
+
     ui.info(`Creating %s...`, refsFilePath);
-    writeJsonFile.sync(
-        refsFilePath,
-        {
-            dependencies: tree.dependencies,
-            devDependencies: tree.devDependencies,
-            peerDependencies: tree.peerDependencies,
-            resolutions: tree.resolutions,
-            references: tree.references
-        },
-        {
-            indent: 0
-        }
-    );
+    writeJsonFileSync(refsFilePath, json, {
+        indent: 0
+    });
 
     ui.info(`Creating %s...`, dupesFilePath);
 
-    writeJsonFile.sync(dupesFilePath, tree.duplicates, {
+    writeJsonFileSync(dupesFilePath, tree.duplicates, {
         indent: 0
     });
 };

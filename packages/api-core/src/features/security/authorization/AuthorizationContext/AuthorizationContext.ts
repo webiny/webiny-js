@@ -1,18 +1,21 @@
 import { AsyncLocalStorage } from "async_hooks";
-import { createImplementation } from "@webiny/di";
-import { AuthorizationContext as Abstraction } from "./abstractions.js";
+import { AuthorizationContext as Abstraction, PermissionTransformer } from "./abstractions.js";
 import { Authorizer } from "../Authorizer/index.js";
 import type { SecurityPermission } from "~/types/security.js";
+import { Identity } from "~/features/security/IdentityContext/index.js";
 
 const authorizationEnabledStorage = new AsyncLocalStorage<boolean>();
 
-class AuthorizationContextImpl implements Abstraction.Interface {
+export class AuthorizationContext implements Abstraction.Interface {
     private permissions?: SecurityPermission[];
     private permissionsLoader?: Promise<SecurityPermission[]>;
 
-    constructor(private authorizers: Authorizer.Interface[]) {}
+    constructor(
+        private getAuthorizers: () => Authorizer.Interface[],
+        private getTransformers: () => PermissionTransformer.Interface[]
+    ) {}
 
-    async loadPermissions(): Promise<SecurityPermission[]> {
+    async loadPermissions(identity: Identity): Promise<SecurityPermission[]> {
         if (this.permissions) {
             return this.permissions;
         }
@@ -23,10 +26,11 @@ class AuthorizationContextImpl implements Abstraction.Interface {
 
         this.permissionsLoader = new Promise<SecurityPermission[]>(async resolve => {
             // Execute authorizers in sequence until one returns permissions
-            for (const authorizer of this.authorizers) {
-                const result = await authorizer.authorize();
-                if (Array.isArray(result)) {
-                    this.permissions = result;
+            const authorizers = this.getAuthorizers();
+            for (const authorizer of authorizers) {
+                const permissions = await authorizer.authorize(identity);
+                if (Array.isArray(permissions)) {
+                    this.permissions = this.transformPermissions(permissions);
                     return resolve(this.permissions);
                 }
             }
@@ -52,10 +56,33 @@ class AuthorizationContextImpl implements Abstraction.Interface {
         this.permissions = undefined;
         this.permissionsLoader = undefined;
     }
-}
 
-export const AuthorizationContext = createImplementation({
-    abstraction: Abstraction,
-    implementation: AuthorizationContextImpl,
-    dependencies: [[Authorizer, { multiple: true }]]
-});
+    private transformPermissions(permissions: SecurityPermission[]) {
+        const transformers = this.getTransformers();
+        if (transformers.length === 0) {
+            return this.deduplicatePermissions(permissions);
+        }
+
+        const transformed = permissions
+            .map(permission => {
+                // A transformer can return one or multiple permissions, so we flatten the result.
+                return transformers.map(t => t.execute(permission)).flat();
+            })
+            .flat();
+
+        return this.deduplicatePermissions(transformed);
+    }
+
+    private deduplicatePermissions(permissions: SecurityPermission[]) {
+        const seen = new Set<string>();
+
+        return permissions.filter(permission => {
+            const key = JSON.stringify(permission);
+            if (seen.has(key)) {
+                return false;
+            }
+            seen.add(key);
+            return true;
+        });
+    }
+}

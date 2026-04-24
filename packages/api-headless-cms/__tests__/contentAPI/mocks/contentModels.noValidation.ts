@@ -14,7 +14,6 @@ const models: CmsModel[] = [
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
         titleFieldId: "title",
-        lockedFields: [],
         name: "Category",
         description: "Product category",
         modelId: "category",
@@ -28,15 +27,15 @@ const models: CmsModel[] = [
         fields: [
             {
                 id: ids.field11,
-                multipleValues: false,
-                helpText: "",
+                list: false,
+                help: "",
                 label: "Title",
                 type: "text",
                 storageId: `text@${ids.field11}`,
                 fieldId: "title",
                 validation: [],
                 listValidation: [],
-                placeholderText: "placeholder text",
+                placeholder: "placeholder text",
                 predefinedValues: {
                     enabled: false,
                     values: []
@@ -47,15 +46,15 @@ const models: CmsModel[] = [
             },
             {
                 id: ids.field12,
-                multipleValues: false,
-                helpText: "",
+                list: false,
+                help: "",
                 label: "Slug",
                 type: "text",
                 storageId: `text@${ids.field12}`,
                 fieldId: "slug",
                 validation: [],
                 listValidation: [],
-                placeholderText: "placeholder text",
+                placeholder: "placeholder text",
                 predefinedValues: {
                     enabled: false,
                     values: []
@@ -65,9 +64,7 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        locale: "en-US",
-        tenant: "root",
-        webinyVersion: "0.0.0"
+        tenant: "root"
     }
 ];
 

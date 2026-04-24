@@ -30,7 +30,6 @@ describe("validate body", () => {
                 "detail-type": {
                     code: "custom",
                     data: {
-                        fatal: undefined,
                         path: ["detail-type"]
                     },
                     message: '"detail-type" must be "synchronization-input".'
@@ -38,31 +37,27 @@ describe("validate body", () => {
                 "detail.id": {
                     code: "invalid_type",
                     data: {
-                        fatal: undefined,
                         path: ["detail", "id"]
                     },
-                    message: "Required"
+                    message: "Invalid input: expected string, received undefined"
                 },
                 "detail.items": {
                     code: "invalid_type",
                     data: {
-                        fatal: undefined,
                         path: ["detail", "items"]
                     },
-                    message: "Required"
+                    message: "Invalid input: expected array, received undefined"
                 },
                 "detail.source": {
                     code: "invalid_type",
                     data: {
-                        fatal: undefined,
                         path: ["detail", "source"]
                     },
-                    message: "Required"
+                    message: "Invalid input: expected object, received undefined"
                 },
                 source: {
                     code: "custom",
                     data: {
-                        fatal: undefined,
                         path: ["source"]
                     },
                     message: '"source" must start with "webiny:".'

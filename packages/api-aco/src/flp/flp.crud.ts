@@ -5,24 +5,22 @@ import {
     type CreateFlpParams,
     type UpdateFlpParams
 } from "~/types.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 
 export interface CreateFlpCrudMethodsParams {
-    getLocale: () => I18NLocale;
     getTenant: () => Tenant;
     storageOperations: AcoStorageOperations;
 }
 
 export const createFlpCrudMethods = ({
     storageOperations,
-    getTenant,
-    getLocale
+    getTenant
 }: CreateFlpCrudMethodsParams): AcoFolderLevelPermissionsCrud => {
     return {
         async create(params: CreateFlpParams) {
             return await storageOperations.flp.create({
-                data: { ...params, tenant: getTenant().id, locale: getLocale().code }
+                data: { ...params, tenant: getTenant().id }
             });
         },
         async update(id: string, data: UpdateFlpParams) {
@@ -42,8 +40,7 @@ export const createFlpCrudMethods = ({
                 original,
                 data: {
                     ...data,
-                    tenant: getTenant().id,
-                    locale: getLocale().code
+                    tenant: getTenant().id
                 }
             });
         },
@@ -59,8 +56,7 @@ export const createFlpCrudMethods = ({
                             original,
                             data: {
                                 ...data,
-                                tenant: getTenant().id,
-                                locale: getLocale().code
+                                tenant: getTenant().id
                             }
                         };
                     })
@@ -90,26 +86,24 @@ export const createFlpCrudMethods = ({
             await storageOperations.flp.delete({
                 flp: {
                     ...flp,
-                    tenant: getTenant().id,
-                    locale: getLocale().code
+                    tenant: getTenant().id
                 }
             });
 
             return true;
         },
         async get(id: string) {
+            const entryId = EntryId.from(id);
             return await storageOperations.flp.get({
-                id,
-                tenant: getTenant().id,
-                locale: getLocale().code
+                id: entryId.id,
+                tenant: getTenant().id
             });
         },
         async list({ where }) {
             return await storageOperations.flp.list({
                 where: {
                     ...where,
-                    tenant: getTenant().id,
-                    locale: getLocale().code
+                    tenant: getTenant().id
                 }
             });
         }

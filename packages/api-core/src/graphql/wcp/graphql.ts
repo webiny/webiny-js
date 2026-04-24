@@ -20,6 +20,7 @@ export const createWcpGraphQL = () => {
                 auditLogs: WcpProjectPackageFeaturesFeature
                 recordLocking: WcpProjectPackageFeaturesFeature
                 fileManager: WcpProjectPackageFeaturesFeature
+                aiPowerups: WcpProjectPackageFeaturesFeature
             }
 
             type WcpProjectPackage {
@@ -68,7 +69,7 @@ export const createWcpGraphQL = () => {
                 getProject: async (_, __, context) => {
                     try {
                         const wcpContext = context.container.resolve(WcpContext);
-                        const project = wcpContext.getProject();
+                        const project = wcpContext.getProjectWithFeatureFlags();
 
                         if (!project) {
                             throw Error(`Could not get project!`);

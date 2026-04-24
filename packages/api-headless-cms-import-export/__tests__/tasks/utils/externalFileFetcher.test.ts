@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { ExternalFileFetcher } from "~/tasks/utils/externalFileFetcher";
 import type { GenericRecord } from "@webiny/api/types";
+import { ExternalFileFetcher } from "~/features/ValidateImportFromUrlTask/ExternalFileFetcher/ExternalFileFetcher.js";
 
 const createFetcherResponse = (params: Partial<Response>): Response => {
     return {

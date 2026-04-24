@@ -1,16 +1,10 @@
 import React from "react";
 import { FloatingLinkEditorController } from "./FloatingLinkEditorController.js";
-import type { LinkEditForm } from "./LinkEditForm.js";
 import "./FloatingLinkEditorPlugin.css";
+import { LinkFormProps } from "./types.js";
 
-export function FloatingLinkEditorPlugin({
-    anchorElem = () => document.body,
-    ...props
-}: {
-    anchorElem?: () => HTMLElement;
-    LinkEditForm?: typeof LinkEditForm;
-}): JSX.Element | null {
-    return (
-        <FloatingLinkEditorController anchorElem={anchorElem} LinkEditForm={props.LinkEditForm} />
-    );
+export function FloatingLinkEditorPlugin(props: {
+    LinkForm: React.FunctionComponent<LinkFormProps>;
+}) {
+    return <FloatingLinkEditorController LinkForm={props.LinkForm} />;
 }

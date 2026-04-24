@@ -19,4 +19,8 @@ export class DefaultEnvConfig implements Abstraction.Interface {
 
         return rawValue;
     }
+
+    getAll(): Abstraction.Config {
+        return this.env;
+    }
 }

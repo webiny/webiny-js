@@ -4,11 +4,15 @@ import type {
     CmsModelFieldRendererProps
 } from "@webiny/app-headless-cms/types.js";
 import { FileManager } from "@webiny/app-admin";
-import { EditFileUsingUrl } from "~/components/EditFileUsingUrl/index.js";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 import { FilePicker } from "@webiny/admin-ui";
+import { EditFileUsingUrl } from "~/components/EditFileUsingUrl/index.js";
 import { getSupportedExtensionsLabelHint } from "~/modules/HeadlessCms/fileRenderer/utils.js";
 
-const FieldRenderer = ({ field, getBind }: CmsModelFieldRendererProps) => {
+const FieldRenderer = ({ getBind }: CmsModelFieldRendererProps) => {
+    const { field } = useModelField();
+    const rules = useFieldEffectiveRules(field);
+    const disabled = !rules.canEdit || rules.disabled;
     const Bind = getBind();
 
     const imagesOnly = field.settings && field.settings.imagesOnly;
@@ -28,17 +32,19 @@ const FieldRenderer = ({ field, getBind }: CmsModelFieldRendererProps) => {
                                         return (
                                             <FilePicker
                                                 {...bind}
+                                                disabled={disabled}
                                                 label={field.label}
                                                 validation={validation}
-                                                description={field.helpText}
+                                                description={field.description}
+                                                hint={field.help}
                                                 note={getSupportedExtensionsLabelHint(imagesOnly)}
                                                 value={value}
-                                                onSelectItem={() =>
-                                                    showFileManager(file => onChange(file.src))
-                                                }
+                                                onSelectItem={() => {
+                                                    showFileManager(file => onChange(file.src));
+                                                }}
                                                 onEditItem={() => editFile(value)}
                                                 onRemoveItem={() => onChange(null)}
-                                                placeholder={field.placeholderText}
+                                                placeholder={field.placeholder}
                                                 type={"compact"}
                                                 data-testid={`fr.input.filefield.${field.label}`}
                                             />
@@ -62,7 +68,7 @@ export const singleFile: CmsModelFieldRendererPlugin = {
         name: "File Input",
         description: "Enables selecting a single file via File Manager.",
         canUse({ field }) {
-            return field.type === "file" && !field.multipleValues;
+            return field.type === "file" && !field.list;
         },
         render(params) {
             return <FieldRenderer {...params} />;

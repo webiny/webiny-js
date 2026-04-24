@@ -1,5 +1,5 @@
 import { type Container } from "@webiny/di";
-import type { SecurityIdentity, SecurityPermission, TenantLink } from "~/types/security.js";
+import type { SecurityIdentity, SecurityPermission } from "~/types/security.js";
 import { AuthenticationContext } from "~/features/security/authentication/AuthenticationContext/index.js";
 import { Authenticator } from "~/features/security/authentication/Authenticator/index.js";
 import { Authorizer } from "~/features/security/authorization/Authorizer/abstractions.js";
@@ -8,29 +8,16 @@ import {
     IdentityContext,
     IdentityData
 } from "~/features/security/IdentityContext/index.js";
-import { GetApiKey } from "~/features/security/apiKeys/GetApiKey/index.js";
-import { GetApiKeyByToken } from "~/features/security/apiKeys/GetApiKeyByToken/index.js";
-import { ListApiKeys } from "~/features/security/apiKeys/ListApiKeys/index.js";
-import { CreateApiKey } from "~/features/security/apiKeys/CreateApiKey/index.js";
-import { UpdateApiKey } from "~/features/security/apiKeys/UpdateApiKey/index.js";
-import { DeleteApiKey } from "~/features/security/apiKeys/DeleteApiKey/index.js";
-import { GetGroupUseCase } from "~/features/security/groups/GetGroup/index.js";
-import { ListGroupsUseCase } from "~/features/security/groups/ListGroups/index.js";
-import { CreateGroupUseCase } from "~/features/security/groups/CreateGroup/index.js";
-import { UpdateGroup } from "~/features/security/groups/UpdateGroup/index.js";
-import { DeleteGroupUseCase } from "~/features/security/groups/DeleteGroup/index.js";
-import { GetTeam } from "~/features/security/teams/GetTeam/index.js";
+import { GetRoleUseCase } from "~/features/security/roles/GetRole/index.js";
+import { ListRolesUseCase } from "~/features/security/roles/ListRoles/index.js";
+import { CreateRoleUseCase } from "~/features/security/roles/CreateRole/index.js";
+import { UpdateRoleUseCase } from "~/features/security/roles/UpdateRole/index.js";
+import { DeleteRoleUseCase } from "~/features/security/roles/DeleteRole/index.js";
+import { GetTeamUseCase } from "~/features/security/teams/GetTeam/index.js";
 import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 import { CreateTeam } from "~/features/security/teams/CreateTeam/index.js";
 import { UpdateTeam } from "~/features/security/teams/UpdateTeam/index.js";
 import { DeleteTeam } from "~/features/security/teams/DeleteTeam/index.js";
-import { CreateTenantLinks } from "~/features/security/tenantLinks/CreateTenantLinks/index.js";
-import { UpdateTenantLinks } from "~/features/security/tenantLinks/UpdateTenantLinks/index.js";
-import { DeleteTenantLinks } from "~/features/security/tenantLinks/DeleteTenantLinks/index.js";
-import { ListTenantLinksByType } from "~/features/security/tenantLinks/ListTenantLinksByType/index.js";
-import { ListTenantLinksByTenant } from "~/features/security/tenantLinks/ListTenantLinksByTenant/index.js";
-import { ListTenantLinksByIdentity } from "~/features/security/tenantLinks/ListTenantLinksByIdentity/index.js";
-import { GetTenantLinkByIdentity } from "~/features/security/tenantLinks/GetTenantLinkByIdentity/index.js";
 
 /**
  * Legacy bridge that implements the old Security interface.
@@ -54,18 +41,6 @@ export class LegacyContext {
                     return authenticator(token);
                 }
             };
-        });
-    }
-
-    getAuthorizers() {
-        return this.container.resolveAll(Authorizer).map(authorizer => {
-            return () => authorizer.authorize();
-        });
-    }
-
-    getAuthenticators(): Authenticator.Interface["authenticate"][] {
-        return this.container.resolveAll(Authenticator).map(authenticator => {
-            return (token: string) => authenticator.authenticate(token);
         });
     }
 
@@ -157,73 +132,8 @@ export class LegacyContext {
         return this.identityContext.hasFullAccess();
     }
 
-    async getApiKey(id: string) {
-        const useCase = this.container.resolve(GetApiKey);
-        const result = await useCase.execute(id);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async getApiKeyByToken(token: string) {
-        const useCase = this.container.resolve(GetApiKeyByToken);
-        const result = await useCase.execute(token);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async listApiKeys(params?: any) {
-        const useCase = this.container.resolve(ListApiKeys);
-        const result = await useCase.execute(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async createApiKey(data: any) {
-        const useCase = this.container.resolve(CreateApiKey);
-        const result = await useCase.execute(data);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async updateApiKey(id: string, data: any) {
-        const useCase = this.container.resolve(UpdateApiKey);
-        const result = await useCase.execute(id, data);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async deleteApiKey(id: string) {
-        const useCase = this.container.resolve(DeleteApiKey);
-        const result = await useCase.execute(id);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-        return true;
-    }
-
-    async getGroup(params: any) {
-        const useCase = this.container.resolve(GetGroupUseCase);
+    async getRole(params: any) {
+        const useCase = this.container.resolve(GetRoleUseCase);
         const result = await useCase.execute(params.where);
 
         if (result.isFail()) {
@@ -233,8 +143,8 @@ export class LegacyContext {
         return result.value;
     }
 
-    async listGroups(params?: any) {
-        const useCase = this.container.resolve(ListGroupsUseCase);
+    async listRoles(params?: any) {
+        const useCase = this.container.resolve(ListRolesUseCase);
         const result = await useCase.execute(params);
 
         if (result.isFail()) {
@@ -244,8 +154,8 @@ export class LegacyContext {
         return result.value;
     }
 
-    async createGroup(input: any) {
-        const useCase = this.container.resolve(CreateGroupUseCase);
+    async createRole(input: any) {
+        const useCase = this.container.resolve(CreateRoleUseCase);
         const result = await useCase.execute(input);
 
         if (result.isFail()) {
@@ -255,8 +165,8 @@ export class LegacyContext {
         return result.value;
     }
 
-    async updateGroup(id: string, input: any) {
-        const useCase = this.container.resolve(UpdateGroup);
+    async updateRole(id: string, input: any) {
+        const useCase = this.container.resolve(UpdateRoleUseCase);
         const result = await useCase.execute(id, input);
 
         if (result.isFail()) {
@@ -266,8 +176,8 @@ export class LegacyContext {
         return result.value;
     }
 
-    async deleteGroup(id: string) {
-        const useCase = this.container.resolve(DeleteGroupUseCase);
+    async deleteRole(id: string) {
+        const useCase = this.container.resolve(DeleteRoleUseCase);
         const result = await useCase.execute(id);
 
         if (result.isFail()) {
@@ -287,7 +197,7 @@ export class LegacyContext {
     }
 
     async getTeam(params: any) {
-        const useCase = this.container.resolve(GetTeam);
+        const useCase = this.container.resolve(GetTeamUseCase);
         const result = await useCase.execute(params.where);
 
         if (result.isFail()) {
@@ -337,76 +247,5 @@ export class LegacyContext {
         if (result.isFail()) {
             throw result.error;
         }
-    }
-
-    async createTenantLinks(params: any[]) {
-        const useCase = this.container.resolve(CreateTenantLinks);
-        const result = await useCase.execute(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-    }
-
-    async updateTenantLinks(params: any[]) {
-        const useCase = this.container.resolve(UpdateTenantLinks);
-        const result = await useCase.execute(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-    }
-
-    async deleteTenantLinks(params: any[]) {
-        const useCase = this.container.resolve(DeleteTenantLinks);
-        const result = await useCase.execute(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-    }
-
-    async listTenantLinksByType<TLink extends TenantLink = TenantLink>(params: any) {
-        const useCase = this.container.resolve(ListTenantLinksByType);
-        const result = await useCase.execute<TLink>(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async listTenantLinksByTenant(params: any) {
-        const useCase = this.container.resolve(ListTenantLinksByTenant);
-        const result = await useCase.execute(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async listTenantLinksByIdentity(params: any) {
-        const useCase = this.container.resolve(ListTenantLinksByIdentity);
-        const result = await useCase.execute(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
-    }
-
-    async getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(params: any) {
-        const useCase = this.container.resolve(GetTenantLinkByIdentity);
-        const result = await useCase.execute<TLink>(params);
-
-        if (result.isFail()) {
-            throw result.error;
-        }
-
-        return result.value;
     }
 }

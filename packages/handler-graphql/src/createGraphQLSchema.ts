@@ -12,10 +12,13 @@ import {
     DateTimeScalar,
     JsonScalar,
     TimeScalar,
-    LongScalar
+    LongScalar,
+    IconScalar
 } from "./builtInTypes/index.js";
 import { ResolverDecoration } from "./ResolverDecoration.js";
 import type { GraphQLSchemaPlugin } from "~/plugins/index.js";
+import { GraphQLSchemaComposer } from "~/features/GraphQLSchemaBuilder/abstractions.js";
+import { GraphQLSchemaComposerFeature } from "~/features/GraphQLSchemaBuilder/feature.js";
 
 export const getSchemaPlugins = (context: Context) => {
     return context.plugins.byType<GraphQLSchemaPlugin>("graphql-schema").filter(pl => {
@@ -26,13 +29,13 @@ export const getSchemaPlugins = (context: Context) => {
     });
 };
 
-export const createGraphQLSchema = (context: Context) => {
+export const createGraphQLSchema = async (context: Context) => {
+    GraphQLSchemaComposerFeature.register(context.container);
+
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
         .map(item => item.scalar);
 
-    // TODO: once the API packages are more closed, we'll have the opportunity
-    // TODO: to maybe import the @ps directive from `api-prerendering-service` package.
     const typeDefs: TypeDefs[] = [
         gql`
             type Query
@@ -40,17 +43,13 @@ export const createGraphQLSchema = (context: Context) => {
             ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
             scalar JSON
             scalar Long
+            scalar Icon
             scalar RefInput
             scalar Number
             scalar Any
             scalar Date
             scalar DateTime
             scalar Time
-
-            # This directive doesn't do anything on the GraphQL resolution level. It just serves
-            # as a way to tell the Prerendering Service whether the GraphQL query needs to be
-            # cached or not.
-            directive @ps(cache: Boolean) on QUERY
 
             type Error {
                 code: String
@@ -79,12 +78,14 @@ export const createGraphQLSchema = (context: Context) => {
             Any: AnyScalar,
             DateTime: DateTimeScalar,
             Date: DateScalar,
-            Time: TimeScalar
+            Time: TimeScalar,
+            Icon: IconScalar
         }
     ];
 
     const resolverDecoration = new ResolverDecoration();
 
+    // Process legacy plugins
     const plugins = getSchemaPlugins(context);
 
     for (const plugin of plugins) {
@@ -100,6 +101,21 @@ export const createGraphQLSchema = (context: Context) => {
         }
     }
 
+    // Process new DI implementations
+    const graphQLSchemaComposer = context.container.resolve(GraphQLSchemaComposer);
+    const schema = await graphQLSchemaComposer.build();
+
+    if (schema.typeDefs) {
+        typeDefs.push(schema.typeDefs);
+    }
+    if (schema.resolvers) {
+        resolvers.push(schema.resolvers);
+    }
+    if (schema.resolverDecorators) {
+        resolverDecoration.addDecorators(schema.resolverDecorators);
+    }
+
+    // Create executable schema
     return makeExecutableSchema({
         typeDefs,
         resolvers: resolverDecoration.decorateResolvers(mergeResolvers(resolvers)),

@@ -14,6 +14,7 @@ type InputProps = InputPrimitiveProps & FormComponentProps;
 const DecoratableInput = ({
     label,
     description,
+    hint,
     note,
     required,
     disabled,
@@ -39,6 +40,8 @@ const DecoratableInput = ({
         [validate, originalOnBlur]
     );
 
+    // TODO: handle `type: "hidden"` so that it doesn't render wrapper divs.
+
     return (
         <div className={"w-full"}>
             <FormComponentLabel
@@ -47,6 +50,7 @@ const DecoratableInput = ({
                 required={required}
                 disabled={disabled}
                 invalid={invalid}
+                hint={hint}
             />
             <FormComponentDescription text={description} disabled={disabled} />
             <InputPrimitive

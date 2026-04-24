@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
 import { CmsTestPermissions, expectNotAuthorized } from "../utils";
-import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };
 const identityB: IdentityData = { id: "b", type: "admin", displayName: "B" };
@@ -35,6 +35,7 @@ describe("Write Permissions Checks", () => {
         });
 
         expectNotAuthorized(notCreatedModel.data.createContentModel, {
+            code: "Cms/Model/NotAuthorized",
             message: "Not allowed to access content models."
         });
 
@@ -108,6 +109,7 @@ describe("Write Permissions Checks", () => {
         });
 
         expectNotAuthorized(notUpdatedModel.data.updateContentModel, {
+            code: "Cms/Model/NotAuthorized",
             message: "Not allowed to access content models."
         });
 

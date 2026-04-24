@@ -11,7 +11,6 @@ import type {
 } from "~/types/index.js";
 import { createFieldStorageId } from "~/crud/contentModel/createFieldStorageId.js";
 import { validateStorageId } from "~/crud/contentModel/validateStorageId.js";
-import { CMS_MODEL_SINGLETON_TAG } from "~/constants.js";
 
 const createApiName = (name: string) => {
     return upperFirst(camelCase(name));
@@ -43,11 +42,10 @@ interface CmsModelFieldInput extends Omit<CmsModelFieldBase, "storageId" | "sett
     settings?: CmsModelFieldSettings;
 }
 
-export interface CmsApiModel
-    extends Omit<
-        CmsModelPluginModel,
-        "isPrivate" | "fields" | "singularApiName" | "pluralApiName" | "isPlugin"
-    > {
+export interface CmsApiModel extends Omit<
+    CmsModelPluginModel,
+    "isPrivate" | "fields" | "singularApiName" | "pluralApiName" | "isPlugin"
+> {
     isPrivate?: never;
     noValidate?: boolean;
     singularApiName?: string;
@@ -59,18 +57,18 @@ export interface CmsApiModelFull extends Omit<CmsApiModel, "fields"> {
     fields: CmsModelFieldBase[];
 }
 
-interface CmsPrivateModel
-    extends Omit<
-        CmsModelPluginModel,
-        | "isPrivate"
-        | "singularApiName"
-        | "pluralApiName"
-        | "fields"
-        | "isPlugin"
-        | "layout"
-        | "titleFieldId"
-        | "description"
-    > {
+interface CmsPrivateModel extends Omit<
+    CmsModelPluginModel,
+    | "isPrivate"
+    | "singularApiName"
+    | "pluralApiName"
+    | "fields"
+    | "isPlugin"
+    | "layout"
+    | "icon"
+    | "titleFieldId"
+    | "description"
+> {
     noValidate?: boolean;
     titleFieldId?: string;
     singularApiName?: never;
@@ -79,16 +77,16 @@ interface CmsPrivateModel
     fields: CmsModelFieldInput[];
 }
 
-export interface CmsPrivateModelFull
-    extends Omit<CmsPrivateModel, "fields" | "createdBy" | "createdOn" | "savedOn"> {
+export interface CmsPrivateModelFull extends Omit<
+    CmsPrivateModel,
+    "fields" | "createdBy" | "createdOn" | "savedOn"
+> {
     fields: CmsModelFieldBase[];
 }
 
 export type CmsModelInput = CmsApiModel | CmsPrivateModel | CmsApiModelFull | CmsPrivateModelFull;
 
-export interface CmsModelPluginModel
-    extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersion"> {
-    locale?: string;
+export interface CmsModelPluginModel extends Omit<CmsModelBase, "tenant"> {
     tenant?: string;
 }
 
@@ -120,14 +118,12 @@ export class CmsModelPlugin extends Plugin {
             : createPluralApiName(input.name);
 
         const modelPlugin: CmsModelPluginModel = {
-            group: {
-                id: "",
-                name: ""
-            },
+            group: input.group ?? "ungrouped",
             description: "",
             fields: [],
             isPlugin: true,
             isPrivate,
+            icon: null,
             layout: [],
             modelId: input.modelId,
             name: input.name,
@@ -297,12 +293,29 @@ export class CmsModelPlugin extends Plugin {
         if (this.options.validateLayout === false) {
             return;
         }
-        for (const field of model.fields) {
+
+        const countFieldInLayout = (fieldId: string, layout: any[][]): number => {
             let total = 0;
-            for (const row of model.layout) {
-                const count = row.filter(cell => cell === field.id).length;
-                total = total + count;
+            for (const row of layout) {
+                for (const cell of row) {
+                    if (typeof cell === "string") {
+                        if (cell === fieldId) {
+                            total++;
+                        }
+                    } else if (cell && typeof cell === "object" && Array.isArray(cell.tabs)) {
+                        for (const tab of cell.tabs) {
+                            if (Array.isArray(tab.layout)) {
+                                total += countFieldInLayout(fieldId, tab.layout);
+                            }
+                        }
+                    }
+                }
             }
+            return total;
+        };
+
+        for (const field of model.fields) {
+            const total = countFieldInLayout(field.id, model.layout);
             if (total === 1) {
                 continue;
             } else if (total > 1) {
@@ -328,25 +341,9 @@ export class CmsModelPlugin extends Plugin {
 }
 
 /**
- * @deprecated Use `createCmsModelPlugin` instead.
+ * IMPORTANT! This function should NOT be used outside the `api-headless-cms` package!
+ * @internal
  */
-export const createCmsModel = (
-    model: CmsModelInput,
-    options?: CmsModelPluginOptions
-): CmsModelPlugin => {
-    return new CmsModelPlugin(model, options);
-};
-
-/**
- * @deprecated Use `createModelPlugin` instead.
- */
-export const createCmsModelPlugin = (
-    model: CmsModelInput,
-    options?: CmsModelPluginOptions
-): CmsModelPlugin => {
-    return new CmsModelPlugin(model, options);
-};
-
 export const createModelPlugin = (
     model: CmsModelInput,
     options?: CmsModelPluginOptions
@@ -355,23 +352,9 @@ export const createModelPlugin = (
 };
 
 /**
- * @deprecated Use `createPrivateModelPlugin` instead.
+ * IMPORTANT! This function should NOT be used outside the `api-headless-cms` package!
+ * @internal
  */
-export const createPrivateModel = (
-    input: Omit<CmsPrivateModelFull, "group" | "isPrivate">
-): CmsPrivateModelFull => {
-    return {
-        authorization: false,
-        noValidate: true,
-        isPrivate: true,
-        group: {
-            id: "private",
-            name: "Private Models"
-        },
-        ...input
-    };
-};
-
 export const createPrivateModelPlugin = (
     input: Omit<CmsPrivateModelFull, "group" | "isPrivate">
 ): CmsModelPlugin => {
@@ -380,66 +363,11 @@ export const createPrivateModelPlugin = (
             authorization: false,
             noValidate: true,
             isPrivate: true,
-            group: {
-                id: "private",
-                name: "Private Models"
-            },
+            group: "private",
             ...input
         },
         {
             validateLayout: false
         }
     );
-};
-
-const ensureSingletonTag = (input?: string[]) => {
-    const tags = input || [];
-    return tags.includes(CMS_MODEL_SINGLETON_TAG) ? tags : [...tags, CMS_MODEL_SINGLETON_TAG];
-};
-
-/**
- * @deprecated Use `createSingleEntryModelPlugin` instead.
- */
-export const createSingleEntryModel = (input: CmsModelInput, options?: CmsModelPluginOptions) => {
-    return createCmsModelPlugin(
-        {
-            ...input,
-            tags: ensureSingletonTag(input.tags)
-        },
-        options
-    );
-};
-
-export const createSingleEntryModelPlugin = (
-    input: CmsModelInput,
-    options?: CmsModelPluginOptions
-) => {
-    return createModelPlugin(
-        {
-            ...input,
-            tags: ensureSingletonTag(input.tags)
-        },
-        options
-    );
-};
-
-/**
- * @deprecated Use `createSingleEntryPrivateModelPlugin` instead.
- */
-export const createSingleEntryPrivateModel = (
-    input: Omit<CmsPrivateModelFull, "group" | "isPrivate">
-) => {
-    return createPrivateModel({
-        ...input,
-        tags: ensureSingletonTag(input.tags)
-    });
-};
-
-export const createPrivateSingleEntryModelPlugin = (
-    input: Omit<CmsPrivateModelFull, "group" | "isPrivate">
-) => {
-    return createPrivateModelPlugin({
-        ...input,
-        tags: ensureSingletonTag(input.tags)
-    });
 };

@@ -1,4 +1,4 @@
-import { createDecorator } from "@webiny/di";
+import { BaseError } from "@webiny/feature/admin";
 import { GraphQLClient } from "./abstractions.js";
 import { EnvConfig } from "~/features/envConfig/index.js";
 
@@ -16,7 +16,7 @@ class RetryGraphQLClientImpl implements GraphQLClient.Interface {
         this.baseDelayMs = gqlClientConfig?.retries.delayInMillis ?? 100;
     }
 
-    async execute<TVariables = any, TResult = any>(
+    async execute<TResult = any, TVariables = any>(
         params: GraphQLClient.Request<TVariables>
     ): Promise<TResult> {
         let lastError: Error | undefined;
@@ -29,7 +29,11 @@ class RetryGraphQLClientImpl implements GraphQLClient.Interface {
 
                 // Don't retry GraphQL errors (business logic errors)
                 // Only retry network/infrastructure errors
-                if (this.isGraphQLError(error as Error)) {
+                if (
+                    this.isGraphQLError(error as Error) ||
+                    this.isAuthenticationError(error as BaseError) ||
+                    this.isMaintenanceError(error as BaseError)
+                ) {
                     throw error;
                 }
 
@@ -47,6 +51,14 @@ class RetryGraphQLClientImpl implements GraphQLClient.Interface {
         return error.message.includes("GraphQL");
     }
 
+    private isAuthenticationError(error: BaseError): boolean {
+        return error.code?.includes("Authentication/");
+    }
+
+    private isMaintenanceError(error: BaseError): boolean {
+        return error.code?.includes("Tenancy/");
+    }
+
     private calculateBackoff(attempt: number): number {
         // Exponential backoff: 100ms, 200ms, 400ms, etc.
         return Math.pow(2, attempt) * this.baseDelayMs;
@@ -57,8 +69,7 @@ class RetryGraphQLClientImpl implements GraphQLClient.Interface {
     }
 }
 
-export const RetryGraphQLClient = createDecorator({
-    abstraction: GraphQLClient,
+export const RetryGraphQLClient = GraphQLClient.createDecorator({
     decorator: RetryGraphQLClientImpl,
     dependencies: [EnvConfig]
 });

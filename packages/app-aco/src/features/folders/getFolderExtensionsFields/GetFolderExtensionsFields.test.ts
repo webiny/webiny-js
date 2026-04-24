@@ -11,10 +11,7 @@ import type { Folder } from "~/domain/folder/Folder.js";
 
 describe("GetFolderExtensionsFields", () => {
     const model = {
-        group: {
-            id: "private",
-            name: "Private Models"
-        },
+        group: "private",
         description: "",
         fields: [
             {
@@ -31,7 +28,7 @@ describe("GetFolderExtensionsFields", () => {
                         message: "Value is required."
                     }
                 ],
-                multipleValues: false,
+                list: false,
                 predefinedValues: {
                     values: [],
                     enabled: false
@@ -116,13 +113,13 @@ describe("GetFolderExtensionsFields", () => {
                 },
                 listValidation: [],
                 validation: [],
-                multipleValues: false,
+                list: false,
                 predefinedValues: {
                     values: [],
                     enabled: false
                 },
-                helpText: null,
-                placeholderText: null,
+                help: null,
+                placeholder: null,
                 renderer: null
             }
         ],
@@ -131,13 +128,11 @@ describe("GetFolderExtensionsFields", () => {
         pluralApiName: "AcoFolders",
         singularApiName: "AcoFolder",
         titleFieldId: "title",
-        locale: "en-US",
         tenant: "root",
         authorization: {
             permissions: false
         },
-        tags: ["type:model"],
-        webinyVersion: "0.0.0"
+        tags: ["type:model"]
     } as unknown as CmsModel;
 
     function setupTest(type: string) {

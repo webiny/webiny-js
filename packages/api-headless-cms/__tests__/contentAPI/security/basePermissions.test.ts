@@ -1,4 +1,4 @@
-import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
 
@@ -28,7 +28,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
         });
 
         const [modelGroupA] = await manageApiA.createContentModelGroupMutation({
-            data: { name: "Group A", icon: "x" }
+            data: { name: "Group A", icon: "x", slug: "group-a" }
         });
 
         await manageApiA.createContentModelMutation({
@@ -36,10 +36,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                 name: "Test Entry A",
                 singularApiName: "TestEntryA",
                 pluralApiName: "TestEntryAs",
-                group: {
-                    id: modelGroupA.data.createContentModelGroup.data.id,
-                    name: modelGroupA.data.createContentModelGroup.data.name
-                }
+                group: modelGroupA.data.createContentModelGroup.data.slug
             }
         });
 
@@ -50,7 +47,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
         });
 
         const [modelGroupB] = await manageApiB.createContentModelGroupMutation({
-            data: { name: "Group B", icon: "x" }
+            data: { name: "Group B", icon: "x", slug: "group-b" }
         });
 
         await manageApiB.createContentModelMutation({
@@ -58,10 +55,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                 name: "Test Entry B",
                 singularApiName: "TestEntryB",
                 pluralApiName: "TestEntryBs",
-                group: {
-                    id: modelGroupB.data.createContentModelGroup.data.id,
-                    name: modelGroupB.data.createContentModelGroup.data.name
-                }
+                group: modelGroupB.data.createContentModelGroup.data.slug
             }
         });
 
@@ -93,11 +87,11 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
         });
 
         const [modelGroup1] = await manageApiA.createContentModelGroupMutation({
-            data: { name: "Group 1", icon: "x" }
+            data: { name: "Group 1", icon: "x", slug: "group-1" }
         });
 
         const [modelGroup2] = await manageApiA.createContentModelGroupMutation({
-            data: { name: "Group 2", icon: "x" }
+            data: { name: "Group 2", icon: "x", slug: "group-2" }
         });
 
         await manageApiA.createContentModelMutation({
@@ -105,10 +99,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                 name: "Test Entry 1",
                 singularApiName: "TestEntryOne",
                 pluralApiName: "TestEntryOnes",
-                group: {
-                    id: modelGroup1.data.createContentModelGroup.data.id,
-                    name: modelGroup1.data.createContentModelGroup.data.name
-                }
+                group: modelGroup1.data.createContentModelGroup.data.slug
             }
         });
 
@@ -117,10 +108,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                 name: "Test Entry 2",
                 singularApiName: "TestEntryTwo",
                 pluralApiName: "TestEntryTwos",
-                group: {
-                    id: modelGroup2.data.createContentModelGroup.data.id,
-                    name: modelGroup2.data.createContentModelGroup.data.name
-                }
+                group: modelGroup2.data.createContentModelGroup.data.slug
             }
         });
 
@@ -135,9 +123,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                     own: false,
                     rwd: "r",
                     pw: "",
-                    groups: {
-                        "en-US": [modelGroup1.data.createContentModelGroup.data.id]
-                    }
+                    groups: [modelGroup1.data.createContentModelGroup.data.slug]
                 },
                 { _src: "x", name: "cms.contentEntry", own: false, rwd: "r", pw: "" }
             ]
@@ -154,9 +140,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                     own: false,
                     rwd: "r",
                     pw: "",
-                    groups: {
-                        "en-US": [modelGroup2.data.createContentModelGroup.data.id]
-                    }
+                    groups: [modelGroup2.data.createContentModelGroup.data.slug]
                 },
                 { _src: "y", name: "cms.contentEntry", own: false, rwd: "r", pw: "" }
             ]
@@ -206,10 +190,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                 name: "Test Entry A",
                 singularApiName: "TestEntryA",
                 pluralApiName: "TestEntryAs",
-                group: {
-                    id: modelGroup.data.createContentModelGroup.data.id,
-                    name: modelGroup.data.createContentModelGroup.data.name
-                }
+                group: modelGroup.data.createContentModelGroup.data.slug
             }
         });
 
@@ -224,10 +205,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                 name: "Test Entry B",
                 singularApiName: "TestEntryB",
                 pluralApiName: "TestEntryBs",
-                group: {
-                    id: modelGroup.data.createContentModelGroup.data.id,
-                    name: modelGroup.data.createContentModelGroup.data.name
-                }
+                group: modelGroup.data.createContentModelGroup.data.slug
             }
         });
 
@@ -267,10 +245,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                 name: "Test Entry 1",
                 singularApiName: "TestEntryOne",
                 pluralApiName: "TestEntryOnes",
-                group: {
-                    id: modelGroup.data.createContentModelGroup.data.id,
-                    name: modelGroup.data.createContentModelGroup.data.name
-                }
+                group: modelGroup.data.createContentModelGroup.data.slug
             }
         });
 
@@ -279,10 +254,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                 name: "Test Entry 2",
                 singularApiName: "TestEntryTwo",
                 pluralApiName: "TestEntryTwos",
-                group: {
-                    id: modelGroup.data.createContentModelGroup.data.id,
-                    name: modelGroup.data.createContentModelGroup.data.name
-                }
+                group: modelGroup.data.createContentModelGroup.data.slug
             }
         });
 
@@ -297,9 +269,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                     own: false,
                     rwd: "rwd",
                     pw: "",
-                    models: {
-                        "en-US": ["testEntry1"]
-                    }
+                    models: ["testEntry1"]
                 },
                 { _src: "x", name: "cms.contentEntry", own: true, rwd: "rwd", pw: "" }
             ]
@@ -316,9 +286,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
                     own: false,
                     rwd: "rwd",
                     pw: "",
-                    models: {
-                        "en-US": ["testEntry2"]
-                    }
+                    models: ["testEntry2"]
                 },
                 { _src: "y", name: "cms.contentEntry", own: true, rwd: "rwd", pw: "" }
             ]

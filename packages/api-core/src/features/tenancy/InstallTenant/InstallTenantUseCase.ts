@@ -7,11 +7,13 @@ import { TenantInstalledEvent } from "./events.js";
 import { DependencyResolver } from "./DependencyResolver.js";
 import type { TenantInstallationInput } from "./abstractions.js";
 import { UpdateTenantUseCase } from "~/features/tenancy/UpdateTenant/index.js";
+import { TenantContext } from "~/exports/api/tenancy.js";
 
 class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
     private resolver: DependencyResolver;
 
     constructor(
+        private tenantContext: TenantContext.Interface,
         private eventPublisher: EventPublisher.Interface,
         private appInstallers: AppInstaller.Interface[],
         private updateTenantUseCase: UpdateTenantUseCase.Interface
@@ -44,32 +46,48 @@ class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
         const installedApps: Array<{ appName: string; installer: AppInstaller.Interface }> = [];
 
         try {
-            // Execute installations in order
-            for (const appName of installationOrder) {
-                const installer = installerMap.get(appName)!;
-                const data = dataMap.get(appName)!;
+            /**
+             * We must run installers in the context of the tenant being installed!
+             */
+            const result = await this.tenantContext.withTenant(tenant, async () => {
+                // Execute installations in order
+                for (const appName of installationOrder) {
+                    const installer = installerMap.get(appName)!;
+                    const data = dataMap.get(appName)!;
 
-                try {
-                    await installer.install(tenant, data);
-                    installedApps.push({ appName, installer });
-                } catch (error) {
-                    // Installation failed - rollback everything
-                    console.error(`✗ ${appName} installation failed:`, error);
-                    await this.rollback(tenant, installedApps);
+                    try {
+                        await installer.install(tenant, data);
+                        installedApps.push({ appName, installer });
+                    } catch (error) {
+                        // Installation failed - rollback everything
+                        console.error(`✗ ${appName} installation failed:`, error);
+                        await this.rollback(tenant, installedApps);
 
-                    return Result.fail(
-                        new InstallTenantError({
-                            reason: error instanceof Error ? error.message : String(error),
-                            failedApp: appName,
-                            installedApps: installedApps.map(i => i.appName),
-                            cause: error instanceof Error ? error : undefined
-                        })
-                    );
+                        return Result.fail(
+                            new InstallTenantError({
+                                reason: error instanceof Error ? error.message : String(error),
+                                failedApp: appName,
+                                installedApps: installedApps.map(i => i.appName),
+                                cause: error instanceof Error ? error : undefined
+                            })
+                        );
+                    }
                 }
+                return Result.ok();
+            });
+
+            if (result.isFail()) {
+                return result;
             }
 
+            /**
+             * Back to root tenant context.
+             */
+
+            // Mark the tenant as installed
             await this.updateTenantUseCase.execute(tenant.id, {
-                isInstalled: true
+                isInstalled: true,
+                status: "enabled"
             });
 
             // Publish the installed event
@@ -80,7 +98,7 @@ class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
                 })
             );
 
-            return Result.ok(undefined);
+            return Result.ok();
         } catch (error) {
             // Unexpected error during installation loop
             await this.rollback(tenant, installedApps);
@@ -133,5 +151,10 @@ class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
 export const InstallTenantUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: InstallTenantUseCaseImpl,
-    dependencies: [EventPublisher, [AppInstaller, { multiple: true }], UpdateTenantUseCase]
+    dependencies: [
+        TenantContext,
+        EventPublisher,
+        [AppInstaller, { multiple: true }],
+        UpdateTenantUseCase
+    ]
 });

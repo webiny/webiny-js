@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import Helmet from "react-helmet";
-import { SecureRoute, HasPermission } from "@webiny/app-security/components/index.js";
+import { SecureRoute, HasPermission } from "@webiny/app-admin";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { CompositionScope } from "@webiny/react-composition";
 import { AdminConfig, AdminLayout } from "@webiny/app-admin";
@@ -26,21 +26,21 @@ const Loader = ({ children, ...props }: LoaderProps) => (
 const ContentModelEditor = lazy(
     () =>
         import(
-            /* webpackChunkName: "ViewsContentModelsContentModelEditor" */
+            /* webpackChunkName: "content-model-editor" */
             "./views/contentModels/ContentModelEditor.js"
         )
 );
 const ContentModelsView = lazy(
     () =>
         import(
-            /* webpackChunkName: "ViewsContentModelsContentModels" */
+            /* webpackChunkName: "content-models" */
             "./views/contentModels/ContentModels.js"
         )
 );
 const ContentModelGroupsView = lazy(
     () =>
         import(
-            /* webpackChunkName: "ViewsContentModelsContentModelGroups" */
+            /* webpackChunkName: "content-model-groups" */
             "./views/contentModelGroups/ContentModelGroups.js"
         )
 );

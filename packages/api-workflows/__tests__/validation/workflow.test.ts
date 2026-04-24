@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { workflowValidation } from "~/validation/workflow";
+import { workflowValidation } from "~/graphql/validation/workflow.js";
 
 describe("workflow validation", () => {
     it("should validate a simple workflow", async () => {
@@ -35,7 +35,9 @@ describe("workflow validation", () => {
             ]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.errors[0].message).toBe("Required");
+        expect(result.error!.issues[0].message).toBe(
+            "Invalid input: expected string, received undefined"
+        );
     });
 
     it("should fail validation if 'steps' is empty", async () => {
@@ -45,6 +47,6 @@ describe("workflow validation", () => {
             steps: []
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.errors[0].message).toBe("You must add at least one step.");
+        expect(result.error!.issues[0].message).toBe("You must add at least one step.");
     });
 });

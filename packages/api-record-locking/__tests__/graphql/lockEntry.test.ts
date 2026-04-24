@@ -127,7 +127,7 @@ describe("lock entry", () => {
                     lockEntry: {
                         data: null,
                         error: {
-                            code: "ENTRY_ALREADY_LOCKED",
+                            code: "RecordLocking/Entry/AlreadyLockedError",
                             message: "Entry is already locked for editing.",
                             data: {
                                 id: "someId#0001",

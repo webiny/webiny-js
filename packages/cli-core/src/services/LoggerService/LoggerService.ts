@@ -2,7 +2,7 @@ import { createImplementation } from "@webiny/di";
 import { GetArgvService, LoggerService } from "~/abstractions/index.js";
 import * as fs from "node:fs";
 import path from "node:path";
-import findUp from "find-up";
+import { findUpSync } from "find-up";
 import { pino, type Logger } from "pino";
 import pinoPretty from "pino-pretty";
 
@@ -72,7 +72,7 @@ export class DefaultLoggerService implements LoggerService.Interface {
         // Wanted to use `GetProjectSdkService` to get project root path, but
         // to get that, had to call async method, which is not allowed in constructor.
         // TODO: implement a better way to get project root path.
-        const webinyConfigPath = findUp.sync("webiny.config.tsx");
+        const webinyConfigPath = findUpSync("webiny.config.tsx");
         if (!webinyConfigPath) {
             // Should not happen, but just in case.
             throw new Error("Could not find project root path.");
@@ -101,7 +101,7 @@ export class DefaultLoggerService implements LoggerService.Interface {
 
     private getLogLevel() {
         const argv = this.getArgvService.execute();
-        return process.env.WEBINY_LOG_LEVEL || argv.logLevel || DEFAULT_LOG_LEVEL;
+        return process.env.WEBINY_CLI_LOG_LEVEL || argv.logLevel || DEFAULT_LOG_LEVEL;
     }
 }
 

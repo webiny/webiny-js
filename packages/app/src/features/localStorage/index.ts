@@ -1,6 +1,5 @@
-export { LocalStorageFeature } from "./feature.js";
 export {
-    LocalStorageService,
+    LocalStorage,
     LocalStorageGateway,
     LocalStorageRepository,
     LocalStorageConfig

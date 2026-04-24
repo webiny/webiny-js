@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins";
-import type { CmsModel, StorageOperationsCmsModel } from "~/types/index.js";
+import type { CmsEntryValues, CmsModel, StorageOperationsCmsModel } from "~/types/index.js";
 
 export interface StorageOperationsCmsModelPluginCallable {
     (model: CmsModel): StorageOperationsCmsModel;
@@ -20,16 +20,16 @@ export class StorageOperationsCmsModelPlugin extends Plugin {
         this.cb = cb;
     }
 
-    public getModel(input: CmsModel) {
+    public getModel<T extends CmsEntryValues>(input: CmsModel) {
         const cacheKey = this.createCacheKey(input);
         if (this.models[cacheKey]) {
-            return this.models[cacheKey];
+            return this.models[cacheKey] as unknown as StorageOperationsCmsModel<T>;
         }
         const model = this.cb(input);
 
         this.models[cacheKey] = model;
 
-        return model;
+        return model as unknown as StorageOperationsCmsModel<T>;
     }
 
     /**
@@ -39,6 +39,6 @@ export class StorageOperationsCmsModelPlugin extends Plugin {
      * The models created via the CRUD operations might get changed in the middle of the call, so we need to re-create the SO model.
      */
     private createCacheKey(model: CmsModel): string {
-        return [model.tenant, model.locale, model.modelId, model.savedOn || "unknown"].join("#");
+        return [model.tenant, model.modelId, model.savedOn || "unknown"].join("#");
     }
 }

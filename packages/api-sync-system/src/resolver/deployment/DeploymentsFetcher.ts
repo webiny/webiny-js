@@ -28,8 +28,8 @@ const deploymentsValidation = zod.array(
         primaryDynamoDbName: zod.string(),
         primaryDynamoDbHashKey: zod.string(),
         primaryDynamoDbRangeKey: zod.string(),
-        elasticsearchDynamodbTableArn: zod.string().optional(),
-        elasticsearchDynamodbTableName: zod.string().optional()
+        opensearchDynamodbTableArn: zod.string().optional(),
+        opensearchDynamodbTableName: zod.string().optional()
     })
 );
 
@@ -113,10 +113,8 @@ export class DeploymentsFetcher implements IDeploymentsFetcher {
                     primaryDynamoDbName: item.primaryDynamoDbName,
                     primaryDynamoDbHashKey: item.primaryDynamoDbHashKey,
                     primaryDynamoDbRangeKey: item.primaryDynamoDbRangeKey,
-                    elasticsearchDynamodbTableArn: item.elasticsearchDynamodbTableArn,
-                    elasticsearchDynamodbTableName: item.elasticsearchDynamodbTableName,
-                    logDynamodbTableName: item.primaryDynamoDbName,
-                    logDynamodbTableArn: item.primaryDynamoDbArn
+                    opensearchDynamodbTableArn: item.opensearchDynamodbTableArn,
+                    opensearchDynamodbTableName: item.opensearchDynamodbTableName
                 }
             });
         });

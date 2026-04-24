@@ -1,21 +1,49 @@
-import type { Sort as esSort } from "@webiny/api-elasticsearch/types.js";
-import { createSort, ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch";
-import type { PluginsContainer } from "@webiny/plugins";
+import type { Sort as OpenSearchSort } from "@webiny/api-opensearch/types.js";
+import { createSort, OpenSearchFieldPlugin } from "@webiny/api-opensearch";
 import type { CmsEntryListSort, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { ModelFields } from "./types.js";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword.js";
-import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search.js";
 import { createFieldPathFactory } from "~/operations/entry/elasticsearch/filtering/path.js";
 import { NoValueContainer } from "~/values/NoValueContainer.js";
+import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
+
+interface IMatchFieldResponse {
+    fieldId: string;
+    isValues: boolean;
+    order: "ASC" | "DESC";
+}
+
+const matchField = (input: string): IMatchFieldResponse | null => {
+    const valuesMatch = input.match(/^values_([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
+    if (valuesMatch) {
+        const [, fieldId, order] = valuesMatch;
+        return {
+            fieldId,
+            isValues: true,
+            order: order as "ASC" | "DESC"
+        };
+    }
+    const nonValues = input.match(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
+    if (!nonValues) {
+        return null;
+    }
+    const [, fieldId, order] = nonValues;
+    return {
+        fieldId,
+        isValues: false,
+        order: order as "ASC" | "DESC"
+    };
+};
 
 interface Params {
-    plugins: PluginsContainer;
     sort?: CmsEntryListSort;
     modelFields: ModelFields;
     model: CmsModel;
+    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
 }
-export const createElasticsearchSort = (params: Params): esSort => {
-    const { sort, modelFields, plugins } = params;
+
+export const createElasticsearchSort = (params: Params): OpenSearchSort => {
+    const { sort, modelFields, valueSearchRegistry } = params;
 
     if (!sort || sort.length === 0) {
         return [
@@ -27,30 +55,29 @@ export const createElasticsearchSort = (params: Params): esSort => {
         ];
     }
 
-    const searchPlugins = createSearchPluginList({
-        plugins
-    });
-
     const createFieldPath = createFieldPathFactory({
-        plugins: searchPlugins
+        valueSearchRegistry
     });
 
     const fieldIdToStorageIdIdMap: Record<string, string> = {};
 
-    const sortPlugins = Object.values(modelFields).reduce<Record<string, ElasticsearchFieldPlugin>>(
+    const sortPlugins = Object.values(modelFields).reduce<Record<string, OpenSearchFieldPlugin>>(
         (plugins, field) => {
             /**
              * We do not support sorting by nested fields.
              */
-            if (field.parents.length > 0) {
+            const isValues = field.parents.length === 1 && field.parents[0].fieldId === "values";
+            if (field.parents.length > 0 && !isValues) {
                 return plugins;
             }
-            const { fieldId, storageId } = field.field;
 
-            fieldIdToStorageIdIdMap[fieldId] = fieldId;
+            const fieldId = field.field.fieldId;
+            const fieldIdPath = isValues ? `values.${fieldId}` : fieldId;
+
+            fieldIdToStorageIdIdMap[fieldIdPath] = fieldIdPath;
 
             const { path } = createFieldPath({
-                key: storageId,
+                key: field.field.storageId,
                 field,
                 value: NoValueContainer.create(),
                 keyword: false,
@@ -59,7 +86,7 @@ export const createElasticsearchSort = (params: Params): esSort => {
             /**
              * Plugins must be stored with fieldId as key because it is later used to find the sorting plugin.
              */
-            plugins[fieldId] = new ElasticsearchFieldPlugin({
+            plugins[fieldIdPath] = new OpenSearchFieldPlugin({
                 unmappedType: field.unmappedType,
                 keyword: hasKeyword(field),
                 sortable: field.sortable,
@@ -70,8 +97,8 @@ export const createElasticsearchSort = (params: Params): esSort => {
             return plugins;
         },
         {
-            ["*"]: new ElasticsearchFieldPlugin({
-                field: ElasticsearchFieldPlugin.ALL,
+            ["*"]: new OpenSearchFieldPlugin({
+                field: OpenSearchFieldPlugin.ALL,
                 keyword: false
             })
         }
@@ -79,13 +106,14 @@ export const createElasticsearchSort = (params: Params): esSort => {
 
     const transformedSort = sort
         .map(value => {
-            const matched = value.match(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
+            const matched = matchField(value);
             if (!matched) {
                 return null;
             }
-            const [, fieldId, order] = matched;
-            if (fieldIdToStorageIdIdMap[fieldId]) {
-                return `${fieldIdToStorageIdIdMap[fieldId]}_${order}`;
+            const { fieldId, order, isValues } = matched;
+            const key = isValues ? `values.${fieldId}` : fieldId;
+            if (fieldIdToStorageIdIdMap[key]) {
+                return `${fieldIdToStorageIdIdMap[key]}_${order}`;
             }
 
             return value;

@@ -6,6 +6,7 @@ import {
     GetProject,
     GetPulumiService,
     LoggerService,
+    ProjectSdkParamsService,
     PulumiGetSecretsProviderService,
     PulumiSelectStackService
 } from "~/abstractions/index.js";
@@ -26,15 +27,16 @@ export class DefaultDeployApp implements DeployApp.Interface {
         private pulumiSelectStackService: PulumiSelectStackService.Interface,
         private getPulumiService: GetPulumiService.Interface,
         private pulumiGetSecretsProviderService: PulumiGetSecretsProviderService.Interface,
-        private logger: LoggerService.Interface
+        private logger: LoggerService.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
     async execute(params: DeployApp.Params) {
-        await this.buildAppWorkspaceService.execute(params);
+        await this.buildAppWorkspaceService.execute(params.app);
 
         const app = this.getApp.execute(params.app);
 
-        await this.pulumiSelectStackService.execute(app, params);
+        await this.pulumiSelectStackService.execute(app);
 
         // A Pulumi refresh might be executed before the deploy. For example,
         // this is needed if the user run the watch command prior to the deploy.
@@ -42,27 +44,30 @@ export class DefaultDeployApp implements DeployApp.Interface {
 
         const pulumi = await this.getPulumiService.execute({ app });
         const project = await this.getProject.execute();
+        const sdkParams = this.projectSdkParamsService.get();
 
         const env = createEnvConfiguration({
             configurations: [
-                withRegion(params),
-                withEnv(params),
-                withEnvVariant(params),
+                withRegion({ region: sdkParams.region }),
+                withEnv({ env: sdkParams.env }),
+                withEnvVariant({ variant: sdkParams.variant }),
                 withProjectName({ project }),
                 withPulumiConfigPassphrase()
             ]
         });
 
         const secretsProvider = this.pulumiGetSecretsProviderService.execute();
+
         const pulumiProcess = params.preview
             ? pulumi.run({
                   command: "preview",
                   args: {
                       diff: true,
-                      debug: !!params.debug
 
                       // Preview command does not accept "--secrets-provider" argument.
-                      // secretsProvider: PULUMI_SECRETS_PROVIDER
+                      // secretsProvider: PULUMI_SECRETS_PROVIDER,
+
+                      ...params.pulumiArgs
                   },
                   execa: { env }
               })
@@ -72,7 +77,7 @@ export class DefaultDeployApp implements DeployApp.Interface {
                       yes: true,
                       skipPreview: true,
                       secretsProvider,
-                      debug: !!params.debug
+                      ...params.pulumiArgs
                   },
                   execa: { env }
               });
@@ -102,6 +107,7 @@ export const deployApp = createImplementation({
         PulumiSelectStackService,
         GetPulumiService,
         PulumiGetSecretsProviderService,
-        LoggerService
+        LoggerService,
+        ProjectSdkParamsService
     ]
 });

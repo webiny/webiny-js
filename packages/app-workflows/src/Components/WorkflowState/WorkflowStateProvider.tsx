@@ -9,7 +9,7 @@ import type ApolloClient from "apollo-client";
 export interface IWorkflowStateProps {
     id: string;
     app: string;
-    identity: IIdentity | null;
+    identity: IIdentity;
     client: ApolloClient<object>;
     children: React.ReactElement | React.ReactElement[];
     title: string;
@@ -44,7 +44,7 @@ export const WorkflowStateProvider = (props: IWorkflowStateProps) => {
             workflowsRepository,
             title
         });
-    }, [app, id, identity?.id, title]);
+    }, [app, id, identity.id, title]);
 
     return (
         <WorkflowStateContext.Provider value={{ presenter }}>

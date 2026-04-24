@@ -5,13 +5,17 @@ import { getIdentity } from "~/utils/identity.js";
 import { getDate } from "~/utils/date.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
-type CreatePublishEntryDataParams = {
+interface ICreatePublishEntryDataParams<TValues extends CmsEntryValues = CmsEntryValues> {
     model: CmsModel;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
-    originalEntry: CmsEntry;
-    latestEntry: CmsEntry;
-};
+    originalEntry: CmsEntry<TValues>;
+    latestEntry: CmsEntry<TValues>;
+}
+
+interface ICreatePublishEntryDataResponse<T extends CmsEntryValues = CmsEntryValues> {
+    entry: CmsEntry<T>;
+}
 
 export const createPublishEntryData = async <T extends CmsEntryValues = CmsEntryValues>({
     model,
@@ -19,13 +23,11 @@ export const createPublishEntryData = async <T extends CmsEntryValues = CmsEntry
     getIdentity: getSecurityIdentity,
     originalEntry,
     latestEntry
-}: CreatePublishEntryDataParams): Promise<{
-    entry: CmsEntry<T>;
-}> => {
+}: ICreatePublishEntryDataParams<T>): Promise<ICreatePublishEntryDataResponse<T>> => {
     await validateModelEntryDataOrThrow({
         context,
         model,
-        data: originalEntry.values,
+        values: originalEntry.values,
         entry: originalEntry
     });
 
@@ -66,8 +68,12 @@ export const createPublishEntryData = async <T extends CmsEntryValues = CmsEntry
             originalEntry.revisionFirstPublishedBy,
             currentIdentity
         ),
-        revisionLastPublishedBy: getIdentity(currentIdentity)
-    } as CmsEntry<T>;
+        revisionLastPublishedBy: getIdentity(currentIdentity),
+
+        live: {
+            version: originalEntry.version
+        }
+    };
 
     return { entry };
 };

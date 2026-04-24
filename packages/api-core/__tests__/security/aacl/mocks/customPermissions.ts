@@ -1,10 +1,6 @@
 export const customPermissions = [
     { something: "custom" },
     { name: "custom" },
-    { locales: ["en-US"], name: "content.i18n" },
-    { name: "pb.*" },
-    { name: "pb.category" },
-    { name: "fb.form" },
     {
         name: "fm.file",
         own: true,
@@ -35,9 +31,8 @@ export const customPermissions = [
         rwd: "rwd"
     },
     { name: "security.*" },
-    { name: "security.group" },
+    { name: "security.role" },
     { name: "security.apiKey" },
     { name: "adminUsers.*" },
-    { name: "i18n.*" },
     { name: "*" }
 ];

@@ -8,7 +8,7 @@ import type {
     WcpProject
 } from "@webiny/wcp/types.js";
 import { WcpContext } from "./abstractions.js";
-import { wcpFetch } from "~/features/wcp/WcpContext/utils.js";
+import { wcpFetch } from "./utils.js";
 
 const wcpProjectEnvironment = getWcpProjectEnvironment();
 
@@ -84,6 +84,10 @@ export class WcpContextImpl implements WcpContext.Interface {
         return this.license.getProject();
     }
 
+    getProjectWithFeatureFlags(): WcpProject | null {
+        return this.getProject();
+    }
+
     getProjectEnvironment(): WcpProjectEnvironment | null {
         return wcpProjectEnvironment;
     }
@@ -128,6 +132,22 @@ export class WcpContextImpl implements WcpContext.Interface {
         return this.license.canUseWorkflows();
     }
 
+    canUseHcmsFieldPermissions(): boolean {
+        return this.license.canUseHcmsFieldPermissions();
+    }
+
+    canUseAiImageEnrichment(): boolean {
+        return this.license.canUseAiImageEnrichment();
+    }
+
+    canUseAiPageGeneration(): boolean {
+        return this.license.canUseAiPageGeneration();
+    }
+
+    canUseAiLexicalGeneration(): boolean {
+        return this.license.canUseAiLexicalGeneration();
+    }
+
     ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL): void {
         if (this.license.canUseFeature(wcpFeatureId)) {
             return;
@@ -157,5 +177,9 @@ export class WcpContextImpl implements WcpContext.Interface {
 
     async decrementTenants(): Promise<void> {
         await this.updateTenants("decrement");
+    }
+
+    toDto() {
+        return this.getRawLicense();
     }
 }

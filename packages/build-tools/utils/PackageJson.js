@@ -1,12 +1,12 @@
-import readJson from "read-json-sync";
-import findUp from "find-up";
+import { loadJsonFileSync } from "load-json-file";
+import { findUp } from "find-up";
 
 export class PackageJson {
     filePath;
     json;
 
     static fromFile(filePath) {
-        return new PackageJson(filePath, readJson(filePath));
+        return new PackageJson(filePath, loadJsonFileSync(filePath));
     }
 
     static async findClosest(fromPath) {

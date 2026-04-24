@@ -1,42 +1,24 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { CliCommandFactory, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { PrintInfoForEnv } from "./PrintInfoForEnv.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 
 export type IInfoCommandParams = Omit<IBaseAppParams, "app">;
 
-export class InfoCommand implements CliCommand.Interface<IInfoCommandParams> {
+export class InfoCommand implements CliCommandFactory.Interface<IInfoCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface
     ) {}
 
-    async execute(): Promise<CliCommand.CommandDefinition<IInfoCommandParams>> {
+    async execute(): Promise<CliCommandFactory.CommandDefinition<IInfoCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
 
         return {
             name: "info",
             description: "Lists relevant URLs for your Webiny project",
-            options: [
-                {
-                    name: "env",
-                    description: "Environment name (dev, prod, etc.)",
-                    type: "string"
-                },
-                {
-                    name: "variant",
-                    description: "Variant of the app to watch",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidVariantName(params.variant);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                }
-            ],
-
+            options: createBaseAppOptions(projectSdk),
             handler: async params => {
                 const ui = this.uiService;
 
@@ -47,7 +29,7 @@ export class InfoCommand implements CliCommand.Interface<IInfoCommandParams> {
 
                 if (params.env) {
                     await printInfoForEnv.execute({ env: params.env, variant: params.variant });
-                    ui.newLine();
+                    ui.emptyLine();
                 } else {
                     const existingEnvs = await projectSdk.listDeployedEnvironments();
 
@@ -72,7 +54,7 @@ export class InfoCommand implements CliCommand.Interface<IInfoCommandParams> {
 
                     for (const { env, variant } of existingEnvs) {
                         await printInfoForEnv.execute({ env, variant });
-                        ui.newLine();
+                        ui.emptyLine();
                     }
                 }
 
@@ -86,7 +68,7 @@ export class InfoCommand implements CliCommand.Interface<IInfoCommandParams> {
 }
 
 export const infoCommand = createImplementation({
-    abstraction: CliCommand,
+    abstraction: CliCommandFactory,
     implementation: InfoCommand,
     dependencies: [GetProjectSdkService, UiService]
 });

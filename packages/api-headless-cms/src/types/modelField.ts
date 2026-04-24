@@ -1,5 +1,16 @@
-import type { CmsModel } from "./model.js";
+import type { CmsModel, CmsModelLayout } from "./model.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import type { CmsDynamicZoneTemplate } from "~/types/fields/dynamicZoneField.js";
+
+export type FieldRuleAction = "hide" | "disable" | string;
+
+export interface FieldRule {
+    type: "accessControl" | "entryValue";
+    target: string;
+    operator: string;
+    value: string | number | boolean | null;
+    action: FieldRuleAction;
+}
 
 export type CmsModelFieldType =
     | "boolean"
@@ -56,17 +67,25 @@ export interface CmsModelField {
      */
     fieldId: string;
     /**
-     * A label for the field
+     * A label for the field.
      */
     label: string;
     /**
-     * Text below the field to clarify what is it meant to be in the field value
+     * Field description right below the label.
      */
-    helpText?: string | null;
+    description?: string | null;
     /**
-     * Text to be displayed in the field
+     * Note displayed below the input.
      */
-    placeholderText?: string | null;
+    note?: string | null;
+    /**
+     * Text in the tooltip next to the input label.
+     */
+    help?: string | null;
+    /**
+     * Placeholder text to be displayed in the field
+     */
+    placeholder?: string | null;
     /**
      * Are predefined values enabled? And list of them
      */
@@ -80,7 +99,7 @@ export interface CmsModelField {
      *
      * @default []
      */
-    validation?: CmsModelFieldValidation[];
+    validation: CmsModelFieldValidation[];
     /**
      * List of validations for the list of values, when a field is set to accept a list of values.
      * These validations will be applied to the entire list, and `validation` (see above) will be applied
@@ -88,12 +107,12 @@ export interface CmsModelField {
      *
      * @default []
      */
-    listValidation?: CmsModelFieldValidation[];
+    listValidation: CmsModelFieldValidation[];
     /**
      * Is this a multiple values field?
      *
      */
-    multipleValues?: boolean;
+    list?: boolean;
     /**
      * Fields can be tagged to give them contextual meaning.
      */
@@ -104,6 +123,10 @@ export interface CmsModelField {
      * @default {}
      */
     settings?: CmsModelFieldSettings;
+    /**
+     * Rules that control field visibility and editability (access control and entry value conditions).
+     */
+    rules?: FieldRule[];
 }
 
 /**
@@ -122,7 +145,7 @@ export interface CmsModelFieldInput {
     id: string;
     /**
      * Type of the field. A plugin for the field must be defined.
-     * @see CmsModelFieldToGraphQLPlugin
+     * @see CmsModelFieldToGraphQL
      */
     type: string;
     /**
@@ -134,13 +157,21 @@ export interface CmsModelFieldInput {
      */
     label: string;
     /**
-     * Text to display below the field to help user what to write in the field.
+     * Field description right below the label.
      */
-    helpText?: string | null;
+    description?: string | null;
     /**
-     * Text to display in the field.
+     * Note displayed below the input.
      */
-    placeholderText?: string | null;
+    note?: string | null;
+    /**
+     * Text in the tooltip next to the input label.
+     */
+    help?: string | null;
+    /**
+     * Placeholder text to be displayed in the field
+     */
+    placeholder?: string | null;
     /**
      * Fields can be tagged to give them contextual meaning.
      */
@@ -148,7 +179,7 @@ export interface CmsModelFieldInput {
     /**
      * Are multiple values allowed?
      */
-    multipleValues?: boolean;
+    list?: boolean;
     /**
      * Predefined values options for the field. Check the reference for more information.
      */
@@ -160,18 +191,21 @@ export interface CmsModelFieldInput {
     /**
      * List of validations for the field.
      */
-    validation?: CmsModelFieldValidation[];
+    validation: CmsModelFieldValidation[];
     /**
      * @see CmsModelField.listValidation
      */
-    listValidation?: CmsModelFieldValidation[];
+    listValidation: CmsModelFieldValidation[];
     /**
      * User defined settings.
      */
     settings?: {
-        showInApi?: boolean;
         [key: string]: any;
     };
+    /**
+     * Rules that control field visibility and editability (access control and entry value conditions).
+     */
+    rules?: FieldRule[];
 }
 
 /**
@@ -215,7 +249,7 @@ export interface CmsModelUpdateInput {
      * ]
      * ```
      */
-    layout: string[][];
+    layout: CmsModelLayout;
     /**
      * Tags for the content model.
      */
@@ -226,31 +260,6 @@ export interface CmsModelUpdateInput {
     titleFieldId?: string | null;
     descriptionFieldId?: string | null;
     imageFieldId?: string | null;
-}
-
-/**
- * Locked field in the content model
- *
- * @see CmsModel.lockedFields
- *
- * @category ModelField
- */
-export interface LockedField {
-    /**
-     * Locked field storage ID - one used to store values.
-     * We cannot change this due to old systems.
-     */
-    fieldId: string;
-    /**
-     * Is the field multiple values field?
-     */
-    multipleValues: boolean;
-    /**
-     * Field type.
-     */
-    type: string;
-
-    [key: string]: any;
 }
 
 /**
@@ -293,7 +302,7 @@ export interface CmsModelFieldSettings {
     /**
      * Object field has child fields - so it needs to have a layout.
      */
-    layout?: string[][];
+    layout?: CmsModelLayout;
     /**
      * Ref field.
      */
@@ -307,9 +316,9 @@ export interface CmsModelFieldSettings {
      */
     disableFullTextSearch?: boolean;
     /**
-     * Should the field be exposed in the API?
+     * Dynamic zone field templates.
      */
-    showInApi?: boolean;
+    templates?: CmsDynamicZoneTemplate[];
     /**
      * There are a lot of other settings that are possible to add, so we keep the type opened.
      */

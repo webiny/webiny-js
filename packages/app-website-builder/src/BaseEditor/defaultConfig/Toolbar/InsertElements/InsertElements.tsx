@@ -18,13 +18,8 @@ const GroupComponent = ({ item }: { item: ComponentGroupItem }) => {
     }
 
     return (
-        <div className="flex flex-row items-center p-sm bg-neutral-light rounded-sm gap-sm cursor-grab">
-            <Icon
-                label="Icon"
-                icon={<InlineSvg src={component.image!} className={"fill-neutral-strong"} />}
-                size={"md"}
-                className={"fill-neutral-strong"}
-            />
+        <div className="flex flex-row items-center p-sm bg-neutral-light rounded-sm gap-sm cursor-grab fill-neutral-strong">
+            <Icon label="Icon" icon={<InlineSvg src={component.image!} />} size={"md"} />
             <div className="text-sm font-medium text-neutral-primary text-center">
                 {component.label ?? component.name}
             </div>

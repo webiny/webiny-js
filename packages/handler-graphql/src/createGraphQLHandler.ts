@@ -21,15 +21,7 @@ const createCacheKey = (context: Context) => {
     // @ts-expect-error TODO: We should not be accessing `context` like this here.
     const tenant = context.tenancy?.getCurrentTenant();
 
-    // TODO: `getContentLocale` should be injected as a parameter.
-    // @ts-expect-error TODO: We should not be accessing `context` like this here.
-    const contentLocale = context.i18n?.getContentLocale();
-
-    return [
-        tenant ? `tenant:${tenant.id}` : null,
-        contentLocale ? `locale:${contentLocale.code}` : null,
-        plugins.length.toString()
-    ]
+    return [tenant ? `tenant:${tenant.id}` : null, plugins.length.toString()]
         .filter(Boolean)
         .join("#");
 };
@@ -75,7 +67,7 @@ export default (options: HandlerGraphQLOptions = {}): Plugin[] => {
             const contextCacheKey = createCacheKey(context as Context);
             if (!schema || cacheKey !== contextCacheKey) {
                 try {
-                    schema = createGraphQLSchema(context);
+                    schema = await createGraphQLSchema(context);
                     cacheKey = contextCacheKey;
                 } catch (ex) {
                     return reply.code(500).send(formatErrorPayload(ex));

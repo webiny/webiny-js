@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
 import { setupGroupAndModels } from "~tests/testHelpers/setup";
-import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 describe("content entry custom identities", () => {
     const manager = useCategoryManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
     const mockIdentityOne: IdentityData = {
@@ -33,9 +33,13 @@ describe("content entry custom identities", () => {
 
     it("should be possible to create an entry with different identity than the current user", async () => {
         const [createRegularResponse] = await manager.createCategory({
-            data: {
-                title: "Category Regular Identity",
-                slug: "category-regular-identity"
+            variables: {
+                data: {
+                    values: {
+                        title: "Category Regular Identity",
+                        slug: "category-regular-identity"
+                    }
+                }
             }
         });
         expect(createRegularResponse).toMatchObject({
@@ -52,12 +56,16 @@ describe("content entry custom identities", () => {
         });
 
         const [createCustomIdentityResponse] = await manager.createCategory({
-            data: {
-                title: "Category Custom Identity",
-                slug: "category-custom-identity",
-                createdBy: mockIdentityOne,
-                revisionCreatedBy: mockIdentityTwo,
-                modifiedBy: mockIdentityThree
+            variables: {
+                data: {
+                    values: {
+                        title: "Category Custom Identity",
+                        slug: "category-custom-identity"
+                    },
+                    createdBy: mockIdentityOne,
+                    revisionCreatedBy: mockIdentityTwo,
+                    modifiedBy: mockIdentityThree
+                }
             }
         });
 
@@ -77,19 +85,25 @@ describe("content entry custom identities", () => {
 
     it("should create a new entry revision with different identity than the current user", async () => {
         const [createRegularResponse] = await manager.createCategory({
-            data: {
-                title: "Category Regular Identity",
-                slug: "category-regular-identity"
+            variables: {
+                data: {
+                    values: {
+                        title: "Category Regular Identity",
+                        slug: "category-regular-identity"
+                    }
+                }
             }
         });
-        const id = createRegularResponse.data.createCategory.data.id;
+        const id = createRegularResponse.data.createCategory.data!.id;
 
         const [createRevisionCustomIdentityResponse] = await manager.createCategoryFrom({
-            revision: id,
-            data: {
-                createdBy: mockIdentityOne,
-                revisionCreatedBy: mockIdentityTwo,
-                modifiedBy: mockIdentityThree
+            variables: {
+                revision: id,
+                data: {
+                    createdBy: mockIdentityOne,
+                    revisionCreatedBy: mockIdentityTwo,
+                    modifiedBy: mockIdentityThree
+                }
             }
         });
         expect(createRevisionCustomIdentityResponse).toMatchObject({
@@ -108,19 +122,25 @@ describe("content entry custom identities", () => {
 
     it("should update an entry with different identity than the current user", async () => {
         const [createRegularResponse] = await manager.createCategory({
-            data: {
-                title: "Category Regular Identity",
-                slug: "category-regular-identity"
+            variables: {
+                data: {
+                    values: {
+                        title: "Category Regular Identity",
+                        slug: "category-regular-identity"
+                    }
+                }
             }
         });
-        const id = createRegularResponse.data.createCategory.data.id;
+        const id = createRegularResponse.data.createCategory.data!.id;
 
         const [updateCustomIdentityResponse] = await manager.updateCategory({
-            revision: id,
-            data: {
-                createdBy: mockIdentityOne,
-                revisionCreatedBy: mockIdentityTwo,
-                modifiedBy: mockIdentityThree
+            variables: {
+                revision: id,
+                data: {
+                    createdBy: mockIdentityOne,
+                    revisionCreatedBy: mockIdentityTwo,
+                    modifiedBy: mockIdentityThree
+                }
             }
         });
         expect(updateCustomIdentityResponse).toMatchObject({

@@ -1,11 +1,9 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import {
     createHandlerOnRequest,
     createModifyFastifyPlugin,
     createRoute,
     ResponseHeaders
 } from "@webiny/handler";
-import type { FileManagerContext } from "~/types.js";
 import { PrivateFilesAssetProcessor } from "./AssetDelivery/privateFiles/PrivateFilesAssetProcessor.js";
 import { PrivateAuthenticatedAuthorizer } from "./AssetDelivery/privateFiles/PrivateAuthenticatedAuthorizer.js";
 import { PrivateFileAssetRequestResolver } from "./AssetDelivery/privateFiles/PrivateFileAssetRequestResolver.js";
@@ -13,11 +11,11 @@ import type { Asset, AssetRequest } from "./index.js";
 import {
     AssetDeliveryConfigBuilder,
     AssetDeliveryConfigModifierPlugin,
-    AliasAssetRequestResolver,
     FilesAssetRequestResolver,
     createAssetDeliveryConfig
 } from "./index.js";
 import type { Reply } from "@webiny/handler/types.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 const noCacheHeaders = ResponseHeaders.create({
     "content-type": "application/json",
@@ -36,11 +34,7 @@ function assertAssetWasResolved(asset: Asset | undefined): asserts asset is Asse
     }
 }
 
-export interface AssetDeliveryParams {
-    documentClient: DynamoDBDocument;
-}
-
-export const setupAssetDelivery = (params: AssetDeliveryParams) => {
+export const setupAssetDelivery = () => {
     const outputAsset = async (reply: Reply, asset: Asset) => {
         const assetReply = await asset.output();
         const headers = assetReply.getHeaders();
@@ -68,7 +62,7 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
             let resolvedRequest: AssetRequest | undefined;
             let resolvedAsset: Asset | undefined;
 
-            // Create a `HandlerOnRequest` plugin to resolve `tenant` and `locale`, and allow the system to bootstrap.
+            // Create a `HandlerOnRequest` plugin to resolve `tenant`, and allow the system to bootstrap.
             const handlerOnRequest = createHandlerOnRequest(async (request, reply) => {
                 const requestResolver = configBuilder.getAssetRequestResolver();
                 resolvedRequest = await requestResolver.resolve(request);
@@ -83,7 +77,8 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                     return false;
                 }
 
-                const assetResolver = configBuilder.getAssetResolver();
+                const container = app.webiny.container;
+                const assetResolver = configBuilder.getAssetResolver(container);
 
                 resolvedAsset = await assetResolver.resolve(resolvedRequest);
 
@@ -97,19 +92,16 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
                     return false;
                 }
 
-                const assetLocale = resolvedAsset.getLocale();
-
                 request.headers = {
                     ...request.headers,
-                    "x-tenant": resolvedAsset.getTenant(),
-                    "x-i18n-locale": `default:${assetLocale};content:${assetLocale};`
+                    "x-tenant": resolvedAsset.getTenant()
                 };
 
                 return;
             });
 
             // Create the `Route` plugin, to handle all GET requests, and output the resolved asset.
-            const deliveryRoute = createRoute<FileManagerContext>(({ onGet, context }) => {
+            const deliveryRoute = createRoute<ApiCoreContext>(({ onGet, context }) => {
                 onGet(
                     "*",
                     async (_, reply) => {
@@ -159,11 +151,6 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
             config.decorateAssetRequestResolver(() => {
                 // This resolver works with `/files/*` requests.
                 return new FilesAssetRequestResolver();
-            });
-
-            config.decorateAssetRequestResolver(({ assetRequestResolver }) => {
-                // This resolver tries to resolve the request using aliases.
-                return new AliasAssetRequestResolver(params.documentClient, assetRequestResolver);
             });
 
             config.decorateAssetRequestResolver(({ assetRequestResolver }) => {

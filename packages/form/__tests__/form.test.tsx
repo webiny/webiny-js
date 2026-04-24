@@ -221,16 +221,22 @@ describe("Form", () => {
             onInvalid.mockReset();
             const priceInput = screen.getByTestId("price");
             await user.type(priceInput, "200");
+            // On blur, we expect validation to be triggered, and success message to be rendered.
+            fireEvent.blur(priceInput);
+            const successElement1 = screen.queryByTestId("price:validation-success");
+            expect(successElement1).toBeTruthy();
+            expect(successElement1!.innerHTML).toBe("Valid!");
+
+            // On submit, we expect the whole form to successfully validate and reset to "pristine" state.
             await user.click(submitBtn);
             await waitFor(() => onSubmit.mock.calls.length > 0);
             rerender(formElement);
-            const successElement = screen.queryByTestId("price:validation-success");
+            const successElement2 = screen.queryByTestId("price:validation-success");
             const errorElement = screen.queryByTestId("price:validation-error");
             expect(onSubmit).toHaveBeenCalledTimes(1);
             expect(onInvalid).toHaveBeenCalledTimes(0);
-            expect(successElement).toBeTruthy();
+            expect(successElement2).toBeNull();
             expect(errorElement).toBeNull();
-            expect(successElement!.innerHTML).toBe("Valid!");
         }
     });
 
@@ -309,17 +315,24 @@ describe("Form", () => {
     });
 
     test("should set new data through props", async () => {
-        const user = userEvent.setup();
         const onSubmit = vi.fn();
 
         const { rerender } = render(<EmptyForm onSubmit={onSubmit} data={{}} />);
 
+        const user = userEvent.setup();
         const submitBtn = screen.getByRole("button", { name: /submit/i });
+
         await user.click(submitBtn);
 
         expect(onSubmit).toHaveBeenLastCalledWith({});
 
         rerender(<EmptyForm onSubmit={onSubmit} data={{ email: "test@example.com" }} />);
+
+        /**
+         * Internally, form presenter is update via a requestAnimationFrame, so we need to wait for it.
+         */
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
         await user.click(submitBtn);
 
         await waitFor(() => onSubmit.mock.calls.length > 0);

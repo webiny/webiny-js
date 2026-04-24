@@ -1,9 +1,11 @@
 import { WebinyError } from "@webiny/error";
 import { Path } from "~/utils/Path.js";
 import { Permissions, ROOT_FOLDER } from "@webiny/shared-aco";
-import type { UpdateFlpUseCase as UseCaseAbstraction, UpdateFlpParams } from "./abstractions.js";
+import type { UpdateFlpParams, UpdateFlpUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { AcoContext, Folder, FolderLevelPermission, FolderPermission } from "~/types.js";
-import { FOLDER_MODEL_ID } from "~/folder/folder.model.js";
+import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
+import { FolderModel } from "~/domain/folder/abstractions.js";
+import { EntryId } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
 
 interface FlpUpdateData {
     parentId: string;
@@ -143,11 +145,16 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
             await this.context.aco.flp.batchUpdate(items);
 
             // Update all folders with the new path
-            const folderModel = await this.getFolderModel();
+            const folderModel = this.context.container.resolve(FolderModel);
             for (const item of items) {
                 const { id, data } = item;
                 // Directly update the folder in CMS storage to bypass any folder update event triggers.
-                await this.context.cms.updateEntry(folderModel, id, { path: data.path });
+                const entryId = EntryId.from(id);
+                await this.context.cms.updateEntry(folderModel, entryId.toString(), {
+                    values: {
+                        path: data.path
+                    }
+                });
             }
         } catch (error) {
             throw WebinyError.from(error, {
@@ -183,8 +190,10 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
     }
 
     private async listDirectChildren(flp: FolderLevelPermission): Promise<FolderLevelPermission[]> {
-        const [folders] = await this.context.security.withoutAuthorization(() => {
-            return this.context.aco.folder.listAll({
+        const listFolders = this.context.container.resolve(ListFoldersUseCase);
+
+        const result = await this.context.security.withoutAuthorization(() => {
+            return listFolders.execute({
                 where: {
                     type: flp.type,
                     parentId: flp.id
@@ -192,7 +201,11 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
             });
         });
 
-        return await Promise.all(folders.map(folder => this.getFlp(folder)));
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return await Promise.all(result.value.folders.map(folder => this.getFlp(folder)));
     }
 
     private async getFlp({
@@ -218,9 +231,5 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
         }
 
         return flp;
-    }
-
-    private async getFolderModel() {
-        return await this.context.cms.getModel(FOLDER_MODEL_ID);
     }
 }

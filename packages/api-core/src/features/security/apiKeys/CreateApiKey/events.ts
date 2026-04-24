@@ -7,15 +7,16 @@ export class ApiKeyBeforeCreateEvent extends DomainEvent<ApiKeyBeforeCreatePaylo
     eventType = "apiKey.beforeCreate" as const;
 
     getHandlerAbstraction() {
-        return ApiKeyBeforeCreateHandler;
+        return ApiKeyBeforeCreateEventHandler;
     }
 }
 
-export const ApiKeyBeforeCreateHandler = createAbstraction<IEventHandler<ApiKeyBeforeCreateEvent>>(
-    "ApiKeyBeforeCreateHandler"
-);
+/** Hook into API key lifecycle before an API key is created. */
+export const ApiKeyBeforeCreateEventHandler = createAbstraction<
+    IEventHandler<ApiKeyBeforeCreateEvent>
+>("ApiKeyBeforeCreateEventHandler");
 
-export namespace ApiKeyBeforeCreateHandler {
+export namespace ApiKeyBeforeCreateEventHandler {
     export type Interface = IEventHandler<ApiKeyBeforeCreateEvent>;
     export type Event = ApiKeyBeforeCreateEvent;
 }
@@ -24,15 +25,16 @@ export class ApiKeyAfterCreateEvent extends DomainEvent<ApiKeyAfterCreatePayload
     eventType = "apiKey.afterCreate" as const;
 
     getHandlerAbstraction() {
-        return ApiKeyAfterCreateHandler;
+        return ApiKeyAfterCreateEventHandler;
     }
 }
 
-export const ApiKeyAfterCreateHandler = createAbstraction<IEventHandler<ApiKeyAfterCreateEvent>>(
-    "ApiKeyAfterCreateHandler"
-);
+/** Hook into API key lifecycle after an API key is created. */
+export const ApiKeyAfterCreateEventHandler = createAbstraction<
+    IEventHandler<ApiKeyAfterCreateEvent>
+>("ApiKeyAfterCreateEventHandler");
 
-export namespace ApiKeyAfterCreateHandler {
+export namespace ApiKeyAfterCreateEventHandler {
     export type Interface = IEventHandler<ApiKeyAfterCreateEvent>;
     export type Event = ApiKeyAfterCreateEvent;
 }

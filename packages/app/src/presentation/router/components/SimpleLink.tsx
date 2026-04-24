@@ -24,7 +24,8 @@ export const SimpleLink = makeDecoratable(
                 event.metaKey ||
                 event.altKey ||
                 event.ctrlKey ||
-                event.shiftKey
+                event.shiftKey ||
+                rest.target === "_blank"
             ) {
                 return;
             }
@@ -33,10 +34,14 @@ export const SimpleLink = makeDecoratable(
             routerGateway.pushState(to);
         };
 
+        const onClick = rest.onClick ?? handleClick;
+
         return (
-            <a href={to} rel="noreferrer noopener" {...rest} onClick={handleClick}>
+            <a href={to} rel="noreferrer noopener" {...rest} onClick={onClick}>
                 {children}
             </a>
         );
     }
 );
+
+export const LinkComponent = SimpleLink;

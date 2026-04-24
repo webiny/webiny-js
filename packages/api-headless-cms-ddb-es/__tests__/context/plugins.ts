@@ -4,18 +4,19 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { PermissionsArg } from "./helpers";
 import { createPermissions } from "./helpers";
 import type { ContextPlugin } from "@webiny/api";
-import type { CmsContext } from "~/types";
+import type { CmsContext, HeadlessCmsStorageOperations } from "~/types";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import type { HeadlessCmsStorageOperations } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { createBackgroundTaskContext } from "@webiny/tasks";
-import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { ApiKey } from "@webiny/api-core/types/security";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import { createApiCore } from "@webiny/api-core";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
+import { createOpenSearchContext } from "@webiny/api-opensearch";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -44,12 +45,14 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const testProjectLicense = createTestWcpLicense();
+    const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
 
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
         plugins: [
             topPlugins,
+            createOpenSearchContext(elasticsearchClient),
             createApiCore({
                 storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
@@ -64,6 +67,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                 type: "context",
                 name: "context-security-tenant",
                 async apply(context) {
+                    // @ts-expect-error
                     context.security.getApiKeyByToken = async (
                         token: string
                     ): Promise<ApiKey | null> => {
@@ -74,7 +78,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                         return {
                             id: apiKey,
                             name: apiKey,
-                            tenant: tenant.id,
+                            slug: "apiKey-slug",
                             permissions: identity?.permissions || [],
                             token,
                             createdBy: {
@@ -83,17 +87,14 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                                 type: "admin"
                             },
                             description: "test",
-                            createdOn: new Date().toISOString(),
-                            webinyVersion: context.WEBINY_VERSION
+                            createdOn: new Date().toISOString()
                         };
                     };
                 }
             } as ContextPlugin<CmsContext>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            createHeadlessCmsContext({
-                storageOperations: cmsStorage.storageOperations
-            }),
+            createHeadlessCmsContext(),
             createBackgroundTaskContext(),
             createHeadlessCmsGraphQL(),
             plugins,

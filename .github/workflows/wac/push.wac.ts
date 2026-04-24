@@ -19,10 +19,18 @@ const ddbOsStorageOps = new DdbOsStorageOps();
 const DIR_WEBINY_JS = "v6";
 const DIR_TEST_PROJECT = "new-webiny-project";
 
-const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
-const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const installBuildSteps = createInstallBuildSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
+const yarnCacheSteps = createYarnCacheSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
+const globalBuildCacheSteps = createGlobalBuildCacheSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
+const runBuildCacheSteps = createRunBuildCacheSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
 
 const createE2EJobs = (storageOps: AbstractStorageOps) => {
     const jobNames = {
@@ -61,9 +69,11 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
     };
 
     if (storageOps.id === "ddb-os,ddb") {
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_3_ENDPOINT }}";
-        env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
+        env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
+        env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
+        env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
+        env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
+        env["OPENSEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
     }
 
     const projectSetupJob: NormalJob = createJob({
@@ -100,7 +110,7 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             ),
             {
                 name: "Create verdaccio-files artifact",
-                uses: "actions/upload-artifact@v4",
+                uses: "actions/upload-artifact@v6",
                 with: {
                     name: `verdaccio-files-${storageOps.shortId}`,
                     "retention-days": 1,
@@ -116,9 +126,18 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             },
             {
                 name: "Create a new Webiny project",
-                run: `npx create-webiny-project@local-npm ${DIR_TEST_PROJECT} --tag local-npm --no-interactive --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"region":"${AWS_REGION}","storageOperations":"${storageOps.shortId}"}'
+                run: `npx create-webiny-project@local-npm ${DIR_TEST_PROJECT} --tag local-npm --no-interactive --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}' --template-options '{"region":"${AWS_REGION}","storageOps":"${storageOps.shortId}"}'
 `
             },
+            ...(storageOps.shortId === "ddb-os"
+                ? [
+                      {
+                          name: "Configure OpenSearch domain name and index prefix in webiny.config.tsx",
+                          "working-directory": DIR_TEST_PROJECT,
+                          run: `sed -i 's|<Infra.OpenSearch enabled={true} />|<Infra.OpenSearch enabled={true} domainName={process.env.AWS_OPENSEARCH_DOMAIN_NAME \\|\\| "webiny-e2e-os"} indexPrefix={process.env.OPENSEARCH_INDEX_PREFIX \\|\\| ""} endpoint={process.env.OPENSEARCH_ENDPOINT} username={process.env.OPENSEARCH_USERNAME} password={process.env.OPENSEARCH_PASSWORD} />|g' webiny.config.tsx`
+                      }
+                  ]
+                : []),
             {
                 name: "Print CLI version",
                 "working-directory": DIR_TEST_PROJECT,
@@ -126,7 +145,7 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
             },
             {
                 name: "Create project-files artifact",
-                uses: "actions/upload-artifact@v4",
+                uses: "actions/upload-artifact@v6",
                 with: {
                     name: `project-files-${storageOps.shortId}`,
                     "retention-days": 1,
@@ -139,7 +158,21 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
                     ].join("\n")
                 }
             },
+            {
+                name: "Enable extension whitelabeling",
+                "working-directory": DIR_TEST_PROJECT,
+                run: "yarn webiny extension whitelabeling"
+            },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
+            ...(storageOps.shortId === "ddb-os"
+                ? [
+                      {
+                          name: "Verify DDB+OS deployment",
+                          "working-directory": DIR_TEST_PROJECT,
+                          run: `OUTPUT=$(yarn webiny output core --env dev --json) && echo "$OUTPUT" && echo "$OUTPUT" | jq -e '.databaseSetup == "ddb+os"' || (echo "ERROR: Expected databaseSetup to be 'ddb+os' but got a different value" && exit 1)`
+                      }
+                  ]
+                : []),
             ...withCommonParams(
                 [
                     // Commented this out b/c of an issue. Basically, the
@@ -226,9 +259,11 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         env["WEBINY_STORAGE"] = storageOps.id;
 
         if (storageOps.id === "ddb-os,ddb") {
-            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}";
-            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_3_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
+            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
+            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
+            env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
+            env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
+            env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
         }
     }
 
@@ -283,7 +318,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
 export const push = createWorkflow({
     name: `Push`,
-    on: { push: { branches: ["dev", "next"] } },
+    on: { push: { branches: ["dev", "next", "release/*"] } },
     jobs: {
         constants: createJob({
             name: "Create constants",
@@ -326,10 +361,10 @@ export const push = createWorkflow({
                 ...withCommonParams(
                     [
                         { name: "Install dependencies", run: "yarn --immutable" },
-                        { name: "Check code formatting", run: "yarn prettier:check" },
+                        { name: "Check code formatting", run: "yarn format:check" },
                         { name: "Check dependencies", run: "yarn adio" },
                         { name: "Check TS configs", run: "yarn check-ts-configs" },
-                        { name: "ESLint", run: "yarn eslint" },
+                        { name: "Lint", run: "yarn lint" },
                         {
                             name: "Check Package Node Modules",
                             run: "yarn check-package-dependencies"

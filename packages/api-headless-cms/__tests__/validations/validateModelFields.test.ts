@@ -1,20 +1,19 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { validateModelFields } from "~/crud/contentModel/validateModelFields";
-import { PluginsContainer } from "@webiny/plugins";
 import type { CmsContext } from "~/types";
 import {
     createTextField,
     createTextFieldWithDuplicatedStorageId,
     createTextFieldWithDuplicateFieldId,
     createTextFieldWithDuplicateId,
-    createTextFieldWithoutFieldId,
-    createTextFieldWithoutStorageId
+    createTextFieldWithoutFieldId
 } from "./fields/text";
 import type { CmsModelField } from "./fields/types";
 import { createNumberField } from "~tests/validations/fields/number";
 import { createObjectField } from "~tests/validations/fields/object";
 import { useHandler } from "~tests/testHelpers/useHandler";
 import { createTestModel as createModel } from "./models/test";
+import { validateModelFields } from "~/domain/contentModel/validation/modelFields";
+import { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 interface ErrorObject {
     message?: string;
@@ -47,7 +46,6 @@ describe("Validate model fields", () => {
     let textFieldWithDuplicatedId: CmsModelField;
     let textFieldWithDuplicatedFieldId: CmsModelField;
     let textFieldWithDuplicatedStorageId: CmsModelField;
-    let textFieldWithoutStorageId: CmsModelField;
     /**
      * Number
      */
@@ -56,10 +54,9 @@ describe("Validate model fields", () => {
     beforeEach(async () => {
         const { handler, tenant } = useHandler({});
         context = await handler({
-            path: "/cms/manage/en-US",
+            path: "/cms/manage",
             headers: {
                 "x-webiny-cms-endpoint": "manage",
-                "x-webiny-cms-locale": "en-US",
                 "x-tenant": tenant.id
             }
         });
@@ -69,7 +66,6 @@ describe("Validate model fields", () => {
         textFieldWithDuplicatedId = createTextFieldWithDuplicateId();
         textFieldWithDuplicatedFieldId = createTextFieldWithDuplicateFieldId();
         textFieldWithDuplicatedStorageId = createTextFieldWithDuplicatedStorageId();
-        textFieldWithoutStorageId = createTextFieldWithoutStorageId();
         // number
         numberField = createNumberField();
     });
@@ -129,7 +125,10 @@ describe("Validate model fields", () => {
     it("should throw an error if any of the fields type does not have the plugin equivalent", async () => {
         let error: ErrorObject | undefined = undefined;
         try {
-            context.plugins = new PluginsContainer();
+            context.container.registerInstance(CmsModelFieldToGraphQLRegistry, {
+                get: () => undefined,
+                getAll: () => []
+            });
             await validateModelFields({
                 context,
                 models: [],
@@ -237,26 +236,6 @@ describe("Validate model fields", () => {
         });
     });
 
-    it("should assign fieldId to the storageId on locked field", async () => {
-        await validateModelFields({
-            context,
-            models: [],
-            model: createModel({
-                fields: [textField, textFieldWithoutStorageId],
-                layout: [[textField.id], [textFieldWithoutStorageId.id]],
-                lockedFields: [
-                    {
-                        fieldId: textFieldWithoutStorageId.id,
-                        multipleValues: textFieldWithoutStorageId.multipleValues,
-                        type: textFieldWithoutStorageId.type
-                    }
-                ]
-            })
-        });
-
-        expect(textFieldWithoutStorageId.storageId).toEqual(textFieldWithoutStorageId.fieldId);
-    });
-
     it("should assign original field storageId to an updated one", async () => {
         const field: any = {
             ...textField,
@@ -339,48 +318,6 @@ describe("Validate model fields", () => {
 
         expect(error).toEqual({
             message: `Cannot update content model because field "${textFieldWithDuplicatedFieldId.storageId}" has fieldId "${textFieldWithDuplicatedFieldId.fieldId}", which is already used.`,
-            stack: expect.any(String)
-        });
-    });
-
-    it("should throw an error if schema cannot be generated for a model - field exists in built-in type", async () => {
-        const field = createTextField({
-            fieldId: "status"
-        });
-
-        let error: any;
-        try {
-            await validateModelFields({
-                context,
-                models: [],
-                model: createModel({
-                    fields: [field],
-                    layout: [[field.id]]
-                })
-            });
-        } catch (ex) {
-            error = extractError(ex);
-        }
-
-        expect(error).toEqual({
-            message:
-                "Cannot generate GraphQL schema when testing with the given model. Please check the response for more details.",
-            code: "GRAPHQL_SCHEMA_ERROR",
-            data: {
-                modelId: "test",
-                error: {
-                    stack: expect.any(String),
-                    message: `Field "TestInput.status" can only be defined once.
-
-Field "TestListWhereInput.status" can only be defined once.
-
-Field "TestListWhereInput.status_not" can only be defined once.
-
-Field "TestListWhereInput.status_in" can only be defined once.
-
-Field "TestListWhereInput.status_not_in" can only be defined once.`
-                }
-            },
             stack: expect.any(String)
         });
     });

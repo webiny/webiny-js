@@ -3,37 +3,38 @@ import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createAcoStorageOperations } from "~/createAcoStorageOperations.js";
 import type { AcoContext } from "~/types.js";
-import { createFolderCrudMethods } from "~/folder/folder.crud.js";
-import { CmsEntriesCrudDecorators } from "~/utils/decorators/CmsEntriesCrudDecorators.js";
 import { createFilterCrudMethods } from "~/filter/filter.crud.js";
 import { createFlpCrudMethods } from "~/flp/index.js";
-import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
-import { UpdateFolderFeature } from "~/features/folders/UpdateFolder/index.js";
-import { DeleteFolderFeature } from "~/features/folders/DeleteFolder/index.js";
-import { CreateFolderFeature } from "~/features/folders/CreateFolder/index.js";
-import { GetFolderFeature } from "~/features/folders/GetFolder/index.js";
-import { ListFoldersFeature } from "~/features/folders/ListFolders/index.js";
-import { GetFolderHierarchyFeature } from "~/features/folders/GetFolderHierarchy/index.js";
-import { GetAncestorsFeature } from "~/features/folders/GetAncestors/index.js";
-import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
+import {
+    FolderLevelPermissions,
+    FolderLevelPermissionsFeature
+} from "~/features/flp/FolderLevelPermissions/index.js";
+import { UpdateFolderFeature } from "~/features/folder/UpdateFolder/index.js";
+import { DeleteFolderFeature } from "~/features/folder/DeleteFolder/index.js";
+import { CreateFolderFeature } from "~/features/folder/CreateFolder/index.js";
+import { GetFolderFeature } from "~/features/folder/GetFolder/index.js";
+import { ListFoldersFeature } from "~/features/folder/ListFolders/index.js";
+import { GetFolderHierarchyFeature } from "~/features/folder/GetFolderHierarchy/index.js";
+import { GetAncestorsFeature } from "~/features/folder/GetAncestors/index.js";
 import { UpdateFlpOnFolderUpdatedFeature } from "~/features/flp/UpdateFlpOnFolderUpdated/index.js";
 import { DeleteFlpOnFolderDeletedFeature } from "~/features/flp/DeleteFlpOnFolderDeleted/index.js";
-import { EnsureFmFolderIsEmptyOnDeleteFeature } from "~/features/folders/EnsureFmFolderIsEmptyOnDelete/index.js";
-import { EnsureHcmsFolderIsEmptyOnDeleteFeature } from "~/features/folders/EnsureHcmsFolderIsEmptyOnDelete/index.js";
+import { EnsureHcmsFolderIsEmptyOnDeleteFeature } from "~/features/folder/EnsureHcmsFolderIsEmptyOnDelete/index.js";
 import { CreateFlpFeature } from "~/features/flp/CreateFlp/index.js";
 import { DeleteFlpFeature } from "~/features/flp/DeleteFlp/index.js";
 import { UpdateFlpFeature } from "~/features/flp/UpdateFlp/index.js";
-import { FolderLevelPermissionsFeature } from "~/features/flp/FolderLevelPermissions/index.js";
-import { EnsureFolderIsEmptyOnDeleteFeature } from "~/features/folders/EnsureFolderIsEmptyOnDelete/index.js";
-import {
-    FilterStorageOperations,
-    FolderStorageOperations
-} from "~/features/folders/shared/abstractions.js";
+import { EnsureFolderIsEmptyOnDeleteFeature } from "~/features/folder/EnsureFolderIsEmptyOnDelete/index.js";
+import { FilterStorageOperations } from "~/features/folder/shared/abstractions.js";
 import { ListFlpsFeature } from "~/features/flp/ListFlps/feature.js";
 import { GetFlpFeature } from "~/features/flp/GetFlp/feature.js";
-import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folders/ListFolderLevelPermissionsTargets/feature.js";
+import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folder/ListFolderLevelPermissionsTargets/feature.js";
 import { Tenant } from "@webiny/api-core/types/tenancy";
-import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
+import { CmsFlpFeature } from "~/features/cms/index.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { FolderModel as FolderModelAbstraction } from "~/domain/folder/abstractions.js";
+import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
+import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpty/feature.js";
+import { FOLDER_MODEL_ID, FolderModel } from "~/domain/folder/folder.model.js";
+import { FilterPrivateModel } from "~/filter/filter.model.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -46,6 +47,16 @@ const setupAcoContext = async (
 ): Promise<void> => {
     const { tenancy, security } = context;
 
+    context.container.register(FolderModel);
+    context.container.register(FilterPrivateModel);
+
+    const getModel = context.container.resolve(GetModelUseCase);
+
+    await context.security.withoutAuthorization(async () => {
+        const folderModel = await getModel.execute(FOLDER_MODEL_ID);
+        context.container.registerInstance(FolderModelAbstraction, folderModel.value);
+    });
+
     const getTenant = (): Tenant => {
         return tenancy.getCurrentTenant();
     };
@@ -55,16 +66,12 @@ const setupAcoContext = async (
          * TODO: We need to figure out a way to pass "cms" from outside (e.g. apps/api/graphql)
          */
         cms: context.cms,
-        /**
-         * TODO: This is required for "entryFieldFromStorageTransform" which access plugins from context.
-         */
-        getCmsContext: () => context,
+        container: context.container,
         documentClient: setupAcoContextParams.documentClient,
         security
     });
 
     const flpCrudMethods = createFlpCrudMethods({
-        getLocale,
         getTenant,
         storageOperations
     });
@@ -74,7 +81,6 @@ const setupAcoContext = async (
     /**
      * Register legacy dependencies via abstractions
      */
-    context.container.registerInstance(FolderStorageOperations, storageOperations.folder);
     context.container.registerInstance(FilterStorageOperations, storageOperations.filter);
 
     /**
@@ -92,11 +98,11 @@ const setupAcoContext = async (
 
     ListFolderLevelPermissionsTargetsFeature.register(context.container);
 
-    GetFolderHierarchyFeature.register(context.container, {
-        storageOperations: storageOperations.folder
-    });
+    GetFolderHierarchyFeature.register(context.container);
 
     GetAncestorsFeature.register(context.container);
+
+    EnsureFolderIsEmptyFeature.register(context.container);
 
     /**
      * Register FLP use cases and event handlers
@@ -107,26 +113,17 @@ const setupAcoContext = async (
     ListFlpsFeature.register(context.container, flpCrudMethods);
     GetFlpFeature.register(context.container, flpCrudMethods);
 
-    CreateFlpOnFolderCreatedFeature.register(context.container, {
-        tasks: context.tasks
-    });
+    CreateFlpOnFolderCreatedFeature.register(context.container);
 
-    UpdateFlpOnFolderUpdatedFeature.register(context.container, {
-        tasks: context.tasks
-    });
+    UpdateFlpOnFolderUpdatedFeature.register(context.container);
 
-    DeleteFlpOnFolderDeletedFeature.register(context.container, {
-        tasks: context.tasks
-    });
+    DeleteFlpOnFolderDeletedFeature.register(context.container);
 
     /**
      * Register folder event handlers
      */
-    EnsureFolderIsEmptyOnDeleteFeature.register(context.container, { context });
-
-    EnsureFmFolderIsEmptyOnDeleteFeature.register(context.container, { context });
-
-    EnsureHcmsFolderIsEmptyOnDeleteFeature.register(context.container, { context });
+    EnsureFolderIsEmptyOnDeleteFeature.register(context.container);
+    EnsureHcmsFolderIsEmptyOnDeleteFeature.register(context.container);
 
     /**
      * Setup legacy context
@@ -134,10 +131,8 @@ const setupAcoContext = async (
     const folderLevelPermissions = context.container.resolve(FolderLevelPermissions);
 
     context.aco = {
-        folder: createFolderCrudMethods({ container: context.container }),
         filter: createFilterCrudMethods({
             container: context.container,
-            getLocale,
             getTenant,
             storageOperations,
             folderLevelPermissions
@@ -146,7 +141,7 @@ const setupAcoContext = async (
     };
 
     if (context.wcp.canUseFolderLevelPermissions()) {
-        new CmsEntriesCrudDecorators({ context }).decorate();
+        CmsFlpFeature.register(context.container);
     }
 };
 

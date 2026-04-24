@@ -11,14 +11,37 @@
   "license": "MIT",
   "exports": {
     "./api": "./api/index.js",
-    "./admin": "./admin/index.js"
+    "./admin": "./admin/index.js",
+    "./*": "./*"
+  },
+  "webiny": {
+    "exports": {
+      "./api/index.ts": {
+        "exportPath": "./api",
+        "namedExports": [
+          "createFeature",
+          "createAbstraction",
+          "BaseError",
+          "Result",
+          "ResultAsync"
+        ]
+      },
+      "./admin/index.ts": {
+        "exportPath": "./admin",
+        "namedExports": [
+          "createFeature",
+          "createAbstraction",
+          "BaseError"
+        ]
+      }
+    }
   },
   "dependencies": {
     "@webiny/di": "^0.2.3"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   },
   "publishConfig": {
     "access": "public",

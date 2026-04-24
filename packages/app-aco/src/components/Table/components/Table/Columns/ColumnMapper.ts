@@ -10,9 +10,11 @@ export class ColumnMapper {
             header: column.header,
             hideable: column.hideable,
             name: column.name,
+            path: column.path,
             resizable: column.resizable,
             size: column.size,
             sortable: column.sortable,
+            truncate: column.truncate,
             visible: column.visible
         };
     }
@@ -22,15 +24,20 @@ export class ColumnMapper {
         cellRenderer: (
             row: T,
             cell: string | React.ReactElement
-        ) => string | number | JSX.Element | null
+        ) => string | number | React.JSX.Element | null
     ): DataTableColumn<T> {
+        // Prefix path with "data." if provided.
+        const accessorKey = column.path ? `data.${column.path}` : undefined;
+
         return {
+            accessorKey,
             header: column.header,
             className: column.className,
             size: column.size,
             enableHiding: column.hideable,
             enableResizing: column.resizable,
             enableSorting: column.sortable,
+            truncate: column.truncate,
             cell: column.cell ? (row: T) => cellRenderer(row, column.cell) : undefined
         };
     }

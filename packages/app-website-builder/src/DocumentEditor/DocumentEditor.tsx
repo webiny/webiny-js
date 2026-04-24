@@ -33,17 +33,17 @@ function BaseDocumentEditor<TDocument extends EditorDocument>({
     const editor = useMemo(() => new Editor<TDocument>(document), [document]);
 
     return (
-        <DialogsProvider>
-            <DndProvider backend={HTML5Backend}>
-                <StateInspector editor={editor} />
-                <DocumentEditorContext.Provider value={editor as Editor<TDocument>}>
+        <DndProvider backend={HTML5Backend}>
+            <StateInspector editor={editor} />
+            <DocumentEditorContext.Provider value={editor as Editor<TDocument>}>
+                <DialogsProvider>
                     {children ? <>{children}</> : null}
                     <CompositionScope name={name}>
                         <EditorComponent />
                     </CompositionScope>
-                </DocumentEditorContext.Provider>
-            </DndProvider>
-        </DialogsProvider>
+                </DialogsProvider>
+            </DocumentEditorContext.Provider>
+        </DndProvider>
     );
 }
 

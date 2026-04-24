@@ -30,22 +30,16 @@ export class Deployment implements IDeployment {
                     arn: this.services.primaryDynamoDbArn,
                     type
                 };
-            case "elasticsearch":
+            case "opensearch":
                 if (
-                    !this.services.elasticsearchDynamodbTableName ||
-                    !this.services.elasticsearchDynamodbTableArn
+                    !this.services.opensearchDynamodbTableName ||
+                    !this.services.opensearchDynamodbTableArn
                 ) {
                     throw new Error(`Unknown table type "${type}" - no data.`);
                 }
                 return {
-                    name: this.services.elasticsearchDynamodbTableName,
-                    arn: this.services.elasticsearchDynamodbTableArn,
-                    type
-                };
-            case "log":
-                return {
-                    name: this.services.logDynamodbTableName,
-                    arn: this.services.logDynamodbTableArn,
+                    name: this.services.opensearchDynamodbTableName,
+                    arn: this.services.opensearchDynamodbTableArn,
                     type
                 };
             default:

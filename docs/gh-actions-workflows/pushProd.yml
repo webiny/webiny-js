@@ -1,0 +1,59 @@
+name: Prod Branch - Push
+
+on:
+  push:
+    branches: [prod]
+
+# Ensures only one deployment to "prod" environment can be in progress at the same time.
+concurrency: prod
+
+jobs:
+  build-test-deploy:
+    name: Build and test
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max_old_space_size=4096
+      AWS_REGION: ${{ secrets.PROD_AWS_REGION }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PROD_PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PROD_PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.PROD_WEBINY_PULUMI_BACKEND }}
+      WEBINY_PROJECT_ID: ${{ secrets.PROD_WEBINY_PROJECT_ID }}
+      WEBINY_PROJECT_API_KEY: ${{ secrets.PROD_WEBINY_PROJECT_API_KEY }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.PROD_AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.PROD_AWS_REGION }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - uses: actions/checkout@v4
+
+      # Install and cache dependencies.
+      - uses: actions/cache@v4
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      # Run static code analysis.
+      - name: Check code formatting
+        run: yarn format
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Deploy
+        run: yarn webiny deploy --env prod
+
+      # Add additional steps if needed. For example, if you have additional E2E
+      # tests done with Cypress (https://www.cypress.io/), you can run them here.

@@ -1,10 +1,9 @@
 import type { SyntheticEvent } from "react";
-import React, { useCallback, useState, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "@emotion/styled";
-import { css } from "emotion";
-import type { ColorState, RGBColor } from "react-color";
+import { css } from "@emotion/css";
+import type { ColorResult, RGBColor } from "react-color";
 import { ChromePicker } from "react-color";
-import type { OnChangeHandler } from "react-color/lib/components/common/ColorWrap.js";
 import { Tooltip } from "@webiny/ui/Tooltip/index.js";
 
 // Icons
@@ -116,6 +115,7 @@ interface LexicalColorPickerProps {
     onChange?: (color: string) => void;
     onChangeComplete: (color: string, name?: string) => void;
     handlerClassName?: string;
+    allowCustomColor?: boolean;
 }
 
 const showPickerStyle = { display: "block" };
@@ -124,7 +124,8 @@ const hidePickerStyle = { display: "none" };
 export const LexicalColorPicker = ({
     value,
     onChange,
-    onChangeComplete
+    onChangeComplete,
+    allowCustomColor
 }: LexicalColorPickerProps) => {
     const [showPicker, setShowPicker] = useState(false);
     // Either a custom color or a color coming from the theme object.
@@ -142,7 +143,7 @@ export const LexicalColorPicker = ({
     }, []);
 
     const onColorChange = useCallback(
-        (color: ColorState, event: React.SyntheticEvent) => {
+        (color: Pick<ColorResult, "rgb">, event: React.SyntheticEvent) => {
             event.preventDefault();
             // controls of the picker are updated as user moves the mouse
             const customColor = getColorValue(color.rgb, color.rgb.a === 0 ? 1 : color.rgb.a);
@@ -155,7 +156,7 @@ export const LexicalColorPicker = ({
     );
 
     const onColorChangeComplete = useCallback(
-        ({ rgb }: ColorState, event: React.SyntheticEvent) => {
+        ({ rgb }: Pick<ColorResult, "rgb">, event: React.SyntheticEvent) => {
             event.preventDefault();
             const color = getColorValue(rgb, rgb.a === 0 ? 1 : rgb.a);
             setActualSelectedColor(color);
@@ -171,34 +172,26 @@ export const LexicalColorPicker = ({
 
     const { theme } = useRichTextEditor();
 
-    const themeColors: Record<string, any> = useMemo(() => {
-        const colors = theme?.styles?.colors ?? {};
-
-        return Object.keys(colors).reduce((acc, key) => {
-            return { ...acc, [key]: colors[key] };
-        }, {});
-    }, [theme?.styles?.colors]);
+    const themeColors = useMemo(() => theme?.colors ?? [], []);
 
     useEffect(() => {
-        const isThemeColor = Object.keys(themeColors).some(key => themeColors[key] === value);
+        const isThemeColor = themeColors.some(color => color.id === value);
         setIsThemeColor(isThemeColor);
     }, [themeColors, value]);
 
     return (
         <ColorPickerStyle>
-            {Object.keys(themeColors).map((key, index) => {
-                const color = themeColors[key];
-
+            {themeColors.map(color => {
                 return (
-                    <ColorBox key={index} className={color === value ? styles.selectedColor : ""}>
-                        <Tooltip content={<span>{color}</span>} placement="bottom">
+                    <ColorBox
+                        key={color.id}
+                        className={color.id === value ? styles.selectedColor : ""}
+                    >
+                        <Tooltip content={<span>{color.label}</span>} placement="bottom">
                             <Color
-                                style={{ backgroundColor: color }}
+                                style={{ backgroundColor: color.value }}
                                 onClick={() => {
-                                    // With page elements implementation, we want to store the color key and
-                                    // then the actual color will be retrieved from the theme object.
-                                    const colors = theme?.styles?.colors;
-                                    onChangeComplete(colors[key], key);
+                                    onChangeComplete(color.value, color.id);
                                 }}
                             />
                         </Tooltip>
@@ -206,24 +199,26 @@ export const LexicalColorPicker = ({
                 );
             })}
 
-            <ColorBox className={value && !isThemeColor ? styles.selectedColor : ""}>
-                <Tooltip content={<span>Color picker</span>} placement="bottom">
-                    <Color
-                        style={{ backgroundColor: isThemeColor ? "#fff" : value }}
-                        onClick={togglePicker}
-                    >
-                        <IconPalette className={iconPaletteStyle} />
-                    </Color>
-                </Tooltip>
-            </ColorBox>
+            {allowCustomColor ? (
+                <ColorBox className={value && !isThemeColor ? styles.selectedColor : ""}>
+                    <Tooltip content={<span>Color picker</span>} placement="bottom">
+                        <Color
+                            style={{ backgroundColor: isThemeColor ? "#fff" : value }}
+                            onClick={togglePicker}
+                        >
+                            <IconPalette className={iconPaletteStyle} />
+                        </Color>
+                    </Tooltip>
+                </ColorBox>
+            ) : null}
 
             <div style={showPicker ? showPickerStyle : hidePickerStyle}>
                 <ChromePicker
                     className={chromePickerStyle}
                     color={actualSelectedColor}
                     disableAlpha={true}
-                    onChange={onColorChange as OnChangeHandler}
-                    onChangeComplete={onColorChangeComplete as OnChangeHandler}
+                    onChange={onColorChange}
+                    onChangeComplete={onColorChangeComplete}
                 />
             </div>
         </ColorPickerStyle>

@@ -2,7 +2,10 @@
   "name": "@webiny/system-requirements",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
@@ -11,10 +14,10 @@
   "author": "Webiny Ltd.",
   "description": "Contains utilities for checking system requirements for Webiny projects",
   "dependencies": {
-    "chalk": "^4.1.2",
+    "chalk": "^5.6.2",
     "cli-table3": "^0.6.5",
     "execa": "^5.1.1",
-    "semver": "^7.7.3"
+    "semver": "^7.7.4"
   },
   "license": "MIT",
   "publishConfig": {

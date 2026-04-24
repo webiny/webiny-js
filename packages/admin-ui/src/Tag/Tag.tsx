@@ -11,7 +11,8 @@ import { TagIcon } from "./TagIcon.js";
 const tagVariants = cva(
     [
         "inline-flex items-center gap-xxs rounded-sm text-sm text-regular transition-colors overflow-hidden",
-        "focus:outline-none"
+        "focus:outline-none",
+        "h-[20px]"
     ],
     {
         variants: {
@@ -33,7 +34,7 @@ const tagVariants = cva(
                 ],
                 "neutral-base-outline": [
                     "border-sm border-solid px-[calc(var(--padding-xs-plus)-(var(--border-width-sm)))] py-[calc(var(--padding-xxs)-(var(--border-width-sm)))]",
-                    "bg-transparent border-neutral-muted text-neutral-primary",
+                    "bg-neutral-base border-neutral-muted text-neutral-primary",
                     "hover:bg-neutral-light",
                     "aria-disabled:bg-transparent aria-disabled:border-neutral-dimmed aria-disabled:text-neutral-disabled"
                 ],
@@ -101,7 +102,8 @@ const tagVariants = cva(
 );
 
 export interface TagProps
-    extends Omit<React.HTMLAttributes<HTMLSpanElement>, "children" | "content">,
+    extends
+        Omit<React.HTMLAttributes<HTMLSpanElement>, "children" | "content">,
         VariantProps<typeof tagVariants> {
     content: React.ReactNode;
     onDismiss?: (event: React.SyntheticEvent<HTMLSpanElement>) => void;

@@ -6,30 +6,35 @@ import {
     SystemInstallerRepository,
     type SystemInstallerViewModel,
     type WizardStep,
-    type WizardStepState
+    type WizardStepState,
+    type ErrorObject
 } from "./abstractions.js";
 import { TelemetryService } from "~/features/telemetry/index.js";
-
-const WIZARD_STEPS: WizardStep[] = [
-    { name: "introduction", label: "Introduction" },
-    { name: "basic-info", label: "Basic info" },
-    { name: "admin-account", label: "Admin account" },
-    { name: "finish", label: "Finish setup" }
-];
 
 class SystemInstallerPresenterImpl implements Abstraction.Interface {
     private loading = true;
     private isInstalled = false;
     private currentStep = 0;
-    private error: Error | undefined = undefined;
+    private error: ErrorObject | undefined = undefined;
     private installing = false;
     private startUsing = false;
     private installerData: Record<string, any> = {};
+    private wizardSteps: WizardStep[];
 
     constructor(
         private telemetry: TelemetryService.Interface,
         private repository: SystemInstallerRepository.Interface
     ) {
+        // TODO: Wizard steps need to be implemented via plugins, but this will do for now.
+        this.wizardSteps = [
+            { name: "introduction", label: "Introduction" },
+            { name: "basic-info", label: "Basic info" },
+            process.env.REACT_APP_IDP_TYPE === "cognito"
+                ? { name: "admin-account", label: "Admin account" }
+                : undefined,
+            { name: "finish", label: "Finish setup" }
+        ].filter(Boolean) as WizardStep[];
+
         makeAutoObservable(this, {}, { autoBind: true });
         this.initialize();
     }
@@ -63,8 +68,8 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
             loading: this.loading,
             isInstalled: this.isInstalled,
             startUsing: this.startUsing,
-            currentStep: WIZARD_STEPS[this.currentStep].name,
-            steps: WIZARD_STEPS.map((step, index) => {
+            currentStep: this.wizardSteps[this.currentStep].name,
+            steps: this.wizardSteps.map((step, index) => {
                 let state: WizardStepState = "idle";
                 if (index === this.currentStep) {
                     state = "current";
@@ -84,7 +89,7 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
     }
 
     nextStep = (data: Record<string, any> = {}): void => {
-        if (this.currentStep < WIZARD_STEPS.length - 1) {
+        if (this.currentStep < this.wizardSteps.length - 1) {
             Object.assign(this.installerData, data ?? {});
             this.currentStep++;
         }
@@ -97,7 +102,7 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
     };
 
     goToStep = (name: WizardStep["name"]): void => {
-        const stepIndex = WIZARD_STEPS.findIndex(step => step.name === name);
+        const stepIndex = this.wizardSteps.findIndex(step => step.name === name);
 
         if (stepIndex > -1) {
             this.currentStep = stepIndex;
@@ -132,6 +137,7 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
             runInAction(() => {
                 this.error = error;
                 this.installing = false;
+                console.log("error", error);
             });
         }
     };

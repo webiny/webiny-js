@@ -7,8 +7,8 @@ import type { CmsModel, CmsModelFieldTypePlugin } from "~/types.js";
 import { ReactComponent as RefIcon } from "@webiny/icons/link.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type { BindComponentRenderProp } from "@webiny/form";
-import { Bind, useForm } from "@webiny/form";
-import { useModel, useQuery } from "~/admin/hooks/index.js";
+import { Bind } from "@webiny/form";
+import { useQuery } from "~/admin/hooks/index.js";
 import { renderInfo } from "./ref/renderInfo.js";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/app-headless-cms-common";
 import { Grid, Label, MultiAutoComplete } from "@webiny/admin-ui";
@@ -16,14 +16,6 @@ import { Grid, Label, MultiAutoComplete } from "@webiny/admin-ui";
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const RefFieldSettings = () => {
-    const { model } = useModel();
-    const { data: formData } = useForm();
-    const lockedFields = model.lockedFields || [];
-    const fieldId = (formData || {}).fieldId || null;
-    const isFieldLocked = lockedFields.some(
-        lockedField => fieldId && lockedField.fieldId === fieldId
-    );
-
     const { data, loading, error } = useQuery<ListCmsModelsQueryResponse>(LIST_CONTENT_MODELS);
     const { showSnackbar } = useSnackbar();
 
@@ -91,7 +83,7 @@ const RefFieldSettings = () => {
                                     )
                                 }
                                 options={options}
-                                disabled={isFieldLocked || loading}
+                                disabled={loading}
                             />
                         );
                     }}
@@ -111,9 +103,9 @@ const plugin: CmsModelFieldTypePlugin = {
         label: t`Reference`,
         description: t`Reference existing content entries. For example, a book can reference one or more authors.`,
         icon: <RefIcon />,
-        allowMultipleValues: true,
+        allowList: true,
         allowPredefinedValues: false,
-        multipleValuesLabel: t`Use as a list of references`,
+        listLabel: t`Use as a list of references`,
         createField() {
             return {
                 type: this.type,

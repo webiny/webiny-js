@@ -1,4 +1,4 @@
-import type { IAuditLog, IIndexStorageItem } from "~/storage/types.js";
+import type { IAuditLog } from "~/storage/types.js";
 import type { IStorageListByEntityIdParams } from "~/storage/abstractions/Storage.js";
 import { BaseAccessPattern } from "~/storage/accessPatterns/BaseAccessPattern.js";
 import type {
@@ -31,7 +31,7 @@ export class EntityIdGlobalAccessPattern<
     public async list(params: T): Promise<IAccessPatternListResult> {
         const options = this.createOptions(params);
 
-        const result = await this.query<IIndexStorageItem>({
+        const result = await this.query({
             partitionKey: createPartitionKey(params),
             options
         });

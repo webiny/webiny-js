@@ -11,7 +11,7 @@ export interface CmsIdentity {
     /**
      * Full name of the user.
      */
-    displayName: string | null;
+    displayName: string;
     /**
      * Type of the user (admin, user)
      */

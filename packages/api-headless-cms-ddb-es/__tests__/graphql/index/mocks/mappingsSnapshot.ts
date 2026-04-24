@@ -6,8 +6,7 @@ export const createMappingsSnapshot = () => {
                     ids: {
                         match: "^id|entryId$",
                         mapping: {
-                            type: "string",
-                            keyword: true
+                            type: "keyword"
                         }
                     }
                 },

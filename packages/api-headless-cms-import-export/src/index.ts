@@ -4,38 +4,40 @@ import { attachHeadlessCmsImportExportGraphQL } from "~/graphql/index.js";
 import type { Context } from "./types.js";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { createHeadlessCmsImportExportCrud } from "~/crud/index.js";
-import {
-    createExportContentAssets,
-    createExportContentEntriesControllerTask,
-    createExportContentEntriesTask,
-    createImportFromUrlControllerTask,
-    createImportFromUrlDownloadTask,
-    createValidateImportFromUrlTask,
-    createImportFromUrlProcessEntriesTask,
-    createImportFromUrlProcessAssetsTask
-} from "~/tasks/index.js";
+import { ExportContentEntriesControllerTaskFeature } from "~/features/ExportContentEntriesControllerTask/feature.js";
+import { ExportContentEntriesTaskFeature } from "~/features/ExportContentEntriesTask/feature.js";
+import { ExportContentAssetsTaskFeature } from "~/features/ExportContentAssetsTask/feature.js";
+import { ValidateImportFromUrlTaskFeature } from "~/features/ValidateImportFromUrlTask/feature.js";
+import { ImportFromUrlControllerTaskFeature } from "~/features/ImportFromUrlControllerTask/feature.js";
+import { ImportFromUrlDownloadTaskFeature } from "~/features/ImportFromUrlDownloadTask/feature.js";
+import { ImportFromUrlProcessEntriesTaskFeature } from "~/features/ImportFromUrlProcessEntriesTask/feature.js";
+import { ImportFromUrlProcessAssetsTaskFeature } from "~/features/ImportFromUrlProcessAssetsTask/feature.js";
+import { createBeforeHandlerPlugin } from "@webiny/handler";
 
 export const createHeadlessCmsImportExport = (): Plugin[] => {
-    const plugin = new ContextPlugin<Context>(async context => {
+    const contextPlugin = new ContextPlugin<Context>(async context => {
         const installed = await isHeadlessCmsReady(context);
         if (!installed) {
             return;
         }
 
-        context.plugins.register(
-            createExportContentEntriesControllerTask(),
-            createExportContentEntriesTask(),
-            createExportContentAssets(),
-            createValidateImportFromUrlTask(),
-            createImportFromUrlControllerTask(),
-            createImportFromUrlDownloadTask(),
-            createImportFromUrlProcessEntriesTask(),
-            createImportFromUrlProcessAssetsTask()
-        );
+        ExportContentEntriesControllerTaskFeature.register(context.container);
+        ExportContentEntriesTaskFeature.register(context.container);
+        ExportContentAssetsTaskFeature.register(context.container);
+        ValidateImportFromUrlTaskFeature.register(context.container);
+        ImportFromUrlControllerTaskFeature.register(context.container);
+        ImportFromUrlDownloadTaskFeature.register(context.container);
+        ImportFromUrlProcessEntriesTaskFeature.register(context.container);
+        ImportFromUrlProcessAssetsTaskFeature.register(context.container);
 
         context.cmsImportExport = await createHeadlessCmsImportExportCrud(context);
+    });
+    contextPlugin.name = "headlessCms.context.importExport";
+
+    const beforeHandlerPlugin = createBeforeHandlerPlugin<Context>(async context => {
         await attachHeadlessCmsImportExportGraphQL(context);
     });
-    plugin.name = "headlessCms.context.importExport";
-    return [plugin];
+    beforeHandlerPlugin.name = "headlessCms.beforeHandler.importExport";
+
+    return [contextPlugin, beforeHandlerPlugin];
 };

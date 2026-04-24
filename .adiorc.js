@@ -1,53 +1,9 @@
 import path from "path";
-import get from "lodash/get.js";
 import getWorkspaces from "get-yarn-workspaces";
 
 export default {
-    parser: {
-        plugins: ["jsx", "classProperties", "dynamicImport", "throwExpressions", "typescript"]
-    },
-    traverse: ({ path, push }) => {
-        const { node } = path;
-        if (node.type === "CallExpression") {
-            if (
-                get(node, "callee.property.name") === "resolve" &&
-                get(node, "callee.object.name") === "require"
-            ) {
-                const possiblePackage = get(node, "arguments.0.value");
-                if (typeof possiblePackage === "string") {
-                    return push(possiblePackage);
-                }
-            }
-        }
-    },
     ignore: {
-        src: [
-            "~tests",
-            "~",
-            "async_hooks",
-            "aws-sdk",
-            "buffer",
-            "child_process",
-            "crypto",
-            "events",
-            "follow-redirects",
-            "fs",
-            "http",
-            "https",
-            "module",
-            "inspector",
-            "node:fs",
-            "node:timers",
-            "node:path",
-            "node:stream",
-            "os",
-            "path",
-            "readline",
-            "stream",
-            "util",
-            "url",
-            "worker_threads"
-        ],
+        src: ["~tests", "~"],
         dependencies: [
             "@babel/runtime",
             // Packages below are defined as peerDependencies in many 3rd party packages
@@ -56,8 +12,7 @@ export default {
             "@emotion/react",
             "@svgr/webpack",
             "@types/react",
-            "@webiny/cli",
-            "prop-types",
+            //"@webiny/cli",
             "apollo-cache",
             "apollo-client",
             "apollo-link",

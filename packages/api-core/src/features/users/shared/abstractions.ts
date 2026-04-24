@@ -9,7 +9,7 @@ export interface IAdminUsersRepositoryErrors {
     base: UserNotFoundError | UserStorageError;
 }
 
-type RepositoryError = IAdminUsersRepositoryErrors[keyof IAdminUsersRepositoryErrors];
+export type RepositoryError = IAdminUsersRepositoryErrors[keyof IAdminUsersRepositoryErrors];
 
 // Repository interface
 export interface IAdminUsersRepository {
@@ -21,7 +21,7 @@ export interface IAdminUsersRepository {
     clearCache(keys: Array<{ tenant: string; id: string }>): void;
 }
 
-// Abstraction constant
+/** Persist and retrieve admin users. */
 export const AdminUsersRepository =
     createAbstraction<IAdminUsersRepository>("AdminUsersRepository");
 

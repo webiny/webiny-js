@@ -2,6 +2,7 @@ import { createImplementation } from "@webiny/di";
 import {
     GetPulumiService,
     LoggerService,
+    ProjectSdkParamsService,
     PulumiGetConfigPassphraseService,
     PulumiGetSecretsProviderService,
     PulumiLoginService,
@@ -17,10 +18,11 @@ export class DefaultPulumiSelectStackService implements PulumiSelectStackService
         private pulumiLoginService: PulumiLoginService.Interface,
         private pulumiGetSecretsProviderService: PulumiGetSecretsProviderService.Interface,
         private pulumiGetConfigPassphraseService: PulumiGetConfigPassphraseService.Interface,
-        private loggerService: LoggerService.Interface
+        private loggerService: LoggerService.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
     ) {}
 
-    async execute(app: AppModel, params: PulumiSelectStackService.Params) {
+    async execute(app: AppModel) {
         const pulumi = await this.getPulumiService.execute({ app });
 
         await this.pulumiLoginService.execute(app);
@@ -28,7 +30,8 @@ export class DefaultPulumiSelectStackService implements PulumiSelectStackService
         const secretsProvider = this.pulumiGetSecretsProviderService.execute();
         const configPassphrase = this.pulumiGetConfigPassphraseService.execute();
 
-        const stackName = getStackName(params);
+        const sdkParams = this.projectSdkParamsService.get();
+        const stackName = getStackName({ env: sdkParams.env, variant: sdkParams.variant });
 
         await pulumi.run({
             command: ["stack", "select", stackName],
@@ -47,16 +50,16 @@ export class DefaultPulumiSelectStackService implements PulumiSelectStackService
          * A region from the input or process CANNOT be different to the region from the stack.
          * Also, if there is no stack, everything is ok.
          */
-        const region = params.region || process.env.AWS_REGION;
+        const region = sdkParams.region || process.env.AWS_REGION;
 
         const mustPerformCoreAppRegionMismatchCheck =
             this.mustPerformCoreAppRegionMismatchCheck(app);
 
         if (mustPerformCoreAppRegionMismatchCheck) {
-            const coreStack = await this.getAppStackOutput(app, params);
+            const coreStack = await this.getAppStackOutput(app);
             if (coreStack && coreStack.region && coreStack.region !== region) {
                 throw new Error(
-                    `Core App Region mismatch. Input: "${params.region || "none"}", process: "${
+                    `Core App Region mismatch. Input: "${sdkParams.region || "none"}", process: "${
                         process.env.AWS_REGION || "none"
                     }". In Core stack: "${
                         coreStack.region
@@ -65,14 +68,14 @@ export class DefaultPulumiSelectStackService implements PulumiSelectStackService
             }
         }
 
-        const targetStack = await this.getAppStackOutput(app, params);
+        const targetStack = await this.getAppStackOutput(app);
 
         if (!targetStack?.region || targetStack.region === region) {
             return;
         }
 
         throw new Error(
-            `Region mismatch. Input: "${params.region || "none"}", process: "${
+            `Region mismatch. Input: "${sdkParams.region || "none"}", process: "${
                 process.env.AWS_REGION || "none"
             }". In stack: "${
                 targetStack.region
@@ -84,7 +87,7 @@ export class DefaultPulumiSelectStackService implements PulumiSelectStackService
         return app.name !== "core" && app.name !== "blueGreen";
     }
 
-    private async getAppStackOutput(app: AppModel, params: PulumiSelectStackService.Params) {
+    private async getAppStackOutput(app: AppModel) {
         // We had to reimplement `getAppStackOutput` locally here. We could not use the existing
         // `PulumiGetStackOutputService` because, internally, it also depends on `PulumiSelectStackService`.
         // This would create a circular dependency. But also, this works just fine.
@@ -111,12 +114,7 @@ export class DefaultPulumiSelectStackService implements PulumiSelectStackService
 
             return stackOutputJson;
         } catch {
-            logger.error(
-                "Could not parse stack output as JSON.",
-                stackOutputString.stdout,
-                app,
-                params
-            );
+            logger.error("Could not parse stack output as JSON.", stackOutputString.stdout, app);
             return null;
         }
     }
@@ -130,6 +128,7 @@ export const pulumiSelectStackService = createImplementation({
         PulumiLoginService,
         PulumiGetSecretsProviderService,
         PulumiGetConfigPassphraseService,
-        LoggerService
+        LoggerService,
+        ProjectSdkParamsService
     ]
 });

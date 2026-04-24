@@ -10,11 +10,9 @@ import type {
     SerializedElementNode,
     Spread
 } from "lexical";
-import { ElementNode } from "lexical";
-import type { EditorTheme, ThemeEmotionMap } from "@webiny/lexical-theme";
-import { findTypographyStyleByHtmlTag } from "@webiny/lexical-theme";
-import { addClassNamesToElement, removeClassNamesFromElement } from "@lexical/utils";
-import type { ListNodeTagType } from "@lexical/list/LexicalListNode.js";
+import { ElementNode, addClassNamesToElement, removeClassNamesFromElement } from "lexical";
+import { Theme } from "@webiny/lexical-theme";
+import type { ListNodeTagType } from "@lexical/list";
 import { $getListDepth, wrapInListItem } from "~/utils/listNode.js";
 import type { ListItemNode } from "./ListItemNode.js";
 import { $isListItemNode } from "./ListItemNode.js";
@@ -74,11 +72,11 @@ export class ListNode extends ElementNode implements TypographyStylesNode {
             element.setAttribute("start", String(this.__start));
         }
 
-        this.updateElementWithThemeClasses(element, config.theme as EditorTheme);
+        this.updateElementWithThemeClasses(element, Theme.from(config.theme));
 
         // @ts-expect-error Internal field.
         element.__lexicalListType = this.__listType;
-        const theme = config.theme as EditorTheme;
+        const theme = Theme.from(config.theme);
         setListThemeClassNames(element, theme, this, this.__styleId);
         return element;
     }
@@ -170,7 +168,7 @@ export class ListNode extends ElementNode implements TypographyStylesNode {
             return true;
         }
 
-        setListThemeClassNames(dom, config.theme as EditorTheme, this, this.__styleId);
+        setListThemeClassNames(dom, Theme.from(config.theme), this, this.__styleId);
         return false;
     }
 
@@ -190,13 +188,9 @@ export class ListNode extends ElementNode implements TypographyStylesNode {
         return this.__tag;
     }
 
-    protected updateElementWithThemeClasses(element: HTMLElement, theme: EditorTheme): HTMLElement {
-        if (!theme?.emotionMap) {
-            return element;
-        }
-
+    protected updateElementWithThemeClasses(element: HTMLElement, theme: Theme): HTMLElement {
         if (!this.__styleId || !this.__className) {
-            this.setDefaultTypography(theme.emotionMap);
+            this.setDefaultTypography(theme);
         }
 
         if (this.__className) {
@@ -206,8 +200,8 @@ export class ListNode extends ElementNode implements TypographyStylesNode {
         return element;
     }
 
-    private setDefaultTypography(themeEmotionMap: ThemeEmotionMap) {
-        const typographyStyle = findTypographyStyleByHtmlTag(this.getTag(), themeEmotionMap);
+    private setDefaultTypography(theme: Theme) {
+        const typographyStyle = theme.getTypographyByTag(this.getTag());
         if (typographyStyle) {
             this.__styleId = typographyStyle.id;
             this.__className = typographyStyle.className;
@@ -217,21 +211,20 @@ export class ListNode extends ElementNode implements TypographyStylesNode {
 
 function setListThemeClassNames(
     dom: HTMLElement,
-    editorTheme: EditorTheme,
+    theme: Theme,
     node: ListNode,
     styleId: string
 ): void {
-    const editorThemeClasses = editorTheme;
     const classesToAdd = [];
     const classesToRemove = [];
-    const listTheme = editorThemeClasses.list;
-    const emotionMap = editorTheme?.emotionMap || {};
+    const listTheme = theme.tokens.list;
     if (listTheme !== undefined) {
+        const listTypography = theme.getTypographyById(styleId);
         const listLevelsClassNames = listTheme[`${node.__tag}Depth`] || [];
         const listDepth = $getListDepth(node) - 1;
         const normalizedListDepth = listDepth % listLevelsClassNames.length;
         const listLevelClassName = listLevelsClassNames[normalizedListDepth];
-        const listClassName = `${listTheme[node.__tag]} ${emotionMap[styleId]?.className ?? ""}`;
+        const listClassName = `${listTheme[node.__tag]} ${listTypography?.className ?? ""}`;
         let nestedListClassName;
         const nestedListTheme = listTheme.nested;
 

@@ -41,7 +41,7 @@ export const SystemInstaller = observer(({ children }: SystemInstallerProps) => 
                     <div className={"mb-lg"}>
                         <Logo />
                     </div>
-                    <Text as="div" size={"md"} className={"text-neutral-muted mb-lg"}>
+                    <Text as="div" size={"md"} className={"text-neutral-strong mb-lg"}>
                         Follow these steps to create your very first Webiny project:
                     </Text>
                     <SteppedProgress

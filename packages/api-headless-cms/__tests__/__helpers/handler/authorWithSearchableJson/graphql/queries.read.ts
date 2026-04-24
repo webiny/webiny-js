@@ -32,9 +32,11 @@ const authorWithSearchableJsonFields = `
     restoredBy ${identityFields}
    
     # user defined fields
-    name
-    info
-    nonSearchableJson
+    values {
+        name
+        info
+        nonSearchableJson
+    }
 `;
 
 export const createGetQuery = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">) => {

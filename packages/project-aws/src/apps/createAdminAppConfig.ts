@@ -1,5 +1,4 @@
 import { createReactAppConfig, type ReactAppConfigModifier } from "./createReactAppConfig.js";
-import { type ApiOutput, type CoreOutput } from "~/pulumi/index.js";
 
 export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
     return createReactAppConfig(baseParams => {
@@ -8,56 +7,14 @@ export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
         config.customEnv(env => ({
             ...env,
             PORT: process.env.PORT || 3001,
+            WEBINY_ADMIN_DEBUG: process.env.DEBUG,
             WEBINY_ADMIN_ENV: options.env,
             WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS: process.env
                 .WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS as string
         }));
 
-        config.pulumiOutputToEnv<CoreOutput>("core", ({ output, env }) => {
-            if (!output) {
-                return env;
-            }
-
-            return {
-                ...env,
-                WEBINY_ADMIN_DEPLOYMENT_ID: output.deploymentId
-            };
-        });
-
-        config.pulumiOutputToEnv<ApiOutput>("api", ({ output, env }) => {
-            if (!output) {
-                return env;
-            }
-
-            return {
-                ...env,
-                REACT_APP_USER_POOL_REGION: output.region,
-                REACT_APP_GRAPHQL_API_URL: `${output.apiUrl}/graphql`,
-                REACT_APP_API_URL: output.apiUrl,
-                REACT_APP_USER_POOL_ID: output.cognitoUserPoolId,
-                REACT_APP_USER_POOL_WEB_CLIENT_ID: output.cognitoAppClientId,
-                REACT_APP_USER_POOL_PASSWORD_POLICY: JSON.stringify(
-                    output.cognitoUserPoolPasswordPolicy
-                ),
-                REACT_APP_WEBSOCKET_URL: output.websocketApiUrl
-            };
-        });
-
         if (modifier) {
             modifier(baseParams);
         }
-    });
-};
-
-/**
- * Inject REACT_APP_USER_POOL_DOMAIN from the `core` app output into the `admin` app bundle.
- * The Cognito user pool domain is taken from the `cognitoUserPoolDomain` Pulumi app output.
- */
-export const configureAdminCognitoUserPoolDomain: ReactAppConfigModifier = modifier => {
-    modifier.config.pulumiOutputToEnv("core", ({ output, env }) => {
-        return {
-            ...env,
-            REACT_APP_USER_POOL_DOMAIN: output["cognitoUserPoolDomain"]
-        };
     });
 };

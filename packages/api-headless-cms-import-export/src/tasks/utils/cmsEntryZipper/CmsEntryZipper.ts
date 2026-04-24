@@ -36,9 +36,7 @@ const createBufferData = (params: ICmsEntryEntriesJson) => {
                  * We need to remove some fields that are not needed in the export.
                  */
                 delete item.tenant;
-                delete item.locale;
                 delete item.locked;
-                delete item.webinyVersion;
                 delete item.version;
                 delete item.entryId;
                 delete item.modelId;
@@ -86,7 +84,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
 
         let id = 1;
 
-        let continueAfter: string | undefined = undefined;
+        let continueAfter: string | null | undefined = undefined;
 
         let assets: IAsset[] | undefined = undefined;
         /**
@@ -112,7 +110,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
                     assets,
                     model: sanitizeModel(
                         {
-                            id: model.group.id
+                            slug: model.group
                         },
                         model
                     )

@@ -7,6 +7,8 @@
     { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
     { "path": "../error" },
+    { "path": "../feature" },
+    { "path": "../handler" },
     { "path": "../handler-db" },
     { "path": "../utils" },
     { "path": "../plugins" }
@@ -28,13 +30,18 @@
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

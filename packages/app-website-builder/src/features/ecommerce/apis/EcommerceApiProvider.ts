@@ -1,13 +1,17 @@
+import { createAbstraction } from "@webiny/feature/admin";
 import type { IEcommerceApi } from "~/ecommerce/index.js";
 import type { EcommerceApiManifest } from "./EcommerceApiManifest.js";
 import type { IEcommerceSettings } from "~/features/ecommerce/settings/types.js";
 
-interface IEcommerceApiProvider {
+export interface IEcommerceApiProvider {
     addApiManifest(manifest: EcommerceApiManifest): void;
     getApiManifest(name: string): EcommerceApiManifest | undefined;
     getApiManifests(): EcommerceApiManifest[];
     getApi(name: string): Promise<IEcommerceApi | undefined>;
 }
+
+export const EcommerceApiProviderAbstraction =
+    createAbstraction<IEcommerceApiProvider>("EcommerceApiProvider");
 
 export interface IEcommerceSettingsLoader {
     (name: string): Promise<IEcommerceSettings | undefined>;

@@ -6,7 +6,6 @@ import {
     ApiFileManager,
     ApiGateway,
     ApiGraphql,
-    ApiMigration,
     ApiWebsocket,
     CoreOutput,
     VpcConfig
@@ -23,11 +22,11 @@ import type { WithServiceManifest } from "~/pulumi/utils/withServiceManifest.js"
 import { ApiScheduler } from "~/pulumi/apps/api/ApiScheduler.js";
 import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
-import { getEsConfigFromExtension } from "../extensions/getEsConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
-import { License } from "@webiny/wcp";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
 import { ApiPulumi } from "@webiny/project/abstractions/index.js";
+import { ApiCustomDomains as apiCustomDomainsExt } from "~/pulumi/extensions/ApiCustomDomains.js";
+import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -42,32 +41,38 @@ export const createApiPulumiApp = () => {
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const openSearchExtensionConfig = getOsConfigFromExtension(projectConfig);
-            const elasticSearchExtensionConfig = getEsConfigFromExtension(projectConfig);
 
-            let searchEngineParams:
-                | typeof openSearchExtensionConfig
-                | typeof elasticSearchExtensionConfig
-                | null = null;
+            let searchEngineParams: typeof openSearchExtensionConfig | null = null;
 
             if (openSearchExtensionConfig) {
                 searchEngineParams = openSearchExtensionConfig;
-            } else if (elasticSearchExtensionConfig) {
-                searchEngineParams = elasticSearchExtensionConfig;
             }
 
             if (searchEngineParams) {
                 const params = searchEngineParams;
                 if (typeof params === "object") {
+                    if (params.endpoint) {
+                        process.env.OPENSEARCH_ENDPOINT = params.endpoint;
+                    }
+
                     if (params.domainName) {
-                        process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME = params.domainName;
+                        process.env.AWS_OS_DOMAIN_NAME = params.domainName;
                     }
 
                     if (params.indexPrefix) {
-                        process.env.ELASTIC_SEARCH_INDEX_PREFIX = params.indexPrefix;
+                        process.env.OPENSEARCH_INDEX_PREFIX = params.indexPrefix;
                     }
 
                     if (params.sharedIndexes) {
-                        process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
+                        process.env.OPENSEARCH_SHARED_INDEXES = "true";
+                    }
+
+                    if (params.username) {
+                        process.env.OPENSEARCH_USERNAME = params.username;
+                    }
+
+                    if (params.password) {
+                        process.env.OPENSEARCH_PASSWORD = params.password;
                     }
                 }
             }
@@ -82,12 +87,12 @@ export const createApiPulumiApp = () => {
 
             // <-------------------- Enterprise start -------------------->
             app.addHandler(async () => {
-                const license = await License.fromEnvironment();
+                const featureFlags = await sdk.getFeatureFlags();
 
                 const usingAdvancedVpcParams =
                     vpcExtensionsConfig && typeof vpcExtensionsConfig !== "boolean";
 
-                if (license.canUseFileManagerThreatDetection()) {
+                if (featureFlags.isFileManagerThreatDetectionEnabled()) {
                     handleGuardDutyEvents(app as ApiPulumiApp);
                 }
 
@@ -159,15 +164,16 @@ export const createApiPulumiApp = () => {
                     COGNITO_REGION: getEnvVariableAwsRegion(),
                     COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
                     DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_LOG: core.logDynamodbTableName,
                     DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName,
-                    DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
-                    ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
+                    DB_TABLE_OPENSEARCH: core.opensearchDynamodbTableName,
+                    OPENSEARCH_ENDPOINT: core.opensearchDomainEndpoint,
 
                     // Not required. Useful for testing purposes / ephemeral environments.
                     // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
-                    ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
-                    ELASTICSEARCH_SHARED_INDEXES: process.env.ELASTICSEARCH_SHARED_INDEXES,
+                    OPENSEARCH_INDEX_PREFIX: process.env.OPENSEARCH_INDEX_PREFIX,
+                    OPENSEARCH_SHARED_INDEXES: process.env.OPENSEARCH_SHARED_INDEXES,
+                    OPENSEARCH_USERNAME: process.env.OPENSEARCH_USERNAME,
+                    OPENSEARCH_PASSWORD: process.env.OPENSEARCH_PASSWORD,
 
                     S3_BUCKET: core.fileManagerBucketId,
                     EVENT_BUS: core.eventBusArn,
@@ -181,7 +187,6 @@ export const createApiPulumiApp = () => {
             const fileManager = app.addModule(ApiFileManager, {
                 env: {
                     DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_LOG: core.logDynamodbTableName,
                     DB_TABLE_AUDIT_LOGS: core.auditLogsDynamodbTableName
                 }
             });
@@ -236,13 +241,17 @@ export const createApiPulumiApp = () => {
 
             const cloudfront = app.addModule(ApiCloudfront);
             const backgroundTask = app.addModule(ApiBackgroundTask);
-            const migration = app.addModule(ApiMigration);
             const scheduler = app.addModule(ApiScheduler);
 
-            // const domains = app.getParam(projectAppParams.domains);
-            // if (domains) {
-            //     applyCustomDomain(cloudfront, domains);
-            // }
+            const [apiCustomDomains] = projectConfig.extensionsByType(apiCustomDomainsExt);
+            if (apiCustomDomains) {
+                const { domains, sslMethod, certificateArn } = apiCustomDomains.params;
+                applyCustomDomain(cloudfront, {
+                    domains,
+                    sslSupportMethod: sslMethod,
+                    acmCertificateArn: certificateArn
+                });
+            }
 
             app.addOutputs({
                 awsAccountId: getAwsAccountId(app),
@@ -252,25 +261,21 @@ export const createApiPulumiApp = () => {
                 cognitoUserPoolPasswordPolicy: core.cognitoUserPoolPasswordPolicy,
                 dynamoDbTable: core.primaryDynamodbTableName,
                 auditLogsDynamoDbTable: core.auditLogsDynamodbTableName,
-                migrationLambdaArn: migration.function.output.arn,
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 graphqlLambdaRole: graphql.role.output.arn,
                 graphqlLambdaRoleName: graphql.role.output.name,
                 backgroundTaskLambdaArn: backgroundTask.backgroundTask.output.arn,
                 backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn,
-                fileManagerManageLambdaArn: fileManager.functions.manage.output.arn,
-                fileManagerManageLambdaRole: fileManager.roles.manage.output.arn,
-                fileManagerManageLambdaRoleName: fileManager.roles.manage.output.name,
                 fileManagerDownloadLambdaArn: fileManager.functions.download.output.arn,
                 websocketApiId: websocket.websocketApi.output.id,
                 websocketApiUrl: websocket.websocketApiUrl,
                 schedulerLambdaInvokeRole: scheduler.invokeRole.output.arn
             });
 
-            // Only add `dynamoDbElasticsearchTable` output if using search engine (ES/OS).
+            // Only add `dynamoDbOpensearchTable` output if using search engine (ES/OS).
             if (searchEngineParams) {
                 app.addOutputs({
-                    dynamoDbElasticsearchTable: core.elasticsearchDynamodbTableName
+                    dynamoDbOpensearchTable: core.opensearchDynamodbTableName
                 });
             }
 
@@ -304,7 +309,6 @@ export const createApiPulumiApp = () => {
                 apiGateway,
                 websocket,
                 cloudfront,
-                migration,
                 backgroundTask,
                 scheduler
             };

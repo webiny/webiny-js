@@ -32,7 +32,7 @@ interface TemplateDialogProps {
 
 export const TemplateDialog = (props: TemplateDialogProps) => {
     const [showWarning, setWarning] = useState(false);
-    const newTemplate = !Boolean(props.template);
+    const newTemplate = !props.template;
     const dialogTitle = newTemplate ? "Add Template" : "Edit Template";
     const submitLabel = newTemplate ? "Add Template" : "Update Template";
 
@@ -100,8 +100,8 @@ export const TemplateDialog = (props: TemplateDialogProps) => {
                     title={dialogTitle}
                     actions={
                         <>
-                            <Dialog.CancelButton />
-                            <Dialog.ConfirmButton onClick={submit} text={submitLabel} />
+                            <Dialog.CancelAction />
+                            <Dialog.ConfirmAction onClick={submit} text={submitLabel} />
                         </>
                     }
                 >

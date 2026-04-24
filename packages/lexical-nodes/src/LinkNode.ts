@@ -19,13 +19,14 @@ import type {
     Spread
 } from "lexical";
 
-import { addClassNamesToElement, isHTMLAnchorElement } from "@lexical/utils";
 import {
     $applyNodeReplacement,
     $isElementNode,
     $isRangeSelection,
     createCommand,
-    ElementNode
+    ElementNode,
+    addClassNamesToElement,
+    isHTMLAnchorElement
 } from "lexical";
 
 export type LinkAttributes = {

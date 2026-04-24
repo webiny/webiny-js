@@ -1,43 +1,34 @@
 import { createOperatorPluginList } from "~/operations/entry/elasticsearch/plugins/operator";
 import { PluginsContainer } from "@webiny/plugins";
-import type { Plugin } from "@webiny/plugins/types";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch";
-import type {
-    ElasticsearchQueryBuilderOperatorPlugins,
-    ElasticsearchQuerySearchValuePlugins
-} from "~/operations/entry/elasticsearch/types";
-import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search";
-import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins";
+import { getOpenSearchOperators } from "@webiny/api-opensearch";
+import type { OpenSearchQueryBuilderOperatorPlugins } from "~/operations/entry/elasticsearch/types";
+import { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch";
+import { CmsEntryOpenSearchFilterRegistry } from "~/features/CmsEntryOpenSearchFilter";
+import { createTestContainer } from "~tests/helpers/createTestContainer";
 
-export const createPluginsContainer = (plugins: Plugin[] = []) => {
-    return new PluginsContainer([getElasticsearchOperators(), createFilterPlugins(), ...plugins]);
+export const createPluginsContainer = () => {
+    return new PluginsContainer([getOpenSearchOperators()]);
 };
 
 export const buildElasticsearchOperatorPlugins = (container?: PluginsContainer) => {
     return createOperatorPluginList({
-        plugins: container || createPluginsContainer(),
-        locale: "en-US"
-    });
-};
-
-export const buildElasticsearchSearchPlugins = (
-    container?: PluginsContainer
-): ElasticsearchQuerySearchValuePlugins => {
-    return createSearchPluginList({
         plugins: container || createPluginsContainer()
     });
 };
 
 export interface Plugins {
-    operators: ElasticsearchQueryBuilderOperatorPlugins;
-    search: ElasticsearchQuerySearchValuePlugins;
+    operators: OpenSearchQueryBuilderOperatorPlugins;
+    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
+    filterRegistry: CmsEntryOpenSearchFilterRegistry.Interface;
     container: PluginsContainer;
 }
 export const createPlugins = (): Plugins => {
     const container = createPluginsContainer();
+    const testContainer = createTestContainer();
     return {
         container,
         operators: buildElasticsearchOperatorPlugins(container),
-        search: buildElasticsearchSearchPlugins(container)
+        valueSearchRegistry: testContainer.resolve(CmsEntryOpenSearchValueSearchRegistry),
+        filterRegistry: testContainer.resolve(CmsEntryOpenSearchFilterRegistry)
     };
 };

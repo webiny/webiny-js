@@ -31,10 +31,10 @@ const ObjectsRenderer = (props: CmsModelFieldRendererProps) => {
 
                 return (
                     <Bind.ValidationContainer>
-                        <Accordion background={"light"}>
+                        <Accordion background={"base"} variant={"container"}>
                             <Accordion.Item
                                 title={label}
-                                description={field.helpText}
+                                description={field.description}
                                 defaultOpen={open}
                             >
                                 <MultiValueContainer
@@ -59,7 +59,7 @@ const plugin: CmsModelFieldRendererPlugin = {
         name: t`Accordion`,
         description: t`Renders fields within an accordion.`,
         canUse({ field }) {
-            return field.type === "object" && Boolean(field.multipleValues);
+            return field.type === "object" && Boolean(field.list);
         },
         render(props) {
             return <ObjectsRenderer {...props} />;

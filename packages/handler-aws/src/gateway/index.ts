@@ -34,6 +34,7 @@ const defaultCharset = "utf-8";
  * We need to attach default headers to the request, so it does not break if there is none sent.
  */
 const attachRequiredProperties = (event: APIGatewayEvent): void => {
+    const isOptions = event.httpMethod.toLowerCase() === "options";
     /**
      * A possibility that headers are not defined?
      * Maybe during testing?
@@ -53,6 +54,10 @@ const attachRequiredProperties = (event: APIGatewayEvent): void => {
     } else if (!event.body && contentType.startsWith(defaultContentType)) {
         event.body = "{}";
     }
+    if (!isOptions) {
+        return;
+    }
+    event.body = null;
 };
 
 export const createHandler = (params: HandlerParams): HandlerCallable => {

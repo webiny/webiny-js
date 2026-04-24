@@ -21,10 +21,14 @@ export class DefaultProjectInfoService implements ProjectInfoService.Interface {
     ) {}
 
     async execute() {
-        const wcpProjectId = process.env.WCP_PROJECT_ID || "";
+        const wcpProjectId = process.env.WEBINY_PROJECT_ID || process.env.WCP_PROJECT_ID || "";
         // const wcpUser = await getUser().catch(() => null);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const wcpUsingProjectEnvironmentApiKey = Boolean(process.env.WCP_ENVIRONMENT_API_KEY);
+        // oxlint-disable-next-line typescript/no-unused-vars
+        const wcpUsingProjectEnvironmentApiKey = Boolean(
+            process.env.WEBINY_PROJECT_API_KEY ||
+            process.env.WCP_PROJECT_ENVIRONMENT_API_KEY ||
+            process.env.WCP_ENVIRONMENT_API_KEY
+        );
 
         const isCI = this.getIsCi.execute();
         const npmVersion = this.getNpmVersion.execute();

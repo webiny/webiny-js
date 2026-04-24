@@ -1,6 +1,12 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
+import {
+    CliCommandFactory,
+    GetProjectSdkService,
+    StdioService,
+    UiService
+} from "~/abstractions/index.js";
 import { measureDuration } from "~/features/utils/index.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 import { PulumiError } from "@webiny/pulumi-sdk";
 import { AppName } from "@webiny/project";
 
@@ -18,14 +24,14 @@ export interface IDestroyWithAppParams extends IDestroyNoAppParams {
 
 export type IDestroyCommandParams = IDestroyNoAppParams | IDestroyWithAppParams;
 
-export class DestroyCommand implements CliCommand.Interface<IDestroyCommandParams> {
+export class DestroyCommand implements CliCommandFactory.Interface<IDestroyCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface,
         private stdioService: StdioService.Interface
     ) {}
 
-    async execute(): Promise<CliCommand.CommandDefinition<IDestroyCommandParams>> {
+    async execute(): Promise<CliCommandFactory.CommandDefinition<IDestroyCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
 
         return {
@@ -44,44 +50,7 @@ export class DestroyCommand implements CliCommand.Interface<IDestroyCommandParam
                     type: "string"
                 }
             ],
-            options: [
-                {
-                    name: "env",
-                    description: "Environment name (dev, prod, etc.)",
-                    type: "string",
-                    default: "dev",
-                    validation: params => {
-                        if ("app" in params && !params.env) {
-                            throw new Error("Environment name is required when destroying an app.");
-                        }
-                        return true;
-                    }
-                },
-                {
-                    name: "variant",
-                    description: "Variant of the app to destroy",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidVariantName(params.variant);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                },
-                {
-                    name: "region",
-                    description: "Region to target",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidRegionName(params.region);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                }
-            ],
+            options: createBaseAppOptions(projectSdk),
             handler: async (params: IDestroyCommandParams) => {
                 if ("app" in params) {
                     return this.destroyApp(params);
@@ -107,7 +76,7 @@ export class DestroyCommand implements CliCommand.Interface<IDestroyCommandParam
         try {
             ui.info(`Destroying %s app...`, params.app);
 
-            ui.newLine();
+            ui.emptyLine();
 
             pulumiProcess.stdout!.pipe(stdio.getStdout());
             pulumiProcess.stderr!.pipe(stdio.getStderr());
@@ -129,7 +98,7 @@ export class DestroyCommand implements CliCommand.Interface<IDestroyCommandParam
 }
 
 export const destroyCommand = createImplementation({
-    abstraction: CliCommand,
+    abstraction: CliCommandFactory,
     implementation: DestroyCommand,
     dependencies: [GetProjectSdkService, UiService, StdioService]
 });

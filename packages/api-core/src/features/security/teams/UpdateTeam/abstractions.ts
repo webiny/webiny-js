@@ -22,6 +22,7 @@ export interface IUpdateTeam {
     execute(id: string, input: UpdateTeamInput): Promise<Result<Team, UpdateTeamError>>;
 }
 
+/** Update an existing team. */
 export const UpdateTeam = createAbstraction<IUpdateTeam>("UpdateTeam");
 
 export namespace UpdateTeam {

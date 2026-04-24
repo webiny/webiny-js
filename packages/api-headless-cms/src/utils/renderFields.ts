@@ -1,19 +1,32 @@
 import type {
     ApiEndpoint,
-    CmsFieldTypePlugins,
     CmsModel,
     CmsModelField,
-    CmsModelFieldDefinition,
-    CmsModelFieldToGraphQLPlugin
+    CmsModelFieldDefinition
 } from "~/types/index.js";
 import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
+import type {
+    CmsModelFieldToGraphQL,
+    CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
+
+const getFieldApi = (
+    field: CmsModelFieldToGraphQL.Interface,
+    type: ApiEndpoint
+): CmsModelFieldToGraphQL.ManageApi => {
+    if (type === "manage") {
+        return field.manage;
+    }
+    /* "read" and "preview" both use the read API. */
+    return field.read as CmsModelFieldToGraphQL.ManageApi;
+};
 
 interface RenderFieldsParams {
     models: CmsModel[];
     model: CmsModel;
     fields: CmsModelField[];
     type: ApiEndpoint;
-    fieldTypePlugins: CmsFieldTypePlugins;
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 }
 
 interface RenderFields {
@@ -25,10 +38,10 @@ export const renderFields: RenderFields = ({
     model,
     fields,
     type,
-    fieldTypePlugins
+    fieldRegistry
 }): CmsModelFieldDefinition[] => {
     return fields
-        .map(field => renderField({ models, model, type, field, fieldTypePlugins }))
+        .map(field => renderField({ models, model, type, field, fieldRegistry }))
         .filter(Boolean) as CmsModelFieldDefinition[];
 };
 
@@ -41,21 +54,19 @@ export const renderField = ({
     model,
     type,
     field,
-    fieldTypePlugins
+    fieldRegistry
 }: RenderFieldParams): CmsModelFieldDefinition | null => {
-    const plugin = fieldTypePlugins[getBaseFieldType(field)];
+    const plugin = fieldRegistry.get(getBaseFieldType(field));
     if (!plugin) {
-        // Let's not render the field if it does not exist in the field plugins.
         return null;
-    } else if (!plugin[type]) {
-        throw new Error(`Missing "${type}" plugin for field type "${field.type}".`);
     }
-    const { createTypeField } = plugin[type] as CmsModelFieldToGraphQLPlugin["manage"];
+    const api = getFieldApi(plugin, type);
+    const { createTypeField } = api;
     const defs = createTypeField({
         models,
         model,
         field,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     if (!defs) {

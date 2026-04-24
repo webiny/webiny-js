@@ -18,7 +18,6 @@ export const pbPublishPage = createGqlQuery<GqlResponse<{ id: string }>, { id: s
 );
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             pbPublishPage: typeof pbPublishPage;

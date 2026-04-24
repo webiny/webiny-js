@@ -19,13 +19,13 @@ export abstract class FieldBuilder<TZod extends z.ZodTypeAny> {
         return this;
     }
 
-    helpText(text: string): this {
-        this.config.helpText = text;
+    help(text: string): this {
+        this.config.help = text;
         return this;
     }
 
     placeholder(text: string): this {
-        this.config.placeholderText = text;
+        this.config.placeholder = text;
         return this;
     }
 
@@ -34,8 +34,8 @@ export abstract class FieldBuilder<TZod extends z.ZodTypeAny> {
             fieldId: "",
             type: this.config.type!,
             label: this.config.label,
-            helpText: this.config.helpText,
-            placeholderText: this.config.placeholderText,
+            help: this.config.help,
+            placeholder: this.config.placeholder,
             validation: this.config.validation || [],
             settings: this.config.settings || {},
             zodSchema: this.zodSchema
@@ -54,56 +54,56 @@ export class TextFieldBuilder<TZod extends z.ZodString = z.ZodString> extends Fi
     }
 
     required(message?: string): TextFieldBuilder<z.ZodString> {
-        const newSchema = (this.zodSchema as z.ZodString).min(1, message || "Field is required");
-        this.zodSchema = newSchema as any;
+        const newSchema = this.zodSchema.min(1, message || "Field is required");
+        this.zodSchema = newSchema;
         this.config.validation?.push({
             name: "required",
             message: message || "Field is required",
             settings: {}
         });
-        return this as any;
+        return this;
     }
 
     minLength(length: number, message?: string): this {
-        this.zodSchema = (this.zodSchema as z.ZodString).min(length, message) as TZod;
+        this.zodSchema = this.zodSchema.min(length, message) as TZod;
         return this;
     }
 
     maxLength(length: number, message?: string): this {
-        this.zodSchema = (this.zodSchema as z.ZodString).max(length, message) as TZod;
+        this.zodSchema = this.zodSchema.max(length, message) as TZod;
         return this;
     }
 
     slug(): this {
-        this.zodSchema = (this.zodSchema as z.ZodString).regex(
-            /^[a-z0-9-]+$/,
-            "Must be a valid slug (lowercase letters, numbers, and hyphens only)"
-        ) as TZod;
-        this.config.validation?.push({
-            name: "slug",
-            message: "Must be a valid slug",
-            settings: {}
-        });
-        return this;
+        return this.addStringValidator(
+            this.zodSchema.regex(
+                /^[a-z0-9-]+$/,
+                "Must be a valid slug (lowercase letters, numbers, and hyphens only)"
+            ),
+            "slug",
+            "Must be a valid slug"
+        );
     }
 
     email(): this {
-        this.zodSchema = (this.zodSchema as z.ZodString).email("Must be a valid email") as TZod;
-        this.config.validation?.push({
-            name: "email",
-            message: "Must be a valid email",
-            settings: {}
-        });
-        return this;
+        return this.addStringValidator(
+            this.zodSchema.email("Must be a valid email"),
+            "email",
+            "Must be a valid email"
+        );
     }
 
     url(): this {
-        this.zodSchema = (this.zodSchema as z.ZodString).url("Must be a valid URL") as TZod;
-        this.config.validation?.push({
-            name: "url",
-            message: "Must be a valid URL",
-            settings: {}
-        });
+        return this.addStringValidator(
+            this.zodSchema.url("Must be a valid URL"),
+            "url",
+            "Must be a valid URL"
+        );
+    }
+
+    private addStringValidator(schema: z.ZodString, name: string, message: string): this {
+        this.zodSchema = schema as TZod;
+        this.config.validation?.push({ name, message, settings: {} });
         return this;
     }
 
@@ -121,11 +121,11 @@ export class TextFieldBuilder<TZod extends z.ZodString = z.ZodString> extends Fi
 export class ObjectFieldBuilder<TShape extends z.ZodRawShape> extends FieldBuilder<
     z.ZodObject<TShape>
 > {
-    private nestedFields: FieldConfig[] = [];
+    private readonly nestedFields: FieldConfig[] = [];
 
     constructor(
         fields: (registry: IFieldBuilderRegistry) => {
-            [K in keyof TShape]: FieldBuilder<TShape[K]>;
+            [K in keyof TShape]: FieldBuilder<TShape[K] & z.ZodTypeAny>;
         },
         registry: IFieldBuilderRegistry
     ) {
@@ -150,15 +150,19 @@ export class ObjectFieldBuilder<TShape extends z.ZodRawShape> extends FieldBuild
     optional(): ObjectFieldBuilder<TShape> & {
         getZodSchema(): z.ZodOptional<z.ZodObject<TShape>>;
     } {
-        this.zodSchema = this.zodSchema.optional() as any;
-        return this as any;
+        // @ts-expect-error
+        this.zodSchema = this.zodSchema.optional();
+        // @ts-expect-error
+        return this;
     }
 
     nullable(): ObjectFieldBuilder<TShape> & {
         getZodSchema(): z.ZodNullable<z.ZodObject<TShape>>;
     } {
-        this.zodSchema = this.zodSchema.nullable() as any;
-        return this as any;
+        // @ts-expect-error
+        this.zodSchema = this.zodSchema.nullable();
+        // @ts-expect-error
+        return this;
     }
 
     override toConfig(): FieldConfig {

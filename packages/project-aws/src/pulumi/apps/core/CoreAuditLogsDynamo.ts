@@ -13,6 +13,7 @@ export const CoreAuditLogsDynamo = createAppModule({
                 attributes: [
                     { name: "PK", type: "S" },
                     { name: "SK", type: "S" },
+                    { name: "GSI_TENANT", type: "S" },
                     { name: "GSI1_PK", type: "S" },
                     { name: "GSI1_SK", type: "N" },
                     { name: "GSI2_PK", type: "S" },
@@ -37,57 +38,139 @@ export const CoreAuditLogsDynamo = createAppModule({
                 rangeKey: "SK",
                 globalSecondaryIndexes: [
                     {
+                        name: "GSI_TENANT",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI_TENANT",
+                                keyType: "HASH"
+                            }
+                        ],
+                        projectionType: "KEYS_ONLY"
+                    },
+                    {
                         name: "GSI1",
-                        hashKey: "GSI1_PK",
-                        rangeKey: "GSI1_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI1_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI1_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI2",
-                        hashKey: "GSI2_PK",
-                        rangeKey: "GSI2_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI2_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI2_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI3",
-                        hashKey: "GSI3_PK",
-                        rangeKey: "GSI3_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI3_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI3_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI4",
-                        hashKey: "GSI4_PK",
-                        rangeKey: "GSI4_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI4_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI4_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI5",
-                        hashKey: "GSI5_PK",
-                        rangeKey: "GSI5_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI5_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI5_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI6",
-                        hashKey: "GSI6_PK",
-                        rangeKey: "GSI6_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI6_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI6_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI7",
-                        hashKey: "GSI7_PK",
-                        rangeKey: "GSI7_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI7_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI7_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI8",
-                        hashKey: "GSI8_PK",
-                        rangeKey: "GSI8_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI8_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI8_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI9",
-                        hashKey: "GSI9_PK",
-                        rangeKey: "GSI9_SK",
+                        keySchemas: [
+                            {
+                                attributeName: "GSI9_PK",
+                                keyType: "HASH"
+                            },
+                            {
+                                attributeName: "GSI9_SK",
+                                keyType: "RANGE"
+                            }
+                        ],
                         projectionType: "KEYS_ONLY"
                     }
                 ],

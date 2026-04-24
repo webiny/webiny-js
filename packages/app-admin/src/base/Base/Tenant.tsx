@@ -1,15 +1,17 @@
 import React from "react";
 import { AdminConfig } from "~/config/AdminConfig.js";
-import wbyLogo from "./Tenant/wby-logo.svg";
+import { ReactComponent as SquareLogo } from "./Tenant/wby-square.svg";
+import { ReactComponent as HorizontalLogo } from "./Tenant/wby-horizontal.svg";
 
 export const Tenant = React.memo(() => {
-    const { Tenant } = AdminConfig;
+    const { Title, Logo } = AdminConfig;
     return (
         <AdminConfig.Public>
-            <Tenant>
-                <Tenant.Name value={"Webiny"} />
-                <Tenant.Logo element={<img src={wbyLogo} alt={"Webiny"} />} />
-            </Tenant>
+            <Title value={"Webiny"} />
+            <Logo
+                squareLogo={<SquareLogo alt={"Webiny"} width={32} />}
+                horizontalLogo={<HorizontalLogo width={175} />}
+            />
         </AdminConfig.Public>
     );
 });

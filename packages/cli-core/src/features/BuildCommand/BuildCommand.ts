@@ -1,18 +1,24 @@
 import { createImplementation } from "@webiny/di";
-import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
+import {
+    CliCommandFactory,
+    GetProjectSdkService,
+    StdioService,
+    UiService
+} from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
+import { createBaseAppOptions } from "~/features/common/index.js";
 
 export type IBuildCommandParams = IBaseAppParams;
 
-export class BuildCommand implements CliCommand.Interface<IBuildCommandParams> {
+export class BuildCommand implements CliCommandFactory.Interface<IBuildCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private stdioService: StdioService.Interface,
         private ui: UiService.Interface
     ) {}
 
-    async execute(): Promise<CliCommand.CommandDefinition<IBuildCommandParams>> {
+    async execute(): Promise<CliCommandFactory.CommandDefinition<IBuildCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
 
         return {
@@ -27,38 +33,7 @@ export class BuildCommand implements CliCommand.Interface<IBuildCommandParams> {
                     required: true
                 }
             ],
-            options: [
-                {
-                    name: "env",
-                    description: "Environment name (dev, prod, etc.)",
-                    type: "string",
-                    required: true
-                },
-                {
-                    name: "variant",
-                    description: "Variant of the app to deploy",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidVariantName(params.variant);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                },
-                {
-                    name: "region",
-                    description: "Region to target",
-                    type: "string",
-                    validation: params => {
-                        const isValid = projectSdk.isValidRegionName(params.region);
-                        if (isValid.isErr()) {
-                            throw isValid.error;
-                        }
-                        return true;
-                    }
-                }
-            ],
+            options: createBaseAppOptions(projectSdk),
             handler: async (params: IBuildCommandParams) => {
                 const stdio = this.stdioService;
                 const ui = this.ui;
@@ -78,7 +53,7 @@ export class BuildCommand implements CliCommand.Interface<IBuildCommandParams> {
 }
 
 export const buildCommand = createImplementation({
-    abstraction: CliCommand,
+    abstraction: CliCommandFactory,
     implementation: BuildCommand,
     dependencies: [GetProjectSdkService, StdioService, UiService]
 });

@@ -11,10 +11,10 @@ export const createSimpleSingleRenderer = (): CmsModelFieldRendererPlugin => {
         name: "cms-editor-field-renderer-ref-single-simple",
         renderer: {
             rendererName: "ref-simple-single",
-            name: t`Simple checkbox list`,
-            description: t`Renders a list of checkboxes and the user can select one related record.`,
+            name: t`Radio buttons`,
+            description: t`Renders a list of radio buttons and the user can select one related record.`,
             canUse({ field }) {
-                return field.type === "ref" && !field.multipleValues;
+                return field.type === "ref" && !field.list;
             },
             render: props => {
                 const { field, getBind } = props;

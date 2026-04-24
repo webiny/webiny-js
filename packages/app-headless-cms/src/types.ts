@@ -4,6 +4,7 @@ import type { DragSourceMonitor, XYCoord } from "react-dnd";
 import type { DragDropManager, Identifier, Listener, Unsubscribe } from "dnd-core";
 
 export type * from "@webiny/app-headless-cms-common/types/index.js";
+export { isLayoutField, isLayoutDescriptor } from "@webiny/app-headless-cms-common/types/index.js";
 
 /***
  * ###### TABLE ########
@@ -12,9 +13,10 @@ export type EntryTableItem = RecordTableRow<CmsContentEntry>;
 
 export type TableItem = FolderTableRow | EntryTableItem;
 
-export declare class DragSourceMonitorImpl<DragObject = unknown, DropResult = unknown>
-    implements DragSourceMonitor<DragObject, DropResult>
-{
+export declare class DragSourceMonitorImpl<
+    DragObject = unknown,
+    DropResult = unknown
+> implements DragSourceMonitor<DragObject, DropResult> {
     private internalMonitor;
     private sourceId;
     constructor(manager: DragDropManager);

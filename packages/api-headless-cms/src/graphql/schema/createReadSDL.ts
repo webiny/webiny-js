@@ -1,28 +1,26 @@
-import type { CmsModel, CmsFieldTypePlugins, ApiEndpoint } from "~/types/index.js";
+import type { ApiEndpoint, CmsModel } from "~/types/index.js";
 import { renderListFilterFields } from "~/utils/renderListFilterFields.js";
 import { renderSortEnum } from "~/utils/renderSortEnum.js";
 import { renderFields } from "~/utils/renderFields.js";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields.js";
-import type { CmsGraphQLSchemaSorterPlugin } from "~/plugins/index.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
+import type {
+    CmsModelFieldToGraphQLRegistry,
+    CmsGraphQLSchemaSorter
+} from "~/features/graphql/index.js";
 
 interface CreateReadSDLParams {
     models: CmsModel[];
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
-    sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    sorters: CmsGraphQLSchemaSorter.Interface[];
 }
 
 interface CreateReadSDL {
     (params: CreateReadSDLParams): string;
 }
 
-export const createReadSDL: CreateReadSDL = ({
-    models,
-    model,
-    fieldTypePlugins,
-    sorterPlugins
-}): string => {
+export const createReadSDL: CreateReadSDL = ({ models, model, fieldRegistry, sorters }): string => {
     const type: ApiEndpoint = "read";
 
     const fieldsRender = renderFields({
@@ -30,24 +28,24 @@ export const createReadSDL: CreateReadSDL = ({
         model,
         fields: model.fields,
         type,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const listFilterFieldsRender = renderListFilterFields({
         model,
         fields: model.fields,
         type,
-        fieldTypePlugins
+        fieldRegistry
     });
     const sortEnumRender = renderSortEnum({
         model,
         fields: model.fields,
-        fieldTypePlugins,
-        sorterPlugins
+        fieldRegistry,
+        sorters
     });
     const getFilterFieldsRender = renderGetFilterFields({
         fields: model.fields,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const hasModelIdField = model.fields.some(f => f.fieldId === "modelId");
@@ -62,27 +60,41 @@ export const createReadSDL: CreateReadSDL = ({
 
     return `
         """${model.description || singularName}"""
+        type ${singularName}Values {
+            ${fieldsRender.map(f => f.fields).join("\n") || "_empty: String"}
+        }
+        
         type ${singularName} {
             id: ID!
             entryId: String!
             ${hasModelIdField ? "" : "modelId: String!"}
             
             ${onByMetaGqlFields}
-            ${fieldsRender.map(f => f.fields).join("\n")}
+            values: ${singularName}Values
         }
         
         ${fieldsRender
             .map(f => f.typeDefs)
             .filter(Boolean)
             .join("\n")}
-        
-        input ${singularName}GetWhereInput {
-            ${getFilterFieldsRender}
+            
+        input ${singularName}GetWhereInputValues {
+            ${getFilterFieldsRender.fieldFiltersAsString() || "_empty: String"}
         }
         
+        input ${singularName}GetWhereInput {
+            ${getFilterFieldsRender.baseFiltersAsString()}
+            values: ${singularName}GetWhereInputValues
+        }
+        
+        input ${singularName}ListWhereInputValues {
+            ${listFilterFieldsRender.fieldFiltersAsString() || "_empty: String"}
+        }
         
         input ${singularName}ListWhereInput {
-            ${listFilterFieldsRender}
+            ${listFilterFieldsRender.baseFiltersAsString()}
+            
+            values: ${singularName}ListWhereInputValues
             AND: [${singularName}ListWhereInput!]
             OR: [${singularName}ListWhereInput!]
         }

@@ -1,7 +1,9 @@
 import set from "lodash/set.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { CmsEntryResolverFactory, CmsFieldTypePlugins, CmsModel } from "~/types/index.js";
-import type { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
+import type { CmsEntryResolverFactory, CmsModel } from "~/types/index.js";
+import type { IContentEntryTraverser } from "~/features/contentEntry/ContentEntryTraverser/ContentEntryTraverser.js";
+import { ContentEntryTraverserProvider } from "~/features/contentEntry/ContentEntryTraverser/index.js";
+import type { CmsModelFieldToGraphQLRegistry } from "~/features/graphql/index.js";
 
 /**
  * This decorates a resolver factory, and normalizes `args.data`.
@@ -21,8 +23,9 @@ export const normalizeGraphQlInput = (
                 return resolver(parent, args, context, info);
             }
 
-            const traverser = await context.cms.getEntryTraverser(params.model.modelId);
-            const normalizer = new GraphQlInputNormalizer(traverser, params.fieldTypePlugins);
+            const traverserProvider = context.container.resolve(ContentEntryTraverserProvider);
+            const traverser = await traverserProvider.getTraverser(params.model.modelId);
+            const normalizer = new GraphQlInputNormalizer(traverser, params.fieldRegistry);
             const normalizedInput = await normalizer.normalize(params.model, input);
 
             return resolver(parent, { ...args, data: normalizedInput }, context, info);
@@ -31,30 +34,33 @@ export const normalizeGraphQlInput = (
 };
 
 class GraphQlInputNormalizer {
-    private readonly traverser: ContentEntryTraverser;
-    private readonly fieldTypePlugins: CmsFieldTypePlugins;
+    private readonly traverser: IContentEntryTraverser;
+    private readonly fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
 
-    constructor(traverser: ContentEntryTraverser, fieldTypePlugins: CmsFieldTypePlugins) {
+    constructor(
+        traverser: IContentEntryTraverser,
+        fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface
+    ) {
         this.traverser = traverser;
-        this.fieldTypePlugins = fieldTypePlugins;
+        this.fieldRegistry = fieldRegistry;
     }
 
     async normalize(model: CmsModel, data: GenericRecord<string>) {
-        const output = structuredClone(data);
+        const values = structuredClone(data.values || {});
 
-        await this.traverser.traverse(output, async ({ path, value, field }) => {
-            const fieldPlugin = this.fieldTypePlugins[field.type];
-            if (fieldPlugin && typeof fieldPlugin.manage.normalizeInput === "function") {
-                const normalizedValue = await fieldPlugin.manage.normalizeInput({
+        await this.traverser.traverse(values, async ({ path, value, field }) => {
+            const fieldImpl = this.fieldRegistry.get(field.type);
+            if (fieldImpl && typeof fieldImpl.manage.normalizeInput === "function") {
+                const normalizedValue = await fieldImpl.manage.normalizeInput({
                     model,
                     field,
                     input: value
                 });
 
-                set(output, path, normalizedValue);
+                set(values, path, normalizedValue);
             }
         });
 
-        return output;
+        return { ...data, values };
     }
 }

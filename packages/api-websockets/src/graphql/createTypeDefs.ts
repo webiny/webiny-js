@@ -12,7 +12,6 @@ export const createTypeDefs = () => {
             identity: WebsocketsIdentity!
             connectedOn: DateTime!
             tenant: String!
-            locale: String!
         }
 
         type WebsocketsError {
@@ -29,7 +28,6 @@ export const createTypeDefs = () => {
         input WebsocketsListConnectionsWhereInput {
             identityId: String
             tenant: String
-            locale: String
         }
 
         type WebsocketsDisconnectResponse {
@@ -62,7 +60,7 @@ export const createTypeDefs = () => {
         extend type WebsocketsMutation {
             disconnect(connections: [String!]!): WebsocketsDisconnectResponse!
             disconnectIdentity(identityId: String!): WebsocketsDisconnectResponse!
-            disconnectTenant(tenant: String!, locale: String): WebsocketsDisconnectResponse!
+            disconnectTenant(tenant: String!): WebsocketsDisconnectResponse!
             disconnectAll: WebsocketsDisconnectResponse!
         }
     `;

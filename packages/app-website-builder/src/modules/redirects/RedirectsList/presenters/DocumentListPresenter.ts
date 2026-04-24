@@ -151,8 +151,8 @@ class DocumentListPresenter {
     private getIsLoading = () => {
         return Boolean(
             this.documentsLoadingRepository.isLoading(loadingActions.init) ||
-                this.documentsLoadingRepository.isLoading(loadingActions.list) ||
-                this.foldersLoadingRepository.isLoading(this.folderId)
+            this.documentsLoadingRepository.isLoading(loadingActions.list) ||
+            this.foldersLoadingRepository.isLoading(this.folderId)
         );
     };
 

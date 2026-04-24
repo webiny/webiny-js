@@ -1,2 +1,2 @@
-export * from "./EcommercePlugin.js";
+export * from "./EcommerceIntegration.js";
 export type * from "./types.js";

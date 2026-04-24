@@ -7,12 +7,15 @@ import {
     getProjectService,
     listPackagesService,
     loggerService,
+    mergeExportsService,
+    parseExportsFileService,
     runCliRunnerService,
+    scanExportsFoldersService,
     stdioService,
     uiService
 } from "./services/index.js";
 
-import { generateWebinyPkgCommand } from "./features/index.js";
+import { generateWebinyPkgCommand, validateWebinyLinksCommand } from "./features/index.js";
 
 import { CliParamsService } from "./abstractions/index.js";
 
@@ -27,12 +30,16 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(getProjectService).inSingletonScope();
     container.register(listPackagesService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
+    container.register(mergeExportsService).inSingletonScope();
+    container.register(parseExportsFileService).inSingletonScope();
     container.register(runCliRunnerService).inSingletonScope();
+    container.register(scanExportsFoldersService).inSingletonScope();
     container.register(stdioService).inSingletonScope();
     container.register(uiService).inSingletonScope();
 
     // Features (commands).
     container.register(generateWebinyPkgCommand).inSingletonScope();
+    container.register(validateWebinyLinksCommand).inSingletonScope();
 
     container.resolve(CliParamsService).set(params);
 

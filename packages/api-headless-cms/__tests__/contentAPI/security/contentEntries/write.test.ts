@@ -29,6 +29,7 @@ describe("Write Permissions Checks", () => {
         const failedCreateTestEntryResponse = await manageApiB.createTestEntry();
 
         expectNotAuthorized(failedCreateTestEntryResponse, {
+            code: "Cms/Entry/NotAuthorized",
             message: 'Not allowed to access "testModel" entries.'
         });
 
@@ -69,11 +70,18 @@ describe("Write Permissions Checks", () => {
         const testEntry = await manageApiA.createTestEntry();
 
         const failedUpdateTestEntryResponse = await manageApiB.updateTestEntry({
-            revision: testEntry.data.id,
-            data: { title: "Test - UPDATE" }
+            variables: {
+                revision: testEntry.data.id,
+                data: {
+                    values: {
+                        title: "Test - UPDATE"
+                    }
+                }
+            }
         });
 
         expectNotAuthorized(failedUpdateTestEntryResponse, {
+            code: "Cms/Entry/NotAuthorized",
             message: 'Not allowed to access "testModel" entries.'
         });
 
@@ -89,12 +97,22 @@ describe("Write Permissions Checks", () => {
         });
 
         const updateTestEntryResponse = await manageApiC.updateTestEntry({
-            revision: testEntry.data.id,
-            data: { title: "Test - UPDATE" }
+            variables: {
+                revision: testEntry.data.id,
+                data: {
+                    values: {
+                        title: "Test - UPDATE"
+                    }
+                }
+            }
         });
 
         expect(updateTestEntryResponse).toMatchObject({
-            data: { title: "Test - UPDATE" },
+            data: {
+                values: {
+                    title: "Test - UPDATE"
+                }
+            },
             error: null
         });
     });

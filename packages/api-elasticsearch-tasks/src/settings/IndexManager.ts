@@ -3,7 +3,7 @@ import { DisableIndexing } from "./DisableIndexing.js";
 import { EnableIndexing } from "./EnableIndexing.js";
 import type { IElasticsearchIndexingTaskValuesSettings, IIndexSettingsValues } from "~/types.js";
 import type { IIndexManager } from "~/settings/types.js";
-import type { Client } from "@webiny/api-elasticsearch";
+import type { Client } from "@webiny/api-opensearch";
 import { getObjectProperties } from "@webiny/utils";
 
 const defaultIndexSettings: IIndexSettingsValues = {
@@ -15,7 +15,7 @@ export interface IListIndicesResponse {
     index: string;
 }
 
-const indexPrefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+const indexPrefix = process.env.OPENSEARCH_INDEX_PREFIX || "";
 const filterIndex = (item?: string) => {
     if (!item) {
         return false;
@@ -57,13 +57,15 @@ export class IndexManager implements IIndexManager {
 
     public async list(): Promise<string[]> {
         try {
-            const response = await this.client.cat.indices<IListIndicesResponse[]>({
+            const response = await this.client.cat.indices({
                 format: "json"
             });
             if (!Array.isArray(response.body)) {
                 return [];
             }
-            return response.body.map(item => item.index).filter(filterIndex);
+            return response.body
+                .map(item => item.index)
+                .filter((index): index is string => filterIndex(index));
         } catch (ex) {
             console.error(
                 JSON.stringify({

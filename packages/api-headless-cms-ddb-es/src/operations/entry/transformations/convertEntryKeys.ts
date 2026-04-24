@@ -1,13 +1,16 @@
 import type {
+    CmsEntryValues,
     CmsStorageEntry,
     StorageOperationsCmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 
-interface ConvertStorageEntryParams {
-    entry: CmsStorageEntry;
-    model: StorageOperationsCmsModel;
+interface ConvertStorageEntryParams<T extends CmsEntryValues = CmsEntryValues> {
+    entry: CmsStorageEntry<T>;
+    model: StorageOperationsCmsModel<T>;
 }
-export const convertEntryKeysToStorage = (params: ConvertStorageEntryParams): CmsStorageEntry => {
+export const convertEntryKeysToStorage = <T extends CmsEntryValues = CmsEntryValues>(
+    params: ConvertStorageEntryParams<T>
+): CmsStorageEntry<T> => {
     const { model, entry } = params;
 
     const values = model.convertValueKeyToStorage({
@@ -20,7 +23,9 @@ export const convertEntryKeysToStorage = (params: ConvertStorageEntryParams): Cm
     };
 };
 
-export const convertEntryKeysFromStorage = (params: ConvertStorageEntryParams): CmsStorageEntry => {
+export const convertEntryKeysFromStorage = <T extends CmsEntryValues = CmsEntryValues>(
+    params: ConvertStorageEntryParams<T>
+): CmsStorageEntry<T> => {
     const { model, entry } = params;
 
     const values = model.convertValueKeyFromStorage({

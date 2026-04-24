@@ -1,0 +1,90 @@
+import { createAbstraction, Result } from "@webiny/feature/api";
+import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
+import type {
+    EntryNotAuthorizedError,
+    EntryNotFoundError,
+    EntryPersistenceError
+} from "~/domain/contentEntry/errors.js";
+
+/**
+ * RestoreEntryFromBin Use Case - Restores a soft-deleted entry from the bin.
+ * This clears the wbyDeleted flag and restores the entry to its original folder.
+ */
+export interface IRestoreEntryFromBinUseCase {
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ): Promise<Result<CmsEntry<T>, UseCaseError>>;
+}
+
+export interface IRestoreEntryFromBinUseCaseErrors {
+    notAuthorized: EntryNotAuthorizedError;
+    notFound: EntryNotFoundError;
+    storage: EntryPersistenceError;
+}
+
+type UseCaseError = IRestoreEntryFromBinUseCaseErrors[keyof IRestoreEntryFromBinUseCaseErrors];
+
+/** Restore a content entry from the recycle bin. */
+export const RestoreEntryFromBinUseCase = createAbstraction<IRestoreEntryFromBinUseCase>(
+    "RestoreEntryFromBinUseCase"
+);
+
+export namespace RestoreEntryFromBinUseCase {
+    export type Interface = IRestoreEntryFromBinUseCase;
+    export type Error = UseCaseError;
+    export type Return<T extends CmsEntryValues = CmsEntryValues> = Promise<
+        Result<CmsEntry<T>, UseCaseError>
+    >;
+}
+
+/**
+ * Payload for before restore event
+ */
+export interface EntryBeforeRestoreFromBinEventPayload {
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+/**
+ * Payload for after restore event
+ */
+export interface EntryAfterRestoreFromBinEventPayload {
+    entry: CmsEntry;
+    model: CmsModel;
+}
+
+/**
+ * Payload for restore error event
+ */
+export interface EntryRestoreFromBinErrorEventPayload {
+    entry: CmsEntry;
+    model: CmsModel;
+    error: Error;
+}
+
+/**
+ * RestoreEntryFromBinRepository - Handles storage operations for restoring entries from bin.
+ */
+export interface IRestoreEntryFromBinRepository {
+    execute<T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        entry: CmsEntry<T>
+    ): Promise<Result<CmsEntry<T>, RepositoryError>>;
+}
+
+export interface IRestoreEntryFromBinRepositoryErrors {
+    storage: EntryPersistenceError;
+}
+
+type RepositoryError =
+    IRestoreEntryFromBinRepositoryErrors[keyof IRestoreEntryFromBinRepositoryErrors];
+
+export const RestoreEntryFromBinRepository = createAbstraction<IRestoreEntryFromBinRepository>(
+    "RestoreEntryFromBinRepository"
+);
+
+export namespace RestoreEntryFromBinRepository {
+    export type Interface = IRestoreEntryFromBinRepository;
+    export type Error = RepositoryError;
+}

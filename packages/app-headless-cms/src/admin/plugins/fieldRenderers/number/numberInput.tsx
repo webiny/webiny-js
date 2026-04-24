@@ -3,6 +3,7 @@ import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { DelayedOnChange, Input } from "@webiny/admin-ui";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/number");
 
@@ -15,12 +16,13 @@ const plugin: CmsModelFieldRendererPlugin = {
         description: t`Renders a simple input with its type set to "number".`,
         canUse({ field }) {
             return (
-                field.type === "number" &&
-                !field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
+                field.type === "number" && !field.list && !get(field, "predefinedValues.enabled")
             );
         },
-        render({ field, getBind }) {
+        render({ getBind }) {
+            const { field } = useModelField();
+            const rules = useFieldEffectiveRules(field);
+            const disabled = !rules.canEdit || rules.disabled;
             const Bind = getBind();
 
             return (
@@ -33,9 +35,12 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 onBlur={bind.validate}
                             >
                                 <Input
+                                    disabled={disabled}
                                     label={field.label}
-                                    placeholder={field.placeholderText}
-                                    description={field.helpText}
+                                    placeholder={field.placeholder}
+                                    description={field.description}
+                                    note={field.note}
+                                    hint={field.help}
                                     type="number"
                                     data-testid={`fr.input.number.${field.label}`}
                                     validation={bind.validation}

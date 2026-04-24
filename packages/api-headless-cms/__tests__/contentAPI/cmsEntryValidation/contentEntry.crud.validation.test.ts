@@ -51,7 +51,7 @@ describe("content entry validation", () => {
                 fields: [field]
             });
             const manager = useValidationManageHandler({
-                path: "manage/en-US",
+                path: "manage",
                 plugins,
                 model
             });
@@ -72,7 +72,7 @@ describe("content entry validation", () => {
         "should return error for invalid %s field - multiple values",
         async (name, fn) => {
             const field = fn({
-                multipleValues: true
+                list: true
             });
             const { plugins, model } = createValidationStructure({
                 modelId: `testingMultipleValue${ucFirst(camelCase(name))}`,
@@ -81,7 +81,7 @@ describe("content entry validation", () => {
                 fields: [field]
             });
             const manager = useValidationManageHandler({
-                path: "manage/en-US",
+                path: "manage",
                 plugins,
                 model
             });
@@ -105,7 +105,7 @@ describe("content entry validation", () => {
     it("should return errors for invalid entry", async () => {
         const { plugins, model } = createValidationStructure();
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -136,7 +136,7 @@ describe("content entry validation", () => {
 
     it("should return errors for array not having any items", async () => {
         const field = createTextField({
-            multipleValues: true
+            list: true
         });
         const { plugins, model } = createValidationStructure({
             modelId: `testingEmptyArrayValues`,
@@ -145,13 +145,15 @@ describe("content entry validation", () => {
             fields: [field]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
         const [response] = await manager.validate({
             data: {
-                [field.fieldId]: []
+                values: {
+                    [field.fieldId]: []
+                }
             }
         });
 
@@ -169,16 +171,18 @@ describe("content entry validation", () => {
         const { plugins, model } = createValidationStructure();
 
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
         const [response] = await manager.validate({
             data: {
-                nested: {},
-                dz: {
-                    Hero: {
-                        dzNested: {}
+                values: {
+                    nested: {},
+                    dz: {
+                        Hero: {
+                            dzNested: {}
+                        }
                     }
                 }
             }
@@ -210,59 +214,61 @@ describe("content entry validation", () => {
             ...(pageModel as CmsModel)
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
         const [response] = await manager.validate({
             data: {
-                content: [
-                    {
-                        Hero: {},
-                        SimpleText: {},
+                values: {
+                    content: [
+                        {
+                            Hero: {},
+                            SimpleText: {},
+                            Objecting: {
+                                nestedObject: {
+                                    objectNestedObject: [
+                                        {
+                                            nestedObjectNestedTitle: null
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            Hero: {
+                                title: "ok hero 2"
+                            },
+                            SimpleText: {},
+                            Objecting: {
+                                nestedObject: {
+                                    objectNestedObject: [
+                                        {
+                                            nestedObjectNestedTitle: "ok 1"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    header: {
+                        TextHeader: {}
+                    },
+                    objective: {
                         Objecting: {
                             nestedObject: {
                                 objectNestedObject: [
+                                    {
+                                        nestedObjectNestedTitle: "ok"
+                                    },
                                     {
                                         nestedObjectNestedTitle: null
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    {
-                        Hero: {
-                            title: "ok hero 2"
-                        },
-                        SimpleText: {},
-                        Objecting: {
-                            nestedObject: {
-                                objectNestedObject: [
+                                    },
                                     {
-                                        nestedObjectNestedTitle: "ok 1"
+                                        nestedObjectNestedTitle: "ok 2"
                                     }
                                 ]
                             }
-                        }
-                    }
-                ],
-                header: {
-                    TextHeader: {}
-                },
-                objective: {
-                    Objecting: {
-                        nestedObject: {
-                            objectNestedObject: [
-                                {
-                                    nestedObjectNestedTitle: "ok"
-                                },
-                                {
-                                    nestedObjectNestedTitle: null
-                                },
-                                {
-                                    nestedObjectNestedTitle: "ok 2"
-                                }
-                            ]
                         }
                     }
                 }
@@ -326,110 +332,112 @@ describe("content entry validation", () => {
     it("should not return errors for valid entry", async () => {
         const { plugins, model } = createValidationStructure();
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
         const [response] = await manager.validate({
             data: {
-                title: "text test",
-                enabled: true,
-                price: 2,
-                description: "long-text test",
-                body: [
-                    {
-                        type: "h1",
-                        content: "rich text test"
-                    }
-                ],
-                releaseDate: "2021-01-01",
-                runningTime: "22:45",
-                xyzPublishedOn: "2023-01-01T00:00:00.000+00:00",
-                image: "https://webiny.com/image.png",
-                category: {
-                    id: "category-1#0001",
-                    modelId: "category"
-                },
-                nested: {
-                    nestedTitle: "nested text test",
-                    nestedEnabled: false,
-                    nestedPrice: 3,
-                    nestedDescription: "nested long-text test",
-                    nestedBody: [
+                values: {
+                    title: "text test",
+                    enabled: true,
+                    price: 2,
+                    description: "long-text test",
+                    body: [
                         {
-                            type: "h2",
-                            content: "nested rich text test"
+                            type: "h1",
+                            content: "rich text test"
                         }
                     ],
-                    nestedReleaseDate: "2022-01-01",
-                    nestedRunningTime: "23:55",
-                    nestedXyzPublishedOn: "2022-01-01T00:00:00.000+02:00",
-                    nestedImage: "https://webiny.com/image2.png",
-                    nestedCategory: {
-                        id: "category-2#0001",
+                    releaseDate: "2021-01-01",
+                    runningTime: "22:45",
+                    xyzPublishedOn: "2023-01-01T00:00:00.000+00:00",
+                    image: "https://webiny.com/image.png",
+                    category: {
+                        id: "category-1#0001",
                         modelId: "category"
-                    }
-                },
-                dz: {
-                    Hero: {
-                        dzTitle: "dz text test",
-                        dzEnabled: false,
-                        dzPrice: 4,
-                        dzDescription: "dz long-text test",
-                        dzBody: [
+                    },
+                    nested: {
+                        nestedTitle: "nested text test",
+                        nestedEnabled: false,
+                        nestedPrice: 3,
+                        nestedDescription: "nested long-text test",
+                        nestedBody: [
                             {
                                 type: "h2",
-                                content: "dz rich text test"
+                                content: "nested rich text test"
                             }
                         ],
-                        dzReleaseDate: "2021-01-01",
-                        dzRunningTime: "21:55",
-                        dzXyzPublishedOn: "2021-01-01T00:00:00.000+02:00",
-                        dzImage: "https://webiny.com/image2.png",
-                        dzCategory: {
-                            id: "category-3#0001",
+                        nestedReleaseDate: "2022-01-01",
+                        nestedRunningTime: "23:55",
+                        nestedXyzPublishedOn: "2022-01-01T00:00:00.000+02:00",
+                        nestedImage: "https://webiny.com/image2.png",
+                        nestedCategory: {
+                            id: "category-2#0001",
                             modelId: "category"
-                        },
-                        dzNested: {
-                            dzNestedTitle: "dzNested text test",
-                            dzNestedEnabled: false,
-                            dzNestedPrice: 4,
-                            dzNestedDescription: "dzNested long-text test",
-                            dzNestedBody: [
+                        }
+                    },
+                    dz: {
+                        Hero: {
+                            dzTitle: "dz text test",
+                            dzEnabled: false,
+                            dzPrice: 4,
+                            dzDescription: "dz long-text test",
+                            dzBody: [
                                 {
                                     type: "h2",
-                                    content: "dzNested rich text test"
+                                    content: "dz rich text test"
                                 }
                             ],
-                            dzNestedReleaseDate: "2021-01-01",
-                            dzNestedRunningTime: "21:55",
-                            dzNestedXyzPublishedOn: "2021-01-01T00:00:00.000+02:00",
-                            dzNestedImage: "https://webiny.com/image2.png",
-                            dzNestedCategory: {
-                                id: "category-4#0001",
+                            dzReleaseDate: "2021-01-01",
+                            dzRunningTime: "21:55",
+                            dzXyzPublishedOn: "2021-01-01T00:00:00.000+02:00",
+                            dzImage: "https://webiny.com/image2.png",
+                            dzCategory: {
+                                id: "category-3#0001",
                                 modelId: "category"
+                            },
+                            dzNested: {
+                                dzNestedTitle: "dzNested text test",
+                                dzNestedEnabled: false,
+                                dzNestedPrice: 4,
+                                dzNestedDescription: "dzNested long-text test",
+                                dzNestedBody: [
+                                    {
+                                        type: "h2",
+                                        content: "dzNested rich text test"
+                                    }
+                                ],
+                                dzNestedReleaseDate: "2021-01-01",
+                                dzNestedRunningTime: "21:55",
+                                dzNestedXyzPublishedOn: "2021-01-01T00:00:00.000+02:00",
+                                dzNestedImage: "https://webiny.com/image2.png",
+                                dzNestedCategory: {
+                                    id: "category-4#0001",
+                                    modelId: "category"
+                                }
                             }
                         }
+                    },
+                    // multiple values
+                    multiValueTitle: "text test",
+                    multiValueEnabled: false,
+                    multiValuePrice: 4,
+                    multiValueDescription: "long-text test",
+                    multiValueBody: [
+                        {
+                            type: "h2",
+                            content: "rich text test"
+                        }
+                    ],
+                    multiValueReleaseDate: "2021-01-01",
+                    multiValueRunningTime: "21:55",
+                    multiValueXyzPublishedOn: "2021-01-01T00:00:00.000+02:00",
+                    multiValueImage: "https://webiny.com/image2.png",
+                    multiValueCategory: {
+                        id: "category-11#0001",
+                        modelId: "category"
                     }
-                },
-                // multiple values
-                multiValueTitle: "text test",
-                multiValueEnabled: false,
-                multiValuePrice: 4,
-                multiValueDescription: "long-text test",
-                multiValueBody: [
-                    {
-                        type: "h2",
-                        content: "rich text test"
-                    }
-                ],
-                multiValueReleaseDate: "2021-01-01",
-                multiValueRunningTime: "21:55",
-                multiValueXyzPublishedOn: "2021-01-01T00:00:00.000+02:00",
-                multiValueImage: "https://webiny.com/image2.png",
-                multiValueCategory: {
-                    id: "category-11#0001",
-                    modelId: "category"
                 }
             }
         });

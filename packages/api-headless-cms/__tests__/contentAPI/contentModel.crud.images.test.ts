@@ -7,7 +7,7 @@ import { createImageModel } from "~tests/contentAPI/mocks/models/images";
 describe("Content Model Nested Object Images", () => {
     const group = createContentModelGroup();
     const handler = useGraphQLHandler({
-        path: "manage/en-US",
+        path: "manage",
         plugins: [new CmsGroupPlugin(group)]
     });
 

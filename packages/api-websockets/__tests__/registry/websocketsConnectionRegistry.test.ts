@@ -10,7 +10,6 @@ describe("websockets connection registry", () => {
         const result = await registry.register({
             connectionId: "connection-1",
             tenant: "root",
-            locale: "en-US",
             identity: {
                 id: "id-1",
                 displayName: "John Doe",
@@ -24,7 +23,6 @@ describe("websockets connection registry", () => {
         expect(result).toEqual({
             connectionId: "connection-1",
             tenant: "root",
-            locale: "en-US",
             identity: {
                 id: "id-1",
                 displayName: "John Doe",
@@ -39,7 +37,6 @@ describe("websockets connection registry", () => {
             await registry.register({
                 connectionId: `connection-${i}`,
                 tenant: i % 2 ? "root" : "anotherTenant",
-                locale: "en-US",
                 identity: {
                     id: `id-${i}`,
                     displayName: "John Doe",
@@ -95,7 +92,6 @@ describe("websockets connection registry", () => {
         const result = await registry.register({
             connectionId: "connection-1",
             tenant: "root",
-            locale: "en-US",
             identity: {
                 id: "id-1",
                 displayName: "John Doe",
@@ -109,7 +105,6 @@ describe("websockets connection registry", () => {
         expect(result).toEqual({
             connectionId: "connection-1",
             tenant: "root",
-            locale: "en-US",
             identity: {
                 id: "id-1",
                 displayName: "John Doe",

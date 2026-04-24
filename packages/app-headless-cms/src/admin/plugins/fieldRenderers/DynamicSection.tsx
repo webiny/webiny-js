@@ -13,8 +13,9 @@ import {
     cn,
     FormComponentDescription,
     FormComponentErrorMessage,
+    FormComponentNote,
     Grid,
-    Heading
+    Separator
 } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
@@ -38,8 +39,9 @@ export interface DynamicSectionPropsChildrenParams {
 export interface DynamicSectionProps {
     field: CmsModelField;
     getBind: GetBindCallable;
+    disabled?: boolean;
     showLabel?: boolean;
-    children: (params: DynamicSectionPropsChildrenParams) => JSX.Element;
+    children: (params: DynamicSectionPropsChildrenParams) => React.JSX.Element;
     emptyValue?: any;
     gridClassName?: string;
     onAddItem?: (index: number) => void;
@@ -54,6 +56,7 @@ const DynamicSection = ({
     field,
     getBind,
     children,
+    disabled = false,
     showLabel = true,
     emptyValue = "",
     onAddItem = defaultAddItem,
@@ -81,29 +84,24 @@ const DynamicSection = ({
                 return (
                     <Bind.ValidationContainer>
                         <ParentFieldProvider value={value} path={Bind.parentName}>
-                            {showLabel ? (
-                                <div
-                                    className={
-                                        "relative mb-xl mt-md border-b-sm border-accent-dimmed"
-                                    }
-                                >
-                                    <Heading
-                                        level={6}
-                                        className={
-                                            "webiny_group-label-text absolute bottom-[-10px] pr-sm text-accent-primary bg-white"
-                                        }
-                                    >
-                                        {`${field.label} ${
-                                            bindFieldValue.length
-                                                ? `(${bindFieldValue.length})`
-                                                : ""
-                                        }`}
-                                    </Heading>
-                                    {field.helpText && (
-                                        <FormComponentDescription text={field.helpText} />
+                            {showLabel && (
+                                <div className={"mb-sm flex flex-col gap-y-sm"}>
+                                    <Separator labelPosition={"start"} variant={"accent"}>
+                                        <span
+                                            className={"text-accent-primary text-lg font-semibold"}
+                                        >
+                                            {`${field.label} ${
+                                                bindFieldValue.length
+                                                    ? `(${bindFieldValue.length})`
+                                                    : ""
+                                            }`}
+                                        </span>
+                                    </Separator>
+                                    {field.description && (
+                                        <FormComponentDescription text={field.description} />
                                     )}
                                 </div>
-                            ) : null}
+                            )}
                             <Grid className={classSet(gridClassName, style.gridContainer)}>
                                 <>
                                     {bindFieldValue.map((_, index) => {
@@ -124,6 +122,7 @@ const DynamicSection = ({
                                                                     index
                                                                 })}
                                                             </ParentValueIndexProvider>
+                                                            <FormComponentNote text={field.note} />
                                                         </BindField.ValidationContainer>
                                                     )}
                                                 </BindField>
@@ -141,23 +140,26 @@ const DynamicSection = ({
                                         </Grid.Column>
                                     )}
                                 </>
-                                <Grid.Column span={12}>
-                                    <div
-                                        className={cn(
-                                            bindFieldValue.length > 0 ? "pt-none" : "pt-sm"
-                                        )}
-                                    >
-                                        <Button
-                                            variant={"tertiary"}
-                                            icon={<AddIcon />}
-                                            text={t(addValueButtonLabel)}
-                                            onClick={() => {
-                                                appendValue(emptyValue);
-                                                onAddItem(bindFieldValue.length);
-                                            }}
-                                        />
-                                    </div>
-                                </Grid.Column>
+                                {
+                                    <Grid.Column span={12}>
+                                        <div
+                                            className={cn(
+                                                bindFieldValue.length > 0 ? "pt-none" : "pt-sm"
+                                            )}
+                                        >
+                                            <Button
+                                                disabled={disabled}
+                                                variant={"tertiary"}
+                                                icon={<AddIcon />}
+                                                text={t(addValueButtonLabel)}
+                                                onClick={() => {
+                                                    appendValue(emptyValue);
+                                                    onAddItem(bindFieldValue.length);
+                                                }}
+                                            />
+                                        </div>
+                                    </Grid.Column>
+                                }
                             </Grid>
                         </ParentFieldProvider>
                     </Bind.ValidationContainer>

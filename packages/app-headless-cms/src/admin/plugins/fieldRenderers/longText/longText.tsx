@@ -3,6 +3,7 @@ import get from "lodash/get.js";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { DelayedOnChange, Textarea } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
+import { useFieldEffectiveRules, useModelField } from "@webiny/app-headless-cms-common";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -15,13 +16,15 @@ const plugin: CmsModelFieldRendererPlugin = {
         description: t`Renders a simple text area, suitable for larger amounts of text.`,
         canUse({ field }) {
             return (
-                field.type === "long-text" &&
-                !field.multipleValues &&
-                !get(field, "predefinedValues.enabled")
+                field.type === "long-text" && !field.list && !get(field, "predefinedValues.enabled")
             );
         },
-        render({ field, getBind }) {
+        render({ getBind }) {
+            const { field } = useModelField();
+            const rules = useFieldEffectiveRules(field);
             const Bind = getBind();
+
+            const disabled = !rules.canEdit || rules.disabled;
 
             return (
                 <Bind>
@@ -33,10 +36,13 @@ const plugin: CmsModelFieldRendererPlugin = {
                                 onBlur={bind.validate}
                             >
                                 <Textarea
+                                    disabled={disabled}
                                     rows={5}
                                     label={field.label}
-                                    placeholder={field.placeholderText}
-                                    description={field.helpText}
+                                    placeholder={field.placeholder}
+                                    description={field.description}
+                                    note={field.note}
+                                    hint={field.help}
                                     data-testid={`fr.input.longtext.${field.label}`}
                                     validation={bind.validation}
                                 />

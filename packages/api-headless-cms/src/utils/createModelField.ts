@@ -1,11 +1,15 @@
 import camelCase from "lodash/camelCase.js";
-import type { CmsModelField } from "~/types/index.js";
+import type { CmsModelField, CmsModelFieldValidation } from "~/types/index.js";
 
-export interface CreateModelFieldParams
-    extends Omit<CmsModelField, "id" | "storageId" | "fieldId"> {
+export interface CreateModelFieldParams extends Omit<
+    CmsModelField,
+    "id" | "storageId" | "fieldId" | "validation" | "listValidation"
+> {
     id?: string;
     fieldId?: string;
     storageId?: string;
+    validation?: CmsModelFieldValidation[];
+    listValidation?: CmsModelFieldValidation[];
 }
 
 export const createModelField = (params: CreateModelFieldParams): CmsModelField => {
@@ -17,25 +21,28 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         fieldId: initialFieldId,
         storageId,
         type,
-        tags,
+        tags = [],
         settings = {},
         listValidation = [],
         validation = [],
-        multipleValues = false,
+        list = false,
         predefinedValues = {
             values: [],
             enabled: false
         },
-        helpText = null,
-        placeholderText = null,
-        renderer = null
+        help = null,
+        placeholder = null,
+        renderer = null,
+        rules = []
     } = params;
 
-    const fieldId = initialFieldId ? camelCase(initialFieldId) : camelCase(label);
+    // TODO: ideally, initialFieldId should also be passed through `camelCase` but currently this would break `wbyAco_location` field.
+    // TODO: Once this legacy field is removed, we can enable camelCase on the initialFieldId.
+    const fieldId = initialFieldId ? initialFieldId : camelCase(label);
 
     return {
         id: id ?? fieldId,
-        storageId: storageId ?? `${type}@${fieldId}`,
+        storageId: storageId ?? `${type}@${id ?? fieldId}`,
         fieldId,
         label,
         type,
@@ -43,10 +50,11 @@ export const createModelField = (params: CreateModelFieldParams): CmsModelField 
         tags,
         listValidation,
         validation,
-        multipleValues,
+        list,
         predefinedValues,
-        helpText,
-        placeholderText,
-        renderer
+        help,
+        placeholder,
+        renderer,
+        rules
     };
 };

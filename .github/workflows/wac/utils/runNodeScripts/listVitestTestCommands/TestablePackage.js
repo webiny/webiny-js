@@ -8,8 +8,9 @@ const getMd5Hash = text => {
 };
 
 export class TestablePackage {
-    constructor(packageFolderPath) {
+    constructor(packageFolderPath, storageOps = null) {
         this.packageFolderPath = packageFolderPath;
+        this.storageOps = storageOps;
         this.vitestCiConfig = undefined;
     }
 
@@ -24,17 +25,19 @@ export class TestablePackage {
     getTestCommands() {
         const vitestCiConfig = this.getVitestCiConfig();
         const shardsCount = vitestCiConfig?.sharding?.shardsCount;
+        const prefix = this.storageOps ? `[${this.storageOps.toUpperCase()}] ` : "";
+
         if (shardsCount && Number.isInteger(shardsCount) && shardsCount > 1) {
             const commands = [];
             for (let currentShard = 1; currentShard <= shardsCount; currentShard++) {
                 const cmd = `yarn test ${this.packageFolderPath} --shard=${currentShard}/${shardsCount}`;
-                const title = `${this.getName()} (${currentShard}/${shardsCount})`;
+                const title = `${prefix}${this.getName()} (${currentShard}/${shardsCount})`;
                 commands.push({ id: getMd5Hash(cmd), title, cmd });
             }
             return commands;
         }
 
-        const title = this.getName();
+        const title = `${prefix}${this.getName()}`;
         const cmd = `yarn test ${this.packageFolderPath}`;
         return [{ id: getMd5Hash(cmd), title, cmd }];
     }
@@ -98,7 +101,12 @@ export class TestablePackage {
                     return true;
                 }
             } else if (entry.isFile()) {
-                if (entry.name.endsWith(".test.ts") || entry.name.endsWith(".test.js")) {
+                if (
+                    entry.name.endsWith(".test.ts") ||
+                    entry.name.endsWith(".test.js") ||
+                    entry.name.endsWith(".test.tsx") ||
+                    entry.name.endsWith(".test.jsx")
+                ) {
                     return true;
                 }
             }

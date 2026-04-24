@@ -23,7 +23,7 @@ describe("ActionEditPresenter", () => {
             renderer: {
                 name: "ref-inputs"
             },
-            multipleValues: true,
+            list: true,
             settings: {
                 models: [
                     {
@@ -63,7 +63,7 @@ describe("ActionEditPresenter", () => {
                         message: "Value is required."
                     }
                 ],
-                multipleValues: false,
+                list: false,
                 predefinedValues: {
                     values: [],
                     enabled: false
@@ -84,7 +84,7 @@ describe("ActionEditPresenter", () => {
                 },
                 listValidation: [],
                 validation: [],
-                multipleValues: false,
+                list: false,
                 predefinedValues: {
                     values: [],
                     enabled: false

@@ -1,10 +1,14 @@
-import React, { useRef, cloneElement } from "react";
+import React, { createContext, useContext, useRef, cloneElement } from "react";
 import type { Validator } from "@webiny/validation/types.js";
 import { useForm } from "@webiny/form";
 import { createValidators } from "~/createValidators.js";
 import type { BindComponent, CmsModelField } from "~/types/index.js";
 import { useModelField } from "~/ModelFieldProvider/index.js";
 import { createValidationContainer } from "~/createValidationContainer.js";
+
+const BindParentNameContext = createContext<string>("");
+
+export const useBindParentName = (): string => useContext(BindParentNameContext);
 
 interface UseBindProps {
     Bind: BindComponent;
@@ -55,7 +59,7 @@ export function useBind({ Bind }: UseBindProps) {
 
         const validators = createValidators(field, field.validation || emptyValidators);
         const listValidators = createValidators(field, field.listValidation || emptyValidators);
-        const isMultipleValues = index === -1 && field.multipleValues;
+        const isMultipleValues = index === -1 && field.list;
         const inputValidators = isMultipleValues ? listValidators : validators;
 
         // We only use default values for single-value fields.
@@ -72,79 +76,81 @@ export function useBind({ Bind }: UseBindProps) {
             const { field } = useModelField();
 
             return (
-                <Bind
-                    name={childName || name}
-                    validators={childValidators || inputValidators}
-                    defaultValue={defaultValue ?? null}
-                    context={{ field }}
-                >
-                    {bind => {
-                        // Multiple-values functions below.
-                        const props = { ...bind };
-                        if (field.multipleValues && index === -1) {
-                            props.appendValue = (newValue: any, index?: number) => {
-                                const currentValue = bind.value || [];
-                                const newIndex = index ?? currentValue.length;
+                <BindParentNameContext.Provider value={name}>
+                    <Bind
+                        name={childName || name}
+                        validators={childValidators || inputValidators}
+                        defaultValue={defaultValue ?? null}
+                        context={{ field }}
+                    >
+                        {bind => {
+                            // Multiple-values functions below.
+                            const props = { ...bind };
+                            if (field.list && index === -1) {
+                                props.appendValue = (newValue: any, index?: number) => {
+                                    const currentValue = bind.value || [];
+                                    const newIndex = index ?? currentValue.length;
 
-                                bind.onChange([
-                                    ...currentValue.slice(0, newIndex),
-                                    newValue,
-                                    ...currentValue.slice(newIndex)
-                                ]);
-                            };
-                            props.prependValue = (newValue: any) => {
-                                bind.onChange([newValue, ...(bind.value || [])]);
-                            };
-                            props.appendValues = (newValues: any[]) => {
-                                bind.onChange([...(bind.value || []), ...newValues]);
-                            };
+                                    bind.onChange([
+                                        ...currentValue.slice(0, newIndex),
+                                        newValue,
+                                        ...currentValue.slice(newIndex)
+                                    ]);
+                                };
+                                props.prependValue = (newValue: any) => {
+                                    bind.onChange([newValue, ...(bind.value || [])]);
+                                };
+                                props.appendValues = (newValues: any[]) => {
+                                    bind.onChange([...(bind.value || []), ...newValues]);
+                                };
 
-                            props.removeValue = (index: number) => {
-                                if (index < 0) {
-                                    return;
-                                }
+                                props.removeValue = (index: number) => {
+                                    if (index < 0) {
+                                        return;
+                                    }
 
-                                const value = [
-                                    ...bind.value.slice(0, index),
-                                    ...bind.value.slice(index + 1)
-                                ];
+                                    const value = [
+                                        ...bind.value.slice(0, index),
+                                        ...bind.value.slice(index + 1)
+                                    ];
 
-                                bind.onChange(value.length === 0 ? null : value);
+                                    bind.onChange(value.length === 0 ? null : value);
 
-                                // To make sure the field is still valid, we must trigger validation.
-                                form.validateInput(field.fieldId);
-                            };
+                                    // To make sure the field is still valid, we must trigger validation.
+                                    form.validateInput(field.fieldId);
+                                };
 
-                            props.moveValueUp = (index: number) => {
-                                if (index <= 0) {
-                                    return;
-                                }
+                                props.moveValueUp = (index: number) => {
+                                    if (index <= 0) {
+                                        return;
+                                    }
 
-                                const value = [...bind.value];
-                                value.splice(index, 1);
-                                value.splice(index - 1, 0, bind.value[index]);
+                                    const value = [...bind.value];
+                                    value.splice(index, 1);
+                                    value.splice(index - 1, 0, bind.value[index]);
 
-                                bind.onChange(value);
-                            };
+                                    bind.onChange(value);
+                                };
 
-                            props.moveValueDown = (index: number) => {
-                                if (index >= bind.value.length) {
-                                    return;
-                                }
+                                props.moveValueDown = (index: number) => {
+                                    if (index >= bind.value.length) {
+                                        return;
+                                    }
 
-                                const value = [...bind.value];
-                                value.splice(index, 1);
-                                value.splice(index + 1, 0, bind.value[index]);
+                                    const value = [...bind.value];
+                                    value.splice(index, 1);
+                                    value.splice(index + 1, 0, bind.value[index]);
 
-                                bind.onChange(value);
-                            };
-                        }
+                                    bind.onChange(value);
+                                };
+                            }
 
-                        return typeof children === "function"
-                            ? children(props)
-                            : cloneElement(children, props);
-                    }}
-                </Bind>
+                            return typeof children === "function"
+                                ? children(props)
+                                : cloneElement(children, props);
+                        }}
+                    </Bind>
+                </BindParentNameContext.Provider>
             );
         } as BindComponent;
 

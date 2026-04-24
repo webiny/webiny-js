@@ -3,13 +3,14 @@ import type { Tenant } from "~/types/tenancy.js";
 
 export type GetTenantByIdError = { type: "NOT_FOUND" } | { type: "UNKNOWN"; cause: Error };
 
-// Use Case Abstraction
 export interface IGetTenantByIdUseCase {
     execute(id: string): Promise<Result<Tenant, GetTenantByIdError>>;
 }
 
-export const GetTenantByIdUseCase =
-    createAbstraction<IGetTenantByIdUseCase>("GetTenantByIdUseCase");
+/** Retrieve a tenant by its ID. */
+export const GetTenantByIdUseCase = createAbstraction<IGetTenantByIdUseCase>(
+    "Tenancy/GetTenantByIdUseCase"
+);
 
 export namespace GetTenantByIdUseCase {
     export type Interface = IGetTenantByIdUseCase;
@@ -17,25 +18,27 @@ export namespace GetTenantByIdUseCase {
     export type Result = ReturnType<IGetTenantByIdUseCase["execute"]>;
 }
 
-// Repository Abstraction
 export interface IGetTenantByIdRepository {
     getById(id: string): Promise<Tenant | null>;
 }
 
-export const GetTenantByIdRepository =
-    createAbstraction<IGetTenantByIdRepository>("GetTenantByIdRepository");
+/** Fetch a tenant by ID from storage. */
+export const GetTenantByIdRepository = createAbstraction<IGetTenantByIdRepository>(
+    "Tenancy/GetTenantByIdRepository"
+);
 
 export namespace GetTenantByIdRepository {
     export type Interface = IGetTenantByIdRepository;
 }
 
-// Gateway Abstraction
 export interface IGetTenantByIdGateway {
     getTenantById(id: string): Promise<Tenant | null>;
 }
 
-export const GetTenantByIdGateway =
-    createAbstraction<IGetTenantByIdGateway>("GetTenantByIdGateway");
+/** Storage gateway for tenant retrieval by ID. */
+export const GetTenantByIdGateway = createAbstraction<IGetTenantByIdGateway>(
+    "Tenancy/GetTenantByIdGateway"
+);
 
 export namespace GetTenantByIdGateway {
     export type Interface = IGetTenantByIdGateway;

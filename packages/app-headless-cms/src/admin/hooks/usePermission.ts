@@ -1,42 +1,148 @@
-import { useCallback, useMemo } from "react";
-import { useSecurity } from "@webiny/app-security";
-import type { CmsGroup, CmsIdentity, CmsModel, CmsSecurityPermission } from "~/types.js";
+import { useCallback, useContext, useMemo } from "react";
+import { useIdentity } from "@webiny/app-admin";
 import { makeDecoratable } from "@webiny/react-composition";
+import { ModelContext } from "@webiny/app-headless-cms-common/ModelProvider/ModelContext.js";
+import type { CmsGroup, CmsIdentity, CmsModel, CmsSecurityPermission } from "~/types.js";
 
 export interface CreatableItem {
     createdBy?: Pick<CmsIdentity, "id">;
 }
 
 interface CanReadEntriesCallableParams {
-    contentModelGroup: CmsGroup;
-    contentModel: CmsModel;
+    contentModelGroup: Pick<CmsGroup, "id">;
+    contentModel: Pick<CmsModel, "modelId">;
+}
+
+function isModelAllowed(modelPermissions: CmsSecurityPermission[], modelId: string): boolean {
+    // No model permissions in this group means all models are allowed.
+    if (!modelPermissions.length) {
+        return true;
+    }
+
+    for (const permission of modelPermissions) {
+        // If no models array, this permission grants access to all models.
+        if (!Array.isArray(permission.models)) {
+            return true;
+        }
+
+        if (permission.models.includes(modelId)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function isGroupAllowed(groupPermissions: CmsSecurityPermission[], groupId: string): boolean {
+    // No group permissions in this group means all groups are allowed.
+    if (!groupPermissions.length) {
+        return true;
+    }
+
+    for (const permission of groupPermissions) {
+        // If no groups array, this permission grants access to all groups.
+        if (!Array.isArray(permission.groups)) {
+            return true;
+        }
+
+        if (permission.groups.includes(groupId)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+interface HasAccessParams {
+    permissions: CmsSecurityPermission[];
+    modelPermissions: CmsSecurityPermission[];
+    modelId: string;
+    check: (permission: CmsSecurityPermission) => boolean;
+}
+
+/**
+ * Check if any _src group grants access for the given model.
+ */
+function hasAccessForModel({ permissions, modelPermissions, modelId, check }: HasAccessParams) {
+    const srcKeys = new Set<string | undefined>();
+    for (const p of [...permissions, ...modelPermissions]) {
+        srcKeys.add(p._src);
+    }
+
+    for (const src of srcKeys) {
+        const srcPerms = permissions.filter(p => p._src === src);
+        const srcModelPerms = modelPermissions.filter(p => p._src === src);
+
+        if (!srcPerms.length) {
+            continue;
+        }
+
+        if (!srcPerms.some(check)) {
+            continue;
+        }
+
+        const modelAllowed = isModelAllowed(srcModelPerms, modelId);
+        if (!modelAllowed) {
+            continue;
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 export const usePermission = makeDecoratable(() => {
-    const { identity, getIdentityId, getPermission, getPermissions } = useSecurity();
+    const { identity } = useIdentity();
+    const model = useContext(ModelContext);
+    const modelId = model?.modelId;
 
-    const hasFullAccess = useMemo(() => !!getPermission("cms.*"), [identity]);
+    const hasFullAccess = useMemo(() => !!identity.getPermission("cms.*"), [identity]);
 
-    const canRead = useCallback(
-        (permissionName: string): boolean => {
+    const modelPermissions = useMemo(
+        () => identity.getPermissions<CmsSecurityPermission>("cms.contentModel") ?? [],
+        [identity]
+    );
+
+    /**
+     * Check permissions with _src-based model scoping when a model context is available.
+     * When no model context exists, falls back to checking permissions without model correlation.
+     */
+    const checkPermission = useCallback(
+        (permissionName: string, check: (permission: CmsSecurityPermission) => boolean) => {
             if (hasFullAccess) {
                 return true;
             }
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
 
+            const permissions = identity.getPermissions<CmsSecurityPermission>(permissionName);
             if (!permissions.length) {
                 return false;
             }
 
-            return permissions.some(permission => {
+            if (modelId) {
+                return hasAccessForModel({
+                    permissions,
+                    modelPermissions,
+                    modelId,
+                    check
+                });
+            }
+
+            return permissions.some(check);
+        },
+        [identity, hasFullAccess, modelId, modelPermissions]
+    );
+
+    const canRead = useCallback(
+        (permissionName: string): boolean => {
+            return checkPermission(permissionName, permission => {
                 if (typeof permission.rwd !== "string") {
                     return true;
                 }
-
                 return permission.rwd.includes("r");
             });
         },
-        [identity, hasFullAccess]
+        [checkPermission]
     );
 
     const canReadEntries = useCallback(
@@ -45,100 +151,68 @@ export const usePermission = makeDecoratable(() => {
                 return true;
             }
 
-            const permissions = getPermissions<CmsSecurityPermission>("cms.contentEntry");
-            if (!permissions.length) {
+            const entryPermissions =
+                identity.getPermissions<CmsSecurityPermission>("cms.contentEntry") ?? [];
+            if (!entryPermissions.length) {
                 return false;
             }
 
-            // Check "contentModel" list.
-            const contentModelPermissions = getPermissions("cms.contentModel");
+            const groupPermissions =
+                identity.getPermissions<CmsSecurityPermission>("cms.contentModelGroup") ?? [];
 
-            // "all" means user has access to all models.
-            let allowedModels: "all" | string[] = [];
-
-            for (let i = 0; i < contentModelPermissions.length; i++) {
-                const permission = contentModelPermissions[i];
-                const permissionAllowedModels = permission?.models;
-                // The moment we encounter a permission that gives access to all models,
-                // we can stop checking other permissions.
-                const allModelsAllowed = !Array.isArray(permissionAllowedModels);
-                if (allModelsAllowed) {
-                    allowedModels = "all";
-                    break;
-                }
-
-                allowedModels = [...allowedModels, ...permissionAllowedModels];
+            // Group all permissions by _src. Permissions without _src go into an "ungrouped" bucket.
+            const srcKeys = new Set<string | undefined>();
+            for (const p of [...entryPermissions, ...modelPermissions, ...groupPermissions]) {
+                srcKeys.add(p._src);
             }
 
-            if (Array.isArray(allowedModels)) {
-                return allowedModels.includes(contentModel.modelId);
-            }
+            for (const src of srcKeys) {
+                const srcEntryPerms = entryPermissions.filter(p => p._src === src);
+                const srcModelPerms = modelPermissions.filter(p => p._src === src);
+                const srcGroupPerms = groupPermissions.filter(p => p._src === src);
 
-            // Check "contentModelGroup" list.
-            const contentModelGroupPermissions = getPermissions("cms.contentModelGroup");
-
-            // "all" means user has access to all models.
-            let allowedModelGroups: "all" | string[] = [];
-
-            for (let i = 0; i < contentModelGroupPermissions.length; i++) {
-                const permission = contentModelGroupPermissions[i];
-                const permissionAllowedModelGroups = permission?.models;
-                // The moment we encounter a permission that gives access to all models,
-                // we can stop checking other permissions.
-                const allModelGroupsAllowed = !Array.isArray(permissionAllowedModelGroups);
-                if (allModelGroupsAllowed) {
-                    allowedModelGroups = "all";
-                    break;
+                if (!srcEntryPerms.length) {
+                    continue;
                 }
 
-                allowedModelGroups = [...allowedModelGroups, ...permissionAllowedModelGroups];
-            }
+                const hasReadAccess = srcEntryPerms.some(p => {
+                    if (typeof p.rwd !== "string") {
+                        return true;
+                    }
+                    return p.rwd.includes("r");
+                });
 
-            if (Array.isArray(allowedModelGroups)) {
-                return allowedModelGroups.includes(contentModelGroup.id);
-            }
-
-            for (let i = 0; i < permissions.length; i++) {
-                const permission = permissions[i];
-
-                // If no RWD restrictions are set, we can return true.
-                if (typeof permission.rwd !== "string") {
-                    return true;
+                if (!hasReadAccess) {
+                    continue;
                 }
 
-                const rwdGivesReadAccess = permission.rwd.includes("r");
-                if (rwdGivesReadAccess) {
-                    return true;
+                const modelAllowed = isModelAllowed(srcModelPerms, contentModel.modelId);
+                if (!modelAllowed) {
+                    continue;
                 }
+
+                const groupAllowed = isGroupAllowed(srcGroupPerms, contentModelGroup.id);
+                if (!groupAllowed) {
+                    continue;
+                }
+
+                return true;
             }
 
             return false;
         },
-        [identity, hasFullAccess]
+        [identity, hasFullAccess, modelPermissions]
     );
 
     const canEdit = useCallback(
         (item: CreatableItem, permissionName: string): boolean => {
-            if (hasFullAccess) {
-                return true;
-            }
-
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
-
-            if (!permissions.length || !identity) {
-                return false;
-            }
-
-            return permissions.some(permission => {
+            return checkPermission(permissionName, permission => {
                 if (permission.own) {
-                    /**
-                     * There will be no "createdBy" field for a new entry therefore we enable the access.
-                     */
                     if (!item.createdBy) {
                         return true;
                     }
 
-                    if (item?.createdBy?.id === getIdentityId()) {
+                    if (item?.createdBy?.id === identity.id) {
                         return true;
                     }
                 }
@@ -152,54 +226,26 @@ export const usePermission = makeDecoratable(() => {
                 return false;
             });
         },
-        [identity]
+        [identity, checkPermission]
     );
 
-    /**
-     * @description This checks whether the user has the "write" access for given permission;
-     * without talking the "own" property in account.
-     * @param {string} permissionName
-     * */
     const canCreate = useCallback(
         (permissionName: string): boolean => {
-            if (hasFullAccess) {
-                return true;
-            }
-
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
-            if (!permissions.length) {
-                return false;
-            }
-
-            return permissions.some(permission => {
+            return checkPermission(permissionName, permission => {
                 if (typeof permission.rwd !== "string") {
                     return true;
                 }
-
                 return permission.rwd.includes("w");
             });
         },
-        [identity]
+        [checkPermission]
     );
 
     const canDelete = useCallback(
         (item: CreatableItem, permissionName: string): boolean => {
-            if (hasFullAccess) {
-                return true;
-            }
-
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
-
-            if (!permissions.length) {
-                return false;
-            }
-
-            return permissions.some(permission => {
+            return checkPermission(permissionName, permission => {
                 if (permission.own) {
-                    // Using optional chaining here because there might be cases where the item
-                    // or its `createdBy` property is not defined. In that case, we want to
-                    // return `false` and not throw an error.
-                    return item?.createdBy?.id === getIdentityId();
+                    return item?.createdBy?.id === identity.id;
                 }
 
                 if (typeof permission.rwd === "string") {
@@ -209,61 +255,34 @@ export const usePermission = makeDecoratable(() => {
                 return false;
             });
         },
-        [identity]
+        [identity, checkPermission]
     );
 
     const canDeleteEntries = useCallback(
         (permissionName: string): boolean => {
-            if (hasFullAccess) {
-                return true;
-            }
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
-
-            if (!permissions.length) {
-                return false;
-            }
-
-            return permissions.some(permission => {
-                return permission.rwd?.includes("d");
+            return checkPermission(permissionName, permission => {
+                return !!permission.rwd?.includes("d");
             });
         },
-        [identity, hasFullAccess]
+        [checkPermission]
     );
 
     const canPublish = useCallback(
         (permissionName: string): boolean => {
-            if (hasFullAccess) {
-                return true;
-            }
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
-
-            if (!permissions.length) {
-                return false;
-            }
-
-            return permissions.some(permission => {
-                return permission.pw?.includes("p");
+            return checkPermission(permissionName, permission => {
+                return !!permission.pw?.includes("p");
             });
         },
-        [identity, hasFullAccess]
+        [checkPermission]
     );
 
     const canUnpublish = useCallback(
         (permissionName: string): boolean => {
-            if (hasFullAccess) {
-                return true;
-            }
-            const permissions = getPermissions<CmsSecurityPermission>(permissionName);
-
-            if (!permissions.length) {
-                return false;
-            }
-
-            return permissions.some(permission => {
-                return permission.pw?.includes("u");
+            return checkPermission(permissionName, permission => {
+                return !!permission.pw?.includes("u");
             });
         },
-        [identity, hasFullAccess]
+        [checkPermission]
     );
 
     const canReadContentModels = canRead("cms.contentModel");
@@ -271,7 +290,7 @@ export const usePermission = makeDecoratable(() => {
     const canCreateContentModels = canCreate("cms.contentModel");
     const canCreateContentModelGroups = canCreate("cms.contentModelGroup");
     const canAccessManageEndpoint = useMemo(() => {
-        return getPermission("cms.endpoint.manage") !== undefined;
+        return identity.getPermission("cms.endpoint.manage") !== undefined;
     }, [identity]);
 
     return {

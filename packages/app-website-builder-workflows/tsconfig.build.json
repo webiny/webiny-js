@@ -5,7 +5,6 @@
     { "path": "../admin-ui/tsconfig.build.json" },
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-website-builder/tsconfig.build.json" },
     { "path": "../app-workflows/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" }
@@ -19,18 +18,10 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/admin-ui/*": ["../admin-ui/src/*"],
       "@webiny/admin-ui": ["../admin-ui/src"],
-      "@webiny/app/features/envConfig": ["../app/src/features/envConfig/index.js"],
-      "@webiny/app/features/localStorage": ["../app/src/features/localStorage/index.js"],
-      "@webiny/app/features/router": ["../app/src/features/router/index.js"],
-      "@webiny/app/features/graphqlClient": ["../app/src/features/graphqlClient/index.js"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
-      "@webiny/app-admin/features/wcp": ["../app-admin/src/features/wcp/index.js"],
-      "@webiny/app-admin/features/tenancy": ["../app-admin/src/features/tenancy/index.js"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/app-security/*": ["../app-security/src/*"],
-      "@webiny/app-security": ["../app-security/src"],
       "@webiny/app-website-builder/*": ["../app-website-builder/src/*"],
       "@webiny/app-website-builder": ["../app-website-builder/src"],
       "@webiny/app-workflows/*": ["../app-workflows/src/*"],
@@ -39,7 +30,6 @@
       "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

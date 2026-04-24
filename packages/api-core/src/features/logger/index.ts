@@ -1,1 +1,1 @@
-export { LoggerService } from "./abstractions.js";
+export { Logger } from "./abstractions.js";

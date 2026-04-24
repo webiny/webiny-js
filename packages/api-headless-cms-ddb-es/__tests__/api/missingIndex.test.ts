@@ -7,7 +7,7 @@ import { configurations } from "~/configurations";
 
 describe("missing index", () => {
     it("should return empty result set when index is missing", async () => {
-        const { createContext, elasticsearch } = useHandler({
+        const { createContext } = useHandler({
             plugins: [...createMockPlugins(), createGlobalModifierPlugin()]
         });
         const context = await createContext();
@@ -18,7 +18,7 @@ describe("missing index", () => {
             model
         });
 
-        const indexExistsResponse = await elasticsearch.indices.exists({
+        const indexExistsResponse = await context.opensearch.indices.exists({
             index: config.index
         });
 

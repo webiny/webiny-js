@@ -1,9 +1,7 @@
 import { mdbid } from "@webiny/utils";
-import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
-import { CreateApiKey } from "./abstractions.js";
+import { CreateApiKeyUseCase as CreateApiKeyUseCaseAbstraction } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { createApiKeyInputSchema } from "../shared/schemas.js";
@@ -11,30 +9,29 @@ import { ApiKeyBeforeCreateEvent, ApiKeyAfterCreateEvent } from "./events.js";
 import type { ApiKey, CreateApiKeyInput } from "../shared/types.js";
 import type { ApiKeyPermission } from "~/types/security.js";
 import { generateToken } from "../shared/generateToken.js";
-import { ApiKeyValidationError, NotAuthorizedError } from "../shared/errors.js";
+import { ApiKeyValidationError, ApiKeyNotAuthorizedError } from "../shared/errors.js";
 
-export class CreateApiKeyUseCase {
+class CreateApiKeyUseCaseImpl implements CreateApiKeyUseCaseAbstraction.Interface {
     constructor(
-        private tenantContext: TenantContext.Interface,
         private identityContext: IdentityContext.Interface,
         private eventPublisher: EventPublisher.Interface,
         private repository: ApiKeysRepository.Interface
     ) {}
 
-    async execute(input: CreateApiKeyInput): Promise<Result<ApiKey, CreateApiKey.Error>> {
+    async execute(
+        input: CreateApiKeyInput
+    ): Promise<Result<ApiKey, CreateApiKeyUseCaseAbstraction.Error>> {
         const hasPermission =
             await this.identityContext.getPermission<ApiKeyPermission>("security.apiKey");
 
         if (!hasPermission) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(new ApiKeyNotAuthorizedError());
         }
 
         const validation = createApiKeyInputSchema.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new ApiKeyValidationError(validation.error.errors[0].message));
+            return Result.fail(new ApiKeyValidationError(validation.error.issues[0].message));
         }
-
-        const tenant = this.tenantContext.getTenant();
 
         const token = generateToken();
         const identity = this.identityContext.getIdentity();
@@ -43,10 +40,10 @@ export class CreateApiKeyUseCase {
         const apiKey: ApiKey = {
             id: mdbid(),
             name: data.name,
+            slug: data.slug,
             description: data.description,
             token,
             permissions: data.permissions,
-            tenant: tenant.id || "root",
             createdOn: new Date().toISOString(),
             createdBy: {
                 id: identity.id,
@@ -73,8 +70,7 @@ export class CreateApiKeyUseCase {
     }
 }
 
-export const CreateApiKeyUseCaseImpl = createImplementation({
-    abstraction: CreateApiKey,
-    implementation: CreateApiKeyUseCase,
-    dependencies: [TenantContext, IdentityContext, EventPublisher, ApiKeysRepository]
+export const CreateApiKeyUseCase = CreateApiKeyUseCaseAbstraction.createImplementation({
+    implementation: CreateApiKeyUseCaseImpl,
+    dependencies: [IdentityContext, EventPublisher, ApiKeysRepository]
 });

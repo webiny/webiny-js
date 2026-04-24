@@ -8,15 +8,13 @@ import type {
     DOMExportOutput,
     DOMConversionMap
 } from "lexical";
-import { $applyNodeReplacement, setNodeIndentFromDOM } from "lexical";
-import { addClassNamesToElement } from "@lexical/utils";
+import { $applyNodeReplacement, setNodeIndentFromDOM, addClassNamesToElement } from "lexical";
 import type {
     HeadingTagType,
     SerializedHeadingNode as BaseSerializedHeadingNode
 } from "@lexical/rich-text";
 import { HeadingNode as BaseHeadingNode } from "@lexical/rich-text";
-import type { EditorTheme, ThemeEmotionMap } from "@webiny/lexical-theme";
-import { findTypographyStyleByHtmlTag } from "@webiny/lexical-theme";
+import { Theme } from "@webiny/lexical-theme";
 import type { ParagraphNode } from "~/ParagraphNode.js";
 import type { TypographyStylesNode, ThemeStyleValue } from "~/types.js";
 import { getStyleId } from "~/utils/getStyleId.js";
@@ -108,7 +106,10 @@ export class HeadingNode extends BaseHeadingNode implements TypographyStylesNode
 
     override createDOM(config: EditorConfig): HTMLElement {
         const element = super.createDOM(config);
-        return this.updateElementWithThemeClasses(element, config.theme as EditorTheme);
+
+        const theme = Theme.from(config.theme);
+
+        return this.updateElementWithThemeClasses(element, theme);
     }
 
     override exportDOM(editor: LexicalEditor): DOMExportOutput {
@@ -224,13 +225,9 @@ export class HeadingNode extends BaseHeadingNode implements TypographyStylesNode
         return true;
     }
 
-    protected updateElementWithThemeClasses(element: HTMLElement, theme: EditorTheme): HTMLElement {
-        if (!theme?.emotionMap) {
-            return element;
-        }
-
+    protected updateElementWithThemeClasses(element: HTMLElement, theme: Theme): HTMLElement {
         if (!this.__styleId || !this.__className) {
-            this.setDefaultTypography(theme.emotionMap);
+            this.setDefaultTypography(theme, this.__styleId);
         }
 
         if (this.__className) {
@@ -240,8 +237,15 @@ export class HeadingNode extends BaseHeadingNode implements TypographyStylesNode
         return element;
     }
 
-    private setDefaultTypography(themeEmotionMap: ThemeEmotionMap) {
-        const typographyStyle = findTypographyStyleByHtmlTag(this.getTag(), themeEmotionMap);
+    private setDefaultTypography(theme: Theme, styleId?: string) {
+        let typographyStyle = theme.getTypographyByTag(this.getTag());
+        if (styleId) {
+            const byStyleId = theme.getTypographyById(styleId);
+            if (byStyleId) {
+                typographyStyle = byStyleId;
+            }
+        }
+
         if (typographyStyle) {
             this.__styleId = typographyStyle.id;
             this.__className = typographyStyle.className;

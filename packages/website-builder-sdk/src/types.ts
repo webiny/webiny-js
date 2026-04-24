@@ -2,6 +2,7 @@ import type * as CSS from "csstype";
 import type { BindingsApi } from "~/BindingsApi.js";
 import type { ShorthandCssProperties } from "./types/ShorthandCssProperties.js";
 import type { InputFactory } from "~/createInput.js";
+import type { Breakpoint } from "~/types/WebsiteBuilderTheme.js";
 export type { WebsiteBuilderTheme, Breakpoint } from "./types/WebsiteBuilderTheme.js";
 
 type CSSProperties = CSS.Properties<string | number>;
@@ -9,6 +10,8 @@ type CSSProperties = CSS.Properties<string | number>;
 export type ElementMap = Record<string, DocumentElement>;
 
 export type DocumentState = Record<string, any>;
+
+export type DocumentMetadata = Record<string, any>;
 
 export type InputValueBinding<T = any> = ValueBinding<T> & {
     id: string;
@@ -104,19 +107,148 @@ export type ResponsiveStyles = {
     [key: string]: SerializableCSSStyleDeclaration;
 };
 
+export type ConstraintElementContext = {
+    /** Component name (e.g., "FunnelBuilder/Step") */
+    name: string;
+    /** Component tags */
+    tags: string[];
+
+    /** Get the parent element context. undefined for root. */
+    getParent(): ConstraintElementContext | undefined;
+
+    /** Index of this element among siblings in the same parent slot. -1 if not in a list slot. */
+    childIndex(): number;
+    /** Total siblings in the same parent slot. -1 if not in a list slot. */
+    childCount(): number;
+    /** True if this element is the last among siblings in its parent slot. */
+    isLastChild(): boolean;
+    /** True if this element is the first among siblings in its parent slot. */
+    isFirstChild(): boolean;
+};
+
+export type ConstraintContext = {
+    /** The component/element this constraint is about */
+    component: ConstraintElementContext;
+    /** The direct parent element at the drop target */
+    parent: ConstraintElementContext;
+    /** The target slot name (e.g., "children", "leftColumn", "rightColumn") */
+    slot: string;
+    /** True if the direct parent is the given component */
+    isChildOf: (componentName: string) => boolean;
+    /** True if any ancestor (including parent) is the given component */
+    isDescendantOf: (componentName: string) => boolean;
+    /** Find the nearest ancestor matching a component name */
+    getAncestor: (componentName: string) => ConstraintElementContext | undefined;
+    /** True if the component being placed has the given tag */
+    hasTag: (tag: string) => boolean;
+    /** Number of items currently in the target slot */
+    slotChildCount: () => number;
+    /** Count instances of a component type in the entire document */
+    countInstances: (componentName: string) => number;
+    /** True if the component has any descendant element carrying the given tag */
+    hasDescendantWithTag: (tag: string) => boolean;
+    /** Returns the resolved inputs of the nearest ancestor matching componentName, or undefined */
+    getAncestorInputs: (componentName: string) => Record<string, any> | undefined;
+    /** Returns the resolved inputs of the element this constraint is evaluating */
+    getElementInputs: () => Record<string, any>;
+    /** Debug logger — safe to call inside serialized constraints */
+    log: (...args: any[]) => void;
+    /** Block placement with an error message shown to the user */
+    block: (message: string) => never;
+};
+
+/**
+ * A constraint function. Call `ctx.block("message")` to block placement.
+ * Returning without blocking means the constraint passes.
+ */
+export type ComponentConstraint = (ctx: ConstraintContext) => void;
+
+// Flow-control symbols
+export type Stop = symbol;
+export type Continue = symbol;
+export type HandlerResult = void | Stop | Continue;
+
+export type OnChangeAction = "create" | "update" | "delete";
+
+export type OnChangeElementContext = {
+    id: string;
+    component: ComponentManifest;
+    inputs: Record<string, any>;
+};
+
+export type ManifestAncestorContext = {
+    id: string;
+    component: ComponentManifest;
+    inputs: Record<string, any>;
+    updateInputs: (cb: (inputs: Record<string, any>) => void) => void;
+    getElement: (id: string) => OnChangeElementContext | undefined;
+};
+
+export type ComponentChangeContext<TInputs = Record<string, any>> = {
+    action: OnChangeAction;
+    id: string;
+    component: ComponentManifest;
+    inputs: TInputs;
+    styles: Record<string, any>;
+    getAncestor: (componentName: string) => ManifestAncestorContext | undefined;
+    getElement: (id: string) => OnChangeElementContext | undefined;
+    createElement: (params: any) => any;
+    executeCommand: <T = unknown>(command: string, payload?: T) => void;
+    breakpoint: string;
+    log: (...args: any[]) => void;
+    stop: () => Stop;
+    continue: () => Continue;
+};
+
+export type DescendantChangeContext<
+    TInputs = Record<string, any>,
+    TDescendantInputs = Record<string, any>
+> = {
+    action: OnChangeAction;
+    descendant: {
+        component: ComponentManifest;
+        id: string;
+        inputs: TDescendantInputs;
+        updateInputs: (cb: (inputs: TDescendantInputs) => void) => void;
+    };
+    inputs: TInputs;
+    updateInputs: (cb: (inputs: TInputs) => void) => void;
+    getElement: (id: string) => OnChangeElementContext | undefined;
+    executeCommand: <T = unknown>(command: string, payload?: T) => void;
+    breakpoint: string;
+    log: (...args: any[]) => void;
+    stop: () => Stop;
+    continue: () => Continue;
+};
+
+export type ComponentChangeHandler<TInputs = Record<string, any>> = (
+    ctx: ComponentChangeContext<TInputs>
+) => HandlerResult;
+
+export type DescendantChangeHandler<
+    TInputs = Record<string, any>,
+    TDescendantInputs = Record<string, any>
+> = (ctx: DescendantChangeContext<TInputs, TDescendantInputs>) => HandlerResult;
+
 export type ComponentManifest = {
     name: string;
     group?: string;
     label?: string;
+    aiContext?: string;
+    useInAiContentGeneration?: boolean;
     image?: string;
     inputs: ComponentInput[];
     canDrag?: boolean;
-    canDelete?: boolean;
+    canDelete?: boolean | ComponentConstraint;
     acceptsChildren?: boolean;
     hideFromToolbar?: boolean;
     hideStyleSettings?: string[];
     autoApplyStyles?: boolean;
-    tags?: string[];
+    tags: string[];
+    constraints?: ComponentConstraint[];
+    descendantConstraints?: ComponentConstraint[];
+    onChange?: ComponentChangeHandler | ComponentChangeHandler[];
+    onDescendantChange?: DescendantChangeHandler | DescendantChangeHandler[];
     defaults?: {
         inputs?: Record<string, any>;
         styles?: SerializableCSSStyleDeclaration;
@@ -155,14 +287,18 @@ export type Document = {
     state: DocumentState;
     version: number;
     properties: Record<string, any>;
+    extensions: Record<string, any>;
+    metadata: DocumentMetadata;
     bindings: DocumentBindings;
     elements: ElementMap;
 };
 
 export type PublicPage = Pick<
     Page,
-    "id" | "version" | "properties" | "bindings" | "elements" | "state"
->;
+    "id" | "version" | "properties" | "bindings" | "elements" | "extensions" | "metadata" | "state"
+> & {
+    languagePaths: Record<string, string>;
+};
 
 export type PublicRedirect = {
     id: string;
@@ -173,9 +309,7 @@ export type PublicRedirect = {
 
 export type EditorPage = EditorDocument & Pick<Page, "properties" | "status" | "location">;
 
-export type EditorDocument = Document & {
-    metadata: Record<string, any>;
-};
+export type EditorDocument = Document;
 
 export type Page = Document & {
     id: string;
@@ -195,6 +329,8 @@ export type Page = Document & {
             src: string;
         };*/
         path: string;
+        language?: string;
+        sourcePage?: string;
         tags: string[];
         seo: {
             title: string;
@@ -214,6 +350,8 @@ export type Page = Document & {
             metaTags: Array<{ property: string; content: string }>;
         };
     };
+    extensions: Record<string, any>;
+    metadata: DocumentMetadata;
 };
 
 export type Box = {
@@ -240,12 +378,23 @@ export type BoxData = ElementBoxData | ElementSlotBoxData;
 export type EditorViewportInfo = PreviewViewportInfo & {
     top: number;
     left: number;
+    // Current breakpoint name
+    breakpoint: string;
+    breakpoints: Breakpoint[];
 };
 
 export type PreviewViewportInfo = {
+    // Viewport width (only the visible part)
     width: number;
+    // Viewport height (only the visible part)
     height: number;
+    // Full iframe width
+    scrollWidth: number;
+    // Full iframe height
+    scrollHeight: number;
+    // Iframe horizontal scroll offset
     scrollX: number;
+    // Iframe vertical scroll offest
     scrollY: number;
 };
 
@@ -264,12 +413,30 @@ export type PreviewViewportData = {
 export type ApiOptions = Record<string, any>;
 
 export type GetPageOptions = ApiOptions;
-export type ListPagesOptions = ApiOptions;
+
+export interface ListPagesOptions {
+    where?: Record<string, any>;
+    limit?: number;
+    after?: string;
+    sort?: string[];
+    search?: string;
+}
+
+export interface ListPagesMeta {
+    hasMoreItems: boolean;
+    totalCount: number;
+    cursor: string | null;
+}
+
+export interface ListPagesResult {
+    data: Array<Omit<PublicPage, "elements" | "bindings">>;
+    meta: ListPagesMeta;
+}
 
 export interface IDataProvider {
     getPageByPath(path: string, options?: GetPageOptions): Promise<PublicPage | null>;
     getPageById(id: string, options?: GetPageOptions): Promise<PublicPage | null>;
-    listPages(options?: ListPagesOptions): Promise<PublicPage[]>;
+    listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
 }
 
 export interface IEnvironment {
@@ -280,7 +447,7 @@ export interface IEnvironment {
 
 export interface IContentSdk {
     getPage(path: string): Promise<PublicPage | null>;
-    listPages(options?: ListPagesOptions): Promise<PublicPage[]>;
+    listPages(options?: ListPagesOptions): Promise<ListPagesResult>;
 }
 
 // Input types
@@ -406,11 +573,27 @@ export type ManifestInputsObject<
     : { [K in keyof TInputs]: InputFactory<K & string> };
 
 export type ComponentManifestInput<TInputs> =
-    | (Omit<ComponentManifest, "inputs" | "acceptsChildren"> & {
+    | (Omit<
+          ComponentManifest,
+          "inputs" | "acceptsChildren" | "tags" | "onChange" | "onDescendantChange"
+      > & {
           acceptsChildren: true;
+          tags?: string[];
           inputs?: ManifestInputsArray<TInputs, true> | ManifestInputsObject<TInputs, true>;
+          onChange?: ComponentChangeHandler<TInputs> | ComponentChangeHandler<TInputs>[];
+          onDescendantChange?:
+              | DescendantChangeHandler<TInputs>
+              | DescendantChangeHandler<TInputs>[];
       })
-    | (Omit<ComponentManifest, "inputs" | "acceptsChildren"> & {
+    | (Omit<
+          ComponentManifest,
+          "inputs" | "acceptsChildren" | "tags" | "onChange" | "onDescendantChange"
+      > & {
           acceptsChildren?: false;
+          tags?: string[];
           inputs: ManifestInputsArray<TInputs, false> | ManifestInputsObject<TInputs, false>;
+          onChange?: ComponentChangeHandler<TInputs> | ComponentChangeHandler<TInputs>[];
+          onDescendantChange?:
+              | DescendantChangeHandler<TInputs>
+              | DescendantChangeHandler<TInputs>[];
       });

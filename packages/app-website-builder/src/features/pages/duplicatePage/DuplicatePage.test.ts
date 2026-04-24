@@ -1,7 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { DuplicatePage } from "./DuplicatePage.js";
+import { Container } from "@webiny/di";
 import { WbPageStatus } from "~/constants.js";
 import { Page, pageListCache } from "~/domain/Page/index.js";
+import { metaRepositoryFactory } from "@webiny/app-utils";
+import {
+    DuplicatePageUseCase as UseCaseAbstraction,
+    DuplicatePageGateway as GatewayAbstraction
+} from "./abstractions.js";
+import { DuplicatePageUseCase } from "./DuplicatePageUseCase.js";
+import { DuplicatePageRepository } from "./DuplicatePageRepository.js";
+import { PageListCache, WbPageMetaRepository } from "~/features/pages/shared/abstractions.js";
 
 describe("DuplicatePage", () => {
     const gateway = {
@@ -9,7 +17,7 @@ describe("DuplicatePage", () => {
             id: "page-1-duplicated#0001",
             entryId: "page-1-duplicated",
             status: WbPageStatus.Draft,
-            wbyAco_location: {
+            location: {
                 folderId: "folder-1"
             },
             properties: {
@@ -36,7 +44,7 @@ describe("DuplicatePage", () => {
                 id: "page-1#0001",
                 entryId: "page-1",
                 status: WbPageStatus.Draft,
-                wbyAco_location: {
+                location: {
                     folderId: "folder-1"
                 },
                 properties: {
@@ -56,7 +64,17 @@ describe("DuplicatePage", () => {
     });
 
     it("should be able to duplicate a page", async () => {
-        const duplicatePage = DuplicatePage.getInstance(gateway);
+        const container = new Container();
+        container.registerInstance(PageListCache, pagesCache);
+        container.registerInstance(
+            WbPageMetaRepository,
+            metaRepositoryFactory.getRepository("WbPageTest")
+        );
+        container.registerInstance(GatewayAbstraction, gateway);
+        container.register(DuplicatePageRepository).inSingletonScope();
+        container.register(DuplicatePageUseCase);
+
+        const duplicatePage = container.resolve(UseCaseAbstraction);
 
         expect(pagesCache.hasItems()).toBeTrue();
         expect(pagesCache.count()).toBe(1);

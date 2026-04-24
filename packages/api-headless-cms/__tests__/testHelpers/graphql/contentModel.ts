@@ -1,17 +1,14 @@
-import type { CmsModel, CmsModelField } from "~/types";
+import type { CmsIcon, CmsModel, CmsModelField, CmsModelLayout } from "~/types";
 
 const DATA_FIELD = /* GraphQL*/ `
     {
+        tenant
         modelId
         singularApiName
         pluralApiName
         name
         description
-        group {
-            id
-            name
-            slug
-        }
+        group
         icon
         layout
         titleFieldId
@@ -20,12 +17,13 @@ const DATA_FIELD = /* GraphQL*/ `
         fields {
             id
             label
-            helpText
-            placeholderText
+            help
+            placeholder
             storageId
             fieldId
             type
-            multipleValues
+            tags
+            list
             predefinedValues {
                 enabled
                 values {
@@ -47,6 +45,13 @@ const DATA_FIELD = /* GraphQL*/ `
                 settings
             }
             settings
+            rules {
+                type
+                target
+                operator
+                value
+                action
+            }
         }
         plugin
         createdOn
@@ -88,15 +93,15 @@ export interface CreateContentModelMutationVariables {
     data: {
         name: string;
         modelId?: string;
-        group: string | { id: string; name: string };
+        group: string;
         singularApiName: string;
         pluralApiName: string;
         description?: string;
         fields?: Omit<CmsModelField, "storageId">[];
-        layout?: string[][];
+        layout?: CmsModelLayout;
         titleFieldId?: string;
         defaultFields?: boolean;
-        icon?: string;
+        icon?: CmsIcon;
     };
 }
 export interface CreateContentModelFromMutationVariables {
@@ -104,28 +109,24 @@ export interface CreateContentModelFromMutationVariables {
     data: {
         name: string;
         modelId?: string;
-        group: string | { id: string; name: string };
+        group: string;
         singularApiName: string;
         pluralApiName: string;
         description?: string;
         fields?: Omit<CmsModelField, "storageId">[];
         layout?: string[][];
         titleFieldId?: string;
-        locale?: `${Lowercase<string>}-${Uppercase<string>}`;
-        icon?: string;
+        icon?: CmsIcon;
     };
 }
 
 export interface CreateContentModelMutationResponse {
-    errors?: any[];
-    data: {
-        createContentModel: {
-            data: CmsModel;
-            error: {
-                message: string;
-                code: any;
-                data: any;
-            };
+    createContentModel: {
+        data: CmsModel;
+        error: {
+            message: string;
+            code: any;
+            data: any;
         };
     };
 }

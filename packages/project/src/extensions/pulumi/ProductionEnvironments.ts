@@ -1,11 +1,26 @@
+import React, { useEffect } from "react";
 import { z } from "zod";
 import { defineExtension } from "~/defineExtension/index.js";
+import { useRegisterProductionEnvironments } from "~/services/GetProjectConfigService/ProductionEnvironmentsContext.js";
 
-export const productionEnvironments = defineExtension({
+interface RegistrarProps {
+    environments: string[];
+}
+
+const Registrar: React.FC<RegistrarProps> = ({ environments }) => {
+    const setProdEnvs = useRegisterProductionEnvironments();
+    useEffect(() => {
+        if (setProdEnvs) {
+            setProdEnvs(environments);
+        }
+    }, []);
+    return null;
+};
+
+export const ProductionEnvironments = defineExtension({
     type: "Infra/ProductionEnvironments",
     tags: { runtimeContext: "project" },
     description: "Provide names for environments that are considered production environments.",
-    multiple: true,
     paramsSchema: z.object({
         environments: z.array(
             z.string().superRefine((value, ctx) => {
@@ -27,5 +42,6 @@ export const productionEnvironments = defineExtension({
                 }
             })
         )
-    })
+    }),
+    render: props => React.createElement(Registrar, { environments: props.environments })
 });

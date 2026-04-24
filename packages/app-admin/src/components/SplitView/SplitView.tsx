@@ -2,19 +2,42 @@ import * as React from "react";
 import type { ColumnProps } from "@webiny/admin-ui";
 import { cn, Separator } from "@webiny/admin-ui";
 import type { PanelProps, PanelGroupProps } from "~/components/ResizablePanels/index.js";
-import { Panel, PanelGroup, PanelResizeHandle } from "~/components/ResizablePanels/index.js";
+import {
+    Panel,
+    PanelGroup,
+    PanelResizeHandle,
+    type Layout
+} from "~/components/ResizablePanels/index.js";
+import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
+import { useCallback } from "react";
 
-interface SplitViewProps extends Omit<PanelGroupProps, "direction" | "id" | "autoSaveId"> {
-    layoutId?: string | null;
+interface SplitViewProps extends Omit<PanelGroupProps, "id"> {
+    namespace?: string;
 }
 
-const SplitView = ({ children, className, layoutId, ...props }: SplitViewProps) => {
+export const SplitView = ({
+    children,
+    className,
+    namespace = "splitView",
+    ...props
+}: SplitViewProps) => {
+    const localStorage = useLocalStorage();
+
+    const layout = useLocalStorageValue<Layout>(namespace);
+
+    const saveLayout = useCallback(
+        (layout: Layout) => {
+            localStorage.set(`${namespace}/panels`, layout);
+        },
+        [localStorage, namespace]
+    );
+
     return (
         <PanelGroup
-            direction="horizontal"
-            id="splitView"
-            autoSaveId={layoutId}
+            id={namespace}
+            defaultLayout={layout}
             className={cn("webiny-split-view", className)}
+            onLayoutChanged={saveLayout}
             {...props}
         >
             {children}
@@ -32,7 +55,7 @@ interface SplitViewPanelProps extends Omit<PanelProps, "id"> {
     span?: ColumnProps["span"];
 }
 
-const LeftPanel = ({ children, className, ...props }: SplitViewPanelProps) => {
+export const LeftPanel = ({ children, className, ...props }: SplitViewPanelProps) => {
     const defaultSize = props.defaultSize ?? getDefaultSize(props.span || 5);
 
     return (
@@ -46,14 +69,14 @@ const LeftPanel = ({ children, className, ...props }: SplitViewPanelProps) => {
             >
                 {children}
             </Panel>
-            <PanelResizeHandle>
+            <PanelResizeHandle className={"outline-0"}>
                 <Separator orientation={"vertical"} />
             </PanelResizeHandle>
         </>
     );
 };
 
-const RightPanel = ({ children, className, ...props }: SplitViewPanelProps) => {
+export const RightPanel = ({ children, className, ...props }: SplitViewPanelProps) => {
     const defaultSize = props.defaultSize ?? getDefaultSize(props.span || 7);
 
     return (
@@ -69,5 +92,3 @@ const RightPanel = ({ children, className, ...props }: SplitViewPanelProps) => {
         </Panel>
     );
 };
-
-export { SplitView, LeftPanel, RightPanel };

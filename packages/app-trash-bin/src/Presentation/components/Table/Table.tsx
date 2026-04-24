@@ -27,7 +27,7 @@ export const Table = () => {
             onSortingChange={sort => sortItems(sort)}
             selected={selected}
             nameColumnId={vm.nameColumnId}
-            namespace={"trash-bin"}
+            namespace={"trash-bin/list"}
         />
     );
 };

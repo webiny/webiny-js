@@ -3,7 +3,7 @@ import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import type { TestContext } from "./types";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 interface Config {
@@ -23,8 +23,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
         new ContextPlugin<TestContext>(context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
-                name: "Root",
-                webinyVersion: context.WEBINY_VERSION
+                name: "Root"
             } as unknown as Tenant);
 
             context.security.addAuthenticator(async () => {

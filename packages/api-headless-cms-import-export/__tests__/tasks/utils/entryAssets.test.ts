@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { useHandler } from "~tests/helpers/useHandler";
+import { ContentEntryTraverserProvider } from "@webiny/api-headless-cms";
 import type { CmsEntry } from "@webiny/api-headless-cms/types";
 import type { IContentEntryTraverser } from "@webiny/api-headless-cms";
+import { useHandler } from "~tests/helpers/useHandler";
 import type { IAsset, IEntryAssets } from "~/tasks/utils/entryAssets";
 import { EntryAssets } from "~/tasks/utils/entryAssets";
 import { createUniqueResolver } from "~tests/mocks/createUniqueResolver";
@@ -23,7 +24,8 @@ describe("entry assets", () => {
     beforeEach(async () => {
         const { createContext } = useHandler();
         const context = await createContext();
-        traverser = await context.cms.getEntryTraverser("author");
+        const traverserProvider = context.container.resolve(ContentEntryTraverserProvider);
+        traverser = await traverserProvider.getTraverser("author");
         entryAssets = new EntryAssets({
             traverser,
             uniqueResolver: createUniqueResolver()
@@ -144,29 +146,6 @@ describe("entry assets", () => {
             }
         ];
 
-        expect(result).toEqual(expected);
-    });
-
-    it("should properly extract asset alias from a path", async () => {
-        const cloudfrontUrl = "https://odisadosadnsakl.cloudfront.aws";
-        const fileKey = "/demo-pages/welcome-to-webiny__webiny-infrastructure-overview!.svg";
-        const image = `${cloudfrontUrl}${fileKey}`;
-
-        const entry: Pick<CmsEntry, "values"> = {
-            values: {
-                fullName: "John Doe",
-                image
-            }
-        };
-
-        const result = await entryAssets.assignAssets(entry);
-
-        const expected: IAsset[] = [
-            {
-                alias: fileKey,
-                url: image
-            }
-        ];
         expect(result).toEqual(expected);
     });
 

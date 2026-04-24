@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import type { EditFileUsingUrlRepository } from "./EditFileUsingUrlRepository.js";
 import { LOADING_STATE } from "./Loading.js";
 

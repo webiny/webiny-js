@@ -199,15 +199,13 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                             Resource: [
                                 `${core.primaryDynamodbTableArn}`,
                                 `${core.primaryDynamodbTableArn}/*`,
-                                `${core.logDynamodbTableArn}`,
-                                `${core.logDynamodbTableArn}/*`,
                                 `${core.auditLogsDynamodbTableArn}`,
                                 `${core.auditLogsDynamodbTableArn}/*`,
                                 // Attach permissions for elastic search dynamo as well (if ES is enabled).
-                                ...(core.elasticsearchDynamodbTableArn
+                                ...(core.opensearchDynamodbTableArn
                                     ? [
-                                          `${core.elasticsearchDynamodbTableArn}`,
-                                          `${core.elasticsearchDynamodbTableArn}/*`
+                                          `${core.opensearchDynamodbTableArn}`,
+                                          `${core.opensearchDynamodbTableArn}/*`
                                       ]
                                     : [])
                             ]
@@ -253,15 +251,15 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
                             Resource: pulumi.interpolate`arn:aws:cloudfront::${awsAccountId}:distribution/*`
                         },
                         // Attach permissions for elastic search domain as well (if ES is enabled).
-                        ...(core.elasticsearchDomainArn
+                        ...(core.opensearchDomainArn
                             ? [
                                   {
-                                      Sid: "PermissionForES",
+                                      Sid: "PermissionForOS",
                                       Effect: "Allow" as const,
                                       Action: "es:*",
                                       Resource: [
-                                          `${core.elasticsearchDomainArn}`,
-                                          `${core.elasticsearchDomainArn}/*`
+                                          `${core.opensearchDomainArn}`,
+                                          `${core.opensearchDomainArn}/*`
                                       ]
                                   }
                               ]

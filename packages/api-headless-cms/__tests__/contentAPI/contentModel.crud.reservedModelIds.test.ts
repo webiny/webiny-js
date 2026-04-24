@@ -4,7 +4,7 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { pubSubTracker } from "./mocks/lifecycleHooks";
 
 describe("content model test reserved model ids", () => {
-    const manageHandlerOpts = { path: "manage/en-US" };
+    const manageHandlerOpts = { path: "manage" };
 
     const { createContentModelGroupMutation, createContentModelMutation } =
         useGraphQLHandler(manageHandlerOpts);
@@ -16,7 +16,11 @@ describe("content model test reserved model ids", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: {
+                    name: "ico/ico",
+                    value: "ico/ico",
+                    type: "ico/ico"
+                },
                 description: "description"
             }
         });
@@ -32,7 +36,7 @@ describe("content model test reserved model ids", () => {
                 modelId: "contentModel",
                 singularApiName: "ContentModel",
                 pluralApiName: "ContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -41,7 +45,7 @@ describe("content model test reserved model ids", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_ID_NOT_ALLOWED",
+                        code: "Cms/Model/ValidationError",
                         data: {
                             input: "contentModel"
                         },
@@ -57,7 +61,7 @@ describe("content model test reserved model ids", () => {
                 modelId: "contentModelGroup",
                 singularApiName: "ContentModelGroup",
                 pluralApiName: "ContentModelsGroups",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -66,7 +70,7 @@ describe("content model test reserved model ids", () => {
                 createContentModel: {
                     data: null,
                     error: {
-                        code: "MODEL_ID_NOT_ALLOWED",
+                        code: "Cms/Model/ValidationError",
                         data: {
                             input: "contentModelGroup"
                         },

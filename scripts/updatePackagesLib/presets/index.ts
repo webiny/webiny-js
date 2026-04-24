@@ -8,10 +8,12 @@ import { rmwc } from "./rmwc";
 import { lexical } from "./lexical";
 import { ts } from "./ts";
 import { graphql } from "./graphql";
-import { eslint } from "./eslint";
-import { prettier } from "./prettier";
+import { oxfmt } from "./oxfmt";
+import { oxlint } from "./oxlint";
 import { vitest } from "./vitest";
 import { storybook } from "./storybook";
+import { emotion } from "./emotion.js";
+import { fontawesome } from "./fontawesome.js";
 
 export const presets = [
     react,
@@ -24,8 +26,10 @@ export const presets = [
     lexical,
     ts,
     graphql,
-    eslint,
-    prettier,
+    oxfmt,
+    oxlint,
     vitest,
-    storybook
+    storybook,
+    emotion,
+    fontawesome
 ];

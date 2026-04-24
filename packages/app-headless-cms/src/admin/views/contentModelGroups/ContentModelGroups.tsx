@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin";
 import ContentModelGroupsDataList from "./ContentModelGroupsDataList.js";
 import ContentModelGroupsForm from "./ContentModelGroupsForm.js";

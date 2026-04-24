@@ -1,4 +1,4 @@
-import glob from "glob";
+import fastGlob from "fast-glob";
 
 const defaultIgnore = ["**/node_modules/**", "**/dist/**", "**/build/**"];
 
@@ -15,17 +15,13 @@ export class ListAllPackageJsonFiles {
         const results: string[] = [];
 
         for (const target of targets) {
-            const files = glob.sync(`${target}/**/**/package.json`, {
-                ignore
-            });
+            const files = fastGlob.sync(
+                `${target}/**/**/{package.json,*.package.json,dependencies.json}`,
+                {
+                    ignore
+                }
+            );
             results.push(...files);
-            /**
-             * Some of our packages have files named `dependencies.json` which contain a list of dependencies.
-             */
-            const dependencies = glob.sync(`${target}/**/**/dependencies.json`, {
-                ignore
-            });
-            results.push(...dependencies);
         }
 
         return results;

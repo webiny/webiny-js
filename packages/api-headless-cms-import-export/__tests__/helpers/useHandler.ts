@@ -15,7 +15,6 @@ import { createBackgroundTaskContext } from "@webiny/tasks";
 import type { Context } from "~/types";
 import { createModelPlugin } from "~tests/mocks/model";
 import { createFileManagerContext } from "@webiny/api-file-manager";
-import type { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 import type { InvokeParams } from "./types";
 import { createHeadlessCmsImportExport } from "~/index";
 import { createGetExportContentEntries } from "./graphql/getExportContentEntries";
@@ -39,7 +38,6 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
     process.env.S3_BUCKET = "a-mock-s3-bucket";
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const plugins = [
@@ -48,20 +46,15 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
         }),
         createModelPlugin(),
         ...cmsStorage.plugins,
-        ...fileManagerStorage.plugins,
         ...createTenancyAndSecurity({
             permissions: createPermissions(),
             identity: createIdentity()
         }),
-        createHeadlessCmsContext({
-            storageOperations: cmsStorage.storageOperations
-        }),
+        createHeadlessCmsContext(),
         createHeadlessCmsGraphQL(),
         createBackgroundTaskContext(),
         createHeadlessCmsImportExport(),
-        createFileManagerContext({
-            storageOperations: fileManagerStorage.storageOperations
-        }),
+        createFileManagerContext(),
         graphQLHandlerPlugins(),
         createRawEventHandler(async ({ context }) => {
             return context;

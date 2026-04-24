@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelectFromDocument } from "@webiny/app-website-builder/BaseEditor/hooks/useSelectFromDocument.js";
 import { useApolloClient } from "@apollo/react-hooks";
-import { useSecurity } from "@webiny/app-security";
-import { Components } from "@webiny/app-workflows";
+import { useAuthentication } from "@webiny/app-admin";
+import { Components, useWorkflowState } from "@webiny/app-workflows";
 import { WB_PAGE_APP } from "~/constants.js";
-import { PageFormWorkflowState } from "./PageFormWorkflowState.js";
 import { PageEditorConfig } from "@webiny/app-website-builder";
+import { observer } from "mobx-react-lite";
+import { useDocumentEditor } from "@webiny/app-website-builder/DocumentEditor/index.js";
 
 const { Ui } = PageEditorConfig;
 
@@ -13,7 +14,22 @@ const {
     ContentReview: { WorkflowStateProvider }
 } = Components;
 
-export const PageEditorLayout = Ui.TopBar.Layout.createDecorator(Original => {
+const ToggleReadonly = observer(() => {
+    const { presenter } = useWorkflowState();
+    const editor = useDocumentEditor();
+
+    const hasState = !!presenter.vm.state?.state;
+
+    useEffect(() => {
+        editor.updateEditor(state => {
+            state.isReadOnly = hasState;
+        });
+    }, [hasState]);
+
+    return null;
+});
+
+export const PageEditorLayout = Ui.Layout.createDecorator(Original => {
     return function PageEditorTopBarWorkflowsState() {
         const page = useSelectFromDocument(doc => {
             return {
@@ -23,7 +39,7 @@ export const PageEditorLayout = Ui.TopBar.Layout.createDecorator(Original => {
         });
 
         const client = useApolloClient();
-        const { identity } = useSecurity();
+        const { identity } = useAuthentication();
 
         return (
             <WorkflowStateProvider
@@ -33,10 +49,8 @@ export const PageEditorLayout = Ui.TopBar.Layout.createDecorator(Original => {
                 client={client}
                 title={`Website Builder: ${page.title}`}
             >
-                {/* Original top bar*/}
                 <Original />
-                {/* Should render workflow state bar and the alert for storing changes */}
-                <PageFormWorkflowState />
+                <ToggleReadonly />
             </WorkflowStateProvider>
         );
     };

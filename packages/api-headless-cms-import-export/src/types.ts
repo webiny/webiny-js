@@ -1,12 +1,13 @@
-import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
 import type { Context as TasksContext, TaskDataStatus } from "@webiny/tasks/types.js";
 import type { ICmsImportExportRecord } from "./domain/abstractions/CmsImportExportRecord.js";
 import type { GenericRecord, NonEmptyArray } from "@webiny/api/types.js";
 import type {
+    CmsContext,
     CmsEntryListSort,
     CmsEntryListWhere,
     CmsEntryMeta
 } from "@webiny/api-headless-cms/types/index.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 export type * from "./domain/abstractions/CmsImportExportRecord.js";
 
@@ -72,8 +73,9 @@ export interface ICmsImportExportValidatedValidFile {
     error?: never;
 }
 
-export interface ICmsImportExportValidatedInvalidFile
-    extends Partial<Omit<ICmsImportExportValidatedValidFile, "error">> {
+export interface ICmsImportExportValidatedInvalidFile extends Partial<
+    Omit<ICmsImportExportValidatedValidFile, "error">
+> {
     checked: boolean;
     error: ICmsImportExportValidatedFileError;
 }
@@ -82,8 +84,7 @@ export type ICmsImportExportValidatedFile =
     | ICmsImportExportValidatedValidFile
     | ICmsImportExportValidatedInvalidFile;
 
-export interface ICmsImportExportValidatedContentEntriesFile
-    extends ICmsImportExportValidatedValidFile {
+export interface ICmsImportExportValidatedContentEntriesFile extends ICmsImportExportValidatedValidFile {
     size: number;
     type: CmsImportExportFileType.ENTRIES;
 }
@@ -164,6 +165,6 @@ export interface CmsImportExportObject {
     ): Promise<ICmsImportExportObjectImportFromUrlResult>;
 }
 
-export interface Context extends FileManagerContext, TasksContext {
+export interface Context extends ApiCoreContext, CmsContext, TasksContext {
     cmsImportExport: CmsImportExportObject;
 }

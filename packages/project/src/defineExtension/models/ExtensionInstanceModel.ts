@@ -1,6 +1,7 @@
 import { type ExtensionDefinitionModel } from "./ExtensionDefinitionModel.js";
 import { type z } from "zod";
 import { type ProjectModel } from "~/models/index.js";
+import { ProjectError } from "~/ProjectError.js";
 
 export interface ExtensionInstanceModelContext {
     [key: string]: any;
@@ -35,8 +36,13 @@ export class ExtensionInstanceModel<TParamsSchema extends z.ZodTypeAny> {
 
         const validationResult = await paramsSchema.safeParseAsync(this.params);
         if (!validationResult.success) {
-            throw new Error(
-                `Validation failed for extension "${this.definition.type}": ${validationResult.error.message}`
+            const errorMessages = validationResult.error.issues
+                .map((err: { message: string }) => err.message)
+                .join("; ");
+
+            throw ProjectError.from(
+                `Validation failed for extension of type %s: ${errorMessages}`,
+                this.definition.type
             );
         }
     }

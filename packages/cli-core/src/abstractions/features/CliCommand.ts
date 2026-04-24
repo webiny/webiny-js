@@ -17,6 +17,7 @@ export interface ICliCommandOptionDefinition<TCommandParams> {
     group?: string;
     required?: boolean;
     alias?: string;
+    array?: boolean;
     default?: any;
     validation?: (value: TCommandParams) => boolean | string;
 }
@@ -36,9 +37,12 @@ export interface ICliCommand<TCommandParams> {
         | ICliCommandDefinition<TCommandParams>;
 }
 
-export const CliCommand = createAbstraction<ICliCommand<any>>("CliCommand");
+/**
+ * Implement a custom CLI command for Webiny CLI.
+ */
+export const CliCommandFactory = createAbstraction<ICliCommand<any>>("CliCommandFactory");
 
-export namespace CliCommand {
+export namespace CliCommandFactory {
     export type Interface<TCommandParams> = ICliCommand<TCommandParams>;
 
     export type ParamDefinition<TCommandParams> = ICliCommandParamDefinition<TCommandParams>;

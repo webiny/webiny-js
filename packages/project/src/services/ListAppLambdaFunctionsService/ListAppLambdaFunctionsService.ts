@@ -1,12 +1,12 @@
 import { createImplementation } from "@webiny/di";
 import {
     ListAppLambdaFunctionsService,
-    PulumiGetStackExportService,
+    PulumiExportService,
     LoggerService
 } from "~/abstractions/index.js";
 import { type AppModel } from "~/models/index.js";
 import path from "path";
-import minimatch from "minimatch";
+import { minimatch } from "minimatch";
 
 interface ExpectedStackExport {
     deployment: {
@@ -26,15 +26,12 @@ export class DefaultListAppLambdaFunctionsService
     implements ListAppLambdaFunctionsService.Interface
 {
     constructor(
-        private pulumiGetStackExportService: PulumiGetStackExportService.Interface,
+        private pulumiExportService: PulumiExportService.Interface,
         private loggerService: LoggerService.Interface
     ) {}
 
-    async execute(app: AppModel, params: ListAppLambdaFunctionsService.Params) {
-        const stackExport = await this.pulumiGetStackExportService.execute<ExpectedStackExport>(
-            app,
-            params
-        );
+    async execute(app: AppModel, params?: ListAppLambdaFunctionsService.Params) {
+        const stackExport = await this.pulumiExportService.execute<ExpectedStackExport>(app);
 
         if (!stackExport) {
             // If no stack export is found, return an empty array. This is a valid scenario.
@@ -73,16 +70,14 @@ export class DefaultListAppLambdaFunctionsService
                 const fnName = resource.inputs.name;
                 const handlerBuildFolderPath = resource.inputs.code.assets["."].path;
 
-                // Atm, functions are always built into a `handler.cjs` file.
-                // At some point, this should become `handler.js` and be fully ESM.
-                const handlerPath = path.join(handlerBuildFolderPath, "handler.cjs");
+                const handlerPath = path.join(handlerBuildFolderPath, "handler.mjs");
                 return {
                     name: fnName,
                     path: handlerPath
                 };
             });
 
-        if (params.whitelist?.length) {
+        if (params?.whitelist?.length) {
             const functionNamesToMatch = Array.isArray(params.whitelist)
                 ? params.whitelist
                 : [params.whitelist];
@@ -117,5 +112,5 @@ export class DefaultListAppLambdaFunctionsService
 export const listAppLambdaFunctionsService = createImplementation({
     abstraction: ListAppLambdaFunctionsService,
     implementation: DefaultListAppLambdaFunctionsService,
-    dependencies: [PulumiGetStackExportService, LoggerService]
+    dependencies: [PulumiExportService, LoggerService]
 });

@@ -2,7 +2,6 @@ import { basename, join } from "path";
 import fs from "fs";
 import type { ViteUserConfig } from "vitest/config";
 import { testPattern } from "./vitest.project.js";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 type TestPreset = {
     setupFiles?: string[];
@@ -39,11 +38,10 @@ export const createTestConfig = async ({
     const version = cliPackage.getJson().version;
 
     process.env.DB_TABLE = "DynamoDB";
-    process.env.DB_TABLE_ELASTICSEARCH = "ElasticsearchStream";
-    process.env.DB_TABLE_LOG = "DynamoDBLog";
+    process.env.DB_TABLE_OPENSEARCH = "OpensearchStream";
     process.env.DB_TABLE_AUDIT_LOGS = "DynamoDBAuditLogs";
     process.env.WEBINY_VERSION = version;
-    process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
+    process.env.TESTING = "true";
 
     // Enables us to run tests of only a specific type (for example "integration" or "e2e").
     let type = "";
@@ -60,8 +58,10 @@ export const createTestConfig = async ({
         fileParallelism: false,
         ...vitestConfig,
         css: false,
-        // @ts-expect-error This _does_ actually work!
-        plugins: [tsconfigPaths({ root: path })]
+        plugins: [],
+        resolve: {
+            tsconfigPaths: true
+        }
     };
 
     const setupAfterEnv = join(path, "__tests__", "setup", "setupAfterEnv.js");

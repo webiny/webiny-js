@@ -1,8 +1,8 @@
-import { describe, test, it, beforeAll, expect } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { mdbid } from "@webiny/utils";
 import useGqlHandler from "~tests/utils/useGqlHandler";
 import testFiles from "./data";
-import { ids, fileDData, fileCData, fileBData, fileAData } from "./mocks/files";
+import { fileAData, fileBData, fileCData, fileDData, ids } from "./mocks/files";
 
 describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
     const { createFile, updateFile, createFiles, getFile, listFiles, listTags } = useGqlHandler();
@@ -14,7 +14,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
         });
     });
 
-    test("should create, read, update and delete files", async () => {
+    it("should create, read, update and delete files", async () => {
         const [create] = await createFile({ data: fileAData });
         expect(create).toEqual({
             data: {
@@ -144,7 +144,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
         });
     });
 
-    test("should create files in bulk and paginate using cursor", async () => {
+    it("should create files in bulk and paginate using cursor", async () => {
         // Bulk insert test data
         await createFiles({ data: testFiles });
 
@@ -194,7 +194,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
             data: {
                 fileManager: {
                     listFiles: {
-                        data: [{ ...fileCData, aliases: [] }, fileBData],
+                        data: [{ ...fileCData }, fileBData],
                         error: null,
                         meta: {
                             hasMoreItems: false,
@@ -216,7 +216,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
             data: {
                 fileManager: {
                     listFiles: {
-                        data: [{ ...fileDData, aliases: [] }],
+                        data: [{ ...fileDData }],
                         error: null,
                         meta: {
                             hasMoreItems: false,
@@ -252,12 +252,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
             data: {
                 fileManager: {
                     listFiles: {
-                        data: [
-                            { ...fileDData, aliases: [] },
-                            { ...fileCData, aliases: [] },
-                            fileBData,
-                            fileAData
-                        ],
+                        data: [{ ...fileDData }, { ...fileCData }, fileBData, fileAData],
                         error: null,
                         meta: {
                             hasMoreItems: false,
@@ -433,8 +428,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
                     listFiles: {
                         data: [
                             {
-                                ...fileCData,
-                                aliases: []
+                                ...fileCData
                             },
                             fileBData
                         ],
@@ -459,8 +453,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
                     listFiles: {
                         data: [
                             {
-                                ...fileCData,
-                                aliases: []
+                                ...fileCData
                             },
                             fileAData
                         ],
@@ -504,6 +497,81 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
                 fileManager: {
                     listTags: {
                         data: [],
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+    /**
+     * Skipped because it is used to test Where mapper.
+     */
+    it.skip("should list files with AND keyword", async () => {
+        await createFiles({
+            data: [fileAData, fileBData, fileCData]
+        });
+
+        const [listResponse] = await listFiles();
+        expect(listResponse.errors).toBeUndefined();
+        expect(listResponse).toMatchObject({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: expect.any(Array),
+                        meta: {
+                            totalCount: 3
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [listResponseWithWhere] = await listFiles({
+            where: {
+                tags_not_startsWith: "scope:",
+                location: {
+                    folderId: "root"
+                },
+                AND: [
+                    {
+                        size_gt: 1000,
+                        OR: [
+                            {
+                                type_startsWith: "image/jpg"
+                            },
+                            {
+                                type_startsWith: "image/jpeg"
+                            },
+                            {
+                                type_startsWith: "image/tiff"
+                            },
+                            {
+                                type_startsWith: "image/gif"
+                            },
+                            {
+                                type_startsWith: "image/png"
+                            },
+                            {
+                                type_startsWith: "image/webp"
+                            },
+                            {
+                                type_startsWith: "image/bmp"
+                            },
+                            {
+                                type_startsWith: "image/svg+xml"
+                            }
+                        ]
+                    }
+                ]
+            }
+        });
+        expect(listResponseWithWhere).toEqual({
+            data: {
+                fileManager: {
+                    listFiles: {
+                        data: null,
+                        meta: null,
                         error: null
                     }
                 }

@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "@webiny-scripts/generate-skills",
+  "version": "0.0.0",
+  "type": "module",
+  "sideEffects": false,
+  "bin": "./src/bin.ts",
+  "main": "./src/bin.ts",
+  "dependencies": {
+    "ts-morph": "^28.0.0"
+  }
+}

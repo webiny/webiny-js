@@ -4,7 +4,7 @@ import type { ApiCoreContext } from "~/types/core.js";
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { LegacyContext } from "~/legacy/tenancy/LegacyContext.js";
-import { createTenantSchema } from "~/graphql/tenancy/tenant.gql.js";
+import { RootTenantValue } from "~/domain/tenancy/RootTenantValue.js";
 
 export const createTenancyContext = () => {
     return new ContextPlugin<ApiCoreContext>(async context => {
@@ -29,9 +29,10 @@ export const createTenancyContext = () => {
 
         // We need to load tenant, and set the current tenant context.
         const getTenantById = context.container.resolve(GetTenantByIdUseCase);
+        const tenantContext = context.container.resolve(TenantContext);
+
         const tenantResult = await getTenantById.execute(tenantId);
         if (tenantResult.isOk()) {
-            const tenantContext = context.container.resolve(TenantContext);
             tenantContext.setTenant(tenantResult.value);
         } else {
             // If there's no `root` tenant, it means system installation wasn't finished yet.
@@ -39,13 +40,13 @@ export const createTenancyContext = () => {
             if (tenantId !== "root") {
                 throw new Error("Unable to load tenant!");
             }
+
+            // Mock root tenant so the system can bootstrap
+            tenantContext.setTenant(RootTenantValue.create());
         }
 
         // Set up legacy context. We use this API in many places across our codebase, and this will provide
         // a working bridge until everything is migrated to use DI container.
         context.tenancy = new LegacyContext(context.container);
-
-        // Register GraphQL plugins
-        context.plugins.register(createTenantSchema());
     });
 };

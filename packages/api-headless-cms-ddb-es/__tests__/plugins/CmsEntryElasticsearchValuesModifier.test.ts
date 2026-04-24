@@ -1,6 +1,38 @@
 import { describe, expect, it } from "vitest";
-import { createCmsEntryElasticsearchValuesModifier } from "~/plugins";
-import { CmsEntry, CmsIdentity, CmsModel } from "@webiny/api-headless-cms/types";
+import type { CmsEntry, CmsIdentity, CmsModel } from "@webiny/api-headless-cms/types";
+import type {
+    CmsEntryOpenSearchValuesModifier,
+    ModifyValuesParams
+} from "~/features/CmsEntryOpenSearchValuesModifier/abstractions.js";
+
+const createModifier = <T>(
+    params:
+        | ((params: ModifyValuesParams<T>) => void)
+        | { models: string[]; modifier: (params: ModifyValuesParams<T>) => void }
+): CmsEntryOpenSearchValuesModifier.Interface => {
+    const cb = typeof params === "function" ? params : params.modifier;
+    const models = typeof params === "function" ? undefined : params.models;
+    return {
+        canModify(modelId: string) {
+            if (!models?.length) {
+                return true;
+            }
+            return models.includes(modelId);
+        },
+        modify({ model, entry, values: initialValues }) {
+            let values = structuredClone(initialValues);
+            cb({
+                model,
+                entry: entry as any,
+                values: values as any,
+                setValues: (fn: any) => {
+                    values = fn(values);
+                }
+            });
+            return values;
+        }
+    };
+};
 
 interface MockCmsEntryValues {
     title: string;
@@ -8,7 +40,6 @@ interface MockCmsEntryValues {
 }
 
 const mockModel: CmsModel = {
-    locale: "en-US",
     tenant: "root",
     modelId: "abcdefghijklmn",
     name: "Test model",
@@ -18,11 +49,7 @@ const mockModel: CmsModel = {
     singularApiName: "TestModel",
     pluralApiName: "TestModels",
     titleFieldId: "id",
-    group: {
-        id: "group",
-        name: "group"
-    },
-    webinyVersion: "0.0.0"
+    group: "group"
 };
 const createdBy: CmsIdentity = {
     id: "a",
@@ -42,11 +69,8 @@ const mockEntry: CmsEntry<MockCmsEntryValues> = {
     },
     status: "draft",
     locked: false,
-    locale: "en-US",
     tenant: "root",
-    webinyVersion: "0.0.0",
     createdBy,
-    ownedBy: createdBy,
     meta: {},
     createdOn: new Date().toISOString(),
     savedOn: new Date().toISOString(),
@@ -62,23 +86,21 @@ const getMockData = () => {
     };
 };
 
-describe("entry values modifier", () => {
+describe("cms elasticsearch entry values modifier", () => {
     it("should modify the original values with a single plugin", async () => {
         const { model, values: initialValues, entry } = getMockData();
         let values = structuredClone(initialValues);
 
-        const modifier = createCmsEntryElasticsearchValuesModifier<MockCmsEntryValues>(
-            async ({ setValues }) => {
-                setValues(() => {
-                    return {
-                        title: "Test title"
-                    };
-                });
-            }
-        );
+        const modifier = createModifier<MockCmsEntryValues>(async ({ setValues }) => {
+            // @ts-expect-error
+            setValues(() => {
+                return {
+                    title: "Test title"
+                };
+            });
+        });
 
-        // @ts-expect-error
-        values = await modifier.modify({
+        values = modifier.modify({
             entry,
             model,
             values
@@ -93,18 +115,16 @@ describe("entry values modifier", () => {
     it("should modify the original values with multiple plugins", async () => {
         const { model, values: initialValues, entry } = getMockData();
         let values = structuredClone(initialValues);
-        const titleModifier = createCmsEntryElasticsearchValuesModifier<MockCmsEntryValues>(
-            async ({ setValues }) => {
-                setValues(() => {
-                    return {
-                        title: "Test title"
-                    };
-                });
-            }
-        );
+        const titleModifier = createModifier<MockCmsEntryValues>(async ({ setValues }) => {
+            // @ts-expect-error
+            setValues(() => {
+                return {
+                    title: "Test title"
+                };
+            });
+        });
 
-        // @ts-expect-error
-        values = await titleModifier.modify({
+        values = titleModifier.modify({
             entry,
             model,
             values
@@ -115,19 +135,16 @@ describe("entry values modifier", () => {
         });
         expect(values.age).toBeUndefined();
 
-        const ageModifier = createCmsEntryElasticsearchValuesModifier<MockCmsEntryValues>(
-            async ({ setValues }) => {
-                setValues(prev => {
-                    return {
-                        ...prev,
-                        age: 2
-                    };
-                });
-            }
-        );
+        const ageModifier = createModifier<MockCmsEntryValues>(async ({ setValues }) => {
+            setValues(prev => {
+                return {
+                    ...prev,
+                    age: 2
+                };
+            });
+        });
 
-        // @ts-expect-error
-        values = await ageModifier.modify({
+        values = ageModifier.modify({
             entry,
             model,
             values
@@ -140,17 +157,17 @@ describe("entry values modifier", () => {
 
     it("should not modify anything because model is not supported", async () => {
         const { model } = getMockData();
-        const nothingWillGetModified =
-            createCmsEntryElasticsearchValuesModifier<MockCmsEntryValues>({
-                models: ["nonExisting"],
-                modifier: async ({ setValues }) => {
-                    setValues(() => {
-                        return {
-                            title: "Test title"
-                        };
-                    });
-                }
-            });
+        const nothingWillGetModified = createModifier<MockCmsEntryValues>({
+            models: ["nonExisting"],
+            modifier: async ({ setValues }) => {
+                setValues(prev => {
+                    return {
+                        ...prev,
+                        title: "Test title"
+                    };
+                });
+            }
+        });
 
         const result = nothingWillGetModified.canModify(model.modelId);
         expect(result).toEqual(false);

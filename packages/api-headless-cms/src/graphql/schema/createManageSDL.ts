@@ -1,17 +1,20 @@
-import type { CmsFieldTypePlugins, CmsModel } from "~/types/index.js";
+import type { CmsModel } from "~/types/index.js";
 import { renderListFilterFields } from "~/utils/renderListFilterFields.js";
 import { renderSortEnum } from "~/utils/renderSortEnum.js";
 import { renderGetFilterFields } from "~/utils/renderGetFilterFields.js";
 import { renderInputFields } from "~/utils/renderInputFields.js";
 import { renderFields } from "~/utils/renderFields.js";
-import type { CmsGraphQLSchemaSorterPlugin } from "~/plugins/index.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
+import {
+    CmsGraphQLSchemaSorter,
+    type CmsModelFieldToGraphQLRegistry
+} from "~/features/graphql/index.js";
 
 interface CreateManageSDLParams {
     models: CmsModel[];
     model: CmsModel;
-    fieldTypePlugins: CmsFieldTypePlugins;
-    sorterPlugins: CmsGraphQLSchemaSorterPlugin[];
+    fieldRegistry: CmsModelFieldToGraphQLRegistry.Interface;
+    sorters: CmsGraphQLSchemaSorter.Interface[];
 }
 
 interface CreateManageSDL {
@@ -21,32 +24,32 @@ interface CreateManageSDL {
 export const createManageSDL: CreateManageSDL = ({
     models,
     model,
-    fieldTypePlugins,
-    sorterPlugins
+    fieldRegistry,
+    sorters
 }): string => {
     const inputFields = renderInputFields({
         models,
         model,
         fields: model.fields,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const listFilterFieldsRender = renderListFilterFields({
         model,
         fields: model.fields,
         type: "manage",
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const sortEnumRender = renderSortEnum({
         model,
         fields: model.fields,
-        fieldTypePlugins,
-        sorterPlugins
+        fieldRegistry,
+        sorters
     });
     const getFilterFieldsRender = renderGetFilterFields({
         fields: model.fields,
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const fields = renderFields({
@@ -54,7 +57,7 @@ export const createManageSDL: CreateManageSDL = ({
         model,
         fields: model.fields,
         type: "manage",
-        fieldTypePlugins
+        fieldRegistry
     });
 
     const { singularApiName: singularName, pluralApiName: pluralName } = model;
@@ -73,18 +76,24 @@ export const createManageSDL: CreateManageSDL = ({
         return `${field}: ${fieldType}`;
     }).join("\n");
 
-    // Had to remove /* GraphQL */ because prettier would not format the code correctly.
+    // Had to remove /* GraphQL */ because it causes issues with oxfmt formatting.
     return `
         """${model.description || singularName}"""
+        
+        type ${singularName}Values {
+            ${fields.map(f => f.fields).join("\n") || "_empty: String"}
+        }
+        
         type ${singularName} {
             id: ID!
             entryId: String!
             
             ${onByMetaGqlFields}
             meta: ${singularName}Meta
-            ${fields.map(f => f.fields).join("\n")}
-            # Advanced Content Organization - make required in 5.38.0
             wbyAco_location: WbyAcoLocation
+            live: CmsEntryLive
+            
+            values: ${singularName}Values
         }
 
         type ${singularName}Meta {
@@ -93,7 +102,7 @@ export const createManageSDL: CreateManageSDL = ({
             locked: Boolean
             
             status: String
-            state: CmsEntryState
+            system: CmsEntrySystem
             """
             CAUTION: this field is resolved by making an extra query to DB.
             RECOMMENDATION: Use it only with "get" queries (avoid in "list")
@@ -112,6 +121,10 @@ export const createManageSDL: CreateManageSDL = ({
 
         ${inputFields.map(f => f.typeDefs).join("\n")}
         
+        input ${singularName}InputValues {
+            ${inputGqlFields || "_empty: String"}
+        }
+        
         input ${singularName}Input {
             id: ID
             
@@ -122,22 +135,33 @@ export const createManageSDL: CreateManageSDL = ({
             
             wbyAco_location: WbyAcoLocationInput
             
-            ${inputGqlFields}
-            
+            values: ${singularName}InputValues
+        }
+        
+        input ${singularName}GetWhereInputValues {
+            ${getFilterFieldsRender.fieldFiltersAsString() || "_empty: String"}
         }
         
         input ${singularName}GetWhereInput {
-            ${getFilterFieldsRender}
+            ${getFilterFieldsRender.baseFiltersAsString()}
+            values: ${singularName}GetWhereInputValues
+        }
+        
+        input ${singularName}ListWhereInputValues {
+            ${listFilterFieldsRender.fieldFiltersAsString() || "_empty: String"}
         }
 
         input ${singularName}ListWhereInput {
-            state: ListWhereInputCmsEntryState
+            ${listFilterFieldsRender.baseFiltersAsString()}
+
+            system: ListWhereInputCmsEntrySystem
             wbyAco_location: WbyAcoLocationWhereInput
-            ${listFilterFieldsRender}
+            live: CmsEntryLiveWhereInput
+            
+            values: ${singularName}ListWhereInputValues
             AND: [${singularName}ListWhereInput!]
             OR: [${singularName}ListWhereInput!]
         }
-
 
         type ${singularName}Response {
             data: ${singularName}

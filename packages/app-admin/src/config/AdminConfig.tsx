@@ -1,5 +1,5 @@
 import React from "react";
-import { AppContainer, Plugin } from "@webiny/app";
+import { createProvider } from "@webiny/app";
 import { Menu, type MenuConfig } from "./AdminConfig/Menu.js";
 import type { TenantConfig } from "./AdminConfig/Tenant.js";
 import { Tenant } from "./AdminConfig/Tenant.js";
@@ -9,7 +9,19 @@ import { Route } from "./AdminConfig/Route.js";
 import { Theme } from "./AdminConfig/Theme.js";
 import { Dashboard } from "./AdminConfig/Dashboard.js";
 import { type WidgetConfig } from "./AdminConfig/Widget.js";
+import { Security } from "./AdminConfig/Security.js";
+import type { PermissionRendererConfig } from "../permissions/types.js";
+import { LexicalTheme } from "./AdminConfig/LexicalTheme.js";
+import { Title } from "./AdminConfig/Title.js";
+import { Logo } from "./AdminConfig/Logo.js";
+import { Dialog } from "./AdminConfig/Dialog.js";
+import type { DialogConfig } from "./AdminConfig/Dialog.js";
+import { Form } from "./AdminConfig/Form.js";
+import type { FieldRendererConfig } from "./AdminConfig/FieldRenderer.js";
+import type { LayoutRendererConfig } from "./AdminConfig/LayoutRenderer.js";
 import { createAdminConfig } from "./createAdminConfig.js";
+import type { EditorTheme } from "@webiny/lexical-theme";
+import { createLexicalTokens } from "@webiny/lexical-theme/createLexicalEditorTokens.js";
 
 const base = createAdminConfig<AdminConfig>();
 
@@ -22,38 +34,57 @@ interface AdminConfig {
     supportMenus: SupportMenuConfig[];
     userMenus: UserMenuConfig[];
     tenant: TenantConfig;
+    title: string;
+    squareLogo: React.ReactNode;
+    horizontalLogo: React.ReactNode;
     widgets: WidgetConfig[];
+    permissionRenderers: PermissionRendererConfig[];
+    lexicalTheme: EditorTheme;
+    dialogs: DialogConfig[];
+    fieldRenderers: FieldRendererConfig[];
+    layoutRenderers: LayoutRendererConfig[];
 }
 
-export const AdminConfigProvider = AppContainer.createDecorator(Original => {
+/* Once the app fully renders (after the LoginScreen), apply protected configs. */
+export const AdminConfigPlugin = <base.ApplyProtectedConfig />;
+
+export const AdminConfigProvider = createProvider(Original => {
     return function AdminConfigProvider({ children }) {
         return (
-            <>
-                {/* Wrap the entire app with an AdminConfig provider, and apply all public configs. */}
-                <Original>
-                    <AdminWithConfig>
-                        <base.ApplyPublicConfig />
-                        {children}
-                    </AdminWithConfig>
-                </Original>
-                {/* Once the app fully renders (after the LoginScreen), apply protected configs. */}
-                <Plugin>
-                    <base.ApplyProtectedConfig />
-                </Plugin>
-            </>
+            <AdminWithConfig>
+                <base.ApplyPublicConfig />
+                <Original>{children}</Original>
+            </AdminWithConfig>
         );
     };
 });
 
+const lexicalTokens = createLexicalTokens("wa-lx-");
+
 export const useAdminConfig = () => {
     const baseConfig = base.useConfig();
+
+    const lexicalTheme: EditorTheme = {
+        colors: baseConfig.lexicalTheme?.colors,
+        typography: baseConfig.lexicalTheme?.typography || {},
+        tokens: lexicalTokens
+    };
 
     return {
         menus: baseConfig.menus ?? [],
         userMenus: baseConfig.userMenus ?? [],
         supportMenus: baseConfig.supportMenus ?? [],
-        tenant: baseConfig.tenant || {},
-        widgets: baseConfig.widgets ?? []
+        title: baseConfig.title,
+        logo: {
+            squareLogo: baseConfig.squareLogo,
+            horizontalLogo: baseConfig.horizontalLogo
+        },
+        widgets: baseConfig.widgets ?? [],
+        permissionRenderers: baseConfig.permissionRenderers ?? [],
+        lexicalTheme,
+        dialogs: baseConfig.dialogs ?? [],
+        fieldRenderers: baseConfig.fieldRenderers ?? [],
+        layoutRenderers: baseConfig.layoutRenderers ?? []
     };
 };
 
@@ -79,6 +110,12 @@ export const AdminConfig = Object.assign(Private, {
     Menu,
     Route,
     Tenant,
+    Title,
+    Logo,
     Dashboard,
+    Security,
+    LexicalTheme,
+    Dialog,
+    Form,
     useAdminConfig
 });

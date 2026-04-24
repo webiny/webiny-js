@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import { CreateExecFilteringResponse } from "~/operations/entry/elasticsearch/filtering";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types";
 import { createPluginsContainer, createQuery, Query } from "./mocks";
-import { normalizeValue } from "@webiny/api-elasticsearch";
+import { normalizeValue } from "@webiny/api-opensearch";
 import { createExecFiltering } from "./mocks/filtering";
 
 describe("not_contains filter", () => {
@@ -20,7 +20,9 @@ describe("not_contains filter", () => {
     it("should add not_contains filter", async () => {
         const title = "Webiny";
         const where: CmsEntryListWhere = {
-            title_not_contains: title
+            values: {
+                title_not_contains: title
+            }
         };
 
         execFiltering({

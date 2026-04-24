@@ -1,21 +1,22 @@
-import type { ILoadingRepository } from "@webiny/app-utils";
-import type { ICreatePageRevisionFromUseCase } from "./ICreatePageRevisionFromUseCase.js";
-import { type CreatePageRevisionFromParams } from "./ICreatePageRevisionFromUseCase.js";
+import { CreatePageRevisionFromUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { WbPageLoadingRepository } from "~/features/pages/shared/abstractions.js";
 import { loadingActions } from "~/constants.js";
 
-export class CreatePageRevisionFromUseCaseWithLoading implements ICreatePageRevisionFromUseCase {
-    private loadingRepository: ILoadingRepository;
-    private useCase: ICreatePageRevisionFromUseCase;
+class CreatePageRevisionFromUseCaseWithLoadingImpl implements UseCaseAbstraction.Interface {
+    constructor(
+        private loadingRepository: WbPageLoadingRepository.Interface,
+        private decoratee: UseCaseAbstraction.Interface
+    ) {}
 
-    constructor(loadingRepository: ILoadingRepository, useCase: ICreatePageRevisionFromUseCase) {
-        this.loadingRepository = loadingRepository;
-        this.useCase = useCase;
-    }
-
-    async execute(params: CreatePageRevisionFromParams) {
+    async execute(params: UseCaseAbstraction.Params) {
         return await this.loadingRepository.runCallBack(
-            this.useCase.execute(params),
+            this.decoratee.execute(params),
             loadingActions.createRevisionFrom
         );
     }
 }
+
+export const CreatePageRevisionFromUseCaseWithLoading = UseCaseAbstraction.createDecorator({
+    decorator: CreatePageRevisionFromUseCaseWithLoadingImpl,
+    dependencies: [WbPageLoadingRepository]
+});

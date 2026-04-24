@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import ReactDOM from "react-dom";
 import noop from "lodash/noop.js";
-// @ts-expect-error This package has no types.
-import { useHotkeys } from "react-hotkeyz";
+import { useHotkeys } from "@webiny/app-admin";
 import { Drawer, Grid, OverlayLoader, Tabs } from "@webiny/admin-ui";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/types.js";
 import type { FormAPI, FormOnSubmit } from "@webiny/form";
 import { Form } from "@webiny/form";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
@@ -109,26 +107,6 @@ const FileDetailsInner = ({ file, onForm, ...props }: FileDetailsInnerProps) => 
     );
 };
 
-function getPortalTarget() {
-    let target = window.document.getElementById("file-details-drawer");
-    if (!target) {
-        target = document.createElement("div");
-        target.setAttribute("id", "file-details-drawer");
-        document.body && document.body.appendChild(target);
-    }
-    return target;
-}
-
-interface FileDetailsPortalProps {
-    children: React.ReactNode;
-}
-
-const FileDetailsPortal = ({ children }: FileDetailsPortalProps) => {
-    const containerRef = useRef<HTMLElement>(getPortalTarget());
-
-    return ReactDOM.createPortal(children, containerRef.current);
-};
-
 export interface FileDetailsProps {
     file?: FileItem;
     open: boolean;
@@ -160,45 +138,45 @@ export const FileDetails = ({
 
     const formRef = useRef<FormAPI | null>(null);
 
+    if (!file) {
+        return null;
+    }
+
     return (
-        <FileDetailsPortal>
-            {file && (
-                <FileProvider file={file}>
-                    <Drawer
-                        title={file.name}
-                        description={<Description />}
-                        width={drawerWidth}
-                        open={open}
-                        modal={true}
-                        bodyPadding={false}
-                        headerSeparator={true}
-                        footerSeparator={true}
+        <FileProvider file={file}>
+            <Drawer
+                title={file.name}
+                description={<Description />}
+                width={drawerWidth}
+                open={open}
+                modal={true}
+                bodyPadding={false}
+                headerSeparator={true}
+                footerSeparator={true}
+                onClose={onClose}
+                data-testid={"fm.file-details.drawer"}
+                actions={
+                    <>
+                        <Drawer.CancelButton text={"Cancel"} />
+                        <Drawer.ConfirmButton
+                            text={"Update"}
+                            onClick={() => formRef.current?.submit()}
+                        />
+                    </>
+                }
+            >
+                {loading && <OverlayLoader text={loading} />}
+                <FileDetailsProvider hideFileDetails={onClose} onSetFile={onSetFile}>
+                    <FileDetailsInner
+                        onForm={form => {
+                            formRef.current = form;
+                        }}
+                        file={file}
                         onClose={onClose}
-                        data-testid={"fm.file-details.drawer"}
-                        actions={
-                            <>
-                                <Drawer.CancelButton text={"Cancel"} />
-                                <Drawer.ConfirmButton
-                                    text={"Update"}
-                                    onClick={() => formRef.current?.submit()}
-                                />
-                            </>
-                        }
-                    >
-                        {loading && <OverlayLoader text={loading} />}
-                        <FileDetailsProvider hideFileDetails={onClose} onSetFile={onSetFile}>
-                            <FileDetailsInner
-                                onForm={form => {
-                                    formRef.current = form;
-                                }}
-                                file={file}
-                                onClose={onClose}
-                                onSubmit={onSave}
-                            />
-                        </FileDetailsProvider>
-                    </Drawer>
-                </FileProvider>
-            )}
-        </FileDetailsPortal>
+                        onSubmit={onSave}
+                    />
+                </FileDetailsProvider>
+            </Drawer>
+        </FileProvider>
     );
 };

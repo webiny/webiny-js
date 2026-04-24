@@ -1,11 +1,14 @@
 import React, { useCallback } from "react";
 import { Text } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
-import mime from "mime/lite.js";
+import { Mime } from "mime";
+import vendorTypes from "mime/types/other.js";
+import standardTypes from "mime/types/standard.js";
 
+const mime = new Mime(standardTypes, vendorTypes);
 mime.define({ "image/x-icon": ["ico"] }, true);
 mime.define({ "image/jpg": ["jpg"] }, true);
-mime.define({ "image/vnd.microsoft.icon": ["ico"] }, true);
+mime.define({ "application/vnd.microsoft.icon": ["ico"] }, true);
 
 const t = i18n.ns("app-admin/file-manager/components/bottom-info-bar/supported-files");
 
@@ -29,7 +32,7 @@ export interface SupportedFileTypesProps {
     currentCount: number;
 }
 
-const SupportedFileTypes = ({
+export const SupportedFileTypes = ({
     accept,
     loading,
     totalCount,
@@ -66,5 +69,3 @@ const SupportedFileTypes = ({
         </Text>
     );
 };
-
-export default SupportedFileTypes;

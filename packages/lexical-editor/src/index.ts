@@ -10,7 +10,6 @@ export { DropDown } from "~/ui/DropDown.js";
 export { BoldAction } from "~/components/ToolbarActions/BoldAction.js";
 export { BulletListAction } from "~/components/ToolbarActions/BulletListAction.js";
 export { CodeHighlightAction } from "~/components/ToolbarActions/CodeHighlightAction.js";
-export { FontSizeAction } from "~/components/ToolbarActions/FontSizeAction.js";
 export { FontColorAction } from "~/components/ToolbarActions/FontColorAction.js";
 export { ItalicAction } from "~/components/ToolbarActions/ItalicAction.js";
 export { LinkAction } from "~/components/ToolbarActions/LinkAction.js";
@@ -21,12 +20,9 @@ export { TypographyAction } from "~/components/ToolbarActions/TypographyAction.j
 export { TextAlignmentAction } from "~/components/ToolbarActions/TextAlignmentAction.js";
 export { ImageAction } from "~/components/ToolbarActions/ImageAction.js";
 // toolbars
-export { Toolbar } from "~/components/Toolbar/Toolbar.js";
 export { StaticToolbar } from "~/components/Toolbar/StaticToolbar.js";
 // editor
 export { RichTextEditor } from "~/components/Editor/RichTextEditor.js";
-export { HeadingEditor } from "~/components/Editor/HeadingEditor.js";
-export { ParagraphEditor } from "~/components/Editor/ParagraphEditor.js";
 // plugins
 export { LinkPlugin } from "~/plugins/LinkPlugin/LinkPlugin.js";
 export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin.js";

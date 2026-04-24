@@ -38,7 +38,7 @@ export const OverlayLayout: React.FC<OverlayLayoutProps> = ({
     }, []);
 
     return (
-        <Portal>
+        <Portal data-role="overlay-layout" className={"absolute z-overlay"}>
             <OverlayRoot visible={visible} onExited={onExited}>
                 <OverlayBackdrop visible={visible} hideOverlay={hideOverlay} />
                 <OverlayContent visible={visible}>

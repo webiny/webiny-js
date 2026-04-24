@@ -4,12 +4,17 @@ import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
 import { createPrivateModelPlugin } from "~/plugins/CmsModelPlugin";
 import type { CmsGroup, CmsGroupCreateInput, CmsModel } from "~/types";
 import type { CreateContentModelMutationVariables } from "~tests/testHelpers/graphql/contentModel";
+import { createModelField } from "~/utils/createModelField.js";
 
 const privateGroup = new CmsGroupPlugin({
     isPrivate: true,
     name: "Private Group",
     slug: "private-group",
-    icon: "pri/pri",
+    icon: {
+        type: "pri/pri",
+        value: "pri/pri",
+        name: "pri/pri"
+    },
     description: "Private group description",
     id: "privateGroupId123456789"
 });
@@ -17,26 +22,21 @@ const privateGroup = new CmsGroupPlugin({
 const privateAuthorsModel = createPrivateModelPlugin({
     modelId: "author",
     name: "Authors",
-    // layout: [["title"]],
     fields: [
-        {
+        createModelField({
             id: "title",
             storageId: "text@title",
             fieldId: "title",
             type: "text",
             label: "Title"
-        }
+        })
     ],
     titleFieldId: "title"
-    // group: {
-    //     id: privateGroup.contentModelGroup.id,
-    //     name: privateGroup.contentModelGroup.name
-    // },
 });
 
 describe("Private Groups and Models", function () {
     const manageHandlerOpts = {
-        path: "manage/en-US",
+        path: "manage",
         plugins: [privateGroup, privateAuthorsModel]
     };
 
@@ -59,7 +59,11 @@ describe("Private Groups and Models", function () {
             name: "Blog",
             slug: "blog",
             description: "Blog group description",
-            icon: "def/def"
+            icon: {
+                name: "def/def",
+                type: "def/def",
+                value: "def/def"
+            }
         });
     };
     const createShopGroup = () => {
@@ -67,7 +71,11 @@ describe("Private Groups and Models", function () {
             name: "Shop",
             slug: "shop",
             description: "Shop group description",
-            icon: "def/def"
+            icon: {
+                name: "def/def",
+                type: "def/def",
+                value: "def/def"
+            }
         });
     };
 
@@ -86,10 +94,7 @@ describe("Private Groups and Models", function () {
             modelId: "animals",
             singularApiName: "Animal",
             pluralApiName: "Animals",
-            group: {
-                id: group.id,
-                name: group.name
-            },
+            group: group.slug,
             description: "Animals model",
             layout: [],
             fields: [],

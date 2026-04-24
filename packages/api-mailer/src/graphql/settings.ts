@@ -1,17 +1,20 @@
 import { ErrorResponse, GraphQLSchemaPlugin, Response } from "@webiny/handler-graphql";
-import type { MailerContext } from "~/types.js";
+import { GetSettingsUseCase } from "~/features/GetSettings/abstractions.js";
+import { SaveSettingsUseCase } from "~/features/SaveSettings/abstractions.js";
+import type { Context } from "@webiny/api/types.js";
+import { getSecret } from "~/features/Encryption/utils/secret.js";
 
 const emptyResolver = () => ({});
 
 export const createSettingsGraphQL = () => {
-    return new GraphQLSchemaPlugin<MailerContext>({
+    return new GraphQLSchemaPlugin<Context>({
         typeDefs: `
             type MailerTransportSettingsError {
                 message: String!
                 code: String
                 data: JSON
             }
-        
+
             type MailerTransportSettings {
                 host: String
                 port: Number
@@ -19,16 +22,16 @@ export const createSettingsGraphQL = () => {
                 from: String
                 replyTo: String
             }
-            
+
             type MailerTransportSettingsResponse {
                 data: MailerTransportSettings
                 error: MailerTransportSettingsError
             }
-        
+
             type MailerQuery {
                 getSettings: MailerTransportSettingsResponse!
             }
-            
+
             input MailerTransportSettingsInput {
                 host: String!
                 port: Number
@@ -37,11 +40,11 @@ export const createSettingsGraphQL = () => {
                 from: String!
                 replyTo: String
             }
-            
+
             type MailerMutation {
                 saveSettings(data: MailerTransportSettingsInput!): MailerTransportSettingsResponse!
             }
-            
+
             extend type Query {
                 mailer: MailerQuery
             }
@@ -56,13 +59,21 @@ export const createSettingsGraphQL = () => {
             MailerQuery: {
                 getSettings: async (_, __, context) => {
                     try {
-                        const settings = await context.mailer.getSettings();
-                        /**
-                         * We want to remove the password from the response, if it exists.
-                         */
+                        // First check of encryption key is set!
+                        // If not, this function will throw an error.
+                        // TODO: refactor this to make more sense.
+                        getSecret();
+
+                        const getSettings = context.container.resolve(GetSettingsUseCase);
+                        const result = await getSettings.execute();
+
+                        const settings = result.value;
+
+                        // Remove password from response
                         if (settings?.password) {
-                            // @ts-expect-error
-                            delete settings.password;
+                            // oxlint-disable-next-line typescript/no-unused-vars
+                            const { password, ...settingsWithoutPassword } = settings;
+                            return new Response(settingsWithoutPassword);
                         }
                         return new Response(settings);
                     } catch (ex) {
@@ -76,15 +87,21 @@ export const createSettingsGraphQL = () => {
             MailerMutation: {
                 saveSettings: async (_, args: any, context) => {
                     try {
-                        const settings = await context.mailer.saveSettings({
-                            input: args.data
-                        });
-                        /**
-                         * We want to remove the password from the response, if it exists.
-                         */
+                        const saveSettings = context.container.resolve(SaveSettingsUseCase);
+                        const result = await saveSettings.execute(args.data);
+
+                        if (result.isFail()) {
+                            return new ErrorResponse(result.error);
+                        }
+
+                        const settings = result.value;
+
+                        // Remove password from response
+                        // TODO: create a GraphQL output mapper
                         if (settings?.password) {
-                            // @ts-expect-error
-                            delete settings.password;
+                            // oxlint-disable-next-line typescript/no-unused-vars
+                            const { password, ...settingsWithoutPassword } = settings;
+                            return new Response(settingsWithoutPassword);
                         }
                         return new Response(settings);
                     } catch (ex) {

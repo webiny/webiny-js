@@ -4,14 +4,14 @@ import type { BindComponentRenderProp } from "@webiny/form";
 interface setValueParams {
     value: string[];
     bind: BindComponentRenderProp;
-    field: Pick<CmsModelField, "multipleValues">;
+    field: Pick<CmsModelField, "list">;
     index: number;
 }
 export const setValue = (params: setValueParams): void => {
     const { value, bind, field, index } = params;
-    let newValue = field.multipleValues ? [...(bind.value || [])] : bind.value;
+    let newValue = field.list ? [...(bind.value || [])] : bind.value;
 
-    if (field.multipleValues) {
+    if (field.list) {
         if (index >= 0) {
             newValue[index] = value;
         } else {

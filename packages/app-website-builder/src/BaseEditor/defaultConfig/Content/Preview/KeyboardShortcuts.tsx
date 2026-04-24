@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import { useKeyHandler } from "~/BaseEditor/hooks/useKeyHandler.js";
-import { $getActiveElementId, $getComponentManifestByElementId } from "~/editorSdk/utils/index.js";
+import { $getActiveElementId } from "~/editorSdk/utils/index.js";
 import { Commands } from "~/BaseEditor/index.js";
 
 export const KeyboardShortcuts = () => {
@@ -11,15 +11,7 @@ export const KeyboardShortcuts = () => {
     const deleteActiveElement = useCallback(() => {
         const activeElementId = $getActiveElementId(editor);
         if (activeElementId) {
-            const manifest = $getComponentManifestByElementId(editor, activeElementId);
-            if (!manifest) {
-                return;
-            }
-
-            if (manifest.canDelete !== false) {
-                editor.executeCommand(Commands.DeselectElement);
-                editor.executeCommand(Commands.DeleteElement, { id: activeElementId });
-            }
+            editor.executeCommand(Commands.DeleteElement, { id: activeElementId });
         }
     }, []);
 

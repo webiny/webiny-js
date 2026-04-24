@@ -15,9 +15,11 @@ import type {
 } from "~/types.js";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields.js";
 import { ParentFieldProvider } from "~/admin/components/ContentEntryForm/ParentValue.js";
+import { useFieldEffectiveRules } from "@webiny/app-headless-cms-common";
 import {
     ParentValueIndexProvider,
-    ModelFieldProvider
+    ModelFieldProvider,
+    useModelField
 } from "~/admin/components/ModelFieldProvider/index.js";
 
 type GetBind = CmsModelFieldRendererProps["getBind"];
@@ -40,8 +42,9 @@ export interface SingleValueItemContainerProps {
     onDelete: () => void;
     title: React.ReactNode;
     description: string;
-    icon: JSX.Element;
-    actions?: JSX.Element;
+    disabled?: boolean;
+    icon: React.JSX.Element;
+    actions?: React.JSX.Element;
     template: CmsDynamicZoneTemplate;
     children: React.ReactNode;
 }
@@ -49,23 +52,24 @@ export interface SingleValueItemContainerProps {
 export const SingleValueItemContainer = makeDecoratable(
     "SingleValueItemContainer",
     (props: SingleValueItemContainerProps) => {
-        const { template, actions, children } = props;
+        const { template, actions, children, disabled = false } = props;
+
+        const accordionActions = disabled ? null : (
+            <>
+                {actions ?? null}
+                <Accordion.Item.Action
+                    icon={<Tooltip trigger={<DeleteIcon />} content={"Delete"} />}
+                    onClick={props.onDelete}
+                />
+            </>
+        );
+
         return (
             <Accordion.Item
                 title={template.name}
                 description={template.description}
                 icon={<TemplateIcon icon={template.icon} />}
-                open={true}
-                interactive={false}
-                actions={
-                    <>
-                        {actions ?? null}
-                        <Accordion.Item.Action
-                            icon={<Tooltip trigger={<DeleteIcon />} content={"Delete"} />}
-                            onClick={props.onDelete}
-                        />
-                    </>
-                }
+                actions={accordionActions}
             >
                 {children}
             </Accordion.Item>
@@ -74,11 +78,14 @@ export const SingleValueItemContainer = makeDecoratable(
 );
 
 export const SingleValueDynamicZone = ({
-    field,
     bind,
     contentModel,
     getBind
 }: SingleValueDynamicZoneProps) => {
+    const { field } = useModelField();
+    const rules = useFieldEffectiveRules(field);
+    const disabled = !rules.canEdit || rules.disabled;
+
     const { showConfirmation } = useConfirmationDialog({
         message: `Are you sure you want to remove this item? This action is not reversible.`,
         acceptLabel: `Yes, I'm sure!`,
@@ -109,8 +116,9 @@ export const SingleValueDynamicZone = ({
                 <ParentFieldProvider value={bind.value} path={Bind.parentName}>
                     <ParentValueIndexProvider index={-1}>
                         <ModelFieldProvider field={field}>
-                            <Accordion>
+                            <Accordion background={"base"} variant={"container"}>
                                 <SingleValueItemContainer
+                                    disabled={disabled}
                                     template={template}
                                     value={bind.value}
                                     contentModel={contentModel}

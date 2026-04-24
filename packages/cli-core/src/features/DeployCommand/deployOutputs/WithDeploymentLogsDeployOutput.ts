@@ -20,7 +20,7 @@ export class WithDeploymentLogsDeployOutput extends BaseDeployOutput {
                 ui.info(`Deploying %s app...`, params.app);
             }
 
-            ui.newLine();
+            ui.emptyLine();
 
             this.deployProcess.stdout!.pipe(stdio.getStdout());
             this.deployProcess.stderr!.pipe(stdio.getStderr());

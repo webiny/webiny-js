@@ -1,4 +1,4 @@
-import { css } from "emotion";
+import { css } from "@emotion/css";
 
 export const breadcrumbs = css({
     display: "flex",
@@ -10,7 +10,7 @@ export const breadcrumbs = css({
     bottom: 0,
     width: "calc(100% - 600px)",
     height: "31px",
-    backgroundColor: "var(--color-neutral-base)",
+    backgroundColor: "var(--color-neutral-dimmed)",
     borderTop: "1px solid var( --color-neutral-dimmed)",
     fontSize: "12px",
     overflow: "hidden",
@@ -60,11 +60,9 @@ export const breadcrumbs = css({
 
     // Handle active state
     "& li .element:hover": {
-        color: "var(--mdc-theme-surface)",
-        background: "var(--mdc-theme-secondary)"
+        background: "var(--color-neutral-muted)"
     },
     "& li .element:hover:after": {
-        color: "var(--mdc-theme-surface)",
-        borderLeftColor: "var(--mdc-theme-secondary) !important"
+        borderLeftColor: "var(--color-neutral-muted) !important"
     }
 });

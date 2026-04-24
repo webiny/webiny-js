@@ -8,14 +8,16 @@ export class UserBeforeDeleteEvent extends DomainEvent<UserBeforeDeletePayload> 
     eventType = "user.beforeDelete" as const;
 
     getHandlerAbstraction() {
-        return UserBeforeDeleteHandler;
+        return UserBeforeDeleteEventHandler;
     }
 }
 
-export const UserBeforeDeleteHandler =
-    createAbstraction<IEventHandler<UserBeforeDeleteEvent>>("UserBeforeDeleteHandler");
+/** Hook into user lifecycle before a user is deleted. */
+export const UserBeforeDeleteEventHandler = createAbstraction<IEventHandler<UserBeforeDeleteEvent>>(
+    "UserBeforeDeleteEventHandler"
+);
 
-export namespace UserBeforeDeleteHandler {
+export namespace UserBeforeDeleteEventHandler {
     export type Interface = IEventHandler<UserBeforeDeleteEvent>;
     export type Event = UserBeforeDeleteEvent;
 }
@@ -25,14 +27,16 @@ export class UserAfterDeleteEvent extends DomainEvent<UserAfterDeletePayload> {
     eventType = "user.afterDelete" as const;
 
     getHandlerAbstraction() {
-        return UserAfterDeleteHandler;
+        return UserAfterDeleteEventHandler;
     }
 }
 
-export const UserAfterDeleteHandler =
-    createAbstraction<IEventHandler<UserAfterDeleteEvent>>("UserAfterDeleteHandler");
+/** Hook into user lifecycle after a user is deleted. */
+export const UserAfterDeleteEventHandler = createAbstraction<IEventHandler<UserAfterDeleteEvent>>(
+    "UserAfterDeleteEventHandler"
+);
 
-export namespace UserAfterDeleteHandler {
+export namespace UserAfterDeleteEventHandler {
     export type Interface = IEventHandler<UserAfterDeleteEvent>;
     export type Event = UserAfterDeleteEvent;
 }

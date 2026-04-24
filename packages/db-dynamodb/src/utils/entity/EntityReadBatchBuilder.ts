@@ -23,7 +23,7 @@ export class EntityReadBatchBuilder implements IEntityReadBatchBuilder {
         } else if (!result.Key) {
             throw new WebinyError(`No key provided for entity ${this.entity.name}.`);
         }
-        return result as IEntityReadBatchBuilderGetResponse;
+        return result as unknown as IEntityReadBatchBuilderGetResponse;
     }
 }
 

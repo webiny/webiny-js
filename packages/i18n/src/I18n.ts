@@ -1,10 +1,5 @@
 import accounting from "accounting";
 import * as fecha from "fecha";
-/**
- * Package short-hash has no types.
- */
-// @ts-expect-error
-import hash from "short-hash";
 import lodashAssign from "lodash/assign.js";
 import lodashGet from "lodash/get.js";
 
@@ -20,6 +15,7 @@ import type {
     Translations,
     Translator
 } from "./types.js";
+import { hash } from "ohash";
 
 export type Translated =
     | ((values: I18NDataValues) => ProcessorResult | null)
@@ -85,7 +81,7 @@ export default class I18N {
 
         const hasVariables = base.includes("{") && base.includes("}");
         if (hasVariables) {
-            // eslint-disable-next-line @typescript-eslint/no-this-alias
+            // oxlint-disable-next-line typescript/no-this-alias
             const $this = this;
             return function i18n(values: I18NDataValues) {
                 const data: I18NData = {
@@ -140,12 +136,12 @@ export default class I18N {
             inputFormat = "YYYY-MM-DDTHH:mm:ss.SSSZ";
         }
 
-        let parsedValue: number | Date;
+        let parsedValue: Date;
 
         if (typeof value === "string") {
             parsedValue = fecha.parse(value, inputFormat) as Date;
         } else {
-            parsedValue = value;
+            parsedValue = value instanceof Date ? value : new Date(value);
         }
 
         return fecha.format(parsedValue, outputFormat);
@@ -167,12 +163,12 @@ export default class I18N {
             inputFormat = "YYYY-MM-DDTHH:mm:ss.SSSZ";
         }
 
-        let parsedValue: number | Date;
+        let parsedValue: Date;
 
         if (typeof value === "string") {
             parsedValue = fecha.parse(value, inputFormat) as Date;
         } else {
-            parsedValue = value;
+            parsedValue = value instanceof Date ? value : new Date(value);
         }
 
         return fecha.format(parsedValue, outputFormat);
@@ -190,12 +186,12 @@ export default class I18N {
             inputFormat = "YYYY-MM-DDTHH:mm:ss.SSSZ";
         }
 
-        let parsedValue: number | Date;
+        let parsedValue: Date;
 
         if (typeof value === "string") {
             parsedValue = fecha.parse(value, inputFormat) as Date;
         } else {
-            parsedValue = value;
+            parsedValue = value instanceof Date ? value : new Date(value);
         }
 
         return fecha.format(parsedValue, outputFormat);

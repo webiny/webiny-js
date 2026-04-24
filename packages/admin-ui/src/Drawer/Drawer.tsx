@@ -13,7 +13,8 @@ import { ConfirmButton } from "./components/ConfirmButton.js";
 import { CancelButton } from "./components/CancelButton.js";
 
 interface DrawerProps
-    extends React.ComponentPropsWithoutRef<typeof DrawerRoot>,
+    extends
+        React.ComponentPropsWithoutRef<typeof DrawerRoot>,
         Omit<React.ComponentPropsWithoutRef<typeof DrawerContent>, "title"> {
     trigger?: React.ReactNode;
     title?: React.ReactNode;
@@ -113,12 +114,14 @@ const DrawerBase = (props: DrawerProps) => {
         <DrawerRoot {...rootProps}>
             {triggerProps.children && <DrawerTrigger {...triggerProps} asChild />}
             <DrawerPortal>
-                {rootProps.modal && <DrawerOverlay />}
-                <DrawerContent {...contentProps} modal={rootProps.modal}>
-                    <DrawerHeader {...headerProps} />
-                    <DrawerBody {...bodyProps} />
-                    <DrawerFooter {...footerProps} />
-                </DrawerContent>
+                <div data-role="drawer" className={"absolute z-overlay"}>
+                    {rootProps.modal && <DrawerOverlay />}
+                    <DrawerContent {...contentProps} modal={rootProps.modal}>
+                        <DrawerHeader {...headerProps} />
+                        <DrawerBody {...bodyProps} />
+                        <DrawerFooter {...footerProps} />
+                    </DrawerContent>
+                </div>
             </DrawerPortal>
         </DrawerRoot>
     );

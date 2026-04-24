@@ -2,7 +2,10 @@
   "name": "@webiny/api-headless-cms-aco",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "keywords": [
     "api-headless-cms-aco-aco:base"
   ],
@@ -26,15 +29,15 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "graphql": "^16.12.0",
-    "typescript": "5.9.3"
+    "graphql": "^16.13.2",
+    "typescript": "6.0.3"
   },
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
-    "@webiny/error": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.5"
   }
 }

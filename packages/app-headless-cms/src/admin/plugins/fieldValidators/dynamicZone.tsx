@@ -1,7 +1,6 @@
 import React from "react";
-import type { FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AccordionItem } from "@webiny/ui/Accordion/index.js";
+import { Accordion } from "@webiny/admin-ui";
 import { Bind } from "@webiny/form";
 import type {
     CmsDynamicZoneTemplate,
@@ -13,6 +12,7 @@ import { createValidators } from "~/utils/createValidators.js";
 import { CmsModelFieldValidatorConfigAdapter } from "~/utils/CmsModelFieldValidatorConfigAdapter.js";
 import { useModelField } from "~/admin/components/ModelFieldProvider/index.js";
 import { commonValidators } from "~/admin/plugins/fields/dynamicZone/commonValidators.js";
+import { normalizeIcon } from "~/utils/normalizeIcon.js";
 
 function TemplateValidationSettings() {
     const { field } = useModelField();
@@ -36,12 +36,10 @@ function TemplateValidationSettings() {
                 return (
                     <>
                         {(templates as CmsDynamicZoneTemplate[]).map((template, index) => {
-                            const icon = template.icon
-                                ? (template.icon.split("/") as FontAwesomeIconProps["icon"])
-                                : undefined;
+                            const icon = normalizeIcon(template.icon);
 
                             return (
-                                <AccordionItem
+                                <Accordion.Item
                                     key={template.id}
                                     title={template.name}
                                     description={template.description}
@@ -53,7 +51,7 @@ function TemplateValidationSettings() {
                                             v => new CmsModelFieldValidatorConfigAdapter(field, v)
                                         )}
                                     />
-                                </AccordionItem>
+                                </Accordion.Item>
                             );
                         })}
                     </>
@@ -80,7 +78,7 @@ export const dynamicZoneFieldValidator: CmsModelFieldValidatorPlugin = {
             return <TemplateValidationSettings />;
         },
         validate: async (value: TemplateValue[], { field }) => {
-            // This validator only runs for Dynamic Zone fields with `multipleValues=true`.
+            // This validator only runs for Dynamic Zone fields with `list=true`.
             const templates = field.settings?.templates || [];
             for (const template of templates) {
                 const validationRules = template.validation || [];

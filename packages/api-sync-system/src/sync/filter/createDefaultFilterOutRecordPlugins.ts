@@ -48,20 +48,11 @@ export const startsWithKeys: string[] = [
  * When deleting a record, we do not have a modelId in the values.
  */
 export const skipModels: string[] = [
-    // APW
-    "apwChangeRequestModelDefinition",
-    "apwCommentModelDefinition",
-    "apwContentReviewModelDefinition",
-    "apwReviewerModelDefinition",
-    "apwWorkflowModelDefnition",
-    "apwWorkflowModelDefinition",
-    // AUDIT LOGS
-    "acoSearchRecord-auditlogs",
     // RECORD LOCKING
-    "wby_recordLocking",
+    "wbyRecordLock",
     // TASKS
-    "webinyTaskLog",
-    "webinyTask"
+    "wbyTaskLog",
+    "wbyTask"
 ].map(key => {
     return key.toLowerCase();
 });

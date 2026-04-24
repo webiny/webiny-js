@@ -3,13 +3,23 @@ import { makeDecoratable } from "~/index.js";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 
 export interface TenantLogoProps {
-    element: React.ReactNode;
+    squareLogo: React.ReactNode;
+    horizontalLogo?: React.ReactNode;
 }
 
-const BaseTenantLogo = ({ element }: TenantLogoProps) => {
+const BaseTenantLogo = ({ squareLogo, horizontalLogo }: TenantLogoProps) => {
     const getId = useIdGenerator("Tenant");
 
-    return <Property id={getId("logo")} name={"logo"} value={element} />;
+    return (
+        <Property id={getId("tenant")} name={"tenant"}>
+            <Property id={getId("squareLogo")} name={"squareLogo"} value={squareLogo} />
+            <Property
+                id={getId("horizontalLogo")}
+                name={"horizontalLogo"}
+                value={horizontalLogo ?? squareLogo}
+            />
+        </Property>
+    );
 };
 
 export const TenantLogo = makeDecoratable("TenantLogo", BaseTenantLogo);

@@ -1,6 +1,5 @@
 import type { AdminUser } from "~/types/users.js";
 
-// Re-export domain entity
 export type { AdminUser };
 
 // Input types
@@ -11,26 +10,30 @@ export interface CreateUserInput {
     firstName?: string;
     lastName?: string;
     avatar?: Record<string, any> | null;
-    groups?: string[];
+    roles?: string[];
     teams?: string[];
-    password?: string; // Only for Cognito
     external?: boolean;
 }
 
 export interface UpdateUserInput {
     displayName?: string;
     firstName?: string;
+    email?: string;
     lastName?: string;
     avatar?: Record<string, any> | null;
-    groups?: string[];
+    roles?: string[];
     teams?: string[];
-    password?: string; // Only for Cognito
 }
 
-export interface GetUserInput {
-    id?: string;
-    email?: string;
-}
+export type GetUserInput =
+    | {
+          id: string;
+          email?: never;
+      }
+    | {
+          id?: never;
+          email: string;
+      };
 
 export interface ListUsersInput {
     where?: {

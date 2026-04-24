@@ -5,9 +5,9 @@ import type { AcoContext } from "~/types.js";
 import { ContextPlugin } from "@webiny/api";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords.js";
 import { createGraphQLSchemaPluginFromFieldPlugins } from "@webiny/api-headless-cms/utils/getSchemaFromFieldPlugins.js";
-import { FOLDER_MODEL_ID } from "~/folder/folder.model.js";
+import { FOLDER_MODEL_ID } from "~/domain/folder/folder.model.js";
+import { CmsModelFieldToGraphQLRegistry } from "@webiny/api-headless-cms/exports/api/cms/graphql.js";
 
 const emptyResolver = () => ({});
 
@@ -82,17 +82,18 @@ export const createAcoGraphQL = () => {
             return;
         }
 
+        const fieldRegistry = context.container.resolve(CmsModelFieldToGraphQLRegistry);
+
         await context.security.withoutAuthorization(async () => {
             const model = (await context.cms.getModel(FOLDER_MODEL_ID)) as CmsModel;
             const models = await context.cms.listModels();
-            const fieldPlugins = createFieldTypePluginRecords(context.plugins);
             /**
              * We need to register all plugins for all the CMS fields.
              */
             const plugins = createGraphQLSchemaPluginFromFieldPlugins({
                 models,
                 type: "manage",
-                fieldTypePlugins: fieldPlugins,
+                fieldRegistry,
                 createPlugin: ({ schema, type, fieldType }) => {
                     const plugin = new GraphQLSchemaPlugin(schema);
                     plugin.name = `aco.graphql.folder.schema.${type}.field.${fieldType}`;
@@ -103,7 +104,7 @@ export const createAcoGraphQL = () => {
             const graphQlPlugin = createFoldersSchema({
                 model,
                 models,
-                plugins: fieldPlugins
+                fieldRegistry
             });
 
             context.plugins.register([...plugins, graphQlPlugin]);

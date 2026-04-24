@@ -18,7 +18,7 @@ const HeaderBarBase = ({ start, middle, end, className, ...props }: HeaderBarPro
                 )}
                 {...props}
             >
-                <div className="h-full flex items-center justify-self-start">{start}</div>
+                <div className="h-full flex items-center min-w-0 flex-1">{start}</div>
                 <div className="h-full flex items-center">{middle}</div>
                 <div className="h-full flex items-center justify-self-end">{end}</div>
             </div>

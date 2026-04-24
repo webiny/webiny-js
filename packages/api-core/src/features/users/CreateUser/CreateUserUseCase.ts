@@ -9,7 +9,7 @@ import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import { createUserValidation } from "./schema.js";
 import {
     NotAuthorizedError,
-    UserExistsError,
+    EmailTakenError,
     UserValidationError
 } from "~/features/users/shared/errors.js";
 import { UserBeforeCreateEvent, UserAfterCreateEvent } from "./events.js";
@@ -35,7 +35,7 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         // 2. Validate input
         const validation = createUserValidation.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new UserValidationError(validation.error.errors[0].message));
+            return Result.fail(new UserValidationError(validation.error.issues[0].message));
         }
 
         const data = validation.data;
@@ -44,10 +44,10 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         const existingUserResult = await this.repository.get({ email: data.email });
         if (existingUserResult.isOk()) {
             // This means the email is taken!
-            return Result.fail(new UserExistsError(data.email));
+            return Result.fail(new EmailTakenError(data.email));
         }
 
-        if (existingUserResult.error.code !== "USER_NOT_FOUND") {
+        if (existingUserResult.error.code !== "AdminUser/NotFound") {
             return Result.fail(existingUserResult.error);
         }
 
@@ -78,8 +78,7 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
             displayName,
             createdOn: new Date().toISOString(),
             createdBy,
-            tenant,
-            webinyVersion: process.env.WEBINY_VERSION as string
+            tenant
         };
 
         // 8. Publish before event

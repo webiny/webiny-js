@@ -30,7 +30,7 @@ export const createAuthorWithSearchableJson = (params?: ICreateAuthorWithSearcha
                 fieldId: "name",
                 type: "text",
                 label: "Name",
-                multipleValues: false
+                list: false
             },
             {
                 id: "info",
@@ -38,7 +38,7 @@ export const createAuthorWithSearchableJson = (params?: ICreateAuthorWithSearcha
                 fieldId: "info",
                 type: "searchable-json",
                 label: "Info",
-                multipleValues: false
+                list: false
             },
             {
                 id: "nonSearchableJson",
@@ -46,7 +46,7 @@ export const createAuthorWithSearchableJson = (params?: ICreateAuthorWithSearcha
                 fieldId: "nonSearchableJson",
                 type: "json",
                 label: "Non Searchable JSON",
-                multipleValues: false
+                list: false
             }
         ],
         group

@@ -15,7 +15,7 @@ interface Params extends Partial<GraphQLHandlerParams> {
 
 export const useValidationManageHandler = (params: Params) => {
     const contentHandler = useGraphQLHandler({
-        path: "manage/en-US",
+        path: "manage",
         ...params
     });
 

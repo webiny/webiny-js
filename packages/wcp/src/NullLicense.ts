@@ -6,6 +6,10 @@ export class NullLicense implements ILicense {
         return null;
     }
 
+    toDto(): null {
+        return null;
+    }
+
     getProject(): WcpProject | null {
         return null;
     }
@@ -35,6 +39,10 @@ export class NullLicense implements ILicense {
         return false;
     }
 
+    canUseHcmsFieldPermissions() {
+        return false;
+    }
+
     canUsePrivateFiles() {
         return false;
     }
@@ -48,6 +56,18 @@ export class NullLicense implements ILicense {
     }
 
     public canUseWorkflows(): boolean {
+        return false;
+    }
+
+    canUseAiImageEnrichment(): boolean {
+        return false;
+    }
+
+    canUseAiPageGeneration(): boolean {
+        return false;
+    }
+
+    canUseAiLexicalGeneration(): boolean {
         return false;
     }
 }

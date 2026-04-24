@@ -22,7 +22,7 @@ export const Container = ({ title, message, splashImage, children }: ContainerPr
                     {title}
                 </Heading>
             </Center>
-            <Text as="div" size={"md"} className={"mb-lg text-center text-neutral-muted"}>
+            <Text as="div" size={"md"} className={"mb-lg text-center text-neutral-strong"}>
                 {message}
             </Text>
             {children}

@@ -1,5 +1,4 @@
-import gql from "graphql-tag";
-import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient/index.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { RootFolder } from "~/domain/folder/RootFolder.js";
 import { FolderModelProvider } from "~/features/folders/abstractions.js";
@@ -25,7 +24,7 @@ export interface LoadFolderHierarchyQueryVariables {
     id: string;
 }
 
-export const LOAD_FOLDER_HIERARCHY = (FOLDER_FIELDS: string) => gql`
+export const LOAD_FOLDER_HIERARCHY = (FOLDER_FIELDS: string) => /* GraphQL*/ `
     query GetFolderHierarchy($type: String!, $id: ID!) {
         aco {
             getFolderHierarchy(type: $type, id: $id) {
@@ -45,14 +44,14 @@ export const LOAD_FOLDER_HIERARCHY = (FOLDER_FIELDS: string) => gql`
 
 class LoadFolderHierarchyGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
-        private client: ApolloClient.Interface,
+        private client: MainGraphQLClient.Interface,
         private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(type: string, id: string) {
         const fields = await this.folderModelProvider.getGraphQLSelection();
 
-        const { data: response } = await this.client.query<
+        const response = await this.client.execute<
             LoadFolderHierarchyResponse,
             LoadFolderHierarchyQueryVariables
         >({
@@ -60,8 +59,7 @@ class LoadFolderHierarchyGqlGatewayImpl implements GatewayAbstraction.Interface 
             variables: {
                 type,
                 id
-            },
-            fetchPolicy: "network-only"
+            }
         });
 
         if (!response) {
@@ -88,5 +86,5 @@ class LoadFolderHierarchyGqlGatewayImpl implements GatewayAbstraction.Interface 
 
 export const LoadFolderHierarchyGqlGateway = GatewayAbstraction.createImplementation({
     implementation: LoadFolderHierarchyGqlGatewayImpl,
-    dependencies: [ApolloClient, FolderModelProvider]
+    dependencies: [MainGraphQLClient, FolderModelProvider]
 });

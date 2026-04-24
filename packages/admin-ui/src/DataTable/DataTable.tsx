@@ -26,15 +26,19 @@ interface DataTableColumn<T> {
     /*
      * Column header component.
      */
-    header?: string | number | JSX.Element;
+    header?: string | number | React.JSX.Element;
     /*
      * Cell renderer, receives the full row and returns the value to render inside the cell.
      */
-    cell?: (row: T) => string | number | JSX.Element | null;
+    cell?: (row: T) => string | number | React.JSX.Element | null;
     /*
      * Column size.
      */
     size?: number;
+    /*
+     * Should truncate?
+     */
+    truncate?: boolean;
     /*
      * Column class names.
      */
@@ -51,6 +55,10 @@ interface DataTableColumn<T> {
      * Enable column visibility toggling.
      */
     enableHiding?: boolean;
+    /*
+     * Accessor key for the column data path.
+     */
+    accessorKey?: string;
 }
 
 type DataTableColumns<T> = {
@@ -161,19 +169,21 @@ const defineColumns = <T,>(
 
         const defaults: ColumnDef<T>[] = columnsList.map(column => {
             const {
+                accessorKey,
                 cell,
                 className,
                 enableHiding = true,
                 enableResizing = true,
                 enableSorting = false,
                 header,
+                truncate = true,
                 id,
                 size = 100
             } = column;
 
             return {
                 id,
-                accessorKey: id,
+                accessorKey: accessorKey || id,
                 header: () => header,
                 cell: props => {
                     if (cell && typeof cell === "function") {
@@ -188,7 +198,8 @@ const defineColumns = <T,>(
                 },
                 enableSorting,
                 meta: {
-                    className
+                    className,
+                    truncate
                 },
                 enableResizing,
                 size,
@@ -457,7 +468,12 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
                                                 onClick={header.column.getToggleSortingHandler()}
                                                 sortable={header.column.getCanSort()}
                                             >
-                                                <div className="w-full overflow-hidden whitespace-nowrap truncate">
+                                                <div
+                                                    className={cn({
+                                                        "w-full overflow-hidden whitespace-nowrap": true,
+                                                        truncate: !isLastCell
+                                                    })}
+                                                >
                                                     {flexRender(
                                                         header.column.columnDef.header,
                                                         header.getContext()
@@ -467,7 +483,7 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
                                                     direction={header.column.getIsSorted() || null}
                                                 />
                                                 {isLastCell && (
-                                                    <div className={"mr-xs h-md"}>
+                                                    <div className={"h-md"}>
                                                         <ColumnsVisibility
                                                             columns={table.getAllColumns()}
                                                         />

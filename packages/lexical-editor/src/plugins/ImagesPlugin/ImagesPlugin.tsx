@@ -7,13 +7,13 @@
  *
  */
 import { useEffect } from "react";
-import { mergeRegister } from "@lexical/utils";
 import type { LexicalEditor } from "lexical";
 import {
     $createRangeSelection,
     $getSelection,
     $isNodeSelection,
     $setSelection,
+    mergeRegister,
     COMMAND_PRIORITY_EDITOR,
     COMMAND_PRIORITY_HIGH,
     COMMAND_PRIORITY_LOW,
@@ -37,7 +37,7 @@ export function ImagesPlugin({
     captionsEnabled
 }: {
     captionsEnabled?: boolean;
-}): JSX.Element | null {
+}): React.JSX.Element | null {
     const { editor } = useRichTextEditor();
 
     useEffect(() => {
@@ -108,11 +108,9 @@ function onDragStart(event: DragEvent): boolean {
             data: {
                 id: node.__id,
                 altText: node.__altText,
-                caption: node.__caption,
                 height: node.__height,
                 key: node.getKey(),
                 maxWidth: node.__maxWidth,
-                showCaption: node.__showCaption,
                 src: node.__src,
                 width: node.__width
             },

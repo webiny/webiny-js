@@ -19,6 +19,9 @@ import { AbstractStorageOps, DdbOsStorageOps, DdbStorageOps } from "./storageOps
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ github.base_ref }}";
 
+// Skip all jobs for release/x.y.z → next PRs (handled by a dedicated release workflow).
+const NOT_RELEASE_PR = "!startsWith(github.head_ref, 'release/')";
+
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
@@ -65,9 +68,11 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
         if (storageOps.id === "ddb-os,ddb") {
-            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME}}";
-            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_3_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
+            env["AWS_OPENSEARCH_DOMAIN_NAME"] = "${{ secrets.OPENSEARCH_DOMAIN_NAME }}";
+            env["OPENSEARCH_ENDPOINT"] = "${{ secrets.OPENSEARCH_ENDPOINT }}";
+            env["OPENSEARCH_USERNAME"] = "${{ secrets.OPENSEARCH_USERNAME }}";
+            env["OPENSEARCH_PASSWORD"] = "${{ secrets.OPENSEARCH_PASSWORD }}";
+            env["OPENSEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
         }
     }
 
@@ -121,16 +126,16 @@ export const pullRequests = createWorkflow({
     jobs: {
         validateCommits: createJob({
             name: "Validate commit messages",
-            if: "github.base_ref != 'dev'",
-            steps: [{ uses: "webiny/action-conventional-commits@v1.3.0" }]
+            if: `github.base_ref != 'dev' && ${NOT_RELEASE_PR}`,
+            steps: [{ uses: "webiny/action-conventional-commits@v1.4.2" }]
         }),
         // Don't allow "feat" commits to be merged into "dev" branch.
         validateCommitsDev: createJob({
             name: "Validate commit messages (dev branch, 'feat' commits not allowed)",
-            if: "github.base_ref == 'dev'",
+            if: `github.base_ref == 'dev' && ${NOT_RELEASE_PR}`,
             steps: [
                 {
-                    uses: "webiny/action-conventional-commits@v1.3.0",
+                    uses: "webiny/action-conventional-commits@v1.4.2",
                     with: {
                         // If dev, use "dev" commit types, otherwise use "next" commit types.
                         "allowed-commit-types":
@@ -141,6 +146,7 @@ export const pullRequests = createWorkflow({
         }),
         constants: createJob({
             name: "Create constants",
+            if: NOT_RELEASE_PR,
             outputs: {
                 "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
                 "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}",
@@ -177,7 +183,7 @@ export const pullRequests = createWorkflow({
                 {
                     name: "Detect changed files",
                     id: "detect-changed-files",
-                    uses: "dorny/paths-filter@v3",
+                    uses: "dorny/paths-filter@v4",
                     with: {
                         filters: "changed:\n  - 'packages/**/*'\n",
                         "list-files": "json"
@@ -196,41 +202,6 @@ export const pullRequests = createWorkflow({
                     name: "Get latest Webiny version on NPM",
                     id: "latest-webiny-version",
                     run: addToOutputs("latest-webiny-version", "$(npm view @webiny/cli version)")
-                }
-            ]
-        }),
-        assignMilestone: createJob({
-            name: "Assign milestone",
-            needs: "constants",
-            if: [
-                "needs.constants.outputs.is-fork-pr != 'true'",
-                "github.event.pull_request.milestone == null"
-            ].join(" && "),
-            steps: [
-                {
-                    name: "Print latest Webiny version",
-                    run: "echo ${{ needs.constants.outputs.latest-webiny-version }}"
-                },
-                {
-                    id: "get-milestone-to-assign",
-                    name: "Get milestone to assign",
-                    run: runNodeScript(
-                        "getMilestoneToAssign",
-                        JSON.stringify({
-                            latestWebinyVersion:
-                                "${{ needs.constants.outputs.latest-webiny-version }}",
-                            baseBranch: "${{ github.base_ref }}"
-                        }),
-                        { outputAs: "milestone" }
-                    )
-                },
-                {
-                    uses: "zoispag/action-assign-milestone@v1",
-                    if: "steps.get-milestone-to-assign.outputs.milestone",
-                    with: {
-                        "repo-token": "${{ secrets.GH_TOKEN }}",
-                        milestone: "${{ steps.get-milestone-to-assign.outputs.milestone }}"
-                    }
                 }
             ]
         }),
@@ -259,10 +230,10 @@ export const pullRequests = createWorkflow({
                 ...withCommonParams(
                     [
                         { name: "Install dependencies", run: "yarn --immutable" },
-                        { name: "Check code formatting", run: "yarn prettier:check" },
+                        { name: "Check code formatting", run: "yarn format:check" },
                         { name: "Check dependencies", run: "yarn adio" },
                         { name: "Check TS configs", run: "yarn check-ts-configs" },
-                        { name: "ESLint", run: "yarn eslint" },
+                        { name: "Lint", run: "yarn lint" },
                         {
                             name: "Check Package Node Modules",
                             run: "yarn check-package-dependencies"
@@ -293,6 +264,7 @@ export const pullRequests = createWorkflow({
         }),
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
+            if: NOT_RELEASE_PR,
             "runs-on": BUILD_PACKAGES_RUNNER,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
@@ -309,6 +281,68 @@ export const pullRequests = createWorkflow({
                     ],
                     { "working-directory": DIR_WEBINY_JS }
                 )
+            ]
+        }),
+        aiFixStaticAnalysis: createJob({
+            name: "AI Fix Static Analysis",
+            needs: ["constants", "staticCodeAnalysis"],
+            if: "failure() && needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true' && github.event.pull_request.user.login == 'adrians5j'",
+            permissions: { contents: "write" },
+            checkout: { path: DIR_WEBINY_JS },
+            env: { ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}" },
+            steps: [
+                ...yarnCacheSteps,
+                {
+                    name: "Install dependencies",
+                    run: "yarn --immutable",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                // Run deterministic fixes as real shell commands so changes definitely land on disk.
+                {
+                    name: "Fix code formatting",
+                    run: "yarn format:fix",
+                    "working-directory": DIR_WEBINY_JS,
+                    "continue-on-error": true
+                },
+                {
+                    name: "Fix lint issues (auto-fixable)",
+                    run: "yarn lint:fix",
+                    "working-directory": DIR_WEBINY_JS,
+                    "continue-on-error": true
+                },
+                // Let Claude handle whatever can't be auto-fixed: adio, ts-configs,
+                // remaining lint errors, and check-package-dependencies.
+                {
+                    name: "Install Claude Code",
+                    run: "npm install -g @anthropic-ai/claude-code"
+                },
+                {
+                    name: "AI Fix Remaining Issues",
+                    "working-directory": DIR_WEBINY_JS,
+                    run: [
+                        `claude --dangerously-skip-permissions -p`,
+                        `"Some static analysis checks may still be failing. Fix any remaining issues:`,
+                        `1. Run 'yarn adio' — if it reports dependency errors, fix the relevant package.json files.`,
+                        `2. Run 'yarn check-ts-configs' — if it reports errors, fix them.`,
+                        `3. Run 'yarn lint' — if there are still non-auto-fixable errors, read the affected files and fix them.`,
+                        `4. Run 'yarn check-package-dependencies' — if it reports errors, fix them.`,
+                        `Work in the current directory."`
+                    ].join(" ")
+                },
+                // Re-run yarn so yarn.lock is updated if package.json files were modified (e.g. by adio fixes).
+                {
+                    name: "Update yarn.lock",
+                    run: "yarn",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "Commit fixes",
+                    uses: "stefanzweifel/git-auto-commit-action@v5",
+                    with: {
+                        commit_message: "chore: ai fix static analysis [skip ci]",
+                        repository: DIR_WEBINY_JS
+                    }
+                }
             ]
         }),
         ...createVitestTestsJobs(),

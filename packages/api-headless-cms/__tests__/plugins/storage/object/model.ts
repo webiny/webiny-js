@@ -3,13 +3,11 @@ import type { CmsModel } from "~/types";
 export const createObjectMockModel = (): CmsModel => {
     return {
         tenant: "root",
-        locale: "en-US",
         modelId: "objectModel",
         singularApiName: "ObjectModel",
         pluralApiName: "ObjectModels",
         name: "Object Model",
         titleFieldId: "titleFieldId",
-        lockedFields: [],
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
         createdBy: {
@@ -17,12 +15,7 @@ export const createObjectMockModel = (): CmsModel => {
             displayName: "admin",
             id: "admin"
         },
-        webinyVersion: "w.w.w",
-
-        group: {
-            name: "Group",
-            id: "group"
-        },
+        group: "group",
         description: "Object model for testing.",
         layout: [["titleId"], ["objectId"]],
         fields: [
@@ -34,15 +27,19 @@ export const createObjectMockModel = (): CmsModel => {
                 storageId: "textWithDefaultStorageId",
                 settings: {
                     defaultValue: "field with default value"
-                }
+                },
+                listValidation: [],
+                validation: []
             },
             {
                 fieldId: "titleFieldId",
                 storageId: "titleStorageId",
-                multipleValues: false,
+                list: false,
                 type: "text",
                 id: "titleId",
-                label: "Title"
+                label: "Title",
+                listValidation: [],
+                validation: []
             },
             {
                 id: "objectId",
@@ -50,16 +47,20 @@ export const createObjectMockModel = (): CmsModel => {
                 storageId: "objectStorageId",
                 label: "Object",
                 type: "object",
-                multipleValues: false,
+                list: false,
+                listValidation: [],
+                validation: [],
                 settings: {
                     fields: [
                         {
                             fieldId: "titleFieldId",
                             storageId: "titleStorageId",
-                            multipleValues: false,
+                            list: false,
                             type: "text",
                             id: "titleId",
-                            label: "Title"
+                            label: "Title",
+                            listValidation: [],
+                            validation: []
                         },
                         {
                             fieldId: "dateFieldId",
@@ -69,7 +70,9 @@ export const createObjectMockModel = (): CmsModel => {
                             storageId: "dateStorageId",
                             id: "dateId",
                             label: "Date",
-                            type: "datetime"
+                            type: "datetime",
+                            listValidation: [],
+                            validation: []
                         },
                         {
                             fieldId: "dateMultipleFieldId",
@@ -80,7 +83,9 @@ export const createObjectMockModel = (): CmsModel => {
                             id: "dateMultipleId",
                             label: "Date Multiple",
                             type: "datetime",
-                            multipleValues: true
+                            list: true,
+                            listValidation: [],
+                            validation: []
                         },
                         {
                             fieldId: "nestedTextWithDefaultFieldId",
@@ -90,7 +95,9 @@ export const createObjectMockModel = (): CmsModel => {
                             storageId: "nestedTextWithDefaultStorageId",
                             settings: {
                                 defaultValue: "nested field with default value"
-                            }
+                            },
+                            listValidation: [],
+                            validation: []
                         }
                     ],
                     layout: [["titleId"], ["dateId"], ["dateMultipleId"]]

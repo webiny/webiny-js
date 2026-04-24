@@ -1,0 +1,35 @@
+{
+  "name": "@webiny/sdk",
+  "version": "0.0.0",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "exports": {
+    ".": "./index.js"
+  },
+  "dependencies": {
+    "p-map": "^7.0.4",
+    "p-retry": "^8.0.0"
+  },
+  "author": "Webiny",
+  "license": "MIT",
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.5"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "p-retry",
+        "p-map"
+      ]
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  }
+}

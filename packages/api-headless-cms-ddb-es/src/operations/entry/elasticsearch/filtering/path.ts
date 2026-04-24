@@ -1,10 +1,8 @@
-import type {
-    ElasticsearchQuerySearchValuePlugins,
-    ModelField
-} from "~/operations/entry/elasticsearch/types.js";
+import type { ModelField } from "~/operations/entry/elasticsearch/types.js";
+import type { CmsEntryOpenSearchValueSearchRegistry } from "~/features/CmsEntryOpenSearchValueSearch/index.js";
 
 interface FieldPathFactoryParams {
-    plugins: ElasticsearchQuerySearchValuePlugins;
+    valueSearchRegistry: CmsEntryOpenSearchValueSearchRegistry.Interface;
 }
 interface FieldPathParams {
     field: ModelField;
@@ -14,14 +12,14 @@ interface FieldPathParams {
     keyword: boolean;
 }
 
-export const createFieldPathFactory = ({ plugins }: FieldPathFactoryParams) => {
+export const createFieldPathFactory = ({ valueSearchRegistry }: FieldPathFactoryParams) => {
     return (params: FieldPathParams) => {
         const { field, key, value, keyword, originalValue } = params;
-        const plugin = plugins[field.type];
+        const search = valueSearchRegistry.get(field.type);
 
         let fieldPath: string | null = null;
-        if (plugin) {
-            fieldPath = plugin.createPath({ field: field.field, value, key, originalValue });
+        if (search) {
+            fieldPath = search.createPath({ field: field.field, value, key, originalValue });
         }
         if (!fieldPath) {
             fieldPath = field.field.storageId;
@@ -30,12 +28,7 @@ export const createFieldPathFactory = ({ plugins }: FieldPathFactoryParams) => {
             }
         }
 
-        const result: string[] = [];
-        if (!field.systemField) {
-            result.push("values");
-        }
-        result.push(...field.parents.map(p => p.storageId));
-        result.push(fieldPath);
+        const result: string[] = field.parents.map(p => p.storageId).concat([fieldPath]);
 
         return {
             basePath: result.join("."),

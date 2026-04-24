@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs/promises";
 import { transformFileAsync } from "@babel/core";
 import chokidar from "chokidar";
+import baseFs from "node:fs";
 
 let compilationQueue = [];
 let debounceTimer = null;
@@ -27,11 +28,25 @@ const logCompilation = inputPathRelative => {
     }, DEBOUNCE_DELAY);
 };
 
+const getBabelFile = cwd => {
+    const babelJs = path.join(cwd, ".babelrc.js");
+    const babelCjs = path.join(cwd, ".babelrc.cjs");
+
+    if (baseFs.existsSync(babelJs)) {
+        return babelJs;
+    } else if (baseFs.existsSync(babelCjs)) {
+        return babelCjs;
+    }
+    throw new Error("No Babel configuration file found (.babelrc.js or .babelrc.cjs).");
+};
+
 const compileFile = async (cwd, inputPath, outputPath) => {
     const inputPathRelative = path.relative(cwd, inputPath);
 
+    const configFile = getBabelFile(cwd);
+
     const result = await transformFileAsync(inputPath, {
-        configFile: path.join(cwd, ".babelrc.js"),
+        configFile: configFile,
         sourceMaps: true
     });
 

@@ -18,7 +18,7 @@ export interface IListUsers {
     execute(input?: ListUsersInput): Promise<Result<AdminUser[], ListUsersError>>;
 }
 
-// Abstraction constant
+/** List all admin users. */
 export const ListUsersUseCase = createAbstraction<IListUsers>("ListUsersUseCase");
 
 // Namespace exports

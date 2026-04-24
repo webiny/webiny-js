@@ -4,7 +4,7 @@ export const useGetPageGraphQLFields = (fields: string[]): string[] => {
         `entryId`,
         `status`,
         `version`,
-        `wbyAco_location {
+        `location {
             folderId
         }`,
         `createdOn`,
@@ -22,6 +22,10 @@ export const useGetPageGraphQLFields = (fields: string[]): string[] => {
             id
             displayName
         }`,
+        `live {
+            version
+        }
+        `,
         ...fields
     ];
 };

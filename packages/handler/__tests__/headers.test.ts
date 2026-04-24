@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { ResponseHeaders } from "~/ResponseHeaders";
 import { createHandler } from "~/fastify";
 import { createRoute } from "~/plugins/RoutePlugin";
@@ -19,13 +19,13 @@ describe("ResponseHeaders class", () => {
         const headers = ResponseHeaders.create();
 
         headers.set("access-control-allow-headers", value => {
-            return [value, "x-wby-custom", "x-tenant", "x-i18n-locale"].filter(Boolean).join(",");
+            return [value, "x-wby-custom", "x-tenant"].filter(Boolean).join(",");
         });
 
         headers.set("x-webiny-version", value => value);
 
         expect(headers.getHeaders()).toEqual({
-            "access-control-allow-headers": "x-wby-custom,x-tenant,x-i18n-locale",
+            "access-control-allow-headers": "x-wby-custom,x-tenant",
             "x-tenant": undefined
         });
     });
@@ -51,8 +51,7 @@ describe("ResponseHeaders class", () => {
         const result = await app.inject({
             path: "/webiny-test",
             method: "OPTIONS",
-            query: {},
-            payload: JSON.stringify({})
+            query: {}
         });
 
         expect(result).toMatchObject({

@@ -80,17 +80,18 @@ const SeparatorBase = ({
         ? "flex items-center w-full"
         : "flex flex-col items-center h-full";
     const separatorClass = separatorVariants({ orientation, variant });
-    const labelClass = "text-neutral-primary text-md font-semibold px-md";
+    const textColor = variant === "accent" ? "text-accent-primary" : "text-neutral-primary";
+    const baseLabelClass = `${textColor} text-lg font-semibold`;
 
     const renderContent = () => {
         if (labelPosition === "start") {
             return (
                 <>
-                    <span className={labelClass}>{children}</span>
+                    <span className={`${baseLabelClass} pr-md`}>{children}</span>
                     <SeparatorPrimitive.Root
                         decorative={decorative}
                         orientation={orientation}
-                        className={`${separatorClass} flex-1 ${isHorizontal ? "ml-xs" : "mt-xs"}`}
+                        className={`${separatorClass} flex-1`}
                         {...props}
                     />
                 </>
@@ -103,10 +104,10 @@ const SeparatorBase = ({
                     <SeparatorPrimitive.Root
                         decorative={decorative}
                         orientation={orientation}
-                        className={`${separatorClass} flex-1 ${isHorizontal ? "mr-xs" : "mb-xs"}`}
+                        className={`${separatorClass} flex-1`}
                         {...props}
                     />
-                    <span className={labelClass}>{children}</span>
+                    <span className={`${baseLabelClass} pl-md`}>{children}</span>
                 </>
             );
         }
@@ -117,21 +118,21 @@ const SeparatorBase = ({
                 <SeparatorPrimitive.Root
                     decorative={decorative}
                     orientation={orientation}
-                    className={`${separatorClass} flex-1 ${isHorizontal ? "mr-xs" : "mb-xs"}`}
+                    className={`${separatorClass} flex-1`}
                     {...props}
                 />
-                <span className={labelClass}>{children}</span>
+                <span className={`${baseLabelClass} px-md`}>{children}</span>
                 <SeparatorPrimitive.Root
                     decorative={decorative}
                     orientation={orientation}
-                    className={`${separatorClass} flex-1 ${isHorizontal ? "ml-xs" : "mt-xs"}`}
+                    className={`${separatorClass} flex-1`}
                     {...props}
                 />
             </>
         );
     };
 
-    return <div className={containerClass}>{renderContent()}</div>;
+    return <div className={`${containerClass} ${className || ""}`}>{renderContent()}</div>;
 };
 
 const Separator = makeDecoratable("Separator", SeparatorBase);

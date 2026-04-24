@@ -3,12 +3,17 @@ import { Result } from "@webiny/feature/api";
 import type { AdminUser } from "~/features/users/shared/types.js";
 import type { UpdateUserInput } from "~/features/users/shared/types.js";
 import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
-import { NotAuthorizedError, UserValidationError } from "~/features/users/shared/errors.js";
+import {
+    NotAuthorizedError,
+    EmailTakenError,
+    UserValidationError
+} from "~/features/users/shared/errors.js";
 
 // Use case specific errors
 export interface IUpdateUserErrors {
     notAuthorized: NotAuthorizedError;
     validation: UserValidationError;
+    userExists: EmailTakenError;
 }
 
 // Combined error type (use case errors + repository errors)
@@ -19,7 +24,7 @@ export interface IUpdateUser {
     execute(id: string, input: UpdateUserInput): Promise<Result<AdminUser, UpdateUserError>>;
 }
 
-// Abstraction constant
+/** Update an existing admin user. */
 export const UpdateUserUseCase = createAbstraction<IUpdateUser>("UpdateUserUseCase");
 
 // Namespace exports

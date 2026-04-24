@@ -201,7 +201,7 @@ export class InputsBindingsProcessor {
                     // Leaf node (primitive or slot) processing
 
                     // Get current new value from deep inputs
-                    const newValue = getValue(inputs, flatKey);
+                    let newValue = getValue(inputs, flatKey);
 
                     // Get original binding entry for this path
                     const originalEntry = originalInputs[flatKey];
@@ -211,8 +211,38 @@ export class InputsBindingsProcessor {
                         continue;
                     }
 
-                    if (typeof newValue === "object" && newValue?.action === "CreateElement") {
-                        // Handle CreateElement action by generating element and operations
+                    // For list slots, process CreateElement items within the array.
+                    if (node.list && Array.isArray(newValue)) {
+                        newValue = newValue.map(item => {
+                            if (
+                                typeof item === "object" &&
+                                item !== null &&
+                                item.action === "CreateElement"
+                            ) {
+                                const newElement = this.elementFactory.createElementFromComponent({
+                                    componentName: item.params.component,
+                                    parentId: this.elementId,
+                                    slot: flatKey,
+                                    bindings: item.params
+                                });
+                                // Skip AddToParent — this processor manages the binding array.
+                                operations.push(
+                                    ...newElement.operations.filter(
+                                        op => !(op instanceof DocumentOperations.AddToParent)
+                                    )
+                                );
+                                return newElement.element.id;
+                            }
+                            return item;
+                        });
+                    }
+
+                    if (
+                        !Array.isArray(newValue) &&
+                        typeof newValue === "object" &&
+                        newValue?.action === "CreateElement"
+                    ) {
+                        // Handle single (non-list) CreateElement action
                         const newElement = this.elementFactory.createElementFromComponent({
                             componentName: newValue.params.component,
                             parentId: this.elementId,
@@ -229,7 +259,7 @@ export class InputsBindingsProcessor {
 
                         // Build binding for the new element id(s)
                         const binding = {
-                            static: node.list ? [createdId] : createdId,
+                            static: createdId,
                             type: node.type,
                             list: node.list,
                             id: idToUse
@@ -268,8 +298,12 @@ export class InputsBindingsProcessor {
                             rebuilt.inputs[flatKey] = binding;
                         }
 
-                        // Add generated operations for this element creation
-                        operations.push(...newElement.operations);
+                        // Skip AddToParent — this processor manages the binding directly.
+                        operations.push(
+                            ...newElement.operations.filter(
+                                op => !(op instanceof DocumentOperations.AddToParent)
+                            )
+                        );
                     } else {
                         // Normal value update
                         const isResponsive =

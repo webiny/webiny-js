@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-opensearch/types";
 import { createPluginsContainer, createQuery, Query } from "./mocks";
 import { createExecFiltering, CreateExecFilteringResponse } from "./mocks/filtering";
 
@@ -18,7 +18,9 @@ describe("not startsWith filter", () => {
     it("should add not_startsWith filter", async () => {
         const title = "webiny";
         const where: CmsEntryListWhere = {
-            title_not_startsWith: title
+            values: {
+                title_not_startsWith: title
+            }
         };
 
         execFiltering({

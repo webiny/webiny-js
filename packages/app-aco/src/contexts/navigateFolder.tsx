@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react";
-import store from "store";
 import { ROOT_FOLDER } from "~/constants.js";
+import { useLocalStorage } from "@webiny/app/exports/admin/local-storage.js";
 
 export interface NavigateFolderContext {
     currentFolderId: string;
@@ -28,6 +28,7 @@ export const NavigateFolderProvider = ({
     createStorageKey,
     ...props
 }: NavigateFolderProviderProps) => {
+    const localStorage = useLocalStorage();
     /**
      * Helper function to set the current folderId to local storage:
      * we export this function to call it programmatically when we need it and
@@ -35,13 +36,13 @@ export const NavigateFolderProvider = ({
      */
     const setFolderToStorage = useCallback(
         (newFolderId?: string): void => {
-            store.set(createStorageKey(), newFolderId);
+            localStorage.set(createStorageKey(), newFolderId);
         },
         [createStorageKey]
     );
 
     const getFolderFromStorage = useCallback((): string | undefined => {
-        const folderId = store.get(createStorageKey()) as string | undefined;
+        const folderId = localStorage.get(createStorageKey());
         return folderId?.toLowerCase();
     }, [createStorageKey]);
 
@@ -71,13 +72,15 @@ export const NavigateFolderProvider = ({
     );
 
     const navigateToListHome = () => {
-        store.remove(createStorageKey());
+        localStorage.remove(createStorageKey());
         props.navigateToFolder(ROOT_FOLDER);
     };
 
+    const finalFolderId = currentFolderId || getFolderFromStorage() || ROOT_FOLDER;
+
     const context: NavigateFolderContext = {
-        currentFolderId: currentFolderId || getFolderFromStorage() || ROOT_FOLDER,
-        isRootFolder: currentFolderId === ROOT_FOLDER,
+        currentFolderId: finalFolderId,
+        isRootFolder: finalFolderId === ROOT_FOLDER,
         setFolderToStorage,
         navigateToListHome,
         navigateToFolder,

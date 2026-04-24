@@ -6,6 +6,8 @@ import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { assignModelEvents, pubSubTracker } from "./mocks/lifecycleHooks";
 import { useBugManageHandler } from "../testHelpers/useBugManageHandler";
+import { createModelField } from "~/utils/createModelField.js";
+import { createIcon } from "~tests/__helpers/icon.js";
 
 const getTypeFields = (type: any) => {
     return type.fields.filter((f: any) => f.name !== "_empty").map((f: any) => f.name);
@@ -22,12 +24,12 @@ const createPermissions = ({ models, groups }: { models?: string[]; groups?: str
     {
         name: "cms.contentModelGroup",
         rwd: "rwd",
-        groups: groups ? { "en-US": groups } : undefined
+        groups: groups ?? undefined
     },
     {
         name: "cms.contentModel",
         rwd: "rwd",
-        models: models ? { "en-US": models } : undefined
+        models: models ?? undefined
     },
     {
         name: "cms.endpoint.read"
@@ -37,16 +39,12 @@ const createPermissions = ({ models, groups }: { models?: string[]; groups?: str
     },
     {
         name: "cms.endpoint.preview"
-    },
-    {
-        name: "content.i18n",
-        locales: ["en-US"]
     }
 ];
 
 describe("content model test", () => {
-    const readHandlerOpts = { path: "read/en-US" };
-    const manageHandlerOpts = { path: "manage/en-US" };
+    const readHandlerOpts = { path: "read" };
+    const manageHandlerOpts = { path: "manage" };
 
     const {
         createContentModelGroupMutation,
@@ -60,7 +58,7 @@ describe("content model test", () => {
             data: {
                 name: "Group",
                 slug: "group",
-                icon: "ico/ico",
+                icon: createIcon("ico/ico"),
                 description: "description"
             }
         });
@@ -108,7 +106,6 @@ describe("content model test", () => {
             "createContentModelFrom",
             "updateContentModel",
             "deleteContentModel",
-            "initializeModel",
             "createContentModelGroup",
             "updateContentModelGroup",
             "deleteContentModelGroup"
@@ -130,8 +127,8 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id,
-                icon: "fa/fas"
+                group: contentModelGroup.slug,
+                icon: createIcon("fa/fas")
             }
         });
 
@@ -153,12 +150,9 @@ describe("content model test", () => {
                         fields: [],
                         layout: [],
                         plugin: false,
-                        group: {
-                            id: contentModelGroup.id,
-                            name: contentModelGroup.name,
-                            slug: contentModelGroup.slug
-                        },
-                        icon: "fa/fas"
+                        group: contentModelGroup.slug,
+                        icon: createIcon("fa/fas"),
+                        tenant: "root"
                     },
                     error: null
                 }
@@ -212,7 +206,7 @@ describe("content model test", () => {
                 description: "changed description",
                 fields: [],
                 layout: [],
-                icon: "fa/updated"
+                icon: createIcon("fa/updated")
             }
         });
 
@@ -221,7 +215,7 @@ describe("content model test", () => {
             name: "changed name",
             description: "changed description",
             savedOn: expect.stringMatching(/^20/),
-            icon: "fa/updated"
+            icon: createIcon("fa/updated")
         };
 
         expect(changedUpdateResponse).toEqual({
@@ -268,7 +262,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -307,7 +301,7 @@ describe("content model test", () => {
                 modelId: category.modelId,
                 singularApiName: category.singularApiName,
                 pluralApiName: category.pluralApiName,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -344,9 +338,13 @@ describe("content model test", () => {
         const model = updateContentModelResponse.data.updateContentModel.data;
 
         const [createCategoryResponse] = await createCategory({
-            data: {
-                title: "Category",
-                slug: "title"
+            variables: {
+                data: {
+                    values: {
+                        title: "Category",
+                        slug: "title"
+                    }
+                }
             }
         });
         expect(createCategoryResponse).toMatchObject({
@@ -370,22 +368,32 @@ describe("content model test", () => {
                     data: null,
                     error: {
                         message: `Cannot delete content model "${model.modelId}" because there are existing entries.`,
-                        code: "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED",
-                        data: {
-                            model: expect.any(Object)
-                        }
+                        code: "Cms/Model/CannotDeleteHasEntries",
+                        data: null
                     }
                 }
             }
         });
 
         // Let's move the entry to the trash bin and try to delete the content model: it should fail.
-        await deleteCategory({
-            revision: createCategoryResponse.data.createCategory.data.entryId,
-            options: {
-                permanently: false
+        const [deleteCategoryResult] = await deleteCategory({
+            variables: {
+                revision: createCategoryResponse.data.createCategory.data!.entryId,
+                options: {
+                    permanently: false
+                }
             }
         });
+
+        expect(deleteCategoryResult).toEqual({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+
         const [deleteWithEntriesInTrashResponse] = await deleteContentModelMutation({
             modelId: model.modelId
         });
@@ -395,20 +403,29 @@ describe("content model test", () => {
                     data: null,
                     error: {
                         message: `Cannot delete content model "${model.modelId}" because there are existing entries in the trash.`,
-                        code: "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED",
-                        data: {
-                            model: expect.any(Object)
-                        }
+                        code: "Cms/Model/CannotDeleteHasEntriesInTrash",
+                        data: null
                     }
                 }
             }
         });
 
         // Let's permanently delete the entry: it should be able to delete the content model.
-        await deleteCategory({
-            revision: createCategoryResponse.data.createCategory.data.entryId,
-            options: {
-                permanently: true
+        const [deleteCategoryResponse] = await deleteCategory({
+            variables: {
+                revision: createCategoryResponse.data.createCategory.data!.entryId,
+                options: {
+                    permanently: true
+                }
+            }
+        });
+
+        expect(deleteCategoryResponse).toEqual({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null
+                }
             }
         });
 
@@ -436,7 +453,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -471,8 +488,8 @@ describe("content model test", () => {
                 getContentModel: {
                     data: null,
                     error: {
-                        message: `Content model "${modelId}" was not found!`,
-                        code: "NOT_FOUND",
+                        message: `Model "${modelId}" was not found!`,
+                        code: "Cms/Model/NotFound",
                         data: null
                     }
                 }
@@ -497,8 +514,8 @@ describe("content model test", () => {
                 updateContentModel: {
                     data: null,
                     error: {
-                        message: `Content model "${modelId}" was not found!`,
-                        code: "NOT_FOUND",
+                        message: `Model "${modelId}" was not found!`,
+                        code: "Cms/Model/NotFound",
                         data: null
                     }
                 }
@@ -519,8 +536,8 @@ describe("content model test", () => {
                 deleteContentModel: {
                     data: null,
                     error: {
-                        message: `Content model "${modelId}" was not found!`,
-                        code: "NOT_FOUND",
+                        message: `Model "${modelId}" was not found!`,
+                        code: "Cms/Model/NotFound",
                         data: null
                     }
                 }
@@ -543,7 +560,7 @@ describe("content model test", () => {
             data: {
                 ...modelData,
                 modelId: realModelId,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -565,9 +582,10 @@ describe("content model test", () => {
             id: "someRandomTextFieldId",
             fieldId: "textField",
             label: "Text field",
-            helpText: "help text",
-            multipleValues: false,
-            placeholderText: "placeholder text",
+            help: "help text",
+            list: false,
+            placeholder: "placeholder text",
+            tags: [],
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -584,9 +602,9 @@ describe("content model test", () => {
             id: "someRandomNumberFieldId",
             fieldId: "numberField",
             label: "Number field",
-            helpText: "number help text",
-            multipleValues: false,
-            placeholderText: "number placeholder text",
+            help: "number help text",
+            list: false,
+            placeholder: "number placeholder text",
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -596,6 +614,7 @@ describe("content model test", () => {
             },
             settings: {},
             type: "number",
+            tags: [],
             validation: [],
             listValidation: []
         };
@@ -627,23 +646,175 @@ describe("content model test", () => {
                         fields: [
                             {
                                 ...textField,
-                                storageId: `${textField.type}@${textField.id}`
+                                storageId: `${textField.type}@${textField.id}`,
+                                rules: []
                             },
                             {
                                 ...numberField,
-                                storageId: `${numberField.type}@${numberField.id}`
+                                storageId: `${numberField.type}@${numberField.id}`,
+                                rules: []
                             }
                         ],
-                        group: {
-                            id: contentModelGroup.id,
-                            name: "Group",
-                            slug: contentModelGroup.slug
-                        },
+                        group: contentModelGroup.slug,
                         modelId: contentModel.modelId,
                         layout: [[textField.id], [numberField.id]],
                         name: "new name",
                         plugin: false,
-                        icon: null
+                        icon: null,
+                        tenant: "root"
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    it("should create and update a model with field rules", async () => {
+        const { createContentModelMutation, updateContentModelMutation } =
+            useGraphQLHandler(manageHandlerOpts);
+
+        const fieldWithRules: CmsModelFieldInput = {
+            id: "permFieldId",
+            fieldId: "permField",
+            label: "Permission field",
+            type: "text",
+            validation: [],
+            listValidation: [],
+            rules: [
+                {
+                    type: "accessControl",
+                    target: "identity",
+                    operator: "matches",
+                    value: "admin:user-1",
+                    action: "disable"
+                },
+                {
+                    type: "accessControl",
+                    target: "identity",
+                    operator: "matches",
+                    value: "team:team-1",
+                    action: "hide"
+                }
+            ]
+        };
+
+        const [createResponse] = await createContentModelMutation({
+            data: {
+                name: "Permissions Test Model",
+                modelId: "permissionsTestModel",
+                singularApiName: "PermissionsTestModel",
+                pluralApiName: "PermissionsTestModels",
+                group: contentModelGroup.slug,
+                fields: [fieldWithRules],
+                layout: [[fieldWithRules.id]]
+            }
+        });
+
+        expect(createResponse).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        fields: [
+                            {
+                                fieldId: "permField",
+                                rules: [
+                                    {
+                                        type: "accessControl",
+                                        target: "identity",
+                                        operator: "matches",
+                                        value: "admin:user-1",
+                                        action: "disable"
+                                    },
+                                    {
+                                        type: "accessControl",
+                                        target: "identity",
+                                        operator: "matches",
+                                        value: "team:team-1",
+                                        action: "hide"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const contentModel = createResponse.data.createContentModel.data;
+
+        // Update rules
+        const updatedField: CmsModelFieldInput = {
+            ...fieldWithRules,
+            rules: [
+                {
+                    type: "accessControl",
+                    target: "identity",
+                    operator: "matches",
+                    value: "admin:user-2",
+                    action: "hide"
+                }
+            ]
+        };
+
+        const [updateResponse] = await updateContentModelMutation({
+            modelId: contentModel.modelId,
+            data: {
+                name: contentModel.name,
+                fields: [updatedField],
+                layout: [[updatedField.id]]
+            }
+        });
+
+        expect(updateResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        fields: [
+                            {
+                                fieldId: "permField",
+                                rules: [
+                                    {
+                                        type: "accessControl",
+                                        target: "identity",
+                                        operator: "matches",
+                                        value: "admin:user-2",
+                                        action: "hide"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    error: null
+                }
+            }
+        });
+
+        // Remove rules
+        const fieldNoRules: CmsModelFieldInput = {
+            ...fieldWithRules,
+            rules: []
+        };
+
+        const [removeResponse] = await updateContentModelMutation({
+            modelId: contentModel.modelId,
+            data: {
+                name: contentModel.name,
+                fields: [fieldNoRules],
+                layout: [[fieldNoRules.id]]
+            }
+        });
+
+        expect(removeResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        fields: [
+                            {
+                                fieldId: "permField",
+                                rules: []
+                            }
+                        ]
                     },
                     error: null
                 }
@@ -660,7 +831,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -670,9 +841,9 @@ describe("content model test", () => {
             id: "someRandomField1Id",
             fieldId: "field1",
             label: "Field 1",
-            helpText: "help text",
-            multipleValues: false,
-            placeholderText: "placeholder text",
+            help: "help text",
+            list: false,
+            placeholder: "placeholder text",
             predefinedValues: {
                 enabled: false,
                 values: []
@@ -719,7 +890,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -753,7 +924,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
         const { modelId } = createResponse.data.createContentModel.data;
@@ -768,7 +939,7 @@ describe("content model test", () => {
                 singularApiName: "ClonedTestModel",
                 pluralApiName: "ClonedTestModels",
                 description: "Cloned model description",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -779,10 +950,7 @@ describe("content model test", () => {
                         name: "Cloned model",
                         description: "Cloned model description",
                         modelId: "clonedTestModel",
-                        group: {
-                            id: contentModelGroup.id,
-                            name: contentModelGroup.name
-                        },
+                        group: contentModelGroup.slug,
                         fields: [],
                         layout: [],
                         plugin: false
@@ -814,7 +982,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
         const { modelId } = createResponse.data.createContentModel.data;
@@ -861,7 +1029,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: "TestContentModel",
                 pluralApiName: "TestContentModels",
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
         const { modelId } = createResponse.data.createContentModel.data;
@@ -896,10 +1064,11 @@ describe("content model test", () => {
             useGraphQLHandler(manageHandlerOpts);
         const { listBugs } = useBugManageHandler(manageHandlerOpts);
 
-        const bugModel = models.find(m => m.modelId === "bug");
-        if (!bugModel) {
+        const initialBugModel = models.find(m => m.modelId === "bug");
+        if (!initialBugModel) {
             throw new Error("Could not find model `bug`.");
         }
+        const bugModel = structuredClone(initialBugModel);
         // Create initial record
         const [createBugModelResponse] = await createContentModelMutation({
             data: {
@@ -907,7 +1076,7 @@ describe("content model test", () => {
                 modelId: bugModel.modelId,
                 singularApiName: bugModel.singularApiName,
                 pluralApiName: bugModel.pluralApiName,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
 
@@ -922,11 +1091,29 @@ describe("content model test", () => {
         initialLayouts.pop();
         initialLayouts.pop();
 
-        await updateContentModelMutation({
+        const [updatedBugModelResponse] = await updateContentModelMutation({
             modelId: createBugModelResponse.data.createContentModel.data.modelId,
             data: {
                 fields: initialFields,
                 layout: initialLayouts
+            }
+        });
+
+        expect(updatedBugModelResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        modelId: createBugModelResponse.data.createContentModel.data.modelId,
+                        fields: initialFields.map(field => {
+                            return {
+                                id: field.id,
+                                fieldId: field.fieldId
+                            };
+                        }),
+                        layout: [...initialLayouts]
+                    },
+                    error: null
+                }
             }
         });
 
@@ -938,14 +1125,14 @@ describe("content model test", () => {
         });
 
         // should not be able to query bugType or bugValue fields (they are defined in the graphql query)
-        expect(listResponse).toEqual({
+        expect(listResponse).toMatchObject({
             errors: [
                 {
-                    message: `Cannot query field "bugValue" on type "${bugModel.singularApiName}". Did you mean "bugType"?`,
+                    message: `Cannot query field "${removedFields[1].fieldId}" on type "${bugModel.singularApiName}Values". Did you mean "bugType"?`,
                     locations: expect.any(Array)
                 },
                 {
-                    message: `Cannot query field "bugFixed" on type "${bugModel.singularApiName}". Did you mean "bugType"?`,
+                    message: `Cannot query field "${removedFields[0].fieldId}" on type "${bugModel.singularApiName}Values". Did you mean "bugType"?`,
                     locations: expect.any(Array)
                 }
             ]
@@ -972,10 +1159,12 @@ describe("content model test", () => {
         // make sure that we can query newly added fields
         const [listResponseAfterUpdate] = await listBugs({
             where: {
-                name: "test",
-                bugType: "t1",
-                bugValue: 3,
-                bugFixed: 2
+                values: {
+                    name: "test",
+                    bugType: "t1",
+                    bugValue: 3,
+                    bugFixed: 2
+                }
             },
             sort: ["createdOn_DESC"]
         });
@@ -1007,7 +1196,7 @@ describe("content model test", () => {
                     modelId: `test-content-model-${i}`,
                     singularApiName: `TestContentModel${i}`,
                     pluralApiName: `TestContentModels${i}`,
-                    group: contentModelGroup.id
+                    group: contentModelGroup.slug
                 }
             });
             createdContentModels.push(createResponse.data.createContentModel.data);
@@ -1039,7 +1228,7 @@ describe("content model test", () => {
                     modelId: `test-content-model-${i}`,
                     singularApiName: `TestContentModel${i}`,
                     pluralApiName: `TestContentModels${i}`,
-                    group: contentModelGroup.id
+                    group: contentModelGroup.slug
                 }
             });
             createdContentModels.push(createResponse.data.createContentModel.data);
@@ -1047,7 +1236,7 @@ describe("content model test", () => {
         // Get model with group permissions
         const permissions = createPermissions({
             models: [createdContentModels[0].modelId],
-            groups: ["some-group-id"]
+            groups: ["some-group-slug"]
         });
         const { getContentModelQuery: getModel } = useGraphQLHandler({
             ...manageHandlerOpts,
@@ -1060,8 +1249,8 @@ describe("content model test", () => {
 
         expect(response.data.getContentModel.data).toEqual(null);
         expect(response.data.getContentModel.error).toEqual({
-            code: "NOT_AUTHORIZED",
-            message: `Not allowed to access content model "Test Content model instance-0".`,
+            code: "Cms/Model/NotAuthorized",
+            message: `Not allowed to access content model "testContentModel0".`,
             data: null
         });
     });
@@ -1078,7 +1267,7 @@ describe("content model test", () => {
                     modelId: `test-content-model-${i}`,
                     singularApiName: `TestContentModel${i}`,
                     pluralApiName: `TestContentModels${i}`,
-                    group: contentModelGroup.id
+                    group: contentModelGroup.slug
                 }
             });
             createdContentModels.push(createResponse.data.createContentModel.data);
@@ -1087,7 +1276,7 @@ describe("content model test", () => {
         // Get model with group permissions
         const permissions = createPermissions({
             models: [createdContentModels[0].modelId],
-            groups: [contentModelGroup.id]
+            groups: [contentModelGroup.slug]
         });
         const { getContentModelQuery: getModelB } = useGraphQLHandler({
             ...manageHandlerOpts,
@@ -1118,7 +1307,7 @@ describe("content model test", () => {
         const [createResponse] = await createContentModelMutation({
             data: {
                 ...model,
-                group: contentModelGroup.id
+                group: contentModelGroup.slug
             }
         });
         expect(createResponse).toMatchObject({
@@ -1200,12 +1389,12 @@ describe("content model test", () => {
     it("should assign description field", async () => {
         const { createContentModelMutation, getContentModelQuery, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
-        const field = {
+        const field = createModelField({
             id: "testId",
             fieldId: "testFieldId",
             type: "long-text",
             label: "Test Field"
-        };
+        });
 
         const [createResponseWithInitialLongText] = await createContentModelMutation({
             data: {
@@ -1213,7 +1402,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: `TestContentModel`,
                 pluralApiName: `TestContentModels`,
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 fields: [field],
                 layout: [["testId"]]
             }
@@ -1254,7 +1443,7 @@ describe("content model test", () => {
                 modelId: "test-content-model-2",
                 singularApiName: `TestContentModel2`,
                 pluralApiName: `TestContentModels2`,
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 fields: [],
                 layout: []
             }
@@ -1312,7 +1501,7 @@ describe("content model test", () => {
     it("should assign image field", async () => {
         const { createContentModelMutation, getContentModelQuery, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
-        const field = {
+        const field = createModelField({
             id: "testId",
             fieldId: "testFieldId",
             type: "file",
@@ -1320,7 +1509,7 @@ describe("content model test", () => {
             settings: {
                 imagesOnly: true
             }
-        };
+        });
 
         const [createResponseWithInitialFile] = await createContentModelMutation({
             data: {
@@ -1328,7 +1517,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: `TestContentModel`,
                 pluralApiName: `TestContentModels`,
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 fields: [field],
                 layout: [["testId"]]
             }
@@ -1369,7 +1558,7 @@ describe("content model test", () => {
                 modelId: "test-content-model-2",
                 singularApiName: `TestContentModel2`,
                 pluralApiName: `TestContentModels2`,
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 fields: [],
                 layout: []
             }
@@ -1428,9 +1617,10 @@ describe("content model test", () => {
         await createContentModelGroupMutation({
             data: {
                 id: "a-custom-group-id",
+                slug: "a-custom-group-slug",
                 name: "My Group With ID",
                 description: "A group with ID",
-                icon: "fa/fas"
+                icon: createIcon("fa/fas")
             }
         });
 
@@ -1440,7 +1630,7 @@ describe("content model test", () => {
                 modelId: "test-content-model-2",
                 singularApiName: `TestContentModel2`,
                 pluralApiName: `TestContentModels2`,
-                group: "a-custom-group-id",
+                group: "a-custom-group-slug",
                 fields: [],
                 layout: []
             }
@@ -1450,10 +1640,7 @@ describe("content model test", () => {
                 createContentModel: {
                     data: {
                         modelId: "testContentModel2",
-                        group: {
-                            id: "a-custom-group-id",
-                            name: "My Group With ID"
-                        }
+                        group: "a-custom-group-slug"
                     },
                     error: null
                 }
@@ -1464,7 +1651,7 @@ describe("content model test", () => {
     it("should create and update a model with steps in settings", async () => {
         const { createContentModelMutation, updateContentModelMutation } =
             useGraphQLHandler(manageHandlerOpts);
-        const field = {
+        const field = createModelField({
             id: "testId",
             fieldId: "testFieldId",
             type: "file",
@@ -1472,7 +1659,7 @@ describe("content model test", () => {
             settings: {
                 imagesOnly: true
             }
-        };
+        });
 
         const [createModelResponse] = await createContentModelMutation({
             data: {
@@ -1480,7 +1667,7 @@ describe("content model test", () => {
                 modelId: "test-content-model",
                 singularApiName: `TestContentModel`,
                 pluralApiName: `TestContentModels`,
-                group: contentModelGroup.id,
+                group: contentModelGroup.slug,
                 fields: [field],
                 layout: [["testId"]]
             }
@@ -1535,5 +1722,27 @@ describe("content model test", () => {
             }
         });
         expect(updateModelResponse.data.updateContentModel.error).toBeNull();
+    });
+
+    it("should create a model with extrapolated modelId", async () => {
+        const [response] = await baseCreateContentModelMutation({
+            data: {
+                name: "Test Content model",
+                singularApiName: `TestContentModel`,
+                pluralApiName: `TestContentModels`,
+                group: contentModelGroup.slug
+            }
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        modelId: "testContentModel"
+                    },
+                    error: null
+                }
+            }
+        });
     });
 });

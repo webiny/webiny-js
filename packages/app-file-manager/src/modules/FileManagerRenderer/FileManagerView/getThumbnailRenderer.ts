@@ -1,5 +1,5 @@
-import type { FileItem } from "@webiny/app-admin/types.js";
-import minimatch from "minimatch";
+import type { FileItem } from "~/types.js";
+import { minimatch } from "minimatch";
 
 export const getThumbnailRenderer = <T extends { type: string }>(
     renderers: T[],

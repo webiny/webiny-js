@@ -28,9 +28,9 @@
   },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae",
   "dependencies": {
-    "@types/aws-lambda": "8.10.152",
-    "cheerio": "^1.1.2",
-    "srcset": "^4.0.0"
+    "@types/aws-lambda": "8.10.161",
+    "cheerio": "^1.2.0",
+    "srcset": "^5.0.3"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0"

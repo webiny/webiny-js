@@ -1,5 +1,6 @@
 import * as rimraf from "rimraf";
 import { join } from "path";
+import fs from "node:fs";
 import { babelCompile } from "./buildPackage/babelCompile.js";
 import { tsCompile } from "./buildPackage/tsCompile.js";
 import { copyToDist } from "./buildPackage/copyToDist.js";
@@ -12,8 +13,7 @@ export default async options => {
         options.cwd = "";
     }
     const { cwd = "" } = options;
-    options.logs !== false && console.log("Deleting existing build files...");
-    rimraf.sync(join(cwd, "./dist"));
+
     rimraf.sync(join(cwd, "*.tsbuildinfo"), { glob: true });
 
     options.logs !== false && console.log("Building...");
@@ -25,6 +25,16 @@ export default async options => {
 
     // Validate ESM imports before compiling
     await validateEsmImports({ cwd, logs: options.logs });
+
+    // Clear dist/ contents without removing the directory itself.
+    // node_modules/@webiny/<pkg> symlinks directly to dist/, so deleting
+    // the directory would leave a dangling symlink and break Rspack resolution.
+    const distDir = join(cwd, "dist");
+    if (fs.existsSync(distDir)) {
+        for (const entry of fs.readdirSync(distDir)) {
+            fs.rmSync(join(distDir, entry), { recursive: true, force: true });
+        }
+    }
 
     await babelCompile(options);
     await tsCompile(options);

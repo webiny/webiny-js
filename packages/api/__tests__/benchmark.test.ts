@@ -29,7 +29,7 @@ describe("benchmark", () => {
         context.benchmark.enable();
 
         const result = await context.benchmark.measure("test", async () => {
-            await sleep(50);
+            await sleep(52);
             return true;
         });
 
@@ -52,7 +52,7 @@ describe("benchmark", () => {
         context.benchmark.disable();
 
         const resultAfterDisable = await context.benchmark.measure("test", async () => {
-            await sleep(50);
+            await sleep(52);
             return true;
         });
 
@@ -64,12 +64,12 @@ describe("benchmark", () => {
 
         context.benchmark.enable();
         await context.benchmark.measure("test", async () => {
-            await sleep(50);
+            await sleep(52);
             return true;
         });
 
         await context.benchmark.measure("another test", async () => {
-            await sleep(50);
+            await sleep(52);
             return true;
         });
 

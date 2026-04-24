@@ -1,6 +1,11 @@
 import React, { useMemo } from "react";
 import type ApolloClient from "apollo-client";
 import { config as appConfig } from "@webiny/app/config.js";
+import { useFeature } from "@webiny/app";
+import { EventPublisherFeature } from "@webiny/app/features/eventPublisher/index.js";
+import { EntryAfterCreateEvent } from "~/features/contentEntry/events/EntryAfterCreateEvent.js";
+import { EntryAfterUpdateEvent } from "~/features/contentEntry/events/EntryAfterUpdateEvent.js";
+import { EntryAfterDeleteEvent } from "~/features/contentEntry/events/EntryAfterDeleteEvent.js";
 import type {
     CmsContentEntry,
     CmsContentEntryRevision,
@@ -222,6 +227,7 @@ export const CmsProvider = (props: CmsProviderProps) => {
     const apolloClient = useMemo(() => {
         return props.createApolloClient({ uri: `${apiUrl}/cms/manage` });
     }, []);
+    const { eventPublisher } = useFeature(EventPublisherFeature);
 
     const value: CmsContext = {
         createApolloClient: props.createApolloClient,
@@ -357,8 +363,16 @@ export const CmsProvider = (props: CmsProviderProps) => {
                 return { error };
             }
 
+            const createdEntry = data as CmsContentEntry;
+
+            await eventPublisher
+                .publish(new EntryAfterCreateEvent({ entry: createdEntry, model }))
+                .catch(e => {
+                    console.error("[CmsProvider] Failed to publish EntryAfterCreateEvent", e);
+                });
+
             return {
-                entry: data as CmsContentEntry
+                entry: createdEntry
             };
         },
         createEntryRevisionFrom: async ({ model, id, input, options }) => {
@@ -438,13 +452,21 @@ export const CmsProvider = (props: CmsProviderProps) => {
                 return { error };
             }
 
+            const updatedEntry = data as CmsContentEntry;
+
+            await eventPublisher
+                .publish(new EntryAfterUpdateEvent({ entry: updatedEntry, model }))
+                .catch(e => {
+                    console.error("[CmsProvider] Failed to publish EntryAfterUpdateEvent", e);
+                });
+
             return {
-                entry: data as CmsContentEntry
+                entry: updatedEntry
             };
         },
         updateSingletonEntry: async ({ model, entry, options }) => {
             const mutation = createUpdateSingletonMutation(model);
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            // oxlint-disable-next-line typescript/no-unused-vars
             const { id, ...input } = entry;
             const response = await catchErrorOnExecute(() => {
                 return value.apolloClient.mutate<
@@ -595,6 +617,13 @@ export const CmsProvider = (props: CmsProviderProps) => {
             if (error) {
                 return { error };
             }
+
+            const entryId = id.split("#")[0];
+            await eventPublisher
+                .publish(new EntryAfterDeleteEvent({ model, id, entryId }))
+                .catch(e => {
+                    console.error("[CmsProvider] Failed to publish EntryAfterDeleteEvent", e);
+                });
 
             return true;
         },

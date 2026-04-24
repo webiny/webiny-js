@@ -1,17 +1,21 @@
 import { createImplementation } from "@webiny/di";
 import { GetProjectConfigService, IsTelemetryEnabled } from "~/abstractions/index.js";
-import { telemetry as telemetryExtension } from "~/extensions/telemetry.js";
+import { Telemetry as TelemetryExtension } from "~/extensions/Telemetry.js";
+import { isEnabled as telemetryEnabledViaGlobalCfg } from "@webiny/telemetry/cli.js";
 
 export class DefaultIsTelemetryEnabled implements IsTelemetryEnabled.Interface {
     constructor(private getProjectConfigService: GetProjectConfigService.Interface) {}
 
     async execute() {
         const projectConfig = await this.getProjectConfigService.execute();
+        const [telemetry] = projectConfig.extensionsByType(TelemetryExtension);
+        const telemetryDisabledViaExtension = telemetry && telemetry.params.enabled === false;
 
-        const [telemetry] = projectConfig.extensionsByType<any>(telemetryExtension.definition.type);
+        if (telemetryDisabledViaExtension) {
+            return false;
+        }
 
-        const telemetryDisabled = telemetry && telemetry.params.enabled === false;
-        return !telemetryDisabled;
+        return telemetryEnabledViaGlobalCfg();
     }
 }
 

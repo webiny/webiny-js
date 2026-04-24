@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import pick from "lodash/pick.js";
-import { NavigationPrompt } from "@webiny/app-admin";
+import { DevToolsSection, useDialogs, useSnackbar } from "@webiny/app-admin";
+import { useRouter } from "@webiny/app";
+import type { FormAPI, FormInvalidFields, FormOnSubmit, FormValidation } from "@webiny/form";
 import { Form } from "@webiny/form";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
-import type { FormAPI, FormOnSubmit, FormValidation, FormInvalidFields } from "@webiny/form";
 import type { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
-import { CompositionScope, useSnackbar } from "@webiny/app-admin";
 import type {
     CreateEntryResponse,
     UpdateEntryRevisionResponse
 } from "~/admin/contexts/Cms/index.js";
+import type { GenericRecord } from "@webiny/app/types.js";
 
 const promptMessage =
     "There are some unsaved changes! Are you sure you want to navigate away and discard all changes?";
@@ -20,7 +20,7 @@ interface SaveEntryOptions {
 }
 
 export interface ContentEntryFormContext {
-    entry: Partial<CmsContentEntry>;
+    entry: Partial<Omit<CmsContentEntry, "values">> & Pick<CmsContentEntry, "values">;
     saveEntry: (options?: SaveEntryOptions) => Promise<CmsContentEntry | null>;
     invalidFields: FormInvalidFields;
 }
@@ -41,7 +41,7 @@ export interface PersistEntry {
 }
 
 interface ContentEntryFormProviderProps {
-    entry: Partial<CmsContentEntry>;
+    entry: Partial<Omit<CmsContentEntry, "values">> & Pick<CmsContentEntry, "values">;
     model: CmsModel;
     persistEntry: PersistEntry;
     confirmNavigationIfDirty: boolean;
@@ -66,7 +66,7 @@ const formValidationToMap = (invalidFields: FormValidation): FormInvalidFields =
 
 export const ContentEntryFormProvider = ({
     model,
-    entry,
+    entry: initialEntry,
     children,
     persistEntry,
     onChange,
@@ -76,30 +76,54 @@ export const ContentEntryFormProvider = ({
     confirmNavigationIfDirty
 }: ContentEntryFormProviderProps) => {
     const ref = useRef<FormAPI<CmsContentEntry> | null>(null);
+    const onAfterSubmitRef = useRef<(entry: CmsContentEntry) => void>(() => void 0);
     const [invalidFields, setInvalidFields] = useState<FormInvalidFields>({});
     const { showSnackbar } = useSnackbar();
     const saveOptionsRef = useRef<SaveEntryOptions>({ skipValidators: undefined });
+    const router = useRouter();
+    const dialogs = useDialogs();
+    const isPristineRef = useRef(true);
+
+    useEffect(() => {
+        if (!confirmNavigationIfDirty) {
+            return;
+        }
+
+        return router.addTransitionGuard({
+            guard: () => !isPristineRef.current,
+            onBlocked: () => {
+                dialogs.showDialog({
+                    title: "Confirm Navigation",
+                    content: promptMessage,
+                    acceptLabel: "Yes!",
+                    cancelLabel: "No, stay here.",
+                    onAccept: () => router.confirmTransition(),
+                    onClose: () => router.cancelTransition()
+                });
+            }
+        });
+    }, [confirmNavigationIfDirty]);
 
     const saveEntry = useCallback(async (options: SaveEntryOptions = {}) => {
         saveOptionsRef.current.skipValidators = options.skipValidators;
 
-        return ref.current!.submit(undefined, {
+        return (await ref.current!.submit(undefined, {
             skipValidators: options.skipValidators
-        }) as unknown as Promise<CmsContentEntry | null>;
+        })) as Promise<CmsContentEntry | null>;
     }, []);
 
     const onFormSubmit: FormOnSubmit<CmsContentEntry> = async data => {
-        const fieldsIds = model.fields.map(item => item.fieldId);
-        const formData = pick(data, [...fieldsIds]);
-
-        const gqlData = prepareFormData(formData, model.fields) as Partial<CmsContentEntry>;
-        const isNewEntry = data.id === undefined;
+        const values = prepareFormData<GenericRecord>(data, model.fields);
+        const isNewEntry = initialEntry.id === undefined;
 
         const { entry, error } = await persistEntry(
-            { id: data.id, ...gqlData },
+            {
+                id: initialEntry.id,
+                values
+            },
             {
                 skipValidators: saveOptionsRef.current.skipValidators,
-                createNewRevision: data.meta?.locked
+                createNewRevision: initialEntry.meta?.locked
             }
         );
 
@@ -119,17 +143,13 @@ export const ContentEntryFormProvider = ({
         showSnackbar("Entry saved successfully!");
         setInvalidFields({});
 
-        const isNewRevision = !isNewEntry && data.id !== entry.id;
+        const isNewRevision = !isNewEntry && entry.id !== initialEntry.id;
 
         if ((isNewEntry || isNewRevision) && onAfterCreate) {
-            // We need a timeout to let the Prompt component update.
-            await new Promise<void>(resolve => {
-                setTimeout(() => {
-                    onAfterCreate(entry);
-                    resolve();
-                }, 50);
-            });
+            onAfterSubmitRef.current = onAfterCreate;
         }
+
+        router.unblockTransition();
 
         return entry;
     };
@@ -143,8 +163,11 @@ export const ContentEntryFormProvider = ({
     return (
         <Form<CmsContentEntry>
             onSubmit={onFormSubmit}
+            onAfterSubmit={data => {
+                onAfterSubmitRef.current(data);
+            }}
             onChange={onChange}
-            data={entry}
+            data={initialEntry.values}
             ref={ref}
             validateOnFirstSubmit
             invalidFields={invalidFields}
@@ -155,21 +178,21 @@ export const ContentEntryFormProvider = ({
             }}
         >
             {formProps => {
+                isPristineRef.current = formProps.form.isPristine;
+
                 const context: ContentEntryFormContext = {
-                    entry: formProps.data,
+                    entry: { ...initialEntry, values: formProps.data },
                     saveEntry,
                     invalidFields
                 };
                 return (
                     <ContentEntryFormContext.Provider value={context}>
-                        {confirmNavigationIfDirty ? (
-                            <CompositionScope name={"cms.contentEntryForm"}>
-                                <NavigationPrompt
-                                    when={!formProps.form.isPristine}
-                                    message={promptMessage}
-                                />
-                            </CompositionScope>
-                        ) : null}
+                        <DevToolsSection
+                            name={"Entry"}
+                            group={"CMS"}
+                            data={context.entry}
+                            views={"raw"}
+                        />
                         {children}
                     </ContentEntryFormContext.Provider>
                 );

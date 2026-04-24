@@ -1,26 +1,28 @@
-import type { CmsContext, CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsEntryValues } from "~/types/index.js";
 import { STATUS_UNPUBLISHED } from "./statuses.js";
 import { getIdentity } from "~/utils/identity.js";
 import { getDate } from "~/utils/date.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
-type CreateRepublishEntryDataParams = {
-    model: CmsModel;
-    context: CmsContext;
+interface CreateRepublishEntryDataParams<TValues extends CmsEntryValues = CmsEntryValues> {
     getIdentity: () => SecurityIdentity;
-    originalEntry: CmsEntry;
-};
+    originalEntry: CmsEntry<TValues>;
+}
 
-export const createUnpublishEntryData = async <T extends CmsEntryValues = CmsEntryValues>({
+interface ICreateUnpublishEntryDataResponse<TValues extends CmsEntryValues = CmsEntryValues> {
+    entry: CmsEntry<TValues>;
+}
+
+export const createUnpublishEntryData = async <TValues extends CmsEntryValues = CmsEntryValues>({
     getIdentity: getSecurityIdentity,
     originalEntry
-}: CreateRepublishEntryDataParams): Promise<{
-    entry: CmsEntry<T>;
-}> => {
+}: CreateRepublishEntryDataParams<TValues>): Promise<
+    ICreateUnpublishEntryDataResponse<TValues>
+> => {
     const currentDateTime = new Date().toISOString();
     const currentIdentity = getSecurityIdentity();
 
-    const entry: CmsEntry<T> = {
+    const entry: CmsEntry<TValues> = {
         ...originalEntry,
         status: STATUS_UNPUBLISHED,
 
@@ -38,8 +40,11 @@ export const createUnpublishEntryData = async <T extends CmsEntryValues = CmsEnt
         revisionSavedOn: getDate(currentDateTime),
         revisionModifiedOn: getDate(currentDateTime),
         revisionSavedBy: getIdentity(currentIdentity),
-        revisionModifiedBy: getIdentity(currentIdentity)
-    } as CmsEntry<T>;
+        revisionModifiedBy: getIdentity(currentIdentity),
+        live: null
+    };
 
-    return { entry };
+    return {
+        entry
+    };
 };

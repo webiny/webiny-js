@@ -13,7 +13,7 @@ export const Routes = {
         }),
         WorkflowStateList: new Route({
             name: "WebsiteBuilder/Pages/WorkflowStateList",
-            path: "/website-builder/pages/workflow-states"
+            path: "/website-builder/pages/content-reviews"
         })
     }
 };

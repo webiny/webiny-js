@@ -1,15 +1,15 @@
 import type { IConverter } from "~/storage/abstractions/Converter.js";
-import type { ICompressor } from "@webiny/utils/compression/index.js";
 import type { IAuditLog, IStorageItem } from "~/storage/types.js";
 import type { IAccessPatternHandler } from "~/storage/abstractions/AccessPatternHandler.js";
 import { convertExpiresAtToUnixTimestamp } from "~/utils/expiresAt.js";
+import { CompressionHandler } from "@webiny/utils/exports/api.js";
 
 const convertToDateTime = (value: string): Date => {
     return new Date(value);
 };
 
 export interface IConverterParams {
-    compressor: ICompressor;
+    compressionHandler: CompressionHandler.Interface;
     patternHandler: IAccessPatternHandler;
 }
 
@@ -20,11 +20,11 @@ type PickOnlyGSIKeys<T> = {
 type PickedGSIKeys = Pick<IStorageItem, PickOnlyGSIKeys<IStorageItem>>;
 
 export class Converter implements IConverter {
-    private readonly compressor;
+    private readonly compressionHandler;
     private readonly patternHandler;
 
     public constructor(params: IConverterParams) {
-        this.compressor = params.compressor;
+        this.compressionHandler = params.compressionHandler;
         this.patternHandler = params.patternHandler;
     }
 
@@ -32,7 +32,7 @@ export class Converter implements IConverter {
         return {
             ...item.data,
             expiresAt: convertToDateTime(item.data.expiresAt),
-            content: await this.compressor.decompress(JSON.parse(item.data.content)),
+            content: await this.compressionHandler.decompress(JSON.parse(item.data.content)),
             createdOn: new Date(item.data.createdOn)
         };
     }
@@ -65,10 +65,12 @@ export class Converter implements IConverter {
             PK: defaultKeys.partitionKey,
             SK: defaultKeys.sortKey as unknown as string,
             ...keys,
+            TYPE: "auditLog.log",
+            GSI_TENANT: auditLog.tenant,
             data: {
                 ...auditLog,
                 expiresAt: auditLog.expiresAt.toISOString(),
-                content: JSON.stringify(await this.compressor.compress(auditLog.content)),
+                content: JSON.stringify(await this.compressionHandler.compress(auditLog.content)),
                 createdOn: auditLog.createdOn.toISOString()
             },
             expiresAt: convertExpiresAtToUnixTimestamp(auditLog.expiresAt)

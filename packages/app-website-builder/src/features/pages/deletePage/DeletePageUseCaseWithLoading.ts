@@ -1,21 +1,22 @@
-import type { ILoadingRepository } from "@webiny/app-utils";
-import type { IDeletePageUseCase } from "./IDeletePageUseCase.js";
-import { type DeletePageParams } from "./IDeletePageUseCase.js";
+import { DeletePageUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { WbPageLoadingRepository } from "~/features/pages/shared/abstractions.js";
 import { loadingActions } from "~/constants.js";
 
-export class DeletePageUseCaseWithLoading implements IDeletePageUseCase {
-    private loadingRepository: ILoadingRepository;
-    private useCase: IDeletePageUseCase;
+class DeletePageUseCaseWithLoadingImpl implements UseCaseAbstraction.Interface {
+    constructor(
+        private loadingRepository: WbPageLoadingRepository.Interface,
+        private decoratee: UseCaseAbstraction.Interface
+    ) {}
 
-    constructor(loadingRepository: ILoadingRepository, useCase: IDeletePageUseCase) {
-        this.loadingRepository = loadingRepository;
-        this.useCase = useCase;
-    }
-
-    async execute(params: DeletePageParams) {
+    async execute(params: UseCaseAbstraction.Params) {
         await this.loadingRepository.runCallBack(
-            this.useCase.execute(params),
+            this.decoratee.execute(params),
             loadingActions.delete
         );
     }
 }
+
+export const DeletePageUseCaseWithLoading = UseCaseAbstraction.createDecorator({
+    decorator: DeletePageUseCaseWithLoadingImpl,
+    dependencies: [WbPageLoadingRepository]
+});

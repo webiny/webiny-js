@@ -1,5 +1,4 @@
 import type { IAuditLog, IIndexStorageItem, IStorageItem } from "~/storage/types.js";
-import type { Entity, EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
 import { createStartKey } from "~/storage/startKey.js";
 import type { IStorageListParams } from "../abstractions/Storage.js";
 import type {
@@ -8,7 +7,8 @@ import type {
     IAccessPatternHandles,
     IAccessPatternListResult
 } from "../abstractions/AccessPattern.js";
-import { createEntityReadBatch, type IQueryPageResponse, queryPerPage } from "@webiny/db-dynamodb";
+import type { AuditLogsEntity } from "~/storage/entity.js";
+import type { IEntityQueryAllParams, IEntityQueryPerPageResult } from "@webiny/db-dynamodb";
 
 const toGteTime = (date?: Date): number => {
     if (!date) {
@@ -33,12 +33,12 @@ export interface ICreateOptionsParams {
 
 export interface IBaseAccessPatternParams {
     index: string | undefined;
-    entity: Entity;
+    entity: AuditLogsEntity;
 }
 
 export interface IAccessPatternQueryParams {
     partitionKey: string;
-    options: EntityQueryOptions;
+    options: IEntityQueryAllParams["options"];
 }
 
 export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
@@ -76,19 +76,19 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
         return false;
     }
 
-    protected async query<T = IStorageItem>(params: IAccessPatternQueryParams) {
-        return queryPerPage<T>({
-            entity: this.entity,
+    protected async query<T extends IStorageItem = IStorageItem>(
+        params: IAccessPatternQueryParams
+    ) {
+        return this.entity.queryPerPage<T>({
             partitionKey: params.partitionKey,
             options: params.options
         });
     }
 
     protected async populateResult(
-        input: IQueryPageResponse<IIndexStorageItem>
-    ): Promise<IQueryPageResponse<IStorageItem>> {
-        const reader = createEntityReadBatch({
-            entity: this.entity,
+        input: Awaited<IEntityQueryPerPageResult<IIndexStorageItem>>
+    ): Promise<IEntityQueryPerPageResult<IStorageItem>> {
+        const reader = this.entity.createEntityReader({
             read: input.items.map(item => {
                 return {
                     PK: item.PK,
@@ -96,7 +96,7 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
                 };
             })
         });
-        const result = await reader.execute<IStorageItem>();
+        const result = await reader.execute();
 
         return {
             ...input,
@@ -113,9 +113,10 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
     public abstract list(params: T): Promise<IAccessPatternListResult>;
     public abstract createKeys(item: IAuditLog): IAccessPatternCreateKeysResult;
 
-    protected createOptions(params: ICreateOptionsParams): EntityQueryOptions {
-        const options: EntityQueryOptions = {
+    protected createOptions(params: ICreateOptionsParams): IEntityQueryAllParams["options"] {
+        const options: IEntityQueryAllParams["options"] = {
             limit: params.limit || 25,
+            // @ts-expect-error
             startKey: createStartKey({
                 after: params.after
             }),
@@ -124,7 +125,7 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
         };
 
         if (params.createdOn_lte || params.createdOn_gte) {
-            options.between = [toGteTime(params.createdOn_gte), toLteTime(params.createdOn_lte)];
+            options!.between = [toGteTime(params.createdOn_gte), toLteTime(params.createdOn_lte)];
         }
 
         return options;

@@ -2,7 +2,10 @@
   "name": "@webiny/react-rich-text-lexical-renderer",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -10,19 +13,17 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@types/react": "18.2.79",
+    "@types/react": "18.3.28",
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/lexical-theme": "0.0.0",
-    "react": "18.2.0"
+    "react": "18.3.1"
   },
   "devDependencies": {
-    "@emotion/react": "11.10.8",
-    "@testing-library/react": "^15.0.7",
+    "@emotion/react": "^11.14.0",
+    "@testing-library/react": "^16.3.2",
     "@webiny/build-tools": "0.0.0",
     "@webiny/react-composition": "0.0.0",
-    "identity-obj-proxy": "^3.0.0",
-    "prettier": "^3.6.2",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.5"
   },
   "publishConfig": {
     "access": "public",

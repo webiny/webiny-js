@@ -9,12 +9,14 @@ import { DialogPortal } from "./components/DialogPortal.js";
 import { DialogRoot } from "./components/DialogRoot.js";
 import { DialogTrigger } from "./components/DialogTrigger.js";
 import { Icon } from "./components/Icon.js";
-import { ConfirmButton } from "./components/ConfirmButton.js";
-import { CancelButton } from "./components/CancelButton.js";
+import { ConfirmAction } from "./components/ConfirmAction.js";
+import { CancelAction } from "./components/CancelAction.js";
+import { CloseDialogIconButton } from "~/Dialog/components/CloseDialogIconButton.js";
 import { DialogClose } from "~/Dialog/components/DialogClose.js";
 
 interface DialogProps
-    extends React.ComponentPropsWithoutRef<typeof DialogRoot>,
+    extends
+        React.ComponentPropsWithoutRef<typeof DialogRoot>,
         Omit<React.ComponentPropsWithoutRef<typeof DialogContent>, "title"> {
     trigger?: React.ReactNode;
     title?: React.ReactNode;
@@ -95,7 +97,8 @@ const DialogBase = (props: DialogProps) => {
                 open,
                 onOpenChange,
                 modal,
-                dir
+                dir,
+                size
             },
             triggerProps: {
                 // Temporary fix. We need this because `ref` doesn't get passed to components
@@ -114,13 +117,17 @@ const DialogBase = (props: DialogProps) => {
         <DialogRoot {...rootProps}>
             {triggerProps.children && <DialogTrigger {...triggerProps} asChild />}
             <DialogPortal>
-                <DialogOverlay />
-                <DialogContent {...contentProps}>
-                    <DialogHeader {...headerProps} />
-                    <DialogBody {...bodyProps} />
-                    <DialogFooter {...footerProps} />
-                    {closeButtonProps.show && <DialogClose size={closeButtonProps.size} />}
-                </DialogContent>
+                <div data-role="dialog" className={"z-overlay absolute"}>
+                    <DialogOverlay />
+                    <DialogContent {...contentProps}>
+                        <DialogHeader {...headerProps} />
+                        <DialogBody {...bodyProps} />
+                        <DialogFooter {...footerProps} />
+                        {closeButtonProps.show && (
+                            <CloseDialogIconButton size={closeButtonProps.size} />
+                        )}
+                    </DialogContent>
+                </div>
             </DialogPortal>
         </DialogRoot>
     );
@@ -131,9 +138,10 @@ DialogBase.displayName = "Dialog";
 const DecoratableDialog = makeDecoratable("Dialog", DialogBase);
 
 const Dialog = withStaticProps(DecoratableDialog, {
-    ConfirmButton,
-    CancelButton,
-    Icon
+    ConfirmAction,
+    CancelAction,
+    Icon,
+    Close: DialogClose
 });
 
 export { Dialog, type DialogProps };

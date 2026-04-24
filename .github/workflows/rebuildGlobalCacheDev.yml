@@ -13,9 +13,9 @@ jobs:
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
       - name: Create global cache key
         id: global-cache-key
         run: >-
@@ -29,18 +29,18 @@ jobs:
     name: Cache dependencies and packages
     needs: constants
     steps:
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
-      - uses: actions/checkout@v4
+          node-version: 24
+      - uses: actions/checkout@v5
         with:
           path: dev
           ref: dev
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: dev/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: dev/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}

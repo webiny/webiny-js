@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash/debounce.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { EmptyView } from "@webiny/app-admin";
-import { useSecurity } from "@webiny/app-security";
+import { useSecurity } from "@webiny/app-admin";
 import { Scrollbar } from "@webiny/ui/Scrollbar/index.js";
 import { LoadingMore } from "~/views/Logs/LoadingMore/index.js";
 import { LoadMoreButton } from "~/views/Logs/LoadMoreButton/index.js";

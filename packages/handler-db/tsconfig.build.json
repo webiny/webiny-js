@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [{ "path": "../api/tsconfig.build.json" }, { "path": "../db/tsconfig.build.json" }],
+  "references": [
+    { "path": "../db/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -9,11 +12,10 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"],
       "@webiny/db/*": ["../db/src/*"],
-      "@webiny/db": ["../db/src"]
-    },
-    "baseUrl": "."
+      "@webiny/db": ["../db/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"]
+    }
   }
 }

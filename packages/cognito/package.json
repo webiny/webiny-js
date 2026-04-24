@@ -1,0 +1,50 @@
+{
+  "name": "@webiny/cognito",
+  "version": "0.0.0",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
+  "description": "Security plugins for Cognito",
+  "author": "Webiny Ltd.",
+  "dependencies": {
+    "@apollo/react-hooks": "^3.1.5",
+    "@webiny/admin-ui": "*",
+    "@webiny/api-core": "*",
+    "@webiny/app": "*",
+    "@webiny/app-admin": "*",
+    "@webiny/aws-sdk": "*",
+    "@webiny/di": "^0.2.3",
+    "@webiny/feature": "*",
+    "@webiny/form": "*",
+    "@webiny/handler-graphql": "*",
+    "@webiny/icons": "*",
+    "@webiny/project": "*",
+    "@webiny/project-aws": "*",
+    "@webiny/ui": "*",
+    "@webiny/validation": "*",
+    "aws-amplify": "^6.16.4",
+    "graphql": "^16.13.2",
+    "graphql-tag": "^2.12.6",
+    "jsonwebtoken": "^9.0.3",
+    "lodash": "^4.18.1",
+    "mobx": "^6.15.0",
+    "mobx-react-lite": "^4.1.1",
+    "react": "18.3.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.28",
+    "@webiny/build-tools": "*",
+    "@webiny/project-utils": "*",
+    "@webiny/wcp": "*",
+    "vitest": "^4.1.5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  }
+}

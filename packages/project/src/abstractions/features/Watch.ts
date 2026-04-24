@@ -10,9 +10,6 @@ export interface IWatchNoAppParams {
 
 export interface IWatchWithAppParams extends IWatchNoAppParams {
     app: GetApp.AppName;
-    env: string;
-    variant?: string;
-    region?: string;
     allowProduction?: boolean;
     deploymentChecks?: boolean;
 

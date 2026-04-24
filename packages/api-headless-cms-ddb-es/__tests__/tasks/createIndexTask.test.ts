@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "./mocks/models";
-import { CreateElasticsearchIndexTaskPlugin } from "@webiny/api-elasticsearch-tasks";
 import { createIndexesTaskDefinition } from "@webiny/api-elasticsearch-tasks/tasks";
 import type { Context as TasksContext } from "@webiny/tasks/types";
 import type { CmsContext } from "~/types";
@@ -9,19 +8,20 @@ import { createRunner } from "@webiny/project-utils/testing/tasks";
 import type { IElasticsearchCreateIndexesTaskInput } from "@webiny/api-elasticsearch-tasks/tasks/createIndexes/types";
 import { configurations } from "~/configurations";
 import type { CmsModel } from "@webiny/api-headless-cms/types";
-import type { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
-import type { Context as LoggerContext } from "@webiny/api-log/types";
+import type { OpenSearchContext } from "@webiny/api-opensearch/types";
+import { OpensearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
-const createIndexName = (model: Pick<CmsModel, "tenant" | "locale" | "modelId">): string => {
+const createIndexName = (model: Pick<CmsModel, "tenant" | "modelId">): string => {
     const { index } = configurations.es({
         model
     });
     return index;
 };
 
-interface Context extends TasksContext, CmsContext, ElasticsearchContext, LoggerContext {}
+interface Context extends TasksContext, CmsContext, OpenSearchContext {}
 
-describe("create index task", () => {
+describe("Create index task", () => {
     it("should create an index configuration for each of the models defined", async () => {
         const { handler } = useHandler<Context>({
             plugins: createMockModels()
@@ -31,176 +31,104 @@ describe("create index task", () => {
             path: "/cms/manage/en-US",
             headers: {
                 "x-webiny-cms-endpoint": "manage",
-                "x-webiny-cms-locale": "en-US",
                 "x-tenant": "root"
             }
         });
 
-        const createIndexPlugins = context.plugins.byType<
-            CreateElasticsearchIndexTaskPlugin<Context>
-        >(CreateElasticsearchIndexTaskPlugin.type);
+        const indexFactories = context.container.resolveAll(OpensearchTenantIndexFactory);
 
-        expect(createIndexPlugins).toHaveLength(1);
+        expect(indexFactories).toHaveLength(1);
 
-        const plugin = createIndexPlugins[0] as CreateElasticsearchIndexTaskPlugin<Context>;
+        const plugin = indexFactories[0];
 
-        const enUsIndexes = await plugin.getIndexList({
-            context,
-            tenant: "root",
-            locale: "en-US"
-        });
+        const indexes = (
+            await plugin.getIndexList({
+                id: "root"
+            })
+        ).sort((a, b) => (a.index > b.index ? 1 : -1));
 
-        expect(enUsIndexes).toHaveLength(7);
+        expect(indexes).toHaveLength(7);
 
-        expect(enUsIndexes).toEqual([
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    locale: "en-US",
-                    modelId: "webinyTask"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    locale: "en-US",
-                    modelId: "webinyTaskLog"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    locale: "en-US",
-                    modelId: "car"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    locale: "en-US",
-                    modelId: "author"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    locale: "en-US",
-                    modelId: "book"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    locale: "en-US",
-                    modelId: "category"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "root",
-                    locale: "en-US",
-                    modelId: "tag"
-                }),
-                settings: expect.any(Object)
-            }
-        ]);
-
-        const deIndexes = await plugin.getIndexList({
-            context,
-            tenant: "dev",
-            locale: "de-DE"
-        });
-
-        expect(deIndexes).toHaveLength(7);
-
-        expect(deIndexes).toEqual([
-            {
-                index: createIndexName({
-                    tenant: "dev",
-                    locale: "de-DE",
-                    modelId: "webinyTask"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "dev",
-                    locale: "de-DE",
-                    modelId: "webinyTaskLog"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "dev",
-                    locale: "de-DE",
-                    modelId: "car"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "dev",
-                    locale: "de-DE",
-                    modelId: "author"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "dev",
-                    locale: "de-DE",
-                    modelId: "book"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "dev",
-                    locale: "de-DE",
-                    modelId: "category"
-                }),
-                settings: expect.any(Object)
-            },
-            {
-                index: createIndexName({
-                    tenant: "dev",
-                    locale: "de-DE",
-                    modelId: "tag"
-                }),
-                settings: expect.any(Object)
-            }
-        ]);
+        expect(indexes).toEqual(
+            [
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "wbyTask"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "wbyTaskLog"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "car"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "author"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "book"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "category"
+                    }),
+                    settings: expect.any(Object)
+                },
+                {
+                    index: createIndexName({
+                        tenant: "root",
+                        modelId: "tag"
+                    }),
+                    settings: expect.any(Object)
+                }
+            ].sort((a, b) => (a.index > b.index ? 1 : -1))
+        );
     });
 
     it("should create an index for each of the models defined", async () => {
-        const createIndexesTask = createIndexesTaskDefinition();
         const { handler, elasticsearch } = useHandler<Context>({
-            plugins: [createIndexesTask, ...createMockModels()]
+            plugins: [createIndexesTaskDefinition(), ...createMockModels()]
         });
 
         const context = await handler({
             path: "/cms/manage/en-US",
             headers: {
                 "x-webiny-cms-endpoint": "manage",
-                "x-webiny-cms-locale": "en-US",
                 "x-tenant": "root"
             }
         });
 
         const task = await context.tasks.createTask<IElasticsearchCreateIndexesTaskInput>({
             name: "Create indexes",
-            definitionId: createIndexesTask.id,
+            definitionId: "elasticsearchCreateIndexes",
             input: {
-                matching: "-en-us-car"
+                matching: "-car"
             }
         });
+
+        const taskDefinitions = context.container.resolveAll(TaskDefinition);
+        const createIndexesTask = taskDefinitions.find(
+            task => task.id === "elasticsearchCreateIndexes"
+        )!;
 
         const runner = createRunner({
             context,
@@ -208,10 +136,9 @@ describe("create index task", () => {
         });
 
         await createIndexesTask.onBeforeTrigger!({
-            context,
             data: {
                 input: {
-                    matching: "-en-us-car"
+                    matching: "-car"
                 },
                 name: createIndexesTask.title,
                 definitionId: createIndexesTask.id
@@ -232,22 +159,18 @@ describe("create index task", () => {
                 done: [
                     createIndexName({
                         tenant: "root",
-                        locale: "en-US",
                         modelId: "car"
                     }),
                     createIndexName({
                         tenant: "webiny",
-                        locale: "en-US",
                         modelId: "car"
                     }),
                     createIndexName({
                         tenant: "dev",
-                        locale: "en-US",
                         modelId: "car"
                     }),
                     createIndexName({
                         tenant: "sales",
-                        locale: "en-US",
                         modelId: "car"
                     })
                 ]
@@ -262,22 +185,18 @@ describe("create index task", () => {
         const done: string[] = [
             createIndexName({
                 tenant: "root",
-                locale: "en-US",
                 modelId: "car"
             }),
             createIndexName({
                 tenant: "webiny",
-                locale: "en-US",
                 modelId: "car"
             }),
             createIndexName({
                 tenant: "dev",
-                locale: "en-US",
                 modelId: "car"
             }),
             createIndexName({
                 tenant: "sales",
-                locale: "en-US",
                 modelId: "car"
             })
         ];

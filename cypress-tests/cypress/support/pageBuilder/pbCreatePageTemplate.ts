@@ -1,7 +1,6 @@
 import { gqlClient } from "../utils";
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             pbCreatePageTemplate(data: Record<string, any>): Promise<{ id: string }>;

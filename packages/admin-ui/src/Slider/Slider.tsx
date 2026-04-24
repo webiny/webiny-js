@@ -53,6 +53,7 @@ type SliderProps = FormComponentProps &
 const DecoratableSlider = ({
     description,
     note,
+    hint,
     validation,
     labelPosition,
     ...props
@@ -86,6 +87,7 @@ const DecoratableSlider = ({
     return (
         <div className={"w-full"}>
             <FormComponentLabel
+                hint={hint}
                 text={<Label text={props.label} value={vm.textValue} />}
                 disabled={props.disabled}
                 required={props.required}

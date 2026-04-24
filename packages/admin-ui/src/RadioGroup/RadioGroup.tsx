@@ -16,6 +16,7 @@ const DecoratableRadioGroup = ({
     label,
     description,
     note,
+    hint,
     required,
     disabled,
     validation,
@@ -28,6 +29,7 @@ const DecoratableRadioGroup = ({
         <div className={"w-full"}>
             <FormComponentLabel
                 text={label}
+                hint={hint}
                 required={required}
                 disabled={disabled}
                 invalid={invalid}
@@ -43,7 +45,7 @@ const DecoratableRadioGroup = ({
                 disabled={disabled}
                 className={"mt-none mb-xs-plus"}
             />
-            <RadioGroupPrimitive {...props} />
+            <RadioGroupPrimitive disabled={disabled} {...props} />
             <FormComponentNote text={note} disabled={disabled} />
         </div>
     );

@@ -1,24 +1,21 @@
 import { createHandler } from "@webiny/handler-aws";
-import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
+import { createOpenSearchClient, createOpenSearchContext } from "@webiny/api-opensearch";
 import { createEventHandler } from "@webiny/api-dynamodb-to-elasticsearch";
-import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
-import { createLogger } from "@webiny/api-log";
 
-const documentClient = getDocumentClient();
+const osUsername = process.env.OPENSEARCH_USERNAME;
+const osPassword = process.env.OPENSEARCH_PASSWORD;
+
+const clientOptions: Parameters<typeof createOpenSearchClient>[0] = {
+    endpoint: `https://${process.env.OPENSEARCH_ENDPOINT}`
+};
+if (osUsername && osPassword) {
+    clientOptions.auth = { username: osUsername, password: osPassword };
+}
+
+const client = createOpenSearchClient(clientOptions);
 
 export const handler = createHandler({
-    plugins: [
-        createLogger({
-            documentClient,
-            getTenant: () => {
-                return "root";
-            }
-        }),
-        elasticsearchClientContextPlugin({
-            endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
-        }),
-        createEventHandler()
-    ],
+    plugins: [createOpenSearchContext(client), createEventHandler()],
     options: {
         bodyLimit: 536870912 // 512MB
     }

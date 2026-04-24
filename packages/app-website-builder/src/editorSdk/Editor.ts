@@ -11,6 +11,7 @@ import { type StateChangeListener, StateWithHistory } from "./StateWithHistory.j
 import { type MutableState, State } from "./State.js";
 
 export type EditorState = {
+    uiReservedSpace: { width: number; height: number };
     boxes: {
         // Coordinates are relative to the preview iframe.
         preview: PreviewViewportData["boxes"];
@@ -20,9 +21,10 @@ export type EditorState = {
     viewport: EditorViewportData["viewport"];
     selectedElement: string | null;
     highlightedElement: string | null;
-    showOverlays: boolean;
     components: Record<string, ComponentManifest>;
     componentGroups: Record<string, SerializedComponentGroup>;
+    isReadOnly: boolean;
+    showOverlays: boolean;
     breakpoint?: string;
     [key: string]: any;
 };
@@ -37,6 +39,8 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
         this.documentState = new StateWithHistory(initialState);
         this.editorState = new State<EditorState>(
             {
+                uiReservedSpace: { width: 0, height: 0 },
+                isReadOnly: false,
                 showOverlays: true,
                 selectedElement: null,
                 highlightedElement: null,
@@ -50,7 +54,11 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
                     width: 0,
                     height: 0,
                     scrollX: 0,
-                    scrollY: 0
+                    scrollY: 0,
+                    scrollWidth: 0,
+                    scrollHeight: 0,
+                    breakpoint: "desktop",
+                    breakpoints: []
                 },
                 components: {},
                 componentGroups: {}

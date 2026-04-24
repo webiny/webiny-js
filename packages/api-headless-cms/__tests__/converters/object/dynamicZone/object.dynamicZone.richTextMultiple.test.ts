@@ -1,0 +1,94 @@
+import { beforeEach, describe, expect, it } from "vitest";
+import { createModel } from "../../mocks/model.js";
+import { createModelField } from "../../mocks/field.js";
+import { getConverters, type IConvertersResponse } from "../../__helpers/converters.js";
+
+const plainValue = {
+    profile: {
+        content: {
+            _templateId: "richTextTemplate",
+            sections: [
+                "First section with <strong>bold</strong> text.",
+                "Second section with <em>italic</em> text.",
+                "Third section with <u>underline</u> text."
+            ]
+        }
+    }
+};
+const convertedValue = {
+    "object@profileId": {
+        "dynamicZone@contentId": {
+            _templateId: "richTextTemplate",
+            "rich-text@sectionsId": [
+                "First section with <strong>bold</strong> text.",
+                "Second section with <em>italic</em> text.",
+                "Third section with <u>underline</u> text."
+            ]
+        }
+    }
+};
+
+const model = createModel({
+    fields: [
+        createModelField({
+            fieldId: "profile",
+            type: "object",
+            list: false,
+            settings: {
+                fields: [
+                    createModelField({
+                        fieldId: "content",
+                        type: "dynamicZone",
+                        list: false,
+                        settings: {
+                            templates: [
+                                {
+                                    id: "richTextTemplate",
+                                    name: "Rich Text Template",
+                                    gqlTypeName: "RichTextTemplate",
+                                    icon: undefined,
+                                    description: "",
+                                    fields: [
+                                        createModelField({
+                                            fieldId: "sections",
+                                            type: "rich-text",
+                                            list: true
+                                        })
+                                    ],
+                                    layout: [],
+                                    validation: []
+                                }
+                            ]
+                        }
+                    })
+                ]
+            }
+        })
+    ]
+});
+
+describe("object storage converter - single object with dynamic zone with multiple rich-text template", () => {
+    let converters: IConvertersResponse;
+
+    beforeEach(async () => {
+        converters = await getConverters(model);
+    });
+
+    it("should convert single object with dynamic zone with multiple rich-text template to and from storage", async () => {
+        const { convertFromStorage, convertToStorage } = converters;
+
+        const storageResult = convertToStorage({
+            fields: model.fields,
+            values: plainValue
+        });
+
+        expect(storageResult).toEqual(convertedValue);
+
+        const fromStorageResult = convertFromStorage({
+            fields: model.fields,
+            values: storageResult
+        });
+
+        expect(fromStorageResult).toEqual(plainValue);
+    });
+});
