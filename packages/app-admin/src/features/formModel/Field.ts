@@ -6,6 +6,7 @@ import type {
     IValueOption,
     IFormModel,
     IField,
+    IRule,
     FieldTypeMap,
     BeforeChangeCallback,
     AfterChangeCallback,
@@ -27,6 +28,7 @@ export class Field implements IField {
     private _onBlurCallbacks: OnBlurCallback[] = [];
     private _isUIChange = false;
     private _form: IFormModel | null = null;
+    private _ancestorRules: IRule[] = [];
 
     readonly config: IFieldConfig;
 
@@ -110,12 +112,38 @@ export class Field implements IField {
         this._disabled = value;
     }
 
+    private _evaluateRules(): { visible: boolean; disabled: boolean } {
+        if (!this._form) {
+            return { visible: true, disabled: false };
+        }
+        const own = this.config.rules ?? [];
+        const all = [...this._ancestorRules, ...own];
+        if (all.length === 0) {
+            return { visible: true, disabled: false };
+        }
+        return this._form.evaluateRules(all);
+    }
+
     get visible(): boolean {
-        return !this._hidden;
+        if (this._hidden) {
+            return false;
+        }
+        return this._evaluateRules().visible;
+    }
+
+    get disabled(): boolean {
+        if (this._disabled) {
+            return true;
+        }
+        return this._evaluateRules().disabled;
     }
 
     setVisible(value: boolean): void {
         this._hidden = !value;
+    }
+
+    setAncestorRules(rules: IRule[]): void {
+        this._ancestorRules = rules;
     }
 
     setValidation(validation: IFieldValidation): void {
@@ -182,7 +210,8 @@ export class Field implements IField {
             value: this._value,
             validation: this._validation,
             required: this.config.required,
-            disabled: this._disabled,
+            visible: this.visible,
+            disabled: this.disabled,
             renderer: this.config.renderer,
             rendererSettings: this.config.rendererSettings,
             options,
@@ -213,8 +242,16 @@ export class Field implements IField {
     /**
      * Validate this field. Returns true if valid.
      * Validation order: required check → zod schema.
+     * Hidden fields are excluded from validation.
      */
     async validate(): Promise<boolean> {
+        if (!this.visible) {
+            runInAction(() => {
+                this._validation = { isValid: null };
+            });
+            return true;
+        }
+
         // Required check
         if (this.config.required) {
             const value = this._value;

@@ -5,7 +5,7 @@ export { FormModelFeature } from "./feature.js";
 import "./renderers.js";
 
 // Abstractions (types + DI tokens)
-export { FormModelFactory, FormModel } from "./abstractions.js";
+export { FormModelFactory, FormModel, RuleEvaluator } from "./abstractions.js";
 export type {
     IFieldRendererRegistry,
     FieldRendererName,
@@ -52,6 +52,9 @@ export type {
     ILayoutNodeHandle,
     ILayoutModifier,
     IFormModifier,
+    IRule,
+    IRuleEvaluator,
+    RuleAction,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
@@ -72,6 +75,9 @@ export type { IFieldTypeFactory } from "./FieldBuilder.js";
 
 // Object field
 export { ObjectField, isObjectField } from "./ObjectField.js";
+
+// Rule evaluators
+export { ConditionRuleEvaluator } from "./ConditionRuleEvaluator.js";
 
 // View
 export { FormView, LayoutNodeRenderer, useFormViewRenderers } from "./FormView.js";

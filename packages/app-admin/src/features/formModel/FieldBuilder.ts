@@ -8,6 +8,7 @@ import type {
     ISelectFieldBuilder,
     IObjectFieldBuilder,
     IFieldBuilderRegistry,
+    IRule,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
@@ -89,6 +90,14 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
 
     disabled(value = true): this {
         this._config.disabled = value;
+        return this;
+    }
+
+    rules(rules: IRule[]): this {
+        if (!this._config.rules) {
+            this._config.rules = [];
+        }
+        this._config.rules.push(...rules);
         return this;
     }
 

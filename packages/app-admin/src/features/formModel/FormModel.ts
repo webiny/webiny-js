@@ -18,6 +18,8 @@ import type {
     ILayoutNodeAccessHandle,
     ITabsHandle,
     ITabHandle,
+    IRule,
+    IRuleEvaluator,
     LayoutNode,
     LayoutPosition,
     LayoutNodeVM,
@@ -40,8 +42,19 @@ const layoutAPI: ILayoutBuilder = {
     separator(): ISeparatorNode {
         return { type: "separator" };
     },
-    tabs(config: { id?: string; renderer?: string; tabs: ITabDefinition[] }): ITabsNode {
-        return { type: "tabs", id: config.id, renderer: config.renderer, tabs: config.tabs };
+    tabs(config: {
+        id?: string;
+        renderer?: string;
+        tabs: ITabDefinition[];
+        rules?: IRule[];
+    }): ITabsNode {
+        return {
+            type: "tabs",
+            id: config.id,
+            renderer: config.renderer,
+            tabs: config.tabs,
+            rules: config.rules
+        };
     },
     element(renderer: string, props?: Record<string, unknown>): IElementNode {
         return { type: "element", renderer, props };
@@ -57,8 +70,12 @@ export class FormModel implements IFormModel {
     private _isValid: boolean | null = null;
     private _errors: IFormError[] = [];
     private _activeTabs = observable.map<string, string>();
+    private _ruleEvaluators: IRuleEvaluator[] = [];
+    private _warnedRuleTypes = new Set<string>();
 
     constructor(config: IFormModelConfig) {
+        this._ruleEvaluators = config.ruleEvaluators ?? [];
+
         const registry = createFieldBuilderRegistry();
         const builders = config.fields(registry);
 
@@ -78,6 +95,9 @@ export class FormModel implements IFormModel {
             this._layout = this._generateDefaultLayout();
         }
 
+        // Propagate ancestor rules from layout into fields
+        this._propagateAncestorRules();
+
         // Validation strategy
         this._validateOnChange = config.validateOnSubmit === false;
 
@@ -91,6 +111,41 @@ export class FormModel implements IFormModel {
             },
             { autoBind: true }
         );
+    }
+
+    evaluateRules(rules: IRule[] | undefined): { visible: boolean; disabled: boolean } {
+        let visible = true;
+        let disabled = false;
+        if (!rules || rules.length === 0) {
+            return { visible, disabled };
+        }
+
+        for (const rule of rules) {
+            const evaluator = this._ruleEvaluators.find(e => e.canEvaluate(rule));
+            if (!evaluator) {
+                if (
+                    process.env.NODE_ENV === "development" &&
+                    !this._warnedRuleTypes.has(rule.type)
+                ) {
+                    this._warnedRuleTypes.add(rule.type);
+                    console.warn(
+                        `[FormModel] No evaluator registered for rule type "${rule.type}". Rule is ignored.`
+                    );
+                }
+                continue;
+            }
+            const matched = evaluator.evaluate(rule, this);
+            if (!matched) {
+                continue;
+            }
+            if (rule.action === "hide") {
+                visible = false;
+            } else if (rule.action === "disable") {
+                disabled = true;
+            }
+        }
+
+        return { visible, disabled };
     }
 
     field(name: string): IField {
@@ -142,6 +197,7 @@ export class FormModel implements IFormModel {
 
         // Re-snapshot baseline to include new fields
         this._snapshotBaseline();
+        this._propagateAncestorRules();
     }
 
     layout(factory: (layout: ILayoutModifier) => (LayoutNode | IPositionedLayoutNode)[]): void;
@@ -179,6 +235,8 @@ export class FormModel implements IFormModel {
                 this._layout.push(entry);
             }
         }
+
+        this._propagateAncestorRules();
     }
 
     removeField(name: string): void {
@@ -336,24 +394,38 @@ export class FormModel implements IFormModel {
             return null;
         }
 
+        // Evaluate rules on the tabs container itself
+        const containerState = this.evaluateRules(node.rules);
+        if (!containerState.visible) {
+            return null;
+        }
+
         const tabKey = node.id || this._tabsNodeKey(node);
 
-        const tabs: ITabDefinitionVM[] = node.tabs.map(tab => ({
-            id: tab.id,
-            label: tab.label,
-            description: tab.description,
-            icon: tab.icon,
-            hasErrors: this._tabHasErrors(tab.layout),
-            layout: tab.layout
-                .map(child => this._resolveLayoutNode(child))
-                .filter(Boolean) as LayoutNodeVM[]
-        }));
+        const tabs: ITabDefinitionVM[] = [];
+        for (const tab of node.tabs) {
+            const tabState = this.evaluateRules(tab.rules);
+            if (!tabState.visible) {
+                continue;
+            }
+            tabs.push({
+                id: tab.id,
+                label: tab.label,
+                description: tab.description,
+                icon: tab.icon,
+                hasErrors: this._tabHasErrors(tab.layout),
+                disabled: containerState.disabled || tabState.disabled,
+                layout: tab.layout
+                    .map(child => this._resolveLayoutNode(child))
+                    .filter(Boolean) as LayoutNodeVM[]
+            });
+        }
 
         if (tabs.length === 0) {
             return null;
         }
 
-        // Resolve active tab — fall back to first tab if stored value is invalid
+        // Resolve active tab — fall back to first visible tab if stored value is invalid
         const storedActive = this._activeTabs.get(tabKey);
         const validActive = tabs.find(t => t.id === storedActive) ? storedActive! : tabs[0].id;
 
@@ -362,6 +434,7 @@ export class FormModel implements IFormModel {
             id: node.id,
             renderer: node.renderer,
             tabs,
+            disabled: containerState.disabled,
             activeTabId: validActive,
             setActiveTab: (id: string) => {
                 runInAction(() => {
@@ -412,6 +485,37 @@ export class FormModel implements IFormModel {
 
     private _tabsNodeKey(node: ITabsNode): string {
         return `__tabs_${node.tabs.map(t => t.id).join("_")}`;
+    }
+
+    /**
+     * Walk the layout tree and propagate ancestor rules (from tabs containers / tabs)
+     * down to each field referenced inside. Fields combine these with their own rules
+     * when computing visible/disabled.
+     */
+    private _propagateAncestorRules(): void {
+        const ancestry = new Map<string, IRule[]>();
+        const walk = (nodes: LayoutNode[], rules: IRule[]) => {
+            for (const node of nodes) {
+                if (node.type === "row") {
+                    for (const id of node.fieldIds) {
+                        const existing = ancestry.get(id) ?? [];
+                        ancestry.set(id, [...existing, ...rules]);
+                    }
+                } else if (node.type === "tabs") {
+                    const containerRules = [...rules, ...(node.rules ?? [])];
+                    for (const tab of node.tabs) {
+                        const tabRules = [...containerRules, ...(tab.rules ?? [])];
+                        walk(tab.layout, tabRules);
+                    }
+                }
+            }
+        };
+
+        walk(this._layout, []);
+
+        for (const [, field] of this._fields) {
+            field.setAncestorRules(ancestry.get(field.name) ?? []);
+        }
     }
 
     private _generateDefaultLayout(): LayoutNode[] {
@@ -544,12 +648,14 @@ export class FormModel implements IFormModel {
                 id?: string;
                 renderer?: string;
                 tabs: ITabDefinition[];
+                rules?: IRule[];
             }): ILayoutNodeHandle {
                 const node: ITabsNode = {
                     type: "tabs",
                     id: config.id,
                     renderer: config.renderer,
-                    tabs: config.tabs
+                    tabs: config.tabs,
+                    rules: config.rules
                 };
                 return createLayoutNodeHandle(node);
             },

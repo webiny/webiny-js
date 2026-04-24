@@ -9,6 +9,7 @@ import type {
     IFieldValidation,
     IFormModel,
     IFieldBuilder,
+    IRule,
     FieldTypeMap,
     BeforeChangeCallback,
     AfterChangeCallback,
@@ -133,12 +134,20 @@ export class ObjectField implements IObjectField {
         return this._base.visible;
     }
 
+    get disabled(): boolean {
+        return this._base.disabled;
+    }
+
     setDisabled(value: boolean): void {
         this._base.setDisabled(value);
     }
 
     setVisible(value: boolean): void {
         this._base.setVisible(value);
+    }
+
+    setAncestorRules(rules: IRule[]): void {
+        this._base.setAncestorRules(rules);
     }
 
     setForm(form: IFormModel): void {
@@ -300,6 +309,7 @@ export class ObjectField implements IObjectField {
             value: this.getValue(),
             validation: baseVm.validation,
             required: baseVm.required,
+            visible: baseVm.visible,
             disabled: baseVm.disabled,
             renderer: baseVm.renderer,
             rendererSettings: baseVm.rendererSettings,
@@ -356,6 +366,11 @@ export class ObjectField implements IObjectField {
     }
 
     async validate(): Promise<boolean> {
+        if (!this.visible) {
+            this.setValidation({ isValid: null });
+            return true;
+        }
+
         if (this.config.required) {
             if (this.config.isList && this._items.length === 0) {
                 this.setValidation({

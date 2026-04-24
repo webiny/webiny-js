@@ -45,6 +45,26 @@ export interface IFieldConfig {
     afterChangeCallbacks?: AfterChangeCallback[];
     afterSetValueCallbacks?: AfterSetValueCallback[];
     onBlurCallbacks?: OnBlurCallback[];
+    rules?: IRule[];
+}
+
+// ---------------------------------------------------------------------------
+// Rules system
+// ---------------------------------------------------------------------------
+
+export type RuleAction = "hide" | "disable";
+
+export interface IRule {
+    type: string;
+    target: string;
+    operator: string;
+    value: string | null;
+    action: RuleAction;
+}
+
+export interface IRuleEvaluator {
+    canEvaluate(rule: IRule): boolean;
+    evaluate(rule: IRule, form: IFormModel): boolean;
 }
 
 export interface IValueOption {
@@ -69,6 +89,7 @@ export interface IFieldVM {
     value: unknown;
     validation: IFieldValidation;
     required: boolean;
+    visible: boolean;
     disabled: boolean;
     renderer?: string;
     rendererSettings?: Record<string, unknown>;
@@ -101,6 +122,7 @@ export interface IField {
     readonly name: string;
     readonly type: string;
     readonly visible: boolean;
+    readonly disabled: boolean;
     readonly vm: IFieldVM;
     readonly config: IFieldConfig;
     getValue<T = unknown>(): T;
@@ -109,6 +131,7 @@ export interface IField {
     setDisabled(value: boolean): void;
     setVisible(value: boolean): void;
     setForm(form: IFormModel): void;
+    setAncestorRules(rules: IRule[]): void;
     setValidation(validation: IFieldValidation): void;
     resetValidation(): void;
     validate(): Promise<boolean>;
@@ -193,6 +216,7 @@ export interface ITabDefinition {
     description?: string;
     icon?: string;
     layout: LayoutNode[];
+    rules?: IRule[];
 }
 
 export interface ITabsNode {
@@ -200,6 +224,7 @@ export interface ITabsNode {
     id?: string;
     renderer?: string;
     tabs: ITabDefinition[];
+    rules?: IRule[];
 }
 
 export interface IElementNode {
@@ -230,6 +255,7 @@ export interface ITabDefinitionVM {
     description?: string;
     icon?: string;
     hasErrors: boolean;
+    disabled: boolean;
     layout: LayoutNodeVM[];
 }
 
@@ -238,6 +264,7 @@ export interface ITabsNodeVM {
     id?: string;
     renderer?: string;
     tabs: ITabDefinitionVM[];
+    disabled: boolean;
     activeTabId: string;
     setActiveTab: (id: string) => void;
 }
@@ -302,7 +329,12 @@ export interface IFormModifier {
 export interface ILayoutModifier {
     row(...fieldIds: string[]): ILayoutNodeHandle;
     separator(): ILayoutNodeHandle;
-    tabs(config: { id?: string; renderer?: string; tabs: ITabDefinition[] }): ILayoutNodeHandle;
+    tabs(config: {
+        id?: string;
+        renderer?: string;
+        tabs: ITabDefinition[];
+        rules?: IRule[];
+    }): ILayoutNodeHandle;
     element(renderer: string, props?: Record<string, unknown>): ILayoutNodeHandle;
     remove(target: string): void;
 }
@@ -336,6 +368,7 @@ export interface IFormModel<T = Record<string, any>> {
     reset(): void;
     validate(): Promise<boolean>;
     submit<T = Record<string, unknown>>(): Promise<T | false>;
+    evaluateRules(rules: IRule[] | undefined): { visible: boolean; disabled: boolean };
     readonly isDirty: boolean;
     readonly isValid: boolean | null;
     readonly errors: IFormError[];
@@ -376,6 +409,9 @@ export namespace FormModel {
     export type Interface<T = Record<string, any>> = IFormModel<T>;
     export type Modifier = IFormModifier;
     export type LayoutModifier = ILayoutModifier;
+    export type Rule = IRule;
+    export type Action = RuleAction;
+    export type RuleEvaluator = IRuleEvaluator;
 }
 
 // ---------------------------------------------------------------------------
@@ -390,12 +426,18 @@ export interface IFormModelConfig {
     fields: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>;
     layout?: (layout: ILayoutBuilder) => LayoutNode[];
     validateOnSubmit?: boolean;
+    ruleEvaluators?: IRuleEvaluator[];
 }
 
 export interface ILayoutBuilder {
     row(...fieldIds: string[]): IRowNode;
     separator(): ISeparatorNode;
-    tabs(config: { id?: string; renderer?: string; tabs: ITabDefinition[] }): ITabsNode;
+    tabs(config: {
+        id?: string;
+        renderer?: string;
+        tabs: ITabDefinition[];
+        rules?: IRule[];
+    }): ITabsNode;
     element(renderer: string, props?: Record<string, unknown>): IElementNode;
 }
 
@@ -418,6 +460,7 @@ export interface IFieldBuilder<TType extends string = string> {
     hidden(): this;
     required(message?: string): this;
     disabled(value?: boolean): this;
+    rules(rules: IRule[]): this;
     beforeChange(fn: BeforeChangeCallback): this;
     afterChange(fn: AfterChangeCallback): this;
     afterSetValue(fn: AfterSetValueCallback): this;
@@ -451,4 +494,12 @@ export namespace FormModelFactory {
     export type SelectFieldBuilder = ISelectFieldBuilder;
     export type ObjectFieldBuilder = IObjectFieldBuilder;
     export type FieldBuilderRegistry = IFieldBuilderRegistry;
+}
+
+export const RuleEvaluator = createAbstraction<IRuleEvaluator>("FormModelRuleEvaluator");
+
+export namespace RuleEvaluator {
+    export type Interface = IRuleEvaluator;
+    export type Rule = IRule;
+    export type Action = RuleAction;
 }
