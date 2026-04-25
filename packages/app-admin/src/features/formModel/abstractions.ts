@@ -103,6 +103,13 @@ export interface IObjectFieldVM extends IFieldVM {
     isList: boolean;
     /** Child field VMs for non-list object fields. */
     fields: IFieldVM[];
+    /**
+     * Resolved layout for non-list object fields. For templated objects, resolves
+     * against the active template's per-template layout (if registered via
+     * `layout.object()`), otherwise defaults to one row per visible child.
+     * For list-mode fields, see `items[].layout`.
+     */
+    layout: LayoutNodeVM[];
     /** Items for list-mode object fields. */
     items: IObjectFieldItemVM[];
     /** Append a new item. Templated lists require a template id. */
@@ -124,6 +131,12 @@ export interface IObjectFieldVM extends IFieldVM {
 export interface IObjectFieldItemVM {
     key: string;
     fields: IFieldVM[];
+    /**
+     * Resolved layout for this item. For templated lists, resolves against the
+     * item's template-specific layout (if registered via `layout.object()`),
+     * otherwise defaults to one row per visible child.
+     */
+    layout: LayoutNodeVM[];
     remove: () => void;
     moveUp: () => void;
     moveDown: () => void;
@@ -228,6 +241,17 @@ export interface IObjectField extends IField {
     readonly activeTemplateId: string | null;
     readonly availableTemplates: ITemplateVM[];
     /**
+     * Register an inner layout used by the field's VM (`field.layout` for
+     * single objects, `item.layout` for list items).
+     *
+     * Pass `LayoutNode[]` for non-templated objects (the layout applies to the
+     * single object or every list item). Pass `Record<templateId, LayoutNode[]>`
+     * for templated objects (each entry applies when that template is active
+     * or for each list item with that template). Templates without an entry
+     * fall back to default one-row-per-visible-child.
+     */
+    setInnerLayout(layout: LayoutNode[] | Record<string, LayoutNode[]>): void;
+    /**
      * Append a new list item.
      * - Non-templated list: `addItem(data?)` — data hydrates the new item.
      * - Templated list: `addItem(templateId, data?)` — templateId picks the variant.
@@ -241,7 +265,29 @@ export interface IObjectField extends IField {
     /** Duplicate a list item (including its `_templateId`) and insert after the source. */
     duplicateItem(index: number): void;
     setTemplate(templateId: string): void;
+    /**
+     * Runtime template management. Available on every object field but throws
+     * when called on a non-templated field (`isTemplated === false`).
+     */
+    readonly templates: IObjectFieldTemplatesAPI;
     getData(): Record<string, unknown> | Record<string, unknown>[];
+}
+
+export interface IObjectFieldTemplatesAPI {
+    /**
+     * Append a new template. Throws on duplicate id or reserved `_templateId`.
+     * Throws when called on a non-templated object field.
+     */
+    add(template: ITemplate): void;
+    /**
+     * Remove a template by id. No-op if the id does not exist.
+     * - Single-object templated field: clears active template if it matches.
+     * - Templated list: drops list items whose `_templateId` matches.
+     * - Layout entries for the removed id are kept silently and reused if the
+     *   id is later re-added.
+     * Throws when called on a non-templated object field.
+     */
+    remove(templateId: string): void;
 }
 
 export interface IListItemField {
@@ -264,7 +310,7 @@ export type OnBlurCallback = (value: unknown, form: IFormModel) => void;
 // Layout types
 // ---------------------------------------------------------------------------
 
-export type LayoutNode = IRowNode | ISeparatorNode | ITabsNode | IElementNode;
+export type LayoutNode = IRowNode | ISeparatorNode | ITabsNode | IElementNode | IObjectNode;
 
 export interface IRowNode {
     type: "row";
@@ -297,6 +343,24 @@ export interface IElementNode {
     id?: string;
     renderer: string;
     props?: Record<string, unknown>;
+}
+
+/**
+ * Layout node that references an object field and registers an inner layout
+ * on it. Resolved as a single-field row in the outer layout — the inner
+ * layout is exposed on the field's VM (`field.layout` for single objects,
+ * `item.layout` for list items).
+ *
+ * - For non-templated objects, `inner` is `LayoutNode[]` (one layout, applied
+ *   to the single object or every list item).
+ * - For templated objects, `inner` is `Record<templateId, LayoutNode[]>` —
+ *   each entry is the layout used when that template is active (or for each
+ *   list item with that template).
+ */
+export interface IObjectNode {
+    type: "object";
+    fieldName: string;
+    inner: LayoutNode[] | Record<string, LayoutNode[]>;
 }
 
 // ---------------------------------------------------------------------------
@@ -401,6 +465,11 @@ export interface ILayoutModifier {
         rules?: IRule[];
     }): ILayoutNodeHandle;
     element(renderer: string, props?: Record<string, unknown>): ILayoutNodeHandle;
+    object(fieldName: string, layout: (layout: ILayoutBuilder) => LayoutNode[]): ILayoutNodeHandle;
+    object(
+        fieldName: string,
+        templateLayouts: Record<string, (layout: ILayoutBuilder) => LayoutNode[]>
+    ): ILayoutNodeHandle;
     remove(target: string): void;
 }
 
@@ -467,11 +536,13 @@ export namespace FormModel {
     export type TabDefinitionVM = ITabDefinitionVM;
     export type ElementNode = IElementNode;
     export type ElementNodeVM = IElementNodeVM;
+    export type ObjectNode = IObjectNode;
     export type ObjectFieldVM = IObjectFieldVM;
     export type ObjectFieldItemVM = IObjectFieldItemVM;
     export type Template = ITemplate;
     export type TemplateConfig = ITemplateConfig;
     export type TemplateVM = ITemplateVM;
+    export type ObjectFieldTemplatesAPI = IObjectFieldTemplatesAPI;
     export type FormError = IFormError;
     export type FormVM = IFormVM;
     export type Interface<T = Record<string, any>> = IFormModel<T>;
@@ -507,6 +578,20 @@ export interface ILayoutBuilder {
         rules?: IRule[];
     }): ITabsNode;
     element(renderer: string, props?: Record<string, unknown>): IElementNode;
+    /**
+     * Reference an object field and register its inner layout.
+     *
+     * Non-templated: pass a single layout factory; the layout applies to the
+     * single object or to every list item. Templated: pass a map of factories
+     * keyed by template id; each entry applies when that template is active
+     * (or for each list item with that template). Templates without an entry
+     * fall back to default one-row-per-visible-child.
+     */
+    object(fieldName: string, layout: (layout: ILayoutBuilder) => LayoutNode[]): IObjectNode;
+    object(
+        fieldName: string,
+        templateLayouts: Record<string, (layout: ILayoutBuilder) => LayoutNode[]>
+    ): IObjectNode;
 }
 
 export interface IFieldBuilder<TType extends string = string> {

@@ -5,7 +5,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as HorizontalRuleIcon } from "@webiny/icons/horizontal_rule.svg";
 import type { IObjectFieldVM } from "~/features/formModel/index.js";
 import { useConfirmationDialog } from "~/hooks/useConfirmationDialog.js";
-import { ChildFields } from "./ObjectFieldComponents.js";
+import { NestedLayout } from "./ObjectFieldComponents.js";
 import { AddTemplateButton } from "./TemplatePicker.js";
 
 export const DynamicZoneRenderer = observer(({ field }: { field: IObjectFieldVM }) => {
@@ -59,7 +59,7 @@ export const DynamicZoneRenderer = observer(({ field }: { field: IObjectFieldVM 
                                     )
                                 }
                             >
-                                <ChildFields fields={field.fields} />
+                                <NestedLayout layout={field.layout} />
                             </Accordion.Item>
                         </Accordion>
                     ) : null}

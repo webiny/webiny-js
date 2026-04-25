@@ -8,7 +8,7 @@ import type {
 } from "~/features/formModel/index.js";
 import {
     isObjectFieldVM,
-    ChildFields,
+    NestedLayout,
     ListItemRenderer,
     AddItemButton
 } from "./ObjectFieldComponents.js";
@@ -51,7 +51,7 @@ const SingleObjectRenderer = observer(({ field }: { field: IObjectFieldVM }) => 
     return (
         <Accordion background={"base"} variant={"container"}>
             <Accordion.Item title={field.label} defaultOpen={true}>
-                <ChildFields fields={field.fields} />
+                <NestedLayout layout={field.layout} />
             </Accordion.Item>
         </Accordion>
     );

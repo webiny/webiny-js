@@ -3,6 +3,7 @@ import { Field } from "./Field.js";
 import type {
     IObjectFieldConfig,
     IObjectField,
+    IObjectFieldTemplatesAPI,
     IListItemField,
     IField,
     IObjectFieldVM,
@@ -10,14 +11,19 @@ import type {
     IFormModel,
     IFieldBuilder,
     IRule,
+    ITemplate,
     ITemplateConfig,
     ITemplateVM,
     FieldTypeMap,
+    LayoutNode,
+    LayoutNodeVM,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
     OnBlurCallback
 } from "./abstractions.js";
+import { createFieldBuilderRegistry } from "./FieldBuilder.js";
+import type { FormModel } from "./FormModel.js";
 
 /** Reserved key used as the template discriminator in templated object data. */
 export const TEMPLATE_DISCRIMINATOR = "_templateId";
@@ -112,7 +118,12 @@ export class ObjectField implements IObjectField {
     private _children: Map<string, IField>;
     private _items: ListItem[] = [];
     private _templates: ITemplateConfig[] = [];
+    private _isTemplated: boolean;
     private _activeTemplateId: string | null = null;
+    /** Inner layout for non-templated objects (single layout, applied per item too). */
+    private _ownLayout: LayoutNode[] | null = null;
+    /** Per-template inner layouts for templated objects. */
+    private _templateLayouts: Record<string, LayoutNode[]> = {};
 
     constructor(config: IObjectFieldConfig) {
         this.config = config;
@@ -122,8 +133,9 @@ export class ObjectField implements IObjectField {
             renderer: config.renderer ?? "object"
         });
         this._templates = config.templates ?? [];
+        this._isTemplated = this._templates.length > 0;
 
-        if (this._templates.length > 0) {
+        if (this._isTemplated) {
             // Templated mode: children populated per-item (list) or when a template is picked (single).
             this._children = new Map();
         } else {
@@ -230,7 +242,7 @@ export class ObjectField implements IObjectField {
     }
 
     get isTemplated(): boolean {
-        return this._templates.length > 0;
+        return this._isTemplated;
     }
 
     get activeTemplateId(): string | null {
@@ -255,6 +267,108 @@ export class ObjectField implements IObjectField {
             return;
         }
         this._rebuildChildrenForTemplate(templateId);
+    }
+
+    get templates(): IObjectFieldTemplatesAPI {
+        return {
+            add: (template: ITemplate) => this._addTemplate(template),
+            remove: (templateId: string) => this._removeTemplate(templateId)
+        };
+    }
+
+    private _addTemplate(template: ITemplate): void {
+        if (!this.isTemplated) {
+            throw new Error(
+                `Object field "${this.config.name}" is not templated; templates.add() requires the field to be defined with .templates([...]).`
+            );
+        }
+        if (template.id === TEMPLATE_DISCRIMINATOR) {
+            throw new Error(
+                `Template id "${TEMPLATE_DISCRIMINATOR}" is reserved. Choose a different id.`
+            );
+        }
+        if (this._findTemplate(template.id)) {
+            throw new Error(`Duplicate template id "${template.id}".`);
+        }
+        const registry = createFieldBuilderRegistry();
+        const childBuilders = template.fields(registry);
+        if (TEMPLATE_DISCRIMINATOR in childBuilders) {
+            throw new Error(
+                `Template "${template.id}" defines a reserved field "${TEMPLATE_DISCRIMINATOR}". ` +
+                    `The discriminator is added automatically.`
+            );
+        }
+        this._templates.push({
+            id: template.id,
+            name: template.name,
+            childBuilders,
+            visible: template.visible
+        });
+    }
+
+    private _removeTemplate(templateId: string): void {
+        if (!this.isTemplated) {
+            throw new Error(
+                `Object field "${this.config.name}" is not templated; templates.remove() requires the field to be defined with .templates([...]).`
+            );
+        }
+        const index = this._templates.findIndex(t => t.id === templateId);
+        if (index === -1) {
+            return;
+        }
+        this._templates.splice(index, 1);
+
+        if (this.config.isList) {
+            this._items = this._items.filter(item => item.templateId !== templateId);
+            return;
+        }
+        if (this._activeTemplateId === templateId) {
+            this._activeTemplateId = null;
+            this._children = new Map();
+        }
+    }
+
+    setInnerLayout(layout: LayoutNode[] | Record<string, LayoutNode[]>): void {
+        if (Array.isArray(layout)) {
+            if (this.isTemplated) {
+                throw new Error(
+                    `Object field "${this.config.name}" is templated; layout.object() must pass a per-template map (Record<templateId, LayoutNode[]>), not a single LayoutNode[].`
+                );
+            }
+            this._ownLayout = layout;
+            this._templateLayouts = {};
+            return;
+        }
+        if (!this.isTemplated) {
+            throw new Error(
+                `Object field "${this.config.name}" is not templated; layout.object() must pass a single LayoutNode[], not a per-template map.`
+            );
+        }
+        this._templateLayouts = layout;
+        this._ownLayout = null;
+    }
+
+    private _resolveLayoutForChildren(
+        children: Map<string, IField>,
+        templateId: string | null
+    ): LayoutNodeVM[] {
+        const formImpl = this._form as FormModel | null;
+        const layoutNodes = this.isTemplated
+            ? templateId !== null
+                ? this._templateLayouts[templateId]
+                : undefined
+            : (this._ownLayout ?? undefined);
+        if (layoutNodes && formImpl?.resolveChildLayout) {
+            return formImpl.resolveChildLayout(layoutNodes, children);
+        }
+        // Default: one row per visible child, in insertion order.
+        const fallback: LayoutNodeVM[] = [];
+        for (const [, field] of children) {
+            if (field.visible) {
+                fallback.push({ type: "row", fields: [field.vm] });
+            }
+        }
+        return fallback;
     }
 
     get children(): Map<string, IField> {
@@ -484,12 +598,19 @@ export class ObjectField implements IObjectField {
                 : Array.from(this._children.values())
                       .filter(f => f.visible)
                       .map(f => f.vm),
+            layout: this.config.isList
+                ? []
+                : this._resolveLayoutForChildren(this._children, this._activeTemplateId),
             items: this.config.isList
                 ? this._items.map((item, index) => ({
                       key: item.key,
                       fields: Array.from(item.children.values())
                           .filter(f => f.visible)
                           .map(f => f.vm),
+                      layout: this._resolveLayoutForChildren(
+                          item.children,
+                          item.templateId ?? null
+                      ),
                       templateId: item.templateId,
                       remove: () => this.removeItem(index),
                       moveUp: () => this.moveItem(index, index - 1),

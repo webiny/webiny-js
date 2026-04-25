@@ -32,7 +32,8 @@ import type {
     ITabDefinition,
     ITabDefinitionVM,
     IElementNode,
-    IElementNodeVM
+    IElementNodeVM,
+    IObjectNode
 } from "./abstractions.js";
 
 const layoutAPI: ILayoutBuilder = {
@@ -58,8 +59,31 @@ const layoutAPI: ILayoutBuilder = {
     },
     element(renderer: string, props?: Record<string, unknown>): IElementNode {
         return { type: "element", renderer, props };
+    },
+    object(
+        fieldName: string,
+        inner:
+            | ((layout: ILayoutBuilder) => LayoutNode[])
+            | Record<string, (layout: ILayoutBuilder) => LayoutNode[]>
+    ): IObjectNode {
+        return { type: "object", fieldName, inner: resolveObjectInner(inner) };
     }
 };
+
+function resolveObjectInner(
+    inner:
+        | ((layout: ILayoutBuilder) => LayoutNode[])
+        | Record<string, (layout: ILayoutBuilder) => LayoutNode[]>
+): LayoutNode[] | Record<string, LayoutNode[]> {
+    if (typeof inner === "function") {
+        return inner(layoutAPI);
+    }
+    const resolved: Record<string, LayoutNode[]> = {};
+    for (const [tplId, factory] of Object.entries(inner)) {
+        resolved[tplId] = factory(layoutAPI);
+    }
+    return resolved;
+}
 
 export class FormModel implements IFormModel {
     private _fields = new Map<string, IField>();
@@ -94,6 +118,9 @@ export class FormModel implements IFormModel {
         } else {
             this._layout = this._generateDefaultLayout();
         }
+
+        // Register per-template layouts on object fields referenced via layout.object()
+        this._registerObjectNodeLayouts(this._layout);
 
         // Propagate ancestor rules from layout into fields
         this._propagateAncestorRules();
@@ -236,6 +263,7 @@ export class FormModel implements IFormModel {
             }
         }
 
+        this._registerObjectNodeLayouts(this._layout);
         this._propagateAncestorRules();
     }
 
@@ -367,6 +395,65 @@ export class FormModel implements IFormModel {
                 return this._resolveTabsNode(node);
             case "element":
                 return this._resolveElementNode(node);
+            case "object":
+                return this._resolveObjectNode(node);
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Object node resolves to a single-field row referencing the field. The
+     * per-template layouts have already been registered on the field at build
+     * time; the field's VM exposes `layout` (or `items[].layout`) so renderers
+     * can walk it.
+     */
+    private _resolveObjectNode(node: IObjectNode): IRowNodeVM | null {
+        const field = this._fields.get(node.fieldName);
+        if (!field || !field.visible) {
+            return null;
+        }
+        return { type: "row", fields: [field.vm] };
+    }
+
+    /**
+     * Resolve a layout-node sub-tree against an arbitrary children Map. Used
+     * by ObjectField to compute its own VM-level `layout` (active template /
+     * per-item template). Field-id lookups go to the children scope; tabs and
+     * other recursive cases are resolved with the same scope.
+     */
+    public resolveChildLayout(layout: LayoutNode[], children: Map<string, IField>): LayoutNodeVM[] {
+        return layout
+            .map(node => this._resolveChildLayoutNode(node, children))
+            .filter(Boolean) as LayoutNodeVM[];
+    }
+
+    private _resolveChildLayoutNode(
+        node: LayoutNode,
+        children: Map<string, IField>
+    ): LayoutNodeVM | null {
+        switch (node.type) {
+            case "row": {
+                const fields = node.fieldIds
+                    .map(id => children.get(id))
+                    .filter((f): f is IField => f !== undefined && f.visible)
+                    .map(f => f.vm);
+                if (fields.length === 0) {
+                    return null;
+                }
+                return { type: "row", fields };
+            }
+            case "separator":
+                return { type: "separator" };
+            case "element":
+                return this._resolveElementNode(node);
+            case "object": {
+                const field = children.get(node.fieldName);
+                if (!field || !field.visible) {
+                    return null;
+                }
+                return { type: "row", fields: [field.vm] };
+            }
             default:
                 return null;
         }
@@ -478,9 +565,74 @@ export class FormModel implements IFormModel {
                 for (const tab of node.tabs) {
                     ids.push(...this._collectFieldIdsFromLayout(tab.layout));
                 }
+            } else if (node.type === "object") {
+                ids.push(node.fieldName);
             }
         }
         return ids;
+    }
+
+    /**
+     * Walk the form layout for `object` nodes and forward each per-template map
+     * to the referenced field. Unknown field names and non-object fields are
+     * ignored. Templates without an entry fall back to default rendering.
+     */
+    private _registerObjectNodeLayouts(layout: LayoutNode[]): void {
+        for (const node of layout) {
+            if (node.type === "object") {
+                const field = this._fields.get(node.fieldName);
+                if (field && isObjectField(field)) {
+                    field.setInnerLayout(node.inner);
+                }
+                // Phase 8c does not register layouts for object nodes nested
+                // inside another object's inner layout — see _warnNestedObjectNodes.
+                this._warnNestedObjectNodes(node.inner, node.fieldName);
+            } else if (node.type === "tabs") {
+                for (const tab of node.tabs) {
+                    this._registerObjectNodeLayouts(tab.layout);
+                }
+            }
+        }
+    }
+
+    /**
+     * Phase 8c does not support `layout.object()` for object fields nested
+     * inside another object's inner layout. Templated children only exist
+     * after a template is activated, so we cannot eagerly register their
+     * inner layouts at build time. The nested node still resolves as a cell
+     * (showing the child's default layout); only the nested per-template
+     * layout map is ignored. Tracked for a later phase.
+     */
+    private _warnNestedObjectNodes(
+        inner: LayoutNode[] | Record<string, LayoutNode[]>,
+        ownerFieldName: string
+    ): void {
+        if (process.env.NODE_ENV !== "development") {
+            return;
+        }
+        const scan = (nodes: LayoutNode[]): void => {
+            for (const node of nodes) {
+                if (node.type === "object") {
+                    console.warn(
+                        `[FormModel] layout.object("${node.fieldName}") is nested inside layout.object("${ownerFieldName}"). ` +
+                            `Per-template layouts on nested object fields are not registered in Phase 8c — ` +
+                            `the nested field will render with its default layout. ` +
+                            `Track: nested object layouts.`
+                    );
+                } else if (node.type === "tabs") {
+                    for (const tab of node.tabs) {
+                        scan(tab.layout);
+                    }
+                }
+            }
+        };
+        if (Array.isArray(inner)) {
+            scan(inner);
+        } else {
+            for (const layoutNodes of Object.values(inner)) {
+                scan(layoutNodes);
+            }
+        }
     }
 
     private _tabsNodeKey(node: ITabsNode): string {
@@ -507,6 +659,9 @@ export class FormModel implements IFormModel {
                         const tabRules = [...containerRules, ...(tab.rules ?? [])];
                         walk(tab.layout, tabRules);
                     }
+                } else if (node.type === "object") {
+                    const existing = ancestry.get(node.fieldName) ?? [];
+                    ancestry.set(node.fieldName, [...existing, ...rules]);
                 }
             }
         };
@@ -571,6 +726,8 @@ export class FormModel implements IFormModel {
                 return node.id === target;
             case "element":
                 return node.id === target || node.renderer === target;
+            case "object":
+                return node.fieldName === target;
             default:
                 return false;
         }
@@ -590,10 +747,11 @@ export class FormModel implements IFormModel {
                     }
                     return { ...node, fieldIds: filtered };
                 }
-                // Remove tabs/elements by their ID
+                // Remove tabs/elements/object by their ID / fieldName
                 if (
                     (node.type === "tabs" && node.id === target) ||
-                    (node.type === "element" && (node.id === target || node.renderer === target))
+                    (node.type === "element" && (node.id === target || node.renderer === target)) ||
+                    (node.type === "object" && node.fieldName === target)
                 ) {
                     return null;
                 }
@@ -661,6 +819,19 @@ export class FormModel implements IFormModel {
             },
             element(renderer: string, props?: Record<string, unknown>): ILayoutNodeHandle {
                 const node: IElementNode = { type: "element", renderer, props };
+                return createLayoutNodeHandle(node);
+            },
+            object(
+                fieldName: string,
+                inner:
+                    | ((layout: ILayoutBuilder) => LayoutNode[])
+                    | Record<string, (layout: ILayoutBuilder) => LayoutNode[]>
+            ): ILayoutNodeHandle {
+                const node: IObjectNode = {
+                    type: "object",
+                    fieldName,
+                    inner: resolveObjectInner(inner)
+                };
                 return createLayoutNodeHandle(node);
             },
             remove(target: string): void {

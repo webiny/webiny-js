@@ -8,7 +8,7 @@ import { ReactComponent as ArrowDownIcon } from "@webiny/icons/expand_more.svg";
 import { ReactComponent as HorizontalRuleIcon } from "@webiny/icons/horizontal_rule.svg";
 import type { IObjectFieldItemVM, IObjectFieldVM } from "~/features/formModel/index.js";
 import { useConfirmationDialog } from "~/hooks/useConfirmationDialog.js";
-import { ChildFields } from "./ObjectFieldComponents.js";
+import { NestedLayout } from "./ObjectFieldComponents.js";
 import { AddTemplateButton } from "./TemplatePicker.js";
 
 export const MultiValueDynamicZoneRenderer = observer(
@@ -113,7 +113,7 @@ const TemplatedListItem = observer(
 
         return (
             <Accordion.Item title={title} actions={disabled ? null : actions} defaultOpen={false}>
-                <ChildFields fields={item.fields} />
+                <NestedLayout layout={item.layout} />
             </Accordion.Item>
         );
     }
