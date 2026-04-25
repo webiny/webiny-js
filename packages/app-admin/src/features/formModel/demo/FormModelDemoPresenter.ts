@@ -47,6 +47,35 @@ export class FormModelDemoPresenter {
                             })
                         }
                     ]),
+                sections: fields
+                    .object()
+                    .label("Page Sections")
+                    .list()
+                    .templates([
+                        {
+                            id: "hero",
+                            name: "Hero Banner",
+                            fields: f => ({
+                                heading: f.text().label("Heading").required("Required"),
+                                image: f.text().label("Image URL")
+                            })
+                        },
+                        {
+                            id: "text",
+                            name: "Rich Text",
+                            fields: f => ({
+                                body: f.text().label("Body").required("Required")
+                            })
+                        },
+                        {
+                            id: "cta",
+                            name: "Call To Action",
+                            fields: f => ({
+                                label: f.text().label("Button Label").required("Required"),
+                                url: f.text().label("Link URL")
+                            })
+                        }
+                    ]),
                 plan: fields
                     .select()
                     .label("Plan")

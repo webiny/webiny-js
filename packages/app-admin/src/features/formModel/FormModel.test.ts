@@ -1962,7 +1962,7 @@ describe("FormModel", () => {
                 ).toThrow(/reserved field "_templateId"/);
             });
 
-            it("rejects combining .list() with .templates() in Phase 8a", () => {
+            it("allows combining .list() with .templates() (Phase 8b)", () => {
                 expect(
                     () =>
                         new FormModel({
@@ -1975,7 +1975,7 @@ describe("FormModel", () => {
                                     ])
                             })
                         })
-                ).toThrow(/Phase 8b/);
+                ).not.toThrow();
             });
         });
 
@@ -2222,6 +2222,260 @@ describe("FormModel", () => {
                     content: { _templateId: "hero", heading: "Hello", image: "" }
                 });
                 (form.field("content") as any).setTemplate("text");
+                expect(form.isDirty).toBe(true);
+            });
+        });
+    });
+
+    describe("templated list fields (Phase 8b)", () => {
+        function createFormWithTemplatedList() {
+            return new FormModel({
+                fields: fields => ({
+                    sections: fields
+                        .object()
+                        .label("Sections")
+                        .list()
+                        .templates([
+                            {
+                                id: "hero",
+                                name: "Hero",
+                                fields: f => ({
+                                    heading: f.text().required("Required"),
+                                    image: f.text()
+                                })
+                            },
+                            {
+                                id: "text",
+                                name: "Text",
+                                fields: f => ({
+                                    body: f.text().required("Required")
+                                })
+                            }
+                        ])
+                })
+            });
+        }
+
+        describe("addItem / templateId", () => {
+            it("requires a template id when adding to a templated list", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                expect(() => field.addItem()).toThrow(/require a template id/);
+            });
+
+            it("rejects unknown template ids", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                expect(() => field.addItem("missing")).toThrow(/Template "missing" not found/);
+            });
+
+            it("adds an item with the picked template's children", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+
+                expect(field.items.length).toBe(1);
+                expect(field.items[0].templateId).toBe("hero");
+                expect(field.items[0].children.has("heading")).toBe(true);
+                expect(field.items[0].children.has("image")).toBe(true);
+            });
+
+            it("allows mixing different templates across items", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.addItem("text");
+                field.addItem("hero");
+
+                expect(field.items.map((i: any) => i.templateId)).toEqual(["hero", "text", "hero"]);
+            });
+        });
+
+        describe("getData", () => {
+            it("includes _templateId per item", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.items[0].children.get("heading").setValue("Welcome");
+                field.addItem("text");
+                field.items[1].children.get("body").setValue("Lorem");
+
+                expect(form.getData().sections).toEqual([
+                    { _templateId: "hero", heading: "Welcome", image: null },
+                    { _templateId: "text", body: "Lorem" }
+                ]);
+            });
+        });
+
+        describe("setData", () => {
+            it("hydrates items by reading each item's _templateId", () => {
+                const form = createFormWithTemplatedList();
+                form.setData({
+                    sections: [
+                        { _templateId: "hero", heading: "H1", image: "img.jpg" },
+                        { _templateId: "text", body: "Body copy" }
+                    ]
+                });
+
+                const field = form.field("sections") as any;
+                expect(field.items.length).toBe(2);
+                expect(field.items[0].templateId).toBe("hero");
+                expect(field.items[0].children.get("heading").getValue()).toBe("H1");
+                expect(field.items[1].templateId).toBe("text");
+                expect(field.items[1].children.get("body").getValue()).toBe("Body copy");
+            });
+
+            it("silently drops items with invalid or missing _templateId", () => {
+                const form = createFormWithTemplatedList();
+                form.setData({
+                    sections: [
+                        { _templateId: "hero", heading: "Keep" },
+                        { _templateId: "nope", x: 1 } as any,
+                        { heading: "no-id" } as any,
+                        null as any,
+                        { _templateId: "text", body: "Also keep" }
+                    ]
+                });
+
+                const field = form.field("sections") as any;
+                expect(field.items.length).toBe(2);
+                expect(field.items.map((i: any) => i.templateId)).toEqual(["hero", "text"]);
+            });
+        });
+
+        describe("duplicate / move / remove", () => {
+            it("duplicates an item preserving templateId and values", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.items[0].children.get("heading").setValue("Original");
+                field.items[0].children.get("image").setValue("pic.jpg");
+
+                field.duplicateItem(0);
+
+                expect(field.items.length).toBe(2);
+                expect(field.items[1].templateId).toBe("hero");
+                expect(field.items[1].children.get("heading").getValue()).toBe("Original");
+                expect(field.items[1].children.get("image").getValue()).toBe("pic.jpg");
+                expect(field.items[0].key).not.toBe(field.items[1].key);
+            });
+
+            it("moves items while preserving templateId", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.addItem("text");
+                field.moveItem(0, 1);
+
+                expect(field.items.map((i: any) => i.templateId)).toEqual(["text", "hero"]);
+            });
+
+            it("removes items by index", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.addItem("text");
+                field.removeItem(0);
+
+                expect(field.items.length).toBe(1);
+                expect(field.items[0].templateId).toBe("text");
+            });
+        });
+
+        describe("VM", () => {
+            it("exposes templateId and duplicate on each item VM", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+
+                const vm = form.field("sections").vm as IObjectFieldVM;
+                expect(vm.items.length).toBe(1);
+                expect(vm.items[0].templateId).toBe("hero");
+                expect(typeof vm.items[0].duplicate).toBe("function");
+            });
+
+            it("VM addItem(templateId) appends an item", () => {
+                const form = createFormWithTemplatedList();
+                const vm = form.field("sections").vm as IObjectFieldVM;
+                vm.addItem("hero");
+                vm.addItem("text");
+
+                const field = form.field("sections") as any;
+                expect(field.items.map((i: any) => i.templateId)).toEqual(["hero", "text"]);
+            });
+
+            it("availableTemplates respects reactive visible() on templated lists", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        plan: fields.text().defaultValue("free"),
+                        sections: fields
+                            .object()
+                            .list()
+                            .templates([
+                                { id: "basic", name: "Basic", fields: f => ({ x: f.text() }) },
+                                {
+                                    id: "premium",
+                                    name: "Premium",
+                                    visible: f => f.field("plan").getValue() === "enterprise",
+                                    fields: f => ({ y: f.text() })
+                                }
+                            ])
+                    })
+                });
+
+                const vm1 = form.field("sections").vm as IObjectFieldVM;
+                expect(vm1.availableTemplates.map(t => t.id)).toEqual(["basic"]);
+
+                form.field("plan").setValue("enterprise");
+                const vm2 = form.field("sections").vm as IObjectFieldVM;
+                expect(vm2.availableTemplates.map(t => t.id)).toEqual(["basic", "premium"]);
+            });
+        });
+
+        describe("validation", () => {
+            it("validates each item's children under its template", async () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero"); // heading is required, not set
+                field.addItem("text");
+                field.items[1].children.get("body").setValue("ok");
+
+                const valid = await form.validate();
+                expect(valid).toBe(false);
+                expect(form.errors.some(e => e.path.startsWith("sections"))).toBe(true);
+            });
+
+            it("passes when every item's required fields are filled", async () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.items[0].children.get("heading").setValue("H");
+                field.addItem("text");
+                field.items[1].children.get("body").setValue("B");
+
+                const valid = await form.validate();
+                expect(valid).toBe(true);
+            });
+        });
+
+        describe("isDirty", () => {
+            it("is not dirty after setData with templated list", () => {
+                const form = createFormWithTemplatedList();
+                form.setData({
+                    sections: [
+                        { _templateId: "hero", heading: "H", image: "" },
+                        { _templateId: "text", body: "B" }
+                    ]
+                });
+                expect(form.isDirty).toBe(false);
+            });
+
+            it("becomes dirty after adding an item", () => {
+                const form = createFormWithTemplatedList();
+                form.setData({
+                    sections: [{ _templateId: "hero", heading: "H", image: "" }]
+                });
+                (form.field("sections") as any).addItem("text");
                 expect(form.isDirty).toBe(true);
             });
         });

@@ -105,9 +105,12 @@ export interface IObjectFieldVM extends IFieldVM {
     fields: IFieldVM[];
     /** Items for list-mode object fields. */
     items: IObjectFieldItemVM[];
-    addItem: () => void;
+    /** Append a new item. Templated lists require a template id. */
+    addItem: (templateId?: string) => void;
     removeItem: (index: number) => void;
     moveItem: (fromIndex: number, toIndex: number) => void;
+    /** Duplicate a list item (including its `_templateId` when templated) and insert it after the source. */
+    duplicateItem: (index: number) => void;
     /** True when the object has templates defined. */
     isTemplated: boolean;
     /** Templates visible in the picker (filtered by each template's reactive `visible`). */
@@ -124,6 +127,7 @@ export interface IObjectFieldItemVM {
     remove: () => void;
     moveUp: () => void;
     moveDown: () => void;
+    duplicate: () => void;
     /** The template id of this item, if the parent list is templated. */
     templateId?: string;
 }
@@ -223,9 +227,19 @@ export interface IObjectField extends IField {
     readonly isTemplated: boolean;
     readonly activeTemplateId: string | null;
     readonly availableTemplates: ITemplateVM[];
-    addItem(data?: Record<string, unknown>): void;
+    /**
+     * Append a new list item.
+     * - Non-templated list: `addItem(data?)` — data hydrates the new item.
+     * - Templated list: `addItem(templateId, data?)` — templateId picks the variant.
+     */
+    addItem(
+        templateIdOrData?: string | Record<string, unknown>,
+        data?: Record<string, unknown>
+    ): void;
     removeItem(index: number): void;
     moveItem(fromIndex: number, toIndex: number): void;
+    /** Duplicate a list item (including its `_templateId`) and insert after the source. */
+    duplicateItem(index: number): void;
     setTemplate(templateId: string): void;
     getData(): Record<string, unknown> | Record<string, unknown>[];
 }
@@ -233,6 +247,7 @@ export interface IObjectField extends IField {
 export interface IListItemField {
     readonly key: string;
     readonly children: Map<string, IField>;
+    readonly templateId?: string;
     getData(): Record<string, unknown>;
 }
 

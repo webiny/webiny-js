@@ -96,6 +96,7 @@ let itemKeyCounter = 0;
 interface ListItem {
     key: string;
     children: Map<string, IField>;
+    templateId?: string;
 }
 
 /**
@@ -122,15 +123,8 @@ export class ObjectField implements IObjectField {
         });
         this._templates = config.templates ?? [];
 
-        if (this._templates.length > 0 && config.isList) {
-            throw new Error(
-                `Object field "${config.name}": combining .list() with .templates() is not yet supported. ` +
-                    `This will be enabled in Phase 8b.`
-            );
-        }
-
         if (this._templates.length > 0) {
-            // Phase 8a: templated single-object. No active template until explicitly set.
+            // Templated mode: children populated per-item (list) or when a template is picked (single).
             this._children = new Map();
         } else {
             this._children = createChildFields(config.childBuilders, null);
@@ -271,8 +265,17 @@ export class ObjectField implements IObjectField {
         return this._items.map(item => ({
             key: item.key,
             children: item.children,
-            getData: () => getChildrenData(item.children)
+            templateId: item.templateId,
+            getData: () => this._getItemData(item)
         }));
+    }
+
+    private _getItemData(item: ListItem): Record<string, unknown> {
+        const data = getChildrenData(item.children);
+        if (item.templateId !== undefined) {
+            return { [TEMPLATE_DISCRIMINATOR]: item.templateId, ...data };
+        }
+        return data;
     }
 
     getChild(name: string): IField | undefined {
@@ -286,7 +289,7 @@ export class ObjectField implements IObjectField {
 
     getData(): any {
         if (this.config.isList) {
-            return this._items.map(item => getChildrenData(item.children));
+            return this._items.map(item => this._getItemData(item));
         }
         if (this.isTemplated) {
             if (this._activeTemplateId === null) {
@@ -313,7 +316,23 @@ export class ObjectField implements IObjectField {
             this._items = [];
             if (Array.isArray(value)) {
                 for (const itemData of value) {
-                    this._addItemInternal(itemData);
+                    if (this.isTemplated) {
+                        if (!itemData || typeof itemData !== "object") {
+                            continue;
+                        }
+                        const data = itemData as Record<string, unknown>;
+                        const templateId = data[TEMPLATE_DISCRIMINATOR];
+                        if (typeof templateId !== "string") {
+                            continue;
+                        }
+                        if (!this._findTemplate(templateId)) {
+                            continue;
+                        }
+                        const { [TEMPLATE_DISCRIMINATOR]: _discarded, ...rest } = data;
+                        this._addItemInternal(rest, templateId);
+                    } else {
+                        this._addItemInternal(itemData);
+                    }
                 }
             }
             return;
@@ -340,8 +359,32 @@ export class ObjectField implements IObjectField {
         hydrateChildren(this._children, value as Record<string, unknown>);
     }
 
-    addItem(data?: Record<string, unknown>): void {
-        this._addItemInternal(data);
+    addItem(
+        templateIdOrData?: string | Record<string, unknown>,
+        data?: Record<string, unknown>
+    ): void {
+        if (this.isTemplated) {
+            if (typeof templateIdOrData !== "string") {
+                throw new Error(
+                    `Object field "${this.config.name}": templated list items require a template id. ` +
+                        `Call addItem(templateId) with one of: ${this._templates.map(t => t.id).join(", ")}.`
+                );
+            }
+            if (!this._findTemplate(templateIdOrData)) {
+                throw new Error(
+                    `Template "${templateIdOrData}" not found on field "${this.config.name}". ` +
+                        `Available: ${this._templates.map(t => t.id).join(", ") || "(none)"}.`
+                );
+            }
+            this._addItemInternal(data, templateIdOrData);
+            return;
+        }
+        if (typeof templateIdOrData === "string") {
+            throw new Error(
+                `Object field "${this.config.name}" is not templated; addItem() does not accept a template id.`
+            );
+        }
+        this._addItemInternal(templateIdOrData);
     }
 
     removeItem(index: number): void {
@@ -362,13 +405,39 @@ export class ObjectField implements IObjectField {
         this._items.splice(toIndex, 0, item);
     }
 
-    private _addItemInternal(data?: Record<string, unknown>): void {
-        const children = createChildFields(this.config.childBuilders, this._form);
+    duplicateItem(index: number): void {
+        const source = this._items[index];
+        if (!source) {
+            return;
+        }
+        const data = getChildrenData(source.children);
+        const children = createChildFields(
+            this._templateChildBuilders(source.templateId),
+            this._form
+        );
+        hydrateChildren(children, data);
+        const key = `item_${++itemKeyCounter}`;
+        this._items.splice(index + 1, 0, { key, children, templateId: source.templateId });
+    }
+
+    private _templateChildBuilders(templateId: string | undefined): Record<string, IFieldBuilder> {
+        if (templateId === undefined) {
+            return this.config.childBuilders;
+        }
+        const template = this._findTemplate(templateId);
+        if (!template) {
+            throw new Error(`Template "${templateId}" not found on field "${this.config.name}".`);
+        }
+        return template.childBuilders;
+    }
+
+    private _addItemInternal(data?: Record<string, unknown>, templateId?: string): void {
+        const children = createChildFields(this._templateChildBuilders(templateId), this._form);
         if (data) {
             hydrateChildren(children, data);
         }
         const key = `item_${++itemKeyCounter}`;
-        this._items.push({ key, children });
+        this._items.push({ key, children, templateId });
     }
 
     resetValidation(): void {
@@ -421,14 +490,18 @@ export class ObjectField implements IObjectField {
                       fields: Array.from(item.children.values())
                           .filter(f => f.visible)
                           .map(f => f.vm),
+                      templateId: item.templateId,
                       remove: () => this.removeItem(index),
                       moveUp: () => this.moveItem(index, index - 1),
-                      moveDown: () => this.moveItem(index, index + 1)
+                      moveDown: () => this.moveItem(index, index + 1),
+                      duplicate: () => this.duplicateItem(index)
                   }))
                 : [],
-            addItem: () => this.addItem(),
+            addItem: (templateId?: string) =>
+                templateId !== undefined ? this.addItem(templateId) : this.addItem(),
             removeItem: (index: number) => this.removeItem(index),
             moveItem: (from: number, to: number) => this.moveItem(from, to),
+            duplicateItem: (index: number) => this.duplicateItem(index),
             isTemplated: this.isTemplated,
             availableTemplates: this.availableTemplates,
             activeTemplateId: this._activeTemplateId,

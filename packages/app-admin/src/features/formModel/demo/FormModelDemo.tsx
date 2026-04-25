@@ -18,12 +18,12 @@ export const FormModelDemo = observer(() => {
     return (
         <div className={"p-lg flex flex-col gap-lg max-w-4xl mx-auto"}>
             <div className={"flex flex-col gap-sm"}>
-                <h2 className={"text-xl font-semibold"}>FormModel Demo — Phase 8a</h2>
+                <h2 className={"text-xl font-semibold"}>FormModel Demo — Phase 8b</h2>
                 <p className={"text-sm text-neutral-strong"}>
-                    Single-object templates. Pick a template from the dropdown inside the
-                    &quot;Content Block&quot; field and observe the form reshape. Change Plan to{" "}
-                    <code>enterprise</code> to see the &quot;Premium Widget&quot; template appear
-                    in the picker.
+                    Single-object templates (&quot;Content Block&quot;) and templated lists (
+                    &quot;Page Sections&quot;). Pick a template from the gallery, reorder,
+                    duplicate, delete. Change Plan to <code>enterprise</code> to see the
+                    &quot;Premium Widget&quot; template appear in the Content Block picker.
                 </p>
             </div>
 
