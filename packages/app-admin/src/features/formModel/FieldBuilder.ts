@@ -80,6 +80,11 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
+    list(): this {
+        this._config.isList = true;
+        return this;
+    }
+
     hidden(): this {
         this._config.hidden = true;
         return this;
@@ -167,7 +172,27 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
 export class TextFieldBuilder extends FieldBuilder<"text"> {
     constructor() {
         super("text");
-        this._config.renderer = "input";
+        this._config.renderer = "textInput";
+    }
+}
+
+/**
+ * Number field builder.
+ */
+export class NumberFieldBuilder extends FieldBuilder<"number"> {
+    constructor() {
+        super("number");
+        this._config.renderer = "numberInput";
+    }
+}
+
+/**
+ * Boolean field builder.
+ */
+export class BooleanFieldBuilder extends FieldBuilder<"boolean"> {
+    constructor() {
+        super("boolean");
+        this._config.renderer = "switch";
     }
 }
 
@@ -200,7 +225,7 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
 
     constructor() {
         super("object");
-        this._config.renderer = "object";
+        this._config.renderer = "objectAccordionSingle";
     }
 
     fields(fn: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this {
@@ -209,8 +234,11 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
         return this;
     }
 
-    list(): this {
+    override list(): this {
         this._isList = true;
+        if (this._config.renderer === "objectAccordionSingle") {
+            this._config.renderer = "objectAccordionMultiple";
+        }
         return this;
     }
 
@@ -241,10 +269,19 @@ export class ObjectFieldBuilder extends FieldBuilder<"object"> implements IObjec
             return {
                 id: t.id,
                 name: t.name,
+                icon: t.icon,
                 childBuilders,
                 visible: t.visible
             };
         });
+
+        if (
+            this._config.renderer === "objectAccordionSingle" ||
+            this._config.renderer === "objectAccordionMultiple"
+        ) {
+            this._config.renderer = "dynamicZone";
+        }
+
         return this;
     }
 
@@ -283,6 +320,11 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
 
     constructor(factories?: IFieldTypeFactory[]) {
         this.fieldTypes.set("text", { type: "text", create: () => new TextFieldBuilder() });
+        this.fieldTypes.set("number", { type: "number", create: () => new NumberFieldBuilder() });
+        this.fieldTypes.set("boolean", {
+            type: "boolean",
+            create: () => new BooleanFieldBuilder()
+        });
         this.fieldTypes.set("select", { type: "select", create: () => new SelectFieldBuilder() });
         this.fieldTypes.set("object", { type: "object", create: () => new ObjectFieldBuilder() });
 
@@ -307,6 +349,12 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
 
     // These exist for TypeScript but are intercepted by the Proxy
     text(): TextFieldBuilder {
+        throw new Error("Should be intercepted by Proxy");
+    }
+    number(): NumberFieldBuilder {
+        throw new Error("Should be intercepted by Proxy");
+    }
+    boolean(): BooleanFieldBuilder {
         throw new Error("Should be intercepted by Proxy");
     }
     select(): SelectFieldBuilder {

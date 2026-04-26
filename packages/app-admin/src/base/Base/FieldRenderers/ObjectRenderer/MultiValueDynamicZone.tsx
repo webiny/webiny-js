@@ -11,24 +11,25 @@ import { useConfirmationDialog } from "~/hooks/useConfirmationDialog.js";
 import { NestedLayout } from "./ObjectFieldComponents.js";
 import { AddTemplateButton } from "./TemplatePicker.js";
 
-export const MultiValueDynamicZoneRenderer = observer(({ field }: { field: IObjectFieldVM }) => {
+export const MultiValueDynamicZone = observer(({ field }: { field: IObjectFieldVM }) => {
     const itemCount = field.items.length;
     const label = `${field.label || ""}${itemCount ? ` (${itemCount})` : ""}`;
 
     return (
-        <div className={"flex flex-col gap-md"}>
-            <Accordion background={"base"} variant={"container"}>
-                <Accordion.Item
-                    icon={
-                        <Accordion.Item.Icon
-                            color={"accent"}
-                            label={"Dynamic Zone"}
-                            icon={<HorizontalRuleIcon />}
-                        />
-                    }
-                    title={label}
-                    defaultOpen={true}
-                >
+        <Accordion background={"base"} variant={"container"}>
+            <Accordion.Item
+                icon={
+                    <Accordion.Item.Icon
+                        color={"accent"}
+                        label={"Dynamic Zone"}
+                        icon={<HorizontalRuleIcon />}
+                    />
+                }
+                title={label}
+                defaultOpen={true}
+                className={"gap-y-lg"}
+            >
+                <div className={"flex flex-col gap-y-lg"}>
                     {itemCount > 0 ? (
                         <Accordion
                             background={"base"}
@@ -47,15 +48,15 @@ export const MultiValueDynamicZoneRenderer = observer(({ field }: { field: IObje
                             ))}
                         </Accordion>
                     ) : null}
-                </Accordion.Item>
-            </Accordion>
-            {!field.disabled && (
-                <AddTemplateButton
-                    templates={field.availableTemplates}
-                    onSelect={template => field.addItem(template.id)}
-                />
-            )}
-        </div>
+                    {!field.disabled && (
+                        <AddTemplateButton
+                            templates={field.availableTemplates}
+                            onSelect={template => field.addItem(template.id)}
+                        />
+                    )}
+                </div>
+            </Accordion.Item>
+        </Accordion>
     );
 });
 

@@ -132,7 +132,9 @@ export class ObjectField implements IObjectField {
         this._base = new Field({
             ...config,
             type: "object",
-            renderer: config.renderer ?? "object"
+            renderer:
+                config.renderer ??
+                (config.isList ? "objectAccordionMultiple" : "objectAccordionSingle")
         });
         this._templates = config.templates ?? [];
         this._isTemplated = this._templates.length > 0;
@@ -275,7 +277,7 @@ export class ObjectField implements IObjectField {
                     continue;
                 }
             }
-            result.push({ id: template.id, name: template.name });
+            result.push({ id: template.id, name: template.name, icon: template.icon });
         }
         return result;
     }
@@ -319,6 +321,7 @@ export class ObjectField implements IObjectField {
         this._templates.push({
             id: template.id,
             name: template.name,
+            icon: template.icon,
             childBuilders,
             visible: template.visible
         });

@@ -35,6 +35,7 @@ export interface IFieldConfig {
     defaultValue?: unknown;
     renderer?: string;
     rendererSettings?: Record<string, unknown>;
+    isList?: boolean;
     hidden: boolean;
     required: boolean;
     requiredMessage?: string;
@@ -105,6 +106,7 @@ export interface IFieldVM {
     disabled: boolean;
     renderer?: string;
     rendererSettings?: Record<string, unknown>;
+    isList?: boolean;
     options?: IValueOption[];
     onChange: (value: unknown) => void;
     onBlur: () => void;
@@ -160,9 +162,15 @@ export interface IObjectFieldItemVM {
 /**
  * VM exposed for each available template in the picker.
  */
+export interface ITemplateIcon {
+    type: string;
+    name: string;
+}
+
 export interface ITemplateVM {
     id: string;
     name: string;
+    icon?: ITemplateIcon;
 }
 
 export interface IField {
@@ -246,6 +254,7 @@ export interface IObjectFieldConfig extends IFieldConfig {
 export interface ITemplate {
     id: string;
     name: string;
+    icon?: ITemplateIcon;
     fields: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>;
     /**
      * Reactive callback — when false, the template is hidden from the picker.
@@ -260,6 +269,7 @@ export interface ITemplate {
 export interface ITemplateConfig {
     id: string;
     name: string;
+    icon?: ITemplateIcon;
     childBuilders: Record<string, IFieldBuilder>;
     visible?: (form: IFormModel) => boolean;
 }
@@ -623,6 +633,7 @@ export namespace FormModel {
     export type ObjectFieldItemVM = IObjectFieldItemVM;
     export type Template = ITemplate;
     export type TemplateConfig = ITemplateConfig;
+    export type TemplateIcon = ITemplateIcon;
     export type TemplateVM = ITemplateVM;
     export type ObjectFieldTemplatesAPI = IObjectFieldTemplatesAPI;
     export type FormError = IFormError;
@@ -704,6 +715,7 @@ export interface IFieldBuilder<TType extends string = string> {
      * required. Built-in `.required()` (if set) is evaluated alongside.
      */
     requiredWhen(fn: (form: IFormModel) => boolean, message?: string): this;
+    list(): this;
     disabled(value?: boolean): this;
     rules(rules: IRule[]): this;
     beforeChange(fn: BeforeChangeCallback): this;
@@ -739,6 +751,8 @@ export interface IObjectFieldBuilder extends IFieldBuilder<"object"> {
 
 export interface IFieldBuilderRegistry {
     text(): IFieldBuilder<"text">;
+    number(): IFieldBuilder<"number">;
+    boolean(): IFieldBuilder<"boolean">;
     select(): ISelectFieldBuilder;
     object(): IObjectFieldBuilder;
 }

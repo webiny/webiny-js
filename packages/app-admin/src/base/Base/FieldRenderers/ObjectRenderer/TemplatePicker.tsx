@@ -1,8 +1,17 @@
 import React, { useState } from "react";
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Dialog, Text } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as PlusIcon } from "@webiny/icons/add_circle_outline.svg";
-import type { ITemplateVM } from "~/features/formModel/index.js";
+import type { ITemplateIcon, ITemplateVM } from "~/features/formModel/index.js";
+
+const normalizeIcon = (icon: ITemplateIcon | undefined): IconProp | undefined => {
+    if (!icon) {
+        return undefined;
+    }
+    return icon.name.split("/") as IconProp;
+};
 
 export interface AddTemplateButtonProps {
     templates: ITemplateVM[];
@@ -56,6 +65,7 @@ interface TemplateCardProps {
 
 const TemplateCard = ({ template, onSelect }: TemplateCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
+    const icon = normalizeIcon(template.icon);
 
     return (
         <div
@@ -66,9 +76,15 @@ const TemplateCard = ({ template, onSelect }: TemplateCardProps) => {
             }
         >
             <div>
-                <div
-                    className={"flex items-center justify-center py-xxl w-full bg-neutral-dimmed"}
-                />
+                <div className={"flex items-center justify-center py-xxl w-full bg-neutral-dimmed"}>
+                    {icon ? (
+                        <FontAwesomeIcon
+                            className={"text-neutral-xstrong"}
+                            icon={icon}
+                            style={{ width: 40, height: 40 }}
+                        />
+                    ) : null}
+                </div>
                 <div className={"py-sm-extra px-md"}>
                     <Text size={"md"} className={"mb-xs text-neutral-primary font-semibold"}>
                         {template.name}

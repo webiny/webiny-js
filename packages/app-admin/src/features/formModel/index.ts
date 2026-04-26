@@ -26,6 +26,7 @@ export type {
     IObjectFieldVM,
     IObjectFieldItemVM,
     ITemplate,
+    ITemplateIcon,
     ITemplateConfig,
     ITemplateVM,
     IObjectFieldTemplatesAPI,

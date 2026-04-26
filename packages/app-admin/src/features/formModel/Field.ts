@@ -45,7 +45,7 @@ export class Field implements IField {
             typeof config.defaultValue === "function"
                 ? (config.defaultValue as () => unknown)()
                 : config.defaultValue;
-        this._value = defaultValue ?? null;
+        this._value = defaultValue ?? (config.isList ? [] : null);
         this._disabled = config.disabled;
         this._hidden = config.hidden;
 
@@ -170,7 +170,9 @@ export class Field implements IField {
     }
 
     setAncestorRules(rules: IRule[]): void {
-        this._ancestorRules = rules;
+        runInAction(() => {
+            this._ancestorRules = rules;
+        });
     }
 
     setValidation(validation: IFieldValidation): void {
@@ -281,6 +283,7 @@ export class Field implements IField {
             disabled: this.disabled,
             renderer: this.config.renderer,
             rendererSettings: this.config.rendererSettings,
+            isList: !!this.config.isList,
             options,
             onChange: (value: unknown) => this._setValueFromUI(value),
             onBlur: () => this.blur()
@@ -324,7 +327,15 @@ export class Field implements IField {
 
         // Required check
         if (requiredState.required) {
-            if (effectiveValue === null || effectiveValue === undefined || effectiveValue === "") {
+            const isEmpty =
+                effectiveValue === null ||
+                effectiveValue === undefined ||
+                effectiveValue === "" ||
+                (this.config.isList &&
+                    Array.isArray(effectiveValue) &&
+                    effectiveValue.length === 0);
+
+            if (isEmpty) {
                 this._validation = {
                     isValid: false,
                     message: requiredState.message || "This field is required."

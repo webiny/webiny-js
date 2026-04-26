@@ -4,6 +4,7 @@ import { useFeature } from "@webiny/app";
 import { Button } from "@webiny/admin-ui";
 import { FormView } from "../FormView.js";
 import { FormModelFeature } from "../feature.js";
+import { FieldRenderersDemoPresenter } from "./FieldRenderersDemoPresenter.js";
 import { FormModelDemoPresenter } from "./FormModelDemoPresenter.js";
 import { FormModelPhase8c1Presenter } from "./FormModelPhase8c1Presenter.js";
 import { FormModelPhase11Presenter } from "./FormModelPhase11Presenter.js";
@@ -20,6 +21,8 @@ export const FormModelDemo = observer(() => {
 
     return (
         <div className={"p-lg flex flex-col gap-2xl max-w-4xl mx-auto"}>
+            <FieldRenderersSection />
+
             <div className={"flex flex-col gap-lg"}>
                 <div className={"flex flex-col gap-sm"}>
                     <h2 className={"text-xl font-semibold"}>FormModel Demo — Phase 8</h2>
@@ -78,6 +81,52 @@ export const FormModelDemo = observer(() => {
             <Phase8c1Section />
 
             <Phase11Section />
+        </div>
+    );
+});
+
+const FieldRenderersSection = observer(() => {
+    const { formModelFactory } = useFeature(FormModelFeature);
+    const presenter = useMemo(
+        () => new FieldRenderersDemoPresenter(formModelFactory),
+        [formModelFactory]
+    );
+
+    const { form, data, lastSubmitted, isSubmitting } = presenter.vm;
+
+    return (
+        <div className={"flex flex-col gap-lg"}>
+            <div className={"flex flex-col gap-sm"}>
+                <h2 className={"text-xl font-semibold"}>Field Renderers Showcase</h2>
+                <p className={"text-sm text-neutral-strong"}>
+                    All field renderer variants: text, number, boolean, select
+                    (dropdown/radio/checkboxes), date/time (4 variants), tags, textarea, multi-value
+                    lists, hidden, and dynamic zones. Renderers not yet implemented show nothing
+                    (console warning).
+                </p>
+            </div>
+
+            <FormView form={form} />
+
+            <div className={"flex flex-wrap gap-sm"}>
+                <Button
+                    text={isSubmitting ? "Submitting…" : "Submit"}
+                    variant={"primary"}
+                    onClick={() => presenter.submit()}
+                    disabled={isSubmitting}
+                />
+                <Button
+                    text={"Reset"}
+                    variant={"secondary"}
+                    onClick={() => presenter.reset()}
+                    disabled={isSubmitting}
+                />
+            </div>
+
+            <div className={"grid grid-cols-2 gap-md"}>
+                <DataPanel title={"Current getData()"} data={data} />
+                <DataPanel title={"Last submitted"} data={lastSubmitted} />
+            </div>
         </div>
     );
 });
