@@ -54,12 +54,12 @@ export class FormModelPhase8c1Presenter {
                             {
                                 id: "general",
                                 label: "General",
-                                layout: [l.row("title", "slug"), l.row("body")]
+                                layout: l => [l.row("title", "slug"), l.row("body")]
                             },
                             {
                                 id: "seo",
                                 label: "SEO",
-                                layout: [
+                                layout: l => [
                                     l.object("seo", inner => [
                                         inner.row("metaTitle"),
                                         inner.row("metaDescription"),

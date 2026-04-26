@@ -370,6 +370,20 @@ export interface ITabDefinition {
     rules?: IRule[];
 }
 
+/**
+ * User-facing tab spec accepted by `layout.tabs(...)`. The layout is supplied
+ * as a callback receiving the layout builder, mirroring `layout.object(...)`.
+ * Resolved to `ITabDefinition` (with `layout: LayoutNode[]`) at build time.
+ */
+export interface ITabDefinitionInput {
+    id: string;
+    label: string;
+    description?: string;
+    icon?: string;
+    layout: (layout: ILayoutBuilder) => LayoutNode[];
+    rules?: IRule[];
+}
+
 export interface ITabsNode {
     type: "tabs";
     id?: string;
@@ -473,7 +487,7 @@ export interface ILayoutNodeHandle extends IPositionedLayoutNode {
 // ---------------------------------------------------------------------------
 
 export interface ITabsHandle {
-    tab(definition: ITabDefinition): ITabHandle;
+    tab(definition: ITabDefinitionInput): ITabHandle;
     tab(id: string): ITabHandle;
 }
 
@@ -501,7 +515,7 @@ export interface ILayoutModifier {
     tabs(config: {
         id?: string;
         renderer?: string;
-        tabs: ITabDefinition[];
+        tabs: ITabDefinitionInput[];
         rules?: IRule[];
     }): ILayoutNodeHandle;
     element(renderer: string, props?: Record<string, unknown>): ILayoutNodeHandle;
@@ -599,6 +613,7 @@ export namespace FormModel {
     export type SeparatorNodeVM = ISeparatorNodeVM;
     export type TabsNode = ITabsNode;
     export type TabDefinition = ITabDefinition;
+    export type TabDefinitionInput = ITabDefinitionInput;
     export type TabsNodeVM = ITabsNodeVM;
     export type TabDefinitionVM = ITabDefinitionVM;
     export type ElementNode = IElementNode;
@@ -645,7 +660,7 @@ export interface ILayoutBuilder {
     tabs(config: {
         id?: string;
         renderer?: string;
-        tabs: ITabDefinition[];
+        tabs: ITabDefinitionInput[];
         rules?: IRule[];
     }): ITabsNode;
     element(renderer: string, props?: Record<string, unknown>): IElementNode;

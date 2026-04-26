@@ -160,12 +160,12 @@ describe("Rules system", () => {
                             {
                                 id: "general",
                                 label: "General",
-                                layout: [layout.row("general")]
+                                layout: layout => [layout.row("general")]
                             },
                             {
                                 id: "seo",
                                 label: "SEO",
-                                layout: [layout.row("seo")]
+                                layout: layout => [layout.row("seo")]
                             }
                         ]
                     })
@@ -198,7 +198,7 @@ describe("Rules system", () => {
                             {
                                 id: "general",
                                 label: "General",
-                                layout: [layout.row("general")]
+                                layout: layout => [layout.row("general")]
                             },
                             {
                                 id: "seo",
@@ -212,7 +212,7 @@ describe("Rules system", () => {
                                         action: "disable"
                                     }
                                 ],
-                                layout: [layout.row("seo")]
+                                layout: layout => [layout.row("seo")]
                             }
                         ]
                     })
@@ -250,7 +250,7 @@ describe("Rules system", () => {
                                         action: "hide"
                                     }
                                 ],
-                                layout: [layout.row("hiddenField")]
+                                layout: layout => [layout.row("hiddenField")]
                             }
                         ]
                     })
@@ -289,7 +289,7 @@ describe("Rules system", () => {
                             {
                                 id: "tab1",
                                 label: "Tab 1",
-                                layout: [layout.row("inner")]
+                                layout: layout => [layout.row("inner")]
                             }
                         ]
                     })

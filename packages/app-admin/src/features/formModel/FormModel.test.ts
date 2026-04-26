@@ -964,13 +964,16 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 },
                                 {
                                     id: "seo",
                                     label: "SEO",
                                     description: "Optimize how this page appears in search",
-                                    layout: [layout.row("metaTitle"), layout.row("metaDescription")]
+                                    layout: layout => [
+                                        layout.row("metaTitle"),
+                                        layout.row("metaDescription")
+                                    ]
                                 }
                             ]
                         })
@@ -1051,12 +1054,12 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("title")]
+                                    layout: layout => [layout.row("title")]
                                 },
                                 {
                                     id: "seo",
                                     label: "SEO",
-                                    layout: [layout.row("metaTitle")]
+                                    layout: layout => [layout.row("metaTitle")]
                                 }
                             ]
                         })
@@ -1093,7 +1096,7 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 }
                             ]
                         })
@@ -1168,12 +1171,12 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 },
                                 {
                                     id: "seo",
                                     label: "SEO",
-                                    layout: [layout.row("metaTitle")]
+                                    layout: layout => [layout.row("metaTitle")]
                                 }
                             ]
                         })
@@ -1193,7 +1196,7 @@ describe("FormModel", () => {
                     .tab({
                         id: "analytics",
                         label: "Analytics",
-                        layout: [{ type: "row", fieldIds: ["trackingId"] }]
+                        layout: () => [{ type: "row", fieldIds: ["trackingId"] }]
                     })
                     .after("seo");
 
@@ -1215,7 +1218,7 @@ describe("FormModel", () => {
                     .tab({
                         id: "analytics",
                         label: "Analytics",
-                        layout: [{ type: "row", fieldIds: ["trackingId"] }]
+                        layout: () => [{ type: "row", fieldIds: ["trackingId"] }]
                     })
                     .before("seo");
 
@@ -1279,7 +1282,7 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 }
                             ]
                         })
@@ -1311,7 +1314,7 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 }
                             ]
                         })
@@ -1342,7 +1345,7 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 }
                             ]
                         })
@@ -1376,12 +1379,12 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 },
                                 {
                                     id: "seo",
                                     label: "SEO",
-                                    layout: [layout.row("metaTitle")]
+                                    layout: layout => [layout.row("metaTitle")]
                                 }
                             ]
                         })
@@ -1398,7 +1401,7 @@ describe("FormModel", () => {
                     .tab({
                         id: "analytics",
                         label: "Analytics",
-                        layout: [{ type: "row", fieldIds: ["trackingId"] }]
+                        layout: () => [{ type: "row", fieldIds: ["trackingId"] }]
                     })
                     .after("seo");
 
@@ -1827,12 +1830,12 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("title")]
+                                    layout: layout => [layout.row("title")]
                                 },
                                 {
                                     id: "details",
                                     label: "Details",
-                                    layout: [layout.row("address")]
+                                    layout: layout => [layout.row("address")]
                                 }
                             ]
                         })
@@ -2986,12 +2989,12 @@ describe("FormModel", () => {
                                 {
                                     id: "main",
                                     label: "Main",
-                                    layout: [l.row("title")]
+                                    layout: l => [l.row("title")]
                                 },
                                 {
                                     id: "seoTab",
                                     label: "SEO",
-                                    layout: [
+                                    layout: l => [
                                         l.object("seo", inner => [
                                             inner.row("metaTitle", "metaDescription")
                                         ])
@@ -3029,12 +3032,12 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [l.row("title"), l.row("body")]
+                                    layout: l => [l.row("title"), l.row("body")]
                                 },
                                 {
                                     id: "seo",
                                     label: "SEO",
-                                    layout: [
+                                    layout: l => [
                                         l.object("seo", inner => [
                                             inner.row("metaTitle", "metaDescription")
                                         ])

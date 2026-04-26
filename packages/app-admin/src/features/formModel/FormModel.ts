@@ -30,6 +30,7 @@ import type {
     ITabsNode,
     ITabsNodeVM,
     ITabDefinition,
+    ITabDefinitionInput,
     ITabDefinitionVM,
     IElementNode,
     IElementNodeVM,
@@ -48,14 +49,14 @@ const layoutAPI: ILayoutBuilder = {
     tabs(config: {
         id?: string;
         renderer?: string;
-        tabs: ITabDefinition[];
+        tabs: ITabDefinitionInput[];
         rules?: IRule[];
     }): ITabsNode {
         return {
             type: "tabs",
             id: config.id,
             renderer: config.renderer,
-            tabs: config.tabs,
+            tabs: config.tabs.map(resolveTabDefinition),
             rules: config.rules
         };
     },
@@ -85,6 +86,17 @@ function resolveObjectInner(
         resolved[tplId] = factory(layoutAPI);
     }
     return resolved;
+}
+
+function resolveTabDefinition(input: ITabDefinitionInput): ITabDefinition {
+    return {
+        id: input.id,
+        label: input.label,
+        description: input.description,
+        icon: input.icon,
+        rules: input.rules,
+        layout: input.layout(layoutAPI)
+    };
 }
 
 export class FormModel implements IFormModel {
@@ -907,14 +919,14 @@ export class FormModel implements IFormModel {
             tabs(config: {
                 id?: string;
                 renderer?: string;
-                tabs: ITabDefinition[];
+                tabs: ITabDefinitionInput[];
                 rules?: IRule[];
             }): ILayoutNodeHandle {
                 const node: ITabsNode = {
                     type: "tabs",
                     id: config.id,
                     renderer: config.renderer,
-                    tabs: config.tabs,
+                    tabs: config.tabs.map(resolveTabDefinition),
                     rules: config.rules
                 };
                 return createLayoutNodeHandle(node);
@@ -974,7 +986,7 @@ export class FormModel implements IFormModel {
                 }
 
                 return {
-                    tab: (definitionOrId: ITabDefinition | string): ITabHandle => {
+                    tab: (definitionOrId: ITabDefinitionInput | string): ITabHandle => {
                         if (typeof definitionOrId === "string") {
                             // Access existing tab
                             const tab = tabsNode.tabs.find(t => t.id === definitionOrId);
@@ -996,12 +1008,8 @@ export class FormModel implements IFormModel {
                                 }
                             };
                         } else {
-                            // Add new tab
-                            const newTab: ITabDefinition = { ...definitionOrId };
-                            // Resolve layout if it's a factory
-                            if (typeof (definitionOrId as any).layout === "function") {
-                                newTab.layout = (definitionOrId as any).layout(layoutAPI);
-                            }
+                            // Add new tab — resolve the layout callback now.
+                            const newTab: ITabDefinition = resolveTabDefinition(definitionOrId);
                             return {
                                 layout: (factory: (layout: ILayoutBuilder) => LayoutNode[]) => {
                                     newTab.layout = factory(layoutAPI);
