@@ -164,6 +164,10 @@ export class ObjectField implements IObjectField {
         const children = createChildFields(template.childBuilders, this._form);
         this._children = children;
         this._activeTemplateId = templateId;
+        const inner = this._innerLayoutFor(templateId);
+        if (inner) {
+            this._applyNestedObjectLayouts(inner, children);
+        }
     }
 
     // --- Forwarded from _base ---
@@ -351,6 +355,12 @@ export class ObjectField implements IObjectField {
             }
             this._ownLayout = layout;
             this._templateLayouts = {};
+            // Apply nested object layouts to children that already exist
+            // (non-templated single + non-templated list items).
+            this._applyNestedObjectLayouts(layout, this._children);
+            for (const item of this._items) {
+                this._applyNestedObjectLayouts(layout, item.children);
+            }
             return;
         }
         if (!this.isTemplated) {
@@ -360,6 +370,53 @@ export class ObjectField implements IObjectField {
         }
         this._templateLayouts = layout;
         this._ownLayout = null;
+        // Apply nested object layouts to currently-active templated children
+        // (templated single with active template + templated list items).
+        if (this._activeTemplateId && layout[this._activeTemplateId]) {
+            this._applyNestedObjectLayouts(layout[this._activeTemplateId], this._children);
+        }
+        for (const item of this._items) {
+            if (item.templateId && layout[item.templateId]) {
+                this._applyNestedObjectLayouts(layout[item.templateId], item.children);
+            }
+        }
+    }
+
+    /**
+     * Walk an inner layout for nested `object` nodes and forward each one to
+     * the matching child field. The recursion bottoms out naturally: each
+     * matched child is itself an ObjectField and will run `_applyNestedObjectLayouts`
+     * against its own children whenever they materialise.
+     */
+    private _applyNestedObjectLayouts(layout: LayoutNode[], children: Map<string, IField>): void {
+        for (const node of layout) {
+            if (node.type === "object") {
+                const child = children.get(node.fieldName);
+                if (child && isObjectField(child)) {
+                    child.setInnerLayout(node.inner);
+                }
+            } else if (node.type === "tabs") {
+                for (const tab of node.tabs) {
+                    this._applyNestedObjectLayouts(tab.layout, children);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns the inner layout that should apply to a freshly-built children
+     * Map for the given templateId (templated objects/lists) or for the
+     * non-templated case. Used to seed nested object layouts on newly-created
+     * children before they go live.
+     */
+    private _innerLayoutFor(templateId: string | undefined): LayoutNode[] | undefined {
+        if (this.isTemplated) {
+            if (templateId === undefined) {
+                return undefined;
+            }
+            return this._templateLayouts[templateId];
+        }
+        return this._ownLayout ?? undefined;
     }
 
     private _resolveLayoutForChildren(
@@ -444,6 +501,15 @@ export class ObjectField implements IObjectField {
                     const itemField = createFieldFromConfig(built, this._form);
                     item.children.set(name, itemField);
                 }
+            }
+        }
+
+        // Re-apply nested object layouts so newly-added children pick up any
+        // layout.object() entries already registered on this field.
+        if (this._ownLayout) {
+            this._applyNestedObjectLayouts(this._ownLayout, this._children);
+            for (const item of this._items) {
+                this._applyNestedObjectLayouts(this._ownLayout, item.children);
             }
         }
     }
@@ -584,6 +650,10 @@ export class ObjectField implements IObjectField {
         hydrateChildren(children, data);
         const key = `item_${++itemKeyCounter}`;
         this._items.splice(index + 1, 0, { key, children, templateId: source.templateId });
+        const inner = this._innerLayoutFor(source.templateId);
+        if (inner) {
+            this._applyNestedObjectLayouts(inner, children);
+        }
     }
 
     private _templateChildBuilders(templateId: string | undefined): Record<string, IFieldBuilder> {
@@ -604,6 +674,10 @@ export class ObjectField implements IObjectField {
         }
         const key = `item_${++itemKeyCounter}`;
         this._items.push({ key, children, templateId });
+        const inner = this._innerLayoutFor(templateId);
+        if (inner) {
+            this._applyNestedObjectLayouts(inner, children);
+        }
     }
 
     resetValidation(): void {

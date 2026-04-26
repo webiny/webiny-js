@@ -513,9 +513,92 @@ export class FormModel implements IFormModel {
                 }
                 return { type: "row", fields: [field.vm] };
             }
+            case "tabs":
+                return this._resolveChildTabsNode(node, children);
             default:
                 return null;
         }
+    }
+
+    private _resolveChildTabsNode(
+        node: ITabsNode,
+        children: Map<string, IField>
+    ): ITabsNodeVM | null {
+        if (node.tabs.length === 0) {
+            return null;
+        }
+        const containerState = this.evaluateRules(node.rules);
+        if (!containerState.visible) {
+            return null;
+        }
+        const tabKey = node.id || this._tabsNodeKey(node);
+        const tabs: ITabDefinitionVM[] = [];
+        for (const tab of node.tabs) {
+            const tabState = this.evaluateRules(tab.rules);
+            if (!tabState.visible) {
+                continue;
+            }
+            tabs.push({
+                id: tab.id,
+                label: tab.label,
+                description: tab.description,
+                icon: tab.icon,
+                hasErrors: this._childTabHasErrors(tab.layout, children),
+                disabled: containerState.disabled || tabState.disabled,
+                layout: tab.layout
+                    .map(child => this._resolveChildLayoutNode(child, children))
+                    .filter(Boolean) as LayoutNodeVM[]
+            });
+        }
+        if (tabs.length === 0) {
+            return null;
+        }
+        const storedActive = this._activeTabs.get(tabKey);
+        const validActive = tabs.find(t => t.id === storedActive) ? storedActive! : tabs[0].id;
+        return {
+            type: "tabs",
+            id: node.id,
+            renderer: node.renderer,
+            tabs,
+            disabled: containerState.disabled,
+            activeTabId: validActive,
+            setActiveTab: (id: string) => {
+                runInAction(() => {
+                    this._activeTabs.set(tabKey, id);
+                });
+            }
+        };
+    }
+
+    private _childTabHasErrors(layout: LayoutNode[], children: Map<string, IField>): boolean {
+        for (const node of layout) {
+            if (node.type === "row") {
+                for (const id of node.fieldIds) {
+                    const field = children.get(id);
+                    if (!field) {
+                        continue;
+                    }
+                    if (field.vm.validation.isValid === false) {
+                        return true;
+                    }
+                    if (isObjectField(field) && field.hasErrors) {
+                        return true;
+                    }
+                }
+            } else if (node.type === "object") {
+                const field = children.get(node.fieldName);
+                if (field && isObjectField(field) && field.hasErrors) {
+                    return true;
+                }
+            } else if (node.type === "tabs") {
+                for (const tab of node.tabs) {
+                    if (this._childTabHasErrors(tab.layout, children)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private _resolveRowNode(node: IRowNode): IRowNodeVM | null {
@@ -632,9 +715,12 @@ export class FormModel implements IFormModel {
     }
 
     /**
-     * Walk the form layout for `object` nodes and forward each per-template map
-     * to the referenced field. Unknown field names and non-object fields are
-     * ignored. Templates without an entry fall back to default rendering.
+     * Walk the form layout for `object` nodes and forward each inner layout
+     * to the referenced field. Recursion into nested `object` nodes is handled
+     * by `ObjectField.setInnerLayout` itself (Phase 8c.1) — when the inner
+     * layout references nested object children, those children re-apply the
+     * registration whenever they materialise (template activation, list-item
+     * creation, modifier `fields()` additions).
      */
     private _registerObjectNodeLayouts(layout: LayoutNode[]): void {
         for (const node of layout) {
@@ -643,53 +729,10 @@ export class FormModel implements IFormModel {
                 if (field && isObjectField(field)) {
                     field.setInnerLayout(node.inner);
                 }
-                // Phase 8c does not register layouts for object nodes nested
-                // inside another object's inner layout — see _warnNestedObjectNodes.
-                this._warnNestedObjectNodes(node.inner, node.fieldName);
             } else if (node.type === "tabs") {
                 for (const tab of node.tabs) {
                     this._registerObjectNodeLayouts(tab.layout);
                 }
-            }
-        }
-    }
-
-    /**
-     * Phase 8c does not support `layout.object()` for object fields nested
-     * inside another object's inner layout. Templated children only exist
-     * after a template is activated, so we cannot eagerly register their
-     * inner layouts at build time. The nested node still resolves as a cell
-     * (showing the child's default layout); only the nested per-template
-     * layout map is ignored. Tracked for a later phase.
-     */
-    private _warnNestedObjectNodes(
-        inner: LayoutNode[] | Record<string, LayoutNode[]>,
-        ownerFieldName: string
-    ): void {
-        if (process.env.NODE_ENV !== "development") {
-            return;
-        }
-        const scan = (nodes: LayoutNode[]): void => {
-            for (const node of nodes) {
-                if (node.type === "object") {
-                    console.warn(
-                        `[FormModel] layout.object("${node.fieldName}") is nested inside layout.object("${ownerFieldName}"). ` +
-                            `Per-template layouts on nested object fields are not registered in Phase 8c — ` +
-                            `the nested field will render with its default layout. ` +
-                            `Track: nested object layouts.`
-                    );
-                } else if (node.type === "tabs") {
-                    for (const tab of node.tabs) {
-                        scan(tab.layout);
-                    }
-                }
-            }
-        };
-        if (Array.isArray(inner)) {
-            scan(inner);
-        } else {
-            for (const layoutNodes of Object.values(inner)) {
-                scan(layoutNodes);
             }
         }
     }

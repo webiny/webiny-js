@@ -2771,6 +2771,297 @@ describe("FormModel", () => {
         });
     });
 
+    describe("nested object layouts (Phase 8c.1)", () => {
+        it("registers layout.object() nested inside another object's inner layout (non-templated)", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    page: fields.object().fields(f => ({
+                        title: f.text(),
+                        seo: f.object().fields(g => ({
+                            metaTitle: g.text(),
+                            metaDescription: g.text()
+                        }))
+                    }))
+                }),
+                layout: layout => [
+                    layout.object("page", l => [
+                        l.row("title"),
+                        l.object("seo", inner => [inner.row("metaTitle", "metaDescription")])
+                    ])
+                ]
+            });
+            const pageVm = form.field("page").vm as IObjectFieldVM;
+            const seoRow = asRow(pageVm.layout[1]);
+            const seoVm = seoRow.fields[0] as IObjectFieldVM;
+            expect(seoVm.layout.length).toBe(1);
+            expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                "metaTitle",
+                "metaDescription"
+            ]);
+        });
+
+        it("supports three levels of nesting", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    a: fields.object().fields(f => ({
+                        b: f.object().fields(g => ({
+                            c: g.object().fields(h => ({
+                                x: h.text(),
+                                y: h.text()
+                            }))
+                        }))
+                    }))
+                }),
+                layout: layout => [
+                    layout.object("a", l1 => [
+                        l1.object("b", l2 => [l2.object("c", l3 => [l3.row("x", "y")])])
+                    ])
+                ]
+            });
+            const aVm = form.field("a").vm as IObjectFieldVM;
+            const bVm = asRow(aVm.layout[0]).fields[0] as IObjectFieldVM;
+            const cVm = asRow(bVm.layout[0]).fields[0] as IObjectFieldVM;
+            expect(cVm.layout.length).toBe(1);
+            expect(asRow(cVm.layout[0]).fields.map(f => f.name)).toEqual(["x", "y"]);
+        });
+
+        it("registers nested layouts on a templated single object when its template activates", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    block: fields.object().templates([
+                        {
+                            id: "hero",
+                            name: "Hero",
+                            fields: f => ({
+                                heading: f.text(),
+                                seo: f.object().fields(g => ({
+                                    metaTitle: g.text(),
+                                    metaDescription: g.text()
+                                }))
+                            })
+                        }
+                    ])
+                }),
+                layout: layout => [
+                    layout.object("block", {
+                        hero: l => [
+                            l.row("heading"),
+                            l.object("seo", inner => [inner.row("metaTitle", "metaDescription")])
+                        ]
+                    })
+                ]
+            });
+            const field = form.field("block") as any;
+            field.setTemplate("hero");
+            const vm = form.field("block").vm as IObjectFieldVM;
+            const seoRow = asRow(vm.layout[1]);
+            const seoVm = seoRow.fields[0] as IObjectFieldVM;
+            expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                "metaTitle",
+                "metaDescription"
+            ]);
+        });
+
+        it("registers nested layouts on a templated list — each item gets its own", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    sections: fields
+                        .object()
+                        .list()
+                        .templates([
+                            {
+                                id: "hero",
+                                name: "Hero",
+                                fields: f => ({
+                                    heading: f.text(),
+                                    seo: f.object().fields(g => ({
+                                        metaTitle: g.text(),
+                                        metaDescription: g.text()
+                                    }))
+                                })
+                            }
+                        ])
+                }),
+                layout: layout => [
+                    layout.object("sections", {
+                        hero: l => [
+                            l.row("heading"),
+                            l.object("seo", inner => [inner.row("metaTitle", "metaDescription")])
+                        ]
+                    })
+                ]
+            });
+            const field = form.field("sections") as any;
+            field.addItem("hero");
+            field.addItem("hero");
+            const vm = form.field("sections").vm as IObjectFieldVM;
+            expect(vm.items.length).toBe(2);
+            for (const item of vm.items) {
+                const seoVm = asRow(item.layout[1]).fields[0] as IObjectFieldVM;
+                expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                    "metaTitle",
+                    "metaDescription"
+                ]);
+            }
+        });
+
+        it("registers nested layouts on a non-templated list item upon creation", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    rows: fields
+                        .object()
+                        .list()
+                        .fields(f => ({
+                            label: f.text(),
+                            seo: f.object().fields(g => ({
+                                metaTitle: g.text(),
+                                metaDescription: g.text()
+                            }))
+                        }))
+                }),
+                layout: layout => [
+                    layout.object("rows", l => [
+                        l.row("label"),
+                        l.object("seo", inner => [inner.row("metaTitle", "metaDescription")])
+                    ])
+                ]
+            });
+            const field = form.field("rows") as any;
+            field.addItem();
+            const vm = form.field("rows").vm as IObjectFieldVM;
+            const seoVm = asRow(vm.items[0].layout[1]).fields[0] as IObjectFieldVM;
+            expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                "metaTitle",
+                "metaDescription"
+            ]);
+        });
+
+        it("registers nested layouts on children added via field.as('object').fields() at runtime", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    page: fields.object().fields(f => ({
+                        title: f.text()
+                    }))
+                }),
+                layout: layout => [
+                    layout.object("page", l => [
+                        l.row("title"),
+                        l.object("seo", inner => [inner.row("metaTitle", "metaDescription")])
+                    ])
+                ]
+            });
+            // seo doesn't exist yet; the layout entry is a no-op until we add it.
+            form.field("page")
+                .as("object")
+                .fields(f => ({
+                    seo: f.object().fields(g => ({
+                        metaTitle: g.text(),
+                        metaDescription: g.text()
+                    }))
+                }));
+            const pageVm = form.field("page").vm as IObjectFieldVM;
+            const seoRow = asRow(pageVm.layout[1]);
+            const seoVm = seoRow.fields[0] as IObjectFieldVM;
+            expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                "metaTitle",
+                "metaDescription"
+            ]);
+        });
+
+        it("recurses through tabs nested inside an inner layout", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    page: fields.object().fields(f => ({
+                        title: f.text(),
+                        seo: f.object().fields(g => ({
+                            metaTitle: g.text(),
+                            metaDescription: g.text()
+                        }))
+                    }))
+                }),
+                layout: layout => [
+                    layout.object("page", l => [
+                        l.tabs({
+                            tabs: [
+                                {
+                                    id: "main",
+                                    label: "Main",
+                                    layout: [l.row("title")]
+                                },
+                                {
+                                    id: "seoTab",
+                                    label: "SEO",
+                                    layout: [
+                                        l.object("seo", inner => [
+                                            inner.row("metaTitle", "metaDescription")
+                                        ])
+                                    ]
+                                }
+                            ]
+                        })
+                    ])
+                ]
+            });
+            const seoVm = form.field("page.seo").vm as IObjectFieldVM;
+            expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                "metaTitle",
+                "metaDescription"
+            ]);
+        });
+
+        it("resolves tabs inside an inner layout against the children scope", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    page: fields.object().fields(f => ({
+                        title: f.text(),
+                        body: f.text(),
+                        seo: f.object().fields(g => ({
+                            metaTitle: g.text(),
+                            metaDescription: g.text()
+                        }))
+                    }))
+                }),
+                layout: layout => [
+                    layout.object("page", l => [
+                        l.tabs({
+                            id: "pageTabs",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: [l.row("title"), l.row("body")]
+                                },
+                                {
+                                    id: "seo",
+                                    label: "SEO",
+                                    layout: [
+                                        l.object("seo", inner => [
+                                            inner.row("metaTitle", "metaDescription")
+                                        ])
+                                    ]
+                                }
+                            ]
+                        })
+                    ])
+                ]
+            });
+            const pageVm = form.field("page").vm as IObjectFieldVM;
+            expect(pageVm.layout.length).toBe(1);
+            const tabs = pageVm.layout[0] as ITabsNodeVM;
+            expect(tabs.type).toBe("tabs");
+            expect(tabs.tabs.map(t => t.id)).toEqual(["general", "seo"]);
+            const generalTab = tabs.tabs[0];
+            expect(asRow(generalTab.layout[0]).fields.map(f => f.name)).toEqual(["title"]);
+            expect(asRow(generalTab.layout[1]).fields.map(f => f.name)).toEqual(["body"]);
+            const seoTab = tabs.tabs[1];
+            const seoVm = asRow(seoTab.layout[0]).fields[0] as IObjectFieldVM;
+            expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                "metaTitle",
+                "metaDescription"
+            ]);
+        });
+    });
+
     describe("runtime template modification (Phase 8d)", () => {
         function createSingleTemplatedForm() {
             return new FormModel({

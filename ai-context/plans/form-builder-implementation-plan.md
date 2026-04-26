@@ -324,7 +324,7 @@ Different page types reconfigure the form. Switching types rebuilds it.
 
 ### Phase 8: [ ] Dynamic Zones / Templates
 
-Broken into sub-phases. 8a, 8b, and 8c are implemented; 8c.1, 8d, and 8e remain.
+Broken into sub-phases. All implemented.
 
 #### Phase 8a: [x] Single-object templates
 
@@ -355,7 +355,7 @@ Broken into sub-phases. 8a, 8b, and 8c are implemented; 8c.1, 8d, and 8e remain.
 - Layouts surface on the field VM as `field.vm.layout` (single) and `item.layout` (list items); object/dynamic-zone renderers consume these via a `<NestedLayout>` walker
 - **Limitation (deferred to a later phase):** `layout.object()` calls nested inside another object's inner layout are not registered. Templated children do not exist until a template is activated, so eager registration is not possible at build time. The nested node still resolves as a cell (default layout); a dev console warning fires when the nesting is detected.
 
-#### Phase 8c.1: [ ] Nested object layouts (later)
+#### Phase 8c.1: [x] Nested object layouts
 
 - Register `layout.object()` recursively when nested inside another object's inner layout
 - For non-templated parents, recurse against the parent's children Map

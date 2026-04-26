@@ -5,6 +5,7 @@ import { Button } from "@webiny/admin-ui";
 import { FormView } from "../FormView.js";
 import { FormModelFeature } from "../feature.js";
 import { FormModelDemoPresenter } from "./FormModelDemoPresenter.js";
+import { FormModelPhase8c1Presenter } from "./FormModelPhase8c1Presenter.js";
 import { FormModelPhase11Presenter } from "./FormModelPhase11Presenter.js";
 
 export const FormModelDemo = observer(() => {
@@ -74,7 +75,58 @@ export const FormModelDemo = observer(() => {
                 </div>
             </div>
 
+            <Phase8c1Section />
+
             <Phase11Section />
+        </div>
+    );
+});
+
+const Phase8c1Section = observer(() => {
+    const { formModelFactory } = useFeature(FormModelFeature);
+    const presenter = useMemo(
+        () => new FormModelPhase8c1Presenter(formModelFactory),
+        [formModelFactory]
+    );
+
+    const { form, data, lastSubmitted, isSubmitting } = presenter.vm;
+
+    return (
+        <div className={"flex flex-col gap-lg border-t border-neutral-dimmed pt-lg"}>
+            <div className={"flex flex-col gap-sm"}>
+                <h2 className={"text-xl font-semibold"}>FormModel Demo — Phase 8c.1</h2>
+                <p className={"text-sm text-neutral-strong"}>
+                    Nested object layouts. A top-level <code>page</code> object whose inner layout
+                    is split across tabs (General / SEO). The SEO tab contains a nested{" "}
+                    <code>layout.object(&quot;seo&quot;, ...)</code> with its own row layout, and
+                    the SEO object itself contains another nested{" "}
+                    <code>layout.object(&quot;og&quot;, ...)</code> for the Open Graph fields. Phase
+                    8c.1 walks the inner layout (including across tabs) and forwards each nested{" "}
+                    <code>layout.object()</code> to the matching child at build time.
+                </p>
+            </div>
+
+            <FormView form={form} />
+
+            <div className={"flex flex-wrap gap-sm"}>
+                <Button
+                    text={isSubmitting ? "Submitting…" : "Submit"}
+                    variant={"primary"}
+                    onClick={() => presenter.submit()}
+                    disabled={isSubmitting}
+                />
+                <Button
+                    text={"Reset"}
+                    variant={"secondary"}
+                    onClick={() => presenter.reset()}
+                    disabled={isSubmitting}
+                />
+            </div>
+
+            <div className={"grid grid-cols-2 gap-md"}>
+                <DataPanel title={"Current getData()"} data={data} />
+                <DataPanel title={"Last submitted"} data={lastSubmitted} />
+            </div>
         </div>
     );
 });
