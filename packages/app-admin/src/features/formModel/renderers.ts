@@ -5,7 +5,6 @@ import "../../base/Base/FieldRenderers/SelectRenderer.js";
 import "../../base/Base/FieldRenderers/ObjectRenderer/ObjectRenderer.js";
 import "../../base/Base/FieldRenderers/ObjectRenderer/ObjectAccordionMultipleRenderer.js";
 import "../../base/Base/FieldRenderers/ObjectRenderer/DynamicZoneRenderer.js";
-import "../../base/Base/FieldRenderers/ObjectRenderer/ObjectListFlatRenderer.js";
 import "../../base/Base/FieldRenderers/PassthroughRenderer.js";
 import "../../base/Base/FieldRenderers/TextareaRenderer.js";
 import "../../base/Base/FieldRenderers/SwitchRenderer.js";

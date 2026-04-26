@@ -6,7 +6,6 @@ import { ObjectRenderer } from "~/base/Base/FieldRenderers/ObjectRenderer/Object
 import { ObjectAccordionMultipleRenderer } from "~/base/Base/FieldRenderers/ObjectRenderer/ObjectAccordionMultipleRenderer.js";
 import { DynamicZoneRenderer } from "~/base/Base/FieldRenderers/ObjectRenderer/DynamicZoneRenderer.js";
 import { PassthroughRenderer } from "~/base/Base/FieldRenderers/PassthroughRenderer.js";
-import { ObjectListFlatRenderer } from "~/base/Base/FieldRenderers/ObjectRenderer/ObjectListFlatRenderer.js";
 import { TextareaRenderer } from "~/base/Base/FieldRenderers/TextareaRenderer.js";
 import { SwitchRenderer } from "~/base/Base/FieldRenderers/SwitchRenderer.js";
 import { NumberInputRenderer } from "~/base/Base/FieldRenderers/NumberInputRenderer.js";
@@ -36,10 +35,6 @@ export const DefaultFieldRenderers = () => {
             />
             <AdminConfig.Form.FieldRenderer name={"dynamicZone"} component={DynamicZoneRenderer} />
             <AdminConfig.Form.FieldRenderer name={"passthrough"} component={PassthroughRenderer} />
-            <AdminConfig.Form.FieldRenderer
-                name={"objectListFlat"}
-                component={ObjectListFlatRenderer}
-            />
             <AdminConfig.Form.FieldRenderer name={"switch"} component={SwitchRenderer} />
             <AdminConfig.Form.FieldRenderer name={"numberInput"} component={NumberInputRenderer} />
             <AdminConfig.Form.FieldRenderer

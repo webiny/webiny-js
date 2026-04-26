@@ -7,13 +7,13 @@ import type { IFieldVM } from "~/features/formModel/index.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
-        textInputs: { fieldType: "text"; settings?: { addValueButtonLabel?: string } };
+        textInputs: { fieldType: "text"; settings?: { addItemLabel?: string } };
     }
 }
 
 export const TextInputsRenderer = observer(({ field }: { field: IFieldVM }) => {
     const values = (field.value as string[]) ?? [];
-    const settings = field.rendererSettings as { addValueButtonLabel?: string } | undefined;
+    const settings = field.rendererSettings as { addItemLabel?: string } | undefined;
 
     const updateAt = (index: number, val: string) => {
         const next = [...values];
@@ -64,7 +64,7 @@ export const TextInputsRenderer = observer(({ field }: { field: IFieldVM }) => {
                 disabled={field.disabled}
                 variant={"tertiary"}
                 icon={<AddIcon />}
-                text={settings?.addValueButtonLabel ?? "Add Value"}
+                text={settings?.addItemLabel ?? "Add Value"}
                 onClick={append}
             />
         </div>

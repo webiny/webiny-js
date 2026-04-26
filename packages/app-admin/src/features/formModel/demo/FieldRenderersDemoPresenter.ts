@@ -28,7 +28,7 @@ export class FieldRenderersDemoPresenter {
                     .text()
                     .list()
                     .label("Text Inputs")
-                    .renderer("textInputs", { addValueButtonLabel: "Add text" })
+                    .renderer("textInputs", { addItemLabel: "Add text" })
                     .description("Add multiple text values")
                     .help("Each value is stored separately")
                     .note("Press Enter to add quickly"),
@@ -53,7 +53,7 @@ export class FieldRenderersDemoPresenter {
                     .text()
                     .list()
                     .label("Descriptions")
-                    .renderer("textareas", { addValueButtonLabel: "Add description" })
+                    .renderer("textareas", { addItemLabel: "Add description" })
                     .description("Multiple long text values")
                     .help("Each textarea is independent")
                     .note("Click add to append a new block"),
@@ -70,7 +70,7 @@ export class FieldRenderersDemoPresenter {
                     .number()
                     .list()
                     .label("Number Inputs")
-                    .renderer("numberInputs", { addValueButtonLabel: "Add number" })
+                    .renderer("numberInputs", { addItemLabel: "Add number" })
                     .description("Multiple numeric values")
                     .help("Each input accepts a number")
                     .note("Empty values are stored as empty strings"),

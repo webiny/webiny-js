@@ -14,8 +14,9 @@ declare module "../../../../features/formModel/abstractions.js" {
             fieldType: "object";
             settings?: {
                 open?: boolean;
+                container?: boolean;
                 itemTitle?: string | ((data: Record<string, unknown>, index: number) => string);
-                addValueButtonLabel?: string;
+                addItemLabel?: string;
             };
         };
     }
@@ -31,34 +32,57 @@ export const ObjectAccordionMultipleRenderer = observer(({ field }: { field: IFi
     return <ListObjectRenderer field={field} />;
 });
 
+const ListItems = observer(
+    ({ field, settings }: { field: IObjectFieldVM; settings: Settings | undefined }) => {
+        return (
+            <div className={"flex flex-col gap-md"}>
+                {field.items.map((item, index) => (
+                    <ListItemRenderer
+                        key={item.key}
+                        item={item}
+                        index={index}
+                        total={field.items.length}
+                        label={field.label}
+                        itemTitle={settings?.itemTitle}
+                        disabled={field.disabled}
+                    />
+                ))}
+            </div>
+        );
+    }
+);
+
 const ListObjectRenderer = observer(({ field }: { field: IObjectFieldVM }) => {
-    const label = `${field.label || ""} ${field.items.length ? `(${field.items.length})` : ""}`;
     const settings = field.rendererSettings as Settings | undefined;
+    const showContainer = settings?.container !== false;
+
+    const addButton = (
+        <AddItemButton
+            label={settings?.addItemLabel ?? `Add ${field.label || "Item"}`}
+            disabled={field.disabled}
+            onAdd={() => field.addItem()}
+        />
+    );
+
+    if (!showContainer) {
+        return (
+            <div className={"flex flex-col gap-lg"}>
+                <ListItems field={field} settings={settings} />
+                {addButton}
+            </div>
+        );
+    }
+
+    const label = `${field.label || ""} ${field.items.length ? `(${field.items.length})` : ""}`;
 
     return (
-        <div className={"flex flex-col gap-sm"}>
+        <div className={"flex flex-col gap-lg"}>
             <Accordion background={"base"} variant={"container"}>
                 <Accordion.Item title={label} defaultOpen={true}>
-                    <div className={"flex flex-col gap-sm"}>
-                        {field.items.map((item, index) => (
-                            <ListItemRenderer
-                                key={item.key}
-                                item={item}
-                                index={index}
-                                total={field.items.length}
-                                label={field.label}
-                                itemTitle={settings?.itemTitle}
-                                disabled={field.disabled}
-                            />
-                        ))}
-                    </div>
+                    <ListItems field={field} settings={settings} />
                 </Accordion.Item>
             </Accordion>
-            <AddItemButton
-                label={settings?.addValueButtonLabel ?? `Add ${field.label || "Item"}`}
-                disabled={field.disabled}
-                onAdd={() => field.addItem()}
-            />
+            {addButton}
         </div>
     );
 });

@@ -11,7 +11,7 @@ declare module "../../../features/formModel/abstractions.js" {
             fieldType: "text";
             settings: {
                 type: "date" | "dateTime" | "dateTimeTimezone" | "time";
-                addValueButtonLabel?: string;
+                addItemLabel?: string;
             };
         };
     }
@@ -69,7 +69,7 @@ export const DateTimeInputsRenderer = observer(({ field }: { field: IFieldVM }) 
                 disabled={field.disabled}
                 variant={"tertiary"}
                 icon={<AddIcon />}
-                text={settings?.addValueButtonLabel ?? "Add Value"}
+                text={settings?.addItemLabel ?? "Add Value"}
                 onClick={append}
             />
         </div>

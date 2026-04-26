@@ -27,9 +27,8 @@ export const MultiValueDynamicZone = observer(({ field }: { field: IObjectFieldV
                 }
                 title={label}
                 defaultOpen={true}
-                className={"gap-y-lg"}
             >
-                <div className={"flex flex-col gap-y-lg"}>
+                <div className={"flex flex-col gap-lg"}>
                     {itemCount > 0 ? (
                         <Accordion
                             background={"base"}
