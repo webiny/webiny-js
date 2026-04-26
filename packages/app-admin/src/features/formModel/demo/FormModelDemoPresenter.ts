@@ -6,12 +6,18 @@ export interface FormModelDemoVM {
     data: Record<string, unknown>;
     lastSubmitted: Record<string, unknown> | null;
     isSubmitting: boolean;
+    runtimeTemplateAdded: boolean;
+    textTemplateRemoved: boolean;
 }
+
+const RUNTIME_TEMPLATE_ID = "runtimeBanner";
 
 export class FormModelDemoPresenter {
     private form: IFormModel;
     private lastSubmitted: Record<string, unknown> | null = null;
     private isSubmitting = false;
+    private runtimeTemplateAdded = false;
+    private textTemplateRemoved = false;
 
     constructor(formFactory: IFormModelFactory) {
         this.form = formFactory.create({
@@ -27,6 +33,7 @@ export class FormModelDemoPresenter {
                             name: "Hero Banner",
                             fields: f => ({
                                 heading: f.text().label("Heading").required("Required"),
+                                subheading: f.text().label("Subheading"),
                                 image: f.text().label("Image URL"),
                                 cta: f.text().label("Call To Action")
                             })
@@ -57,6 +64,7 @@ export class FormModelDemoPresenter {
                             name: "Hero Banner",
                             fields: f => ({
                                 heading: f.text().label("Heading").required("Required"),
+                                subheading: f.text().label("Subheading"),
                                 image: f.text().label("Image URL")
                             })
                         },
@@ -85,7 +93,19 @@ export class FormModelDemoPresenter {
                         { label: "Pro", value: "pro" },
                         { label: "Enterprise", value: "enterprise" }
                     ])
-            })
+            }),
+            layout: layout => [
+                layout.row("title"),
+                layout.row("plan"),
+                layout.object("content", {
+                    hero: l => [l.row("heading", "subheading"), l.row("image"), l.row("cta")],
+                    text: l => [l.row("body")]
+                }),
+                layout.object("sections", {
+                    hero: l => [l.row("heading", "subheading"), l.row("image")],
+                    cta: l => [l.row("label", "url")]
+                })
+            ]
         });
 
         makeAutoObservable(this);
@@ -96,7 +116,9 @@ export class FormModelDemoPresenter {
             form: this.form.vm,
             data: toJS(this.form.getData()),
             lastSubmitted: this.lastSubmitted,
-            isSubmitting: this.isSubmitting
+            isSubmitting: this.isSubmitting,
+            runtimeTemplateAdded: this.runtimeTemplateAdded,
+            textTemplateRemoved: this.textTemplateRemoved
         };
     }
 
@@ -115,5 +137,40 @@ export class FormModelDemoPresenter {
     reset(): void {
         this.form.reset();
         this.lastSubmitted = null;
+    }
+
+    toggleRuntimeTemplate(): void {
+        const sections = this.form.field("sections").as("object");
+        if (this.runtimeTemplateAdded) {
+            sections.templates.remove(RUNTIME_TEMPLATE_ID);
+            this.runtimeTemplateAdded = false;
+        } else {
+            sections.templates.add({
+                id: RUNTIME_TEMPLATE_ID,
+                name: "Runtime Banner",
+                fields: f => ({
+                    headline: f.text().label("Headline").required("Required"),
+                    note: f.text().label("Note")
+                })
+            });
+            this.runtimeTemplateAdded = true;
+        }
+    }
+
+    toggleTextTemplate(): void {
+        const content = this.form.field("content").as("object");
+        if (this.textTemplateRemoved) {
+            content.templates.add({
+                id: "text",
+                name: "Rich Text",
+                fields: f => ({
+                    body: f.text().label("Body").required("Required")
+                })
+            });
+            this.textTemplateRemoved = false;
+        } else {
+            content.templates.remove("text");
+            this.textTemplateRemoved = true;
+        }
     }
 }

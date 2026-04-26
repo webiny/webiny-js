@@ -11,55 +11,53 @@ import { useConfirmationDialog } from "~/hooks/useConfirmationDialog.js";
 import { NestedLayout } from "./ObjectFieldComponents.js";
 import { AddTemplateButton } from "./TemplatePicker.js";
 
-export const MultiValueDynamicZoneRenderer = observer(
-    ({ field }: { field: IObjectFieldVM }) => {
-        const itemCount = field.items.length;
-        const label = `${field.label || ""}${itemCount ? ` (${itemCount})` : ""}`;
+export const MultiValueDynamicZoneRenderer = observer(({ field }: { field: IObjectFieldVM }) => {
+    const itemCount = field.items.length;
+    const label = `${field.label || ""}${itemCount ? ` (${itemCount})` : ""}`;
 
-        return (
-            <div className={"flex flex-col gap-md"}>
-                <Accordion background={"base"} variant={"container"}>
-                    <Accordion.Item
-                        icon={
-                            <Accordion.Item.Icon
-                                color={"accent"}
-                                label={"Dynamic Zone"}
-                                icon={<HorizontalRuleIcon />}
-                            />
-                        }
-                        title={label}
-                        defaultOpen={true}
-                    >
-                        {itemCount > 0 ? (
-                            <Accordion
-                                background={"base"}
-                                variant={"container"}
-                                className={"gap-md flex flex-col"}
-                            >
-                                {field.items.map((item, index) => (
-                                    <TemplatedListItem
-                                        key={item.key}
-                                        item={item}
-                                        index={index}
-                                        total={itemCount}
-                                        templates={field.availableTemplates}
-                                        disabled={field.disabled}
-                                    />
-                                ))}
-                            </Accordion>
-                        ) : null}
-                    </Accordion.Item>
-                </Accordion>
-                {!field.disabled && (
-                    <AddTemplateButton
-                        templates={field.availableTemplates}
-                        onSelect={template => field.addItem(template.id)}
-                    />
-                )}
-            </div>
-        );
-    }
-);
+    return (
+        <div className={"flex flex-col gap-md"}>
+            <Accordion background={"base"} variant={"container"}>
+                <Accordion.Item
+                    icon={
+                        <Accordion.Item.Icon
+                            color={"accent"}
+                            label={"Dynamic Zone"}
+                            icon={<HorizontalRuleIcon />}
+                        />
+                    }
+                    title={label}
+                    defaultOpen={true}
+                >
+                    {itemCount > 0 ? (
+                        <Accordion
+                            background={"base"}
+                            variant={"container"}
+                            className={"gap-md flex flex-col"}
+                        >
+                            {field.items.map((item, index) => (
+                                <TemplatedListItem
+                                    key={item.key}
+                                    item={item}
+                                    index={index}
+                                    total={itemCount}
+                                    templates={field.availableTemplates}
+                                    disabled={field.disabled}
+                                />
+                            ))}
+                        </Accordion>
+                    ) : null}
+                </Accordion.Item>
+            </Accordion>
+            {!field.disabled && (
+                <AddTemplateButton
+                    templates={field.availableTemplates}
+                    onSelect={template => field.addItem(template.id)}
+                />
+            )}
+        </div>
+    );
+});
 
 interface TemplatedListItemProps {
     item: IObjectFieldItemVM;

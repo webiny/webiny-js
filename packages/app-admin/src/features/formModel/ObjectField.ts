@@ -10,6 +10,7 @@ import type {
     IFieldValidation,
     IFormModel,
     IFieldBuilder,
+    IFieldBuilderRegistry,
     IRule,
     ITemplate,
     ITemplateConfig,
@@ -20,7 +21,8 @@ import type {
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
-    OnBlurCallback
+    OnBlurCallback,
+    ComputedFieldCallback
 } from "./abstractions.js";
 import { createFieldBuilderRegistry } from "./FieldBuilder.js";
 import type { FormModel } from "./FormModel.js";
@@ -227,6 +229,18 @@ export class ObjectField implements IObjectField {
         this._base.addOnBlur(cb);
     }
 
+    addRequiredWhen(fn: (form: IFormModel) => boolean, message?: string): void {
+        this._base.addRequiredWhen(fn, message);
+    }
+
+    setComputed(fn: ComputedFieldCallback): void {
+        this._base.setComputed(fn);
+    }
+
+    setComputedUntilDirty(fn: ComputedFieldCallback): void {
+        this._base.setComputedUntilDirty(fn);
+    }
+
     blur(): void {
         this._base.blur();
     }
@@ -394,6 +408,44 @@ export class ObjectField implements IObjectField {
 
     getChild(name: string): IField | undefined {
         return this._children.get(name);
+    }
+
+    fields(
+        factory: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder | undefined>
+    ): void {
+        if (this.isTemplated) {
+            throw new Error(
+                `Object field "${this.config.name}" is templated; use templates.add()/remove() to manage children. Each template owns its own fields.`
+            );
+        }
+        const registry = createFieldBuilderRegistry();
+        const builders = factory(registry);
+
+        for (const [name, builder] of Object.entries(builders)) {
+            if (builder === undefined) {
+                this._children.delete(name);
+                this.config.childBuilders[name] = undefined as unknown as IFieldBuilder;
+                delete this.config.childBuilders[name];
+                if (this.config.isList) {
+                    for (const item of this._items) {
+                        item.children.delete(name);
+                    }
+                }
+                continue;
+            }
+
+            this.config.childBuilders[name] = builder;
+            const built = builder.build(name);
+            const newField = createFieldFromConfig(built, this._form);
+            this._children.set(name, newField);
+
+            if (this.config.isList) {
+                for (const item of this._items) {
+                    const itemField = createFieldFromConfig(built, this._form);
+                    item.children.set(name, itemField);
+                }
+            }
+        }
     }
 
     getListItemChild(index: number, name: string): IField | undefined {
@@ -663,21 +715,17 @@ export class ObjectField implements IObjectField {
             return true;
         }
 
-        if (this.config.required) {
+        const requiredState = this._base.resolveRequired();
+        if (requiredState.required) {
+            const message = requiredState.message || "This field is required.";
             if (this.config.isList && this._items.length === 0) {
-                this.setValidation({
-                    isValid: false,
-                    message: this.config.requiredMessage || "This field is required."
-                });
+                this.setValidation({ isValid: false, message });
                 return false;
             }
             if (!this.config.isList) {
                 if (this.isTemplated) {
                     if (this._activeTemplateId === null) {
-                        this.setValidation({
-                            isValid: false,
-                            message: this.config.requiredMessage || "This field is required."
-                        });
+                        this.setValidation({ isValid: false, message });
                         return false;
                     }
                 } else {
@@ -686,10 +734,7 @@ export class ObjectField implements IObjectField {
                         v => v !== null && v !== undefined && v !== ""
                     );
                     if (!hasAnyValue) {
-                        this.setValidation({
-                            isValid: false,
-                            message: this.config.requiredMessage || "This field is required."
-                        });
+                        this.setValidation({ isValid: false, message });
                         return false;
                     }
                 }

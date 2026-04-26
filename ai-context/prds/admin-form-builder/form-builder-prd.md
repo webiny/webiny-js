@@ -812,12 +812,12 @@ const LayoutNodeRenderer = observer(({ node, form, fieldScope, renderers }) => {
 **Top-level `<FormView>`:**
 
 ```tsx
-const FormView = observer(({form, renderers}) => (
-    <div>
-        {form.layout.map((node, i) => (
-            <LayoutNodeRenderer key={i} node={node} form={form} fieldScope={form} renderers={renderers}/>
-        ))}
-    </div>
+const FormView = observer(({ form, renderers }) => (
+  <div>
+    {form.layout.map((node, i) => (
+      <LayoutNodeRenderer key={i} node={node} form={form} fieldScope={form} renderers={renderers} />
+    ))}
+  </div>
 ));
 ```
 

@@ -24,9 +24,7 @@ export const AddTemplateButton = ({
             <Dialog
                 size={"lg"}
                 className={"w-[800px]"}
-                trigger={
-                    <Button size={size} variant={variant} text={label} icon={<AddIcon />} />
-                }
+                trigger={<Button size={size} variant={variant} text={label} icon={<AddIcon />} />}
                 title={"Insert a template"}
                 info={<></>}
             >

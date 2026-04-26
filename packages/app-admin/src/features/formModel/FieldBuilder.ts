@@ -14,6 +14,7 @@ import type {
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
+    ComputedFieldCallback,
     OnBlurCallback
 } from "./abstractions.js";
 
@@ -87,6 +88,26 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
     required(message?: string): this {
         this._config.required = true;
         this._config.requiredMessage = message;
+        return this;
+    }
+
+    requiredWhen(fn: (form: IFormModel) => boolean, message?: string): this {
+        if (!this._config.requiredWhenCallbacks) {
+            this._config.requiredWhenCallbacks = [];
+        }
+        this._config.requiredWhenCallbacks.push({ fn, message });
+        return this;
+    }
+
+    computed(fn: ComputedFieldCallback): this {
+        this._config.computed = fn;
+        this._config.computedUntilDirty = undefined;
+        return this;
+    }
+
+    computedUntilDirty(fn: ComputedFieldCallback): this {
+        this._config.computedUntilDirty = fn;
+        this._config.computed = undefined;
         return this;
     }
 

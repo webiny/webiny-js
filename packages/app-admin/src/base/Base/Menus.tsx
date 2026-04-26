@@ -32,9 +32,7 @@ export const Menus = React.memo(() => {
                     <Menu.Link
                         to={"/form-model-demo"}
                         text={"FormModel Demo"}
-                        icon={
-                            <Menu.Link.Icon label="FormModel Demo" element={<DashboardIcon />} />
-                        }
+                        icon={<Menu.Link.Icon label="FormModel Demo" element={<DashboardIcon />} />}
                     />
                 }
             />

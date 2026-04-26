@@ -33,7 +33,9 @@ import type {
     ITabDefinitionVM,
     IElementNode,
     IElementNodeVM,
-    IObjectNode
+    IObjectNode,
+    FormRule,
+    FormRuleFn
 } from "./abstractions.js";
 
 const layoutAPI: ILayoutBuilder = {
@@ -96,6 +98,7 @@ export class FormModel implements IFormModel {
     private _activeTabs = observable.map<string, string>();
     private _ruleEvaluators: IRuleEvaluator[] = [];
     private _warnedRuleTypes = new Set<string>();
+    private _formRules: FormRule[] = [];
 
     constructor(config: IFormModelConfig) {
         this._ruleEvaluators = config.ruleEvaluators ?? [];
@@ -331,6 +334,17 @@ export class FormModel implements IFormModel {
         return this._errors;
     }
 
+    addRule(rule: FormRule): void {
+        this._formRules.push(rule);
+    }
+
+    setLayout(factory: (layout: ILayoutBuilder) => LayoutNode[]): void {
+        this._layout = factory(layoutAPI);
+        this._warnOrphanFields();
+        this._registerObjectNodeLayouts(this._layout);
+        this._propagateAncestorRules();
+    }
+
     async validate(): Promise<boolean> {
         const errors: IFormError[] = [];
 
@@ -345,6 +359,21 @@ export class FormModel implements IFormModel {
             }
         }
 
+        // Form-level rules — run after per-field validation. Errors merge into
+        // form.errors and surface on per-field validation when the path matches.
+        for (const rule of this._formRules) {
+            const ruleErrors = await this._runFormRule(rule);
+            for (const err of ruleErrors) {
+                errors.push(err);
+                if (err.path) {
+                    const target = this._tryGetField(err.path);
+                    if (target) {
+                        target.setValidation({ isValid: false, message: err.message });
+                    }
+                }
+            }
+        }
+
         const isValid = errors.length === 0;
         runInAction(() => {
             this._errors = errors;
@@ -352,6 +381,36 @@ export class FormModel implements IFormModel {
             this._submitted = true;
         });
         return isValid;
+    }
+
+    private async _runFormRule(rule: FormRule): Promise<IFormError[]> {
+        if (typeof rule === "function") {
+            const fn = rule as FormRuleFn;
+            const result = await fn(this);
+            return Array.isArray(result) ? result : [];
+        }
+        const data = this.getData();
+        const result = await rule.safeParseAsync(data);
+        if (result.success) {
+            return [];
+        }
+        return result.error.issues.map(issue => {
+            const path = issue.path.map(String).join(".");
+            const field = path ? this._tryGetField(path) : undefined;
+            return {
+                path,
+                label: field?.config.label,
+                message: issue.message || "Invalid value."
+            };
+        });
+    }
+
+    private _tryGetField(path: string): IField | undefined {
+        try {
+            return this.field(path);
+        } catch {
+            return undefined;
+        }
     }
 
     async submit<T = Record<string, unknown>>(): Promise<T | false> {

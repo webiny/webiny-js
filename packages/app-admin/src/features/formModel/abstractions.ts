@@ -45,8 +45,20 @@ export interface IFieldConfig {
     afterChangeCallbacks?: AfterChangeCallback[];
     afterSetValueCallbacks?: AfterSetValueCallback[];
     onBlurCallbacks?: OnBlurCallback[];
+    requiredWhenCallbacks?: RequiredWhenCallback[];
+    computed?: ComputedFieldCallback;
+    computedUntilDirty?: ComputedFieldCallback;
     rules?: IRule[];
 }
+
+export interface IRequiredWhenCallbackConfig {
+    fn: (form: IFormModel) => boolean;
+    message?: string;
+}
+
+export type RequiredWhenCallback = IRequiredWhenCallbackConfig;
+
+export type ComputedFieldCallback = (form: IFormModel) => unknown;
 
 // ---------------------------------------------------------------------------
 // Rules system
@@ -175,6 +187,25 @@ export interface IField {
     addAfterChange(cb: AfterChangeCallback): void;
     addAfterSetValue(cb: AfterSetValueCallback): void;
     addOnBlur(cb: OnBlurCallback): void;
+    /**
+     * Append a conditional required check. Multiple callbacks chain additively;
+     * the first one returning `true` makes the field required for the current
+     * form state. The built-in `.required()` flag (if set) always counts as a
+     * truthy check and cannot be overridden.
+     */
+    addRequiredWhen(fn: (form: IFormModel) => boolean, message?: string): void;
+    /**
+     * Mark this field as a derived value computed from `fn(form)`. The field
+     * stays editable (no auto-disable) and is excluded from `isDirty` while
+     * still tracking the computed value. Validation continues to apply.
+     */
+    setComputed(fn: ComputedFieldCallback): void;
+    /**
+     * Same as `setComputed`, but the field switches to manual mode the first
+     * time the user edits its value. After that, the computed callback no
+     * longer overrides user input.
+     */
+    setComputedUntilDirty(fn: ComputedFieldCallback): void;
     blur(): void;
     as<T extends keyof FieldTypeMap>(type: T): FieldTypeMap[T];
 }
@@ -240,6 +271,15 @@ export interface IObjectField extends IField {
     readonly isTemplated: boolean;
     readonly activeTemplateId: string | null;
     readonly availableTemplates: ITemplateVM[];
+    /**
+     * Add, replace, or remove children on this object field at runtime.
+     * Mirrors `form.fields()` but scoped to this object's children. Existing
+     * keys are replaced; new keys are appended; passing `undefined` removes.
+     * Throws on templated objects — each template owns its own fields.
+     */
+    fields(
+        factory: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder | undefined>
+    ): void;
     /**
      * Register an inner layout used by the field's VM (`field.layout` for
      * single objects, `item.layout` for list items).
@@ -490,6 +530,21 @@ export interface IFormVM {
     isValid: boolean | null;
 }
 
+/**
+ * Imperative form-level rule. Receives the live form and may return a flat
+ * list of errors (sync or async). Errors are merged into `form.errors` and
+ * surfaced on per-field validation when their `path` matches a known field.
+ */
+export type FormRuleFn = (
+    form: IFormModel
+) => IFormError[] | undefined | void | Promise<IFormError[] | undefined | void>;
+
+/**
+ * A form-level rule. Either a Zod schema (validated against `form.getData()`)
+ * or an imperative function returning an error list.
+ */
+export type FormRule = z.ZodTypeAny | FormRuleFn;
+
 export interface IFormModel<T = Record<string, any>> {
     field(name: string): IField;
     fields(
@@ -497,6 +552,18 @@ export interface IFormModel<T = Record<string, any>> {
     ): void;
     layout(factory: (layout: ILayoutModifier) => (LayoutNode | IPositionedLayoutNode)[]): void;
     layout(nodeId: string): ILayoutNodeAccessHandle;
+    /**
+     * Replace the entire layout. Re-registers per-field inner layouts and
+     * propagates ancestor rules. Use `layout()` (modifier form) for additive
+     * changes.
+     */
+    setLayout(factory: (layout: ILayoutBuilder) => LayoutNode[]): void;
+    /**
+     * Append a form-level validation rule. Runs after per-field validation.
+     * Accepts a Zod schema (validated against `getData()`) or an imperative
+     * function returning a list of errors.
+     */
+    addRule(rule: FormRule): void;
     getData(): T;
     setData(data: T): void;
     reset(): void;
@@ -551,6 +618,10 @@ export namespace FormModel {
     export type Rule = IRule;
     export type Action = RuleAction;
     export type RuleEvaluator = IRuleEvaluator;
+    export type FormRuleFunction = FormRuleFn;
+    export type FormRuleType = FormRule;
+    export type RequiredWhen = (form: IFormModel) => boolean;
+    export type Computed = ComputedFieldCallback;
 }
 
 // ---------------------------------------------------------------------------
@@ -612,12 +683,31 @@ export interface IFieldBuilder<TType extends string = string> {
     ): this;
     hidden(): this;
     required(message?: string): this;
+    /**
+     * Conditional required check. Multiple `requiredWhen()` calls chain — the
+     * first one to return `true` for the current form state makes the field
+     * required. Built-in `.required()` (if set) is evaluated alongside.
+     */
+    requiredWhen(fn: (form: IFormModel) => boolean, message?: string): this;
     disabled(value?: boolean): this;
     rules(rules: IRule[]): this;
     beforeChange(fn: BeforeChangeCallback): this;
     afterChange(fn: AfterChangeCallback): this;
     afterSetValue(fn: AfterSetValueCallback): this;
     onBlur(fn: OnBlurCallback): this;
+    /**
+     * Mark this field as a derived value computed from `fn(form)`. The field
+     * stays editable; user edits are accepted but the computed value continues
+     * to flow whenever a dependency changes. To make the user "win", use
+     * `computedUntilDirty()` instead.
+     */
+    computed(fn: ComputedFieldCallback): this;
+    /**
+     * Same as `computed`, but the field switches to manual mode the first time
+     * its value is changed via the UI. After that, `fn(form)` no longer
+     * overrides user input.
+     */
+    computedUntilDirty(fn: ComputedFieldCallback): this;
     build(name: string): IFieldConfig;
 }
 

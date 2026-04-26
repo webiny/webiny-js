@@ -11,7 +11,9 @@ import type {
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
-    OnBlurCallback
+    OnBlurCallback,
+    RequiredWhenCallback,
+    ComputedFieldCallback
 } from "./abstractions.js";
 
 /**
@@ -26,6 +28,11 @@ export class Field implements IField {
     private _afterChangeCallbacks: AfterChangeCallback[] = [];
     private _afterSetValueCallbacks: AfterSetValueCallback[] = [];
     private _onBlurCallbacks: OnBlurCallback[] = [];
+    private _requiredWhenCallbacks: RequiredWhenCallback[] = [];
+    private _computed: ComputedFieldCallback | null = null;
+    private _computedUntilDirty: ComputedFieldCallback | null = null;
+    /** Set once a computedUntilDirty field receives its first user edit. */
+    private _computedOverridden = false;
     private _isUIChange = false;
     private _form: IFormModel | null = null;
     private _ancestorRules: IRule[] = [];
@@ -54,6 +61,14 @@ export class Field implements IField {
         if (config.onBlurCallbacks) {
             this._onBlurCallbacks = [...config.onBlurCallbacks];
         }
+        if (config.requiredWhenCallbacks) {
+            this._requiredWhenCallbacks = [...config.requiredWhenCallbacks];
+        }
+        if (config.computed) {
+            this._computed = config.computed;
+        } else if (config.computedUntilDirty) {
+            this._computedUntilDirty = config.computedUntilDirty;
+        }
 
         makeAutoObservable(this, {
             config: false,
@@ -70,6 +85,12 @@ export class Field implements IField {
     }
 
     getValue<T = unknown>(): T {
+        if (this._computed && this._form) {
+            return this._computed(this._form) as T;
+        }
+        if (this._computedUntilDirty && !this._computedOverridden && this._form) {
+            return this._computedUntilDirty(this._form) as T;
+        }
         return this._value as T;
     }
 
@@ -89,6 +110,9 @@ export class Field implements IField {
         }
 
         this._value = transformed;
+        if (this._computedUntilDirty && this._isUIChange) {
+            this._computedOverridden = true;
+        }
 
         for (const cb of this._afterChangeCallbacks) {
             cb(transformed, this._form!);
@@ -102,10 +126,13 @@ export class Field implements IField {
     }
 
     /**
-     * Set value directly without running pipelines. Used by setData().
+     * Set value directly without running pipelines. Used by setData() and reset().
      */
     setValueSilent(value: unknown): void {
         this._value = value;
+        if (this._computedUntilDirty) {
+            this._computedOverridden = value !== null && value !== undefined;
+        }
     }
 
     setDisabled(value: boolean): void {
@@ -170,6 +197,45 @@ export class Field implements IField {
         this._onBlurCallbacks.push(cb);
     }
 
+    addRequiredWhen(fn: (form: IFormModel) => boolean, message?: string): void {
+        this._requiredWhenCallbacks.push({ fn, message });
+    }
+
+    setComputed(fn: ComputedFieldCallback): void {
+        this._computed = fn;
+        this._computedUntilDirty = null;
+        this._computedOverridden = false;
+    }
+
+    setComputedUntilDirty(fn: ComputedFieldCallback): void {
+        this._computedUntilDirty = fn;
+        this._computed = null;
+        this._computedOverridden = false;
+    }
+
+    /**
+     * Effective `required` state — true if the built-in `.required()` flag is
+     * set, or if any `requiredWhen()` callback returns `true` for the current
+     * form state. The first truthy callback wins; its message is used.
+     */
+    resolveRequired(): { required: boolean; message?: string } {
+        return this._resolveRequired();
+    }
+
+    private _resolveRequired(): { required: boolean; message?: string } {
+        if (this.config.required) {
+            return { required: true, message: this.config.requiredMessage };
+        }
+        if (this._form && this._requiredWhenCallbacks.length > 0) {
+            for (const cb of this._requiredWhenCallbacks) {
+                if (cb.fn(this._form)) {
+                    return { required: true, message: cb.message };
+                }
+            }
+        }
+        return { required: false };
+    }
+
     blur(): void {
         for (const cb of this._onBlurCallbacks) {
             cb(this._value, this._form!);
@@ -198,6 +264,7 @@ export class Field implements IField {
 
     get vm(): IFieldVM {
         const options = this._resolveOptions();
+        const required = this._resolveRequired().required;
 
         return {
             name: this.config.name,
@@ -207,9 +274,9 @@ export class Field implements IField {
             description: this.config.description,
             note: this.config.note,
             placeholder: this.config.placeholder,
-            value: this._value,
+            value: this.getValue(),
             validation: this._validation,
-            required: this.config.required,
+            required,
             visible: this.visible,
             disabled: this.disabled,
             renderer: this.config.renderer,
@@ -252,13 +319,15 @@ export class Field implements IField {
             return true;
         }
 
+        const effectiveValue = this.getValue();
+        const requiredState = this._resolveRequired();
+
         // Required check
-        if (this.config.required) {
-            const value = this._value;
-            if (value === null || value === undefined || value === "") {
+        if (requiredState.required) {
+            if (effectiveValue === null || effectiveValue === undefined || effectiveValue === "") {
                 this._validation = {
                     isValid: false,
-                    message: this.config.requiredMessage || "This field is required."
+                    message: requiredState.message || "This field is required."
                 };
                 return false;
             }
@@ -266,7 +335,7 @@ export class Field implements IField {
 
         // Zod schema check
         if (this.config.schema) {
-            const result = await this.config.schema.safeParseAsync(this._value);
+            const result = await this.config.schema.safeParseAsync(effectiveValue);
             if (!result.success) {
                 const firstIssue = result.error.issues[0];
                 runInAction(() => {
@@ -283,5 +352,15 @@ export class Field implements IField {
             this._validation = { isValid: true };
         });
         return true;
+    }
+
+    /** True if this field has any computed callback configured. */
+    get isComputed(): boolean {
+        return this._computed !== null || this._computedUntilDirty !== null;
+    }
+
+    /** True if a computedUntilDirty field has been overridden by user edit. */
+    get isComputedOverridden(): boolean {
+        return this._computedOverridden;
     }
 }

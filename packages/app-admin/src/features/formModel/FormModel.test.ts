@@ -2969,4 +2969,400 @@ describe("FormModel", () => {
             warn.mockRestore();
         });
     });
+
+    describe("requiredWhen (Phase 11)", () => {
+        it("makes a field required when the callback returns true", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    plan: fields.text().defaultValue("free"),
+                    seats: fields
+                        .text()
+                        .requiredWhen(f => f.field("plan").getValue() === "pro", "Seats required")
+                })
+            });
+
+            // plan = free → not required → validation passes
+            expect(form.field("seats").vm.required).toBe(false);
+            expect(await form.validate()).toBe(true);
+
+            // plan = pro → becomes required → empty value fails validation
+            form.field("plan").setValue("pro");
+            expect(form.field("seats").vm.required).toBe(true);
+            expect(await form.validate()).toBe(false);
+            expect(form.field("seats").vm.validation.message).toBe("Seats required");
+        });
+
+        it("chains requiredWhen callbacks — first truthy wins", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    plan: fields.text().defaultValue("free"),
+                    flag: fields.text().defaultValue("off"),
+                    seats: fields
+                        .text()
+                        .requiredWhen(f => f.field("plan").getValue() === "pro", "Pro requires it")
+                        .requiredWhen(f => f.field("flag").getValue() === "on", "Flag requires it")
+                })
+            });
+
+            form.field("flag").setValue("on");
+            await form.validate();
+            expect(form.field("seats").vm.validation.message).toBe("Flag requires it");
+
+            // First-truthy-wins: enable plan too, plan callback runs first.
+            form.field("plan").setValue("pro");
+            await form.validate();
+            expect(form.field("seats").vm.validation.message).toBe("Pro requires it");
+        });
+
+        it("hard .required() always wins over requiredWhen messages", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    seats: fields
+                        .text()
+                        .required("Always required")
+                        .requiredWhen(() => true, "Conditional message")
+                })
+            });
+
+            await form.validate();
+            expect(form.field("seats").vm.required).toBe(true);
+            expect(form.field("seats").vm.validation.message).toBe("Always required");
+        });
+
+        it("modifier-added requiredWhen chains with builder-defined ones", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    plan: fields.text().defaultValue("free"),
+                    other: fields.text().defaultValue("off"),
+                    seats: fields
+                        .text()
+                        .requiredWhen(f => f.field("plan").getValue() === "pro", "Pro required")
+                })
+            });
+
+            form.field("seats").addRequiredWhen(
+                f => f.field("other").getValue() === "on",
+                "Other required"
+            );
+
+            // Neither truthy → not required.
+            expect(form.field("seats").vm.required).toBe(false);
+
+            // Modifier callback truthy.
+            form.field("other").setValue("on");
+            await form.validate();
+            expect(form.field("seats").vm.validation.message).toBe("Other required");
+        });
+    });
+
+    describe("computed / computedUntilDirty (Phase 11)", () => {
+        it("computed field exposes derived value reactively", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    first: fields.text().defaultValue("Ada"),
+                    last: fields.text().defaultValue("Lovelace"),
+                    full: fields
+                        .text()
+                        .computed(
+                            f => `${f.field("first").getValue()} ${f.field("last").getValue()}`
+                        )
+                })
+            });
+
+            expect(form.field("full").getValue()).toBe("Ada Lovelace");
+            form.field("first").setValue("Grace");
+            expect(form.field("full").getValue()).toBe("Grace Lovelace");
+        });
+
+        it("computed field stays editable but value remains derived", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    src: fields.text().defaultValue("A"),
+                    derived: fields.text().computed(f => f.field("src").getValue())
+                })
+            });
+
+            // Not auto-disabled.
+            expect(form.field("derived").vm.disabled).toBe(false);
+
+            // User edit doesn't override the computed value.
+            form.field("derived").vm.onChange("manual override");
+            expect(form.field("derived").getValue()).toBe("A");
+        });
+
+        it("computedUntilDirty switches to manual after first UI edit", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    src: fields.text().defaultValue("A"),
+                    derived: fields
+                        .text()
+                        .computedUntilDirty(f => `derived-${f.field("src").getValue()}`)
+                })
+            });
+
+            expect(form.field("derived").getValue()).toBe("derived-A");
+
+            form.field("derived").vm.onChange("manual");
+            expect(form.field("derived").getValue()).toBe("manual");
+
+            // Source changes no longer overwrite manual edit.
+            form.field("src").setValue("B");
+            expect(form.field("derived").getValue()).toBe("manual");
+        });
+
+        it("computed field still participates in validation", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    src: fields.text().defaultValue(""),
+                    derived: fields
+                        .text()
+                        .required("Derived must not be empty")
+                        .computed(f => f.field("src").getValue())
+                })
+            });
+
+            const valid = await form.validate();
+            expect(valid).toBe(false);
+            expect(form.field("derived").vm.validation.message).toBe("Derived must not be empty");
+
+            form.field("src").setValue("hello");
+            expect(await form.validate()).toBe(true);
+        });
+
+        it("modifier setComputed converts a regular field into a computed one", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    src: fields.text().defaultValue("X"),
+                    derived: fields.text().defaultValue("initial")
+                })
+            });
+
+            form.field("derived").setComputed(f => `from-${f.field("src").getValue()}`);
+
+            expect(form.field("derived").getValue()).toBe("from-X");
+            form.field("src").setValue("Y");
+            expect(form.field("derived").getValue()).toBe("from-Y");
+        });
+    });
+
+    describe('field("...").as("object").fields() (Phase 11)', () => {
+        it("adds new children to an existing object field at runtime", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    profile: fields.object().fields(f => ({
+                        firstName: f.text().label("First")
+                    }))
+                })
+            });
+
+            form.field("profile")
+                .as("object")
+                .fields(f => ({
+                    lastName: f.text().label("Last")
+                }));
+
+            form.field("profile.firstName").setValue("Ada");
+            form.field("profile.lastName").setValue("Lovelace");
+            expect(form.getData()).toEqual({
+                profile: { firstName: "Ada", lastName: "Lovelace" }
+            });
+        });
+
+        it("replaces existing children when keys collide", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    profile: fields.object().fields(f => ({
+                        firstName: f.text().label("Old")
+                    }))
+                })
+            });
+
+            form.field("profile")
+                .as("object")
+                .fields(f => ({
+                    firstName: f.text().label("New")
+                }));
+
+            const profile = form.field("profile").as("object");
+            expect(profile.children.get("firstName")?.config.label).toBe("New");
+        });
+
+        it("removes children when factory returns undefined", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    profile: fields.object().fields(f => ({
+                        firstName: f.text(),
+                        lastName: f.text()
+                    }))
+                })
+            });
+
+            form.field("profile")
+                .as("object")
+                .fields(() => ({
+                    lastName: undefined
+                }));
+
+            const profile = form.field("profile").as("object");
+            expect(profile.children.has("lastName")).toBe(false);
+            expect(profile.children.has("firstName")).toBe(true);
+        });
+
+        it("propagates added children to existing list items", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    contacts: fields
+                        .object()
+                        .list()
+                        .fields(f => ({
+                            name: f.text()
+                        }))
+                })
+            });
+
+            const contacts = form.field("contacts").as("object");
+            contacts.addItem({ name: "Ada" });
+            contacts.addItem({ name: "Grace" });
+
+            contacts.fields(f => ({
+                email: f.text()
+            }));
+
+            // Existing items now have the new child.
+            expect(contacts.items[0].children.has("email")).toBe(true);
+            expect(contacts.items[1].children.has("email")).toBe(true);
+
+            // Newly added items pick up the child too.
+            contacts.addItem({ name: "Linus", email: "linus@example.com" });
+            expect(contacts.items[2].children.get("email")?.getValue()).toBe("linus@example.com");
+        });
+
+        it("throws when called on a templated object field", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    block: fields.object().templates([
+                        {
+                            id: "a",
+                            name: "A",
+                            fields: f => ({ x: f.text() })
+                        }
+                    ])
+                })
+            });
+
+            expect(() => {
+                form.field("block")
+                    .as("object")
+                    .fields(f => ({ y: f.text() }));
+            }).toThrow(/templated/);
+        });
+    });
+
+    describe("form.addRule() (Phase 11)", () => {
+        it("runs a Zod schema against getData() and surfaces issues", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    password: fields.text().defaultValue("a"),
+                    confirm: fields.text().defaultValue("b")
+                })
+            });
+
+            form.addRule(
+                z
+                    .object({
+                        password: z.string(),
+                        confirm: z.string()
+                    })
+                    .refine(d => d.password === d.confirm, {
+                        message: "Passwords must match",
+                        path: ["confirm"]
+                    })
+            );
+
+            const valid = await form.validate();
+            expect(valid).toBe(false);
+            expect(form.errors.some(e => e.message === "Passwords must match")).toBe(true);
+            // Error surfaced on per-field validation when path matches.
+            expect(form.field("confirm").vm.validation.isValid).toBe(false);
+            expect(form.field("confirm").vm.validation.message).toBe("Passwords must match");
+        });
+
+        it("runs an imperative function and merges returned errors", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    age: fields.text().defaultValue("17")
+                })
+            });
+
+            form.addRule(f => {
+                if (Number(f.field("age").getValue()) < 18) {
+                    return [{ path: "age", message: "Must be 18+" }];
+                }
+                return [];
+            });
+
+            expect(await form.validate()).toBe(false);
+            expect(form.field("age").vm.validation.message).toBe("Must be 18+");
+
+            form.field("age").setValue("21");
+            expect(await form.validate()).toBe(true);
+        });
+
+        it("supports async imperative rules", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    name: fields.text().defaultValue("taken")
+                })
+            });
+
+            form.addRule(async f => {
+                await Promise.resolve();
+                if (f.field("name").getValue() === "taken") {
+                    return [{ path: "name", message: "Already taken" }];
+                }
+                return [];
+            });
+
+            expect(await form.validate()).toBe(false);
+            expect(form.field("name").vm.validation.message).toBe("Already taken");
+        });
+    });
+
+    describe("form.setLayout() (Phase 11)", () => {
+        it("replaces the layout entirely", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    a: fields.text(),
+                    b: fields.text(),
+                    c: fields.text()
+                }),
+                layout: layout => [layout.row("a"), layout.row("b"), layout.row("c")]
+            });
+
+            form.setLayout(layout => [layout.row("c", "a")]);
+
+            const layout = form.vm.layout;
+            expect(layout).toHaveLength(1);
+            const row = asRow(layout[0]);
+            expect(row.fields.map(f => f.name)).toEqual(["c", "a"]);
+        });
+
+        it("emits orphan warnings for fields not in the new layout", () => {
+            const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+            const form = new FormModel({
+                fields: fields => ({
+                    a: fields.text(),
+                    b: fields.text()
+                })
+            });
+
+            warn.mockClear();
+            form.setLayout(layout => [layout.row("a")]);
+
+            expect(warn).toHaveBeenCalledWith(
+                expect.stringContaining('Field "b" is not in the layout')
+            );
+            warn.mockRestore();
+        });
+    });
 });

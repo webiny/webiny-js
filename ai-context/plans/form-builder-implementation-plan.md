@@ -370,7 +370,7 @@ Broken into sub-phases. 8a, 8b, and 8c are implemented; 8c.1, 8d, and 8e remain.
 - Dev warning suppression for orphan objects/lists (they auto-render per 4c default-layout fallback)
 - Tests covering: add/remove template at runtime, orphan layout entries, orphan warning suppression, interaction with active template (removing the active template clears it via `onChange(null)`)
 
-#### Phase 8e: [ ] Integration + real-world verification
+#### Phase 8e: [x] Integration + real-world verification
 
 - Default field renderers for object/list items with template picker (`@webiny/admin-ui`) — exercised against the existing `/form-model-demo` playground rather than a fresh integration target
 
@@ -387,10 +387,11 @@ Broken into sub-phases. 8a, 8b, and 8c are implemented; 8c.1, 8d, and 8e remain.
 - Async schema memoization (cache by input value, force-revalidate on `submit()`)
 - `field.vm.validating` flag (true while `parseAsync()` in-flight)
 
-### Phase 11: [ ] Advanced Features
+### Phase 11: [x] Advanced Features
 
 - `.requiredWhen(fn, message)` — conditional required via MobX computed callback, reactively flips `field.vm.required`
-- `computed()` / `computedUntilDirty()` — derived fields
-- `.extend()` for object field merging
-- Form-level `addRule()` — zod refinements and imperative rules
-- `form.setLayout()` — full layout replacement
+- `.requiredWhen` can be added by a modifier (chains additively; first truthy callback wins; built-in `.required()` is non-overridable)
+- `computed()` / `computedUntilDirty()` — derived fields, can be added by a modifier (`field.setComputed`/`setComputedUntilDirty`); fields stay editable, participate in validation
+- `form.field("name").as("object").fields(factory)` for runtime children management on existing object fields (add/replace/remove via the same factory shape as `form.fields()`); throws on templated objects, propagates additions to existing list items
+- Form-level `addRule()` — accepts a Zod schema (validated against `getData()`) or an imperative function returning `IFormError[]`; matched paths surface on per-field validation
+- `form.setLayout()` — full layout replacement (re-registers object node inner layouts, propagates ancestor rules, re-emits orphan warnings)
