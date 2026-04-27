@@ -251,7 +251,10 @@ export function createCorePulumiApp() {
 
             let opensearch;
             if (searchEngineType === "opensearch") {
-                opensearch = app.addModule(OpenSearch, { protect });
+                opensearch = app.addModule(OpenSearch, {
+                    protect,
+                    namePrefix: pulumiResourceNamePrefix || ""
+                });
             }
 
             app.addModule(WatchCommand, { deploymentId: deploymentId.hex });

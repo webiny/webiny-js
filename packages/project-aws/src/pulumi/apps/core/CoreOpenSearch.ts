@@ -21,6 +21,7 @@ import { LAMBDA_RUNTIME } from "~/pulumi/constants.js";
 
 export interface OpenSearchParams {
     protect: boolean;
+    namePrefix: string;
 }
 
 function getDevClusterConfig(): aws.types.input.opensearch.DomainClusterConfig {
@@ -85,7 +86,7 @@ export const OpenSearch = createAppModule({
             domainEndpoint = providedEndpoint ?? domain.output.endpoint;
         } else {
             const randomId = new random.RandomId("osDomainRandomId", { byteLength: 8 });
-            const namePrefix = app.getParam(app.params.create.pulumiResourceNamePrefix) || "";
+            const namePrefix = params.namePrefix;
 
             const domainLogicalName = "webiny-js";
             const domainPhysicalName = randomId.hex.apply((hex: string) => {
