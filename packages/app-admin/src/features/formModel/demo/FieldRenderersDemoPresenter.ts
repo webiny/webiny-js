@@ -184,6 +184,63 @@ export class FieldRenderersDemoPresenter {
                     .help("Carried in form data silently")
                     .note("Value is preset"),
 
+                // --- Conditional Visibility / Disabled ---
+                enableFeature: fields
+                    .boolean()
+                    .label("Enable Feature")
+                    .description("Toggle this to show or hide the feature fields below"),
+                featureName: fields
+                    .text()
+                    .label("Feature Name")
+                    .placeholder("Name your feature...")
+                    .rules([
+                        {
+                            type: "condition",
+                            target: "enableFeature",
+                            operator: "isFalsy",
+                            value: null,
+                            action: "hide"
+                        }
+                    ]),
+                featureMode: fields
+                    .text()
+                    .label("Feature Mode")
+                    .options([
+                        { label: "Simple", value: "simple" },
+                        { label: "Advanced", value: "advanced" }
+                    ])
+                    .rules([
+                        {
+                            type: "condition",
+                            target: "enableFeature",
+                            operator: "isFalsy",
+                            value: null,
+                            action: "hide"
+                        }
+                    ]),
+                advancedConfig: fields
+                    .text()
+                    .label("Advanced Config")
+                    .placeholder("JSON config...")
+                    .renderer("textarea", { rows: 3 })
+                    .description("Only editable in advanced mode")
+                    .rules([
+                        {
+                            type: "condition",
+                            target: "enableFeature",
+                            operator: "isFalsy",
+                            value: null,
+                            action: "hide"
+                        },
+                        {
+                            type: "condition",
+                            target: "featureMode",
+                            operator: "neq",
+                            value: "advanced",
+                            action: "disable"
+                        }
+                    ]),
+
                 // --- Dynamic Zone (single template) ---
                 contentBlock: fields
                     .object()
@@ -286,6 +343,15 @@ export class FieldRenderersDemoPresenter {
                                 l.row("dateTime"),
                                 l.row("dateTimeTz"),
                                 l.row("dateTimeList")
+                            ]
+                        },
+                        {
+                            id: "rules",
+                            label: "Rules",
+                            layout: l => [
+                                l.row("enableFeature"),
+                                l.row("featureName", "featureMode"),
+                                l.row("advancedConfig")
                             ]
                         },
                         {

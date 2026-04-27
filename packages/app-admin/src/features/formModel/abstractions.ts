@@ -79,10 +79,19 @@ export type ComputedFieldCallback = (form: IFormModel) => unknown;
 
 export type RuleAction = "hide" | "disable";
 
+export type RuleOperator =
+    | "eq"
+    | "neq"
+    | "isEmpty"
+    | "isNotEmpty"
+    | "isTruthy"
+    | "isFalsy"
+    | "matches";
+
 export interface IRule {
     type: string;
     target: string;
-    operator: string;
+    operator: RuleOperator | (string & {});
     value: string | null;
     action: RuleAction;
 }

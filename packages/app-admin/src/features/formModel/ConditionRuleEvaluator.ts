@@ -29,6 +29,10 @@ export class ConditionRuleEvaluator implements IRuleEvaluator {
                 return value === rule.value;
             case "neq":
                 return value !== rule.value;
+            case "isTruthy":
+                return !!value;
+            case "isFalsy":
+                return !value;
             case "matches":
                 if (typeof value !== "string" || rule.value === null) {
                     return false;
