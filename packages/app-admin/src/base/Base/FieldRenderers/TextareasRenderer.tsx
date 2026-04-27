@@ -28,15 +28,6 @@ export const TextareasRenderer = observer(({ field }: { field: IFieldVM }) => {
         field.onChange(next);
     };
 
-    const removeAt = (index: number) => {
-        const next = values.filter((_, i) => i !== index);
-        field.onChange(next);
-    };
-
-    const append = () => {
-        field.onChange([...values, ""]);
-    };
-
     return (
         <div className={"flex flex-col gap-sm"}>
             <Separator labelPosition={"start"} variant={"accent"}>
@@ -63,7 +54,7 @@ export const TextareasRenderer = observer(({ field }: { field: IFieldVM }) => {
                             variant={"ghost"}
                             size={"md"}
                             icon={<DeleteIcon />}
-                            onClick={() => removeAt(index)}
+                            onClick={() => field.removeItem(index)}
                         />
                     </div>
                 </div>
@@ -73,7 +64,7 @@ export const TextareasRenderer = observer(({ field }: { field: IFieldVM }) => {
                 variant={"tertiary"}
                 icon={<AddIcon />}
                 text={settings?.addItemLabel ?? "Add Value"}
-                onClick={append}
+                onClick={() => field.addItem("")}
             />
         </div>
     );

@@ -791,8 +791,9 @@ export class ObjectField implements IObjectField {
                       duplicate: () => this.duplicateItem(index)
                   }))
                 : [],
-            addItem: (templateId?: string) =>
-                templateId !== undefined ? this.addItem(templateId) : this.addItem(),
+            addItem: (value?: unknown) => {
+                return value !== undefined ? this.addItem(value as string) : this.addItem();
+            },
             removeItem: (index: number) => this.removeItem(index),
             moveItem: (from: number, to: number) => this.moveItem(from, to),
             duplicateItem: (index: number) => this.duplicateItem(index),

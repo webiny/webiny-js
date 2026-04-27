@@ -30,15 +30,6 @@ export const DateTimeInputsRenderer = observer(({ field }: { field: IFieldVM }) 
         field.onChange(next);
     };
 
-    const removeAt = (index: number) => {
-        const next = values.filter((_, i) => i !== index);
-        field.onChange(next);
-    };
-
-    const append = () => {
-        field.onChange([...values, ""]);
-    };
-
     return (
         <div className={"flex flex-col gap-sm"}>
             <Separator labelPosition={"start"} variant={"accent"}>
@@ -59,7 +50,7 @@ export const DateTimeInputsRenderer = observer(({ field }: { field: IFieldVM }) 
                         <Icon
                             icon={<DeleteIcon />}
                             label={"Delete"}
-                            onClick={() => removeAt(index)}
+                            onClick={() => field.removeItem(index)}
                             className={"cursor-pointer"}
                         />
                     }
@@ -70,7 +61,7 @@ export const DateTimeInputsRenderer = observer(({ field }: { field: IFieldVM }) 
                 variant={"tertiary"}
                 icon={<AddIcon />}
                 text={settings?.addItemLabel ?? "Add Value"}
-                onClick={append}
+                onClick={() => field.addItem("")}
             />
         </div>
     );

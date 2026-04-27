@@ -28,7 +28,9 @@ export const DynamicZoneRenderer = observer(({ field }: { field: IFieldVM }) => 
     const settings = field.rendererSettings as DynamicZoneSettings | undefined;
 
     if (field.isList) {
-        return <MultiValueDynamicZone field={field} showContainer={settings?.container !== false} />;
+        return (
+            <MultiValueDynamicZone field={field} showContainer={settings?.container !== false} />
+        );
     }
 
     return <SingleValueDynamicZone field={field} showContainer={settings?.container !== false} />;

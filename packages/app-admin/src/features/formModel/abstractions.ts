@@ -125,6 +125,8 @@ export interface IFieldVM {
     options?: IValueOption[];
     onChange: (value: unknown) => void;
     onBlur: () => void;
+    addItem: (value?: unknown) => void;
+    removeItem: (index: number) => void;
     focusRequested: boolean;
     clearFocusRequest: () => void;
 }
@@ -144,8 +146,7 @@ export interface IObjectFieldVM extends IFieldVM {
     /** Items for list-mode object fields. */
     items: IObjectFieldItemVM[];
     /** Append a new item. Templated lists require a template id. */
-    addItem: (templateId?: string) => void;
-    removeItem: (index: number) => void;
+    addItem: (value?: unknown) => void;
     moveItem: (fromIndex: number, toIndex: number) => void;
     /** Duplicate a list item (including its `_templateId` when templated) and insert it after the source. */
     duplicateItem: (index: number) => void;

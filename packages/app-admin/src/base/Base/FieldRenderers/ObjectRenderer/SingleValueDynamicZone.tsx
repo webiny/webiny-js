@@ -22,8 +22,7 @@ export const SingleValueDynamicZone = observer(
 
         const { showConfirmation } = useConfirmationDialog({
             title: "Remove template",
-            message:
-                "Are you sure you want to remove this item? This action is not reversible.",
+            message: "Are you sure you want to remove this item? This action is not reversible.",
             acceptLabel: "Yes, I'm sure!",
             cancelLabel: "No, leave it."
         });

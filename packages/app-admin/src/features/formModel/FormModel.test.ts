@@ -4195,4 +4195,90 @@ describe("FormModel", () => {
             expect((form.vm.layout[0] as any).activeTabId).toBe("t2");
         });
     });
+
+    describe("primitive list addItem / removeItem", () => {
+        it("addItem appends to empty list", () => {
+            const form = new FormModel({
+                fields: f => ({
+                    tags: f.text().list()
+                }),
+                layout: l => [l.row("tags")]
+            });
+
+            const vm = form.field("tags").vm;
+            expect(vm.value).toEqual([]);
+
+            vm.addItem("hello");
+            expect(form.field("tags").vm.value).toEqual(["hello"]);
+        });
+
+        it("addItem appends with default null when no value given", () => {
+            const form = new FormModel({
+                fields: f => ({
+                    tags: f.text().list()
+                }),
+                layout: l => [l.row("tags")]
+            });
+
+            form.field("tags").vm.addItem();
+            expect(form.field("tags").vm.value).toEqual([null]);
+        });
+
+        it("addItem appends to existing values", () => {
+            const form = new FormModel({
+                fields: f => ({
+                    tags: f.text().list().defaultValue(["a", "b"])
+                }),
+                layout: l => [l.row("tags")]
+            });
+
+            form.field("tags").vm.addItem("c");
+            expect(form.field("tags").vm.value).toEqual(["a", "b", "c"]);
+        });
+
+        it("removeItem removes at index", () => {
+            const form = new FormModel({
+                fields: f => ({
+                    tags: f.text().list().defaultValue(["a", "b", "c"])
+                }),
+                layout: l => [l.row("tags")]
+            });
+
+            form.field("tags").vm.removeItem(1);
+            expect(form.field("tags").vm.value).toEqual(["a", "c"]);
+        });
+
+        it("removeItem from beginning preserves order", () => {
+            const form = new FormModel({
+                fields: f => ({
+                    tags: f.text().list().defaultValue(["a", "b", "c"])
+                }),
+                layout: l => [l.row("tags")]
+            });
+
+            form.field("tags").vm.removeItem(0);
+            expect(form.field("tags").vm.value).toEqual(["b", "c"]);
+        });
+
+        it("operations go through beforeChange pipeline", () => {
+            const log: unknown[] = [];
+            const form = new FormModel({
+                fields: f => ({
+                    tags: f
+                        .text()
+                        .list()
+                        .defaultValue(["a"])
+                        .beforeChange((value, _form) => {
+                            log.push(value);
+                            return value;
+                        })
+                }),
+                layout: l => [l.row("tags")]
+            });
+
+            form.field("tags").vm.addItem("b");
+            form.field("tags").vm.removeItem(0);
+            expect(log).toEqual([["a", "b"], ["b"]]);
+        });
+    });
 });

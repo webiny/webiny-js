@@ -322,6 +322,8 @@ export class Field implements IField {
                 }
                 this.blur();
             },
+            addItem: (value?: unknown) => this._addItem(value),
+            removeItem: (index: number) => this._removeItem(index),
             focusRequested: this._focusRequested,
             clearFocusRequest: () => {
                 this._focusRequested = false;
@@ -336,6 +338,16 @@ export class Field implements IField {
         } finally {
             this._isUIChange = false;
         }
+    }
+
+    private _addItem(value?: unknown): void {
+        const current = Array.isArray(this._value) ? this._value : [];
+        this._setValueFromUI([...current, value ?? null]);
+    }
+
+    private _removeItem(index: number): void {
+        const current = Array.isArray(this._value) ? this._value : [];
+        this._setValueFromUI(current.filter((_: unknown, i: number) => i !== index));
     }
 
     private _resolveOptions(): IValueOption[] | undefined {
