@@ -62,6 +62,7 @@ export const Infra = {
         Tags: AwsTags
     },
     Env: {
+        useEnv,
         Is: EnvIs,
         IsNot: EnvIsNot,
         IsProd: EnvIsProd,
