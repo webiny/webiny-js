@@ -48,10 +48,7 @@ export const SingleValueDynamicZone = observer(({ field }: { field: IObjectField
                                 field.disabled ? null : (
                                     <Accordion.Item.Action
                                         icon={
-                                            <Tooltip
-                                                trigger={<DeleteIcon />}
-                                                content={"Delete"}
-                                            />
+                                            <Tooltip trigger={<DeleteIcon />} content={"Delete"} />
                                         }
                                         onClick={onClear}
                                     />

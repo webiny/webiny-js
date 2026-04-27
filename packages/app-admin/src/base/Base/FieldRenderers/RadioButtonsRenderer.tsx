@@ -5,7 +5,7 @@ import type { IFieldVM, IValueOption } from "~/features/formModel/index.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
-        radioButtons: { fieldType: "select"; settings: undefined };
+        radioButtons: { fieldType: "text" | "number"; options: true; settings: undefined };
     }
 }
 

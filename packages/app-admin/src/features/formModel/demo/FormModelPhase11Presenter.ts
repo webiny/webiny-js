@@ -37,7 +37,7 @@ export class FormModelPhase11Presenter {
                         return full.trim().toLowerCase().replace(/\s+/g, "-");
                     }),
                 plan: fields
-                    .select()
+                    .text()
                     .label("Plan")
                     .defaultValue("free")
                     .options([

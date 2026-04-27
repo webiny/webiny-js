@@ -534,12 +534,12 @@ describe("FormModel", () => {
         });
     });
 
-    describe("select field with options", () => {
+    describe("field with options", () => {
         it("should resolve static options in field VM", () => {
             const form = new FormModel({
                 fields: fields => ({
                     lang: fields
-                        .select()
+                        .text()
                         .label("Language")
                         .options([
                             { label: "English", value: "en" },
@@ -559,7 +559,7 @@ describe("FormModel", () => {
             const form = new FormModel({
                 fields: fields => ({
                     lang: fields
-                        .select()
+                        .text()
                         .label("Language")
                         .options(() => {
                             // Dynamic options based on form state
@@ -579,7 +579,7 @@ describe("FormModel", () => {
                 const form = createBasicForm();
                 form.fields(fields => ({
                     language: fields
-                        .select()
+                        .text()
                         .label("Language")
                         .options([
                             { label: "English", value: "en" },
@@ -588,7 +588,7 @@ describe("FormModel", () => {
                 }));
 
                 expect(form.field("language")).toBeDefined();
-                expect(form.field("language").type).toBe("select");
+                expect(form.field("language").type).toBe("text");
                 expect(form.getData()).toHaveProperty("language");
             });
 
@@ -692,20 +692,20 @@ describe("FormModel", () => {
                 const form = new FormModel({
                     fields: fields => ({
                         lang: fields
-                            .select()
+                            .text()
                             .label("Language")
                             .options([{ label: "English", value: "en" }])
                     })
                 });
 
-                const selectField = form.field("lang").as("select");
-                expect(selectField).toBe(form.field("lang"));
+                const textField = form.field("lang").as("text");
+                expect(textField).toBe(form.field("lang"));
             });
 
             it("should throw when type does not match", () => {
                 const form = createBasicForm();
-                expect(() => form.field("title").as("select")).toThrow(
-                    'Field "title" is type "text", not "select".'
+                expect(() => form.field("title").as("boolean")).toThrow(
+                    'Field "title" is type "text", not "boolean".'
                 );
             });
         });
@@ -768,7 +768,7 @@ describe("FormModel", () => {
             it("should insert a row before a target", () => {
                 const form = createFormWithLayout();
                 form.fields(fields => ({
-                    language: fields.select().label("Language").options([])
+                    language: fields.text().label("Language").options([])
                 }));
 
                 form.layout(layout => [layout.row("language").before("path")]);
@@ -780,7 +780,7 @@ describe("FormModel", () => {
             it("should insert a row after a target", () => {
                 const form = createFormWithLayout();
                 form.fields(fields => ({
-                    language: fields.select().label("Language").options([])
+                    language: fields.text().label("Language").options([])
                 }));
 
                 form.layout(layout => [layout.row("language").after("path")]);
@@ -816,7 +816,7 @@ describe("FormModel", () => {
             it("should append when no position is specified", () => {
                 const form = createFormWithLayout();
                 form.fields(fields => ({
-                    language: fields.select().label("Language").options([])
+                    language: fields.text().label("Language").options([])
                 }));
 
                 form.layout(layout => [layout.row("language")]);
@@ -828,7 +828,7 @@ describe("FormModel", () => {
             it("should append when target is not found", () => {
                 const form = createFormWithLayout();
                 form.fields(fields => ({
-                    language: fields.select().label("Language").options([])
+                    language: fields.text().label("Language").options([])
                 }));
 
                 form.layout(layout => [layout.row("language").after("nonexistent")]);
@@ -868,7 +868,7 @@ describe("FormModel", () => {
                         // Add language field
                         form.fields(fields => ({
                             language: fields
-                                .select()
+                                .text()
                                 .label("Language")
                                 .options([
                                     { label: "English", value: "en" },
@@ -3913,6 +3913,120 @@ describe("FormModel", () => {
                 expect(result).toEqual({ slug: "available" });
                 expect(form.field("slug").vm.validation.isValid).toBe(true);
             });
+        });
+    });
+
+    describe("parseValue", () => {
+        it("should coerce string to number on setValue for number fields", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    count: fields.number().label("Count")
+                })
+            });
+
+            form.field("count").setValue("42");
+            expect(form.field("count").getValue()).toBe(42);
+        });
+
+        it("should pass through null and empty string for number fields", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    count: fields.number().label("Count")
+                })
+            });
+
+            form.field("count").setValue("");
+            expect(form.field("count").getValue()).toBe("");
+
+            form.field("count").setValue(null);
+            expect(form.field("count").getValue()).toBe(null);
+        });
+
+        it("should pass through NaN-producing strings for number fields", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    count: fields.number().label("Count")
+                })
+            });
+
+            form.field("count").setValue("abc");
+            expect(form.field("count").getValue()).toBe("abc");
+        });
+
+        it("should store number for number field with options", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    tier: fields
+                        .number()
+                        .label("Tier")
+                        .options([
+                            { label: "Tier 1", value: 100 },
+                            { label: "Tier 2", value: 200 }
+                        ])
+                })
+            });
+
+            form.field("tier").setValue("100");
+            expect(form.field("tier").getValue()).toBe(100);
+            expect(typeof form.field("tier").getValue()).toBe("number");
+        });
+
+        it("should coerce to boolean on setValue for boolean fields", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    active: fields.boolean().label("Active")
+                })
+            });
+
+            form.field("active").setValue(1);
+            expect(form.field("active").getValue()).toBe(true);
+
+            form.field("active").setValue(0);
+            expect(form.field("active").getValue()).toBe(false);
+        });
+
+        it("should apply parseValue on setData (via setValueSilent)", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    count: fields.number().label("Count")
+                })
+            });
+
+            form.setData({ count: "42" } as any);
+            expect(form.field("count").getValue()).toBe(42);
+            expect(typeof form.field("count").getValue()).toBe("number");
+        });
+
+        it("should not alter text field values", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    name: fields.text().label("Name")
+                })
+            });
+
+            form.field("name").setValue("hello");
+            expect(form.field("name").getValue()).toBe("hello");
+
+            form.field("name").setValue(42);
+            expect(form.field("name").getValue()).toBe(42);
+        });
+
+        it("should run parseValue before beforeChange", () => {
+            const log: unknown[] = [];
+            const form = new FormModel({
+                fields: fields => ({
+                    count: fields
+                        .number()
+                        .label("Count")
+                        .beforeChange(value => {
+                            log.push(value);
+                            return value;
+                        })
+                })
+            });
+
+            form.field("count").setValue("7");
+            expect(log).toEqual([7]);
         });
     });
 });

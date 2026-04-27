@@ -5,7 +5,6 @@ import type {
     IValueOption,
     IFormModel,
     IFieldBuilder,
-    ISelectFieldBuilder,
     IObjectFieldBuilder,
     IFieldBuilderRegistry,
     IRule,
@@ -161,8 +160,20 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
+    options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this {
+        this._config.options = opts;
+        if (this._config.renderer === "textInput" || this._config.renderer === "numberInput") {
+            this._config.renderer = "dropdown";
+        }
+        return this;
+    }
+
+    parseValue(value: unknown): unknown {
+        return value;
+    }
+
     build(name: string): IFieldConfig {
-        return { ...this._config, name };
+        return { ...this._config, name, parseValue: (v: unknown) => this.parseValue(v) };
     }
 }
 
@@ -184,6 +195,14 @@ export class NumberFieldBuilder extends FieldBuilder<"number"> {
         super("number");
         this._config.renderer = "numberInput";
     }
+
+    override parseValue(value: unknown): unknown {
+        if (value == null || value === "") {
+            return value;
+        }
+        const n = Number(value);
+        return Number.isNaN(n) ? value : n;
+    }
 }
 
 /**
@@ -194,20 +213,19 @@ export class BooleanFieldBuilder extends FieldBuilder<"boolean"> {
         super("boolean");
         this._config.renderer = "switch";
     }
+
+    override parseValue(value: unknown): unknown {
+        return Boolean(value);
+    }
 }
 
 /**
- * Select field builder with .options() support.
+ * DateTime field builder.
  */
-export class SelectFieldBuilder extends FieldBuilder<"select"> implements ISelectFieldBuilder {
+export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
     constructor() {
-        super("select");
-        this._config.renderer = "dropdown";
-    }
-
-    options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this {
-        this._config.options = opts;
-        return this;
+        super("datetime");
+        this._config.renderer = "dateTimeInput";
     }
 }
 
@@ -325,7 +343,10 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
             type: "boolean",
             create: () => new BooleanFieldBuilder()
         });
-        this.fieldTypes.set("select", { type: "select", create: () => new SelectFieldBuilder() });
+        this.fieldTypes.set("datetime", {
+            type: "datetime",
+            create: () => new DateTimeFieldBuilder()
+        });
         this.fieldTypes.set("object", { type: "object", create: () => new ObjectFieldBuilder() });
 
         if (factories) {
@@ -357,7 +378,7 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
     boolean(): BooleanFieldBuilder {
         throw new Error("Should be intercepted by Proxy");
     }
-    select(): SelectFieldBuilder {
+    datetime(): DateTimeFieldBuilder {
         throw new Error("Should be intercepted by Proxy");
     }
     object(): ObjectFieldBuilder {

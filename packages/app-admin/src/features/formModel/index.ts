@@ -14,12 +14,11 @@ export type {
     IFormModelConfig,
     ILayoutBuilder,
     IFieldBuilder,
-    ISelectFieldBuilder,
+    IOptionsFieldBuilder,
     IObjectFieldBuilder,
     IFieldBuilderRegistry,
     IFormModel,
     IField,
-    ISelectField,
     IObjectField,
     IObjectFieldConfig,
     IListItemField,
@@ -73,7 +72,9 @@ export { Field } from "./Field.js";
 export {
     FieldBuilder,
     TextFieldBuilder,
-    SelectFieldBuilder,
+    NumberFieldBuilder,
+    BooleanFieldBuilder,
+    DateTimeFieldBuilder,
     ObjectFieldBuilder,
     createFieldBuilderRegistry
 } from "./FieldBuilder.js";

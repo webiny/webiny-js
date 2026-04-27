@@ -33,7 +33,7 @@ class ProviderSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                         .defaultValue(() => generateAlphaNumericId(10)),
                     name: f.text().label("Name").required("Name is required"),
                     model: f
-                        .select()
+                        .text()
                         .label("Model")
                         .required("Model is required")
                         .options(() => this.getModelOptions()),

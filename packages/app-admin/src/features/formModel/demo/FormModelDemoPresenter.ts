@@ -85,7 +85,7 @@ export class FormModelDemoPresenter {
                         }
                     ]),
                 plan: fields
-                    .select()
+                    .text()
                     .label("Plan")
                     .defaultValue("free")
                     .options([

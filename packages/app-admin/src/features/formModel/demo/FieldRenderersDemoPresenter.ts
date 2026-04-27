@@ -74,6 +74,17 @@ export class FieldRenderersDemoPresenter {
                     .description("Multiple numeric values")
                     .help("Each input accepts a number")
                     .note("Empty values are stored as empty strings"),
+                numberOptions: fields
+                    .number()
+                    .list()
+                    .label("Number Options")
+                    .options([
+                        { label: "Tier 1", value: 100 },
+                        { label: "Tier 2", value: 200 }
+                    ])
+                    .description("Multiple numeric values")
+                    .help("Each input accepts a number")
+                    .note("Empty values are stored as empty strings"),
 
                 // --- Boolean ---
                 boolSwitch: fields
@@ -83,9 +94,9 @@ export class FieldRenderersDemoPresenter {
                     .help("Click to toggle state")
                     .note("Default is unchecked"),
 
-                // --- Select / Predefined Values ---
+                // --- Predefined Values ---
                 dropdown: fields
-                    .select()
+                    .text()
                     .label("Dropdown")
                     .placeholder("Pick one")
                     .description("Single-select dropdown")
@@ -97,62 +108,62 @@ export class FieldRenderersDemoPresenter {
                         { label: "Option C", value: "c" }
                     ]),
                 radioButtons: fields
-                    .select()
+                    .text()
                     .label("Radio Buttons")
-                    .renderer("radioButtons")
-                    .description("Pick a size variant")
-                    .help("Only one option can be selected")
-                    .note("Selection is mutually exclusive")
                     .options([
                         { label: "Small", value: "sm" },
                         { label: "Medium", value: "md" },
                         { label: "Large", value: "lg" }
-                    ]),
+                    ])
+                    .renderer("radioButtons")
+                    .description("Pick a size variant")
+                    .help("Only one option can be selected")
+                    .note("Selection is mutually exclusive"),
                 checkboxes: fields
-                    .select()
+                    .text()
                     .list()
                     .label("Checkboxes")
-                    .renderer("checkboxes")
-                    .description("Multi-select permissions")
-                    .help("Check all that apply")
-                    .note("At least one is recommended")
                     .options([
                         { label: "Read", value: "read" },
                         { label: "Write", value: "write" },
                         { label: "Admin", value: "admin" }
-                    ]),
+                    ])
+                    .renderer("checkboxes")
+                    .description("Multi-select permissions")
+                    .help("Check all that apply")
+                    .note("At least one is recommended"),
 
                 // --- Date/Time ---
                 dateOnly: fields
-                    .text()
+                    .datetime()
                     .label("Date Only")
                     .renderer("dateTimeInput", { type: "date" })
                     .description("Pick a calendar date")
                     .help("Format: YYYY-MM-DD")
                     .note("Time is not stored"),
                 dateTime: fields
-                    .text()
+                    .datetime()
                     .label("Date & Time")
                     .renderer("dateTimeInput", { type: "dateTime" })
                     .description("Date with time of day")
                     .help("Stored without timezone")
                     .note("Seconds default to :00"),
                 dateTimeTz: fields
-                    .text()
+                    .datetime()
                     .label("Date Time + Timezone")
                     .renderer("dateTimeInput", { type: "dateTimeTimezone" })
                     .description("Full date, time, and timezone")
                     .help("ISO 8601 with offset")
                     .note("Timezone defaults to your local zone"),
                 timeOnly: fields
-                    .text()
+                    .datetime()
                     .label("Time Only")
                     .renderer("dateTimeInput", { type: "time" })
                     .description("Time without a date")
                     .help("Format: HH:MM:SS")
                     .note("24-hour format"),
                 dateTimeList: fields
-                    .text()
+                    .datetime()
                     .list()
                     .label("Dates (multi)")
                     .renderer("dateTimeInputs", { type: "date" })
@@ -242,6 +253,7 @@ export class FieldRenderersDemoPresenter {
                 // Number
                 layout.row("numberInput"),
                 layout.row("numberInputs"),
+                layout.row("numberOptions"),
                 layout.separator(),
                 // Boolean
                 layout.row("boolSwitch"),

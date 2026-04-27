@@ -1,13 +1,20 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { FormComponentDescription, FormComponentLabel, FormComponentNote, Grid, Input, Select } from "@webiny/admin-ui";
+import {
+    FormComponentDescription,
+    FormComponentLabel,
+    FormComponentNote,
+    Grid,
+    Input,
+    Select
+} from "@webiny/admin-ui";
 import type { IFieldVM } from "~/features/formModel/index.js";
 import { UTC_TIMEZONES } from "@webiny/utils";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
         dateTimeInput: {
-            fieldType: "text";
+            fieldType: "datetime";
             settings: { type: "date" | "dateTime" | "dateTimeTimezone" | "time" };
         };
     }
@@ -231,7 +238,11 @@ export const DateTimeRenderer = observer(({ field }: { field: IFieldVM }) => {
 
     return (
         <div className={"w-full"}>
-            <FormComponentLabel text={field.label} required={field.required} disabled={field.disabled} />
+            <FormComponentLabel
+                text={field.label}
+                required={field.required}
+                disabled={field.disabled}
+            />
             {field.description && <FormComponentDescription text={field.description} />}
             <Component field={field} />
             <FormComponentNote text={field.note} disabled={field.disabled} />

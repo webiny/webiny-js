@@ -8,7 +8,7 @@ import type { IFieldVM, IFieldRendererRegistry } from "~/features/formModel/inde
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
         dateTimeInputs: {
-            fieldType: "text";
+            fieldType: "datetime";
             settings: {
                 type: "date" | "dateTime" | "dateTimeTimezone" | "time";
                 addItemLabel?: string;

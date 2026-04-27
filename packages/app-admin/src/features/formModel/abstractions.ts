@@ -7,11 +7,22 @@ import type { z } from "zod";
 
 export interface IFieldRendererRegistry {}
 
-export type FieldRendererName<TType extends string = string> = string extends TType
+export type FieldRendererName<
+    TType extends string = string,
+    TOptions extends boolean = boolean
+> = string extends TType
     ? keyof IFieldRendererRegistry & string
     : {
           [K in keyof IFieldRendererRegistry]: TType extends IFieldRendererRegistry[K]["fieldType"]
-              ? K
+              ? boolean extends TOptions
+                  ? K
+                  : TOptions extends true
+                    ? IFieldRendererRegistry[K] extends { options: true }
+                        ? K
+                        : never
+                    : IFieldRendererRegistry[K] extends { options: true }
+                      ? never
+                      : K
               : never;
       }[keyof IFieldRendererRegistry] &
           string;
@@ -42,6 +53,7 @@ export interface IFieldConfig {
     disabled: boolean;
     schema?: z.ZodTypeAny;
     options?: IValueOption[] | ((form: IFormModel) => IValueOption[]);
+    parseValue?: (value: unknown) => unknown;
     beforeChangeCallbacks?: BeforeChangeCallback[];
     afterChangeCallbacks?: AfterChangeCallback[];
     afterSetValueCallbacks?: AfterSetValueCallback[];
@@ -80,11 +92,13 @@ export interface IRuleEvaluator {
     evaluate(rule: IRule, form: IFormModel): boolean;
 }
 
-export interface IValueOption {
+export interface IValueOption<V extends string | number = string | number> {
     label: string;
-    value: string;
+    value: V;
     disabled?: boolean;
 }
+
+export type OptionValueType<TType extends string> = TType extends "number" ? number : string;
 
 export interface IFieldValidation {
     isValid: boolean | null;
@@ -225,14 +239,10 @@ export interface IField {
  */
 export interface FieldTypeMap {
     text: IField;
-    select: ISelectField;
+    number: IField;
+    boolean: IField;
+    datetime: IField;
     object: IObjectField;
-}
-
-export interface ISelectField extends IField {
-    readonly config: IFieldConfig & {
-        options?: IValueOption[] | ((form: IFormModel) => IValueOption[]);
-    };
 }
 
 // ---------------------------------------------------------------------------
@@ -612,7 +622,6 @@ export namespace FormModel {
     export type FieldValidation = IFieldValidation;
     export type FieldVM = IFieldVM;
     export type Field = IField;
-    export type SelectField = ISelectField;
     export type ObjectField = IObjectField;
     export type ObjectFieldConfig = IObjectFieldConfig;
     export type BeforeChange = BeforeChangeCallback;
@@ -693,7 +702,7 @@ export interface ILayoutBuilder {
     ): IObjectNode;
 }
 
-export interface IFieldBuilder<TType extends string = string> {
+export interface IFieldBuilder<TType extends string = string, TOptions extends boolean = false> {
     label(text: string): this;
     help(text: string): this;
     description(text: string): this;
@@ -701,7 +710,7 @@ export interface IFieldBuilder<TType extends string = string> {
     placeholder(text: string): this;
     schema(zodSchema: z.ZodTypeAny): this;
     defaultValue(value: unknown): this;
-    renderer<TName extends FieldRendererName<TType>>(
+    renderer<TName extends FieldRendererName<TType, TOptions>>(
         name: TName,
         ...args: undefined extends FieldRendererSettings<TName>
             ? [settings?: FieldRendererSettings<TName>]
@@ -740,8 +749,12 @@ export interface IFieldBuilder<TType extends string = string> {
     build(name: string): IFieldConfig;
 }
 
-export interface ISelectFieldBuilder extends IFieldBuilder<"select"> {
-    options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this;
+export interface IOptionsFieldBuilder<TType extends string> extends IFieldBuilder<TType, false> {
+    options(
+        opts:
+            | IValueOption<OptionValueType<TType>>[]
+            | ((form: IFormModel) => IValueOption<OptionValueType<TType>>[])
+    ): IFieldBuilder<TType, true>;
 }
 
 export interface IObjectFieldBuilder extends IFieldBuilder<"object"> {
@@ -752,10 +765,10 @@ export interface IObjectFieldBuilder extends IFieldBuilder<"object"> {
 }
 
 export interface IFieldBuilderRegistry {
-    text(): IFieldBuilder<"text">;
-    number(): IFieldBuilder<"number">;
+    text(): IOptionsFieldBuilder<"text">;
+    number(): IOptionsFieldBuilder<"number">;
     boolean(): IFieldBuilder<"boolean">;
-    select(): ISelectFieldBuilder;
+    datetime(): IFieldBuilder<"datetime">;
     object(): IObjectFieldBuilder;
 }
 
@@ -766,7 +779,7 @@ export namespace FormModelFactory {
     export type Config = IFormModelConfig;
     export type LayoutBuilder = ILayoutBuilder;
     export type FieldBuilder = IFieldBuilder;
-    export type SelectFieldBuilder = ISelectFieldBuilder;
+    export type OptionsFieldBuilder<TType extends string> = IOptionsFieldBuilder<TType>;
     export type ObjectFieldBuilder = IObjectFieldBuilder;
     export type FieldBuilderRegistry = IFieldBuilderRegistry;
 }

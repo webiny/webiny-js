@@ -103,7 +103,7 @@ export class Field implements IField {
      * afterChange only fires when value actually changed.
      */
     setValue(raw: unknown): void {
-        let transformed = raw;
+        let transformed = this.config.parseValue ? this.config.parseValue(raw) : raw;
         for (const cb of this._beforeChangeCallbacks) {
             transformed = cb(transformed, this._form!);
         }
@@ -132,9 +132,10 @@ export class Field implements IField {
      * Set value directly without running pipelines. Used by setData() and reset().
      */
     setValueSilent(value: unknown): void {
-        this._value = value;
+        const parsed = this.config.parseValue ? this.config.parseValue(value) : value;
+        this._value = parsed;
         if (this._computedUntilDirty) {
-            this._computedOverridden = value !== null && value !== undefined;
+            this._computedOverridden = parsed !== null && parsed !== undefined;
         }
     }
 

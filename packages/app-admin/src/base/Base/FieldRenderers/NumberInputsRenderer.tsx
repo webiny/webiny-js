@@ -2,7 +2,14 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
-import { Button, DelayedOnChange, FormComponentDescription, Icon, Input, Separator } from "@webiny/admin-ui";
+import {
+    Button,
+    DelayedOnChange,
+    FormComponentDescription,
+    Icon,
+    Input,
+    Separator
+} from "@webiny/admin-ui";
 import type { IFieldVM } from "~/features/formModel/index.js";
 
 declare module "../../../features/formModel/abstractions.js" {
@@ -39,11 +46,7 @@ export const NumberInputsRenderer = observer(({ field }: { field: IFieldVM }) =>
             </Separator>
             {field.description && <FormComponentDescription text={field.description} />}
             {values.map((val, index) => (
-                <DelayedOnChange
-                    key={index}
-                    value={val}
-                    onChange={value => updateAt(index, value)}
-                >
+                <DelayedOnChange key={index} value={val} onChange={value => updateAt(index, value)}>
                     <Input
                         disabled={field.disabled}
                         label={`Value ${index + 1}`}
