@@ -8,38 +8,34 @@ import { useConfirmationDialog } from "~/hooks/useConfirmationDialog.js";
 import { NestedLayout } from "./ObjectFieldComponents.js";
 import { AddTemplateButton } from "./TemplatePicker.js";
 
-export const SingleValueDynamicZone = observer(({ field }: { field: IObjectFieldVM }) => {
-    const activeTemplate =
-        field.activeTemplateId !== null
-            ? field.availableTemplates.find(t => t.id === field.activeTemplateId)
-            : undefined;
+interface SingleValueDynamicZoneProps {
+    field: IObjectFieldVM;
+    showContainer?: boolean;
+}
 
-    const { showConfirmation } = useConfirmationDialog({
-        title: "Remove template",
-        message: "Are you sure you want to remove this item? This action is not reversible.",
-        acceptLabel: "Yes, I'm sure!",
-        cancelLabel: "No, leave it."
-    });
+export const SingleValueDynamicZone = observer(
+    ({ field, showContainer = true }: SingleValueDynamicZoneProps) => {
+        const activeTemplate =
+            field.activeTemplateId !== null
+                ? field.availableTemplates.find(t => t.id === field.activeTemplateId)
+                : undefined;
 
-    const onClear = () => {
-        showConfirmation(() => {
-            field.onChange(null);
+        const { showConfirmation } = useConfirmationDialog({
+            title: "Remove template",
+            message:
+                "Are you sure you want to remove this item? This action is not reversible.",
+            acceptLabel: "Yes, I'm sure!",
+            cancelLabel: "No, leave it."
         });
-    };
 
-    return (
-        <Accordion background={"base"} variant={"container"}>
-            <Accordion.Item
-                icon={
-                    <Accordion.Item.Icon
-                        color={"accent"}
-                        label={"Dynamic Zone"}
-                        icon={<HorizontalRuleIcon />}
-                    />
-                }
-                title={field.label}
-                defaultOpen={true}
-            >
+        const onClear = () => {
+            showConfirmation(() => {
+                field.onChange(null);
+            });
+        };
+
+        const content = (
+            <>
                 {activeTemplate ? (
                     <Accordion background={"base"} variant={"container"}>
                         <Accordion.Item
@@ -65,7 +61,29 @@ export const SingleValueDynamicZone = observer(({ field }: { field: IObjectField
                         onSelect={template => field.setTemplate(template.id)}
                     />
                 )}
-            </Accordion.Item>
-        </Accordion>
-    );
-});
+            </>
+        );
+
+        if (!showContainer) {
+            return <div className={"flex flex-col gap-lg"}>{content}</div>;
+        }
+
+        return (
+            <Accordion background={"base"} variant={"container"}>
+                <Accordion.Item
+                    icon={
+                        <Accordion.Item.Icon
+                            color={"accent"}
+                            label={"Dynamic Zone"}
+                            icon={<HorizontalRuleIcon />}
+                        />
+                    }
+                    title={field.label}
+                    defaultOpen={true}
+                >
+                    {content}
+                </Accordion.Item>
+            </Accordion>
+        );
+    }
+);

@@ -8,6 +8,7 @@ import type {
     IFieldBuilder,
     IFieldBuilderRegistry,
     IObjectFieldConfig,
+    IObjectField,
     IFormVM,
     IFormError,
     IFormModelConfig,
@@ -106,11 +107,12 @@ export class FormModel implements IFormModel {
     private _submitted = false;
     private _validateOnChange = false;
     private _isValid: boolean | null = null;
-    private _errors: IFormError[] = [];
+    private _formRuleErrors: IFormError[] = [];
     private _activeTabs = observable.map<string, string>();
     private _ruleEvaluators: IRuleEvaluator[] = [];
     private _warnedRuleTypes = new Set<string>();
     private _formRules: FormRule[] = [];
+    private _lastFocusedField: IField | null = null;
 
     constructor(config: IFormModelConfig) {
         this._ruleEvaluators = config.ruleEvaluators ?? [];
@@ -216,6 +218,33 @@ export class FormModel implements IFormModel {
         throw new Error(`Field "${name}" not found.`);
     }
 
+    focusField(name: string): void {
+        if (this._lastFocusedField) {
+            this._lastFocusedField.clearFocusRequest();
+            this._lastFocusedField = null;
+        }
+
+        const activations = this._buildFocusPath(name);
+        let field: IField | undefined;
+        try {
+            field = this.field(name);
+        } catch {
+            // Field not found — no-op.
+        }
+
+        runInAction(() => {
+            if (activations) {
+                for (const act of activations) {
+                    this._activeTabs.set(act.tabKey, act.tabId);
+                }
+            }
+            if (field) {
+                field.requestFocus();
+                this._lastFocusedField = field;
+            }
+        });
+    }
+
     fields(
         factory: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder | undefined>
     ): void {
@@ -313,7 +342,7 @@ export class FormModel implements IFormModel {
         this._resetAllValidation();
         this._submitted = false;
         this._isValid = null;
-        this._errors = [];
+        this._formRuleErrors = [];
     }
 
     reset(): void {
@@ -324,7 +353,7 @@ export class FormModel implements IFormModel {
         this._resetAllValidation();
         this._submitted = false;
         this._isValid = null;
-        this._errors = [];
+        this._formRuleErrors = [];
     }
 
     get isDirty(): boolean {
@@ -347,7 +376,20 @@ export class FormModel implements IFormModel {
     }
 
     get errors(): IFormError[] {
-        return this._errors;
+        if (!this._submitted) {
+            return [];
+        }
+        const errors: IFormError[] = [];
+        for (const [, field] of this._fields) {
+            if (field.vm.validation.isValid === false) {
+                errors.push({
+                    path: field.name,
+                    label: field.config.label,
+                    message: field.vm.validation.message || "Invalid value."
+                });
+            }
+        }
+        return [...errors, ...this._formRuleErrors];
     }
 
     addRule(rule: FormRule): void {
@@ -362,25 +404,22 @@ export class FormModel implements IFormModel {
     }
 
     async validate(): Promise<boolean> {
-        const errors: IFormError[] = [];
+        let allFieldsValid = true;
 
         for (const [, field] of this._fields) {
             const valid = await field.validate({ force: true });
             if (!valid) {
-                errors.push({
-                    path: field.name,
-                    label: field.config.label,
-                    message: field.vm.validation.message || "Invalid value."
-                });
+                allFieldsValid = false;
             }
         }
 
-        // Form-level rules — run after per-field validation. Errors merge into
-        // form.errors and surface on per-field validation when the path matches.
+        // Form-level rules — run after per-field validation. Errors surface
+        // on per-field validation when the path matches.
+        const ruleErrors: IFormError[] = [];
         for (const rule of this._formRules) {
-            const ruleErrors = await this._runFormRule(rule);
-            for (const err of ruleErrors) {
-                errors.push(err);
+            const errors = await this._runFormRule(rule);
+            for (const err of errors) {
+                ruleErrors.push(err);
                 if (err.path) {
                     const target = this._tryGetField(err.path);
                     if (target) {
@@ -390,9 +429,9 @@ export class FormModel implements IFormModel {
             }
         }
 
-        const isValid = errors.length === 0;
+        const isValid = allFieldsValid && ruleErrors.length === 0;
         runInAction(() => {
-            this._errors = errors;
+            this._formRuleErrors = ruleErrors;
             this._isValid = isValid;
             this._submitted = true;
         });
@@ -440,7 +479,7 @@ export class FormModel implements IFormModel {
     get vm(): IFormVM {
         return {
             layout: this._resolveLayout(),
-            errors: this._errors,
+            errors: this.errors,
             isDirty: this.isDirty,
             isValid: this._isValid
         };
@@ -755,6 +794,121 @@ export class FormModel implements IFormModel {
 
     private _tabsNodeKey(node: ITabsNode): string {
         return `__tabs_${node.tabs.map(t => t.id).join("_")}`;
+    }
+
+    // --- Focus path walking ---
+
+    private _buildFocusPath(name: string): { tabKey: string; tabId: string }[] | null {
+        const segments = name.split(".");
+        return this._walkLayoutForFocus(this._layout, segments, this._fields);
+    }
+
+    private _walkLayoutForFocus(
+        layout: LayoutNode[],
+        segments: string[],
+        fieldScope: Map<string, IField>
+    ): { tabKey: string; tabId: string }[] | null {
+        const target = segments[0];
+
+        for (const node of layout) {
+            switch (node.type) {
+                case "row": {
+                    if (!node.fieldIds.includes(target)) {
+                        break;
+                    }
+                    return this._focusDiveIntoField(target, segments, fieldScope);
+                }
+                case "object": {
+                    if (node.fieldName !== target) {
+                        break;
+                    }
+                    return this._focusDiveIntoObjectNode(node, segments, fieldScope);
+                }
+                case "tabs": {
+                    const tabKey = node.id || this._tabsNodeKey(node);
+                    for (const tab of node.tabs) {
+                        const result = this._walkLayoutForFocus(tab.layout, segments, fieldScope);
+                        if (result !== null) {
+                            return [{ tabKey, tabId: tab.id }, ...result];
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        return null;
+    }
+
+    private _focusDiveIntoField(
+        fieldName: string,
+        segments: string[],
+        fieldScope: Map<string, IField>
+    ): { tabKey: string; tabId: string }[] | null {
+        if (segments.length === 1) {
+            return [];
+        }
+        const field = fieldScope.get(fieldName);
+        if (!field || !isObjectField(field)) {
+            return [];
+        }
+        const childScope = this._resolveChildScopeForFocus(field, segments);
+        if (!childScope) {
+            return [];
+        }
+        const inner = field.getInnerLayout();
+        if (!inner) {
+            return [];
+        }
+        return this._walkLayoutForFocus(inner, childScope.segments, childScope.children);
+    }
+
+    private _focusDiveIntoObjectNode(
+        node: IObjectNode,
+        segments: string[],
+        fieldScope: Map<string, IField>
+    ): { tabKey: string; tabId: string }[] | null {
+        if (segments.length === 1) {
+            return [];
+        }
+        const field = fieldScope.get(node.fieldName);
+        if (!field || !isObjectField(field)) {
+            return [];
+        }
+        const childScope = this._resolveChildScopeForFocus(field, segments);
+        if (!childScope) {
+            return [];
+        }
+        const inner = Array.isArray(node.inner)
+            ? node.inner
+            : field.activeTemplateId
+              ? (node.inner[field.activeTemplateId] ?? null)
+              : null;
+        if (!inner) {
+            const stored = field.getInnerLayout();
+            if (!stored) {
+                return [];
+            }
+            return this._walkLayoutForFocus(stored, childScope.segments, childScope.children);
+        }
+        return this._walkLayoutForFocus(inner, childScope.segments, childScope.children);
+    }
+
+    private _resolveChildScopeForFocus(
+        field: IObjectField,
+        segments: string[]
+    ): { segments: string[]; children: Map<string, IField> } | null {
+        const nextSegment = segments[1];
+        if (field.isList) {
+            const index = parseInt(nextSegment, 10);
+            if (!isNaN(index)) {
+                const item = field.items[index];
+                if (!item) {
+                    return null;
+                }
+                return { segments: segments.slice(2), children: item.children };
+            }
+        }
+        return { segments: segments.slice(1), children: field.children };
     }
 
     /**

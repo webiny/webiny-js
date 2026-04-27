@@ -25,7 +25,10 @@ export const RadioButtonsRenderer = observer(({ field }: { field: IFieldVM }) =>
                 value: String(opt.value)
             }))}
             value={field.value !== undefined ? String(field.value) : undefined}
-            onChange={value => field.onChange(value)}
+            onChange={value => {
+                field.onChange(value);
+                field.onBlur();
+            }}
         />
     );
 });

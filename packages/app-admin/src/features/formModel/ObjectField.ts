@@ -32,28 +32,29 @@ export const TEMPLATE_DISCRIMINATOR = "_templateId";
 
 function createChildFields(
     childBuilders: Record<string, IFieldBuilder>,
-    form: IFormModel | null
+    form: IFormModel | null,
+    parentPath?: string
 ): Map<string, IField> {
     const children = new Map<string, IField>();
     for (const [name, builder] of Object.entries(childBuilders)) {
         const config = builder.build(name);
-        const field = createFieldFromConfig(config, form);
+        const field = createFieldFromConfig(config, form, parentPath);
         children.set(name, field);
     }
     return children;
 }
 
-function createFieldFromConfig(config: any, form: IFormModel | null): IField {
+function createFieldFromConfig(config: any, form: IFormModel | null, parentPath?: string): IField {
     if (config.childBuilders) {
         const objField = new ObjectField(config as IObjectFieldConfig);
         if (form) {
-            objField.setForm(form);
+            objField.setForm(form, parentPath);
         }
         return objField;
     }
     const field = new Field(config);
     if (form) {
-        field.setForm(form);
+        field.setForm(form, parentPath);
     }
     return field;
 }
@@ -167,7 +168,7 @@ export class ObjectField implements IObjectField {
                     `Available: ${this._templates.map(t => t.id).join(", ") || "(none)"}.`
             );
         }
-        const children = createChildFields(template.childBuilders, this._form);
+        const children = createChildFields(template.childBuilders, this._form, this.qualifiedName);
         this._children = children;
         this._activeTemplateId = templateId;
         const inner = this._innerLayoutFor(templateId);
@@ -206,15 +207,16 @@ export class ObjectField implements IObjectField {
         this._base.setAncestorRules(rules);
     }
 
-    setForm(form: IFormModel): void {
+    setForm(form: IFormModel, parentPath?: string): void {
         this._form = form;
-        this._base.setForm(form);
+        this._base.setForm(form, parentPath);
+        const myPath = this._base.qualifiedName;
         for (const [, field] of this._children) {
-            field.setForm(form);
+            field.setForm(form, myPath);
         }
         for (const item of this._items) {
             for (const [, field] of item.children) {
-                field.setForm(form);
+                field.setForm(form, myPath);
             }
         }
     }
@@ -257,6 +259,31 @@ export class ObjectField implements IObjectField {
 
     remove(): void {
         this._base.remove();
+    }
+
+    get qualifiedName(): string {
+        return this._base.qualifiedName;
+    }
+
+    focus(): void {
+        this._base.focus();
+    }
+
+    requestFocus(): void {
+        this._base.requestFocus();
+    }
+
+    clearFocusRequest(): void {
+        this._base.clearFocusRequest();
+    }
+
+    getInnerLayout(): LayoutNode[] | null {
+        if (this.isTemplated) {
+            return this._activeTemplateId
+                ? (this._templateLayouts[this._activeTemplateId] ?? null)
+                : null;
+        }
+        return this._ownLayout;
     }
 
     // --- Object-specific ---
@@ -500,12 +527,12 @@ export class ObjectField implements IObjectField {
 
             this.config.childBuilders[name] = builder;
             const built = builder.build(name);
-            const newField = createFieldFromConfig(built, this._form);
+            const newField = createFieldFromConfig(built, this._form, this.qualifiedName);
             this._children.set(name, newField);
 
             if (this.config.isList) {
                 for (const item of this._items) {
-                    const itemField = createFieldFromConfig(built, this._form);
+                    const itemField = createFieldFromConfig(built, this._form, this.qualifiedName);
                     item.children.set(name, itemField);
                 }
             }
@@ -652,7 +679,8 @@ export class ObjectField implements IObjectField {
         const data = getChildrenData(source.children);
         const children = createChildFields(
             this._templateChildBuilders(source.templateId),
-            this._form
+            this._form,
+            this.qualifiedName
         );
         hydrateChildren(children, data);
         const key = `item_${++itemKeyCounter}`;
@@ -675,7 +703,11 @@ export class ObjectField implements IObjectField {
     }
 
     private _addItemInternal(data?: Record<string, unknown>, templateId?: string): void {
-        const children = createChildFields(this._templateChildBuilders(templateId), this._form);
+        const children = createChildFields(
+            this._templateChildBuilders(templateId),
+            this._form,
+            this.qualifiedName
+        );
         if (data) {
             hydrateChildren(children, data);
         }
@@ -731,6 +763,8 @@ export class ObjectField implements IObjectField {
                 }
                 this.blur();
             },
+            focusRequested: baseVm.focusRequested,
+            clearFocusRequest: baseVm.clearFocusRequest,
             isList: this.config.isList,
             fields: this.config.isList
                 ? []

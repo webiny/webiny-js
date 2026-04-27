@@ -125,6 +125,8 @@ export interface IFieldVM {
     options?: IValueOption[];
     onChange: (value: unknown) => void;
     onBlur: () => void;
+    focusRequested: boolean;
+    clearFocusRequest: () => void;
 }
 
 export interface IObjectFieldVM extends IFieldVM {
@@ -200,7 +202,7 @@ export interface IField {
     setValueSilent(value: unknown): void;
     setDisabled(value: boolean): void;
     setVisible(value: boolean): void;
-    setForm(form: IFormModel): void;
+    setForm(form: IFormModel, parentPath?: string): void;
     setAncestorRules(rules: IRule[]): void;
     setValidation(validation: IFieldValidation): void;
     resetValidation(): void;
@@ -231,6 +233,10 @@ export interface IField {
     setComputedUntilDirty(fn: ComputedFieldCallback): void;
     blur(): void;
     as<T extends keyof FieldTypeMap>(type: T): FieldTypeMap[T];
+    readonly qualifiedName: string;
+    focus(): void;
+    requestFocus(): void;
+    clearFocusRequest(): void;
 }
 
 /**
@@ -331,6 +337,7 @@ export interface IObjectField extends IField {
      * when called on a non-templated field (`isTemplated === false`).
      */
     readonly templates: IObjectFieldTemplatesAPI;
+    getInnerLayout(): LayoutNode[] | null;
     getData(): Record<string, unknown> | Record<string, unknown>[];
 }
 
@@ -605,6 +612,7 @@ export interface IFormModel<T = Record<string, any>> {
     validate(): Promise<boolean>;
     submit<T = Record<string, unknown>>(): Promise<T | false>;
     evaluateRules(rules: IRule[] | undefined): { visible: boolean; disabled: boolean };
+    focusField(name: string): void;
     readonly isDirty: boolean;
     readonly isValid: boolean | null;
     readonly submitted: boolean;

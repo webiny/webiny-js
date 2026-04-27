@@ -9,9 +9,15 @@ declare module "../../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
         dynamicZone: {
             fieldType: "object";
-            settings?: undefined;
+            settings?: {
+                container?: boolean;
+            };
         };
     }
+}
+
+export interface DynamicZoneSettings {
+    container?: boolean;
 }
 
 export const DynamicZoneRenderer = observer(({ field }: { field: IFieldVM }) => {
@@ -19,9 +25,11 @@ export const DynamicZoneRenderer = observer(({ field }: { field: IFieldVM }) => 
         return null;
     }
 
+    const settings = field.rendererSettings as DynamicZoneSettings | undefined;
+
     if (field.isList) {
-        return <MultiValueDynamicZone field={field} />;
+        return <MultiValueDynamicZone field={field} showContainer={settings?.container !== false} />;
     }
 
-    return <SingleValueDynamicZone field={field} />;
+    return <SingleValueDynamicZone field={field} showContainer={settings?.container !== false} />;
 });

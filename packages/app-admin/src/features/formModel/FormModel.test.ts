@@ -4029,4 +4029,170 @@ describe("FormModel", () => {
             expect(log).toEqual([7]);
         });
     });
+
+    describe("focusField", () => {
+        it("should set focusRequested on the target field", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title"),
+                    path: fields.text().label("Path")
+                })
+            });
+
+            form.focusField("title");
+            expect(form.field("title").vm.focusRequested).toBe(true);
+            expect(form.field("path").vm.focusRequested).toBe(false);
+        });
+
+        it("should activate the correct tab", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title"),
+                    slug: fields.text().label("Slug")
+                }),
+                layout: layout => [
+                    layout.tabs({
+                        id: "mainTabs",
+                        tabs: [
+                            {
+                                id: "general",
+                                label: "General",
+                                layout: l => [l.row("title")]
+                            },
+                            {
+                                id: "seo",
+                                label: "SEO",
+                                layout: l => [l.row("slug")]
+                            }
+                        ]
+                    })
+                ]
+            });
+
+            // Initially the first tab is active
+            expect((form.vm.layout[0] as any).activeTabId).toBe("general");
+
+            form.focusField("slug");
+            expect(form.field("slug").vm.focusRequested).toBe(true);
+            expect((form.vm.layout[0] as any).activeTabId).toBe("seo");
+        });
+
+        it("should activate nested tabs inside object fields", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    page: fields.object().fields(f => ({
+                        title: f.text().label("Title"),
+                        metaTitle: f.text().label("Meta Title")
+                    }))
+                }),
+                layout: layout => [
+                    layout.object("page", l => [
+                        l.tabs({
+                            id: "pageTabs",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: l => [l.row("title")]
+                                },
+                                {
+                                    id: "seo",
+                                    label: "SEO",
+                                    layout: l => [l.row("metaTitle")]
+                                }
+                            ]
+                        })
+                    ])
+                ]
+            });
+
+            form.focusField("page.metaTitle");
+            expect(form.field("page.metaTitle").vm.focusRequested).toBe(true);
+        });
+
+        it("should clear previous focus when focusing a new field", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title"),
+                    path: fields.text().label("Path")
+                })
+            });
+
+            form.focusField("title");
+            expect(form.field("title").vm.focusRequested).toBe(true);
+
+            form.focusField("path");
+            expect(form.field("title").vm.focusRequested).toBe(false);
+            expect(form.field("path").vm.focusRequested).toBe(true);
+        });
+
+        it("should allow renderer to clear focus via clearFocusRequest", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title")
+                })
+            });
+
+            form.focusField("title");
+            expect(form.field("title").vm.focusRequested).toBe(true);
+
+            form.field("title").vm.clearFocusRequest();
+            expect(form.field("title").vm.focusRequested).toBe(false);
+        });
+
+        it("should not throw on unknown field", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title")
+                })
+            });
+
+            expect(() => form.focusField("nonexistent")).not.toThrow();
+        });
+
+        it("should propagate qualifiedName through nested objects", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    page: fields.object().fields(f => ({
+                        seo: f.object().fields(g => ({
+                            metaTitle: g.text().label("Meta Title")
+                        }))
+                    }))
+                })
+            });
+
+            const meta = form.field("page.seo.metaTitle");
+            expect(meta.qualifiedName).toBe("page.seo.metaTitle");
+        });
+
+        it("field.focus() should delegate to form.focusField", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title"),
+                    path: fields.text().label("Path")
+                }),
+                layout: layout => [
+                    layout.tabs({
+                        id: "tabs",
+                        tabs: [
+                            {
+                                id: "t1",
+                                label: "T1",
+                                layout: l => [l.row("title")]
+                            },
+                            {
+                                id: "t2",
+                                label: "T2",
+                                layout: l => [l.row("path")]
+                            }
+                        ]
+                    })
+                ]
+            });
+
+            form.field("path").focus();
+            expect(form.field("path").vm.focusRequested).toBe(true);
+            expect((form.vm.layout[0] as any).activeTabId).toBe("t2");
+        });
+    });
 });

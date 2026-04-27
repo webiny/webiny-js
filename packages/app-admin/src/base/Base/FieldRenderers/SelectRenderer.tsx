@@ -19,7 +19,10 @@ export const SelectRenderer = observer(({ field }: { field: IFieldVM }) => {
             description={field.description}
             note={field.note}
             value={field.value != null ? String(field.value) : ""}
-            onChange={value => field.onChange(value)}
+            onChange={value => {
+                field.onChange(value);
+                field.onBlur();
+            }}
             required={field.required}
             disabled={field.disabled}
             validation={field.validation}

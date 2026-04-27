@@ -92,7 +92,7 @@ const FieldRenderersSection = observer(() => {
         [formModelFactory]
     );
 
-    const { form, data, lastSubmitted, isSubmitting } = presenter.vm;
+    const { form, data, lastSubmitted, isSubmitting, formErrors } = presenter.vm;
 
     return (
         <div className={"flex flex-col gap-lg"}>
@@ -107,6 +107,30 @@ const FieldRenderersSection = observer(() => {
             </div>
 
             <FormView form={form} />
+
+            {formErrors.length > 0 && (
+                <div className={"flex flex-col gap-xs"}>
+                    <div className={"text-sm font-medium"}>Form errors</div>
+                    <ul className={"text-xs text-error-strong list-disc pl-md"}>
+                        {formErrors.map((e, i) => (
+                            <li key={i}>
+                                {e.path ? (
+                                    <button
+                                        type={"button"}
+                                        className={
+                                            "underline cursor-pointer hover:text-error-default"
+                                        }
+                                        onClick={() => presenter.focusField(e.path)}
+                                    >
+                                        <code>{e.path}</code>
+                                    </button>
+                                ) : null}{" "}
+                                {e.message}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
             <div className={"flex flex-wrap gap-sm"}>
                 <Button

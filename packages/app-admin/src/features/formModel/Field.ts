@@ -37,6 +37,8 @@ export class Field implements IField {
     private _validationCacheKey: string | undefined = undefined;
     private _validationCache: boolean | undefined = undefined;
     private _isUIChange = false;
+    private _focusRequested = false;
+    private _qualifiedName: string = "";
     private _form: IFormModel | null = null;
     private _ancestorRules: IRule[] = [];
 
@@ -44,6 +46,7 @@ export class Field implements IField {
 
     constructor(config: IFieldConfig) {
         this.config = config;
+        this._qualifiedName = config.name;
         const defaultValue =
             typeof config.defaultValue === "function"
                 ? (config.defaultValue as () => unknown)()
@@ -250,8 +253,28 @@ export class Field implements IField {
         }
     }
 
-    setForm(form: IFormModel): void {
+    setForm(form: IFormModel, parentPath?: string): void {
         this._form = form;
+        this._qualifiedName = parentPath ? `${parentPath}.${this.config.name}` : this.config.name;
+    }
+
+    get qualifiedName(): string {
+        return this._qualifiedName;
+    }
+
+    focus(): void {
+        if (!this._form) {
+            throw new Error(`Field "${this.config.name}" is not attached to a form.`);
+        }
+        this._form.focusField(this._qualifiedName);
+    }
+
+    requestFocus(): void {
+        this._focusRequested = true;
+    }
+
+    clearFocusRequest(): void {
+        this._focusRequested = false;
     }
 
     as<T extends keyof FieldTypeMap>(type: T): FieldTypeMap[T] {
@@ -298,6 +321,10 @@ export class Field implements IField {
                     void this.validate();
                 }
                 this.blur();
+            },
+            focusRequested: this._focusRequested,
+            clearFocusRequest: () => {
+                this._focusRequested = false;
             }
         };
     }

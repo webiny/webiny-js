@@ -1,11 +1,12 @@
 import { makeAutoObservable, toJS } from "mobx";
-import type { IFormModel, IFormModelFactory, IFormVM } from "../abstractions.js";
+import type { IFormModel, IFormModelFactory, IFormVM, IFormError } from "../abstractions.js";
 
 export interface FieldRenderersDemoVM {
     form: IFormVM;
     data: Record<string, unknown>;
     lastSubmitted: Record<string, unknown> | null;
     isSubmitting: boolean;
+    formErrors: IFormError[];
 }
 
 export class FieldRenderersDemoPresenter {
@@ -21,6 +22,7 @@ export class FieldRenderersDemoPresenter {
                     .text()
                     .label("Text Input")
                     .placeholder("Type here...")
+                    .required("Text input is required")
                     .description("Standard text input")
                     .help("Enter any text value")
                     .note("Max 255 characters"),
@@ -63,6 +65,7 @@ export class FieldRenderersDemoPresenter {
                     .number()
                     .label("Number")
                     .placeholder("0")
+                    .required("Number is required")
                     .description("Single numeric value")
                     .help("Accepts integers and decimals")
                     .note("Use dot as decimal separator"),
@@ -99,6 +102,7 @@ export class FieldRenderersDemoPresenter {
                     .text()
                     .label("Dropdown")
                     .placeholder("Pick one")
+                    .required("Dropdown selection is required")
                     .description("Single-select dropdown")
                     .help("Choose exactly one option")
                     .note("Required for form submission")
@@ -215,6 +219,7 @@ export class FieldRenderersDemoPresenter {
                     .object()
                     .list()
                     .label("Page Sections")
+                    .renderer("dynamicZone", { container: false })
                     .templates([
                         {
                             id: "hero",
@@ -243,39 +248,61 @@ export class FieldRenderersDemoPresenter {
                     ])
             }),
             layout: layout => [
-                // Text
-                layout.row("textInput"),
-                layout.row("textInputs"),
-                layout.row("tags"),
-                layout.row("textarea"),
-                layout.row("textareas"),
-                layout.separator(),
-                // Number
-                layout.row("numberInput"),
-                layout.row("numberInputs"),
-                layout.row("numberOptions"),
-                layout.separator(),
-                // Boolean
-                layout.row("boolSwitch"),
-                layout.separator(),
-                // Select / Predefined
-                layout.row("dropdown", "radioButtons"),
-                layout.row("checkboxes"),
-                layout.separator(),
-                // Date/Time
-                layout.row("dateOnly", "timeOnly"),
-                layout.row("dateTime"),
-                layout.row("dateTimeTz"),
-                layout.row("dateTimeList"),
-                layout.separator(),
-                // Dynamic Zone
-                layout.object("contentBlock", {
-                    hero: l => [l.row("heading"), l.row("image")],
-                    text: l => [l.row("body")]
-                }),
-                layout.object("sections", {
-                    hero: l => [l.row("heading", "subheading")],
-                    cta: l => [l.row("label", "url")]
+                layout.tabs({
+                    id: "mainTabs",
+                    tabs: [
+                        {
+                            id: "text",
+                            label: "Text",
+                            layout: l => [
+                                l.row("textInput"),
+                                l.row("textInputs"),
+                                l.row("tags"),
+                                l.row("textarea"),
+                                l.row("textareas")
+                            ]
+                        },
+                        {
+                            id: "numbers",
+                            label: "Numbers & Boolean",
+                            layout: l => [
+                                l.row("numberInput"),
+                                l.row("numberInputs"),
+                                l.row("numberOptions"),
+                                l.separator(),
+                                l.row("boolSwitch")
+                            ]
+                        },
+                        {
+                            id: "selects",
+                            label: "Selects",
+                            layout: l => [l.row("dropdown", "radioButtons"), l.row("checkboxes")]
+                        },
+                        {
+                            id: "datetime",
+                            label: "Date / Time",
+                            layout: l => [
+                                l.row("dateOnly", "timeOnly"),
+                                l.row("dateTime"),
+                                l.row("dateTimeTz"),
+                                l.row("dateTimeList")
+                            ]
+                        },
+                        {
+                            id: "dynamic",
+                            label: "Dynamic Zones",
+                            layout: l => [
+                                l.object("contentBlock", {
+                                    hero: inner => [inner.row("heading"), inner.row("image")],
+                                    text: inner => [inner.row("body")]
+                                }),
+                                l.object("sections", {
+                                    hero: inner => [inner.row("heading", "subheading")],
+                                    cta: inner => [inner.row("label", "url")]
+                                })
+                            ]
+                        }
+                    ]
                 })
             ]
         });
@@ -288,8 +315,13 @@ export class FieldRenderersDemoPresenter {
             form: this.form.vm,
             data: toJS(this.form.getData()),
             lastSubmitted: this.lastSubmitted,
-            isSubmitting: this.isSubmitting
+            isSubmitting: this.isSubmitting,
+            formErrors: this.form.errors
         };
+    }
+
+    focusField(path: string): void {
+        this.form.focusField(path);
     }
 
     async submit(): Promise<void> {

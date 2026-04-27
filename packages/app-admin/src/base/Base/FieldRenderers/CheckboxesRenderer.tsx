@@ -26,7 +26,10 @@ export const CheckboxesRenderer = observer(({ field }: { field: IFieldVM }) => {
                 value: opt.value
             }))}
             value={value}
-            onChange={value => field.onChange(value)}
+            onChange={value => {
+                field.onChange(value);
+                field.onBlur();
+            }}
         />
     );
 });
