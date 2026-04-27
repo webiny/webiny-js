@@ -29,6 +29,7 @@ export const AiPowerUpsSettingsDialog = observer(() => {
 
     return (
         <Dialog
+            scrollable={false}
             open={true}
             onClose={closeDialog}
             title="AI Power-Ups"
