@@ -269,14 +269,18 @@ window.pannellum = (function (window, document, undefined) {
             document.mozFullScreenEnabled ||
             document.webkitFullscreenEnabled ||
             document.msFullscreenEnabled
-        )
+        ) {
             controls.container.appendChild(controls.fullscreen);
+        }
 
         // Device orientation toggle
         controls.orientation = document.createElement("div");
         controls.orientation.addEventListener("click", function (e) {
-            if (orientation) stopOrientation();
-            else startOrientation();
+            if (orientation) {
+                stopOrientation();
+            } else {
+                startOrientation();
+            }
         });
         controls.orientation.addEventListener("mousedown", function (e) {
             e.stopPropagation();
@@ -494,7 +498,9 @@ window.pannellum = (function (window, document, undefined) {
                 }
             }
 
-            if (config.draggable) uiContainer.classList.add("pnlm-grab");
+            if (config.draggable) {
+                uiContainer.classList.add("pnlm-grab");
+            }
             uiContainer.classList.remove("pnlm-grabbing");
 
             // Properly handle switching to dynamic scenes
@@ -525,7 +531,9 @@ window.pannellum = (function (window, document, undefined) {
          * @private
          */
         function onImageLoad() {
-            if (!renderer) renderer = new libpannellum.renderer(renderContainer);
+            if (!renderer) {
+                renderer = new libpannellum.renderer(renderContainer);
+            }
 
             // Only add event listeners once
             if (!listenersAdded) {
@@ -572,7 +580,9 @@ window.pannellum = (function (window, document, undefined) {
                 }
 
                 // Deal with MS pointer events
-                if (window.navigator.pointerEnabled) container.style.touchAction = "none";
+                if (window.navigator.pointerEnabled) {
+                    container.style.touchAction = "none";
+                }
             }
 
             renderInit();
@@ -597,7 +607,9 @@ window.pannellum = (function (window, document, undefined) {
                 // with non-progressive encoded JPEGs.
                 if (navigator.userAgent.toLowerCase().match(/(iphone|ipod|ipad).* os 8_/)) {
                     var flagIndex = img.indexOf("\xff\xc2");
-                    if (flagIndex < 0 || flagIndex > 65536) anError(config.strings.iOS8WebGLError);
+                    if (flagIndex < 0 || flagIndex > 65536) {
+                        anError(config.strings.iOS8WebGLError);
+                    }
                 }
 
                 var start = img.indexOf("<x:xmpmeta");
@@ -645,14 +657,17 @@ window.pannellum = (function (window, document, undefined) {
                         xmp.topPixels !== null
                     ) {
                         // Set up viewer using GPano XMP data
-                        if (specifiedPhotoSphereExcludes.indexOf("haov") < 0)
+                        if (specifiedPhotoSphereExcludes.indexOf("haov") < 0) {
                             config.haov = (xmp.croppedWidth / xmp.fullWidth) * 360;
-                        if (specifiedPhotoSphereExcludes.indexOf("vaov") < 0)
+                        }
+                        if (specifiedPhotoSphereExcludes.indexOf("vaov") < 0) {
                             config.vaov = (xmp.croppedHeight / xmp.fullHeight) * 180;
-                        if (specifiedPhotoSphereExcludes.indexOf("vOffset") < 0)
+                        }
+                        if (specifiedPhotoSphereExcludes.indexOf("vOffset") < 0) {
                             config.vOffset =
                                 ((xmp.topPixels + xmp.croppedHeight / 2) / xmp.fullHeight - 0.5) *
                                 -180;
+                        }
                         if (
                             xmp.heading !== null &&
                             specifiedPhotoSphereExcludes.indexOf("northOffset") < 0
@@ -664,18 +679,26 @@ window.pannellum = (function (window, document, undefined) {
                             }
                         }
                         if (xmp.horizonPitch !== null && xmp.horizonRoll !== null) {
-                            if (specifiedPhotoSphereExcludes.indexOf("horizonPitch") < 0)
+                            if (specifiedPhotoSphereExcludes.indexOf("horizonPitch") < 0) {
                                 config.horizonPitch = xmp.horizonPitch;
-                            if (specifiedPhotoSphereExcludes.indexOf("horizonRoll") < 0)
+                            }
+                            if (specifiedPhotoSphereExcludes.indexOf("horizonRoll") < 0) {
                                 config.horizonRoll = xmp.horizonRoll;
+                            }
                         }
 
-                        if (xmp.pitch !== null && specifiedPhotoSphereExcludes.indexOf("pitch") < 0)
+                        if (
+                            xmp.pitch !== null &&
+                            specifiedPhotoSphereExcludes.indexOf("pitch") < 0
+                        ) {
                             config.pitch = xmp.pitch;
-                        if (xmp.yaw !== null && specifiedPhotoSphereExcludes.indexOf("yaw") < 0)
+                        }
+                        if (xmp.yaw !== null && specifiedPhotoSphereExcludes.indexOf("yaw") < 0) {
                             config.yaw = xmp.yaw;
-                        if (xmp.hfov !== null && specifiedPhotoSphereExcludes.indexOf("hfov") < 0)
+                        }
+                        if (xmp.hfov !== null && specifiedPhotoSphereExcludes.indexOf("hfov") < 0) {
                             config.hfov = xmp.hfov;
+                        }
                     }
                 }
 
@@ -687,7 +710,9 @@ window.pannellum = (function (window, document, undefined) {
                     // do, we load the image directly from the URL. While this should
                     // allow the image to load, it does prevent parsing of XMP data.
                     function getCspHeaders() {
-                        if (!window.fetch) return null;
+                        if (!window.fetch) {
+                            return null;
+                        }
                         return window.fetch(document.location.href).then(function (resp) {
                             return resp.headers.get("Content-Security-Policy");
                         });
@@ -709,8 +734,11 @@ window.pannellum = (function (window, document, undefined) {
                     });
                 };
             });
-            if (reader.readAsBinaryString !== undefined) reader.readAsBinaryString(image);
-            else reader.readAsText(image);
+            if (reader.readAsBinaryString !== undefined) {
+                reader.readAsBinaryString(image);
+            } else {
+                reader.readAsText(image);
+            }
         }
 
         /**
@@ -720,7 +748,9 @@ window.pannellum = (function (window, document, undefined) {
          *      generic WebGL error is displayed.
          */
         function anError(errorMsg) {
-            if (errorMsg === undefined) errorMsg = config.strings.genericWebGLError;
+            if (errorMsg === undefined) {
+                errorMsg = config.strings.genericWebGLError;
+            }
             infoDisplay.errorMsg.innerHTML = "<p>" + errorMsg + "</p>";
             controls.load.style.display = "none";
             infoDisplay.load.box.style.display = "none";
@@ -912,8 +942,12 @@ window.pannellum = (function (window, document, undefined) {
             var root = Math.sqrt(x * x + a * a);
             var pitch = (Math.atan((y * c + focal * s) / root) * 180) / Math.PI;
             var yaw = (Math.atan2(x / root, a / root) * 180) / Math.PI + config.yaw;
-            if (yaw < -180) yaw += 360;
-            if (yaw > 180) yaw -= 360;
+            if (yaw < -180) {
+                yaw += 360;
+            }
+            if (yaw > 180) {
+                yaw -= 360;
+            }
             return [pitch, yaw];
         }
 
@@ -969,8 +1003,9 @@ window.pannellum = (function (window, document, undefined) {
          * @private
          */
         function onDocumentMouseUp(event) {
-            if (draggingHotSpot && draggingHotSpot.dragHandlerFunc)
+            if (draggingHotSpot && draggingHotSpot.dragHandlerFunc) {
                 draggingHotSpot.dragHandlerFunc(event, draggingHotSpot.dragHandlerArgs);
+            }
             draggingHotSpot = null;
 
             if (!isUserInteracting) {
@@ -1045,7 +1080,9 @@ window.pannellum = (function (window, document, undefined) {
             }
 
             // Override default action
-            if (!config.dragConfirm) event.preventDefault();
+            if (!config.dragConfirm) {
+                event.preventDefault();
+            }
             if (loaded) {
                 latestInteraction = Date.now();
             }
@@ -1081,9 +1118,11 @@ window.pannellum = (function (window, document, undefined) {
                     event.targetTouches.length != 2
                 ) {
                     if (onPointerDownPointerX != clientX) {
-                        if (config.dragConfirm == "yaw")
+                        if (config.dragConfirm == "yaw") {
                             showInteractionMessage(config.strings.twoTouchXActivate);
-                        else showInteractionMessage(config.strings.twoTouchActivate);
+                        } else {
+                            showInteractionMessage(config.strings.twoTouchActivate);
+                        }
                     }
                 } else {
                     var yaw =
@@ -1099,9 +1138,11 @@ window.pannellum = (function (window, document, undefined) {
                     event.targetTouches.length != 2
                 ) {
                     if (onPointerDownPointerY != clientY) {
-                        if (config.dragConfirm == "pitch")
+                        if (config.dragConfirm == "pitch") {
                             showInteractionMessage(config.strings.twoTouchYActivate);
-                        else showInteractionMessage(config.strings.twoTouchActivate);
+                        } else {
+                            showInteractionMessage(config.strings.twoTouchActivate);
+                        }
                     }
                 } else {
                     var pitch =
@@ -1150,7 +1191,9 @@ window.pannellum = (function (window, document, undefined) {
         function onDocumentPointerDown(event) {
             if (event.pointerType == "touch") {
                 // Only do something if the panorama is loaded
-                if (!loaded || !config.draggable) return;
+                if (!loaded || !config.draggable) {
+                    return;
+                }
                 pointerIDs.push(event.pointerId);
                 pointerCoordinates.push({
                     clientX: event.clientX,
@@ -1174,7 +1217,9 @@ window.pannellum = (function (window, document, undefined) {
                     return;
                 }
 
-                if (!config.draggable) return;
+                if (!config.draggable) {
+                    return;
+                }
                 for (var i = 0; i < pointerIDs.length; i++) {
                     if (event.pointerId == pointerIDs[i]) {
                         pointerCoordinates[i].clientX = event.clientX;
@@ -1194,15 +1239,20 @@ window.pannellum = (function (window, document, undefined) {
          * @param {PointerEvent} event - Document pointer up event.
          */
         function onDocumentPointerUp(event) {
-            if (draggingHotSpot && draggingHotSpot.dragHandlerFunc)
+            if (draggingHotSpot && draggingHotSpot.dragHandlerFunc) {
                 draggingHotSpot.dragHandlerFunc(event, draggingHotSpot.dragHandlerArgs);
+            }
             draggingHotSpot = null;
 
             if (event.pointerType == "touch") {
                 var defined = false;
                 for (var i = 0; i < pointerIDs.length; i++) {
-                    if (event.pointerId == pointerIDs[i]) pointerIDs[i] = undefined;
-                    if (pointerIDs[i]) defined = true;
+                    if (event.pointerId == pointerIDs[i]) {
+                        pointerIDs[i] = undefined;
+                    }
+                    if (pointerIDs[i]) {
+                        defined = true;
+                    }
                 }
                 if (!defined) {
                     pointerIDs = [];
@@ -1275,15 +1325,18 @@ window.pannellum = (function (window, document, undefined) {
             var keynumber = event.which || event.keycode;
 
             // Override default action for keys that are used
-            if (config.capturedKeyNumbers.indexOf(keynumber) < 0) return;
+            if (config.capturedKeyNumbers.indexOf(keynumber) < 0) {
+                return;
+            }
             if (
                 !fullscreenActive &&
                 (keynumber == 16 || keynumber == 17) &&
                 config.mouseZoom == "ctrl"
-            )
-                // Disable ctrl / shift zoom when holding the ctrl key is required for
-                // scroll wheel zooming
+            ) // Disable ctrl / shift zoom when holding the ctrl key is required for
+            // scroll wheel zooming
+            {
                 return;
+            }
             event.preventDefault();
 
             // If escape key is pressed
@@ -1318,7 +1371,9 @@ window.pannellum = (function (window, document, undefined) {
             var keynumber = event.which || event.keycode;
 
             // Override default action for keys that are used
-            if (config.capturedKeyNumbers.indexOf(keynumber) < 0) return;
+            if (config.capturedKeyNumbers.indexOf(keynumber) < 0) {
+                return;
+            }
             event.preventDefault();
 
             // Change key
@@ -1499,7 +1554,9 @@ window.pannellum = (function (window, document, undefined) {
                 isKeyDown = true;
             }
 
-            if (isKeyDown) latestInteraction = Date.now();
+            if (isKeyDown) {
+                latestInteraction = Date.now();
+            }
 
             // If auto-rotate
             if (config.autoRotate) {
@@ -1670,7 +1727,9 @@ window.pannellum = (function (window, document, undefined) {
             }
 
             render();
-            if (autoRotateStart) clearTimeout(autoRotateStart);
+            if (autoRotateStart) {
+                clearTimeout(autoRotateStart);
+            }
             if (isUserInteracting || orientation === true) {
                 requestAnimationFrame(animate);
             } else if (
@@ -1706,12 +1765,13 @@ window.pannellum = (function (window, document, undefined) {
             } else if (renderer && (renderer.isLoading() || (config.dynamic === true && update))) {
                 requestAnimationFrame(animate);
             } else {
-                if (_this.getPitch && _this.getYaw && _this.getHfov)
+                if (_this.getPitch && _this.getYaw && _this.getHfov) {
                     fireEvent("animatefinished", {
                         pitch: _this.getPitch(),
                         yaw: _this.getYaw(),
                         hfov: _this.getHfov()
                     });
+                }
                 animating = false;
                 prevTime = undefined;
                 var autoRotateStartTime =
@@ -1831,8 +1891,12 @@ window.pannellum = (function (window, document, undefined) {
                     // Lock pitch to average of min and max pitch when both can be seen at once
                     minPitch = maxPitch = (minPitch + maxPitch) / 2;
                 }
-                if (isNaN(minPitch)) minPitch = -90;
-                if (isNaN(maxPitch)) maxPitch = 90;
+                if (isNaN(minPitch)) {
+                    minPitch = -90;
+                }
+                if (isNaN(maxPitch)) {
+                    maxPitch = 90;
+                }
                 config.pitch = Math.max(minPitch, Math.min(maxPitch, config.pitch));
 
                 renderer.render(
@@ -1841,7 +1905,9 @@ window.pannellum = (function (window, document, undefined) {
                     (config.hfov * Math.PI) / 180,
                     { roll: (config.roll * Math.PI) / 180, dynamic: update }
                 );
-                if (updateOnce) updateOnce = update = false;
+                if (updateOnce) {
+                    updateOnce = update = false;
+                }
 
                 renderHotSpots();
 
@@ -1980,12 +2046,15 @@ window.pannellum = (function (window, document, undefined) {
         function renderInit() {
             try {
                 var params = {};
-                if (config.horizonPitch !== undefined)
+                if (config.horizonPitch !== undefined) {
                     params.horizonPitch = (config.horizonPitch * Math.PI) / 180;
-                if (config.horizonRoll !== undefined)
+                }
+                if (config.horizonRoll !== undefined) {
                     params.horizonRoll = (config.horizonRoll * Math.PI) / 180;
-                if (config.backgroundColor !== undefined)
+                }
+                if (config.backgroundColor !== undefined) {
                     params.backgroundColor = config.backgroundColor;
+                }
                 renderer.init(
                     panoImage,
                     config.type,
@@ -2079,17 +2148,24 @@ window.pannellum = (function (window, document, undefined) {
             var div = document.createElement("div");
             div.tabIndex = -1;
             div.className = "pnlm-hotspot-base";
-            if (hs.cssClass) div.className += " " + hs.cssClass;
-            else div.className += " pnlm-hotspot pnlm-sprite pnlm-" + escapeHTML(hs.type);
+            if (hs.cssClass) {
+                div.className += " " + hs.cssClass;
+            } else {
+                div.className += " pnlm-hotspot pnlm-sprite pnlm-" + escapeHTML(hs.type);
+            }
 
             var span = document.createElement("span");
-            if (hs.text) span.innerHTML = escapeHTML(hs.text);
+            if (hs.text) {
+                span.innerHTML = escapeHTML(hs.text);
+            }
 
             var a;
             if (hs.video) {
                 var video = document.createElement("video"),
                     vidp = hs.video;
-                if (config.basePath && !absoluteURL(vidp)) vidp = config.basePath + vidp;
+                if (config.basePath && !absoluteURL(vidp)) {
+                    vidp = config.basePath + vidp;
+                }
                 video.src = sanitizeURL(vidp);
                 video.controls = true;
                 video.style.width = hs.width + "px";
@@ -2097,7 +2173,9 @@ window.pannellum = (function (window, document, undefined) {
                 span.appendChild(video);
             } else if (hs.image) {
                 var imgp = hs.image;
-                if (config.basePath && !absoluteURL(imgp)) imgp = config.basePath + imgp;
+                if (config.basePath && !absoluteURL(imgp)) {
+                    imgp = config.basePath + imgp;
+                }
                 a = document.createElement("a");
                 a.href = sanitizeURL(hs.URL ? hs.URL : imgp, true);
                 if (config.targetBlank) {
@@ -2201,7 +2279,9 @@ window.pannellum = (function (window, document, undefined) {
             if (hs.draggable) {
                 // Handle mouse by container event listeners
                 div.addEventListener("mousedown", function (e) {
-                    if (hs.dragHandlerFunc) hs.dragHandlerFunc(e, hs.dragHandlerArgs);
+                    if (hs.dragHandlerFunc) {
+                        hs.dragHandlerFunc(e, hs.dragHandlerArgs);
+                    }
                     draggingHotSpot = hs;
                 });
 
@@ -2210,7 +2290,9 @@ window.pannellum = (function (window, document, undefined) {
                     document.documentElement.style.touchAction === ""
                 ) {
                     div.addEventListener("pointerdown", function (e) {
-                        if (hs.dragHandlerFunc) hs.dragHandlerFunc(e, hs.dragHandlerArgs);
+                        if (hs.dragHandlerFunc) {
+                            hs.dragHandlerFunc(e, hs.dragHandlerArgs);
+                        }
                         draggingHotSpot = hs;
                     });
                 }
@@ -2220,7 +2302,9 @@ window.pannellum = (function (window, document, undefined) {
                     moveHotSpot(hs, e.targetTouches[0]);
                 });
                 div.addEventListener("touchend", function (e) {
-                    if (hs.dragHandlerFunc) hs.dragHandlerFunc(e, hs.dragHandlerArgs);
+                    if (hs.dragHandlerFunc) {
+                        hs.dragHandlerFunc(e, hs.dragHandlerArgs);
+                    }
                     draggingHotSpot = null;
                 });
             }
@@ -2246,7 +2330,9 @@ window.pannellum = (function (window, document, undefined) {
          * @private
          */
         function createHotSpots() {
-            if (hotspotsCreated) return;
+            if (hotspotsCreated) {
+                return;
+            }
 
             if (!config.hotSpots) {
                 config.hotSpots = [];
@@ -2333,10 +2419,12 @@ window.pannellum = (function (window, document, undefined) {
                     "px) translateZ(9999px) rotate(" +
                     config.roll +
                     "deg)";
-                if (hs.scale)
+                if (hs.scale) {
                     transform +=
                         " scale(" + ((hs.scaleFactor || 1) * (origHfov / config.hfov)) / z + ")";
-                else if (hs.scaleFactor) transform += " scale(" + hs.scaleFactor + ")";
+                } else if (hs.scaleFactor) {
+                    transform += " scale(" + hs.scaleFactor + ")";
+                }
                 hs.div.style.webkitTransform = transform;
                 hs.div.style.MozTransform = transform;
                 hs.div.style.transform = transform;
@@ -2456,7 +2544,9 @@ window.pannellum = (function (window, document, undefined) {
             // panoramas
             if (isPreview && "preview" in config) {
                 var p = config.preview;
-                if (config.basePath && !absoluteURL(p)) p = config.basePath + p;
+                if (config.basePath && !absoluteURL(p)) {
+                    p = config.basePath + p;
+                }
                 preview = document.createElement("div");
                 preview.className = "pnlm-preview-img";
                 preview.style.backgroundImage = "url('" + sanitizeURLForCss(p) + "')";
@@ -2467,15 +2557,24 @@ window.pannellum = (function (window, document, undefined) {
             var title = config.title,
                 author = config.author;
             if (isPreview) {
-                if ("previewTitle" in config) config.title = config.previewTitle;
-                if ("previewAuthor" in config) config.author = config.previewAuthor;
+                if ("previewTitle" in config) {
+                    config.title = config.previewTitle;
+                }
+                if ("previewAuthor" in config) {
+                    config.author = config.previewAuthor;
+                }
             }
 
             // Reset title / author display
-            if (!config.hasOwnProperty("title")) infoDisplay.title.innerHTML = "";
-            if (!config.hasOwnProperty("author")) infoDisplay.author.innerHTML = "";
-            if (!config.hasOwnProperty("title") && !config.hasOwnProperty("author"))
+            if (!config.hasOwnProperty("title")) {
+                infoDisplay.title.innerHTML = "";
+            }
+            if (!config.hasOwnProperty("author")) {
+                infoDisplay.author.innerHTML = "";
+            }
+            if (!config.hasOwnProperty("title") && !config.hasOwnProperty("author")) {
                 infoDisplay.container.style.display = "none";
+            }
             if (config.targetBlank) {
                 aboutMsgLink.rel = "noopener";
                 aboutMsgLink.target = "_blank";
@@ -2556,8 +2655,11 @@ window.pannellum = (function (window, document, undefined) {
                             break;
 
                         case "hotSpotDebug":
-                            if (config[key]) hotSpotDebugIndicator.style.display = "block";
-                            else hotSpotDebugIndicator.style.display = "none";
+                            if (config[key]) {
+                                hotSpotDebugIndicator.style.display = "block";
+                            } else {
+                                hotSpotDebugIndicator.style.display = "none";
+                            }
                             break;
 
                         case "showControls":
@@ -2569,7 +2671,9 @@ window.pannellum = (function (window, document, undefined) {
                             break;
 
                         case "orientationOnByDefault":
-                            if (config[key]) startOrientation();
+                            if (config[key]) {
+                                startOrientation();
+                            }
                             break;
                     }
                 }
@@ -2577,10 +2681,16 @@ window.pannellum = (function (window, document, undefined) {
 
             if (isPreview) {
                 // Restore original values if changed for preview
-                if (title) config.title = title;
-                else delete config.title;
-                if (author) config.author = author;
-                else delete config.author;
+                if (title) {
+                    config.title = title;
+                } else {
+                    delete config.title;
+                }
+                if (author) {
+                    config.author = author;
+                } else {
+                    delete config.author;
+                }
             }
         }
 
@@ -2636,7 +2746,9 @@ window.pannellum = (function (window, document, undefined) {
                 controls.fullscreen.classList.remove("pnlm-fullscreen-toggle-button-active");
                 fullscreenActive = false;
             }
-            if (resize !== "resize") fireEvent("fullscreenchange", fullscreenActive);
+            if (resize !== "resize") {
+                fireEvent("fullscreenchange", fullscreenActive);
+            }
             // Resize renderer (deal with browser quirks and fixes #155)
             renderer.resize();
             setHfov(config.hfov);
@@ -2761,7 +2873,9 @@ window.pannellum = (function (window, document, undefined) {
          * @param {boolean} [fadeDone] - If `true`, fade setup is skipped.
          */
         function loadScene(sceneId, targetPitch, targetYaw, targetHfov, fadeDone) {
-            if (!loaded) fadeDone = true; // Don't try to fade when there isn't a scene loaded
+            if (!loaded) {
+                fadeDone = true;
+            } // Don't try to fade when there isn't a scene loaded
             loaded = false;
             animatedMove = {};
 
@@ -2775,8 +2889,11 @@ window.pannellum = (function (window, document, undefined) {
                     { roll: (config.roll * Math.PI) / 180, returnImage: "ImageBitmap" }
                 );
                 if (data !== undefined) {
-                    if (data.then) fadeImg = document.createElement("canvas");
-                    else fadeImg = new Image(); // ImageBitmap isn't supported
+                    if (data.then) {
+                        fadeImg = document.createElement("canvas");
+                    } else {
+                        fadeImg = new Image();
+                    } // ImageBitmap isn't supported
                     fadeImg.className = "pnlm-fade-img";
                     fadeImg.style.transition = "opacity " + config.sceneFadeDuration / 1000 + "s";
                     fadeImg.style.width = "100%";
@@ -2844,7 +2961,9 @@ window.pannellum = (function (window, document, undefined) {
             }
 
             // Trigger recalculation of orientationYawOffset in orientationListener()
-            if (orientation === true) orientation = 10;
+            if (orientation === true) {
+                orientation = 10;
+            }
 
             fireEvent("scenechange", sceneId);
             load();
@@ -2866,7 +2985,9 @@ window.pannellum = (function (window, document, undefined) {
          * @private
          */
         function startOrientation() {
-            if (!orientationSupport) return;
+            if (!orientationSupport) {
+                return;
+            }
             if (
                 typeof DeviceMotionEvent !== "undefined" &&
                 typeof DeviceMotionEvent.requestPermission === "function"
@@ -2892,7 +3013,9 @@ window.pannellum = (function (window, document, undefined) {
          * @returns {string} Escaped string
          */
         function escapeHTML(s) {
-            if (!initialConfig.escapeHTML) return String(s).split("\n").join("<br>");
+            if (!initialConfig.escapeHTML) {
+                return String(s).split("\n").join("<br>");
+            }
             return String(s)
                 .split(/&/g)
                 .join("&amp;")
@@ -2952,7 +3075,9 @@ window.pannellum = (function (window, document, undefined) {
             // Explicitly match decimal, hex, and named HTML entities
             return html.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/gi, function (_, n) {
                 n = n.toLowerCase();
-                if (n === "colon") return ":";
+                if (n === "colon") {
+                    return ":";
+                }
                 if (n.charAt(0) === "#") {
                     return n.charAt(1) === "x"
                         ? String.fromCharCode(parseInt(n.substring(2), 16))
@@ -3007,7 +3132,9 @@ window.pannellum = (function (window, document, undefined) {
         this.setPitch = function (pitch, animated, callback, callbackArgs) {
             latestInteraction = Date.now();
             if (Math.abs(pitch - config.pitch) <= eps) {
-                if (typeof callback == "function") callback(callbackArgs);
+                if (typeof callback == "function") {
+                    callback(callbackArgs);
+                }
                 return this;
             }
             animated = animated == undefined ? 1000 : Number(animated);
@@ -3018,13 +3145,16 @@ window.pannellum = (function (window, document, undefined) {
                     endPosition: pitch,
                     duration: animated
                 };
-                if (typeof callback == "function")
+                if (typeof callback == "function") {
                     setTimeout(function () {
                         callback(callbackArgs);
                     }, animated);
+                }
             } else {
                 config.pitch = pitch;
-                if (typeof callback == "function") callback(callbackArgs);
+                if (typeof callback == "function") {
+                    callback(callbackArgs);
+                }
             }
             animateInit();
             return this;
@@ -3076,15 +3206,20 @@ window.pannellum = (function (window, document, undefined) {
         this.setYaw = function (yaw, animated, callback, callbackArgs) {
             latestInteraction = Date.now();
             if (Math.abs(yaw - config.yaw) <= eps) {
-                if (typeof callback == "function") callback(callbackArgs);
+                if (typeof callback == "function") {
+                    callback(callbackArgs);
+                }
                 return this;
             }
             animated = animated == undefined ? 1000 : Number(animated);
             yaw = ((yaw + 180) % 360) - 180; // Keep in bounds
             if (animated) {
                 // Animate in shortest direction
-                if (config.yaw - yaw > 180) yaw += 360;
-                else if (yaw - config.yaw > 180) yaw -= 360;
+                if (config.yaw - yaw > 180) {
+                    yaw += 360;
+                } else if (yaw - config.yaw > 180) {
+                    yaw -= 360;
+                }
 
                 animatedMove.yaw = {
                     startTime: Date.now(),
@@ -3092,13 +3227,16 @@ window.pannellum = (function (window, document, undefined) {
                     endPosition: yaw,
                     duration: animated
                 };
-                if (typeof callback == "function")
+                if (typeof callback == "function") {
                     setTimeout(function () {
                         callback(callbackArgs);
                     }, animated);
+                }
             } else {
                 config.yaw = yaw;
-                if (typeof callback == "function") callback(callbackArgs);
+                if (typeof callback == "function") {
+                    callback(callbackArgs);
+                }
             }
             animateInit();
             return this;
@@ -3150,7 +3288,9 @@ window.pannellum = (function (window, document, undefined) {
         this.setHfov = function (hfov, animated, callback, callbackArgs) {
             latestInteraction = Date.now();
             if (Math.abs(hfov - config.hfov) <= eps) {
-                if (typeof callback == "function") callback(callbackArgs);
+                if (typeof callback == "function") {
+                    callback(callbackArgs);
+                }
                 return this;
             }
             animated = animated == undefined ? 1000 : Number(animated);
@@ -3161,13 +3301,16 @@ window.pannellum = (function (window, document, undefined) {
                     endPosition: constrainHfov(hfov),
                     duration: animated
                 };
-                if (typeof callback == "function")
+                if (typeof callback == "function") {
                     setTimeout(function () {
                         callback(callbackArgs);
                     }, animated);
+                }
             } else {
                 setHfov(hfov);
-                if (typeof callback == "function") callback(callbackArgs);
+                if (typeof callback == "function") {
+                    callback(callbackArgs);
+                }
             }
             animateInit();
             return this;
@@ -3223,7 +3366,9 @@ window.pannellum = (function (window, document, undefined) {
                 this.setHfov(hfov, animated, callback, callbackArgs);
                 callback = undefined;
             }
-            if (typeof callback == "function") callback(callbackArgs);
+            if (typeof callback == "function") {
+                callback(callbackArgs);
+            }
             return this;
         };
 
@@ -3324,7 +3469,9 @@ window.pannellum = (function (window, document, undefined) {
             pitch = pitch === undefined ? origPitch : pitch;
             hfov = hfov === undefined ? origHfov : hfov;
             config.autoRotate = speed;
-            if (inactivityDelay !== undefined) config.autoRotateInactivityDelay = inactivityDelay;
+            if (inactivityDelay !== undefined) {
+                config.autoRotateInactivityDelay = inactivityDelay;
+            }
             _this.lookAt(pitch, undefined, hfov, 3000);
             animateInit();
             return this;
@@ -3374,8 +3521,11 @@ window.pannellum = (function (window, document, undefined) {
             update = bool === true;
             if (update) {
                 updateOnce = false;
-                if (renderer === undefined) onImageLoad();
-                else animateInit();
+                if (renderer === undefined) {
+                    onImageLoad();
+                } else {
+                    animateInit();
+                }
             }
             return this;
         };
@@ -3388,8 +3538,11 @@ window.pannellum = (function (window, document, undefined) {
          */
         this.updateOnce = function () {
             update = updateOnce = true;
-            if (renderer === undefined) onImageLoad();
-            else animateInit();
+            if (renderer === undefined) {
+                onImageLoad();
+            } else {
+                animateInit();
+            }
             return this;
         };
 
@@ -3415,7 +3568,9 @@ window.pannellum = (function (window, document, undefined) {
          * @returns {Viewer} `this`
          */
         this.loadScene = function (sceneId, pitch, yaw, hfov) {
-            if (loaded !== false) loadScene(sceneId, pitch, yaw, hfov);
+            if (loaded !== false) {
+                loadScene(sceneId, pitch, yaw, hfov);
+            }
             return this;
         };
 
@@ -3450,8 +3605,9 @@ window.pannellum = (function (window, document, undefined) {
          * @returns {boolean} False if the scene is the current scene or if the scene doesn't exists, else true
          */
         this.removeScene = function (sceneId) {
-            if (config.scene == sceneId || !initialConfig.scenes.hasOwnProperty(sceneId))
+            if (config.scene == sceneId || !initialConfig.scenes.hasOwnProperty(sceneId)) {
                 return false;
+            }
             delete initialConfig.scenes[sceneId];
             return true;
         };
@@ -3506,7 +3662,9 @@ window.pannellum = (function (window, document, undefined) {
                 if (initialConfig.scenes.hasOwnProperty(id)) {
                     if (!initialConfig.scenes[id].hasOwnProperty("hotSpots")) {
                         initialConfig.scenes[id].hotSpots = []; // Create hot spots array if needed
-                        if (id == config.scene) config.hotSpots = initialConfig.scenes[id].hotSpots; // Link to current config
+                        if (id == config.scene) {
+                            config.hotSpots = initialConfig.scenes[id].hotSpots;
+                        } // Link to current config
                     }
                     initialConfig.scenes[id].hotSpots.push(hs); // Add hot spot to config
                 } else {
@@ -3516,7 +3674,9 @@ window.pannellum = (function (window, document, undefined) {
             if (sceneId === undefined || config.scene == sceneId) {
                 // Add to current scene
                 createHotSpot(hs);
-                if (loaded) renderHotSpot(hs);
+                if (loaded) {
+                    renderHotSpot(hs);
+                }
             }
             return this;
         };
@@ -3533,7 +3693,9 @@ window.pannellum = (function (window, document, undefined) {
          */
         this.removeHotSpot = function (hotSpotId, sceneId) {
             if (sceneId === undefined || config.scene == sceneId) {
-                if (!config.hotSpots) return false;
+                if (!config.hotSpots) {
+                    return false;
+                }
                 for (var i = 0; i < config.hotSpots.length; i++) {
                     if (
                         config.hotSpots[i].hasOwnProperty("id") &&
@@ -3541,7 +3703,9 @@ window.pannellum = (function (window, document, undefined) {
                     ) {
                         // Delete hot spot DOM elements
                         var current = config.hotSpots[i].div;
-                        while (current.parentNode != uiContainer) current = current.parentNode;
+                        while (current.parentNode != uiContainer) {
+                            current = current.parentNode;
+                        }
                         uiContainer.removeChild(current);
                         delete config.hotSpots[i].div;
                         // Remove hot spot from configuration
@@ -3551,7 +3715,9 @@ window.pannellum = (function (window, document, undefined) {
                 }
             } else {
                 if (initialConfig.scenes.hasOwnProperty(sceneId)) {
-                    if (!initialConfig.scenes[sceneId].hasOwnProperty("hotSpots")) return false;
+                    if (!initialConfig.scenes[sceneId].hasOwnProperty("hotSpots")) {
+                        return false;
+                    }
                     for (var j = 0; j < initialConfig.scenes[sceneId].hotSpots.length; j++) {
                         if (
                             initialConfig.scenes[sceneId].hotSpots[j].hasOwnProperty("id") &&
@@ -3574,7 +3740,9 @@ window.pannellum = (function (window, document, undefined) {
          * @instance
          */
         this.resize = function () {
-            if (renderer) onDocumentResize();
+            if (renderer) {
+                onDocumentResize();
+            }
         };
 
         /**
@@ -3685,11 +3853,17 @@ window.pannellum = (function (window, document, undefined) {
             destroyed = true;
             clearTimeout(autoRotateStart);
 
-            if (xhr) xhr.abort();
-            if (Array.isArray(panoImage)) {
-                for (var i = 0; i < 6; i++) panoImage[i].src = "";
+            if (xhr) {
+                xhr.abort();
             }
-            if (renderer) renderer.destroy();
+            if (Array.isArray(panoImage)) {
+                for (var i = 0; i < 6; i++) {
+                    panoImage[i].src = "";
+                }
+            }
+            if (renderer) {
+                renderer.destroy();
+            }
             if (listenersAdded) {
                 document.removeEventListener("mousemove", onDocumentMouseMove, false);
                 document.removeEventListener("mouseup", onDocumentMouseUp, false);

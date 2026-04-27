@@ -171,7 +171,7 @@ export const Input = (props: InputProps) => {
         return undefined;
     }, []);
 
-    if (Boolean(rows)) {
+    if (rows) {
         return (
             <AdminTextarea
                 {...pick(rest, rmwcProps)}

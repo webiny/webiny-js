@@ -531,7 +531,7 @@ export const EntryFeature = createFeature({
 
 1. **Unit tests**: Mock gateways, test repository cache behavior for each feature
 2. **Build**: `yarn build -p @webiny/app-headless-cms 2>&1 | tail -30`
-3. **Lint**: `y eslint`
+3. **Lint**: `y lint`
 4. **Manual — Models**: Create model, edit fields, clone, export, import, delete (full delete + cancel)
 5. **Manual — Groups**: Create group, edit, delete, verify menu updates
 6. **Manual — Entries**: Create/edit/publish/unpublish/delete entries, verify list updates

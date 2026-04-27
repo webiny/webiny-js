@@ -17,7 +17,7 @@ export class RecordLockingLockEntry implements IRecordLockingLockEntry {
         this.client = params.client;
     }
     public async execute(
-        // eslint-disable-next-line
+        // oxlint-disable-next-line
         params: IRecordLockingLockEntryParams
     ): Promise<IRecordLockingLockEntryResult> {
         throw new WebinyError("Method not implemented.");

@@ -4,6 +4,6 @@ export const toSlug = (text: string): string => {
     return slugify(text, {
         replacement: "-",
         lower: true,
-        remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
+        remove: /[*#?<>_{}[\]+~.()'"!:;@]/g
     });
 };

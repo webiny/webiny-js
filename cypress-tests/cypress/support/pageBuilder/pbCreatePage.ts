@@ -18,7 +18,6 @@ const CREATE_PAGE = /* GraphQL */ `
 `;
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             pbCreatePage(data: any): Promise<{ id: string; title: string; category: string[] }>;

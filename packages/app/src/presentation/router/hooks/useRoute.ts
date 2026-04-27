@@ -6,7 +6,7 @@ import { RouterFeature } from "~/features/router/feature.js";
 import { useFeature } from "~/shared/di/useFeature.js";
 
 export function useRoute<TParams extends RouteParamsDefinition | undefined = undefined>(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line typescript/no-unused-vars
     route?: Route<TParams>
 ) {
     const { presenter } = useFeature(RouterFeature);

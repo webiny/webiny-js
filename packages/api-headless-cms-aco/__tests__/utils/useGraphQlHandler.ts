@@ -9,13 +9,13 @@ import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import { createAcoHcmsContext } from "~/index";
 import { createAco } from "@webiny/api-aco";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { getIntrospectionQuery } from "graphql";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import { until } from "@webiny/project-utils/testing/helpers/until";
+import { until } from "@webiny/project-utils/testing/helpers/until.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import {
     CREATE_CONTENT_MODEL,

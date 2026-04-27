@@ -56,7 +56,7 @@ class PrivateCmsModelConfiguration<
     TModel extends BaseModel<any>
 > implements IPrivateCmsModelConfiguration<TModel> {
     private metadata: CmsModelMetadata = {};
-    // eslint-disable-next-line
+    // oxlint-disable-next-line
     private modelMethods: Record<string, Function> = {};
     private extensionFields = new Map<string, FieldBuilderConfig>();
 

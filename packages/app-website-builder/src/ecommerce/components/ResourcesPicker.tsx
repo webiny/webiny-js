@@ -198,7 +198,7 @@ export const ResourcesPickerButton: React.FC<ResourcesPickerButtonProps> = obser
             });
         },
         async showPickResourceModal(title?: string) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            // oxlint-disable-next-line typescript/no-unused-vars
             const { value, resourcePicker, ...rest } = props;
             const PickerComponent = resourcePicker || ResourcePicker;
 

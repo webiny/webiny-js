@@ -48,12 +48,10 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     AACL = "advancedAccessControlLayer",
     /**
      * @deprecated Use `AUDIT_LOGS` instead.
+     * TODO: remove oxlint disable when removing AL enum value.
      */
+    // oxlint-disable-next-line typescript/no-duplicate-enum-values
     AL = "auditLogs",
-    /**
-     * TODO: remove eslint disable when removing AL enum value.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
     AUDIT_LOGS = "auditLogs",
     RECORD_LOCKING = "recordLocking",
     FILE_MANAGER = "fileManager",

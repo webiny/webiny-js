@@ -110,7 +110,7 @@ Status: ok
 
 Status: ok
 
-## @storybook/addon-a11y, @storybook/addon-docs, @storybook/addon-webpack5-compiler-babel, @storybook/react-webpack5, storybook, eslint-plugin-storybook
+## @storybook/addon-a11y, @storybook/addon-docs, @storybook/addon-webpack5-compiler-babel, @storybook/react-webpack5, storybook
 
 Status: ok
 
