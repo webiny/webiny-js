@@ -52,6 +52,9 @@ export const ApiGateway = createAppModule({
         };
 
         function addRoute(name: string, params: ApiRouteParams) {
+            if (routes[name]) {
+                return;
+            }
             const route = createRoute(app, api.output, name, params);
             routes[name] = route;
         }
