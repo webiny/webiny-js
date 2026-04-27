@@ -34,6 +34,9 @@ export function createCorePulumiApp() {
             const projectConfig = await sdk.getProjectConfig();
 
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
+            const coreStackOutput = await sdk.getAppStackOutput<{ opensearchDomainName?: string }>(
+                "core"
+            );
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const opensearchExtensionConfig = getOsConfigFromExtension(projectConfig);
 
@@ -253,7 +256,8 @@ export function createCorePulumiApp() {
             if (searchEngineType === "opensearch") {
                 opensearch = app.addModule(OpenSearch, {
                     protect,
-                    namePrefix: pulumiResourceNamePrefix || ""
+                    namePrefix: pulumiResourceNamePrefix || "",
+                    prevDomainName: coreStackOutput?.opensearchDomainName
                 });
             }
 

@@ -19,7 +19,7 @@ export const Extensions = () => {
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
             <Infra.Core.Pulumi src={"/extensions/MyCorePulumiHandler.ts"} />
             <Infra.Vpc enabled={false} />
-            <Infra.OpenSearch enabled={false} />
+            <Infra.OpenSearch enabled={true} />
 
             <Infra.Encryption passphrase={"my-passphrase"} />
 
