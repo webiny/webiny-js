@@ -3659,4 +3659,260 @@ describe("FormModel", () => {
             warn.mockRestore();
         });
     });
+
+    describe("Phase 10: Advanced Validation", () => {
+        describe("field.vm.validating", () => {
+            it("should be false initially", () => {
+                const form = createBasicForm();
+                expect(form.field("title").vm.validating).toBe(false);
+            });
+
+            it("should be true while async schema validates", async () => {
+                let resolveValidation!: () => void;
+                const form = new FormModel({
+                    fields: fields => ({
+                        email: fields.text().schema(
+                            z.string().refine(async () => {
+                                await new Promise<void>(r => {
+                                    resolveValidation = r;
+                                });
+                                return true;
+                            })
+                        )
+                    })
+                });
+                form.field("email").setValue("test@test.com");
+
+                const promise = form.validate();
+                // Allow microtask to enter the async refine
+                await new Promise(r => setTimeout(r, 0));
+                expect(form.field("email").vm.validating).toBe(true);
+
+                resolveValidation();
+                await promise;
+                expect(form.field("email").vm.validating).toBe(false);
+            });
+
+            it("should be false after sync-only validation", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        name: fields.text().required()
+                    })
+                });
+                form.field("name").setValue("hello");
+                await form.validate();
+                expect(form.field("name").vm.validating).toBe(false);
+            });
+        });
+
+        describe("form.submitted", () => {
+            it("should be false initially", () => {
+                const form = createBasicForm();
+                expect(form.submitted).toBe(false);
+            });
+
+            it("should be true after validate()", async () => {
+                const form = createBasicForm();
+                form.field("title").setValue("t");
+                form.field("path").setValue("/p");
+                await form.validate();
+                expect(form.submitted).toBe(true);
+            });
+
+            it("should be true after failed validate()", async () => {
+                const form = createBasicForm();
+                await form.validate();
+                expect(form.submitted).toBe(true);
+            });
+
+            it("should reset to false on setData()", async () => {
+                const form = createBasicForm();
+                form.field("title").setValue("t");
+                form.field("path").setValue("/p");
+                await form.validate();
+                expect(form.submitted).toBe(true);
+
+                form.setData({ title: "new", path: "/new" });
+                expect(form.submitted).toBe(false);
+            });
+
+            it("should reset to false on reset()", async () => {
+                const form = createBasicForm();
+                form.field("title").setValue("t");
+                form.field("path").setValue("/p");
+                await form.validate();
+                expect(form.submitted).toBe(true);
+
+                form.reset();
+                expect(form.submitted).toBe(false);
+            });
+        });
+
+        describe("validate-on-blur after submit", () => {
+            it("should not validate on blur before first submit", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        email: fields.text().required("Required")
+                    })
+                });
+                form.field("email").vm.onBlur();
+                await new Promise(r => setTimeout(r, 0));
+                expect(form.field("email").vm.validation.isValid).toBeNull();
+            });
+
+            it("should validate on blur after first submit", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        email: fields
+                            .text()
+                            .required("Required")
+                            .schema(z.string().email("Invalid email"))
+                    })
+                });
+
+                form.field("email").setValue("bad");
+                await form.submit();
+                expect(form.field("email").vm.validation.isValid).toBe(false);
+
+                // Fix the value and blur — should re-validate
+                form.field("email").setValue("valid@email.com");
+                form.field("email").vm.onBlur();
+                await new Promise(r => setTimeout(r, 0));
+                expect(form.field("email").vm.validation.isValid).toBe(true);
+            });
+
+            it("should show error on blur for invalid value after submit", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        name: fields.text().required("Name is required")
+                    })
+                });
+
+                form.field("name").setValue("hello");
+                await form.submit();
+                expect(form.field("name").vm.validation.isValid).toBe(true);
+
+                // Clear the value and blur — should fail required check
+                form.field("name").setValue("");
+                form.field("name").vm.onBlur();
+                await new Promise(r => setTimeout(r, 0));
+                expect(form.field("name").vm.validation.isValid).toBe(false);
+                expect(form.field("name").vm.validation.message).toBe("Name is required");
+            });
+        });
+
+        describe("validation memoization", () => {
+            it("should not re-run schema on blur when value unchanged", async () => {
+                const schemaSpy = vi.fn().mockReturnValue(true);
+                const form = new FormModel({
+                    fields: fields => ({
+                        slug: fields.text().schema(z.string().refine(schemaSpy, "fail"))
+                    })
+                });
+
+                form.field("slug").setValue("hello");
+                await form.submit();
+                expect(schemaSpy).toHaveBeenCalledTimes(1);
+
+                // Blur with same value — should use cache
+                form.field("slug").vm.onBlur();
+                await new Promise(r => setTimeout(r, 0));
+                expect(schemaSpy).toHaveBeenCalledTimes(1);
+            });
+
+            it("should re-run schema on blur when value changed", async () => {
+                const schemaSpy = vi.fn().mockReturnValue(true);
+                const form = new FormModel({
+                    fields: fields => ({
+                        slug: fields.text().schema(z.string().refine(schemaSpy, "fail"))
+                    })
+                });
+
+                form.field("slug").setValue("hello");
+                await form.submit();
+                expect(schemaSpy).toHaveBeenCalledTimes(1);
+
+                // Change value and blur — should re-validate
+                form.field("slug").setValue("world");
+                form.field("slug").vm.onBlur();
+                await new Promise(r => setTimeout(r, 0));
+                expect(schemaSpy).toHaveBeenCalledTimes(2);
+            });
+
+            it("should always re-run schema on form.validate()", async () => {
+                const schemaSpy = vi.fn().mockReturnValue(true);
+                const form = new FormModel({
+                    fields: fields => ({
+                        slug: fields.text().schema(z.string().refine(schemaSpy, "fail"))
+                    })
+                });
+
+                form.field("slug").setValue("hello");
+                await form.validate();
+                expect(schemaSpy).toHaveBeenCalledTimes(1);
+
+                // Same value, but form.validate() forces re-validation
+                await form.validate();
+                expect(schemaSpy).toHaveBeenCalledTimes(2);
+            });
+
+            it("should clear cache on resetValidation()", async () => {
+                const schemaSpy = vi.fn().mockReturnValue(true);
+                const form = new FormModel({
+                    fields: fields => ({
+                        slug: fields.text().schema(z.string().refine(schemaSpy, "fail"))
+                    })
+                });
+
+                form.field("slug").setValue("hello");
+                await form.submit();
+                expect(schemaSpy).toHaveBeenCalledTimes(1);
+
+                // Reset validation — clears cache
+                form.field("slug").resetValidation();
+
+                // Blur with same value — should re-validate (cache cleared)
+                form.field("slug").vm.onBlur();
+                await new Promise(r => setTimeout(r, 0));
+                expect(schemaSpy).toHaveBeenCalledTimes(2);
+            });
+        });
+
+        describe("async validation with z.refine", () => {
+            it("should validate async refine on submit", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        slug: fields.text().schema(
+                            z.string().refine(async value => {
+                                return value !== "taken";
+                            }, "This slug is already taken")
+                        )
+                    })
+                });
+
+                form.field("slug").setValue("taken");
+                const result = await form.submit();
+                expect(result).toBe(false);
+                expect(form.field("slug").vm.validation.isValid).toBe(false);
+                expect(form.field("slug").vm.validation.message).toBe("This slug is already taken");
+            });
+
+            it("should pass async refine with valid value", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        slug: fields.text().schema(
+                            z.string().refine(async value => {
+                                return value !== "taken";
+                            }, "This slug is already taken")
+                        )
+                    })
+                });
+
+                form.field("slug").setValue("available");
+                const result = await form.submit();
+                expect(result).toEqual({ slug: "available" });
+                expect(form.field("slug").vm.validation.isValid).toBe(true);
+            });
+        });
+    });
 });

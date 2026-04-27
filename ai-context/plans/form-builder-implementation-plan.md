@@ -381,11 +381,13 @@ Broken into sub-phases. All implemented.
 - Layout generation from CMS `layout` grid
 - `factory.createFromCmsModel()` integration
 
-### Phase 10: [ ] Advanced Validation
+### Phase 10: [x] Advanced Validation
 
-- Async validation debouncing (default 300ms, configurable per field via `.debounce()`)
-- Async schema memoization (cache by input value, force-revalidate on `submit()`)
-- `field.vm.validating` flag (true while `parseAsync()` in-flight)
+- `field.vm.validating: boolean` — true while `safeParseAsync()` is in-flight
+- Validate-on-blur after first submit — `vm.onBlur` triggers `field.validate()` when `form.submitted` is true
+- Async schema memoization (cache by input value per field, `form.validate()`/`submit()` force-revalidate)
+- `form.submitted` readonly getter — exposed on `IFormModel`
+- `IField.validate()` accepts optional `{ force: boolean }` to bypass cache
 
 ### Phase 11: [x] Advanced Features
 

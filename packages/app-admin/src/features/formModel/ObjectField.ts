@@ -84,10 +84,13 @@ function getChildrenData(children: Map<string, IField>): Record<string, unknown>
     return data;
 }
 
-async function validateChildren(children: Map<string, IField>): Promise<boolean> {
+async function validateChildren(
+    children: Map<string, IField>,
+    options?: { force?: boolean }
+): Promise<boolean> {
     let allValid = true;
     for (const [, field] of children) {
-        const valid = await field.validate();
+        const valid = await field.validate(options);
         if (!valid) {
             allValid = false;
         }
@@ -126,6 +129,7 @@ export class ObjectField implements IObjectField {
     private _ownLayout: LayoutNode[] | null = null;
     /** Per-template inner layouts for templated objects. */
     private _templateLayouts: Record<string, LayoutNode[]> = {};
+    private _validating = false;
 
     constructor(config: IObjectFieldConfig) {
         this.config = config;
@@ -714,13 +718,19 @@ export class ObjectField implements IObjectField {
             placeholder: baseVm.placeholder,
             value: this.getValue(),
             validation: baseVm.validation,
+            validating: this._validating,
             required: baseVm.required,
             visible: baseVm.visible,
             disabled: baseVm.disabled,
             renderer: baseVm.renderer,
             rendererSettings: baseVm.rendererSettings,
             onChange: (value: unknown) => this.setValue(value),
-            onBlur: () => this.blur(),
+            onBlur: () => {
+                if (this._form?.submitted) {
+                    void this.validate();
+                }
+                this.blur();
+            },
             isList: this.config.isList,
             fields: this.config.isList
                 ? []
@@ -786,85 +796,95 @@ export class ObjectField implements IObjectField {
         return false;
     }
 
-    async validate(): Promise<boolean> {
+    async validate(options?: { force?: boolean }): Promise<boolean> {
         if (!this.visible) {
             this.setValidation({ isValid: null });
             return true;
         }
 
-        const requiredState = this._base.resolveRequired();
-        if (requiredState.required) {
-            const message = requiredState.message || "This field is required.";
-            if (this.config.isList && this._items.length === 0) {
-                this.setValidation({ isValid: false, message });
-                return false;
-            }
-            if (!this.config.isList) {
-                if (this.isTemplated) {
-                    if (this._activeTemplateId === null) {
-                        this.setValidation({ isValid: false, message });
-                        return false;
-                    }
-                } else {
-                    const data = this.getData();
-                    const hasAnyValue = Object.values(data).some(
-                        v => v !== null && v !== undefined && v !== ""
-                    );
-                    if (!hasAnyValue) {
-                        this.setValidation({ isValid: false, message });
-                        return false;
-                    }
-                }
-            }
-        }
-
-        if (this.config.isList && this.config.listSchema) {
-            const listData = this.getData();
-            const result = await this.config.listSchema.safeParseAsync(listData);
-            if (!result.success) {
-                const firstIssue = result.error.issues[0];
-                runInAction(() => {
-                    this.setValidation({
-                        isValid: false,
-                        message: firstIssue?.message || "Invalid value."
-                    });
-                });
-                return false;
-            }
-        }
-
-        if (this.config.schema) {
-            const data = this.getData();
-            const result = await this.config.schema.safeParseAsync(data);
-            if (!result.success) {
-                const firstIssue = result.error.issues[0];
-                runInAction(() => {
-                    this.setValidation({
-                        isValid: false,
-                        message: firstIssue?.message || "Invalid value."
-                    });
-                });
-                return false;
-            }
-        }
-
-        let allValid = true;
-
-        if (this.config.isList) {
-            for (const item of this._items) {
-                const valid = await validateChildren(item.children);
-                if (!valid) {
-                    allValid = false;
-                }
-            }
-        } else {
-            allValid = await validateChildren(this._children);
-        }
-
         runInAction(() => {
-            this.setValidation({ isValid: allValid });
+            this._validating = true;
         });
 
-        return allValid;
+        try {
+            const requiredState = this._base.resolveRequired();
+            if (requiredState.required) {
+                const message = requiredState.message || "This field is required.";
+                if (this.config.isList && this._items.length === 0) {
+                    this.setValidation({ isValid: false, message });
+                    return false;
+                }
+                if (!this.config.isList) {
+                    if (this.isTemplated) {
+                        if (this._activeTemplateId === null) {
+                            this.setValidation({ isValid: false, message });
+                            return false;
+                        }
+                    } else {
+                        const data = this.getData();
+                        const hasAnyValue = Object.values(data).some(
+                            v => v !== null && v !== undefined && v !== ""
+                        );
+                        if (!hasAnyValue) {
+                            this.setValidation({ isValid: false, message });
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            if (this.config.isList && this.config.listSchema) {
+                const listData = this.getData();
+                const result = await this.config.listSchema.safeParseAsync(listData);
+                if (!result.success) {
+                    const firstIssue = result.error.issues[0];
+                    runInAction(() => {
+                        this.setValidation({
+                            isValid: false,
+                            message: firstIssue?.message || "Invalid value."
+                        });
+                    });
+                    return false;
+                }
+            }
+
+            if (this.config.schema) {
+                const data = this.getData();
+                const result = await this.config.schema.safeParseAsync(data);
+                if (!result.success) {
+                    const firstIssue = result.error.issues[0];
+                    runInAction(() => {
+                        this.setValidation({
+                            isValid: false,
+                            message: firstIssue?.message || "Invalid value."
+                        });
+                    });
+                    return false;
+                }
+            }
+
+            let allValid = true;
+
+            if (this.config.isList) {
+                for (const item of this._items) {
+                    const valid = await validateChildren(item.children, options);
+                    if (!valid) {
+                        allValid = false;
+                    }
+                }
+            } else {
+                allValid = await validateChildren(this._children, options);
+            }
+
+            runInAction(() => {
+                this.setValidation({ isValid: allValid });
+            });
+
+            return allValid;
+        } finally {
+            runInAction(() => {
+                this._validating = false;
+            });
+        }
     }
 }

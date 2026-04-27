@@ -101,6 +101,7 @@ export interface IFieldVM {
     placeholder?: string;
     value: unknown;
     validation: IFieldValidation;
+    validating: boolean;
     required: boolean;
     visible: boolean;
     disabled: boolean;
@@ -189,7 +190,7 @@ export interface IField {
     setAncestorRules(rules: IRule[]): void;
     setValidation(validation: IFieldValidation): void;
     resetValidation(): void;
-    validate(): Promise<boolean>;
+    validate(options?: { force?: boolean }): Promise<boolean>;
     remove(): void;
     addBeforeChange(cb: BeforeChangeCallback): void;
     addAfterChange(cb: AfterChangeCallback): void;
@@ -596,6 +597,7 @@ export interface IFormModel<T = Record<string, any>> {
     evaluateRules(rules: IRule[] | undefined): { visible: boolean; disabled: boolean };
     readonly isDirty: boolean;
     readonly isValid: boolean | null;
+    readonly submitted: boolean;
     readonly errors: IFormError[];
     readonly vm: IFormVM;
 }

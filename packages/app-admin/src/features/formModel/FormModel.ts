@@ -342,6 +342,10 @@ export class FormModel implements IFormModel {
         return this._isValid;
     }
 
+    get submitted(): boolean {
+        return this._submitted;
+    }
+
     get errors(): IFormError[] {
         return this._errors;
     }
@@ -361,7 +365,7 @@ export class FormModel implements IFormModel {
         const errors: IFormError[] = [];
 
         for (const [, field] of this._fields) {
-            const valid = await field.validate();
+            const valid = await field.validate({ force: true });
             if (!valid) {
                 errors.push({
                     path: field.name,

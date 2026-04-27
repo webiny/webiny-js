@@ -33,6 +33,9 @@ export class Field implements IField {
     private _computedUntilDirty: ComputedFieldCallback | null = null;
     /** Set once a computedUntilDirty field receives its first user edit. */
     private _computedOverridden = false;
+    private _validating = false;
+    private _validationCacheKey: string | undefined = undefined;
+    private _validationCache: boolean | undefined = undefined;
     private _isUIChange = false;
     private _form: IFormModel | null = null;
     private _ancestorRules: IRule[] = [];
@@ -181,6 +184,8 @@ export class Field implements IField {
 
     resetValidation(): void {
         this._validation = { isValid: null };
+        this._validationCacheKey = undefined;
+        this._validationCache = undefined;
     }
 
     addBeforeChange(cb: BeforeChangeCallback): void {
@@ -278,6 +283,7 @@ export class Field implements IField {
             placeholder: this.config.placeholder,
             value: this.getValue(),
             validation: this._validation,
+            validating: this._validating,
             required,
             visible: this.visible,
             disabled: this.disabled,
@@ -286,7 +292,12 @@ export class Field implements IField {
             isList: !!this.config.isList,
             options,
             onChange: (value: unknown) => this._setValueFromUI(value),
-            onBlur: () => this.blur()
+            onBlur: () => {
+                if (this._form?.submitted) {
+                    void this.validate();
+                }
+                this.blur();
+            }
         };
     }
 
@@ -313,8 +324,12 @@ export class Field implements IField {
      * Validate this field. Returns true if valid.
      * Validation order: required check → zod schema.
      * Hidden fields are excluded from validation.
+     *
+     * Pass `{ force: true }` to bypass the memoization cache (used by
+     * `form.validate()` / `form.submit()`). Blur-triggered validation
+     * omits the flag so unchanged values return the cached result.
      */
-    async validate(): Promise<boolean> {
+    async validate(options?: { force?: boolean }): Promise<boolean> {
         if (!this.visible) {
             runInAction(() => {
                 this._validation = { isValid: null };
@@ -323,46 +338,84 @@ export class Field implements IField {
         }
 
         const effectiveValue = this.getValue();
-        const requiredState = this._resolveRequired();
 
-        // Required check
-        if (requiredState.required) {
-            const isEmpty =
-                effectiveValue === null ||
-                effectiveValue === undefined ||
-                effectiveValue === "" ||
-                (this.config.isList &&
-                    Array.isArray(effectiveValue) &&
-                    effectiveValue.length === 0);
-
-            if (isEmpty) {
-                this._validation = {
-                    isValid: false,
-                    message: requiredState.message || "This field is required."
-                };
-                return false;
-            }
-        }
-
-        // Zod schema check
-        if (this.config.schema) {
-            const result = await this.config.schema.safeParseAsync(effectiveValue);
-            if (!result.success) {
-                const firstIssue = result.error.issues[0];
-                runInAction(() => {
-                    this._validation = {
-                        isValid: false,
-                        message: firstIssue?.message || "Invalid value."
-                    };
-                });
-                return false;
+        // Memoization: return cached result when value hasn't changed.
+        if (!options?.force && this._validationCache !== undefined) {
+            const cacheKey = this._serializeValue(effectiveValue);
+            if (this._validationCacheKey === cacheKey) {
+                return this._validationCache;
             }
         }
 
         runInAction(() => {
-            this._validation = { isValid: true };
+            this._validating = true;
         });
-        return true;
+
+        try {
+            const requiredState = this._resolveRequired();
+
+            // Required check
+            if (requiredState.required) {
+                const isEmpty =
+                    effectiveValue === null ||
+                    effectiveValue === undefined ||
+                    effectiveValue === "" ||
+                    (this.config.isList &&
+                        Array.isArray(effectiveValue) &&
+                        effectiveValue.length === 0);
+
+                if (isEmpty) {
+                    const cacheKey = this._serializeValue(effectiveValue);
+                    runInAction(() => {
+                        this._validation = {
+                            isValid: false,
+                            message: requiredState.message || "This field is required."
+                        };
+                        this._validationCacheKey = cacheKey;
+                        this._validationCache = false;
+                    });
+                    return false;
+                }
+            }
+
+            // Zod schema check
+            if (this.config.schema) {
+                const result = await this.config.schema.safeParseAsync(effectiveValue);
+                if (!result.success) {
+                    const firstIssue = result.error.issues[0];
+                    const cacheKey = this._serializeValue(effectiveValue);
+                    runInAction(() => {
+                        this._validation = {
+                            isValid: false,
+                            message: firstIssue?.message || "Invalid value."
+                        };
+                        this._validationCacheKey = cacheKey;
+                        this._validationCache = false;
+                    });
+                    return false;
+                }
+            }
+
+            const cacheKey = this._serializeValue(effectiveValue);
+            runInAction(() => {
+                this._validation = { isValid: true };
+                this._validationCacheKey = cacheKey;
+                this._validationCache = true;
+            });
+            return true;
+        } finally {
+            runInAction(() => {
+                this._validating = false;
+            });
+        }
+    }
+
+    private _serializeValue(value: unknown): string {
+        try {
+            return JSON.stringify(value);
+        } catch {
+            return String(Math.random());
+        }
     }
 
     /** True if this field has any computed callback configured. */
