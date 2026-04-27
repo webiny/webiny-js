@@ -26,7 +26,6 @@ my-webiny-project/
 │   ├── global.css
 │   ├── index.html
 │   └── robots.txt
-├── eslint.config.js     # ESLint configuration
 ├── package.json         # Single package.json for the whole project
 ├── tsconfig.json        # Single TypeScript config
 ├── webiny.config.tsx    # Main configuration -- all extensions registered here

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { Tool } from "~/exports/admin.js";
 import { textToLexicalState } from "./textToLexicalState.js";
+import { LexicalContext } from "~/exports/admin.js";
 
 const inputSchema = z.object({
     text: z.string().describe("Text content")
@@ -23,12 +24,14 @@ class TextToLexicalToolImpl implements Tool.Interface<typeof inputSchema, typeof
     readonly inputSchema = inputSchema;
     readonly outputSchema = outputSchema;
 
+    constructor(private lexicalContext: LexicalContext.Interface) {}
+
     async execute(input: Input): Promise<Output> {
-        return textToLexicalState(input.text);
+        return textToLexicalState(this.lexicalContext, input.text);
     }
 }
 
 export const TextToLexicalTool = Tool.createImplementation({
     implementation: TextToLexicalToolImpl,
-    dependencies: []
+    dependencies: [LexicalContext]
 });

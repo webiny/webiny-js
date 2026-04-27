@@ -2,7 +2,10 @@
   "name": "@webiny/build-tools",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "description": "A collection of utilities for Webiny project.",
   "repository": {
     "type": "git",
@@ -32,7 +35,6 @@
     "chalk": "^5.6.2",
     "chokidar": "^5.0.0",
     "css-loader": "^7.1.4",
-    "eslint": "^10.2.1",
     "fast-glob": "^3.3.3",
     "find-up": "^8.0.0",
     "fs-extra": "^11.3.4",
@@ -73,7 +75,6 @@
         "react-refresh",
         "style-loader",
         "typescript",
-        "eslint",
         "sass-loader",
         "sass",
         "bufferutil",

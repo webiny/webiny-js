@@ -121,7 +121,7 @@ export function makeDecoratableHook<T extends GenericHook>(hook: T) {
 }
 
 export function createVoidComponent<T>() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // oxlint-disable-next-line typescript/no-unused-vars
     return (props: T): React.JSX.Element | null => {
         return null;
     };

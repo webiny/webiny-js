@@ -76,7 +76,7 @@ interface RangeSliderPrimitiveProps extends Omit<
 }
 
 const RangeSliderPrimitive = (props: RangeSliderPrimitiveProps) => {
-    const { transformValue, onValuesChange, onValuesCommit, ...restProps } = props; // Rename transformValue to _ to avoid ESLint warning
+    const { transformValue, onValuesChange, onValuesCommit, ...restProps } = props; // Rename transformValue to _ to avoid Oxlint warning
     const { vm, changeValues, commitValues } = useRangeSlider({
         ...restProps,
         transformValue,

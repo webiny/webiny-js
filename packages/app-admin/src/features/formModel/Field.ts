@@ -32,7 +32,11 @@ export class Field implements IField {
 
     constructor(config: IFieldConfig) {
         this.config = config;
-        this._value = config.defaultValue ?? null;
+        const defaultValue =
+            typeof config.defaultValue === "function"
+                ? (config.defaultValue as () => unknown)()
+                : config.defaultValue;
+        this._value = defaultValue ?? null;
         this._disabled = config.disabled;
         this._hidden = config.hidden;
 

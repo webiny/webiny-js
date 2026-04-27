@@ -3,7 +3,7 @@ import type { FieldBuilder } from "./FieldBuilder.js";
 import type { IFieldBuilderRegistry } from "./abstractions.js";
 import type { FieldConfig, FieldBuilderConfig } from "./types.js";
 
-// eslint-disable-next-line
+// oxlint-disable-next-line
 export class FieldDefinitionsBuilder<TFields extends z.ZodRawShape = {}> {
     private fields = new Map<string, FieldBuilderConfig>();
 
@@ -66,7 +66,7 @@ export function createFieldDefinitions<TShape extends Record<string, FieldBuilde
 }
 
 // TODO: check the unused generic
-// eslint-disable-next-line
+// oxlint-disable-next-line
 export interface FieldDefinitionsFactory<TFields extends z.ZodRawShape> {
     __type: "FieldDefinitionsFactory";
     factory: (fields: IFieldBuilderRegistry) => Record<string, FieldBuilder<any>>;

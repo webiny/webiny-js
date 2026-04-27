@@ -99,8 +99,8 @@ jobs:
       - name: Check TS configs
         run: yarn check-ts-configs
         working-directory: v6
-      - name: ESLint
-        run: yarn eslint
+      - name: Lint
+        run: yarn lint
         working-directory: v6
       - name: Check Package Node Modules
         run: yarn check-package-dependencies

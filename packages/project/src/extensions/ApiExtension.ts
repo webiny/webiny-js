@@ -99,7 +99,7 @@ export const ApiExtension = defineExtension({
             }
 
             const registerExtensionPluginImportPath =
-                "@webiny/handler/plugins/RegisterExtensionPlugin";
+                "@webiny/handler/plugins/RegisterExtensionPlugin.js";
             const existingContextPluginImport = source.getImportDeclaration(
                 registerExtensionPluginImportPath
             );
