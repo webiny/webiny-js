@@ -5,6 +5,7 @@
 Condition rules on child fields inside an ObjectField can only target root-level fields. A rule like `{ target: "name", operator: "neq", value: "pro", action: "disable" }` on a child field `tier` inside object `metaTags` fails because `form.field("name")` looks up the root field map, not siblings.
 
 Two capabilities are needed:
+
 1. **Dot-notation with list indices** — `metaTags.0.name` to reference a specific item's child from anywhere
 2. **Relative sibling references** — `$self.name` to reference a sibling field within the same parent object/item, so rules work regardless of nesting depth or list index
 
@@ -34,22 +35,22 @@ Problem: `getChild("0")` returns the item scope, but the next segment needs to r
 ```typescript
 // In FormModel.field() traversal loop:
 for (let i = 1; i < parts.length && current; i++) {
-    if (isObjectField(current)) {
-        const index = parseInt(parts[i], 10);
-        if (!isNaN(index) && current.isList) {
-            const item = current.items[index];
-            if (!item || i + 1 >= parts.length) {
-                current = undefined;
-            } else {
-                i++; // consume the index segment
-                current = item.children.get(parts[i]);
-            }
-        } else {
-            current = current.getChild(parts[i]);
-        }
-    } else {
+  if (isObjectField(current)) {
+    const index = parseInt(parts[i], 10);
+    if (!isNaN(index) && current.isList) {
+      const item = current.items[index];
+      if (!item || i + 1 >= parts.length) {
         current = undefined;
+      } else {
+        i++; // consume the index segment
+        current = item.children.get(parts[i]);
+      }
+    } else {
+      current = current.getChild(parts[i]);
     }
+  } else {
+    current = undefined;
+  }
 }
 ```
 
