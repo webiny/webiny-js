@@ -1,3 +1,6 @@
+export { TenantModelExtension } from "~/api/domain/TenantModelExtension.js";
+export type { TenantExtensions } from "~/shared/Tenant.js";
+
 export { GetCurrentTenantUseCase } from "~/api/features/GetCurrentTenant/abstractions.js";
 export { GetTenantByIdUseCase } from "~/api/features/GetTenantById/abstractions.js";
 export { CreateTenantUseCase } from "~/api/features/CreateTenant/abstractions.js";

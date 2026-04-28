@@ -1,3 +1,5 @@
+export { TenantModelExtension } from "@webiny/tenant-manager/api/domain/TenantModelExtension.js";
+export type { TenantExtensions } from "@webiny/tenant-manager/shared/Tenant.js";
 export { GetCurrentTenantUseCase } from "@webiny/tenant-manager/api/features/GetCurrentTenant/abstractions.js";
 export { GetTenantByIdUseCase } from "@webiny/tenant-manager/api/features/GetTenantById/abstractions.js";
 export { CreateTenantUseCase } from "@webiny/tenant-manager/api/features/CreateTenant/abstractions.js";
