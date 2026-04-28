@@ -98,6 +98,12 @@ export const OpenSearch = createAppModule({
              * stack output (via `sdk.getAppStackOutput`) and reuse it unchanged. Only on the
              * very first deploy, when there is no previous output, do we generate a new name
              * (with the resource name prefix applied for consistent naming going forward).
+             *
+             * NOTE: `params.namePrefix` may be "" when upgrading from old code that never stored
+             * the domain name in the stack output. In that case the caller passes "" explicitly so
+             * the fallback formula reproduces the legacy name (`webiny-js-<hex>`) rather than
+             * prepending the SDK default prefix and triggering an unintended cluster replacement.
+             * See `createCorePulumiApp.ts` → `isUpgradeFromOldCode` for details.
              */
             const domainPhysicalName = randomId.hex.apply(
                 hex =>
