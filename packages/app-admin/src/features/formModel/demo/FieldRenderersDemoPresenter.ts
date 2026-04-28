@@ -184,6 +184,18 @@ export class FieldRenderersDemoPresenter {
                     .help("Carried in form data silently")
                     .note("Value is preset"),
 
+                // --- Key-Value Tags ---
+                metaTags: fields
+                    .object()
+                    .list()
+                    .label("Meta Tags")
+                    .description("Add SEO tags")
+                    .renderer("keyValueTags", { addItemLabel: "Add tag" })
+                    .fields(f => ({
+                        name: f.text().placeholder("Name"),
+                        content: f.text().placeholder("Content")
+                    })),
+
                 // --- Conditional Visibility / Disabled ---
                 enableFeature: fields
                     .boolean()
@@ -316,7 +328,8 @@ export class FieldRenderersDemoPresenter {
                                 l.row("textInputs"),
                                 l.row("tags"),
                                 l.row("textarea"),
-                                l.row("textareas")
+                                l.row("textareas"),
+                                l.row("metaTags")
                             ]
                         },
                         {

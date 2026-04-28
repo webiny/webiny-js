@@ -18,6 +18,7 @@ import { CheckboxesRenderer } from "~/base/Base/FieldRenderers/CheckboxesRendere
 import { DateTimeRenderer } from "~/base/Base/FieldRenderers/DateTimeRenderer.js";
 import { DateTimeInputsRenderer } from "~/base/Base/FieldRenderers/DateTimeInputsRenderer.js";
 import { HiddenRenderer } from "~/base/Base/FieldRenderers/HiddenRenderer.js";
+import { KeyValueTagsRenderer } from "~/base/Base/FieldRenderers/ObjectRenderer/KeyValueTagsRenderer.js";
 
 export const DefaultFieldRenderers = () => {
     return (
@@ -55,6 +56,10 @@ export const DefaultFieldRenderers = () => {
                 component={DateTimeInputsRenderer}
             />
             <AdminConfig.Form.FieldRenderer name={"hidden"} component={HiddenRenderer} />
+            <AdminConfig.Form.FieldRenderer
+                name={"keyValueTags"}
+                component={KeyValueTagsRenderer}
+            />
         </AdminConfig>
     );
 };
