@@ -102,7 +102,7 @@ setValue(raw):
 
 ---
 
-## Phase 1: Render a Form with Layout
+## Phase 1: [x] Render a Form with Layout
 
 A FormModel with fields, validation, a layout system, and a generic `<FormView>` that renders it. Replaces the existing "Create a Page" dialog.
 
@@ -176,7 +176,7 @@ A FormModel with fields, validation, a layout system, and a generic `<FormView>`
 
 ---
 
-## Phase 2: Value Transformations
+## Phase 2: [x] Value Transformations
 
 Title auto-generates path. Path applies slugify.
 
@@ -205,7 +205,7 @@ Title auto-generates path. Path applies slugify.
 
 ---
 
-## Phase 3: Modifiers + Language Field
+## Phase 3: [x] Modifiers + Language Field
 
 External code contributes fields and behavior to the form.
 
@@ -250,7 +250,7 @@ External code contributes fields and behavior to the form.
 
 ---
 
-## Phase 4: Page Type Providers + Form Rebuild
+## Phase 4: [x] Page Type Providers + Form Rebuild
 
 Different page types reconfigure the form. Switching types rebuilds it.
 
@@ -291,7 +291,7 @@ Different page types reconfigure the form. Switching types rebuilds it.
 
 ## Future Phases (post-MVP)
 
-### Phase 5: Layout System Expansion
+### Phase 5: [x] Layout System Expansion
 
 - `layout.separator()`, `layout.tabs()`, `layout.object()`, `layout.element()`
 - Named tabs containers: `layout.tabs({ id: "settings", tabs: [...] })`
@@ -304,7 +304,7 @@ Different page types reconfigure the form. Switching types rebuilds it.
 - Tab `hasErrors` computed from referenced fields
 - `ObjectNode` rendering for single objects and non-templated lists
 
-### Phase 6: Object & List Fields
+### Phase 6: [x] Object & List Fields
 
 - `ObjectField` with hierarchical children Map
 - `.fields()` on object builder for nesting
@@ -313,7 +313,7 @@ Different page types reconfigure the form. Switching types rebuilds it.
 - List validation via `.listSchema()`
 - `hasErrors` rollup over descendants
 
-### Phase 7: Rules System
+### Phase 7: [x] Rules System
 
 - Rule format: `{ type, target, operator, value, action }`
 - `ConditionRuleEvaluator` (built-in, reads form values)
@@ -322,30 +322,78 @@ Different page types reconfigure the form. Switching types rebuilds it.
 - `field.vm.visible` and `field.vm.disabled` as MobX computeds resolving full rule cascade
 - Integrate evaluators into `FormModelFactory`
 
-### Phase 8: Dynamic Zones / Templates
+### Phase 8: [ ] Dynamic Zones / Templates
 
-- `.templates()` on object fields
-- `_templateId` discriminator
-- Template visibility and layouts
-- `layout.object("field", { templateId: [...] })` for per-template layouts
+Broken into sub-phases. All implemented.
 
-### Phase 9: CMS Model Conversion
+#### Phase 8a: [x] Single-object templates
+
+- `.templates([{ id, name, fields, visible? }])` on object fields
+- `_templateId` discriminator in `getData()` / `setValueSilent()`
+- Reactive template `visible` callback filters the picker (does not clear active selection)
+- Atomic add/remove — users pick one template at a time; no piecemeal field edits inside a template
+- Active template can be cleared via `field.onChange(null)` (generic field API — no dedicated "unset template" method)
+- Build-time validation: rejects duplicate template ids, reserved `_templateId`, combining `.fields()` with `.templates()`, and combining `.list()` with `.templates()` (deferred to 8b)
+- `DynamicZoneRenderer` — visual parity with the CMS `SingleValueDynamicZone` (gallery dialog with template cards + active template inside an accordion with delete action + confirmation)
+- `ObjectRenderer` delegates to `DynamicZoneRenderer` when `isTemplated && !isList`
+- Demo route at `/form-model-demo` (app-admin) with a proper Presenter
+
+#### Phase 8b: [x] List templates (dynamic zones)
+
+- Allow `.list().templates([...])` — each list item carries its own `_templateId`
+- Add-item flow: user picks a template from the gallery → new item is appended with that template's children
+- Per-item delete/duplicate/move preserved from Phase 6 list behaviour
+- Visual parity with CMS `MultiValueDynamicZone` (one accordion per item, template icon/name in the header, action row with up/down/duplicate/delete)
+- `IObjectFieldItemVM.templateId` is already typed — needs to be populated and respected by the renderer
+
+#### Phase 8c: [x] Per-template layouts
+
+- `layout.object("field", { templateId: [...] })` — each template can define its own row layout
+- `layout.object("field", layout)` — non-templated objects also accept a single inner layout, applied to the single object or to every list item
+- Falls back to default one-field-per-row when a template has no layout entry, or when no `layout.object()` is registered
+- Layout lives on the parent form (not inside the template definition) so layout concerns stay centralised
+- Layouts surface on the field VM as `field.vm.layout` (single) and `item.layout` (list items); object/dynamic-zone renderers consume these via a `<NestedLayout>` walker
+- **Limitation (deferred to a later phase):** `layout.object()` calls nested inside another object's inner layout are not registered. Templated children do not exist until a template is activated, so eager registration is not possible at build time. The nested node still resolves as a cell (default layout); a dev console warning fires when the nesting is detected.
+
+#### Phase 8c.1: [x] Nested object layouts
+
+- Register `layout.object()` recursively when nested inside another object's inner layout
+- For non-templated parents, recurse against the parent's children Map
+- For templated parents, defer registration until `setTemplate()` activates a template, then walk that template's layout for any nested `object` nodes and register on the freshly-built children
+- Apply the same flow to non-templated lists (each item gets the same recursive registration on creation)
+- Replaces the dev-warning emitted in Phase 8c
+
+#### Phase 8d: [x] Modifier API + orphan handling
+
+- `form.field("x").as("object").templates.add(...)` / `.templates.remove(...)` — modifier-facing API for adding/removing whole templates after the form is built
+- Orphan layout map entries (templates removed but still referenced in `layout.object("field", { templateId: [...] })`) are ignored silently
+- Dev warning suppression for orphan objects/lists (they auto-render per 4c default-layout fallback)
+- Tests covering: add/remove template at runtime, orphan layout entries, orphan warning suppression, interaction with active template (removing the active template clears it via `onChange(null)`)
+
+#### Phase 8e: [x] Integration + real-world verification
+
+- Default field renderers for object/list items with template picker (`@webiny/admin-ui`) — exercised against the existing `/form-model-demo` playground rather than a fresh integration target
+
+### Phase 9: [ ] CMS Model Conversion
 
 - `createFormFromCmsModel(model)` converter
 - Type mapping, validator-to-zod bridge
 - Layout generation from CMS `layout` grid
 - `factory.createFromCmsModel()` integration
 
-### Phase 10: Advanced Validation
+### Phase 10: [x] Advanced Validation
 
-- Async validation debouncing (default 300ms, configurable per field via `.debounce()`)
-- Async schema memoization (cache by input value, force-revalidate on `submit()`)
-- `field.vm.validating` flag (true while `parseAsync()` in-flight)
+- `field.vm.validating: boolean` — true while `safeParseAsync()` is in-flight
+- Validate-on-blur after first submit — `vm.onBlur` triggers `field.validate()` when `form.submitted` is true
+- Async schema memoization (cache by input value per field, `form.validate()`/`submit()` force-revalidate)
+- `form.submitted` readonly getter — exposed on `IFormModel`
+- `IField.validate()` accepts optional `{ force: boolean }` to bypass cache
 
-### Phase 11: Advanced Features
+### Phase 11: [x] Advanced Features
 
 - `.requiredWhen(fn, message)` — conditional required via MobX computed callback, reactively flips `field.vm.required`
-- `computed()` / `computedUntilDirty()` — derived fields
-- `.extend()` for object field merging
-- Form-level `addRule()` — zod refinements and imperative rules
-- `form.setLayout()` — full layout replacement
+- `.requiredWhen` can be added by a modifier (chains additively; first truthy callback wins; built-in `.required()` is non-overridable)
+- `computed()` / `computedUntilDirty()` — derived fields, can be added by a modifier (`field.setComputed`/`setComputedUntilDirty`); fields stay editable, participate in validation
+- `form.field("name").as("object").fields(factory)` for runtime children management on existing object fields (add/replace/remove via the same factory shape as `form.fields()`); throws on templated objects, propagates additions to existing list items
+- Form-level `addRule()` — accepts a Zod schema (validated against `getData()`) or an imperative function returning `IFormError[]`; matched paths surface on per-field validation
+- `form.setLayout()` — full layout replacement (re-registers object node inner layouts, propagates ancestor rules, re-emits orphan warnings)

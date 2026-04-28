@@ -7,6 +7,7 @@ import { AdminConfig } from "~/config/AdminConfig.js";
 import { HasPermission } from "~/presentation/security/components/HasPermission.js";
 import { Menu } from "~/config/AdminConfig/Menu.js";
 import { useWcp } from "~/index.js";
+import { DeveloperMode } from "~/index.js";
 
 export const Menus = React.memo(() => {
     const wcp = useWcp();
@@ -25,6 +26,24 @@ export const Menus = React.memo(() => {
                     />
                 }
             />
+            <DeveloperMode>
+                <Menu
+                    name={"formModelDemo"}
+                    pin={"start"}
+                    element={
+                        <Menu.Link
+                            to={"/form-model-demo"}
+                            text={"FormModel Demo"}
+                            icon={
+                                <Menu.Link.Icon
+                                    label="FormModel Demo"
+                                    element={<DashboardIcon />}
+                                />
+                            }
+                        />
+                    }
+                />
+            </DeveloperMode>
             <HasPermission name={"fm.file"}>
                 <Menu
                     name={"fileManager"}

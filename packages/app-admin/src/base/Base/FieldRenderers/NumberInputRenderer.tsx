@@ -1,16 +1,15 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Input } from "@webiny/admin-ui";
-import { DelayedOnChange } from "@webiny/admin-ui";
+import { DelayedOnChange, Input } from "@webiny/admin-ui";
 import type { IFieldVM } from "~/features/formModel/index.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
-        textInput: { fieldType: "text"; settings: undefined };
+        numberInput: { fieldType: "number"; settings: undefined };
     }
 }
 
-export const InputRenderer = observer(({ field }: { field: IFieldVM }) => {
+export const NumberInputRenderer = observer(({ field }: { field: IFieldVM }) => {
     return (
         <DelayedOnChange value={field.value} onChange={value => field.onChange(value)}>
             <Input
@@ -22,6 +21,7 @@ export const InputRenderer = observer(({ field }: { field: IFieldVM }) => {
                 disabled={field.disabled}
                 validation={field.validation}
                 onBlur={() => field.onBlur()}
+                type="number"
             />
         </DelayedOnChange>
     );
