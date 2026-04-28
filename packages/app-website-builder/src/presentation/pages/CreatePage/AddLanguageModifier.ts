@@ -23,7 +23,7 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
 
         form.fields(fields => ({
             language: fields
-                .select()
+                .text()
                 .label("Language")
                 .hidden()
                 .options(() => this.getLanguageOptions())
