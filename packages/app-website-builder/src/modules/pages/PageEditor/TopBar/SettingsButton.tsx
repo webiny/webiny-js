@@ -3,49 +3,46 @@ import React, { useCallback, useState } from "react";
 import { IconButton } from "@webiny/admin-ui";
 import { useHotkeys } from "@webiny/app-admin";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
-import type { GenericFormData } from "@webiny/form";
+import { useFeature } from "@webiny/app";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
-import { usePageEditorConfig } from "~/modules/pages/PageEditor/usePageEditorConfig.js";
-import { PageSettingsDrawer } from "./Settings/PageSettingsDrawer.js";
-import { PageSettingsDialog } from "./Settings/PageSettingsDialog.js";
-
-export interface PageSettingsOverlayProps {
-    open: boolean;
-    data: Record<string, any>;
-    onClose: () => void;
-    onSave: (data: Record<string, any>) => void;
-}
+import { PageSettingsFeature } from "~/modules/pages/PageEditor/PageSettings/index.js";
+import { PageSettingsDrawer } from "./PageSettingsDrawer.js";
+import type { IPageDocument } from "~/modules/pages/PageEditor/PageSettings/index.js";
 
 export const SettingsButton = () => {
     const editor = useDocumentEditor();
-    const { pageSettings } = usePageEditorConfig();
+    const { presenter } = useFeature(PageSettingsFeature);
     const [isOverlayOpen, setOverlayOpen] = useState(false);
-
-    const openOverlay = useCallback(() => {
-        setOverlayOpen(() => true);
-    }, []);
-
-    const closeOverlay = useCallback(() => {
-        setOverlayOpen(() => false);
-    }, []);
-
-    const saveSettings = useCallback((data: GenericFormData) => {
-        editor.updateDocument(document => {
-            document.properties = observable(data.properties);
-            document.metadata = observable(data.metadata);
-            document.extensions = observable(data.extensions);
-        });
-        closeOverlay();
-    }, []);
 
     const formData = useSelectFromDocument(document => {
         return structuredClone({
             properties: toJS(document.properties),
             metadata: toJS(document.metadata),
             extensions: toJS(document.extensions)
-        });
+        }) as IPageDocument;
     });
+
+    const openOverlay = useCallback(() => {
+        presenter.init(formData);
+        setOverlayOpen(true);
+    }, [formData]);
+
+    const closeOverlay = useCallback(() => {
+        setOverlayOpen(false);
+    }, []);
+
+    const saveSettings = useCallback(async () => {
+        const result = await presenter.submit();
+        if (result) {
+            editor.updateDocument(document => {
+                document.properties = observable(result.properties);
+                document.metadata = observable(result.metadata);
+                document.extensions = observable(result.extensions);
+            });
+            closeOverlay();
+        }
+    }, []);
 
     useHotkeys({
         zIndex: 55,
@@ -55,18 +52,15 @@ export const SettingsButton = () => {
         }
     });
 
-    const props: PageSettingsOverlayProps = {
-        open: isOverlayOpen,
-        onClose: closeOverlay,
-        data: formData,
-        onSave: saveSettings
-    };
-
     return (
         <div className={"flex gap-x-sm"}>
             <IconButton variant="ghost" icon={<SettingsIcon />} onClick={openOverlay} />
-            {pageSettings.viewMode === "dialog" ? <PageSettingsDialog {...props} /> : null}
-            {pageSettings.viewMode === "drawer" ? <PageSettingsDrawer {...props} /> : null}
+            <PageSettingsDrawer
+                presenter={presenter}
+                open={isOverlayOpen}
+                onClose={closeOverlay}
+                onSave={saveSettings}
+            />
         </div>
     );
 };

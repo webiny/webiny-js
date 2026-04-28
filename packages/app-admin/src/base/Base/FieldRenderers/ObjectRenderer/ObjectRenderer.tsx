@@ -26,7 +26,7 @@ export const ObjectRenderer = observer(({ field }: { field: IFieldVM }) => {
 const SingleObjectRenderer = observer(({ field }: { field: IObjectFieldVM }) => {
     return (
         <Accordion background={"base"} variant={"container"}>
-            <Accordion.Item title={field.label} defaultOpen={true}>
+            <Accordion.Item title={field.label} defaultOpen={true} className={"pl-sm"}>
                 <NestedLayout layout={field.layout} />
             </Accordion.Item>
         </Accordion>

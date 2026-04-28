@@ -19,6 +19,8 @@ import { DateTimeRenderer } from "~/base/Base/FieldRenderers/DateTimeRenderer.js
 import { DateTimeInputsRenderer } from "~/base/Base/FieldRenderers/DateTimeInputsRenderer.js";
 import { HiddenRenderer } from "~/base/Base/FieldRenderers/HiddenRenderer.js";
 import { KeyValueTagsRenderer } from "~/base/Base/FieldRenderers/ObjectRenderer/KeyValueTagsRenderer.js";
+import { FilePickerRenderer } from "~/base/Base/FieldRenderers/FilePickerRenderer.js";
+import { CodeEditorRenderer } from "~/base/Base/FieldRenderers/CodeEditorRenderer.js";
 
 export const DefaultFieldRenderers = () => {
     return (
@@ -60,6 +62,8 @@ export const DefaultFieldRenderers = () => {
                 name={"keyValueTags"}
                 component={KeyValueTagsRenderer}
             />
+            <AdminConfig.Form.FieldRenderer name={"filePicker"} component={FilePickerRenderer} />
+            <AdminConfig.Form.FieldRenderer name={"codeEditor"} component={CodeEditorRenderer} />
         </AdminConfig>
     );
 };

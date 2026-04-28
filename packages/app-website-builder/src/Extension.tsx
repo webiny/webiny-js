@@ -35,6 +35,7 @@ import { LoadPagesFeature } from "~/features/pages/loadPages/index.js";
 import { CreatePageConfig } from "./presentation/pages/CreatePage/CreatePageConfig.js";
 import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
 import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
+import { PageSettingsFeature } from "~/modules/pages/PageEditor/PageSettings/index.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -65,6 +66,7 @@ export const Extension = () => {
             <RegisterFeature feature={SelectPagesFeature} />
             <RegisterFeature feature={LoadPagesFeature} />
             <RegisterFeature feature={CreatePageFeature} />
+            <RegisterFeature feature={PageSettingsFeature} />
             <AdminConfig>
                 <Security.Permissions
                     name="website-builder"

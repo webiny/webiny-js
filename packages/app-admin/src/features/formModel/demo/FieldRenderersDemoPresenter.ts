@@ -178,7 +178,7 @@ export class FieldRenderersDemoPresenter {
                 // --- Hidden ---
                 hiddenField: fields
                     .text()
-                    .renderer("hidden")
+                    .hidden()
                     .defaultValue("secret-value")
                     .description("Not visible in the UI")
                     .help("Carried in form data silently")

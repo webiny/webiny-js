@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { z } from "zod";
+import type { Icon } from "~/components/IconPicker/types.js";
 
 // ---------------------------------------------------------------------------
 // Renderer registry — augmented by each renderer via declare module
@@ -258,6 +259,7 @@ export interface FieldTypeMap {
     number: IField;
     boolean: IField;
     datetime: IField;
+    file: IField;
     object: IObjectField;
 }
 
@@ -403,7 +405,7 @@ export interface ITabDefinition {
     id: string;
     label: string;
     description?: string;
-    icon?: string;
+    icon?: Icon;
     layout: LayoutNode[];
     rules?: IRule[];
 }
@@ -417,7 +419,7 @@ export interface ITabDefinitionInput {
     id: string;
     label: string;
     description?: string;
-    icon?: string;
+    icon?: Icon;
     layout: (layout: ILayoutBuilder) => LayoutNode[];
     rules?: IRule[];
 }
@@ -474,7 +476,7 @@ export interface ITabDefinitionVM {
     id: string;
     label: string;
     description?: string;
-    icon?: string;
+    icon?: Icon;
     hasErrors: boolean;
     disabled: boolean;
     layout: LayoutNodeVM[];
@@ -655,6 +657,7 @@ export namespace FormModel {
     export type TabDefinitionInput = ITabDefinitionInput;
     export type TabsNodeVM = ITabsNodeVM;
     export type TabDefinitionVM = ITabDefinitionVM;
+    export type TabIcon = Icon;
     export type ElementNode = IElementNode;
     export type ElementNodeVM = IElementNodeVM;
     export type ObjectNode = IObjectNode;
@@ -787,6 +790,7 @@ export interface IFieldBuilderRegistry {
     number(): IOptionsFieldBuilder<"number">;
     boolean(): IFieldBuilder<"boolean">;
     datetime(): IFieldBuilder<"datetime">;
+    file(): IFieldBuilder<"file">;
     object(): IObjectFieldBuilder;
 }
 

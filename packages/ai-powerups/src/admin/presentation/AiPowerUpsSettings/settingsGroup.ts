@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import { FormModelFactory } from "@webiny/app-admin";
+import { FormModelFactory, Icon } from "@webiny/app-admin";
 import type { LayoutNode } from "@webiny/app-admin/features/formModel/abstractions.js";
 
 export interface IAiPowerUpsSettingsGroupFormBuilder {
@@ -15,7 +15,7 @@ export interface IAiPowerUpsSettingsGroup {
     name: string;
     label: string;
     description?: string;
-    icon?: string;
+    icon?: Icon;
     buildForm(formBuilder: IAiPowerUpsSettingsGroupFormBuilder): void;
 }
 

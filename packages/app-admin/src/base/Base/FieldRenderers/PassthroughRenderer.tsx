@@ -2,6 +2,7 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import type { IFieldVM, IObjectFieldVM } from "~/features/formModel/index.js";
 import { useFormViewRenderers } from "~/features/formModel/FormView.js";
+import { Grid } from "@webiny/admin-ui";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -23,18 +24,24 @@ export const PassthroughRenderer = observer(({ field }: { field: IFieldVM }) => 
     const children = field.isList ? [] : field.fields;
 
     return (
-        <>
-            {children.map(childField => {
-                const Renderer = childField.renderer
-                    ? fieldRenderers[childField.renderer]
-                    : undefined;
+        <Grid>
+            {children
+                .filter(childField => {
+                    const Renderer = childField.renderer
+                        ? fieldRenderers[childField.renderer]
+                        : undefined;
 
-                if (!Renderer) {
-                    return null;
-                }
+                    return !!Renderer;
+                })
+                .map(childField => {
+                    const Renderer = fieldRenderers[childField.renderer!];
 
-                return <Renderer key={childField.name} field={childField} />;
-            })}
-        </>
+                    return (
+                        <Grid.Column key={childField.name} span={12}>
+                            <Renderer field={childField} />
+                        </Grid.Column>
+                    );
+                })}
+        </Grid>
     );
 });

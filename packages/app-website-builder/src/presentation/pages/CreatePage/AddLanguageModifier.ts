@@ -83,7 +83,7 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
 
     mapFromForm(data: Record<string, unknown>, input: CreatePageParams): void {
         if (data.language) {
-            input.properties ??= {};
+            input.properties = input.properties ?? {};
             input.properties.language = data.language;
         }
     }

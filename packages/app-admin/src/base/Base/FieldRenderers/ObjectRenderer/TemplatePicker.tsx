@@ -50,7 +50,7 @@ interface TemplateGalleryProps {
 
 const TemplateGallery = ({ templates, onSelect }: TemplateGalleryProps) => {
     return (
-        <div className={"gap-md flex flex-wrap"}>
+        <div className={"gap-md flex flex-wrap p-xs"}>
             {templates.map(template => (
                 <TemplateCard key={template.id} template={template} onSelect={onSelect} />
             ))}

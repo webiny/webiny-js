@@ -19,7 +19,7 @@ declare module "../../../features/formModel/abstractions.js" {
 }
 
 export const NumberInputsRenderer = observer(({ field }: { field: IFieldVM }) => {
-    const values = (field.value as number[]) ?? [];
+    const values = Array.isArray(field.value) ? field.value : [];
     const settings = field.rendererSettings as { addItemLabel?: string } | undefined;
 
     const updateAt = (index: number, val: unknown) => {

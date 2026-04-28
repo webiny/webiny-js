@@ -230,6 +230,16 @@ export class DateTimeFieldBuilder extends FieldBuilder<"datetime"> {
 }
 
 /**
+ * File field builder. Stores an object value (e.g., image metadata).
+ */
+export class FileFieldBuilder extends FieldBuilder<"file"> {
+    constructor() {
+        super("file");
+        this._config.renderer = "filePicker";
+    }
+}
+
+/**
  * Object field builder with .fields(), .list(), .listSchema(), .templates() support.
  *
  * Templates and .fields() are mutually exclusive — an object either defines its own
@@ -347,6 +357,7 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
             type: "datetime",
             create: () => new DateTimeFieldBuilder()
         });
+        this.fieldTypes.set("file", { type: "file", create: () => new FileFieldBuilder() });
         this.fieldTypes.set("object", { type: "object", create: () => new ObjectFieldBuilder() });
 
         if (factories) {
@@ -379,6 +390,9 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
         throw new Error("Should be intercepted by Proxy");
     }
     datetime(): DateTimeFieldBuilder {
+        throw new Error("Should be intercepted by Proxy");
+    }
+    file(): FileFieldBuilder {
         throw new Error("Should be intercepted by Proxy");
     }
     object(): ObjectFieldBuilder {

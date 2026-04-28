@@ -26,15 +26,21 @@ export const KeyValueTagsRenderer = observer(({ field }: { field: IFieldVM }) =>
 const KeyValueTagsList = observer(({ field }: { field: IObjectFieldVM }) => {
     const settings = field.rendererSettings as { addItemLabel?: string } | undefined;
 
+    const hasItems = field.items.length > 0;
+
     return (
-        <div className={"flex flex-col gap-sm"}>
+        <>
             {field.label && <FormComponentLabel text={field.label} />}
             {field.description && <FormComponentDescription text={field.description} />}
-            {field.items.map(item => (
-                <TagRow key={item.key} item={item} disabled={field.disabled} />
-            ))}
+            {hasItems ? (
+                <div className={"flex flex-col gap-md"}>
+                    {field.items.map(item => (
+                        <TagRow key={item.key} item={item} disabled={field.disabled} />
+                    ))}
+                </div>
+            ) : null}
             {!field.disabled && (
-                <div>
+                <div className={"mt-md"}>
                     <Button
                         onClick={() => field.addItem()}
                         text={settings?.addItemLabel ?? "Add tag"}
@@ -44,7 +50,7 @@ const KeyValueTagsList = observer(({ field }: { field: IObjectFieldVM }) => {
                     />
                 </div>
             )}
-        </div>
+        </>
     );
 });
 
@@ -53,7 +59,7 @@ const TagRow = observer(({ item, disabled }: { item: IObjectFieldItemVM; disable
 
     return (
         <div className={"flex items-center gap-sm"}>
-            <div className={"flex-1"}>
+            <div className={"flex-1 gap-md"}>
                 <NestedLayout layout={inlineLayout} />
             </div>
             {!disabled && (

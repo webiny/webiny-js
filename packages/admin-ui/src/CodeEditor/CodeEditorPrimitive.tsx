@@ -34,7 +34,7 @@ const DecoratableCodeEditorPrimitive = ({
         <MonacoEditor
             height={"calc(100vh - 400px)"}
             {...rest}
-            language={"json"}
+            language={rest.language ?? "json"}
             defaultValue={value}
             options={options}
         />
