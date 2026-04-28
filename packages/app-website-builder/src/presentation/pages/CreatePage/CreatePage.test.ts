@@ -151,7 +151,7 @@ describe("PageType + Modifier 3-layer architecture", () => {
         modifyForm(form) {
             form.fields(fields => ({
                 product: fields
-                    .select()
+                    .text()
                     .label("Product")
                     .required("Product is required")
                     .options([
@@ -240,7 +240,7 @@ describe("Form rebuild on page type switch", () => {
         modifyForm(form) {
             form.fields(fields => ({
                 product: fields
-                    .select()
+                    .text()
                     .label("Product")
                     .required("Product is required")
                     .options([

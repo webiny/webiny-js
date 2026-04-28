@@ -534,12 +534,12 @@ describe("FormModel", () => {
         });
     });
 
-    describe("select field with options", () => {
+    describe("field with options", () => {
         it("should resolve static options in field VM", () => {
             const form = new FormModel({
                 fields: fields => ({
                     lang: fields
-                        .select()
+                        .text()
                         .label("Language")
                         .options([
                             { label: "English", value: "en" },
@@ -559,7 +559,7 @@ describe("FormModel", () => {
             const form = new FormModel({
                 fields: fields => ({
                     lang: fields
-                        .select()
+                        .text()
                         .label("Language")
                         .options(() => {
                             // Dynamic options based on form state
@@ -579,7 +579,7 @@ describe("FormModel", () => {
                 const form = createBasicForm();
                 form.fields(fields => ({
                     language: fields
-                        .select()
+                        .text()
                         .label("Language")
                         .options([
                             { label: "English", value: "en" },
@@ -588,7 +588,7 @@ describe("FormModel", () => {
                 }));
 
                 expect(form.field("language")).toBeDefined();
-                expect(form.field("language").type).toBe("select");
+                expect(form.field("language").type).toBe("text");
                 expect(form.getData()).toHaveProperty("language");
             });
 
@@ -692,20 +692,20 @@ describe("FormModel", () => {
                 const form = new FormModel({
                     fields: fields => ({
                         lang: fields
-                            .select()
+                            .text()
                             .label("Language")
                             .options([{ label: "English", value: "en" }])
                     })
                 });
 
-                const selectField = form.field("lang").as("select");
-                expect(selectField).toBe(form.field("lang"));
+                const textField = form.field("lang").as("text");
+                expect(textField).toBe(form.field("lang"));
             });
 
             it("should throw when type does not match", () => {
                 const form = createBasicForm();
-                expect(() => form.field("title").as("select")).toThrow(
-                    'Field "title" is type "text", not "select".'
+                expect(() => form.field("title").as("boolean")).toThrow(
+                    'Field "title" is type "text", not "boolean".'
                 );
             });
         });
@@ -768,7 +768,7 @@ describe("FormModel", () => {
             it("should insert a row before a target", () => {
                 const form = createFormWithLayout();
                 form.fields(fields => ({
-                    language: fields.select().label("Language").options([])
+                    language: fields.text().label("Language").options([])
                 }));
 
                 form.layout(layout => [layout.row("language").before("path")]);
@@ -780,7 +780,7 @@ describe("FormModel", () => {
             it("should insert a row after a target", () => {
                 const form = createFormWithLayout();
                 form.fields(fields => ({
-                    language: fields.select().label("Language").options([])
+                    language: fields.text().label("Language").options([])
                 }));
 
                 form.layout(layout => [layout.row("language").after("path")]);
@@ -816,7 +816,7 @@ describe("FormModel", () => {
             it("should append when no position is specified", () => {
                 const form = createFormWithLayout();
                 form.fields(fields => ({
-                    language: fields.select().label("Language").options([])
+                    language: fields.text().label("Language").options([])
                 }));
 
                 form.layout(layout => [layout.row("language")]);
@@ -828,7 +828,7 @@ describe("FormModel", () => {
             it("should append when target is not found", () => {
                 const form = createFormWithLayout();
                 form.fields(fields => ({
-                    language: fields.select().label("Language").options([])
+                    language: fields.text().label("Language").options([])
                 }));
 
                 form.layout(layout => [layout.row("language").after("nonexistent")]);
@@ -868,7 +868,7 @@ describe("FormModel", () => {
                         // Add language field
                         form.fields(fields => ({
                             language: fields
-                                .select()
+                                .text()
                                 .label("Language")
                                 .options([
                                     { label: "English", value: "en" },
@@ -964,13 +964,16 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 },
                                 {
                                     id: "seo",
                                     label: "SEO",
                                     description: "Optimize how this page appears in search",
-                                    layout: [layout.row("metaTitle"), layout.row("metaDescription")]
+                                    layout: layout => [
+                                        layout.row("metaTitle"),
+                                        layout.row("metaDescription")
+                                    ]
                                 }
                             ]
                         })
@@ -1051,12 +1054,12 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("title")]
+                                    layout: layout => [layout.row("title")]
                                 },
                                 {
                                     id: "seo",
                                     label: "SEO",
-                                    layout: [layout.row("metaTitle")]
+                                    layout: layout => [layout.row("metaTitle")]
                                 }
                             ]
                         })
@@ -1093,7 +1096,7 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 }
                             ]
                         })
@@ -1168,12 +1171,12 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 },
                                 {
                                     id: "seo",
                                     label: "SEO",
-                                    layout: [layout.row("metaTitle")]
+                                    layout: layout => [layout.row("metaTitle")]
                                 }
                             ]
                         })
@@ -1193,7 +1196,7 @@ describe("FormModel", () => {
                     .tab({
                         id: "analytics",
                         label: "Analytics",
-                        layout: [{ type: "row", fieldIds: ["trackingId"] }]
+                        layout: () => [{ type: "row", fieldIds: ["trackingId"] }]
                     })
                     .after("seo");
 
@@ -1215,7 +1218,7 @@ describe("FormModel", () => {
                     .tab({
                         id: "analytics",
                         label: "Analytics",
-                        layout: [{ type: "row", fieldIds: ["trackingId"] }]
+                        layout: () => [{ type: "row", fieldIds: ["trackingId"] }]
                     })
                     .before("seo");
 
@@ -1279,7 +1282,7 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 }
                             ]
                         })
@@ -1311,7 +1314,7 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 }
                             ]
                         })
@@ -1342,7 +1345,7 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 }
                             ]
                         })
@@ -1376,12 +1379,12 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("description")]
+                                    layout: layout => [layout.row("description")]
                                 },
                                 {
                                     id: "seo",
                                     label: "SEO",
-                                    layout: [layout.row("metaTitle")]
+                                    layout: layout => [layout.row("metaTitle")]
                                 }
                             ]
                         })
@@ -1398,7 +1401,7 @@ describe("FormModel", () => {
                     .tab({
                         id: "analytics",
                         label: "Analytics",
-                        layout: [{ type: "row", fieldIds: ["trackingId"] }]
+                        layout: () => [{ type: "row", fieldIds: ["trackingId"] }]
                     })
                     .after("seo");
 
@@ -1827,12 +1830,12 @@ describe("FormModel", () => {
                                 {
                                     id: "general",
                                     label: "General",
-                                    layout: [layout.row("title")]
+                                    layout: layout => [layout.row("title")]
                                 },
                                 {
                                     id: "details",
                                     label: "Details",
-                                    layout: [layout.row("address")]
+                                    layout: layout => [layout.row("address")]
                                 }
                             ]
                         })
@@ -1846,6 +1849,2436 @@ describe("FormModel", () => {
                 expect(tabsNode.tabs[0].hasErrors).toBe(false);
                 expect(tabsNode.tabs[1].hasErrors).toBe(true);
             });
+        });
+    });
+
+    describe("templated object fields (Phase 8a)", () => {
+        function createFormWithTemplatedObject() {
+            return new FormModel({
+                fields: fields => ({
+                    content: fields
+                        .object()
+                        .label("Content")
+                        .templates([
+                            {
+                                id: "hero",
+                                name: "Hero Banner",
+                                fields: f => ({
+                                    heading: f.text().label("Heading").required("Required"),
+                                    image: f.text().label("Image")
+                                })
+                            },
+                            {
+                                id: "text",
+                                name: "Rich Text",
+                                fields: f => ({
+                                    body: f.text().label("Body").required("Required")
+                                })
+                            }
+                        ])
+                })
+            });
+        }
+
+        describe("shape", () => {
+            it("starts with no active template and empty children", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+                expect(field.isTemplated).toBe(true);
+                expect(field.activeTemplateId).toBeNull();
+                expect(field.children.size).toBe(0);
+            });
+
+            it("exposes available templates via VM", () => {
+                const form = createFormWithTemplatedObject();
+                const vm = form.field("content").vm as IObjectFieldVM;
+                expect(vm.isTemplated).toBe(true);
+                expect(vm.availableTemplates).toEqual([
+                    { id: "hero", name: "Hero Banner" },
+                    { id: "text", name: "Rich Text" }
+                ]);
+                expect(vm.activeTemplateId).toBeNull();
+                expect(vm.fields).toEqual([]);
+            });
+
+            it("rejects .fields() alongside .templates() at build time", () => {
+                expect(
+                    () =>
+                        new FormModel({
+                            fields: fields => ({
+                                content: fields
+                                    .object()
+                                    .fields(f => ({ x: f.text() }))
+                                    .templates([
+                                        { id: "a", name: "A", fields: f => ({ y: f.text() }) }
+                                    ])
+                            })
+                        })
+                ).toThrow(/both .fields\(\) and .templates\(\)/);
+            });
+
+            it("rejects duplicate template ids", () => {
+                expect(
+                    () =>
+                        new FormModel({
+                            fields: fields => ({
+                                content: fields.object().templates([
+                                    { id: "a", name: "A1", fields: f => ({ x: f.text() }) },
+                                    { id: "a", name: "A2", fields: f => ({ y: f.text() }) }
+                                ])
+                            })
+                        })
+                ).toThrow(/Duplicate template id "a"/);
+            });
+
+            it("rejects reserved _templateId as template id", () => {
+                expect(
+                    () =>
+                        new FormModel({
+                            fields: fields => ({
+                                content: fields.object().templates([
+                                    {
+                                        id: "_templateId",
+                                        name: "X",
+                                        fields: f => ({ x: f.text() })
+                                    }
+                                ])
+                            })
+                        })
+                ).toThrow(/reserved/);
+            });
+
+            it("rejects _templateId as a child field name in a template", () => {
+                expect(
+                    () =>
+                        new FormModel({
+                            fields: fields => ({
+                                content: fields.object().templates([
+                                    {
+                                        id: "hero",
+                                        name: "Hero",
+                                        fields: f => ({ _templateId: f.text() })
+                                    }
+                                ])
+                            })
+                        })
+                ).toThrow(/reserved field "_templateId"/);
+            });
+
+            it("allows combining .list() with .templates() (Phase 8b)", () => {
+                expect(
+                    () =>
+                        new FormModel({
+                            fields: fields => ({
+                                content: fields
+                                    .object()
+                                    .list()
+                                    .templates([
+                                        { id: "a", name: "A", fields: f => ({ x: f.text() }) }
+                                    ])
+                            })
+                        })
+                ).not.toThrow();
+            });
+        });
+
+        describe("setTemplate / switching", () => {
+            it("builds children when a template is selected", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+
+                field.setTemplate("hero");
+
+                expect(field.activeTemplateId).toBe("hero");
+                expect(field.children.size).toBe(2);
+                expect(form.field("content.heading").type).toBe("text");
+                expect(form.field("content.image").type).toBe("text");
+            });
+
+            it("discards data when switching to a different template", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+
+                field.setTemplate("hero");
+                form.field("content.heading").setValue("Hello");
+
+                field.setTemplate("text");
+
+                expect(field.activeTemplateId).toBe("text");
+                expect(form.field("content.body")).toBeDefined();
+                expect(() => form.field("content.heading")).toThrow();
+            });
+
+            it("is a no-op when setting the currently active template", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+
+                field.setTemplate("hero");
+                form.field("content.heading").setValue("Preserved");
+                field.setTemplate("hero");
+
+                expect(form.field("content.heading").getValue()).toBe("Preserved");
+            });
+
+            it("throws when setting an unknown template id", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+                expect(() => field.setTemplate("missing")).toThrow(/Template "missing" not found/);
+            });
+
+            it("wires the form reference on newly created children", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                // Setting a value on a child requires _form to be wired for pipelines.
+                expect(() => form.field("content.heading").setValue("OK")).not.toThrow();
+            });
+        });
+
+        describe("getData / setData", () => {
+            it("returns null when no template is active", () => {
+                const form = createFormWithTemplatedObject();
+                expect(form.getData().content).toBeNull();
+            });
+
+            it("includes _templateId and child values when active", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                form.field("content.heading").setValue("Welcome");
+                form.field("content.image").setValue("cover.jpg");
+
+                expect(form.getData().content).toEqual({
+                    _templateId: "hero",
+                    heading: "Welcome",
+                    image: "cover.jpg"
+                });
+            });
+
+            it("hydrates via setData by reading _templateId", () => {
+                const form = createFormWithTemplatedObject();
+                form.setData({
+                    content: { _templateId: "text", body: "Lorem ipsum" }
+                });
+
+                const field = form.field("content") as any;
+                expect(field.activeTemplateId).toBe("text");
+                expect(form.field("content.body").getValue()).toBe("Lorem ipsum");
+            });
+
+            it("setData with null clears the active template", () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                form.field("content.heading").setValue("X");
+
+                form.setData({ content: null as any });
+
+                expect(field.activeTemplateId).toBeNull();
+                expect(field.children.size).toBe(0);
+            });
+
+            it("setData ignores unknown template id silently", () => {
+                const form = createFormWithTemplatedObject();
+                form.setData({
+                    content: { _templateId: "nope", foo: "bar" } as any
+                });
+                const field = form.field("content") as any;
+                expect(field.activeTemplateId).toBeNull();
+            });
+        });
+
+        describe("validation", () => {
+            it("required templated object fails validation when no template active", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        content: fields
+                            .object()
+                            .required("Pick a template")
+                            .templates([
+                                {
+                                    id: "hero",
+                                    name: "Hero",
+                                    fields: f => ({ heading: f.text() })
+                                }
+                            ])
+                    })
+                });
+
+                const valid = await form.validate();
+                expect(valid).toBe(false);
+                expect(form.errors.some(e => e.path === "content")).toBe(true);
+            });
+
+            it("required templated object passes when template active with valid children", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        content: fields
+                            .object()
+                            .required("Pick a template")
+                            .templates([
+                                {
+                                    id: "hero",
+                                    name: "Hero",
+                                    fields: f => ({
+                                        heading: f.text().required("Required")
+                                    })
+                                }
+                            ])
+                    })
+                });
+
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                form.field("content.heading").setValue("Hi");
+
+                const valid = await form.validate();
+                expect(valid).toBe(true);
+            });
+
+            it("validates child fields inside active template", async () => {
+                const form = createFormWithTemplatedObject();
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                // heading is required; no value set
+                const valid = await form.validate();
+                expect(valid).toBe(false);
+            });
+
+            it("passes validation when object is optional and no template selected", async () => {
+                const form = createFormWithTemplatedObject();
+                const valid = await form.validate();
+                expect(valid).toBe(true);
+            });
+        });
+
+        describe("template visibility", () => {
+            it("filters availableTemplates by reactive visible callback", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        plan: fields.text().defaultValue("free"),
+                        content: fields.object().templates([
+                            {
+                                id: "basic",
+                                name: "Basic",
+                                fields: f => ({ x: f.text() })
+                            },
+                            {
+                                id: "premium",
+                                name: "Premium",
+                                visible: f => f.field("plan").getValue() === "enterprise",
+                                fields: f => ({ y: f.text() })
+                            }
+                        ])
+                    })
+                });
+
+                const vm1 = form.field("content").vm as IObjectFieldVM;
+                expect(vm1.availableTemplates.map(t => t.id)).toEqual(["basic"]);
+
+                form.field("plan").setValue("enterprise");
+                const vm2 = form.field("content").vm as IObjectFieldVM;
+                expect(vm2.availableTemplates.map(t => t.id)).toEqual(["basic", "premium"]);
+            });
+
+            it("hiding a template does not clear an already-active selection", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        plan: fields.text().defaultValue("enterprise"),
+                        content: fields.object().templates([
+                            {
+                                id: "premium",
+                                name: "Premium",
+                                visible: f => f.field("plan").getValue() === "enterprise",
+                                fields: f => ({ y: f.text() })
+                            }
+                        ])
+                    })
+                });
+
+                const field = form.field("content") as any;
+                field.setTemplate("premium");
+                form.field("content.y").setValue("set");
+
+                form.field("plan").setValue("free");
+
+                // Template no longer in picker, but active selection + data preserved.
+                const vm = form.field("content").vm as IObjectFieldVM;
+                expect(vm.availableTemplates).toEqual([]);
+                expect(vm.activeTemplateId).toBe("premium");
+                expect(form.field("content.y").getValue()).toBe("set");
+            });
+        });
+
+        describe("isDirty", () => {
+            it("is not dirty after setData with template", () => {
+                const form = createFormWithTemplatedObject();
+                form.setData({
+                    content: { _templateId: "hero", heading: "Hello", image: "" }
+                });
+                expect(form.isDirty).toBe(false);
+            });
+
+            it("becomes dirty after switching template", () => {
+                const form = createFormWithTemplatedObject();
+                form.setData({
+                    content: { _templateId: "hero", heading: "Hello", image: "" }
+                });
+                (form.field("content") as any).setTemplate("text");
+                expect(form.isDirty).toBe(true);
+            });
+        });
+    });
+
+    describe("templated list fields (Phase 8b)", () => {
+        function createFormWithTemplatedList() {
+            return new FormModel({
+                fields: fields => ({
+                    sections: fields
+                        .object()
+                        .label("Sections")
+                        .list()
+                        .templates([
+                            {
+                                id: "hero",
+                                name: "Hero",
+                                fields: f => ({
+                                    heading: f.text().required("Required"),
+                                    image: f.text()
+                                })
+                            },
+                            {
+                                id: "text",
+                                name: "Text",
+                                fields: f => ({
+                                    body: f.text().required("Required")
+                                })
+                            }
+                        ])
+                })
+            });
+        }
+
+        describe("addItem / templateId", () => {
+            it("requires a template id when adding to a templated list", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                expect(() => field.addItem()).toThrow(/require a template id/);
+            });
+
+            it("rejects unknown template ids", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                expect(() => field.addItem("missing")).toThrow(/Template "missing" not found/);
+            });
+
+            it("adds an item with the picked template's children", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+
+                expect(field.items.length).toBe(1);
+                expect(field.items[0].templateId).toBe("hero");
+                expect(field.items[0].children.has("heading")).toBe(true);
+                expect(field.items[0].children.has("image")).toBe(true);
+            });
+
+            it("allows mixing different templates across items", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.addItem("text");
+                field.addItem("hero");
+
+                expect(field.items.map((i: any) => i.templateId)).toEqual(["hero", "text", "hero"]);
+            });
+        });
+
+        describe("getData", () => {
+            it("includes _templateId per item", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.items[0].children.get("heading").setValue("Welcome");
+                field.addItem("text");
+                field.items[1].children.get("body").setValue("Lorem");
+
+                expect(form.getData().sections).toEqual([
+                    { _templateId: "hero", heading: "Welcome", image: null },
+                    { _templateId: "text", body: "Lorem" }
+                ]);
+            });
+        });
+
+        describe("setData", () => {
+            it("hydrates items by reading each item's _templateId", () => {
+                const form = createFormWithTemplatedList();
+                form.setData({
+                    sections: [
+                        { _templateId: "hero", heading: "H1", image: "img.jpg" },
+                        { _templateId: "text", body: "Body copy" }
+                    ]
+                });
+
+                const field = form.field("sections") as any;
+                expect(field.items.length).toBe(2);
+                expect(field.items[0].templateId).toBe("hero");
+                expect(field.items[0].children.get("heading").getValue()).toBe("H1");
+                expect(field.items[1].templateId).toBe("text");
+                expect(field.items[1].children.get("body").getValue()).toBe("Body copy");
+            });
+
+            it("silently drops items with invalid or missing _templateId", () => {
+                const form = createFormWithTemplatedList();
+                form.setData({
+                    sections: [
+                        { _templateId: "hero", heading: "Keep" },
+                        { _templateId: "nope", x: 1 } as any,
+                        { heading: "no-id" } as any,
+                        null as any,
+                        { _templateId: "text", body: "Also keep" }
+                    ]
+                });
+
+                const field = form.field("sections") as any;
+                expect(field.items.length).toBe(2);
+                expect(field.items.map((i: any) => i.templateId)).toEqual(["hero", "text"]);
+            });
+        });
+
+        describe("duplicate / move / remove", () => {
+            it("duplicates an item preserving templateId and values", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.items[0].children.get("heading").setValue("Original");
+                field.items[0].children.get("image").setValue("pic.jpg");
+
+                field.duplicateItem(0);
+
+                expect(field.items.length).toBe(2);
+                expect(field.items[1].templateId).toBe("hero");
+                expect(field.items[1].children.get("heading").getValue()).toBe("Original");
+                expect(field.items[1].children.get("image").getValue()).toBe("pic.jpg");
+                expect(field.items[0].key).not.toBe(field.items[1].key);
+            });
+
+            it("moves items while preserving templateId", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.addItem("text");
+                field.moveItem(0, 1);
+
+                expect(field.items.map((i: any) => i.templateId)).toEqual(["text", "hero"]);
+            });
+
+            it("removes items by index", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.addItem("text");
+                field.removeItem(0);
+
+                expect(field.items.length).toBe(1);
+                expect(field.items[0].templateId).toBe("text");
+            });
+        });
+
+        describe("VM", () => {
+            it("exposes templateId and duplicate on each item VM", () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+
+                const vm = form.field("sections").vm as IObjectFieldVM;
+                expect(vm.items.length).toBe(1);
+                expect(vm.items[0].templateId).toBe("hero");
+                expect(typeof vm.items[0].duplicate).toBe("function");
+            });
+
+            it("VM addItem(templateId) appends an item", () => {
+                const form = createFormWithTemplatedList();
+                const vm = form.field("sections").vm as IObjectFieldVM;
+                vm.addItem("hero");
+                vm.addItem("text");
+
+                const field = form.field("sections") as any;
+                expect(field.items.map((i: any) => i.templateId)).toEqual(["hero", "text"]);
+            });
+
+            it("availableTemplates respects reactive visible() on templated lists", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        plan: fields.text().defaultValue("free"),
+                        sections: fields
+                            .object()
+                            .list()
+                            .templates([
+                                { id: "basic", name: "Basic", fields: f => ({ x: f.text() }) },
+                                {
+                                    id: "premium",
+                                    name: "Premium",
+                                    visible: f => f.field("plan").getValue() === "enterprise",
+                                    fields: f => ({ y: f.text() })
+                                }
+                            ])
+                    })
+                });
+
+                const vm1 = form.field("sections").vm as IObjectFieldVM;
+                expect(vm1.availableTemplates.map(t => t.id)).toEqual(["basic"]);
+
+                form.field("plan").setValue("enterprise");
+                const vm2 = form.field("sections").vm as IObjectFieldVM;
+                expect(vm2.availableTemplates.map(t => t.id)).toEqual(["basic", "premium"]);
+            });
+        });
+
+        describe("validation", () => {
+            it("validates each item's children under its template", async () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero"); // heading is required, not set
+                field.addItem("text");
+                field.items[1].children.get("body").setValue("ok");
+
+                const valid = await form.validate();
+                expect(valid).toBe(false);
+                expect(form.errors.some(e => e.path.startsWith("sections"))).toBe(true);
+            });
+
+            it("passes when every item's required fields are filled", async () => {
+                const form = createFormWithTemplatedList();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.items[0].children.get("heading").setValue("H");
+                field.addItem("text");
+                field.items[1].children.get("body").setValue("B");
+
+                const valid = await form.validate();
+                expect(valid).toBe(true);
+            });
+        });
+
+        describe("isDirty", () => {
+            it("is not dirty after setData with templated list", () => {
+                const form = createFormWithTemplatedList();
+                form.setData({
+                    sections: [
+                        { _templateId: "hero", heading: "H", image: "" },
+                        { _templateId: "text", body: "B" }
+                    ]
+                });
+                expect(form.isDirty).toBe(false);
+            });
+
+            it("becomes dirty after adding an item", () => {
+                const form = createFormWithTemplatedList();
+                form.setData({
+                    sections: [{ _templateId: "hero", heading: "H", image: "" }]
+                });
+                (form.field("sections") as any).addItem("text");
+                expect(form.isDirty).toBe(true);
+            });
+        });
+    });
+
+    describe("per-template / inner object layouts (Phase 8c)", () => {
+        describe("non-templated single object", () => {
+            it("defaults to one row per visible child when no layout.object() is registered", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        meta: fields.object().fields(f => ({
+                            a: f.text().label("A"),
+                            b: f.text().label("B")
+                        }))
+                    })
+                });
+                const vm = form.field("meta").vm as IObjectFieldVM;
+                expect(vm.layout.length).toBe(2);
+                expect(asRow(vm.layout[0]).fields.map(f => f.name)).toEqual(["a"]);
+                expect(asRow(vm.layout[1]).fields.map(f => f.name)).toEqual(["b"]);
+            });
+
+            it("resolves the registered inner layout against the children", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        meta: fields.object().fields(f => ({
+                            a: f.text().label("A"),
+                            b: f.text().label("B")
+                        }))
+                    }),
+                    layout: layout => [layout.object("meta", l => [l.row("a", "b")])]
+                });
+                const vm = form.field("meta").vm as IObjectFieldVM;
+                expect(vm.layout.length).toBe(1);
+                expect(asRow(vm.layout[0]).fields.map(f => f.name)).toEqual(["a", "b"]);
+            });
+
+            it("throws when a per-template map is passed to a non-templated field", () => {
+                expect(
+                    () =>
+                        new FormModel({
+                            fields: fields => ({
+                                meta: fields.object().fields(f => ({ a: f.text() }))
+                            }),
+                            layout: layout => [layout.object("meta", { tplA: l => [l.row("a")] })]
+                        })
+                ).toThrow(/not templated/);
+            });
+        });
+
+        describe("non-templated list", () => {
+            it("applies the inner layout to every list item", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        rows: fields
+                            .object()
+                            .list()
+                            .fields(f => ({ a: f.text(), b: f.text() }))
+                    }),
+                    layout: layout => [layout.object("rows", l => [l.row("a", "b")])]
+                });
+                const field = form.field("rows") as any;
+                field.addItem();
+                field.addItem();
+                const vm = field.vm as IObjectFieldVM;
+                expect(vm.items.length).toBe(2);
+                for (const item of vm.items) {
+                    expect(item.layout.length).toBe(1);
+                    expect(asRow(item.layout[0]).fields.map(f => f.name)).toEqual(["a", "b"]);
+                }
+            });
+        });
+
+        describe("templated single object", () => {
+            function createForm(
+                layoutFactory?: ConstructorParameters<typeof FormModel>[0]["layout"]
+            ) {
+                return new FormModel({
+                    fields: fields => ({
+                        content: fields.object().templates([
+                            {
+                                id: "hero",
+                                name: "Hero",
+                                fields: f => ({
+                                    heading: f.text().label("Heading"),
+                                    subheading: f.text().label("Subheading")
+                                })
+                            },
+                            {
+                                id: "cta",
+                                name: "CTA",
+                                fields: f => ({
+                                    text: f.text().label("Text"),
+                                    url: f.text().label("URL")
+                                })
+                            }
+                        ])
+                    }),
+                    layout: layoutFactory
+                });
+            }
+
+            it("uses the active template's per-template layout", () => {
+                const form = createForm(layout => [
+                    layout.object("content", {
+                        hero: l => [l.row("heading", "subheading")],
+                        cta: l => [l.row("text"), l.row("url")]
+                    })
+                ]);
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                let vm = form.field("content").vm as IObjectFieldVM;
+                expect(vm.layout.length).toBe(1);
+                expect(asRow(vm.layout[0]).fields.map(f => f.name)).toEqual([
+                    "heading",
+                    "subheading"
+                ]);
+
+                field.setTemplate("cta");
+                vm = form.field("content").vm as IObjectFieldVM;
+                expect(vm.layout.length).toBe(2);
+                expect(asRow(vm.layout[0]).fields.map(f => f.name)).toEqual(["text"]);
+                expect(asRow(vm.layout[1]).fields.map(f => f.name)).toEqual(["url"]);
+            });
+
+            it("falls back to default one-row-per-child when active template has no entry", () => {
+                const form = createForm(layout => [
+                    layout.object("content", {
+                        hero: l => [l.row("heading", "subheading")]
+                        // no entry for "cta"
+                    })
+                ]);
+                const field = form.field("content") as any;
+                field.setTemplate("cta");
+                const vm = form.field("content").vm as IObjectFieldVM;
+                expect(vm.layout.length).toBe(2);
+                expect(asRow(vm.layout[0]).fields.map(f => f.name)).toEqual(["text"]);
+                expect(asRow(vm.layout[1]).fields.map(f => f.name)).toEqual(["url"]);
+            });
+
+            it("returns an empty layout when no template is active", () => {
+                const form = createForm(layout => [
+                    layout.object("content", { hero: l => [l.row("heading", "subheading")] })
+                ]);
+                const vm = form.field("content").vm as IObjectFieldVM;
+                expect(vm.activeTemplateId).toBeNull();
+                expect(vm.layout).toEqual([]);
+            });
+
+            it("silently ignores an unknown template id in the layout map", () => {
+                const form = createForm(layout => [
+                    layout.object("content", {
+                        hero: l => [l.row("heading", "subheading")],
+                        unknown: l => [l.row("xxx")]
+                    })
+                ]);
+                // Should not throw at build time; the unknown entry is dead until referenced.
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                const vm = form.field("content").vm as IObjectFieldVM;
+                expect(asRow(vm.layout[0]).fields.map(f => f.name)).toEqual([
+                    "heading",
+                    "subheading"
+                ]);
+            });
+
+            it("throws when a single LayoutNode[] is passed to a templated field", () => {
+                expect(() =>
+                    createForm(layout => [layout.object("content", l => [l.row("x")])])
+                ).toThrow(/is templated/);
+            });
+
+            it("falls back to default when no layout.object() is registered", () => {
+                const form = createForm();
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                const vm = form.field("content").vm as IObjectFieldVM;
+                expect(vm.layout.length).toBe(2);
+                expect(asRow(vm.layout[0]).fields.map(f => f.name)).toEqual(["heading"]);
+                expect(asRow(vm.layout[1]).fields.map(f => f.name)).toEqual(["subheading"]);
+            });
+        });
+
+        describe("templated list", () => {
+            function createForm() {
+                return new FormModel({
+                    fields: fields => ({
+                        sections: fields
+                            .object()
+                            .list()
+                            .templates([
+                                {
+                                    id: "hero",
+                                    name: "Hero",
+                                    fields: f => ({
+                                        heading: f.text().label("Heading"),
+                                        subheading: f.text().label("Subheading")
+                                    })
+                                },
+                                {
+                                    id: "cta",
+                                    name: "CTA",
+                                    fields: f => ({
+                                        text: f.text().label("Text"),
+                                        url: f.text().label("URL")
+                                    })
+                                }
+                            ])
+                    }),
+                    layout: layout => [
+                        layout.object("sections", {
+                            hero: l => [l.row("heading", "subheading")],
+                            cta: l => [l.row("text"), l.row("url")]
+                        })
+                    ]
+                });
+            }
+
+            it("each item resolves layout against its own template", () => {
+                const form = createForm();
+                const field = form.field("sections") as any;
+                field.addItem("hero");
+                field.addItem("cta");
+                const vm = form.field("sections").vm as IObjectFieldVM;
+                expect(vm.items.length).toBe(2);
+                expect(asRow(vm.items[0].layout[0]).fields.map(f => f.name)).toEqual([
+                    "heading",
+                    "subheading"
+                ]);
+                expect(asRow(vm.items[1].layout[0]).fields.map(f => f.name)).toEqual(["text"]);
+                expect(asRow(vm.items[1].layout[1]).fields.map(f => f.name)).toEqual(["url"]);
+            });
+
+            it("hides hidden child fields from the resolved layout row", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        content: fields.object().templates([
+                            {
+                                id: "hero",
+                                name: "Hero",
+                                fields: f => ({
+                                    heading: f.text(),
+                                    secret: f.text().hidden()
+                                })
+                            }
+                        ])
+                    }),
+                    layout: layout => [
+                        layout.object("content", {
+                            hero: l => [l.row("heading", "secret")]
+                        })
+                    ]
+                });
+                const field = form.field("content") as any;
+                field.setTemplate("hero");
+                const vm = form.field("content").vm as IObjectFieldVM;
+                expect(asRow(vm.layout[0]).fields.map(f => f.name)).toEqual(["heading"]);
+            });
+        });
+
+        describe("interaction with form.vm.layout", () => {
+            it("the form layout exposes a single-field row for the object", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        content: fields
+                            .object()
+                            .templates([
+                                { id: "hero", name: "Hero", fields: f => ({ heading: f.text() }) }
+                            ])
+                    }),
+                    layout: layout => [layout.object("content", { hero: l => [l.row("heading")] })]
+                });
+                const layout = form.vm.layout;
+                expect(layout.length).toBe(1);
+                const row = asRow(layout[0]);
+                expect(row.fields.map(f => f.name)).toEqual(["content"]);
+            });
+
+            it("hides the object node from form.vm.layout when the field is not visible", () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        content: fields
+                            .object()
+                            .hidden()
+                            .templates([
+                                { id: "hero", name: "Hero", fields: f => ({ heading: f.text() }) }
+                            ])
+                    }),
+                    layout: layout => [layout.object("content", { hero: l => [l.row("heading")] })]
+                });
+                expect(form.vm.layout).toEqual([]);
+            });
+        });
+    });
+
+    describe("nested object layouts (Phase 8c.1)", () => {
+        it("registers layout.object() nested inside another object's inner layout (non-templated)", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    page: fields.object().fields(f => ({
+                        title: f.text(),
+                        seo: f.object().fields(g => ({
+                            metaTitle: g.text(),
+                            metaDescription: g.text()
+                        }))
+                    }))
+                }),
+                layout: layout => [
+                    layout.object("page", l => [
+                        l.row("title"),
+                        l.object("seo", inner => [inner.row("metaTitle", "metaDescription")])
+                    ])
+                ]
+            });
+            const pageVm = form.field("page").vm as IObjectFieldVM;
+            const seoRow = asRow(pageVm.layout[1]);
+            const seoVm = seoRow.fields[0] as IObjectFieldVM;
+            expect(seoVm.layout.length).toBe(1);
+            expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                "metaTitle",
+                "metaDescription"
+            ]);
+        });
+
+        it("supports three levels of nesting", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    a: fields.object().fields(f => ({
+                        b: f.object().fields(g => ({
+                            c: g.object().fields(h => ({
+                                x: h.text(),
+                                y: h.text()
+                            }))
+                        }))
+                    }))
+                }),
+                layout: layout => [
+                    layout.object("a", l1 => [
+                        l1.object("b", l2 => [l2.object("c", l3 => [l3.row("x", "y")])])
+                    ])
+                ]
+            });
+            const aVm = form.field("a").vm as IObjectFieldVM;
+            const bVm = asRow(aVm.layout[0]).fields[0] as IObjectFieldVM;
+            const cVm = asRow(bVm.layout[0]).fields[0] as IObjectFieldVM;
+            expect(cVm.layout.length).toBe(1);
+            expect(asRow(cVm.layout[0]).fields.map(f => f.name)).toEqual(["x", "y"]);
+        });
+
+        it("registers nested layouts on a templated single object when its template activates", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    block: fields.object().templates([
+                        {
+                            id: "hero",
+                            name: "Hero",
+                            fields: f => ({
+                                heading: f.text(),
+                                seo: f.object().fields(g => ({
+                                    metaTitle: g.text(),
+                                    metaDescription: g.text()
+                                }))
+                            })
+                        }
+                    ])
+                }),
+                layout: layout => [
+                    layout.object("block", {
+                        hero: l => [
+                            l.row("heading"),
+                            l.object("seo", inner => [inner.row("metaTitle", "metaDescription")])
+                        ]
+                    })
+                ]
+            });
+            const field = form.field("block") as any;
+            field.setTemplate("hero");
+            const vm = form.field("block").vm as IObjectFieldVM;
+            const seoRow = asRow(vm.layout[1]);
+            const seoVm = seoRow.fields[0] as IObjectFieldVM;
+            expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                "metaTitle",
+                "metaDescription"
+            ]);
+        });
+
+        it("registers nested layouts on a templated list — each item gets its own", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    sections: fields
+                        .object()
+                        .list()
+                        .templates([
+                            {
+                                id: "hero",
+                                name: "Hero",
+                                fields: f => ({
+                                    heading: f.text(),
+                                    seo: f.object().fields(g => ({
+                                        metaTitle: g.text(),
+                                        metaDescription: g.text()
+                                    }))
+                                })
+                            }
+                        ])
+                }),
+                layout: layout => [
+                    layout.object("sections", {
+                        hero: l => [
+                            l.row("heading"),
+                            l.object("seo", inner => [inner.row("metaTitle", "metaDescription")])
+                        ]
+                    })
+                ]
+            });
+            const field = form.field("sections") as any;
+            field.addItem("hero");
+            field.addItem("hero");
+            const vm = form.field("sections").vm as IObjectFieldVM;
+            expect(vm.items.length).toBe(2);
+            for (const item of vm.items) {
+                const seoVm = asRow(item.layout[1]).fields[0] as IObjectFieldVM;
+                expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                    "metaTitle",
+                    "metaDescription"
+                ]);
+            }
+        });
+
+        it("registers nested layouts on a non-templated list item upon creation", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    rows: fields
+                        .object()
+                        .list()
+                        .fields(f => ({
+                            label: f.text(),
+                            seo: f.object().fields(g => ({
+                                metaTitle: g.text(),
+                                metaDescription: g.text()
+                            }))
+                        }))
+                }),
+                layout: layout => [
+                    layout.object("rows", l => [
+                        l.row("label"),
+                        l.object("seo", inner => [inner.row("metaTitle", "metaDescription")])
+                    ])
+                ]
+            });
+            const field = form.field("rows") as any;
+            field.addItem();
+            const vm = form.field("rows").vm as IObjectFieldVM;
+            const seoVm = asRow(vm.items[0].layout[1]).fields[0] as IObjectFieldVM;
+            expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                "metaTitle",
+                "metaDescription"
+            ]);
+        });
+
+        it("registers nested layouts on children added via field.as('object').fields() at runtime", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    page: fields.object().fields(f => ({
+                        title: f.text()
+                    }))
+                }),
+                layout: layout => [
+                    layout.object("page", l => [
+                        l.row("title"),
+                        l.object("seo", inner => [inner.row("metaTitle", "metaDescription")])
+                    ])
+                ]
+            });
+            // seo doesn't exist yet; the layout entry is a no-op until we add it.
+            form.field("page")
+                .as("object")
+                .fields(f => ({
+                    seo: f.object().fields(g => ({
+                        metaTitle: g.text(),
+                        metaDescription: g.text()
+                    }))
+                }));
+            const pageVm = form.field("page").vm as IObjectFieldVM;
+            const seoRow = asRow(pageVm.layout[1]);
+            const seoVm = seoRow.fields[0] as IObjectFieldVM;
+            expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                "metaTitle",
+                "metaDescription"
+            ]);
+        });
+
+        it("recurses through tabs nested inside an inner layout", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    page: fields.object().fields(f => ({
+                        title: f.text(),
+                        seo: f.object().fields(g => ({
+                            metaTitle: g.text(),
+                            metaDescription: g.text()
+                        }))
+                    }))
+                }),
+                layout: layout => [
+                    layout.object("page", l => [
+                        l.tabs({
+                            tabs: [
+                                {
+                                    id: "main",
+                                    label: "Main",
+                                    layout: l => [l.row("title")]
+                                },
+                                {
+                                    id: "seoTab",
+                                    label: "SEO",
+                                    layout: l => [
+                                        l.object("seo", inner => [
+                                            inner.row("metaTitle", "metaDescription")
+                                        ])
+                                    ]
+                                }
+                            ]
+                        })
+                    ])
+                ]
+            });
+            const seoVm = form.field("page.seo").vm as IObjectFieldVM;
+            expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                "metaTitle",
+                "metaDescription"
+            ]);
+        });
+
+        it("resolves tabs inside an inner layout against the children scope", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    page: fields.object().fields(f => ({
+                        title: f.text(),
+                        body: f.text(),
+                        seo: f.object().fields(g => ({
+                            metaTitle: g.text(),
+                            metaDescription: g.text()
+                        }))
+                    }))
+                }),
+                layout: layout => [
+                    layout.object("page", l => [
+                        l.tabs({
+                            id: "pageTabs",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: l => [l.row("title"), l.row("body")]
+                                },
+                                {
+                                    id: "seo",
+                                    label: "SEO",
+                                    layout: l => [
+                                        l.object("seo", inner => [
+                                            inner.row("metaTitle", "metaDescription")
+                                        ])
+                                    ]
+                                }
+                            ]
+                        })
+                    ])
+                ]
+            });
+            const pageVm = form.field("page").vm as IObjectFieldVM;
+            expect(pageVm.layout.length).toBe(1);
+            const tabs = pageVm.layout[0] as ITabsNodeVM;
+            expect(tabs.type).toBe("tabs");
+            expect(tabs.tabs.map(t => t.id)).toEqual(["general", "seo"]);
+            const generalTab = tabs.tabs[0];
+            expect(asRow(generalTab.layout[0]).fields.map(f => f.name)).toEqual(["title"]);
+            expect(asRow(generalTab.layout[1]).fields.map(f => f.name)).toEqual(["body"]);
+            const seoTab = tabs.tabs[1];
+            const seoVm = asRow(seoTab.layout[0]).fields[0] as IObjectFieldVM;
+            expect(asRow(seoVm.layout[0]).fields.map(f => f.name)).toEqual([
+                "metaTitle",
+                "metaDescription"
+            ]);
+        });
+    });
+
+    describe("runtime template modification (Phase 8d)", () => {
+        function createSingleTemplatedForm() {
+            return new FormModel({
+                fields: fields => ({
+                    content: fields.object().templates([
+                        {
+                            id: "hero",
+                            name: "Hero",
+                            fields: f => ({ heading: f.text() })
+                        }
+                    ])
+                })
+            });
+        }
+
+        function createListTemplatedForm() {
+            return new FormModel({
+                fields: fields => ({
+                    blocks: fields
+                        .object()
+                        .list()
+                        .templates([
+                            {
+                                id: "hero",
+                                name: "Hero",
+                                fields: f => ({ heading: f.text() })
+                            },
+                            {
+                                id: "text",
+                                name: "Text",
+                                fields: f => ({ body: f.text() })
+                            }
+                        ])
+                })
+            });
+        }
+
+        it("templates.add appends a template and the picker lists it", () => {
+            const form = createSingleTemplatedForm();
+            const field = form.field("content").as("object");
+            field.templates.add({
+                id: "text",
+                name: "Text",
+                fields: f => ({ body: f.text() })
+            });
+            const vm = form.field("content").vm as IObjectFieldVM;
+            expect(vm.availableTemplates.map(t => t.id)).toEqual(["hero", "text"]);
+        });
+
+        it("templates.add throws on duplicate id", () => {
+            const form = createSingleTemplatedForm();
+            const field = form.field("content").as("object");
+            expect(() =>
+                field.templates.add({
+                    id: "hero",
+                    name: "Other",
+                    fields: f => ({ x: f.text() })
+                })
+            ).toThrow(/Duplicate template id "hero"/);
+        });
+
+        it("templates.add throws on reserved _templateId", () => {
+            const form = createSingleTemplatedForm();
+            const field = form.field("content").as("object");
+            expect(() =>
+                field.templates.add({
+                    id: "_templateId",
+                    name: "Reserved",
+                    fields: f => ({ x: f.text() })
+                })
+            ).toThrow(/reserved/);
+        });
+
+        it("templates.add throws when the template defines a reserved _templateId field", () => {
+            const form = createSingleTemplatedForm();
+            const field = form.field("content").as("object");
+            expect(() =>
+                field.templates.add({
+                    id: "bad",
+                    name: "Bad",
+                    fields: f => ({ _templateId: f.text() })
+                })
+            ).toThrow(/reserved field "_templateId"/);
+        });
+
+        it("templates.remove removes the template from the picker", () => {
+            const form = createListTemplatedForm();
+            const field = form.field("blocks").as("object");
+            field.templates.remove("text");
+            const vm = form.field("blocks").vm as IObjectFieldVM;
+            expect(vm.availableTemplates.map(t => t.id)).toEqual(["hero"]);
+        });
+
+        it("templates.remove silently no-ops on unknown id", () => {
+            const form = createListTemplatedForm();
+            const field = form.field("blocks").as("object");
+            const before = (form.field("blocks").vm as IObjectFieldVM).availableTemplates.length;
+            expect(() => field.templates.remove("nonExistent")).not.toThrow();
+            const after = (form.field("blocks").vm as IObjectFieldVM).availableTemplates.length;
+            expect(after).toBe(before);
+        });
+
+        it("templates.remove clears active template on a single-object field via onChange(null) semantics", () => {
+            const form = createSingleTemplatedForm();
+            const field = form.field("content").as("object");
+            field.setTemplate("hero");
+            expect(field.activeTemplateId).toBe("hero");
+            field.templates.remove("hero");
+            expect(field.activeTemplateId).toBeNull();
+            expect(field.children.size).toBe(0);
+            expect(form.field("content").getValue()).toBeNull();
+        });
+
+        it("templates.remove drops list items whose _templateId matches", () => {
+            const form = createListTemplatedForm();
+            const field = form.field("blocks").as("object");
+            field.addItem("hero", { heading: "H1" });
+            field.addItem("text", { body: "B1" });
+            field.addItem("hero", { heading: "H2" });
+            expect(field.items.length).toBe(3);
+            field.templates.remove("hero");
+            expect(field.items.length).toBe(1);
+            expect(field.items[0].templateId).toBe("text");
+        });
+
+        it("templates.add throws when called on a non-templated object field", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    plain: fields.object().fields(f => ({ x: f.text() }))
+                })
+            });
+            const field = form.field("plain").as("object");
+            expect(() =>
+                field.templates.add({
+                    id: "x",
+                    name: "X",
+                    fields: f => ({ y: f.text() })
+                })
+            ).toThrow(/not templated/);
+        });
+
+        it("templates.remove throws when called on a non-templated object field", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    plain: fields.object().fields(f => ({ x: f.text() }))
+                })
+            });
+            const field = form.field("plain").as("object");
+            expect(() => field.templates.remove("anything")).toThrow(/not templated/);
+        });
+
+        it("orphan layout entry persists silently and is reused when the same template id is re-added", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    content: fields.object().templates([
+                        {
+                            id: "hero",
+                            name: "Hero",
+                            fields: f => ({ heading: f.text(), subheading: f.text() })
+                        }
+                    ])
+                }),
+                layout: layout => [
+                    layout.object("content", {
+                        hero: l => [l.row("heading", "subheading")]
+                    })
+                ]
+            });
+            const field = form.field("content").as("object");
+            field.setTemplate("hero");
+            const vmBefore = form.field("content").vm as IObjectFieldVM;
+            const rowBefore = asRow(vmBefore.layout[0]);
+            expect(rowBefore.fields.map(f => f.name)).toEqual(["heading", "subheading"]);
+
+            field.templates.remove("hero");
+            field.templates.add({
+                id: "hero",
+                name: "Hero v2",
+                fields: f => ({ heading: f.text(), subheading: f.text() })
+            });
+            field.setTemplate("hero");
+
+            const vmAfter = form.field("content").vm as IObjectFieldVM;
+            const rowAfter = asRow(vmAfter.layout[0]);
+            expect(rowAfter.fields.map(f => f.name)).toEqual(["heading", "subheading"]);
+        });
+
+        it("removing all templates does not emit dev warnings (orphan suppression)", () => {
+            const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+            const form = createSingleTemplatedForm();
+            const field = form.field("content").as("object");
+            field.templates.remove("hero");
+            const vm = form.field("content").vm as IObjectFieldVM;
+            expect(vm.availableTemplates).toEqual([]);
+            expect(warn).not.toHaveBeenCalled();
+            warn.mockRestore();
+        });
+    });
+
+    describe("requiredWhen (Phase 11)", () => {
+        it("makes a field required when the callback returns true", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    plan: fields.text().defaultValue("free"),
+                    seats: fields
+                        .text()
+                        .requiredWhen(f => f.field("plan").getValue() === "pro", "Seats required")
+                })
+            });
+
+            // plan = free → not required → validation passes
+            expect(form.field("seats").vm.required).toBe(false);
+            expect(await form.validate()).toBe(true);
+
+            // plan = pro → becomes required → empty value fails validation
+            form.field("plan").setValue("pro");
+            expect(form.field("seats").vm.required).toBe(true);
+            expect(await form.validate()).toBe(false);
+            expect(form.field("seats").vm.validation.message).toBe("Seats required");
+        });
+
+        it("chains requiredWhen callbacks — first truthy wins", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    plan: fields.text().defaultValue("free"),
+                    flag: fields.text().defaultValue("off"),
+                    seats: fields
+                        .text()
+                        .requiredWhen(f => f.field("plan").getValue() === "pro", "Pro requires it")
+                        .requiredWhen(f => f.field("flag").getValue() === "on", "Flag requires it")
+                })
+            });
+
+            form.field("flag").setValue("on");
+            await form.validate();
+            expect(form.field("seats").vm.validation.message).toBe("Flag requires it");
+
+            // First-truthy-wins: enable plan too, plan callback runs first.
+            form.field("plan").setValue("pro");
+            await form.validate();
+            expect(form.field("seats").vm.validation.message).toBe("Pro requires it");
+        });
+
+        it("hard .required() always wins over requiredWhen messages", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    seats: fields
+                        .text()
+                        .required("Always required")
+                        .requiredWhen(() => true, "Conditional message")
+                })
+            });
+
+            await form.validate();
+            expect(form.field("seats").vm.required).toBe(true);
+            expect(form.field("seats").vm.validation.message).toBe("Always required");
+        });
+
+        it("modifier-added requiredWhen chains with builder-defined ones", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    plan: fields.text().defaultValue("free"),
+                    other: fields.text().defaultValue("off"),
+                    seats: fields
+                        .text()
+                        .requiredWhen(f => f.field("plan").getValue() === "pro", "Pro required")
+                })
+            });
+
+            form.field("seats").addRequiredWhen(
+                f => f.field("other").getValue() === "on",
+                "Other required"
+            );
+
+            // Neither truthy → not required.
+            expect(form.field("seats").vm.required).toBe(false);
+
+            // Modifier callback truthy.
+            form.field("other").setValue("on");
+            await form.validate();
+            expect(form.field("seats").vm.validation.message).toBe("Other required");
+        });
+    });
+
+    describe("computed / computedUntilDirty (Phase 11)", () => {
+        it("computed field exposes derived value reactively", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    first: fields.text().defaultValue("Ada"),
+                    last: fields.text().defaultValue("Lovelace"),
+                    full: fields
+                        .text()
+                        .computed(
+                            f => `${f.field("first").getValue()} ${f.field("last").getValue()}`
+                        )
+                })
+            });
+
+            expect(form.field("full").getValue()).toBe("Ada Lovelace");
+            form.field("first").setValue("Grace");
+            expect(form.field("full").getValue()).toBe("Grace Lovelace");
+        });
+
+        it("computed field stays editable but value remains derived", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    src: fields.text().defaultValue("A"),
+                    derived: fields.text().computed(f => f.field("src").getValue())
+                })
+            });
+
+            // Not auto-disabled.
+            expect(form.field("derived").vm.disabled).toBe(false);
+
+            // User edit doesn't override the computed value.
+            form.field("derived").vm.onChange("manual override");
+            expect(form.field("derived").getValue()).toBe("A");
+        });
+
+        it("computedUntilDirty switches to manual after first UI edit", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    src: fields.text().defaultValue("A"),
+                    derived: fields
+                        .text()
+                        .computedUntilDirty(f => `derived-${f.field("src").getValue()}`)
+                })
+            });
+
+            expect(form.field("derived").getValue()).toBe("derived-A");
+
+            form.field("derived").vm.onChange("manual");
+            expect(form.field("derived").getValue()).toBe("manual");
+
+            // Source changes no longer overwrite manual edit.
+            form.field("src").setValue("B");
+            expect(form.field("derived").getValue()).toBe("manual");
+        });
+
+        it("computed field still participates in validation", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    src: fields.text().defaultValue(""),
+                    derived: fields
+                        .text()
+                        .required("Derived must not be empty")
+                        .computed(f => f.field("src").getValue())
+                })
+            });
+
+            const valid = await form.validate();
+            expect(valid).toBe(false);
+            expect(form.field("derived").vm.validation.message).toBe("Derived must not be empty");
+
+            form.field("src").setValue("hello");
+            expect(await form.validate()).toBe(true);
+        });
+
+        it("modifier setComputed converts a regular field into a computed one", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    src: fields.text().defaultValue("X"),
+                    derived: fields.text().defaultValue("initial")
+                })
+            });
+
+            form.field("derived").setComputed(f => `from-${f.field("src").getValue()}`);
+
+            expect(form.field("derived").getValue()).toBe("from-X");
+            form.field("src").setValue("Y");
+            expect(form.field("derived").getValue()).toBe("from-Y");
+        });
+    });
+
+    describe('field("...").as("object").fields() (Phase 11)', () => {
+        it("adds new children to an existing object field at runtime", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    profile: fields.object().fields(f => ({
+                        firstName: f.text().label("First")
+                    }))
+                })
+            });
+
+            form.field("profile")
+                .as("object")
+                .fields(f => ({
+                    lastName: f.text().label("Last")
+                }));
+
+            form.field("profile.firstName").setValue("Ada");
+            form.field("profile.lastName").setValue("Lovelace");
+            expect(form.getData()).toEqual({
+                profile: { firstName: "Ada", lastName: "Lovelace" }
+            });
+        });
+
+        it("replaces existing children when keys collide", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    profile: fields.object().fields(f => ({
+                        firstName: f.text().label("Old")
+                    }))
+                })
+            });
+
+            form.field("profile")
+                .as("object")
+                .fields(f => ({
+                    firstName: f.text().label("New")
+                }));
+
+            const profile = form.field("profile").as("object");
+            expect(profile.children.get("firstName")?.config.label).toBe("New");
+        });
+
+        it("removes children when factory returns undefined", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    profile: fields.object().fields(f => ({
+                        firstName: f.text(),
+                        lastName: f.text()
+                    }))
+                })
+            });
+
+            form.field("profile")
+                .as("object")
+                .fields(() => ({
+                    lastName: undefined
+                }));
+
+            const profile = form.field("profile").as("object");
+            expect(profile.children.has("lastName")).toBe(false);
+            expect(profile.children.has("firstName")).toBe(true);
+        });
+
+        it("propagates added children to existing list items", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    contacts: fields
+                        .object()
+                        .list()
+                        .fields(f => ({
+                            name: f.text()
+                        }))
+                })
+            });
+
+            const contacts = form.field("contacts").as("object");
+            contacts.addItem({ name: "Ada" });
+            contacts.addItem({ name: "Grace" });
+
+            contacts.fields(f => ({
+                email: f.text()
+            }));
+
+            // Existing items now have the new child.
+            expect(contacts.items[0].children.has("email")).toBe(true);
+            expect(contacts.items[1].children.has("email")).toBe(true);
+
+            // Newly added items pick up the child too.
+            contacts.addItem({ name: "Linus", email: "linus@example.com" });
+            expect(contacts.items[2].children.get("email")?.getValue()).toBe("linus@example.com");
+        });
+
+        it("throws when called on a templated object field", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    block: fields.object().templates([
+                        {
+                            id: "a",
+                            name: "A",
+                            fields: f => ({ x: f.text() })
+                        }
+                    ])
+                })
+            });
+
+            expect(() => {
+                form.field("block")
+                    .as("object")
+                    .fields(f => ({ y: f.text() }));
+            }).toThrow(/templated/);
+        });
+    });
+
+    describe("form.addRule() (Phase 11)", () => {
+        it("runs a Zod schema against getData() and surfaces issues", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    password: fields.text().defaultValue("a"),
+                    confirm: fields.text().defaultValue("b")
+                })
+            });
+
+            form.addRule(
+                z
+                    .object({
+                        password: z.string(),
+                        confirm: z.string()
+                    })
+                    .refine(d => d.password === d.confirm, {
+                        message: "Passwords must match",
+                        path: ["confirm"]
+                    })
+            );
+
+            const valid = await form.validate();
+            expect(valid).toBe(false);
+            expect(form.errors.some(e => e.message === "Passwords must match")).toBe(true);
+            // Error surfaced on per-field validation when path matches.
+            expect(form.field("confirm").vm.validation.isValid).toBe(false);
+            expect(form.field("confirm").vm.validation.message).toBe("Passwords must match");
+        });
+
+        it("runs an imperative function and merges returned errors", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    age: fields.text().defaultValue("17")
+                })
+            });
+
+            form.addRule(f => {
+                if (Number(f.field("age").getValue()) < 18) {
+                    return [{ path: "age", message: "Must be 18+" }];
+                }
+                return [];
+            });
+
+            expect(await form.validate()).toBe(false);
+            expect(form.field("age").vm.validation.message).toBe("Must be 18+");
+
+            form.field("age").setValue("21");
+            expect(await form.validate()).toBe(true);
+        });
+
+        it("supports async imperative rules", async () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    name: fields.text().defaultValue("taken")
+                })
+            });
+
+            form.addRule(async f => {
+                await Promise.resolve();
+                if (f.field("name").getValue() === "taken") {
+                    return [{ path: "name", message: "Already taken" }];
+                }
+                return [];
+            });
+
+            expect(await form.validate()).toBe(false);
+            expect(form.field("name").vm.validation.message).toBe("Already taken");
+        });
+    });
+
+    describe("form.setLayout() (Phase 11)", () => {
+        it("replaces the layout entirely", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    a: fields.text(),
+                    b: fields.text(),
+                    c: fields.text()
+                }),
+                layout: layout => [layout.row("a"), layout.row("b"), layout.row("c")]
+            });
+
+            form.setLayout(layout => [layout.row("c", "a")]);
+
+            const layout = form.vm.layout;
+            expect(layout).toHaveLength(1);
+            const row = asRow(layout[0]);
+            expect(row.fields.map(f => f.name)).toEqual(["c", "a"]);
+        });
+
+        it("emits orphan warnings for fields not in the new layout", () => {
+            const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+            const form = new FormModel({
+                fields: fields => ({
+                    a: fields.text(),
+                    b: fields.text()
+                })
+            });
+
+            warn.mockClear();
+            form.setLayout(layout => [layout.row("a")]);
+
+            expect(warn).toHaveBeenCalledWith(
+                expect.stringContaining('Field "b" is not in the layout')
+            );
+            warn.mockRestore();
+        });
+    });
+
+    describe("Phase 10: Advanced Validation", () => {
+        describe("field.vm.validating", () => {
+            it("should be false initially", () => {
+                const form = createBasicForm();
+                expect(form.field("title").vm.validating).toBe(false);
+            });
+
+            it("should be true while async schema validates", async () => {
+                let resolveValidation!: () => void;
+                const form = new FormModel({
+                    fields: fields => ({
+                        email: fields.text().schema(
+                            z.string().refine(async () => {
+                                await new Promise<void>(r => {
+                                    resolveValidation = r;
+                                });
+                                return true;
+                            })
+                        )
+                    })
+                });
+                form.field("email").setValue("test@test.com");
+
+                const promise = form.validate();
+                // Allow microtask to enter the async refine
+                await new Promise(r => setTimeout(r, 0));
+                expect(form.field("email").vm.validating).toBe(true);
+
+                resolveValidation();
+                await promise;
+                expect(form.field("email").vm.validating).toBe(false);
+            });
+
+            it("should be false after sync-only validation", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        name: fields.text().required()
+                    })
+                });
+                form.field("name").setValue("hello");
+                await form.validate();
+                expect(form.field("name").vm.validating).toBe(false);
+            });
+        });
+
+        describe("form.submitted", () => {
+            it("should be false initially", () => {
+                const form = createBasicForm();
+                expect(form.submitted).toBe(false);
+            });
+
+            it("should be true after validate()", async () => {
+                const form = createBasicForm();
+                form.field("title").setValue("t");
+                form.field("path").setValue("/p");
+                await form.validate();
+                expect(form.submitted).toBe(true);
+            });
+
+            it("should be true after failed validate()", async () => {
+                const form = createBasicForm();
+                await form.validate();
+                expect(form.submitted).toBe(true);
+            });
+
+            it("should reset to false on setData()", async () => {
+                const form = createBasicForm();
+                form.field("title").setValue("t");
+                form.field("path").setValue("/p");
+                await form.validate();
+                expect(form.submitted).toBe(true);
+
+                form.setData({ title: "new", path: "/new" });
+                expect(form.submitted).toBe(false);
+            });
+
+            it("should reset to false on reset()", async () => {
+                const form = createBasicForm();
+                form.field("title").setValue("t");
+                form.field("path").setValue("/p");
+                await form.validate();
+                expect(form.submitted).toBe(true);
+
+                form.reset();
+                expect(form.submitted).toBe(false);
+            });
+        });
+
+        describe("validate-on-blur after submit", () => {
+            it("should not validate on blur before first submit", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        email: fields.text().required("Required")
+                    })
+                });
+                form.field("email").vm.onBlur();
+                await new Promise(r => setTimeout(r, 0));
+                expect(form.field("email").vm.validation.isValid).toBeNull();
+            });
+
+            it("should validate on blur after first submit", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        email: fields
+                            .text()
+                            .required("Required")
+                            .schema(z.string().email("Invalid email"))
+                    })
+                });
+
+                form.field("email").setValue("bad");
+                await form.submit();
+                expect(form.field("email").vm.validation.isValid).toBe(false);
+
+                // Fix the value and blur — should re-validate
+                form.field("email").setValue("valid@email.com");
+                form.field("email").vm.onBlur();
+                await new Promise(r => setTimeout(r, 0));
+                expect(form.field("email").vm.validation.isValid).toBe(true);
+            });
+
+            it("should show error on blur for invalid value after submit", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        name: fields.text().required("Name is required")
+                    })
+                });
+
+                form.field("name").setValue("hello");
+                await form.submit();
+                expect(form.field("name").vm.validation.isValid).toBe(true);
+
+                // Clear the value and blur — should fail required check
+                form.field("name").setValue("");
+                form.field("name").vm.onBlur();
+                await new Promise(r => setTimeout(r, 0));
+                expect(form.field("name").vm.validation.isValid).toBe(false);
+                expect(form.field("name").vm.validation.message).toBe("Name is required");
+            });
+        });
+
+        describe("validation memoization", () => {
+            it("should not re-run schema on blur when value unchanged", async () => {
+                const schemaSpy = vi.fn().mockReturnValue(true);
+                const form = new FormModel({
+                    fields: fields => ({
+                        slug: fields.text().schema(z.string().refine(schemaSpy, "fail"))
+                    })
+                });
+
+                form.field("slug").setValue("hello");
+                await form.submit();
+                expect(schemaSpy).toHaveBeenCalledTimes(1);
+
+                // Blur with same value — should use cache
+                form.field("slug").vm.onBlur();
+                await new Promise(r => setTimeout(r, 0));
+                expect(schemaSpy).toHaveBeenCalledTimes(1);
+            });
+
+            it("should re-run schema on blur when value changed", async () => {
+                const schemaSpy = vi.fn().mockReturnValue(true);
+                const form = new FormModel({
+                    fields: fields => ({
+                        slug: fields.text().schema(z.string().refine(schemaSpy, "fail"))
+                    })
+                });
+
+                form.field("slug").setValue("hello");
+                await form.submit();
+                expect(schemaSpy).toHaveBeenCalledTimes(1);
+
+                // Change value and blur — should re-validate
+                form.field("slug").setValue("world");
+                form.field("slug").vm.onBlur();
+                await new Promise(r => setTimeout(r, 0));
+                expect(schemaSpy).toHaveBeenCalledTimes(2);
+            });
+
+            it("should always re-run schema on form.validate()", async () => {
+                const schemaSpy = vi.fn().mockReturnValue(true);
+                const form = new FormModel({
+                    fields: fields => ({
+                        slug: fields.text().schema(z.string().refine(schemaSpy, "fail"))
+                    })
+                });
+
+                form.field("slug").setValue("hello");
+                await form.validate();
+                expect(schemaSpy).toHaveBeenCalledTimes(1);
+
+                // Same value, but form.validate() forces re-validation
+                await form.validate();
+                expect(schemaSpy).toHaveBeenCalledTimes(2);
+            });
+
+            it("should clear cache on resetValidation()", async () => {
+                const schemaSpy = vi.fn().mockReturnValue(true);
+                const form = new FormModel({
+                    fields: fields => ({
+                        slug: fields.text().schema(z.string().refine(schemaSpy, "fail"))
+                    })
+                });
+
+                form.field("slug").setValue("hello");
+                await form.submit();
+                expect(schemaSpy).toHaveBeenCalledTimes(1);
+
+                // Reset validation — clears cache
+                form.field("slug").resetValidation();
+
+                // Blur with same value — should re-validate (cache cleared)
+                form.field("slug").vm.onBlur();
+                await new Promise(r => setTimeout(r, 0));
+                expect(schemaSpy).toHaveBeenCalledTimes(2);
+            });
+        });
+
+        describe("async validation with z.refine", () => {
+            it("should validate async refine on submit", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        slug: fields.text().schema(
+                            z.string().refine(async value => {
+                                return value !== "taken";
+                            }, "This slug is already taken")
+                        )
+                    })
+                });
+
+                form.field("slug").setValue("taken");
+                const result = await form.submit();
+                expect(result).toBe(false);
+                expect(form.field("slug").vm.validation.isValid).toBe(false);
+                expect(form.field("slug").vm.validation.message).toBe("This slug is already taken");
+            });
+
+            it("should pass async refine with valid value", async () => {
+                const form = new FormModel({
+                    fields: fields => ({
+                        slug: fields.text().schema(
+                            z.string().refine(async value => {
+                                return value !== "taken";
+                            }, "This slug is already taken")
+                        )
+                    })
+                });
+
+                form.field("slug").setValue("available");
+                const result = await form.submit();
+                expect(result).toEqual({ slug: "available" });
+                expect(form.field("slug").vm.validation.isValid).toBe(true);
+            });
+        });
+    });
+
+    describe("parseValue", () => {
+        it("should coerce string to number on setValue for number fields", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    count: fields.number().label("Count")
+                })
+            });
+
+            form.field("count").setValue("42");
+            expect(form.field("count").getValue()).toBe(42);
+        });
+
+        it("should pass through null and empty string for number fields", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    count: fields.number().label("Count")
+                })
+            });
+
+            form.field("count").setValue("");
+            expect(form.field("count").getValue()).toBe("");
+
+            form.field("count").setValue(null);
+            expect(form.field("count").getValue()).toBe(null);
+        });
+
+        it("should pass through NaN-producing strings for number fields", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    count: fields.number().label("Count")
+                })
+            });
+
+            form.field("count").setValue("abc");
+            expect(form.field("count").getValue()).toBe("abc");
+        });
+
+        it("should store number for number field with options", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    tier: fields
+                        .number()
+                        .label("Tier")
+                        .options([
+                            { label: "Tier 1", value: 100 },
+                            { label: "Tier 2", value: 200 }
+                        ])
+                })
+            });
+
+            form.field("tier").setValue("100");
+            expect(form.field("tier").getValue()).toBe(100);
+            expect(typeof form.field("tier").getValue()).toBe("number");
+        });
+
+        it("should coerce to boolean on setValue for boolean fields", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    active: fields.boolean().label("Active")
+                })
+            });
+
+            form.field("active").setValue(1);
+            expect(form.field("active").getValue()).toBe(true);
+
+            form.field("active").setValue(0);
+            expect(form.field("active").getValue()).toBe(false);
+        });
+
+        it("should apply parseValue on setData (via setValueSilent)", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    count: fields.number().label("Count")
+                })
+            });
+
+            form.setData({ count: "42" } as any);
+            expect(form.field("count").getValue()).toBe(42);
+            expect(typeof form.field("count").getValue()).toBe("number");
+        });
+
+        it("should not alter text field values", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    name: fields.text().label("Name")
+                })
+            });
+
+            form.field("name").setValue("hello");
+            expect(form.field("name").getValue()).toBe("hello");
+
+            form.field("name").setValue(42);
+            expect(form.field("name").getValue()).toBe(42);
+        });
+
+        it("should run parseValue before beforeChange", () => {
+            const log: unknown[] = [];
+            const form = new FormModel({
+                fields: fields => ({
+                    count: fields
+                        .number()
+                        .label("Count")
+                        .beforeChange(value => {
+                            log.push(value);
+                            return value;
+                        })
+                })
+            });
+
+            form.field("count").setValue("7");
+            expect(log).toEqual([7]);
+        });
+    });
+
+    describe("focusField", () => {
+        it("should set focusRequested on the target field", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title"),
+                    path: fields.text().label("Path")
+                })
+            });
+
+            form.focusField("title");
+            expect(form.field("title").vm.focusRequested).toBe(true);
+            expect(form.field("path").vm.focusRequested).toBe(false);
+        });
+
+        it("should activate the correct tab", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title"),
+                    slug: fields.text().label("Slug")
+                }),
+                layout: layout => [
+                    layout.tabs({
+                        id: "mainTabs",
+                        tabs: [
+                            {
+                                id: "general",
+                                label: "General",
+                                layout: l => [l.row("title")]
+                            },
+                            {
+                                id: "seo",
+                                label: "SEO",
+                                layout: l => [l.row("slug")]
+                            }
+                        ]
+                    })
+                ]
+            });
+
+            // Initially the first tab is active
+            expect((form.vm.layout[0] as any).activeTabId).toBe("general");
+
+            form.focusField("slug");
+            expect(form.field("slug").vm.focusRequested).toBe(true);
+            expect((form.vm.layout[0] as any).activeTabId).toBe("seo");
+        });
+
+        it("should activate nested tabs inside object fields", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    page: fields.object().fields(f => ({
+                        title: f.text().label("Title"),
+                        metaTitle: f.text().label("Meta Title")
+                    }))
+                }),
+                layout: layout => [
+                    layout.object("page", l => [
+                        l.tabs({
+                            id: "pageTabs",
+                            tabs: [
+                                {
+                                    id: "general",
+                                    label: "General",
+                                    layout: l => [l.row("title")]
+                                },
+                                {
+                                    id: "seo",
+                                    label: "SEO",
+                                    layout: l => [l.row("metaTitle")]
+                                }
+                            ]
+                        })
+                    ])
+                ]
+            });
+
+            form.focusField("page.metaTitle");
+            expect(form.field("page.metaTitle").vm.focusRequested).toBe(true);
+        });
+
+        it("should clear previous focus when focusing a new field", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title"),
+                    path: fields.text().label("Path")
+                })
+            });
+
+            form.focusField("title");
+            expect(form.field("title").vm.focusRequested).toBe(true);
+
+            form.focusField("path");
+            expect(form.field("title").vm.focusRequested).toBe(false);
+            expect(form.field("path").vm.focusRequested).toBe(true);
+        });
+
+        it("should allow renderer to clear focus via clearFocusRequest", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title")
+                })
+            });
+
+            form.focusField("title");
+            expect(form.field("title").vm.focusRequested).toBe(true);
+
+            form.field("title").vm.clearFocusRequest();
+            expect(form.field("title").vm.focusRequested).toBe(false);
+        });
+
+        it("should not throw on unknown field", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title")
+                })
+            });
+
+            expect(() => form.focusField("nonexistent")).not.toThrow();
+        });
+
+        it("should propagate qualifiedName through nested objects", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    page: fields.object().fields(f => ({
+                        seo: f.object().fields(g => ({
+                            metaTitle: g.text().label("Meta Title")
+                        }))
+                    }))
+                })
+            });
+
+            const meta = form.field("page.seo.metaTitle");
+            expect(meta.qualifiedName).toBe("page.seo.metaTitle");
+        });
+
+        it("field.focus() should delegate to form.focusField", () => {
+            const form = new FormModel({
+                fields: fields => ({
+                    title: fields.text().label("Title"),
+                    path: fields.text().label("Path")
+                }),
+                layout: layout => [
+                    layout.tabs({
+                        id: "tabs",
+                        tabs: [
+                            {
+                                id: "t1",
+                                label: "T1",
+                                layout: l => [l.row("title")]
+                            },
+                            {
+                                id: "t2",
+                                label: "T2",
+                                layout: l => [l.row("path")]
+                            }
+                        ]
+                    })
+                ]
+            });
+
+            form.field("path").focus();
+            expect(form.field("path").vm.focusRequested).toBe(true);
+            expect((form.vm.layout[0] as any).activeTabId).toBe("t2");
+        });
+    });
+
+    describe("primitive list addItem / removeItem", () => {
+        it("addItem appends to empty list", () => {
+            const form = new FormModel({
+                fields: f => ({
+                    tags: f.text().list()
+                }),
+                layout: l => [l.row("tags")]
+            });
+
+            const vm = form.field("tags").vm;
+            expect(vm.value).toEqual([]);
+
+            vm.addItem("hello");
+            expect(form.field("tags").vm.value).toEqual(["hello"]);
+        });
+
+        it("addItem appends with default null when no value given", () => {
+            const form = new FormModel({
+                fields: f => ({
+                    tags: f.text().list()
+                }),
+                layout: l => [l.row("tags")]
+            });
+
+            form.field("tags").vm.addItem();
+            expect(form.field("tags").vm.value).toEqual([null]);
+        });
+
+        it("addItem appends to existing values", () => {
+            const form = new FormModel({
+                fields: f => ({
+                    tags: f.text().list().defaultValue(["a", "b"])
+                }),
+                layout: l => [l.row("tags")]
+            });
+
+            form.field("tags").vm.addItem("c");
+            expect(form.field("tags").vm.value).toEqual(["a", "b", "c"]);
+        });
+
+        it("removeItem removes at index", () => {
+            const form = new FormModel({
+                fields: f => ({
+                    tags: f.text().list().defaultValue(["a", "b", "c"])
+                }),
+                layout: l => [l.row("tags")]
+            });
+
+            form.field("tags").vm.removeItem(1);
+            expect(form.field("tags").vm.value).toEqual(["a", "c"]);
+        });
+
+        it("removeItem from beginning preserves order", () => {
+            const form = new FormModel({
+                fields: f => ({
+                    tags: f.text().list().defaultValue(["a", "b", "c"])
+                }),
+                layout: l => [l.row("tags")]
+            });
+
+            form.field("tags").vm.removeItem(0);
+            expect(form.field("tags").vm.value).toEqual(["b", "c"]);
+        });
+
+        it("operations go through beforeChange pipeline", () => {
+            const log: unknown[] = [];
+            const form = new FormModel({
+                fields: f => ({
+                    tags: f
+                        .text()
+                        .list()
+                        .defaultValue(["a"])
+                        .beforeChange((value, _form) => {
+                            log.push(value);
+                            return value;
+                        })
+                }),
+                layout: l => [l.row("tags")]
+            });
+
+            form.field("tags").vm.addItem("b");
+            form.field("tags").vm.removeItem(0);
+            expect(log).toEqual([["a", "b"], ["b"]]);
         });
     });
 });
