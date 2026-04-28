@@ -42,9 +42,12 @@ import {
     EnvIsNot,
     EnvIsProd,
     EnvIsNotProd,
+    useEnv,
     CiIs,
     CiIsNot
 } from "@webiny/project/extensions/infra/index.js";
+
+export { useEnv };
 
 export const Infra = {
     Encryption,
@@ -59,6 +62,7 @@ export const Infra = {
         Tags: AwsTags
     },
     Env: {
+        useEnv,
         Is: EnvIs,
         IsNot: EnvIsNot,
         IsProd: EnvIsProd,
