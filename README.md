@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/webiny-webiny-js-badge.png)](https://mseep.ai/app/webiny-webiny-js)
+
 <p align="center">
   <img src="./docs/static/webiny-logo.svg" width="350">
 </p>
