@@ -152,7 +152,7 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
                             label: group.label,
                             description: group.description,
                             icon: group.icon,
-                            layout: [layout.row(group.name)]
+                            layout: l => [l.row(group.name)]
                         }))
                     })
                 ];
