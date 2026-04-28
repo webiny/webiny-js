@@ -21,6 +21,8 @@ import { LAMBDA_RUNTIME } from "~/pulumi/constants.js";
 
 export interface OpenSearchParams {
     protect: boolean;
+    namePrefix: string;
+    prevDomainName: string | undefined;
 }
 
 function getDevClusterConfig(): aws.types.input.opensearch.DomainClusterConfig {
@@ -85,12 +87,29 @@ export const OpenSearch = createAppModule({
             domainEndpoint = providedEndpoint ?? domain.output.endpoint;
         } else {
             const randomId = new random.RandomId("osDomainRandomId", { byteLength: 8 });
-            const namePrefix = app.getParam(app.params.create.pulumiResourceNamePrefix) || "";
 
             const domainLogicalName = "webiny-js";
-            const domainPhysicalName = randomId.hex.apply((hex: string) => {
-                return `${namePrefix}${domainLogicalName}-${hex.slice(-7)}`;
-            });
+
+            /**
+             * The physical domain name must remain stable across re-deploys. Changing it causes
+             * Pulumi to delete and recreate the cluster, which is a destructive operation.
+             *
+             * To avoid this, we read the domain name that was stored in the previous deploy's
+             * stack output (via `sdk.getAppStackOutput`) and reuse it unchanged. Only on the
+             * very first deploy, when there is no previous output, do we generate a new name
+             * (with the resource name prefix applied for consistent naming going forward).
+             *
+             * NOTE: `params.namePrefix` may be "" when upgrading from old code that never stored
+             * the domain name in the stack output. In that case the caller passes "" explicitly so
+             * the fallback formula reproduces the legacy name (`webiny-js-<hex>`) rather than
+             * prepending the SDK default prefix and triggering an unintended cluster replacement.
+             * See `createCorePulumiApp.ts` → `isUpgradeFromOldCode` for details.
+             */
+            const domainPhysicalName = randomId.hex.apply(
+                hex =>
+                    params.prevDomainName ??
+                    `${params.namePrefix}${domainLogicalName}-${hex.slice(-7)}`
+            );
 
             domain = app.addResource(aws.opensearch.Domain, {
                 name: domainLogicalName,
@@ -310,6 +329,7 @@ export const OpenSearch = createAppModule({
         app.addOutputs({
             opensearchDomainArn: domainArn,
             opensearchDomainEndpoint: domainEndpoint,
+            opensearchDomainName: domain!.output.domainName,
             opensearchDynamodbTableArn: table.output.arn,
             opensearchDynamodbTableName: table.output.name
         });

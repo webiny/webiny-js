@@ -34,6 +34,10 @@ export function createCorePulumiApp() {
             const projectConfig = await sdk.getProjectConfig();
 
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
+            const coreStackOutput = await sdk.getAppStackOutput<{
+                opensearchDomainName?: string;
+                primaryDynamodbTableName?: string;
+            }>("core");
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const opensearchExtensionConfig = getOsConfigFromExtension(projectConfig);
 
@@ -251,7 +255,22 @@ export function createCorePulumiApp() {
 
             let opensearch;
             if (searchEngineType === "opensearch") {
-                opensearch = app.addModule(OpenSearch, { protect });
+                const prevDomainName = coreStackOutput?.opensearchDomainName;
+
+                // When upgrading from old code that never stored opensearchDomainName, the old
+                // code always generated domain names without any prefix (app.params.create
+                // .pulumiResourceNamePrefix was never a real Pulumi param, so it returned "").
+                // Using the SDK default "wby-" prefix here would generate a different name and
+                // cause Pulumi to destroy and recreate the cluster.
+                const isUpgradeFromOldCode =
+                    !!coreStackOutput?.primaryDynamodbTableName && !prevDomainName;
+                const namePrefixForOs = isUpgradeFromOldCode ? "" : pulumiResourceNamePrefix || "";
+
+                opensearch = app.addModule(OpenSearch, {
+                    protect,
+                    namePrefix: namePrefixForOs,
+                    prevDomainName
+                });
             }
 
             app.addModule(WatchCommand, { deploymentId: deploymentId.hex });
