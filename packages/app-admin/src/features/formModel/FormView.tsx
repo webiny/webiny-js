@@ -164,11 +164,12 @@ const TabsNodeRenderer = observer(function TabsNodeRenderer({ node }: TabsNodeRe
                     <button
                         key={tab.id}
                         type="button"
+                        disabled={tab.disabled}
                         className={`px-4 py-2 text-sm font-medium border-b-2 ${
                             tab.id === node.activeTabId
                                 ? "border-primary text-primary"
                                 : "border-transparent text-neutral hover:text-neutral-strong"
-                        }`}
+                        } ${tab.disabled ? "opacity-50 cursor-not-allowed" : ""}`}
                         onClick={() => node.setActiveTab(tab.id)}
                     >
                         {tab.label}

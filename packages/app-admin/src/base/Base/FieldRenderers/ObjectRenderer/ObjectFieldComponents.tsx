@@ -4,8 +4,13 @@ import { Accordion, Button, IconButton } from "@webiny/admin-ui";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
-import type { IFieldVM, IObjectFieldVM, IObjectFieldItemVM } from "~/features/formModel/index.js";
-import { useFormViewRenderers } from "~/features/formModel/FormView.js";
+import type {
+    IFieldVM,
+    IObjectFieldVM,
+    IObjectFieldItemVM,
+    LayoutNodeVM
+} from "~/features/formModel/index.js";
+import { useFormViewRenderers, LayoutNodeRenderer } from "~/features/formModel/FormView.js";
 import { resolveItemTitle } from "./resolveItemTitle.js";
 
 export const isObjectFieldVM = (field: IFieldVM): field is IObjectFieldVM => {
@@ -28,6 +33,20 @@ export const ChildFields = observer(({ fields }: { fields: IFieldVM[] }) => {
 
                 return <Renderer key={childField.name} field={childField} />;
             })}
+        </div>
+    );
+});
+
+/**
+ * Walks a resolved layout sub-tree. Used by dynamic-zone renderers to render
+ * a templated object's children via per-template layouts (Phase 8c).
+ */
+export const NestedLayout = observer(({ layout }: { layout: LayoutNodeVM[] }) => {
+    return (
+        <div className={"flex flex-col gap-4 p-sm"}>
+            {layout.map((node, index) => (
+                <LayoutNodeRenderer key={index} node={node} />
+            ))}
         </div>
     );
 });
@@ -86,7 +105,7 @@ export const ListItemRenderer = observer(
                     actions={disabled ? null : actions}
                     defaultOpen={false}
                 >
-                    <ChildFields fields={item.fields} />
+                    <NestedLayout layout={item.layout} />
                 </Accordion.Item>
             </Accordion>
         );

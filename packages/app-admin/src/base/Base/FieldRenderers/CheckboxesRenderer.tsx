@@ -1,36 +1,35 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Select } from "@webiny/admin-ui";
+import { CheckboxGroup } from "@webiny/admin-ui";
 import type { IFieldVM, IValueOption } from "~/features/formModel/index.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
-        dropdown: { fieldType: "text" | "number"; options: true; settings: undefined };
+        checkboxes: { fieldType: "text" | "number"; options: true; settings: undefined };
     }
 }
 
-export const SelectRenderer = observer(({ field }: { field: IFieldVM }) => {
+export const CheckboxesRenderer = observer(({ field }: { field: IFieldVM }) => {
     const options: IValueOption[] = field.options ?? [];
+    const value = (field.value as (string | number)[]) ?? [];
 
     return (
-        <Select
+        <CheckboxGroup
             label={field.label}
-            placeholder={field.placeholder}
             description={field.description}
             note={field.note}
-            value={field.value != null ? String(field.value) : ""}
+            required={field.required}
+            disabled={field.disabled}
+            validation={field.validation}
+            items={options.map(opt => ({
+                label: opt.label,
+                value: opt.value
+            }))}
+            value={value}
             onChange={value => {
                 field.onChange(value);
                 field.onBlur();
             }}
-            required={field.required}
-            disabled={field.disabled}
-            validation={field.validation}
-            options={options.map(opt => ({
-                label: opt.label,
-                value: String(opt.value),
-                disabled: opt.disabled
-            }))}
         />
     );
 });
