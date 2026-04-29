@@ -175,12 +175,15 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
                 const tabsBuilder = layout.tabs("settings-tabs").renderer("tabs-vertical");
 
                 for (const { group, layoutFns } of collected) {
-                    tabsBuilder.tab({
-                        id: group.name,
-                        label: group.label,
-                        description: group.description,
-                        icon: group.icon,
-                        layout: (l: FormModelFactory.LayoutBuilder) => {
+                    tabsBuilder.tab(group.name, tab => {
+                        tab.label(group.label);
+                        if (group.description) {
+                            tab.description(group.description);
+                        }
+                        if (group.icon) {
+                            tab.icon(group.icon);
+                        }
+                        tab.layout((l: FormModelFactory.LayoutBuilder) => {
                             if (layoutFns.length > 0) {
                                 return [
                                     l.object(group.name, inner => {
@@ -197,7 +200,7 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
                             }
 
                             return [l.row(group.name)];
-                        }
+                        });
                     });
                 }
 

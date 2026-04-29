@@ -969,19 +969,16 @@ describe("FormModel", () => {
                         layout.row("title", "slug"),
                         layout
                             .tabs("settings")
-                            .tab({
-                                id: "general",
-                                label: "General",
-                                layout: layout => [layout.row("description")]
+                            .tab("general", tab => {
+                                tab.label("General").layout(layout => [layout.row("description")]);
                             })
-                            .tab({
-                                id: "seo",
-                                label: "SEO",
-                                description: "Optimize how this page appears in search",
-                                layout: layout => [
-                                    layout.row("metaTitle"),
-                                    layout.row("metaDescription")
-                                ]
+                            .tab("seo", tab => {
+                                tab.label("SEO")
+                                    .description("Optimize how this page appears in search")
+                                    .layout(layout => [
+                                        layout.row("metaTitle"),
+                                        layout.row("metaDescription")
+                                    ]);
                             })
                     ]
                 });
@@ -1056,15 +1053,11 @@ describe("FormModel", () => {
                     layout: layout => [
                         layout
                             .tabs("settings")
-                            .tab({
-                                id: "general",
-                                label: "General",
-                                layout: layout => [layout.row("title")]
+                            .tab("general", tab => {
+                                tab.label("General").layout(layout => [layout.row("title")]);
                             })
-                            .tab({
-                                id: "seo",
-                                label: "SEO",
-                                layout: layout => [layout.row("metaTitle")]
+                            .tab("seo", tab => {
+                                tab.label("SEO").layout(layout => [layout.row("metaTitle")]);
                             })
                     ]
                 });
@@ -1093,10 +1086,8 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs("settings").tab({
-                            id: "general",
-                            label: "General",
-                            layout: layout => [layout.row("description")]
+                        layout.tabs("settings").tab("general", tab => {
+                            tab.label("General").layout(layout => [layout.row("description")]);
                         })
                     ]
                 });
@@ -1165,15 +1156,11 @@ describe("FormModel", () => {
                         layout.row("title"),
                         layout
                             .tabs("settings")
-                            .tab({
-                                id: "general",
-                                label: "General",
-                                layout: layout => [layout.row("description")]
+                            .tab("general", tab => {
+                                tab.label("General").layout(layout => [layout.row("description")]);
                             })
-                            .tab({
-                                id: "seo",
-                                label: "SEO",
-                                layout: layout => [layout.row("metaTitle")]
+                            .tab("seo", tab => {
+                                tab.label("SEO").layout(layout => [layout.row("metaTitle")]);
                             })
                     ]
                 });
@@ -1188,10 +1175,8 @@ describe("FormModel", () => {
 
                 (form.layout("settings") as ILayoutNodeAccessHandle)
                     .as("tabs")
-                    .tab({
-                        id: "analytics",
-                        label: "Analytics",
-                        layout: layout => [layout.row("trackingId")]
+                    .tab("analytics", tab => {
+                        tab.label("Analytics").layout(layout => [layout.row("trackingId")]);
                     })
                     .after("seo");
 
@@ -1210,10 +1195,8 @@ describe("FormModel", () => {
 
                 (form.layout("settings") as ILayoutNodeAccessHandle)
                     .as("tabs")
-                    .tab({
-                        id: "analytics",
-                        label: "Analytics",
-                        layout: layout => [layout.row("trackingId")]
+                    .tab("analytics", tab => {
+                        tab.label("Analytics").layout(layout => [layout.row("trackingId")]);
                     })
                     .before("seo");
 
@@ -1224,40 +1207,11 @@ describe("FormModel", () => {
                 expect(tabsNode.tabs[2].id).toBe("seo");
             });
 
-            it("should append to an existing tab's layout", () => {
-                const form = createFormWithTabs();
-
-                form.fields(fields => ({
-                    ogImage: fields.text().label("OG Image")
-                }));
-
-                (form.layout("settings") as ILayoutNodeAccessHandle)
-                    .as("tabs")
-                    .tab("seo")
-                    .layout(layout => [layout.row("ogImage")]);
-
-                const tabsNode = form.vm.layout[1] as ITabsNodeVM;
-                const seoTab = tabsNode.tabs.find(t => t.id === "seo")!;
-                expect(seoTab.layout).toHaveLength(2);
-
-                const lastRow = seoTab.layout[1] as IRowNodeVM;
-                expect(lastRow.fields[0].name).toBe("ogImage");
-            });
-
             it("should throw when accessing a non-existent node ID", () => {
                 const form = createFormWithTabs();
                 expect(() =>
                     (form.layout("nonexistent") as ILayoutNodeAccessHandle).as("tabs")
                 ).toThrow('Layout node "nonexistent" not found.');
-            });
-
-            it("should throw when accessing a non-existent tab ID", () => {
-                const form = createFormWithTabs();
-                expect(() =>
-                    (form.layout("settings") as ILayoutNodeAccessHandle)
-                        .as("tabs")
-                        .tab("nonexistent")
-                ).toThrow('Tab "nonexistent" not found in tabs node "settings".');
             });
         });
 
@@ -1271,10 +1225,8 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs("settings").tab({
-                            id: "general",
-                            label: "General",
-                            layout: layout => [layout.row("description")]
+                        layout.tabs("settings").tab("general", tab => {
+                            tab.label("General").layout(layout => [layout.row("description")]);
                         })
                     ]
                 });
@@ -1298,10 +1250,8 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs("settings").tab({
-                            id: "general",
-                            label: "General",
-                            layout: layout => [layout.row("description")]
+                        layout.tabs("settings").tab("general", tab => {
+                            tab.label("General").layout(layout => [layout.row("description")]);
                         })
                     ]
                 });
@@ -1324,10 +1274,8 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs("settings").tab({
-                            id: "general",
-                            label: "General",
-                            layout: layout => [layout.row("description")]
+                        layout.tabs("settings").tab("general", tab => {
+                            tab.label("General").layout(layout => [layout.row("description")]);
                         })
                     ]
                 });
@@ -1355,15 +1303,11 @@ describe("FormModel", () => {
                         layout.separator(),
                         layout
                             .tabs("settings")
-                            .tab({
-                                id: "general",
-                                label: "General",
-                                layout: layout => [layout.row("description")]
+                            .tab("general", tab => {
+                                tab.label("General").layout(layout => [layout.row("description")]);
                             })
-                            .tab({
-                                id: "seo",
-                                label: "SEO",
-                                layout: layout => [layout.row("metaTitle")]
+                            .tab("seo", tab => {
+                                tab.label("SEO").layout(layout => [layout.row("metaTitle")]);
                             })
                     ]
                 });
@@ -1375,22 +1319,10 @@ describe("FormModel", () => {
 
                 (form.layout("settings") as ILayoutNodeAccessHandle)
                     .as("tabs")
-                    .tab({
-                        id: "analytics",
-                        label: "Analytics",
-                        layout: layout => [layout.row("trackingId")]
+                    .tab("analytics", tab => {
+                        tab.label("Analytics").layout(layout => [layout.row("trackingId")]);
                     })
                     .after("seo");
-
-                // Modifier B: append OG Image to SEO tab
-                form.fields(fields => ({
-                    ogImage: fields.text().label("OG Image")
-                }));
-
-                (form.layout("settings") as ILayoutNodeAccessHandle)
-                    .as("tabs")
-                    .tab("seo")
-                    .layout(layout => [layout.row("ogImage")]);
 
                 // Verify full layout
                 const vm = form.vm;
@@ -1405,14 +1337,13 @@ describe("FormModel", () => {
                 expect(tabsNode.tabs[1].id).toBe("seo");
                 expect(tabsNode.tabs[2].id).toBe("analytics");
 
-                // SEO tab now has metaTitle + ogImage
+                // SEO tab has metaTitle
                 const seoTab = tabsNode.tabs[1];
-                expect(seoTab.layout).toHaveLength(2);
+                expect(seoTab.layout).toHaveLength(1);
 
                 // Verify all fields are in getData
                 const data = form.getData();
                 expect(data).toHaveProperty("trackingId");
-                expect(data).toHaveProperty("ogImage");
             });
         });
     });
@@ -1803,15 +1734,11 @@ describe("FormModel", () => {
                     layout: layout => [
                         layout
                             .tabs("settings")
-                            .tab({
-                                id: "general",
-                                label: "General",
-                                layout: layout => [layout.row("title")]
+                            .tab("general", tab => {
+                                tab.label("General").layout(layout => [layout.row("title")]);
                             })
-                            .tab({
-                                id: "details",
-                                label: "Details",
-                                layout: layout => [layout.row("address")]
+                            .tab("details", tab => {
+                                tab.label("Details").layout(layout => [layout.row("address")]);
                             })
                     ]
                 });
@@ -2948,19 +2875,15 @@ describe("FormModel", () => {
                     layout.object("page", l => [
                         l
                             .tabs()
-                            .tab({
-                                id: "main",
-                                label: "Main",
-                                layout: l => [l.row("title")]
+                            .tab("main", tab => {
+                                tab.label("Main").layout(l => [l.row("title")]);
                             })
-                            .tab({
-                                id: "seoTab",
-                                label: "SEO",
-                                layout: l => [
+                            .tab("seoTab", tab => {
+                                tab.label("SEO").layout(l => [
                                     l.object("seo", inner => [
                                         inner.row("metaTitle", "metaDescription")
                                     ])
-                                ]
+                                ]);
                             })
                     ])
                 ]
@@ -2988,19 +2911,15 @@ describe("FormModel", () => {
                     layout.object("page", l => [
                         l
                             .tabs("pageTabs")
-                            .tab({
-                                id: "general",
-                                label: "General",
-                                layout: l => [l.row("title"), l.row("body")]
+                            .tab("general", tab => {
+                                tab.label("General").layout(l => [l.row("title"), l.row("body")]);
                             })
-                            .tab({
-                                id: "seo",
-                                label: "SEO",
-                                layout: l => [
+                            .tab("seo", tab => {
+                                tab.label("SEO").layout(l => [
                                     l.object("seo", inner => [
                                         inner.row("metaTitle", "metaDescription")
                                     ])
-                                ]
+                                ]);
                             })
                     ])
                 ]
@@ -4010,15 +3929,11 @@ describe("FormModel", () => {
                 layout: layout => [
                     layout
                         .tabs("mainTabs")
-                        .tab({
-                            id: "general",
-                            label: "General",
-                            layout: l => [l.row("title")]
+                        .tab("general", tab => {
+                            tab.label("General").layout(l => [l.row("title")]);
                         })
-                        .tab({
-                            id: "seo",
-                            label: "SEO",
-                            layout: l => [l.row("slug")]
+                        .tab("seo", tab => {
+                            tab.label("SEO").layout(l => [l.row("slug")]);
                         })
                 ]
             });
@@ -4043,15 +3958,11 @@ describe("FormModel", () => {
                     layout.object("page", l => [
                         l
                             .tabs("pageTabs")
-                            .tab({
-                                id: "general",
-                                label: "General",
-                                layout: l => [l.row("title")]
+                            .tab("general", tab => {
+                                tab.label("General").layout(l => [l.row("title")]);
                             })
-                            .tab({
-                                id: "seo",
-                                label: "SEO",
-                                layout: l => [l.row("metaTitle")]
+                            .tab("seo", tab => {
+                                tab.label("SEO").layout(l => [l.row("metaTitle")]);
                             })
                     ])
                 ]
@@ -4125,15 +4036,11 @@ describe("FormModel", () => {
                 layout: layout => [
                     layout
                         .tabs("tabs")
-                        .tab({
-                            id: "t1",
-                            label: "T1",
-                            layout: l => [l.row("title")]
+                        .tab("t1", tab => {
+                            tab.label("T1").layout(l => [l.row("title")]);
                         })
-                        .tab({
-                            id: "t2",
-                            label: "T2",
-                            layout: l => [l.row("path")]
+                        .tab("t2", tab => {
+                            tab.label("T2").layout(l => [l.row("path")]);
                         })
                 ]
             });

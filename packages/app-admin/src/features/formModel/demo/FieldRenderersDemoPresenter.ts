@@ -334,57 +334,48 @@ export class FieldRenderersDemoPresenter {
             layout: layout => [
                 layout
                     .tabs("mainTabs")
-                    .tab({
-                        id: "text",
-                        label: "Text",
-                        layout: l => [
+                    .tab("text", tab => {
+                        tab.label("Text").layout(l => [
                             l.row("textInput"),
                             l.row("textInputs"),
                             l.row("tags"),
                             l.row("textarea"),
                             l.row("textareas"),
                             l.row("metaTags")
-                        ]
+                        ]);
                     })
-                    .tab({
-                        id: "numbers",
-                        label: "Numbers & Boolean",
-                        layout: l => [
+                    .tab("numbers", tab => {
+                        tab.label("Numbers & Boolean").layout(l => [
                             l.row("numberInput"),
                             l.row("numberInputs"),
                             l.row("numberOptions"),
                             l.separator(),
                             l.row("boolSwitch")
-                        ]
+                        ]);
                     })
-                    .tab({
-                        id: "selects",
-                        label: "Selects",
-                        layout: l => [l.row("dropdown", "radioButtons"), l.row("checkboxes")]
+                    .tab("selects", tab => {
+                        tab.label("Selects").layout(l => [
+                            l.row("dropdown", "radioButtons"),
+                            l.row("checkboxes")
+                        ]);
                     })
-                    .tab({
-                        id: "datetime",
-                        label: "Date / Time",
-                        layout: l => [
+                    .tab("datetime", tab => {
+                        tab.label("Date / Time").layout(l => [
                             l.row("dateOnly", "timeOnly"),
                             l.row("dateTime"),
                             l.row("dateTimeTz"),
                             l.row("dateTimeList")
-                        ]
+                        ]);
                     })
-                    .tab({
-                        id: "rules",
-                        label: "Rules",
-                        layout: l => [
+                    .tab("rules", tab => {
+                        tab.label("Rules").layout(l => [
                             l.row("enableFeature"),
                             l.row("featureName", "featureMode"),
                             l.row("advancedConfig")
-                        ]
+                        ]);
                     })
-                    .tab({
-                        id: "dynamic",
-                        label: "Dynamic Zones",
-                        layout: l => [
+                    .tab("dynamic", tab => {
+                        tab.label("Dynamic Zones").layout(l => [
                             l.object("contentBlock", {
                                 hero: inner => [inner.row("heading"), inner.row("image")],
                                 text: inner => [inner.row("body")]
@@ -396,12 +387,10 @@ export class FieldRenderersDemoPresenter {
                                 ],
                                 cta: inner => [inner.row("label", "url")]
                             })
-                        ]
+                        ]);
                     })
-                    .tab({
-                        id: "files",
-                        label: "Files",
-                        layout: l => [l.row("fileImage", "fileUrl")]
+                    .tab("files", tab => {
+                        tab.label("Files").layout(l => [l.row("fileImage", "fileUrl")]);
                     })
             ]
         });

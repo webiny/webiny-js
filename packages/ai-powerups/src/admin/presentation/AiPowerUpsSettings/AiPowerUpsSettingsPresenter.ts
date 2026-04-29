@@ -146,12 +146,15 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
                 const tabsBuilder = layout.tabs("settings-tabs").renderer("tabs-vertical");
 
                 for (const { group } of collected) {
-                    tabsBuilder.tab({
-                        id: group.name,
-                        label: group.label,
-                        description: group.description,
-                        icon: group.icon,
-                        layout: l => [l.row(group.name)]
+                    tabsBuilder.tab(group.name, tab => {
+                        tab.label(group.label);
+                        if (group.description) {
+                            tab.description(group.description);
+                        }
+                        if (group.icon) {
+                            tab.icon(group.icon);
+                        }
+                        tab.layout(l => [l.row(group.name)]);
                     });
                 }
 

@@ -158,15 +158,11 @@ describe("Rules system", () => {
                                 action: "disable"
                             }
                         ])
-                        .tab({
-                            id: "general",
-                            label: "General",
-                            layout: layout => [layout.row("general")]
+                        .tab("general", tab => {
+                            tab.label("General").layout(layout => [layout.row("general")]);
                         })
-                        .tab({
-                            id: "seo",
-                            label: "SEO",
-                            layout: layout => [layout.row("seo")]
+                        .tab("seo", tab => {
+                            tab.label("SEO").layout(layout => [layout.row("seo")]);
                         })
                 ]
             });
@@ -193,24 +189,21 @@ describe("Rules system", () => {
                 layout: layout => [
                     layout
                         .tabs("settings")
-                        .tab({
-                            id: "general",
-                            label: "General",
-                            layout: layout => [layout.row("general")]
+                        .tab("general", tab => {
+                            tab.label("General").layout(layout => [layout.row("general")]);
                         })
-                        .tab({
-                            id: "seo",
-                            label: "SEO",
-                            rules: [
-                                {
-                                    type: "condition",
-                                    target: "title",
-                                    operator: "isEmpty",
-                                    value: null,
-                                    action: "disable"
-                                }
-                            ],
-                            layout: layout => [layout.row("seo")]
+                        .tab("seo", tab => {
+                            tab.label("SEO")
+                                .rules([
+                                    {
+                                        type: "condition",
+                                        target: "title",
+                                        operator: "isEmpty",
+                                        value: null,
+                                        action: "disable"
+                                    }
+                                ])
+                                .layout(layout => [layout.row("seo")]);
                         })
                 ]
             });
@@ -231,19 +224,18 @@ describe("Rules system", () => {
                 }),
                 layout: layout => [
                     layout.row("trigger"),
-                    layout.tabs("settings").tab({
-                        id: "secret",
-                        label: "Secret",
-                        rules: [
-                            {
-                                type: "condition",
-                                target: "trigger",
-                                operator: "isEmpty",
-                                value: null,
-                                action: "hide"
-                            }
-                        ],
-                        layout: layout => [layout.row("hiddenField")]
+                    layout.tabs("settings").tab("secret", tab => {
+                        tab.label("Secret")
+                            .rules([
+                                {
+                                    type: "condition",
+                                    target: "trigger",
+                                    operator: "isEmpty",
+                                    value: null,
+                                    action: "hide"
+                                }
+                            ])
+                            .layout(layout => [layout.row("hiddenField")]);
                     })
                 ]
             });
@@ -276,10 +268,8 @@ describe("Rules system", () => {
                                 action: "hide"
                             }
                         ])
-                        .tab({
-                            id: "tab1",
-                            label: "Tab 1",
-                            layout: layout => [layout.row("inner")]
+                        .tab("tab1", tab => {
+                            tab.label("Tab 1").layout(layout => [layout.row("inner")]);
                         })
                 ]
             });

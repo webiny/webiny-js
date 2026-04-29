@@ -499,9 +499,19 @@ export interface ISeparatorBuilder extends ILayoutNodeBuilder {
     build(): ISeparatorNode;
 }
 
+export interface ITabBuilder {
+    label(text: string): this;
+    description(text: string): this;
+    icon(icon: Icon): this;
+    layout(factory: (l: ILayoutBuilder) => ILayoutNodeBuilder[]): this;
+    rules(rules: IRule[]): this;
+}
+
 export interface ITabsBuilder extends ILayoutNodeBuilder {
     renderer(name: string): this;
-    tab(definition: ITabDefinitionInput): this;
+    tab(id: string, configure: (tab: ITabBuilder) => void): this;
+    before(target: string): this;
+    after(target: string): this;
     rules(rules: IRule[]): this;
     build(): ITabsNode;
 }
@@ -583,20 +593,21 @@ export interface ILayoutNodeHandle extends IPositionedLayoutNode {
 // Named layout node access types
 // ---------------------------------------------------------------------------
 
-export interface ITabsHandle {
-    tab(definition: ITabDefinitionInput): ITabHandle;
-    tab(id: string): ITabHandle;
-}
-
-export interface ITabHandle {
-    layout(factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]): void;
-    before(target: string): void;
-    after(target: string): void;
+export interface LayoutNodeHandleMap {
+    tabs: ITabsBuilder;
+    element: IElementNode;
+    object: IObjectNode;
 }
 
 export interface ILayoutNodeAccessHandle {
-    as(type: "tabs"): ITabsHandle;
+    as<T extends keyof LayoutNodeHandleMap>(type: T): LayoutNodeHandleMap[T];
 }
+
+/** @deprecated Use ITabsBuilder instead */
+export type ITabsHandle = ITabsBuilder;
+
+/** @deprecated Use ITabBuilder instead */
+export type ITabHandle = ITabBuilder;
 
 // ---------------------------------------------------------------------------
 // Modifier types
@@ -713,6 +724,7 @@ export namespace FormModel {
     export type LayoutNodeBuilder = ILayoutNodeBuilder;
     export type RowBuilder = IRowBuilder;
     export type SeparatorBuilder = ISeparatorBuilder;
+    export type TabBuilder = ITabBuilder;
     export type TabsBuilder = ITabsBuilder;
     export type ElementBuilder = IElementBuilder;
     export type ObjectBuilder = IObjectBuilder;

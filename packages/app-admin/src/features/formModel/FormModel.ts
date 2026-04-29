@@ -15,6 +15,7 @@ import type {
     ILayoutNodeBuilder,
     IRowBuilder,
     ISeparatorBuilder,
+    ITabBuilder,
     ITabsBuilder,
     IElementBuilder,
     IObjectBuilder,
@@ -22,8 +23,7 @@ import type {
     ILayoutModifier,
     IPositionedLayoutNode,
     ILayoutNodeAccessHandle,
-    ITabsHandle,
-    ITabHandle,
+    LayoutNodeHandleMap,
     IRule,
     IRuleEvaluator,
     LayoutNode,
@@ -71,33 +71,7 @@ const layoutAPI: ILayoutBuilder = {
         };
     },
     tabs(id?: string): ITabsBuilder {
-        let renderer: string | undefined;
-        const tabs: ITabDefinitionInput[] = [];
-        let rules: IRule[] | undefined;
-        const builder: ITabsBuilder = {
-            renderer(name: string) {
-                renderer = name;
-                return builder;
-            },
-            tab(definition: ITabDefinitionInput) {
-                tabs.push(definition);
-                return builder;
-            },
-            rules(r: IRule[]) {
-                rules = r;
-                return builder;
-            },
-            build(): ITabsNode {
-                return {
-                    type: "tabs",
-                    id,
-                    renderer,
-                    tabs: tabs.map(resolveTabDefinition),
-                    rules
-                };
-            }
-        };
-        return builder;
+        return createTabsBuilder({ id });
     },
     element(renderer: string, props?: Record<string, unknown>): IElementBuilder {
         return {
@@ -137,17 +111,6 @@ function resolveObjectInner(
         resolved[tplId] = buildLayoutNodes(factory(layoutAPI));
     }
     return resolved;
-}
-
-function resolveTabDefinition(input: ITabDefinitionInput): ITabDefinition {
-    return {
-        id: input.id,
-        label: input.label,
-        description: input.description,
-        icon: input.icon,
-        rules: input.rules,
-        layout: buildLayoutNodes(input.layout(layoutAPI))
-    };
 }
 
 function collectBuilders(
@@ -1215,89 +1178,23 @@ export class FormModel implements IFormModel {
     }
 
     private _accessLayoutNode(nodeId: string): ILayoutNodeAccessHandle {
-        const findTabsNode = (layout: LayoutNode[]): ITabsNode | undefined => {
-            for (const node of layout) {
-                if (node.type === "tabs" && node.id === nodeId) {
-                    return node;
-                }
-                // Search inside nested tabs
-                if (node.type === "tabs") {
-                    for (const tab of node.tabs) {
-                        const found = findTabsNode(tab.layout);
-                        if (found) {
-                            return found;
-                        }
-                    }
-                }
-            }
-            return undefined;
-        };
-
         return {
-            as: (type: "tabs"): ITabsHandle => {
-                const tabsNode = findTabsNode(this._layout);
-                if (!tabsNode) {
+            as: <T extends keyof LayoutNodeHandleMap>(type: T): LayoutNodeHandleMap[T] => {
+                const node = findLayoutNodeById(this._layout, nodeId);
+                if (!node) {
                     throw new Error(`Layout node "${nodeId}" not found.`);
                 }
-                if (tabsNode.type !== type) {
+                if (node.type !== type) {
                     throw new Error(
-                        `Layout node "${nodeId}" is type "${tabsNode.type}", not "${type}".`
+                        `Layout node "${nodeId}" is type "${node.type}", not "${type}".`
                     );
                 }
 
-                return {
-                    tab: (definitionOrId: ITabDefinitionInput | string): ITabHandle => {
-                        if (typeof definitionOrId === "string") {
-                            // Access existing tab
-                            const tab = tabsNode.tabs.find(t => t.id === definitionOrId);
-                            if (!tab) {
-                                throw new Error(
-                                    `Tab "${definitionOrId}" not found in tabs node "${nodeId}".`
-                                );
-                            }
-                            return {
-                                layout: (
-                                    factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]
-                                ) => {
-                                    const nodes = buildLayoutNodes(factory(layoutAPI));
-                                    tab.layout.push(...nodes);
-                                },
-                                before: () => {
-                                    /* no-op for existing tabs */
-                                },
-                                after: () => {
-                                    /* no-op for existing tabs */
-                                }
-                            };
-                        } else {
-                            // Add new tab — resolve the layout callback now.
-                            const newTab: ITabDefinition = resolveTabDefinition(definitionOrId);
-                            return {
-                                layout: (
-                                    factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]
-                                ) => {
-                                    newTab.layout = buildLayoutNodes(factory(layoutAPI));
-                                },
-                                before: (targetTabId: string) => {
-                                    const idx = tabsNode.tabs.findIndex(t => t.id === targetTabId);
-                                    if (idx !== -1) {
-                                        tabsNode.tabs.splice(idx, 0, newTab);
-                                    } else {
-                                        tabsNode.tabs.push(newTab);
-                                    }
-                                },
-                                after: (targetTabId: string) => {
-                                    const idx = tabsNode.tabs.findIndex(t => t.id === targetTabId);
-                                    if (idx !== -1) {
-                                        tabsNode.tabs.splice(idx + 1, 0, newTab);
-                                    } else {
-                                        tabsNode.tabs.push(newTab);
-                                    }
-                                }
-                            };
-                        }
-                    }
-                };
+                if (type === "tabs") {
+                    return createTabsBuilder(node as ITabsNode) as LayoutNodeHandleMap[T];
+                }
+
+                return node as LayoutNodeHandleMap[T];
             }
         };
     }
@@ -1333,4 +1230,203 @@ function createLayoutNodeHandle(node: LayoutNode): ILayoutNodeHandle {
         }
     };
     return handle;
+}
+
+function matchesNodeId(node: LayoutNode, nodeId: string): boolean {
+    if ("id" in node && node.id === nodeId) {
+        return true;
+    }
+    if (node.type === "object" && node.fieldName === nodeId) {
+        return true;
+    }
+    return false;
+}
+
+function findLayoutNodeById(layout: LayoutNode[], nodeId: string): LayoutNode | undefined {
+    for (const node of layout) {
+        if (matchesNodeId(node, nodeId)) {
+            return node;
+        }
+        if (node.type === "tabs") {
+            for (const tab of node.tabs) {
+                const found = findLayoutNodeById(tab.layout, nodeId);
+                if (found) {
+                    return found;
+                }
+            }
+        }
+    }
+    return undefined;
+}
+
+interface TabBuilderInternal extends ITabBuilder {
+    _build(id: string): ITabDefinition;
+}
+
+function createTabBuilder(existing?: ITabDefinition): TabBuilderInternal {
+    if (existing) {
+        const builder: TabBuilderInternal = {
+            label(text: string) {
+                existing.label = text;
+                return builder;
+            },
+            description(text: string) {
+                existing.description = text;
+                return builder;
+            },
+            icon(icon) {
+                existing.icon = icon;
+                return builder;
+            },
+            layout(factory) {
+                existing.layout.push(...buildLayoutNodes(factory(layoutAPI)));
+                return builder;
+            },
+            rules(r) {
+                existing.rules = r;
+                return builder;
+            },
+            _build(id: string) {
+                return existing;
+            }
+        };
+        return builder;
+    }
+
+    let label = "";
+    let description: string | undefined;
+    let icon: ITabDefinition["icon"];
+    let layoutFactory: ((l: ILayoutBuilder) => ILayoutNodeBuilder[]) | undefined;
+    let rules: IRule[] | undefined;
+
+    const builder: TabBuilderInternal = {
+        label(text: string) {
+            label = text;
+            return builder;
+        },
+        description(text: string) {
+            description = text;
+            return builder;
+        },
+        icon(i) {
+            icon = i;
+            return builder;
+        },
+        layout(factory) {
+            layoutFactory = factory;
+            return builder;
+        },
+        rules(r) {
+            rules = r;
+            return builder;
+        },
+        _build(id: string): ITabDefinition {
+            return {
+                id,
+                label,
+                description,
+                icon,
+                layout: layoutFactory ? buildLayoutNodes(layoutFactory(layoutAPI)) : [],
+                rules
+            };
+        }
+    };
+    return builder;
+}
+
+function createTabsBuilder(init: { id?: string } | ITabsNode): ITabsBuilder {
+    const isAccessMode = "type" in init && init.type === "tabs";
+    const node = isAccessMode ? (init as ITabsNode) : undefined;
+
+    let id = isAccessMode ? node!.id : (init as { id?: string }).id;
+    let renderer: string | undefined = node?.renderer;
+    let rules: IRule[] | undefined = node?.rules;
+    const pendingTabs: { tabId: string; tabBuilder: TabBuilderInternal }[] = [];
+    let lastAddedIdx = -1;
+
+    const builder: ITabsBuilder = {
+        renderer(name: string) {
+            if (node) {
+                node.renderer = name;
+            } else {
+                renderer = name;
+            }
+            return builder;
+        },
+        tab(tabId: string, configure: (tab: ITabBuilder) => void) {
+            if (node) {
+                const existing = node.tabs.find(t => t.id === tabId);
+                if (existing) {
+                    configure(createTabBuilder(existing));
+                } else {
+                    const tb = createTabBuilder();
+                    configure(tb);
+                    node.tabs.push(tb._build(tabId));
+                    lastAddedIdx = node.tabs.length - 1;
+                }
+            } else {
+                const tb = createTabBuilder();
+                configure(tb);
+                pendingTabs.push({ tabId, tabBuilder: tb });
+                lastAddedIdx = pendingTabs.length - 1;
+            }
+            return builder;
+        },
+        before(target: string) {
+            if (node && lastAddedIdx >= 0) {
+                const tab = node.tabs.splice(lastAddedIdx, 1)[0];
+                const targetIdx = node.tabs.findIndex(t => t.id === target);
+                if (targetIdx !== -1) {
+                    node.tabs.splice(targetIdx, 0, tab);
+                } else {
+                    node.tabs.push(tab);
+                }
+            }
+            return builder;
+        },
+        after(target: string) {
+            if (node && lastAddedIdx >= 0) {
+                const tab = node.tabs.splice(lastAddedIdx, 1)[0];
+                const targetIdx = node.tabs.findIndex(t => t.id === target);
+                if (targetIdx !== -1) {
+                    node.tabs.splice(targetIdx + 1, 0, tab);
+                } else {
+                    node.tabs.push(tab);
+                }
+            }
+            return builder;
+        },
+        rules(r: IRule[]) {
+            if (node) {
+                node.rules = r;
+            } else {
+                rules = r;
+            }
+            return builder;
+        },
+        build(): ITabsNode {
+            if (node) {
+                return node;
+            }
+            return {
+                type: "tabs",
+                id,
+                renderer,
+                tabs: pendingTabs.map(p => p.tabBuilder._build(p.tabId)),
+                rules
+            };
+        }
+    };
+    return builder;
+}
+
+function resolveTabDefinition(input: ITabDefinitionInput): ITabDefinition {
+    return {
+        id: input.id,
+        label: input.label,
+        description: input.description,
+        icon: input.icon,
+        rules: input.rules,
+        layout: buildLayoutNodes(input.layout(layoutAPI))
+    };
 }

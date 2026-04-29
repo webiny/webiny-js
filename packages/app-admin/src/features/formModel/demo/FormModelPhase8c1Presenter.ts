@@ -50,21 +50,20 @@ export class FormModelPhase8c1Presenter {
                 layout.object("page", l => [
                     l
                         .tabs("pageTabs")
-                        .tab({
-                            id: "general",
-                            label: "General",
-                            layout: l => [l.row("title", "slug"), l.row("body")]
+                        .tab("general", tab => {
+                            tab.label("General").layout(l => [
+                                l.row("title", "slug"),
+                                l.row("body")
+                            ]);
                         })
-                        .tab({
-                            id: "seo",
-                            label: "SEO",
-                            layout: l => [
+                        .tab("seo", tab => {
+                            tab.label("SEO").layout(l => [
                                 l.object("seo", inner => [
                                     inner.row("metaTitle"),
                                     inner.row("metaDescription"),
                                     inner.object("og", og => [og.row("ogTitle", "ogImage")])
                                 ])
-                            ]
+                            ]);
                         })
                 ])
             ]
