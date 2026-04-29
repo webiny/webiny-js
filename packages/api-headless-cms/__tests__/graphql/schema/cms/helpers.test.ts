@@ -172,6 +172,19 @@ describe("CMS Schema Helpers", () => {
             expect(result).toBe('Cannot query field "mystery" on type "ProductValues".');
         });
 
+        it("should rewrite where-variable error into a short unknown-filter-field message", () => {
+            const errors = [
+                {
+                    message:
+                        'Variable "$where" got invalid value { nonExistentWhereField: "hello" } at "where.values"; Field "nonExistentWhereField" is not defined by type "ProductListWhereInputValues".'
+                }
+            ];
+
+            const result = transformFieldErrors(errors, ["id"]);
+
+            expect(result).toBe('Unknown filter field: "nonExistentWhereField".');
+        });
+
         it("should return the original message for unrecognised error patterns", () => {
             const errors = [{ message: "Some unexpected error from the server." }];
             const fields = ["id", "values.name"];

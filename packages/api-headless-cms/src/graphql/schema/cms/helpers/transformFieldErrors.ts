@@ -34,6 +34,14 @@ export const transformFieldErrors = (
                 }
             }
 
+            // 'Variable "$where" got invalid value ... Field "X" is not defined by type "Y".' — unknown where filter key or operator
+            const whereVarMatch = err.message.match(
+                /Variable "\$where" got invalid value.*?Field "([^"]+)" is not defined by type/s
+            );
+            if (whereVarMatch) {
+                return `Unknown filter field: "${whereVarMatch[1]}".`;
+            }
+
             return err.message;
         })
         .join("; ");

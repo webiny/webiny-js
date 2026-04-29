@@ -264,6 +264,41 @@ describe("SDK GraphQL - CMS Operations", () => {
             expect(listResult.error?.message).toMatch(/object type/);
         });
 
+        it("should return error when where references a non-existent field", async () => {
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id"],
+                where: { "values.nonExistentWhereField": "hello" }
+            });
+
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.message).toBe(
+                'Unknown filter field: "nonExistentWhereField".'
+            );
+        });
+
+        it("should return error when where uses an unknown operator on a known field", async () => {
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id"],
+                where: { "values.name_unknownop": "hello" }
+            });
+
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.message).toBe('Unknown filter field: "name_unknownop".');
+        });
+
+        it("should return empty results for limit 0 without error", async () => {
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id"],
+                limit: 0
+            });
+
+            expect(listResult.isOk()).toBe(true);
+            expect(listResult.value?.data).toHaveLength(0);
+        });
+
         it("should list entries with limit and pagination", async () => {
             // Create 3 test products using SDK.
             for (let i = 1; i <= 3; i++) {

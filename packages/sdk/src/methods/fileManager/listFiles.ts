@@ -8,7 +8,6 @@ import type {
     FmListMeta
 } from "./fileManagerTypes.js";
 import { buildFieldsSelection } from "./buildFieldsSelection.js";
-import { transformFieldError } from "../../utils/transformFieldErrors.js";
 
 export interface ListFilesParams {
     search?: string;
@@ -78,14 +77,7 @@ ${fieldsSelection}
     });
 
     if (result.isFail()) {
-        const { GraphQLError } = await import("../../errors.js");
-        const error = result.error;
-        if (error instanceof GraphQLError) {
-            return Result.fail(
-                new GraphQLError(transformFieldError(error.message, fields), error.data?.code)
-            );
-        }
-        return Result.fail(error);
+        return Result.fail(result.error);
     }
 
     const responseData = result.value;
