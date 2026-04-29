@@ -52,12 +52,7 @@
     ],
     "ignore": {
       "src": [
-        "listr2",
         "cloudfront"
-      ],
-      "dependencies": [
-        "@pulumi/pulumi",
-        "@pulumi/aws"
       ]
     }
   }

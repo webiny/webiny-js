@@ -1,4 +1,4 @@
-import zlib from "zlib";
+import zlib from "node:zlib";
 
 export const compress = (input: zlib.InputType, options?: zlib.ZlibOptions): Promise<Buffer> => {
     return new Promise(function (resolve, reject) {

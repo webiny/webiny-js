@@ -46,10 +46,5 @@
     "access": "public",
     "directory": "dist"
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
-  "adio": {
-    "ignore": {
-      "src": []
-    }
-  }
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }
