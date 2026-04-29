@@ -29,7 +29,7 @@
     "@webiny/wcp": "0.0.0",
     "ai": "^6.0.168",
     "dataloader": "^2.2.3",
-    "jose": "^6.2.2",
+    "jose": "^6.2.3",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.18.1",
     "minimatch": "^10.2.5",
