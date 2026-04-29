@@ -126,11 +126,10 @@ export const Extensions = () => {
                 host={"smtp.webiny.com"}
                 port={587}
                 user={"smtp-user"}
-                password={process.env.SMTP_PASSWORD || ""}
+                password={process.env.SMTP_PASSWORD || "unknown"}
                 from={"Webiny <test@webiny.com>"}
                 replyTo={"No-reply <no-reply@webiny.com>"}
             />
-            
         </>
     );
 };
