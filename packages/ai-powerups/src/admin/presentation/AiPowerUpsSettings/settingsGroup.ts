@@ -1,6 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import { FormModelFactory, Icon } from "@webiny/app-admin";
-import type { LayoutNode } from "@webiny/app-admin/features/formModel/abstractions.js";
+import { FormModelFactory, FormModel, Icon } from "@webiny/app-admin";
 
 export interface IAiPowerUpsSettingsGroupFormBuilder {
     fields(
@@ -8,7 +7,7 @@ export interface IAiPowerUpsSettingsGroupFormBuilder {
             fields: FormModelFactory.FieldBuilderRegistry
         ) => Record<string, FormModelFactory.FieldBuilder>
     ): void;
-    layout(fn: (layout: FormModelFactory.LayoutBuilder) => LayoutNode[]): void;
+    layout(fn: (layout: FormModelFactory.LayoutBuilder) => FormModel.LayoutNodeBuilder[]): void;
 }
 
 export interface IAiPowerUpsSettingsGroup {

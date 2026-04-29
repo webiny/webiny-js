@@ -967,25 +967,22 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title", "slug"),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                },
-                                {
-                                    id: "seo",
-                                    label: "SEO",
-                                    description: "Optimize how this page appears in search",
-                                    layout: layout => [
-                                        layout.row("metaTitle"),
-                                        layout.row("metaDescription")
-                                    ]
-                                }
-                            ]
-                        })
+                        layout
+                            .tabs("settings")
+                            .tab({
+                                id: "general",
+                                label: "General",
+                                layout: layout => [layout.row("description")]
+                            })
+                            .tab({
+                                id: "seo",
+                                label: "SEO",
+                                description: "Optimize how this page appears in search",
+                                layout: layout => [
+                                    layout.row("metaTitle"),
+                                    layout.row("metaDescription")
+                                ]
+                            })
                     ]
                 });
             }
@@ -1057,21 +1054,18 @@ describe("FormModel", () => {
                         metaTitle: fields.text().label("Meta Title").required("Required")
                     }),
                     layout: layout => [
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("title")]
-                                },
-                                {
-                                    id: "seo",
-                                    label: "SEO",
-                                    layout: layout => [layout.row("metaTitle")]
-                                }
-                            ]
-                        })
+                        layout
+                            .tabs("settings")
+                            .tab({
+                                id: "general",
+                                label: "General",
+                                layout: layout => [layout.row("title")]
+                            })
+                            .tab({
+                                id: "seo",
+                                label: "SEO",
+                                layout: layout => [layout.row("metaTitle")]
+                            })
                     ]
                 });
 
@@ -1099,15 +1093,10 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                }
-                            ]
+                        layout.tabs("settings").tab({
+                            id: "general",
+                            label: "General",
+                            layout: layout => [layout.row("description")]
                         })
                     ]
                 });
@@ -1121,7 +1110,7 @@ describe("FormModel", () => {
                     fields: fields => ({
                         title: fields.text().label("Title")
                     }),
-                    layout: layout => [layout.row("title"), layout.tabs({ id: "empty", tabs: [] })]
+                    layout: layout => [layout.row("title"), layout.tabs("empty")]
                 });
 
                 expect(form.vm.layout).toHaveLength(1);
@@ -1174,21 +1163,18 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                },
-                                {
-                                    id: "seo",
-                                    label: "SEO",
-                                    layout: layout => [layout.row("metaTitle")]
-                                }
-                            ]
-                        })
+                        layout
+                            .tabs("settings")
+                            .tab({
+                                id: "general",
+                                label: "General",
+                                layout: layout => [layout.row("description")]
+                            })
+                            .tab({
+                                id: "seo",
+                                label: "SEO",
+                                layout: layout => [layout.row("metaTitle")]
+                            })
                     ]
                 });
             }
@@ -1205,7 +1191,7 @@ describe("FormModel", () => {
                     .tab({
                         id: "analytics",
                         label: "Analytics",
-                        layout: () => [{ type: "row", fieldIds: ["trackingId"] }]
+                        layout: layout => [layout.row("trackingId")]
                     })
                     .after("seo");
 
@@ -1227,7 +1213,7 @@ describe("FormModel", () => {
                     .tab({
                         id: "analytics",
                         label: "Analytics",
-                        layout: () => [{ type: "row", fieldIds: ["trackingId"] }]
+                        layout: layout => [layout.row("trackingId")]
                     })
                     .before("seo");
 
@@ -1285,15 +1271,10 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                }
-                            ]
+                        layout.tabs("settings").tab({
+                            id: "general",
+                            label: "General",
+                            layout: layout => [layout.row("description")]
                         })
                     ]
                 });
@@ -1317,15 +1298,10 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                }
-                            ]
+                        layout.tabs("settings").tab({
+                            id: "general",
+                            label: "General",
+                            layout: layout => [layout.row("description")]
                         })
                     ]
                 });
@@ -1348,15 +1324,10 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                }
-                            ]
+                        layout.tabs("settings").tab({
+                            id: "general",
+                            label: "General",
+                            layout: layout => [layout.row("description")]
                         })
                     ]
                 });
@@ -1382,21 +1353,18 @@ describe("FormModel", () => {
                     layout: layout => [
                         layout.row("title"),
                         layout.separator(),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                },
-                                {
-                                    id: "seo",
-                                    label: "SEO",
-                                    layout: layout => [layout.row("metaTitle")]
-                                }
-                            ]
-                        })
+                        layout
+                            .tabs("settings")
+                            .tab({
+                                id: "general",
+                                label: "General",
+                                layout: layout => [layout.row("description")]
+                            })
+                            .tab({
+                                id: "seo",
+                                label: "SEO",
+                                layout: layout => [layout.row("metaTitle")]
+                            })
                     ]
                 });
 
@@ -1410,7 +1378,7 @@ describe("FormModel", () => {
                     .tab({
                         id: "analytics",
                         label: "Analytics",
-                        layout: () => [{ type: "row", fieldIds: ["trackingId"] }]
+                        layout: layout => [layout.row("trackingId")]
                     })
                     .after("seo");
 
@@ -1833,21 +1801,18 @@ describe("FormModel", () => {
                             }))
                     }),
                     layout: layout => [
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("title")]
-                                },
-                                {
-                                    id: "details",
-                                    label: "Details",
-                                    layout: layout => [layout.row("address")]
-                                }
-                            ]
-                        })
+                        layout
+                            .tabs("settings")
+                            .tab({
+                                id: "general",
+                                label: "General",
+                                layout: layout => [layout.row("title")]
+                            })
+                            .tab({
+                                id: "details",
+                                label: "Details",
+                                layout: layout => [layout.row("address")]
+                            })
                     ]
                 });
 
@@ -2981,24 +2946,22 @@ describe("FormModel", () => {
                 }),
                 layout: layout => [
                     layout.object("page", l => [
-                        l.tabs({
-                            tabs: [
-                                {
-                                    id: "main",
-                                    label: "Main",
-                                    layout: l => [l.row("title")]
-                                },
-                                {
-                                    id: "seoTab",
-                                    label: "SEO",
-                                    layout: l => [
-                                        l.object("seo", inner => [
-                                            inner.row("metaTitle", "metaDescription")
-                                        ])
-                                    ]
-                                }
-                            ]
-                        })
+                        l
+                            .tabs()
+                            .tab({
+                                id: "main",
+                                label: "Main",
+                                layout: l => [l.row("title")]
+                            })
+                            .tab({
+                                id: "seoTab",
+                                label: "SEO",
+                                layout: l => [
+                                    l.object("seo", inner => [
+                                        inner.row("metaTitle", "metaDescription")
+                                    ])
+                                ]
+                            })
                     ])
                 ]
             });
@@ -3023,25 +2986,22 @@ describe("FormModel", () => {
                 }),
                 layout: layout => [
                     layout.object("page", l => [
-                        l.tabs({
-                            id: "pageTabs",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: l => [l.row("title"), l.row("body")]
-                                },
-                                {
-                                    id: "seo",
-                                    label: "SEO",
-                                    layout: l => [
-                                        l.object("seo", inner => [
-                                            inner.row("metaTitle", "metaDescription")
-                                        ])
-                                    ]
-                                }
-                            ]
-                        })
+                        l
+                            .tabs("pageTabs")
+                            .tab({
+                                id: "general",
+                                label: "General",
+                                layout: l => [l.row("title"), l.row("body")]
+                            })
+                            .tab({
+                                id: "seo",
+                                label: "SEO",
+                                layout: l => [
+                                    l.object("seo", inner => [
+                                        inner.row("metaTitle", "metaDescription")
+                                    ])
+                                ]
+                            })
                     ])
                 ]
             });
@@ -4048,21 +4008,18 @@ describe("FormModel", () => {
                     slug: fields.text().label("Slug")
                 }),
                 layout: layout => [
-                    layout.tabs({
-                        id: "mainTabs",
-                        tabs: [
-                            {
-                                id: "general",
-                                label: "General",
-                                layout: l => [l.row("title")]
-                            },
-                            {
-                                id: "seo",
-                                label: "SEO",
-                                layout: l => [l.row("slug")]
-                            }
-                        ]
-                    })
+                    layout
+                        .tabs("mainTabs")
+                        .tab({
+                            id: "general",
+                            label: "General",
+                            layout: l => [l.row("title")]
+                        })
+                        .tab({
+                            id: "seo",
+                            label: "SEO",
+                            layout: l => [l.row("slug")]
+                        })
                 ]
             });
 
@@ -4084,21 +4041,18 @@ describe("FormModel", () => {
                 }),
                 layout: layout => [
                     layout.object("page", l => [
-                        l.tabs({
-                            id: "pageTabs",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: l => [l.row("title")]
-                                },
-                                {
-                                    id: "seo",
-                                    label: "SEO",
-                                    layout: l => [l.row("metaTitle")]
-                                }
-                            ]
-                        })
+                        l
+                            .tabs("pageTabs")
+                            .tab({
+                                id: "general",
+                                label: "General",
+                                layout: l => [l.row("title")]
+                            })
+                            .tab({
+                                id: "seo",
+                                label: "SEO",
+                                layout: l => [l.row("metaTitle")]
+                            })
                     ])
                 ]
             });
@@ -4169,21 +4123,18 @@ describe("FormModel", () => {
                     path: fields.text().label("Path")
                 }),
                 layout: layout => [
-                    layout.tabs({
-                        id: "tabs",
-                        tabs: [
-                            {
-                                id: "t1",
-                                label: "T1",
-                                layout: l => [l.row("title")]
-                            },
-                            {
-                                id: "t2",
-                                label: "T2",
-                                layout: l => [l.row("path")]
-                            }
-                        ]
-                    })
+                    layout
+                        .tabs("tabs")
+                        .tab({
+                            id: "t1",
+                            label: "T1",
+                            layout: l => [l.row("title")]
+                        })
+                        .tab({
+                            id: "t2",
+                            label: "T2",
+                            layout: l => [l.row("path")]
+                        })
                 ]
             });
 

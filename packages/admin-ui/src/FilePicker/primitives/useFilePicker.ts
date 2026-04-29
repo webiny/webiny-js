@@ -6,7 +6,6 @@ import type { FilePickerPrimitiveProps } from "~/FilePicker/index.js";
 type IFilePickerPrimitiveProps = Pick<FilePickerPrimitiveProps, "value">;
 
 export const useFilePicker = (props: IFilePickerPrimitiveProps) => {
-    console.log("useFilePicker", props);
     const params: FilePickerPresenterParams = useMemo(
         () => ({
             value: props.value

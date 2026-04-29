@@ -2,6 +2,7 @@ import { makeAutoObservable, computed } from "mobx";
 import { FormModelFactory, FormModel } from "@webiny/app-admin";
 import type {
     LayoutNode,
+    ILayoutNodeBuilder,
     IRowNode,
     LayoutPosition
 } from "@webiny/app-admin/features/formModel/abstractions.js";
@@ -13,7 +14,7 @@ type FieldsFactory = (
     fields: FormModelFactory.FieldBuilderRegistry
 ) => Record<string, FormModelFactory.FieldBuilder>;
 
-type LayoutFactory = (layout: FormModelFactory.LayoutBuilder) => LayoutNode[];
+type LayoutFactory = (layout: FormModelFactory.LayoutBuilder) => ILayoutNodeBuilder[];
 
 interface CollectedGroup {
     group: PageSettingsGroup.Interface;
@@ -171,33 +172,36 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
                     return [];
                 }
 
-                return [
-                    layout.tabs({
-                        id: "settings-tabs",
-                        renderer: "tabs-vertical",
-                        tabs: collected.map(({ group, layoutFns }) => ({
-                            id: group.name,
-                            label: group.label,
-                            description: group.description,
-                            icon: group.icon,
-                            layout: (l: FormModelFactory.LayoutBuilder) => {
-                                if (layoutFns.length > 0) {
-                                    return [
-                                        l.object(group.name, inner => {
-                                            const nodes: LayoutNode[] = [];
-                                            for (const fn of layoutFns) {
-                                                nodes.push(...fn(inner));
-                                            }
-                                            return resolvePositionedNodes(nodes);
-                                        })
-                                    ];
-                                }
+                const tabsBuilder = layout.tabs("settings-tabs").renderer("tabs-vertical");
 
-                                return [l.row(group.name)];
+                for (const { group, layoutFns } of collected) {
+                    tabsBuilder.tab({
+                        id: group.name,
+                        label: group.label,
+                        description: group.description,
+                        icon: group.icon,
+                        layout: (l: FormModelFactory.LayoutBuilder) => {
+                            if (layoutFns.length > 0) {
+                                return [
+                                    l.object(group.name, inner => {
+                                        const builders: ILayoutNodeBuilder[] = [];
+                                        for (const fn of layoutFns) {
+                                            builders.push(...fn(inner));
+                                        }
+                                        const resolved = resolvePositionedNodes(
+                                            builders.map(b => b.build())
+                                        );
+                                        return resolved.map(node => ({ build: () => node }));
+                                    })
+                                ];
                             }
-                        }))
-                    })
-                ];
+
+                            return [l.row(group.name)];
+                        }
+                    });
+                }
+
+                return [tabsBuilder];
             }
         });
     }

@@ -418,10 +418,8 @@ export interface IRowNode {
     position?: LayoutPosition;
 }
 
-export interface IRowNodeHandle extends IRowNode {
-    before(target: string): IRowNodeHandle;
-    after(target: string): IRowNodeHandle;
-}
+/** @deprecated Use IRowBuilder instead */
+export type IRowNodeHandle = IRowBuilder;
 
 export interface ISeparatorNode {
     type: "separator";
@@ -446,7 +444,7 @@ export interface ITabDefinitionInput {
     label: string;
     description?: string;
     icon?: Icon;
-    layout: (layout: ILayoutBuilder) => LayoutNode[];
+    layout: (layout: ILayoutBuilder) => ILayoutNodeBuilder[];
     rules?: IRule[];
 }
 
@@ -481,6 +479,39 @@ export interface IObjectNode {
     type: "object";
     fieldName: string;
     inner: LayoutNode[] | Record<string, LayoutNode[]>;
+}
+
+// ---------------------------------------------------------------------------
+// Layout node builders
+// ---------------------------------------------------------------------------
+
+export interface ILayoutNodeBuilder {
+    build(): LayoutNode;
+}
+
+export interface IRowBuilder extends ILayoutNodeBuilder {
+    before(target: string): IRowBuilder;
+    after(target: string): IRowBuilder;
+    build(): IRowNode;
+}
+
+export interface ISeparatorBuilder extends ILayoutNodeBuilder {
+    build(): ISeparatorNode;
+}
+
+export interface ITabsBuilder extends ILayoutNodeBuilder {
+    renderer(name: string): this;
+    tab(definition: ITabDefinitionInput): this;
+    rules(rules: IRule[]): this;
+    build(): ITabsNode;
+}
+
+export interface IElementBuilder extends ILayoutNodeBuilder {
+    build(): IElementNode;
+}
+
+export interface IObjectBuilder extends ILayoutNodeBuilder {
+    build(): IObjectNode;
 }
 
 // ---------------------------------------------------------------------------
@@ -558,7 +589,7 @@ export interface ITabsHandle {
 }
 
 export interface ITabHandle {
-    layout(factory: (layout: ILayoutBuilder) => LayoutNode[]): void;
+    layout(factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]): void;
     before(target: string): void;
     after(target: string): void;
 }
@@ -585,10 +616,13 @@ export interface ILayoutModifier {
         rules?: IRule[];
     }): ILayoutNodeHandle;
     element(renderer: string, props?: Record<string, unknown>): ILayoutNodeHandle;
-    object(fieldName: string, layout: (layout: ILayoutBuilder) => LayoutNode[]): ILayoutNodeHandle;
     object(
         fieldName: string,
-        templateLayouts: Record<string, (layout: ILayoutBuilder) => LayoutNode[]>
+        layout: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]
+    ): ILayoutNodeHandle;
+    object(
+        fieldName: string,
+        templateLayouts: Record<string, (layout: ILayoutBuilder) => ILayoutNodeBuilder[]>
     ): ILayoutNodeHandle;
     remove(target: string): void;
 }
@@ -637,7 +671,7 @@ export interface IFormModel<T = Record<string, any>> {
      * propagates ancestor rules. Use `layout()` (modifier form) for additive
      * changes.
      */
-    setLayout(factory: (layout: ILayoutBuilder) => LayoutNode[]): void;
+    setLayout(factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]): void;
     /**
      * Append a form-level validation rule. Runs after per-field validation.
      * Accepts a Zod schema (validated against `getData()`) or an imperative
@@ -676,7 +710,14 @@ export namespace FormModel {
     export type AfterSetValue = AfterSetValueCallback;
     export type OnBlur = OnBlurCallback;
     export type CloneValue = CloneValueCallback;
+    export type LayoutNodeBuilder = ILayoutNodeBuilder;
+    export type RowBuilder = IRowBuilder;
+    export type SeparatorBuilder = ISeparatorBuilder;
+    export type TabsBuilder = ITabsBuilder;
+    export type ElementBuilder = IElementBuilder;
+    export type ObjectBuilder = IObjectBuilder;
     export type RowNode = IRowNode;
+    /** @deprecated Use RowBuilder instead */
     export type RowNodeHandle = IRowNodeHandle;
     export type RowNodeVM = IRowNodeVM;
     export type SeparatorNode = ISeparatorNode;
@@ -721,21 +762,16 @@ export interface IFormModelFactory {
 
 export interface IFormModelConfig {
     fields: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>;
-    layout?: (layout: ILayoutBuilder) => LayoutNode[];
+    layout?: (layout: ILayoutBuilder) => ILayoutNodeBuilder[];
     validateOnSubmit?: boolean;
     ruleEvaluators?: IRuleEvaluator[];
 }
 
 export interface ILayoutBuilder {
-    row(...fieldIds: string[]): IRowNodeHandle;
-    separator(): ISeparatorNode;
-    tabs(config: {
-        id?: string;
-        renderer?: string;
-        tabs: ITabDefinitionInput[];
-        rules?: IRule[];
-    }): ITabsNode;
-    element(renderer: string, props?: Record<string, unknown>): IElementNode;
+    row(...fieldIds: string[]): IRowBuilder;
+    separator(): ISeparatorBuilder;
+    tabs(id?: string): ITabsBuilder;
+    element(renderer: string, props?: Record<string, unknown>): IElementBuilder;
     /**
      * Reference an object field and register its inner layout.
      *
@@ -745,11 +781,14 @@ export interface ILayoutBuilder {
      * (or for each list item with that template). Templates without an entry
      * fall back to default one-row-per-visible-child.
      */
-    object(fieldName: string, layout: (layout: ILayoutBuilder) => LayoutNode[]): IObjectNode;
     object(
         fieldName: string,
-        templateLayouts: Record<string, (layout: ILayoutBuilder) => LayoutNode[]>
-    ): IObjectNode;
+        layout: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]
+    ): IObjectBuilder;
+    object(
+        fieldName: string,
+        templateLayouts: Record<string, (layout: ILayoutBuilder) => ILayoutNodeBuilder[]>
+    ): IObjectBuilder;
 }
 
 export interface IFieldBuilder<

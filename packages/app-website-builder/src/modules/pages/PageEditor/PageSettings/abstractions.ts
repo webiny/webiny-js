@@ -1,7 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import { FormModel } from "@webiny/app-admin";
 import { FormModelFactory } from "@webiny/app-admin";
-import type { LayoutNode } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { Icon } from "@webiny/app-admin/components/IconPicker/types.js";
 import type { EditorPage } from "@webiny/website-builder-sdk";
 
@@ -13,7 +12,7 @@ export interface IPageSettingsGroupFormBuilder {
             fields: FormModelFactory.FieldBuilderRegistry
         ) => Record<string, FormModelFactory.FieldBuilder>
     ): void;
-    layout(fn: (layout: FormModelFactory.LayoutBuilder) => LayoutNode[]): void;
+    layout(fn: (layout: FormModelFactory.LayoutBuilder) => FormModel.LayoutNodeBuilder[]): void;
 }
 
 export interface IPageDocument {

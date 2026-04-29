@@ -332,80 +332,77 @@ export class FieldRenderersDemoPresenter {
                     .description("Stores only the file URL as a string")
             }),
             layout: layout => [
-                layout.tabs({
-                    id: "mainTabs",
-                    tabs: [
-                        {
-                            id: "text",
-                            label: "Text",
-                            layout: l => [
-                                l.row("textInput"),
-                                l.row("textInputs"),
-                                l.row("tags"),
-                                l.row("textarea"),
-                                l.row("textareas"),
-                                l.row("metaTags")
-                            ]
-                        },
-                        {
-                            id: "numbers",
-                            label: "Numbers & Boolean",
-                            layout: l => [
-                                l.row("numberInput"),
-                                l.row("numberInputs"),
-                                l.row("numberOptions"),
-                                l.separator(),
-                                l.row("boolSwitch")
-                            ]
-                        },
-                        {
-                            id: "selects",
-                            label: "Selects",
-                            layout: l => [l.row("dropdown", "radioButtons"), l.row("checkboxes")]
-                        },
-                        {
-                            id: "datetime",
-                            label: "Date / Time",
-                            layout: l => [
-                                l.row("dateOnly", "timeOnly"),
-                                l.row("dateTime"),
-                                l.row("dateTimeTz"),
-                                l.row("dateTimeList")
-                            ]
-                        },
-                        {
-                            id: "rules",
-                            label: "Rules",
-                            layout: l => [
-                                l.row("enableFeature"),
-                                l.row("featureName", "featureMode"),
-                                l.row("advancedConfig")
-                            ]
-                        },
-                        {
-                            id: "dynamic",
-                            label: "Dynamic Zones",
-                            layout: l => [
-                                l.object("contentBlock", {
-                                    hero: inner => [inner.row("heading"), inner.row("image")],
-                                    text: inner => [inner.row("body")]
-                                }),
-                                l.object("sections", {
-                                    hero: inner => [
-                                        inner.row("heading", "subheading"),
-                                        inner.row("uuid")
-                                    ],
-                                    cta: inner => [inner.row("label", "url")]
-                                })
-                            ]
-                        },
-                        {
-                            id: "files",
-                            label: "Files",
-                            layout: l => [l.row("fileImage", "fileUrl")]
-                        }
-                    ]
-                })
+                layout
+                    .tabs("mainTabs")
+                    .tab({
+                        id: "text",
+                        label: "Text",
+                        layout: l => [
+                            l.row("textInput"),
+                            l.row("textInputs"),
+                            l.row("tags"),
+                            l.row("textarea"),
+                            l.row("textareas"),
+                            l.row("metaTags")
+                        ]
+                    })
+                    .tab({
+                        id: "numbers",
+                        label: "Numbers & Boolean",
+                        layout: l => [
+                            l.row("numberInput"),
+                            l.row("numberInputs"),
+                            l.row("numberOptions"),
+                            l.separator(),
+                            l.row("boolSwitch")
+                        ]
+                    })
+                    .tab({
+                        id: "selects",
+                        label: "Selects",
+                        layout: l => [l.row("dropdown", "radioButtons"), l.row("checkboxes")]
+                    })
+                    .tab({
+                        id: "datetime",
+                        label: "Date / Time",
+                        layout: l => [
+                            l.row("dateOnly", "timeOnly"),
+                            l.row("dateTime"),
+                            l.row("dateTimeTz"),
+                            l.row("dateTimeList")
+                        ]
+                    })
+                    .tab({
+                        id: "rules",
+                        label: "Rules",
+                        layout: l => [
+                            l.row("enableFeature"),
+                            l.row("featureName", "featureMode"),
+                            l.row("advancedConfig")
+                        ]
+                    })
+                    .tab({
+                        id: "dynamic",
+                        label: "Dynamic Zones",
+                        layout: l => [
+                            l.object("contentBlock", {
+                                hero: inner => [inner.row("heading"), inner.row("image")],
+                                text: inner => [inner.row("body")]
+                            }),
+                            l.object("sections", {
+                                hero: inner => [
+                                    inner.row("heading", "subheading"),
+                                    inner.row("uuid")
+                                ],
+                                cta: inner => [inner.row("label", "url")]
+                            })
+                        ]
+                    })
+                    .tab({
+                        id: "files",
+                        label: "Files",
+                        layout: l => [l.row("fileImage", "fileUrl")]
+                    })
             ]
         });
 

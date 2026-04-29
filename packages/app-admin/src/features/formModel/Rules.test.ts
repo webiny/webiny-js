@@ -147,9 +147,9 @@ describe("Rules system", () => {
                 }),
                 layout: layout => [
                     layout.row("trigger"),
-                    layout.tabs({
-                        id: "settings",
-                        rules: [
+                    layout
+                        .tabs("settings")
+                        .rules([
                             {
                                 type: "condition",
                                 target: "trigger",
@@ -157,20 +157,17 @@ describe("Rules system", () => {
                                 value: null,
                                 action: "disable"
                             }
-                        ],
-                        tabs: [
-                            {
-                                id: "general",
-                                label: "General",
-                                layout: layout => [layout.row("general")]
-                            },
-                            {
-                                id: "seo",
-                                label: "SEO",
-                                layout: layout => [layout.row("seo")]
-                            }
-                        ]
-                    })
+                        ])
+                        .tab({
+                            id: "general",
+                            label: "General",
+                            layout: layout => [layout.row("general")]
+                        })
+                        .tab({
+                            id: "seo",
+                            label: "SEO",
+                            layout: layout => [layout.row("seo")]
+                        })
                 ]
             });
 
@@ -194,30 +191,27 @@ describe("Rules system", () => {
                     seo: fields.text().label("SEO")
                 }),
                 layout: layout => [
-                    layout.tabs({
-                        id: "settings",
-                        tabs: [
-                            {
-                                id: "general",
-                                label: "General",
-                                layout: layout => [layout.row("general")]
-                            },
-                            {
-                                id: "seo",
-                                label: "SEO",
-                                rules: [
-                                    {
-                                        type: "condition",
-                                        target: "title",
-                                        operator: "isEmpty",
-                                        value: null,
-                                        action: "disable"
-                                    }
-                                ],
-                                layout: layout => [layout.row("seo")]
-                            }
-                        ]
-                    })
+                    layout
+                        .tabs("settings")
+                        .tab({
+                            id: "general",
+                            label: "General",
+                            layout: layout => [layout.row("general")]
+                        })
+                        .tab({
+                            id: "seo",
+                            label: "SEO",
+                            rules: [
+                                {
+                                    type: "condition",
+                                    target: "title",
+                                    operator: "isEmpty",
+                                    value: null,
+                                    action: "disable"
+                                }
+                            ],
+                            layout: layout => [layout.row("seo")]
+                        })
                 ]
             });
 
@@ -237,24 +231,19 @@ describe("Rules system", () => {
                 }),
                 layout: layout => [
                     layout.row("trigger"),
-                    layout.tabs({
-                        id: "settings",
-                        tabs: [
+                    layout.tabs("settings").tab({
+                        id: "secret",
+                        label: "Secret",
+                        rules: [
                             {
-                                id: "secret",
-                                label: "Secret",
-                                rules: [
-                                    {
-                                        type: "condition",
-                                        target: "trigger",
-                                        operator: "isEmpty",
-                                        value: null,
-                                        action: "hide"
-                                    }
-                                ],
-                                layout: layout => [layout.row("hiddenField")]
+                                type: "condition",
+                                target: "trigger",
+                                operator: "isEmpty",
+                                value: null,
+                                action: "hide"
                             }
-                        ]
+                        ],
+                        layout: layout => [layout.row("hiddenField")]
                     })
                 ]
             });
@@ -276,9 +265,9 @@ describe("Rules system", () => {
                 }),
                 layout: layout => [
                     layout.row("trigger"),
-                    layout.tabs({
-                        id: "settings",
-                        rules: [
+                    layout
+                        .tabs("settings")
+                        .rules([
                             {
                                 type: "condition",
                                 target: "trigger",
@@ -286,15 +275,12 @@ describe("Rules system", () => {
                                 value: null,
                                 action: "hide"
                             }
-                        ],
-                        tabs: [
-                            {
-                                id: "tab1",
-                                label: "Tab 1",
-                                layout: layout => [layout.row("inner")]
-                            }
-                        ]
-                    })
+                        ])
+                        .tab({
+                            id: "tab1",
+                            label: "Tab 1",
+                            layout: layout => [layout.row("inner")]
+                        })
                 ]
             });
 

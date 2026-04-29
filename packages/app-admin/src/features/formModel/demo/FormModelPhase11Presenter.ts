@@ -86,8 +86,8 @@ export class FormModelPhase11Presenter {
         this.form.addRule(
             z
                 .object({
-                    password: z.string(),
-                    confirm: z.string()
+                    password: z.string().nullable(),
+                    confirm: z.string().nullable()
                 })
                 .refine(d => d.password === d.confirm || (!d.password && !d.confirm), {
                     message: "Passwords must match",

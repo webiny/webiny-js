@@ -12,6 +12,12 @@ import type {
     IFormError,
     IFormModelConfig,
     ILayoutBuilder,
+    ILayoutNodeBuilder,
+    IRowBuilder,
+    ISeparatorBuilder,
+    ITabsBuilder,
+    IElementBuilder,
+    IObjectBuilder,
     ILayoutNodeHandle,
     ILayoutModifier,
     IPositionedLayoutNode,
@@ -24,7 +30,6 @@ import type {
     LayoutPosition,
     LayoutNodeVM,
     IRowNode,
-    IRowNodeHandle,
     IRowNodeVM,
     ISeparatorNode,
     ISeparatorNodeVM,
@@ -41,61 +46,95 @@ import type {
 } from "./abstractions.js";
 
 const layoutAPI: ILayoutBuilder = {
-    row(...fieldIds: string[]): IRowNodeHandle {
-        const node: IRowNode = { type: "row", fieldIds };
-        const handle: IRowNodeHandle = Object.assign(node, {
+    row(...fieldIds: string[]): IRowBuilder {
+        let position: LayoutPosition | undefined;
+        const builder: IRowBuilder = {
             before(target: string) {
-                node.position = { type: "before", target };
-                return handle;
+                position = { type: "before", target };
+                return builder;
             },
             after(target: string) {
-                node.position = { type: "after", target };
-                return handle;
+                position = { type: "after", target };
+                return builder;
+            },
+            build(): IRowNode {
+                return { type: "row", fieldIds, position };
             }
-        });
-        return handle;
+        };
+        return builder;
     },
-    separator(): ISeparatorNode {
-        return { type: "separator" };
-    },
-    tabs(config: {
-        id?: string;
-        renderer?: string;
-        tabs: ITabDefinitionInput[];
-        rules?: IRule[];
-    }): ITabsNode {
+    separator(): ISeparatorBuilder {
         return {
-            type: "tabs",
-            id: config.id,
-            renderer: config.renderer,
-            tabs: config.tabs.map(resolveTabDefinition),
-            rules: config.rules
+            build(): ISeparatorNode {
+                return { type: "separator" };
+            }
         };
     },
-    element(renderer: string, props?: Record<string, unknown>): IElementNode {
-        return { type: "element", renderer, props };
+    tabs(id?: string): ITabsBuilder {
+        let renderer: string | undefined;
+        const tabs: ITabDefinitionInput[] = [];
+        let rules: IRule[] | undefined;
+        const builder: ITabsBuilder = {
+            renderer(name: string) {
+                renderer = name;
+                return builder;
+            },
+            tab(definition: ITabDefinitionInput) {
+                tabs.push(definition);
+                return builder;
+            },
+            rules(r: IRule[]) {
+                rules = r;
+                return builder;
+            },
+            build(): ITabsNode {
+                return {
+                    type: "tabs",
+                    id,
+                    renderer,
+                    tabs: tabs.map(resolveTabDefinition),
+                    rules
+                };
+            }
+        };
+        return builder;
+    },
+    element(renderer: string, props?: Record<string, unknown>): IElementBuilder {
+        return {
+            build(): IElementNode {
+                return { type: "element", renderer, props };
+            }
+        };
     },
     object(
         fieldName: string,
         inner:
-            | ((layout: ILayoutBuilder) => LayoutNode[])
-            | Record<string, (layout: ILayoutBuilder) => LayoutNode[]>
-    ): IObjectNode {
-        return { type: "object", fieldName, inner: resolveObjectInner(inner) };
+            | ((layout: ILayoutBuilder) => ILayoutNodeBuilder[])
+            | Record<string, (layout: ILayoutBuilder) => ILayoutNodeBuilder[]>
+    ): IObjectBuilder {
+        return {
+            build(): IObjectNode {
+                return { type: "object", fieldName, inner: resolveObjectInner(inner) };
+            }
+        };
     }
 };
 
+function buildLayoutNodes(builders: ILayoutNodeBuilder[]): LayoutNode[] {
+    return builders.map(b => b.build());
+}
+
 function resolveObjectInner(
     inner:
-        | ((layout: ILayoutBuilder) => LayoutNode[])
-        | Record<string, (layout: ILayoutBuilder) => LayoutNode[]>
+        | ((layout: ILayoutBuilder) => ILayoutNodeBuilder[])
+        | Record<string, (layout: ILayoutBuilder) => ILayoutNodeBuilder[]>
 ): LayoutNode[] | Record<string, LayoutNode[]> {
     if (typeof inner === "function") {
-        return inner(layoutAPI);
+        return buildLayoutNodes(inner(layoutAPI));
     }
     const resolved: Record<string, LayoutNode[]> = {};
     for (const [tplId, factory] of Object.entries(inner)) {
-        resolved[tplId] = factory(layoutAPI);
+        resolved[tplId] = buildLayoutNodes(factory(layoutAPI));
     }
     return resolved;
 }
@@ -107,7 +146,7 @@ function resolveTabDefinition(input: ITabDefinitionInput): ITabDefinition {
         description: input.description,
         icon: input.icon,
         rules: input.rules,
-        layout: input.layout(layoutAPI)
+        layout: buildLayoutNodes(input.layout(layoutAPI))
     };
 }
 
@@ -180,7 +219,7 @@ export class FormModel implements IFormModel {
 
         // Build layout
         if (config.layout) {
-            this._layout = config.layout(layoutAPI);
+            this._layout = buildLayoutNodes(config.layout(layoutAPI));
             this._warnOrphanFields();
         } else {
             this._layout = this._generateDefaultLayout();
@@ -430,9 +469,10 @@ export class FormModel implements IFormModel {
         if (!this._submitted) {
             return [];
         }
+        const ruleErrorPaths = new Set(this._formRuleErrors.filter(e => e.path).map(e => e.path));
         const errors: IFormError[] = [];
         for (const [, field] of this._fields) {
-            if (field.vm.validation.isValid === false) {
+            if (field.vm.validation.isValid === false && !ruleErrorPaths.has(field.name)) {
                 errors.push({
                     path: field.name,
                     label: field.config.label,
@@ -447,8 +487,8 @@ export class FormModel implements IFormModel {
         this._formRules.push(rule);
     }
 
-    setLayout(factory: (layout: ILayoutBuilder) => LayoutNode[]): void {
-        this._layout = factory(layoutAPI);
+    setLayout(factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]): void {
+        this._layout = buildLayoutNodes(factory(layoutAPI));
         this._warnOrphanFields();
         this._registerObjectNodeLayouts(this._layout);
         this._propagateAncestorRules();
@@ -1158,8 +1198,8 @@ export class FormModel implements IFormModel {
             object(
                 fieldName: string,
                 inner:
-                    | ((layout: ILayoutBuilder) => LayoutNode[])
-                    | Record<string, (layout: ILayoutBuilder) => LayoutNode[]>
+                    | ((layout: ILayoutBuilder) => ILayoutNodeBuilder[])
+                    | Record<string, (layout: ILayoutBuilder) => ILayoutNodeBuilder[]>
             ): ILayoutNodeHandle {
                 const node: IObjectNode = {
                     type: "object",
@@ -1216,8 +1256,10 @@ export class FormModel implements IFormModel {
                                 );
                             }
                             return {
-                                layout: (factory: (layout: ILayoutBuilder) => LayoutNode[]) => {
-                                    const nodes = factory(layoutAPI);
+                                layout: (
+                                    factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]
+                                ) => {
+                                    const nodes = buildLayoutNodes(factory(layoutAPI));
                                     tab.layout.push(...nodes);
                                 },
                                 before: () => {
@@ -1231,8 +1273,10 @@ export class FormModel implements IFormModel {
                             // Add new tab — resolve the layout callback now.
                             const newTab: ITabDefinition = resolveTabDefinition(definitionOrId);
                             return {
-                                layout: (factory: (layout: ILayoutBuilder) => LayoutNode[]) => {
-                                    newTab.layout = factory(layoutAPI);
+                                layout: (
+                                    factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]
+                                ) => {
+                                    newTab.layout = buildLayoutNodes(factory(layoutAPI));
                                 },
                                 before: (targetTabId: string) => {
                                     const idx = tabsNode.tabs.findIndex(t => t.id === targetTabId);
