@@ -10,6 +10,8 @@ class UpdateFlpTaskImpl implements TaskDefinition.Interface<IUpdateFlpTaskInput>
         "Synchronizes the FLP catalog by updating the FLP record and its descendants based on the provided folder.";
     databaseLogs = false;
 
+    selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(private updateFlp: UpdateFlpUseCase.Interface) {}
 
     async run({ input, controller }: TaskDefinition.RunParams<IUpdateFlpTaskInput>) {

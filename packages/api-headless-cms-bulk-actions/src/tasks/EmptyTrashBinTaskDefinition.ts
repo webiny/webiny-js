@@ -35,6 +35,8 @@ class EmptyTrashBinTask implements TaskDefinition.Interface<
     public readonly maxIterations = 120;
     public readonly databaseLogs = false;
 
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(
         private tenantContext: TenantContext.Interface,
         private listTenants: ListTenantsUseCase.Interface,

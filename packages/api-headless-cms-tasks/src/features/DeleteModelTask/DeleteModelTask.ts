@@ -17,6 +17,8 @@ class DeleteModelTaskDefinition implements TaskDefinition.Interface<
     databaseLogs = false;
     description = "Delete a content model and all associated entries.";
 
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {
