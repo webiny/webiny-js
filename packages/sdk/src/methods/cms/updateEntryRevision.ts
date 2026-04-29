@@ -80,7 +80,9 @@ export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEn
     Result<UpdateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
 > {
     const parsed = parseParams(updateEntryRevisionSchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { modelId, revisionId, data, fields } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");

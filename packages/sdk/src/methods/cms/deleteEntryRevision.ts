@@ -27,7 +27,9 @@ export async function deleteEntryRevision(
     params: DeleteEntryRevisionParams
 ): Promise<Result<boolean, HttpError | GraphQLError | NetworkError | ValidationError>> {
     const parsed = parseParams(deleteEntryRevisionSchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { modelId, revisionId, permanent = false } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");

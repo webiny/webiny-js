@@ -42,7 +42,9 @@ export async function getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
     Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
 > {
     const parsed = parseParams(getEntrySchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { modelId, where, fields, preview } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");

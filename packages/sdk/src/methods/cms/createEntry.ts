@@ -81,7 +81,9 @@ export async function createEntry<TValues extends CmsEntryValues = CmsEntryValue
     Result<CreateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
 > {
     const parsed = parseParams(createEntrySchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { modelId, data, fields } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");

@@ -31,7 +31,9 @@ export async function unpublishEntryRevision<TValues extends CmsEntryValues = Cm
     Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
 > {
     const parsed = parseParams(unpublishEntryRevisionSchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { modelId, revisionId, fields } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");

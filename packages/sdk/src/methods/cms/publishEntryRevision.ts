@@ -31,7 +31,9 @@ export async function publishEntryRevision<TValues extends CmsEntryValues = CmsE
     Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
 > {
     const parsed = parseParams(publishEntryRevisionSchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { modelId, revisionId, fields } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");

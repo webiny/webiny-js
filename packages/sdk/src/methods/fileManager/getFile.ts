@@ -27,7 +27,9 @@ export async function getFile(
     params: GetFileParams
 ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError | ValidationError>> {
     const parsed = parseParams(getFileSchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { id, fields } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");

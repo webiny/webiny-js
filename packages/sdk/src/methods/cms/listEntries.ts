@@ -50,7 +50,9 @@ export async function listEntries<TValues extends CmsEntryValues = CmsEntryValue
     Result<ListEntriesResult<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
 > {
     const parsed = parseParams(listEntriesSchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { modelId, where, sort, limit = 10, after, search, fields, preview } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");

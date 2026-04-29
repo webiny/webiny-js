@@ -45,7 +45,9 @@ export async function listFiles(
     params: ListFilesParams
 ): Promise<Result<ListFilesResult, HttpError | GraphQLError | NetworkError | ValidationError>> {
     const parsed = parseParams(listFilesSchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { search, where, limit, after, sort, fields } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
