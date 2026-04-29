@@ -12,7 +12,7 @@ const isMailboxAddress = (value: string): boolean => {
 const mailboxAddress = z.string().refine(isMailboxAddress, { message: "Invalid email address." });
 
 export const Smtp = defineExtension({
-    type: "Infra/Mailer/Smtp",
+    type: "Api/Mailer/Smtp",
     tags: { runtimeContext: "project" },
     description:
         "Configure mailer SMTP transport settings via code. Always pass the password through a build-time env var, e.g. `password={process.env.SMTP_PASSWORD!}` — the value is serialized into the build artifact, so hard-coding it would commit the secret to source control.",
