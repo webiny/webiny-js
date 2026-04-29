@@ -121,6 +121,16 @@ export const Extensions = () => {
 
             {/* Tasks */}
             <Api.Extension src={"/extensions/tasks/SelfCleaningTask.ts"} />
+            {/* Mailer */}
+            <Api.Mailer.Smtp
+                host={"smtp.webiny.com"}
+                port={587}
+                user={"smtp-user"}
+                password={process.env.SMTP_PASSWORD!}
+                from={"Webiny <test@webiny.com>"}
+                replyTo={"No-reply <no-reply@webiny.com>"}
+            />
+            
         </>
     );
 };
