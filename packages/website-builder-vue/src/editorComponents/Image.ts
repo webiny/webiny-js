@@ -28,7 +28,7 @@ const computeSrcSetWidths = (width?: string | number): number[] => {
         const widths: number[] = [];
         for (const w of SUPPORTED_WIDTHS) {
             widths.push(w);
-            if (w >= px) break;
+            if (w >= px) {break;}
         }
         return widths;
     }
@@ -86,7 +86,7 @@ export const ImageComponent = defineComponent({
         watch(
             () => props.inputs?.image?.src,
             src => {
-                if (!src) isLoaded.value = false;
+                if (!src) {isLoaded.value = false;}
             }
         );
 

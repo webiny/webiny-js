@@ -41,6 +41,9 @@
   },
   "adio": {
     "ignore": {
+      "src": [
+        "#imports"
+      ],
       "dependencies": [
         "postcss",
         "postcss-import",

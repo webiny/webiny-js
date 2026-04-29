@@ -40,7 +40,7 @@ export class EditingElementRendererPresenter {
 
     private setupPreview() {
         const element = this.element;
-        if (!element) return;
+        if (!element) {return;}
 
         const { id } = element;
 

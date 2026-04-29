@@ -27,7 +27,7 @@ export const ConnectToEditor = defineComponent({
         });
 
         return () => {
-            if (!data.value) return null;
+            if (!data.value) {return null;}
 
             return h(
                 DocumentStoreProvider,

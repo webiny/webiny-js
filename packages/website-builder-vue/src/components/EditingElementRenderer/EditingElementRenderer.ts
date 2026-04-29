@@ -32,7 +32,7 @@ export const EditingElementRenderer = defineComponent({
         const stopWatch = watch(
             () => props.element?.id,
             () => {
-                if (props.element) presenter.init(props.element);
+                if (props.element) {presenter.init(props.element);}
             },
             { immediate: true }
         );
@@ -47,7 +47,7 @@ export const EditingElementRenderer = defineComponent({
 
         return () => {
             const element = vm.value?.element;
-            if (!element?.id) return null;
+            if (!element?.id) {return null;}
 
             return h(
                 "div",

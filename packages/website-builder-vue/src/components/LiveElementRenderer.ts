@@ -48,7 +48,7 @@ export const LiveElementRenderer = defineComponent({
 
         return () => {
             const { element } = props;
-            if (!element?.component) return null;
+            if (!element?.component) {return null;}
 
             const onResolved = (value: unknown, input: ComponentInput) => {
                 if (input.type === "slot") {
@@ -71,7 +71,7 @@ export const LiveElementRenderer = defineComponent({
                 onResolved
             });
 
-            if (!instances) return null;
+            if (!instances) {return null;}
 
             const vnodes = instances.map((resolved, index) => {
                 const { component: Component, inputs, styles, manifest } = resolved;
@@ -85,7 +85,7 @@ export const LiveElementRenderer = defineComponent({
                     breakpoint: breakpoint.value
                 });
 
-                if (!autoApplyStyles) return userVNode;
+                if (!autoApplyStyles) {return userVNode;}
 
                 return h("div", { key: `wrapper-${index}`, style: styles }, [userVNode]);
             });

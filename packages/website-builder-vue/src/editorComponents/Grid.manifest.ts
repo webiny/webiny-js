@@ -63,7 +63,7 @@ export const Grid = createComponent(GridComponent, {
                 }
 
                 const createRows = Math.max(0, rowCount - rows.length);
-                if (createRows <= 0) return;
+                if (createRows <= 0) {return;}
 
                 const newRows = Array.from({ length: createRows * columnCount }).map(() => ({
                     children: ce({ component: "Webiny/GridColumn" })
@@ -79,8 +79,8 @@ export const Grid = createComponent(GridComponent, {
             responsive: true,
             onChange: ({ inputs, styles }) => {
                 const v = parseInt(inputs.rowGap);
-                if (isNaN(v)) delete styles.rowGap;
-                else styles.rowGap = `${inputs.rowGap}px`;
+                if (isNaN(v)) {delete styles.rowGap;}
+                else {styles.rowGap = `${inputs.rowGap}px`;}
             }
         }),
         createNumberInput({
@@ -90,8 +90,8 @@ export const Grid = createComponent(GridComponent, {
             responsive: true,
             onChange: ({ inputs, styles }) => {
                 const v = parseInt(inputs.columnGap);
-                if (isNaN(v)) delete styles.columnGap;
-                else styles.columnGap = `${inputs.columnGap}px`;
+                if (isNaN(v)) {delete styles.columnGap;}
+                else {styles.columnGap = `${inputs.columnGap}px`;}
             }
         }),
         createSelectInput({

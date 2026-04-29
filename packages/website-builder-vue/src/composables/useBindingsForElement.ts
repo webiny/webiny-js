@@ -22,7 +22,7 @@ export const useBindingsForElement = (elementId: string, breakpoint: Ref<string>
     const document = useObservable(() => documentStore.getDocument());
 
     return computed(() => {
-        if (!document.value) return {};
+        if (!document.value) {return {};}
 
         const bindings = toJS(document.value.bindings[elementId]) ?? {};
         const breakpoints =
