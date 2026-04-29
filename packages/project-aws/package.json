@@ -42,7 +42,7 @@
     "@types/lodash": "^4.17.24",
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   },
   "adio": {
     "ignoreDirs": [
