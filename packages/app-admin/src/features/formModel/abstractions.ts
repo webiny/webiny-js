@@ -62,6 +62,7 @@ export interface IFieldConfig {
     requiredWhenCallbacks?: RequiredWhenCallback[];
     computed?: ComputedFieldCallback;
     computedUntilDirty?: ComputedFieldCallback;
+    tags?: string[];
     onClone?: OnCloneCallback;
     rules?: IRule[];
 }
@@ -632,6 +633,7 @@ export interface IFormModel<T = Record<string, any>> {
     readonly submitted: boolean;
     readonly errors: IFormError[];
     readonly vm: IFormVM;
+    getFieldBuilders(predicate?: (builder: IFieldBuilder) => boolean): IFieldBuilder[];
 }
 
 // ---------------------------------------------------------------------------
@@ -758,6 +760,8 @@ export interface IFieldBuilder<TType extends string = string, TOptions extends b
     afterSetValue(fn: AfterSetValueCallback): this;
     onBlur(fn: OnBlurCallback): this;
     onClone(fn: OnCloneCallback): this;
+    getTags(): string[];
+    tags(tags: string[]): this;
     /**
      * Mark this field as a derived value computed from `fn(form)`. The field
      * stays editable; user edits are accepted but the computed value continues

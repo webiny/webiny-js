@@ -166,6 +166,15 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
+    getTags(): string[] {
+        return this._config.tags ?? [];
+    }
+
+    tags(tags: string[]): this {
+        this._config.tags = tags;
+        return this;
+    }
+
     options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this {
         this._config.options = opts;
         if (this._config.renderer === "textInput" || this._config.renderer === "numberInput") {

@@ -100,8 +100,45 @@ function resolveTabDefinition(input: ITabDefinitionInput): ITabDefinition {
     };
 }
 
+function collectBuilders(
+    fields: Map<string, IField>,
+    builders: Map<string, IFieldBuilder> | Record<string, IFieldBuilder>,
+    predicate: (builder: IFieldBuilder) => boolean,
+    result: IFieldBuilder[]
+): void {
+    const entries = builders instanceof Map ? builders.entries() : Object.entries(builders);
+    for (const [name, builder] of entries) {
+        if (predicate(builder)) {
+            result.push(builder);
+        }
+        const field = fields instanceof Map ? fields.get(name) : undefined;
+        if (field && isObjectField(field)) {
+            collectBuilders(field.children, field.config.childBuilders, predicate, result);
+            const templates = (field.config as IObjectFieldConfig).templates;
+            if (templates) {
+                for (const tpl of templates) {
+                    collectBuildersFlat(tpl.childBuilders, predicate, result);
+                }
+            }
+        }
+    }
+}
+
+function collectBuildersFlat(
+    builders: Record<string, IFieldBuilder>,
+    predicate: (builder: IFieldBuilder) => boolean,
+    result: IFieldBuilder[]
+): void {
+    for (const builder of Object.values(builders)) {
+        if (predicate(builder)) {
+            result.push(builder);
+        }
+    }
+}
+
 export class FormModel implements IFormModel {
     private _fields = new Map<string, IField>();
+    private _builders = new Map<string, IFieldBuilder>();
     private _layout: LayoutNode[] = [];
     private _baseline = new Map<string, unknown>();
     private _submitted = false;
@@ -122,6 +159,7 @@ export class FormModel implements IFormModel {
 
         // Build fields from builders
         for (const [name, builder] of Object.entries(builders)) {
+            this._builders.set(name, builder);
             const fieldConfig = builder.build(name);
             const field = this._createField(fieldConfig);
             field.setForm(this);
@@ -254,10 +292,12 @@ export class FormModel implements IFormModel {
         for (const [name, builder] of Object.entries(builders)) {
             if (builder === undefined) {
                 // undefined = remove
+                this._builders.delete(name);
                 this.removeField(name);
                 continue;
             }
 
+            this._builders.set(name, builder);
             const fieldConfig = builder.build(name);
             const field = this._createField(fieldConfig);
             field.setForm(this);
@@ -491,6 +531,13 @@ export class FormModel implements IFormModel {
 
     getFields(): Map<string, IField> {
         return this._fields;
+    }
+
+    getFieldBuilders(predicate?: (builder: IFieldBuilder) => boolean): IFieldBuilder[] {
+        const pred = predicate ?? (() => true);
+        const result: IFieldBuilder[] = [];
+        collectBuilders(this._fields, this._builders, pred, result);
+        return result;
     }
 
     private _resolveLayout(): LayoutNodeVM[] {
