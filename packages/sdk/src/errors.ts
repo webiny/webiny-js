@@ -48,3 +48,14 @@ export class NetworkError extends BaseError {
         });
     }
 }
+
+/**
+ * Input validation error — params failed schema validation before any network request was made.
+ */
+export class ValidationError extends BaseError {
+    override readonly code = "VALIDATION_ERROR" as const;
+
+    constructor(message: string) {
+        super({ message });
+    }
+}

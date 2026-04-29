@@ -1,7 +1,9 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsIdentity } from "./cmsTypes.js";
+import { parseParams } from "../../utils/validateParams.js";
+import { updateEntryRevisionSchema } from "./schemas.js";
 
 /**
  * Update entry revision data.
@@ -74,8 +76,12 @@ export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEn
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: UpdateEntryRevisionParams<TValues>
-): Promise<Result<UpdateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
-    const { modelId, revisionId, data, fields } = params;
+): Promise<
+    Result<UpdateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
+> {
+    const parsed = parseParams(updateEntryRevisionSchema, params);
+    if (!parsed.ok) return parsed.result;
+    const { modelId, revisionId, data, fields } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 

@@ -1,6 +1,8 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
+import { parseParams } from "../../utils/validateParams.js";
+import { deleteEntryRevisionSchema } from "./schemas.js";
 
 export interface DeleteEntryRevisionParams {
     modelId: string;
@@ -23,8 +25,10 @@ export async function deleteEntryRevision(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: DeleteEntryRevisionParams
-): Promise<Result<boolean, HttpError | GraphQLError | NetworkError>> {
-    const { modelId, revisionId, permanent = false } = params;
+): Promise<Result<boolean, HttpError | GraphQLError | NetworkError | ValidationError>> {
+    const parsed = parseParams(deleteEntryRevisionSchema, params);
+    if (!parsed.ok) return parsed.result;
+    const { modelId, revisionId, permanent = false } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 

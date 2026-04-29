@@ -1,6 +1,8 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
+import { parseParams } from "../../utils/validateParams.js";
+import { listFilesSchema } from "./schemas.js";
 import type {
     FmFile,
     FmFileListWhereInput,
@@ -41,8 +43,10 @@ export async function listFiles(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: ListFilesParams
-): Promise<Result<ListFilesResult, HttpError | GraphQLError | NetworkError>> {
-    const { search, where, limit, after, sort, fields } = params;
+): Promise<Result<ListFilesResult, HttpError | GraphQLError | NetworkError | ValidationError>> {
+    const parsed = parseParams(listFilesSchema, params);
+    if (!parsed.ok) return parsed.result;
+    const { search, where, limit, after, sort, fields } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 

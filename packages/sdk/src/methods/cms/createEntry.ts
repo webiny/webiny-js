@@ -1,7 +1,9 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryStatus, CmsIdentity } from "./cmsTypes.js";
+import { parseParams } from "../../utils/validateParams.js";
+import { createEntrySchema } from "./schemas.js";
 
 /**
  * Create entry data.
@@ -75,8 +77,12 @@ export async function createEntry<TValues extends CmsEntryValues = CmsEntryValue
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: CreateEntryParams<TValues>
-): Promise<Result<CreateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
-    const { modelId, data, fields } = params;
+): Promise<
+    Result<CreateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
+> {
+    const parsed = parseParams(createEntrySchema, params);
+    if (!parsed.ok) return parsed.result;
+    const { modelId, data, fields } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 

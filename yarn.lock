@@ -15555,6 +15555,7 @@ __metadata:
     p-retry: "npm:^8.0.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.5"
+    zod: "npm:^4.3.6"
   languageName: unknown
   linkType: soft
 

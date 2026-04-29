@@ -288,15 +288,39 @@ describe("SDK GraphQL - CMS Operations", () => {
             expect(listResult.error?.message).toBe('Unknown filter field: "name_unknownop".');
         });
 
-        it("should return empty results for limit 0 without error", async () => {
+        it("should return validation error for limit 0", async () => {
             const listResult = await sdk.cms.listEntries<ProductValues>({
                 modelId: "product",
                 fields: ["id"],
                 limit: 0
             });
 
-            expect(listResult.isOk()).toBe(true);
-            expect(listResult.value?.data).toHaveLength(0);
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.code).toBe("VALIDATION_ERROR");
+        });
+
+        it("should return validation error for non-integer limit", async () => {
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id"],
+                limit: "sd" as unknown as number
+            });
+
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.code).toBe("VALIDATION_ERROR");
+            expect(listResult.error?.message).toContain('"limit"');
+        });
+
+        it("should return validation error for non-string search", async () => {
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id"],
+                search: false as unknown as string
+            });
+
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.code).toBe("VALIDATION_ERROR");
+            expect(listResult.error?.message).toContain('"search"');
         });
 
         it("should list entries with limit and pagination", async () => {

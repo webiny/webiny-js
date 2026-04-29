@@ -1,6 +1,8 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
+import { parseParams } from "../../utils/validateParams.js";
+import { getFileSchema } from "./schemas.js";
 import type { FmFile } from "./fileManagerTypes.js";
 import { buildFieldsSelection } from "./buildFieldsSelection.js";
 import { transformFieldError } from "../../utils/transformFieldErrors.js";
@@ -23,8 +25,10 @@ export async function getFile(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: GetFileParams
-): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
-    const { id, fields } = params;
+): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError | ValidationError>> {
+    const parsed = parseParams(getFileSchema, params);
+    if (!parsed.ok) return parsed.result;
+    const { id, fields } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 

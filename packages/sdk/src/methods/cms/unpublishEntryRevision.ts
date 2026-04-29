@@ -1,7 +1,9 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
+import { parseParams } from "../../utils/validateParams.js";
+import { unpublishEntryRevisionSchema } from "./schemas.js";
 
 export interface UnpublishEntryRevisionParams {
     modelId: string;
@@ -25,8 +27,12 @@ export async function unpublishEntryRevision<TValues extends CmsEntryValues = Cm
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: UnpublishEntryRevisionParams
-): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
-    const { modelId, revisionId, fields } = params;
+): Promise<
+    Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
+> {
+    const parsed = parseParams(unpublishEntryRevisionSchema, params);
+    if (!parsed.ok) return parsed.result;
+    const { modelId, revisionId, fields } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 

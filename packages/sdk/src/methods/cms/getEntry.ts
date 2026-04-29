@@ -1,7 +1,9 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
+import { parseParams } from "../../utils/validateParams.js";
+import { getEntrySchema } from "./schemas.js";
 
 export interface GetEntryWhere {
     id?: string;
@@ -36,8 +38,12 @@ export async function getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: GetEntryParams
-): Promise<Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
-    const { modelId, where, fields, preview } = params;
+): Promise<
+    Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
+> {
+    const parsed = parseParams(getEntrySchema, params);
+    if (!parsed.ok) return parsed.result;
+    const { modelId, where, fields, preview } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 
