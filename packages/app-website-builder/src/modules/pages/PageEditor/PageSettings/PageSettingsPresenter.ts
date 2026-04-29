@@ -1,11 +1,5 @@
 import { makeAutoObservable, computed } from "mobx";
 import { FormModelFactory, FormModel } from "@webiny/app-admin";
-import type {
-    LayoutNode,
-    ILayoutNodeBuilder,
-    IRowNode,
-    LayoutPosition
-} from "@webiny/app-admin/features/formModel/abstractions.js";
 import { PageSettingsPresenter as PresenterAbstraction } from "./abstractions.js";
 import { PageSettingsGroup } from "./abstractions.js";
 import { PageSettingsGroupModifier } from "./abstractions.js";
@@ -14,39 +8,12 @@ type FieldsFactory = (
     fields: FormModelFactory.FieldBuilderRegistry
 ) => Record<string, FormModelFactory.FieldBuilder>;
 
-type LayoutFactory = (layout: FormModelFactory.LayoutBuilder) => ILayoutNodeBuilder[];
+type LayoutFactory = (layout: FormModelFactory.LayoutBuilder) => FormModel.LayoutNodeBuilder[];
 
 interface CollectedGroup {
     group: PageSettingsGroup.Interface;
     fieldsFns: FieldsFactory[];
     layoutFns: LayoutFactory[];
-}
-
-function resolvePositionedNodes(nodes: LayoutNode[]): LayoutNode[] {
-    const positioned: LayoutNode[] = [];
-    const deferred: { node: LayoutNode; position: LayoutPosition }[] = [];
-
-    for (const node of nodes) {
-        if ("position" in node && (node as IRowNode).position) {
-            deferred.push({ node, position: (node as IRowNode).position! });
-        } else {
-            positioned.push(node);
-        }
-    }
-
-    for (const { node, position } of deferred) {
-        const targetIndex = positioned.findIndex(
-            n => n.type === "row" && (n as IRowNode).fieldIds.includes(position.target)
-        );
-        if (targetIndex === -1) {
-            positioned.push(node);
-            continue;
-        }
-        const insertAt = position.type === "after" ? targetIndex + 1 : targetIndex;
-        positioned.splice(insertAt, 0, node);
-    }
-
-    return positioned;
 }
 
 class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
@@ -187,14 +154,7 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
                             if (layoutFns.length > 0) {
                                 return [
                                     l.object(group.name, inner => {
-                                        const builders: ILayoutNodeBuilder[] = [];
-                                        for (const fn of layoutFns) {
-                                            builders.push(...fn(inner));
-                                        }
-                                        const resolved = resolvePositionedNodes(
-                                            builders.map(b => b.build())
-                                        );
-                                        return resolved.map(node => ({ build: () => node }));
+                                        return layoutFns.flatMap(fn => fn(inner));
                                     })
                                 ];
                             }

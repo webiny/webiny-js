@@ -98,17 +98,44 @@ function buildLayoutNodes(builders: ILayoutNodeBuilder[]): LayoutNode[] {
     return builders.map(b => b.build());
 }
 
+function resolvePositionedRows(nodes: LayoutNode[]): LayoutNode[] {
+    const result: LayoutNode[] = [];
+    const deferred: { node: LayoutNode; position: LayoutPosition }[] = [];
+
+    for (const node of nodes) {
+        if (node.type === "row" && node.position) {
+            deferred.push({ node, position: node.position });
+        } else {
+            result.push(node);
+        }
+    }
+
+    for (const { node, position } of deferred) {
+        const targetIndex = result.findIndex(
+            n => n.type === "row" && (n as IRowNode).fieldIds.includes(position.target)
+        );
+        if (targetIndex === -1) {
+            result.push(node);
+            continue;
+        }
+        const insertAt = position.type === "after" ? targetIndex + 1 : targetIndex;
+        result.splice(insertAt, 0, node);
+    }
+
+    return result;
+}
+
 function resolveObjectInner(
     inner:
         | ((layout: ILayoutBuilder) => ILayoutNodeBuilder[])
         | Record<string, (layout: ILayoutBuilder) => ILayoutNodeBuilder[]>
 ): LayoutNode[] | Record<string, LayoutNode[]> {
     if (typeof inner === "function") {
-        return buildLayoutNodes(inner(layoutAPI));
+        return resolvePositionedRows(buildLayoutNodes(inner(layoutAPI)));
     }
     const resolved: Record<string, LayoutNode[]> = {};
     for (const [tplId, factory] of Object.entries(inner)) {
-        resolved[tplId] = buildLayoutNodes(factory(layoutAPI));
+        resolved[tplId] = resolvePositionedRows(buildLayoutNodes(factory(layoutAPI)));
     }
     return resolved;
 }
