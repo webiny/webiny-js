@@ -1,1 +1,4 @@
-export { AfterAuthenticationEventHandler, BeforeAuthenticationEventHandler } from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";
+export {
+    AfterAuthenticationEventHandler,
+    BeforeAuthenticationEventHandler
+} from "@webiny/api-core/features/security/authentication/AuthenticationContext/index.js";

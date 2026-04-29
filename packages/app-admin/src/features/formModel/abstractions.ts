@@ -256,13 +256,36 @@ export interface IField {
  * Maps field type strings to their typed field interfaces.
  * Extended via module augmentation when new field types are registered.
  */
+export interface ITypedField<V> extends IField {
+    getValue<T = V>(): T;
+}
+
+export interface FieldValueTypeMap {
+    text: string | null;
+    number: number | null;
+    boolean: boolean | null;
+    datetime: string | null;
+    file: Record<string, unknown> | null;
+    fileUrl: string | null;
+}
+
+export type FileValue = {
+    id: string;
+    name: string;
+    size: number;
+    mimeType: string;
+    src: string;
+    width: number | undefined;
+    height: number | undefined;
+};
+
 export interface FieldTypeMap {
-    text: IField;
-    number: IField;
-    boolean: IField;
-    datetime: IField;
-    file: IField;
-    fileUrl: IField;
+    text: ITypedField<string | null>;
+    number: ITypedField<number | null>;
+    boolean: ITypedField<boolean | null>;
+    datetime: ITypedField<string | null>;
+    file: ITypedField<FileValue | null>;
+    fileUrl: ITypedField<string | null>;
     object: IObjectField;
 }
 

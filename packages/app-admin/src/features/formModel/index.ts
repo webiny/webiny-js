@@ -30,6 +30,8 @@ export type {
     ITemplateVM,
     IObjectFieldTemplatesAPI,
     FieldTypeMap,
+    FieldValueTypeMap,
+    ITypedField,
     IFieldConfig,
     IFieldVM,
     IFieldValidation,

@@ -4,6 +4,7 @@ import { FileManager } from "~/base/ui/FileManager.js";
 import { FilePicker, type FileItemDto } from "@webiny/admin-ui";
 import type { IFieldVM } from "~/features/formModel/abstractions.js";
 import type { FileManagerFileItem } from "~/base/ui/FileManager.js";
+import type { FileValue } from "~/features/formModel/abstractions.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -34,7 +35,7 @@ export const FilePickerRenderer = observer(({ field }: { field: IFieldVM }) => {
 });
 
 const toFilePickerValue = (value: unknown): FileItemDto | undefined => {
-    const img = value as ImageValue | undefined;
+    const img = value as FileValue | undefined;
     if (!img?.src) {
         return undefined;
     }
@@ -52,5 +53,3 @@ const fileManagerItemToValue = (file: FileManagerFileItem) => {
         height: file.height
     };
 };
-
-type ImageValue = ReturnType<typeof fileManagerItemToValue>;
