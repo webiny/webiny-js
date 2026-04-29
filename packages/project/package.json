@@ -34,7 +34,7 @@
     "exit-hook": "^5.1.0",
     "fast-glob": "^3.3.3",
     "find-up": "^8.0.0",
-    "get-tsconfig": "^4.13.7",
+    "get-tsconfig": "^4.14.0",
     "graphql-request": "^7.4.0",
     "humanize-duration": "3.33.2",
     "jsdom": "^29.0.2",
