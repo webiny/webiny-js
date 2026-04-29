@@ -398,6 +398,12 @@ export type LayoutNode = IRowNode | ISeparatorNode | ITabsNode | IElementNode | 
 export interface IRowNode {
     type: "row";
     fieldIds: string[];
+    position?: LayoutPosition;
+}
+
+export interface IRowNodeHandle extends IRowNode {
+    before(target: string): IRowNodeHandle;
+    after(target: string): IRowNodeHandle;
 }
 
 export interface ISeparatorNode {
@@ -654,6 +660,7 @@ export namespace FormModel {
     export type OnBlur = OnBlurCallback;
     export type OnClone = OnCloneCallback;
     export type RowNode = IRowNode;
+    export type RowNodeHandle = IRowNodeHandle;
     export type RowNodeVM = IRowNodeVM;
     export type SeparatorNode = ISeparatorNode;
     export type SeparatorNodeVM = ISeparatorNodeVM;
@@ -703,7 +710,7 @@ export interface IFormModelConfig {
 }
 
 export interface ILayoutBuilder {
-    row(...fieldIds: string[]): IRowNode;
+    row(...fieldIds: string[]): IRowNodeHandle;
     separator(): ISeparatorNode;
     tabs(config: {
         id?: string;

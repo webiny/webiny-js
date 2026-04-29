@@ -4,7 +4,6 @@ import { FormModelFactory } from "@webiny/app-admin";
 import type { LayoutNode } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { Icon } from "@webiny/app-admin/components/IconPicker/types.js";
 import type { EditorPage } from "@webiny/website-builder-sdk";
-import type { IFormModel } from "@webiny/app-admin";
 
 // Settings Group
 
@@ -43,9 +42,12 @@ export namespace PageSettingsGroup {
 
 export interface IPageSettingsGroupModifier {
     group: string;
-    modifyForm(form: IFormModel): void;
-    mapToForm?(document: IPageDocument): Record<string, any>;
-    mapFromForm?(formData: Record<string, any>, document: IPageDocument): void;
+    modifyForm(formBuilder: IPageSettingsGroupFormBuilder): void;
+    mapToForm?(document: PageSettingsGroupModifier.PageDocument): Record<string, any>;
+    mapFromForm?(
+        formData: Record<string, any>,
+        document: PageSettingsGroupModifier.PageDocument
+    ): void;
 }
 
 export const PageSettingsGroupModifier = createAbstraction<IPageSettingsGroupModifier>(
@@ -55,6 +57,7 @@ export const PageSettingsGroupModifier = createAbstraction<IPageSettingsGroupMod
 export namespace PageSettingsGroupModifier {
     export type Interface = IPageSettingsGroupModifier;
     export type PageDocument = IPageDocument;
+    export type FormBuilder = IPageSettingsGroupFormBuilder;
 }
 
 // Presenter

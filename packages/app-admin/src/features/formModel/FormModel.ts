@@ -25,6 +25,7 @@ import type {
     LayoutPosition,
     LayoutNodeVM,
     IRowNode,
+    IRowNodeHandle,
     IRowNodeVM,
     ISeparatorNode,
     ISeparatorNodeVM,
@@ -41,8 +42,19 @@ import type {
 } from "./abstractions.js";
 
 const layoutAPI: ILayoutBuilder = {
-    row(...fieldIds: string[]): IRowNode {
-        return { type: "row", fieldIds };
+    row(...fieldIds: string[]): IRowNodeHandle {
+        const node: IRowNode = { type: "row", fieldIds };
+        const handle: IRowNodeHandle = Object.assign(node, {
+            before(target: string) {
+                node.position = { type: "before", target };
+                return handle;
+            },
+            after(target: string) {
+                node.position = { type: "after", target };
+                return handle;
+            }
+        });
+        return handle;
     },
     separator(): ISeparatorNode {
         return { type: "separator" };

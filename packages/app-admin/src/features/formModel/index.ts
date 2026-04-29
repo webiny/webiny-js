@@ -37,6 +37,7 @@ export type {
     IFormError,
     IValueOption,
     IRowNode,
+    IRowNodeHandle,
     IRowNodeVM,
     ISeparatorNode,
     ISeparatorNodeVM,

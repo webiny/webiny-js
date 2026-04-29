@@ -1,6 +1,10 @@
 import { makeAutoObservable, computed } from "mobx";
 import { FormModelFactory, FormModel } from "@webiny/app-admin";
-import type { LayoutNode } from "@webiny/app-admin/features/formModel/abstractions.js";
+import type {
+    LayoutNode,
+    IRowNode,
+    LayoutPosition
+} from "@webiny/app-admin/features/formModel/abstractions.js";
 import { PageSettingsPresenter as PresenterAbstraction } from "./abstractions.js";
 import { PageSettingsGroup } from "./abstractions.js";
 import { PageSettingsGroupModifier } from "./abstractions.js";
@@ -13,8 +17,35 @@ type LayoutFactory = (layout: FormModelFactory.LayoutBuilder) => LayoutNode[];
 
 interface CollectedGroup {
     group: PageSettingsGroup.Interface;
-    fieldsFn: FieldsFactory | null;
-    layoutFn: LayoutFactory | null;
+    fieldsFns: FieldsFactory[];
+    layoutFns: LayoutFactory[];
+}
+
+function resolvePositionedNodes(nodes: LayoutNode[]): LayoutNode[] {
+    const positioned: LayoutNode[] = [];
+    const deferred: { node: LayoutNode; position: LayoutPosition }[] = [];
+
+    for (const node of nodes) {
+        if ("position" in node && (node as IRowNode).position) {
+            deferred.push({ node, position: (node as IRowNode).position! });
+        } else {
+            positioned.push(node);
+        }
+    }
+
+    for (const { node, position } of deferred) {
+        const targetIndex = positioned.findIndex(
+            n => n.type === "row" && (n as IRowNode).fieldIds.includes(position.target)
+        );
+        if (targetIndex === -1) {
+            positioned.push(node);
+            continue;
+        }
+        const insertAt = position.type === "after" ? targetIndex + 1 : targetIndex;
+        positioned.splice(insertAt, 0, node);
+    }
+
+    return positioned;
 }
 
 class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
@@ -68,6 +99,8 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
             return false;
         }
 
+        console.log("data", data);
+
         const doc = structuredClone(this.originalData);
 
         for (const group of this.groups) {
@@ -85,42 +118,51 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
 
     private collectGroups(): CollectedGroup[] {
         return this.groups.map(group => {
-            const collected: CollectedGroup = {
-                group,
-                fieldsFn: null,
-                layoutFn: null
-            };
+            const fieldsFns: FieldsFactory[] = [];
+            const layoutFns: LayoutFactory[] = [];
 
             const builder: PageSettingsGroup.FormBuilder = {
                 fields(fn: FieldsFactory) {
-                    collected.fieldsFn = fn;
+                    fieldsFns.push(fn);
                 },
                 layout(fn: LayoutFactory) {
-                    collected.layoutFn = fn;
+                    layoutFns.push(fn);
                 }
             };
 
             group.buildForm(builder);
 
-            return collected;
+            for (const modifier of this.modifiers ?? []) {
+                if (modifier.group === group.name) {
+                    modifier.modifyForm(builder);
+                }
+            }
+
+            return { group, fieldsFns, layoutFns };
         });
     }
 
     private buildForm() {
         const collected = this.collectGroups();
 
-        const form = this.factory.create({
+        return this.factory.create({
             fields: fields => {
                 const result: Record<string, FormModelFactory.FieldBuilder> = {};
-                for (const { group, fieldsFn } of collected) {
-                    if (!fieldsFn) {
+                for (const { group, fieldsFns } of collected) {
+                    if (fieldsFns.length === 0) {
                         continue;
                     }
                     result[group.name] = fields
                         .object()
                         .label(group.label)
                         .renderer("passthrough")
-                        .fields(fieldsFn);
+                        .fields(registry => {
+                            const merged: Record<string, FormModelFactory.FieldBuilder> = {};
+                            for (const fn of fieldsFns) {
+                                Object.assign(merged, fn(registry));
+                            }
+                            return merged;
+                        });
                 }
                 return result;
             },
@@ -133,23 +175,31 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
                     layout.tabs({
                         id: "settings-tabs",
                         renderer: "tabs-vertical",
-                        tabs: collected.map(({ group }) => ({
+                        tabs: collected.map(({ group, layoutFns }) => ({
                             id: group.name,
                             label: group.label,
                             description: group.description,
                             icon: group.icon,
-                            layout: l => [l.row(group.name)]
+                            layout: (l: FormModelFactory.LayoutBuilder) => {
+                                if (layoutFns.length > 0) {
+                                    return [
+                                        l.object(group.name, inner => {
+                                            const nodes: LayoutNode[] = [];
+                                            for (const fn of layoutFns) {
+                                                nodes.push(...fn(inner));
+                                            }
+                                            return resolvePositionedNodes(nodes);
+                                        })
+                                    ];
+                                }
+
+                                return [l.row(group.name)];
+                            }
                         }))
                     })
                 ];
             }
         });
-
-        for (const modifier of this.modifiers ?? []) {
-            modifier.modifyForm(form);
-        }
-
-        return form;
     }
 }
 
