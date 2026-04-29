@@ -1,25 +1,27 @@
 import { describe, it, expect } from "vitest";
-import { FormModel } from "./FormModel.js";
+import { Container } from "@webiny/di";
+import { FormModelFeature } from "./feature.js";
 import { ConditionRuleEvaluator } from "./ConditionRuleEvaluator.js";
-import type {
-    IRule,
-    IRuleEvaluator,
-    ITabsNodeVM,
-    IFormModel,
-    IFormModelConfig
+import {
+    FormModelFactory,
+    type IRule,
+    type IRuleEvaluator,
+    type ITabsNodeVM,
+    type IFormModel,
+    type IFormModelConfig
 } from "./abstractions.js";
-
-const condition = new ConditionRuleEvaluator();
 
 function createForm(config: {
     extraEvaluators?: IRuleEvaluator[];
     fields: IFormModelConfig["fields"];
     layout?: IFormModelConfig["layout"];
 }) {
-    return new FormModel({
+    const container = new Container();
+    FormModelFeature.register(container);
+    return container.resolve(FormModelFactory).create({
         fields: config.fields,
         layout: config.layout,
-        ruleEvaluators: [condition, ...(config.extraEvaluators ?? [])]
+        ruleEvaluators: config.extraEvaluators
     });
 }
 

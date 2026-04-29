@@ -24,7 +24,6 @@ import type {
     OnBlurCallback,
     ComputedFieldCallback
 } from "./abstractions.js";
-import { createFieldBuilderRegistry } from "./FieldBuilder.js";
 import type { FormModel } from "./FormModel.js";
 
 /** Reserved key used as the template discriminator in templated object data. */
@@ -346,8 +345,7 @@ export class ObjectField implements IObjectField {
         if (this._findTemplate(template.id)) {
             throw new Error(`Duplicate template id "${template.id}".`);
         }
-        const registry = createFieldBuilderRegistry();
-        const childBuilders = template.fields(registry);
+        const childBuilders = template.fields((this._form as FormModel).registry);
         if (TEMPLATE_DISCRIMINATOR in childBuilders) {
             throw new Error(
                 `Template "${template.id}" defines a reserved field "${TEMPLATE_DISCRIMINATOR}". ` +
@@ -514,8 +512,7 @@ export class ObjectField implements IObjectField {
                 `Object field "${this.config.name}" is templated; use templates.add()/remove() to manage children. Each template owns its own fields.`
             );
         }
-        const registry = createFieldBuilderRegistry();
-        const builders = factory(registry);
+        const builders = factory((this._form as FormModel).registry);
 
         for (const [name, builder] of Object.entries(builders)) {
             if (builder === undefined) {

@@ -1,7 +1,6 @@
 import { makeAutoObservable, computed, toJS, runInAction, observable } from "mobx";
 import { Field } from "./Field.js";
 import { ObjectField, isObjectField } from "./ObjectField.js";
-import { createFieldBuilderRegistry } from "./FieldBuilder.js";
 import type {
     IFormModel,
     IField,
@@ -162,11 +161,12 @@ export class FormModel implements IFormModel {
     private _warnedRuleTypes = new Set<string>();
     private _formRules: FormRule[] = [];
     private _lastFocusedField: IField | null = null;
+    private _registry: IFieldBuilderRegistry;
 
-    constructor(config: IFormModelConfig) {
+    constructor(config: IFormModelConfig, registry: IFieldBuilderRegistry) {
+        this._registry = registry;
         this._ruleEvaluators = config.ruleEvaluators ?? [];
 
-        const registry = createFieldBuilderRegistry();
         const builders = config.fields(registry);
 
         // Build fields from builders
@@ -298,8 +298,7 @@ export class FormModel implements IFormModel {
     fields(
         factory: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder | undefined>
     ): void {
-        const registry = createFieldBuilderRegistry();
-        const builders = factory(registry);
+        const builders = factory(this._registry);
 
         for (const [name, builder] of Object.entries(builders)) {
             if (builder === undefined) {
@@ -595,6 +594,10 @@ export class FormModel implements IFormModel {
      * per-item template). Field-id lookups go to the children scope; tabs and
      * other recursive cases are resolved with the same scope.
      */
+    get registry(): IFieldBuilderRegistry {
+        return this._registry;
+    }
+
     public resolveChildLayout(layout: LayoutNode[], children: Map<string, IField>): LayoutNodeVM[] {
         return layout
             .map(node => this._resolveChildLayoutNode(node, children))

@@ -1,12 +1,18 @@
 import { describe, it, expect } from "vitest";
 import { z } from "zod";
-import {
-    TextFieldBuilder,
-    NumberFieldBuilder,
-    BooleanFieldBuilder,
-    DateTimeFieldBuilder,
-    createFieldBuilderRegistry
-} from "./FieldBuilder.js";
+import { Container } from "@webiny/di";
+import { FormModelFeature } from "./feature.js";
+import { FieldBuilderRegistry, type IFieldBuilderRegistry } from "./abstractions.js";
+import { TextFieldBuilder } from "./fieldTypes/TextFieldType.js";
+import { NumberFieldBuilder } from "./fieldTypes/NumberFieldType.js";
+import { BooleanFieldBuilder } from "./fieldTypes/BooleanFieldType.js";
+import { DateTimeFieldBuilder } from "./fieldTypes/DateTimeFieldType.js";
+
+function createRegistry(): IFieldBuilderRegistry {
+    const container = new Container();
+    FormModelFeature.register(container);
+    return container.resolve(FieldBuilderRegistry);
+}
 
 describe("TextFieldBuilder", () => {
     it("should build a text field config with all fluent methods", () => {
@@ -165,38 +171,38 @@ describe("DateTimeFieldBuilder", () => {
 
 describe("FieldBuilderRegistry", () => {
     it("should create text builders via registry.text()", () => {
-        const registry = createFieldBuilderRegistry();
+        const registry = createRegistry();
         const builder = registry.text();
         expect(builder).toBeInstanceOf(TextFieldBuilder);
     });
 
     it("should create number builders via registry.number()", () => {
-        const registry = createFieldBuilderRegistry();
+        const registry = createRegistry();
         const builder = registry.number();
         expect(builder).toBeInstanceOf(NumberFieldBuilder);
     });
 
     it("should create boolean builders via registry.boolean()", () => {
-        const registry = createFieldBuilderRegistry();
+        const registry = createRegistry();
         const builder = registry.boolean();
         expect(builder).toBeInstanceOf(BooleanFieldBuilder);
     });
 
     it("should create datetime builders via registry.datetime()", () => {
-        const registry = createFieldBuilderRegistry();
+        const registry = createRegistry();
         const builder = registry.datetime();
         expect(builder).toBeInstanceOf(DateTimeFieldBuilder);
     });
 
     it("should support chaining on registry-created builders", () => {
-        const registry = createFieldBuilderRegistry();
+        const registry = createRegistry();
         const config = registry.text().label("Name").required().build("name");
         expect(config.label).toBe("Name");
         expect(config.required).toBe(true);
     });
 
     it("should support options on text builders from registry", () => {
-        const registry = createFieldBuilderRegistry();
+        const registry = createRegistry();
         const config = registry
             .text()
             .options([{ label: "A", value: "a" }])

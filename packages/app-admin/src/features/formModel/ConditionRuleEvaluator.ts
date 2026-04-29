@@ -1,4 +1,4 @@
-import type { IRule, IRuleEvaluator, IFormModel } from "./abstractions.js";
+import type { IFormModel } from "./abstractions.js";
 import { RuleEvaluator } from "./abstractions.js";
 
 const isEmpty = (value: unknown): boolean => {
@@ -11,12 +11,12 @@ const isEmpty = (value: unknown): boolean => {
     return false;
 };
 
-export class ConditionRuleEvaluator implements IRuleEvaluator {
-    canEvaluate(rule: IRule): boolean {
+export class ConditionRuleEvaluatorImpl implements RuleEvaluator.Interface {
+    canEvaluate(rule: RuleEvaluator.Rule): boolean {
         return rule.type === "condition";
     }
 
-    evaluate(rule: IRule, form: IFormModel): boolean {
+    evaluate(rule: RuleEvaluator.Rule, form: IFormModel): boolean {
         const field = safeGetField(form, rule.target);
         const value = field?.getValue() ?? null;
 
@@ -57,7 +57,7 @@ function safeGetField(form: IFormModel, name: string) {
     }
 }
 
-export const ConditionRuleEvaluatorImpl = RuleEvaluator.createImplementation({
-    implementation: ConditionRuleEvaluator,
+export const ConditionRuleEvaluator = RuleEvaluator.createImplementation({
+    implementation: ConditionRuleEvaluatorImpl,
     dependencies: []
 });

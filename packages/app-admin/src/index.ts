@@ -66,6 +66,13 @@ export * from "@webiny/app/renderApp.js";
 
 // FormModel
 import "./features/formModel/renderers.js";
+import "./features/formModel/fieldTypes/TextFieldType.js";
+import "./features/formModel/fieldTypes/NumberFieldType.js";
+import "./features/formModel/fieldTypes/BooleanFieldType.js";
+import "./features/formModel/fieldTypes/DateTimeFieldType.js";
+import "./features/formModel/fieldTypes/FileFieldType.js";
+import "./features/formModel/fieldTypes/FileUrlFieldType.js";
+import "./features/formModel/fieldTypes/ObjectFieldType.js";
 export { FormModelFactory, FormModel } from "./features/formModel/abstractions.js";
 export type {
     IFieldRendererRegistry,

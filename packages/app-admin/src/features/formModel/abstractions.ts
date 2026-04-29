@@ -260,14 +260,17 @@ export interface ITypedField<V> extends IField {
     getValue<T = V>(): T;
 }
 
-export interface FieldValueTypeMap {
-    text: string | null;
-    number: number | null;
-    boolean: boolean | null;
-    datetime: string | null;
-    file: Record<string, unknown> | null;
-    fileUrl: string | null;
-}
+type InferFieldTypeMap = {
+    [K in keyof IFieldBuilderRegistry]: ReturnType<
+        IFieldBuilderRegistry[K]
+    > extends IObjectFieldBuilder
+        ? IObjectField
+        : ReturnType<IFieldBuilderRegistry[K]> extends { readonly __valueType?: infer V }
+          ? ITypedField<V>
+          : IField;
+};
+
+export type FieldTypeMap = { [K in keyof InferFieldTypeMap]: InferFieldTypeMap[K] };
 
 export type FileValue = {
     id: string;
@@ -278,16 +281,6 @@ export type FileValue = {
     width: number | undefined;
     height: number | undefined;
 };
-
-export interface FieldTypeMap {
-    text: ITypedField<string | null>;
-    number: ITypedField<number | null>;
-    boolean: ITypedField<boolean | null>;
-    datetime: ITypedField<string | null>;
-    file: ITypedField<FileValue | null>;
-    fileUrl: ITypedField<string | null>;
-    object: IObjectField;
-}
 
 // ---------------------------------------------------------------------------
 // Object / List field types
@@ -329,7 +322,7 @@ export interface ITemplateConfig {
     visible?: (form: IFormModel) => boolean;
 }
 
-export interface IObjectField extends IField {
+export interface IObjectField extends ITypedField<Record<string, unknown> | null> {
     readonly isList: boolean;
     readonly children: Map<string, IField>;
     readonly items: IListItemField[];
@@ -759,7 +752,12 @@ export interface ILayoutBuilder {
     ): IObjectNode;
 }
 
-export interface IFieldBuilder<TType extends string = string, TOptions extends boolean = false> {
+export interface IFieldBuilder<
+    TType extends string = string,
+    TOptions extends boolean = false,
+    TValue = unknown
+> {
+    readonly __valueType?: TValue;
     label(text: string): this;
     help(text: string): this;
     description(text: string): this;
@@ -809,29 +807,52 @@ export interface IFieldBuilder<TType extends string = string, TOptions extends b
     build(name: string): IFieldConfig;
 }
 
-export interface IOptionsFieldBuilder<TType extends string> extends IFieldBuilder<TType, false> {
+export interface IOptionsFieldBuilder<TType extends string, TValue = unknown> extends IFieldBuilder<
+    TType,
+    false,
+    TValue
+> {
     options(
         opts:
             | IValueOption<OptionValueType<TType>>[]
             | ((form: IFormModel) => IValueOption<OptionValueType<TType>>[])
-    ): IFieldBuilder<TType, true>;
+    ): IFieldBuilder<TType, true, TValue>;
 }
 
-export interface IObjectFieldBuilder extends IFieldBuilder<"object"> {
+export interface IObjectFieldBuilder extends IFieldBuilder<
+    "object",
+    false,
+    Record<string, unknown> | null
+> {
     fields(fn: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this;
     list(): this;
     listSchema(schema: z.ZodTypeAny): this;
     templates(templates: ITemplate[]): this;
 }
 
-export interface IFieldBuilderRegistry {
-    text(): IOptionsFieldBuilder<"text">;
-    number(): IOptionsFieldBuilder<"number">;
-    boolean(): IFieldBuilder<"boolean">;
-    datetime(): IFieldBuilder<"datetime">;
-    file(): IFieldBuilder<"file">;
-    fileUrl(): IFieldBuilder<"fileUrl">;
-    object(): IObjectFieldBuilder;
+export interface IFieldBuilderRegistry {}
+
+// ---------------------------------------------------------------------------
+// Field type plugin system
+// ---------------------------------------------------------------------------
+
+export interface IFieldTypeFactory {
+    readonly type: string;
+    create(registry: IFieldBuilderRegistry): IFieldBuilder;
+}
+
+export const FieldType = createAbstraction<IFieldTypeFactory>("FormModel/FieldType");
+
+export namespace FieldType {
+    export type Interface = IFieldTypeFactory;
+}
+
+export const FieldBuilderRegistry = createAbstraction<IFieldBuilderRegistry>(
+    "FormModel/FieldBuilderRegistry"
+);
+
+export namespace FieldBuilderRegistry {
+    export type Interface = IFieldBuilderRegistry;
 }
 
 export const FormModelFactory = createAbstraction<IFormModelFactory>("FormModelFactory");

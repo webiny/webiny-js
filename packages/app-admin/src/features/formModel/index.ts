@@ -5,7 +5,13 @@ export { FormModelFeature } from "./feature.js";
 import "./renderers.js";
 
 // Abstractions (types + DI tokens)
-export { FormModelFactory, FormModel, RuleEvaluator } from "./abstractions.js";
+export {
+    FormModelFactory,
+    FormModel,
+    RuleEvaluator,
+    FieldType,
+    FieldBuilderRegistry
+} from "./abstractions.js";
 export type {
     IFieldRendererRegistry,
     FieldRendererName,
@@ -30,7 +36,6 @@ export type {
     ITemplateVM,
     IObjectFieldTemplatesAPI,
     FieldTypeMap,
-    FieldValueTypeMap,
     ITypedField,
     IFieldConfig,
     IFieldVM,
@@ -67,23 +72,42 @@ export type {
     AfterChangeCallback,
     AfterSetValueCallback,
     OnBlurCallback,
-    CloneValueCallback
+    CloneValueCallback,
+    IFieldTypeFactory,
+    FileValue
 } from "./abstractions.js";
 
 // Implementations
 export { FormModel as FormModelImpl } from "./FormModel.js";
 export { Field } from "./Field.js";
+export { FieldBuilder, createFieldBuilderRegistry } from "./FieldBuilder.js";
+
+// Field type augmentations (side-effect imports ensure declare module blocks are included)
+import "./fieldTypes/TextFieldType.js";
+import "./fieldTypes/NumberFieldType.js";
+import "./fieldTypes/BooleanFieldType.js";
+import "./fieldTypes/DateTimeFieldType.js";
+import "./fieldTypes/FileFieldType.js";
+import "./fieldTypes/FileUrlFieldType.js";
+import "./fieldTypes/ObjectFieldType.js";
+
+// Field types (DI-registered)
 export {
-    FieldBuilder,
+    TextFieldType,
     TextFieldBuilder,
+    NumberFieldType,
     NumberFieldBuilder,
+    BooleanFieldType,
     BooleanFieldBuilder,
+    DateTimeFieldType,
     DateTimeFieldBuilder,
+    FileFieldType,
+    FileFieldBuilder,
+    FileUrlFieldType,
     FileUrlFieldBuilder,
-    ObjectFieldBuilder,
-    createFieldBuilderRegistry
-} from "./FieldBuilder.js";
-export type { IFieldTypeFactory } from "./FieldBuilder.js";
+    ObjectFieldType,
+    ObjectFieldBuilder
+} from "./fieldTypes/index.js";
 
 // Object field
 export { ObjectField, isObjectField } from "./ObjectField.js";
