@@ -87,10 +87,16 @@ export type ITaskResult<I = ITaskInput, O extends ITaskOutput = ITaskOutput> =
     | ITaskResultError
     | ITaskResultAborted;
 
+export type ISelfCleanupEvent = "onSuccess" | "onError" | "onAbort";
+
+export type ISelfCleanup = "always" | "never" | ISelfCleanupEvent | ISelfCleanupEvent[];
+
 export type ITaskLifecycleHook<
     I extends ITaskInput = ITaskInput,
     O extends ITaskOutput = ITaskOutput
-> = { task: ITask<I, O> };
+> = {
+    task: ITask<I, O>;
+};
 
 /**
  * Core TaskDefinition - minimal interface
@@ -105,6 +111,7 @@ export interface ITaskDefinition<
     maxIterations?: number;
     databaseLogs?: boolean;
     isPrivate?: boolean;
+    selfCleanup?: ISelfCleanup;
 
     /**
      * Core run method - receives ONLY input params
@@ -113,7 +120,7 @@ export interface ITaskDefinition<
     run(params: ITaskRunParams<I, O>): Promise<ITaskResult<I, O>>;
 
     /**
-     * Optional lifecycle hooks - receive task data, no context
+     * Optional lifecycle hooks - receive task data, no context.
      */
     onBeforeTrigger?(params: ITaskBeforeTriggerParams<I>): Promise<void>;
     onDone?(params: ITaskLifecycleHook<I, O>): Promise<void>;
@@ -192,4 +199,7 @@ export namespace TaskDefinition {
         I extends ITaskInput = ITaskInput,
         O extends ITaskOutput = ITaskOutput
     > = ITaskLifecycleHook<I, O>;
+
+    export type SelfCleanupEvent = ISelfCleanupEvent;
+    export type SelfCleanup = ISelfCleanup;
 }

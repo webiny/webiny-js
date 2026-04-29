@@ -12,6 +12,8 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
     description = "Synchronizes the FLP catalog by updating the FLP record and its descendants.";
     databaseLogs = false;
 
+    selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(
         private getFolder: GetFolderUseCase.Interface,
         private listFolders: ListFoldersUseCase.Interface,

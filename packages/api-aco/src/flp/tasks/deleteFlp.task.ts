@@ -10,6 +10,8 @@ class DeleteFlpTaskImpl implements TaskDefinition.Interface<IDeleteFlpTaskInput>
         "Synchronizes the FLP catalog by deleting the FLP record based on the provided folder.";
     databaseLogs = false;
 
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(private deleteFlp: DeleteFlpUseCase.Interface) {}
 
     async run({ input, controller }: TaskDefinition.RunParams<IDeleteFlpTaskInput>) {

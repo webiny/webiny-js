@@ -5,7 +5,8 @@ import type { TransportSettings } from "~/types.js";
 import {
     SettingsValidationError,
     SettingsPersistenceError,
-    SettingsNotAuthorized
+    SettingsNotAuthorized,
+    SettingsLockedByCode
 } from "~/domain/errors.js";
 
 export interface SaveSettingsInput {
@@ -21,12 +22,21 @@ export interface ISaveSettingsErrors {
     validation: SettingsValidationError;
     persistence: SettingsPersistenceError;
     notAuthorized: SettingsNotAuthorized;
+    lockedByCode: SettingsLockedByCode;
 }
 
 type SaveSettingsError = ISaveSettingsErrors[keyof ISaveSettingsErrors];
 
+/**
+ * Save-side returns are password-free. The only path that exposes the password
+ * to in-process callers is GetSettingsRepository.get / GetSettingsUseCase.execute
+ * (used by MailerService to authenticate SMTP). Everything else — events,
+ * GraphQL responses, logs, audit trails — must use this Omit shape.
+ */
+export type SavedTransportSettings = Omit<TransportSettings, "password">;
+
 export interface ISaveSettingsRepository {
-    execute(input: SaveSettingsInput): Promise<Result<TransportSettings, SaveSettingsError>>;
+    execute(input: SaveSettingsInput): Promise<Result<SavedTransportSettings, SaveSettingsError>>;
 }
 
 export const SaveSettingsRepository =
@@ -34,29 +44,30 @@ export const SaveSettingsRepository =
 
 export namespace SaveSettingsRepository {
     export type Interface = ISaveSettingsRepository;
-    export type Return = Promise<Result<TransportSettings, SaveSettingsError>>;
+    export type Return = Promise<Result<SavedTransportSettings, SaveSettingsError>>;
     export type Error = SaveSettingsError;
 }
 
 export interface ISaveSettings {
-    execute(input: SaveSettingsInput): Promise<Result<TransportSettings, SaveSettingsError>>;
+    execute(input: SaveSettingsInput): Promise<Result<SavedTransportSettings, SaveSettingsError>>;
 }
 
 export const SaveSettingsUseCase = createAbstraction<ISaveSettings>("SaveSettingsUseCase");
 
 export namespace SaveSettingsUseCase {
     export type Interface = ISaveSettings;
-    export type Return = Promise<Result<TransportSettings, SaveSettingsError>>;
+    export type Return = Promise<Result<SavedTransportSettings, SaveSettingsError>>;
     export type Error = SaveSettingsError;
 }
 
-// Domain Events
+// Domain Events. Both payloads exclude `password` so subscribers (audit logs,
+// telemetry, etc.) cannot accidentally persist plaintext or ciphertext secrets.
 export interface MailerSettingsBeforeSavePayload {
-    input: SaveSettingsInput;
+    input: Omit<SaveSettingsInput, "password">;
 }
 
 export interface MailerSettingsAfterSavePayload {
-    settings: TransportSettings;
+    settings: Omit<TransportSettings, "password">;
 }
 
 // Event Handler Abstractions

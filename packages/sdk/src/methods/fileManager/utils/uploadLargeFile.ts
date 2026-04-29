@@ -2,6 +2,8 @@ import type { WebinyConfig } from "../../../types.js";
 import type { FmFile, UploadProgress } from "../fileManagerTypes.js";
 import { isBrowser } from "../../../utils/platform.js";
 import { isBuffer, isFile, getFileSize } from "./fileTypeDetection.js";
+import pMap from "p-map";
+import pRetry from "p-retry";
 
 export interface UploadLargeFileOptions {
     onProgress?: (progress: UploadProgress) => void;
@@ -67,9 +69,6 @@ export async function uploadLargeFile(
     };
 
     // 2. Upload parts in parallel.
-    const pMap = (await import("p-map")).default;
-    const pRetry = (await import("p-retry")).default;
-
     await pMap(
         uploadData.parts,
         async (part: { partNumber: number; url: string }) => {

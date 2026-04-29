@@ -21,14 +21,6 @@
     "typescript": "6.0.3",
     "vitest": "^4.1.5"
   },
-  "adio": {
-    "ignore": {
-      "dependencies": [
-        "p-retry",
-        "p-map"
-      ]
-    }
-  },
   "publishConfig": {
     "access": "public",
     "directory": "dist"

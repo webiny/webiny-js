@@ -298,15 +298,16 @@ export const pullRequests = createWorkflow({
                     "working-directory": DIR_WEBINY_JS
                 },
                 // Run deterministic fixes as real shell commands so changes definitely land on disk.
+                // Lint runs first because auto-fixes can produce code that needs re-formatting.
                 {
-                    name: "Fix code formatting",
-                    run: "yarn format:fix",
+                    name: "Fix lint issues (auto-fixable)",
+                    run: "yarn lint:fix",
                     "working-directory": DIR_WEBINY_JS,
                     "continue-on-error": true
                 },
                 {
-                    name: "Fix lint issues (auto-fixable)",
-                    run: "yarn lint:fix",
+                    name: "Fix code formatting",
+                    run: "yarn format:fix",
                     "working-directory": DIR_WEBINY_JS,
                     "continue-on-error": true
                 },

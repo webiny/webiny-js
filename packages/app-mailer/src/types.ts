@@ -15,6 +15,7 @@ export interface MailerSecurityPermission extends Identity.Permission {
  */
 export interface TransportSettings {
     host: string;
+    port?: number;
     user: string;
     from: string;
     replyTo?: string;
