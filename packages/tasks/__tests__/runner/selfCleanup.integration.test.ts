@@ -189,8 +189,9 @@ describe("selfCleanup integration", () => {
 
     it("user's onDone runs before cleanup fires", async () => {
         const order: string[] = [];
-        const contextRef: { current?: Awaited<ReturnType<ReturnType<typeof createLiveContextFactory>>> } =
-            {};
+        const contextRef: {
+            current?: Awaited<ReturnType<ReturnType<typeof createLiveContextFactory>>>;
+        } = {};
 
         const plugin = createTaskDefinition({
             id: "cleanupOrderTask",

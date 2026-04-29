@@ -118,9 +118,9 @@ export const Extensions = () => {
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
             {/* 🚧 WIP 👇 */}
             {/*<AuditLogs.RetentionPeriod days={90} />*/}
-            
+
             {/* Tasks */}
-            <Api.Extension src={"/extensions/tasks/SelfCleaningTask.ts"}/>
+            <Api.Extension src={"/extensions/tasks/SelfCleaningTask.ts"} />
         </>
     );
 };

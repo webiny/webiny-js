@@ -120,7 +120,7 @@ export interface ITaskDefinition<
     run(params: ITaskRunParams<I, O>): Promise<ITaskResult<I, O>>;
 
     /**
-     * Optional lifecycle hooks - receive task data and the tenant context.
+     * Optional lifecycle hooks - receive task data, no context.
      */
     onBeforeTrigger?(params: ITaskBeforeTriggerParams<I>): Promise<void>;
     onDone?(params: ITaskLifecycleHook<I, O>): Promise<void>;
