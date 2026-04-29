@@ -304,7 +304,7 @@ export class FieldRenderersDemoPresenter {
                                     .text()
                                     .label("UUID")
                                     .defaultValue(() => Date.now())
-                                    .onClone(() => Date.now())
+                                    .onClone(value => `${value}/${Date.now()}`)
                             })
                         },
                         {
@@ -319,7 +319,17 @@ export class FieldRenderersDemoPresenter {
                                 url: f.text().label("URL")
                             })
                         }
-                    ])
+                    ]),
+
+                // --- Files ---
+                fileImage: fields
+                    .file()
+                    .label("Image (full metadata)")
+                    .description("Stores the full file object (id, name, size, src, etc.)"),
+                fileUrl: fields
+                    .fileUrl()
+                    .label("Image URL")
+                    .description("Stores only the file URL as a string")
             }),
             layout: layout => [
                 layout.tabs({
@@ -388,6 +398,11 @@ export class FieldRenderersDemoPresenter {
                                     cta: inner => [inner.row("label", "url")]
                                 })
                             ]
+                        },
+                        {
+                            id: "files",
+                            label: "Files",
+                            layout: l => [l.row("fileImage", "fileUrl")]
                         }
                     ]
                 })

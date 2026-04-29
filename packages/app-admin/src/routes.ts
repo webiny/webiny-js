@@ -13,7 +13,7 @@ export const Routes = {
 
     FormModelDemo: new Route({
         name: "FormModelDemo",
-        path: "/form-model-demo"
+        path: "/_/form-model-demo"
     }),
 
     CatchAll: new Route({

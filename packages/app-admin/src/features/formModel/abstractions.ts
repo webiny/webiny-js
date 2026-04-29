@@ -262,6 +262,7 @@ export interface FieldTypeMap {
     boolean: IField;
     datetime: IField;
     file: IField;
+    fileUrl: IField;
     object: IObjectField;
 }
 
@@ -806,6 +807,7 @@ export interface IFieldBuilderRegistry {
     boolean(): IFieldBuilder<"boolean">;
     datetime(): IFieldBuilder<"datetime">;
     file(): IFieldBuilder<"file">;
+    fileUrl(): IFieldBuilder<"fileUrl">;
     object(): IObjectFieldBuilder;
 }
 

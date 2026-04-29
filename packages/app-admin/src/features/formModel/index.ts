@@ -77,6 +77,7 @@ export {
     NumberFieldBuilder,
     BooleanFieldBuilder,
     DateTimeFieldBuilder,
+    FileUrlFieldBuilder,
     ObjectFieldBuilder,
     createFieldBuilderRegistry
 } from "./FieldBuilder.js";

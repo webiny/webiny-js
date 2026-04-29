@@ -255,6 +255,16 @@ export class FileFieldBuilder extends FieldBuilder<"file"> {
 }
 
 /**
+ * File URL field builder. Uses a file picker but only stores the URL string.
+ */
+export class FileUrlFieldBuilder extends FieldBuilder<"fileUrl"> {
+    constructor() {
+        super("fileUrl");
+        this._config.renderer = "fileUrlPicker";
+    }
+}
+
+/**
  * Object field builder with .fields(), .list(), .listSchema(), .templates() support.
  *
  * Templates and .fields() are mutually exclusive — an object either defines its own
@@ -373,6 +383,10 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
             create: () => new DateTimeFieldBuilder()
         });
         this.fieldTypes.set("file", { type: "file", create: () => new FileFieldBuilder() });
+        this.fieldTypes.set("fileUrl", {
+            type: "fileUrl",
+            create: () => new FileUrlFieldBuilder()
+        });
         this.fieldTypes.set("object", { type: "object", create: () => new ObjectFieldBuilder() });
 
         if (factories) {
@@ -408,6 +422,9 @@ class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
         throw new Error("Should be intercepted by Proxy");
     }
     file(): FileFieldBuilder {
+        throw new Error("Should be intercepted by Proxy");
+    }
+    fileUrl(): FileUrlFieldBuilder {
         throw new Error("Should be intercepted by Proxy");
     }
     object(): ObjectFieldBuilder {

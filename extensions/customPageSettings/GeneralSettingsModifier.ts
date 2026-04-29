@@ -11,7 +11,7 @@ class GeneralSettingsModifierImpl implements PageSettingsGroupModifier.Interface
                 .renderer("dateTimeInput", { type: "dateTime" })
         }));
 
-        form.layout(layout => [layout.row("expirationDate").after("tags")]);
+        form.layout(layout => [layout.row("expirationDate").after("snippet")]);
     }
 
     mapToForm(doc: PageSettingsGroupModifier.PageDocument): Record<string, any> {
