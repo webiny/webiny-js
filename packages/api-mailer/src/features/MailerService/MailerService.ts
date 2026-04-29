@@ -5,28 +5,36 @@ import {
     NoSettingsConfiguredError,
     TransportSendError
 } from "~/domain/MailerService/errors.js";
-import { MailTransport, MailTransportFactory } from "~/domain/MailTransport/abstractions.js";
+import {
+    ActiveTransport,
+    MailTransport,
+    MailTransportFactory
+} from "~/domain/MailTransport/abstractions.js";
 import { GetSettingsRepository } from "../GetSettings/abstractions.js";
 import type { TransportSettings, TransportSendData } from "~/types.js";
-import { getDefaultSettingsFromEnv } from "./TransportFactory.js";
 
 class MailerServiceImpl implements Abstraction.Interface {
     constructor(
         private getSettingsRepository: GetSettingsRepository.Interface,
+        private activeTransport: ActiveTransport.Interface,
         private transportFactories: MailTransportFactory.Interface[]
     ) {}
 
     async sendMail<T = any>(data: TransportSendData): Abstraction.Return<T> {
-        // Get settings from repository or environment variables
-        const result = await this.getSettingsRepository.get();
-        const settings = result.value ?? getDefaultSettingsFromEnv();
+        const transportName = this.activeTransport.name();
+
+        if (!transportName) {
+            return Result.fail(new NoTransportAvailableError());
+        }
+
+        const result = await this.getSettingsRepository.get(transportName);
+        const { settings } = result.value;
 
         if (!settings) {
             return Result.fail(new NoSettingsConfiguredError());
         }
 
-        // Get and configure transport
-        const transport = await this.getTransport(settings);
+        const transport = await this.getTransport(transportName, settings);
 
         if (!transport) {
             return Result.fail(new NoTransportAvailableError());
@@ -35,7 +43,6 @@ class MailerServiceImpl implements Abstraction.Interface {
         try {
             const response = await transport.send(data);
 
-            // If transport.send returned an error in the response
             if (response.error) {
                 return Result.fail(new TransportSendError(response.error));
             }
@@ -47,19 +54,22 @@ class MailerServiceImpl implements Abstraction.Interface {
     }
 
     private async getTransport(
+        transportName: string,
         settings: TransportSettings
     ): Promise<MailTransport.Interface | null> {
-        if (this.transportFactories.length === 0) {
+        const factory = this.transportFactories.find(f => f.name === transportName);
+        if (!factory) {
             return null;
         }
-
-        const factory = this.transportFactories[this.transportFactories.length - 1];
-
         return factory.createTransport(settings);
     }
 }
 
 export const MailerService = Abstraction.createImplementation({
     implementation: MailerServiceImpl,
-    dependencies: [GetSettingsRepository, [MailTransportFactory, { multiple: true }]]
+    dependencies: [
+        GetSettingsRepository,
+        ActiveTransport,
+        [MailTransportFactory, { multiple: true }]
+    ]
 });

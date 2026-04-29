@@ -1,10 +1,29 @@
-import { ErrorResponse, GraphQLSchemaPlugin, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { GetSettingsUseCase } from "~/features/GetSettings/abstractions.js";
 import { SaveSettingsUseCase } from "~/features/SaveSettings/abstractions.js";
+import { ActiveTransport } from "~/domain/MailTransport/abstractions.js";
+import type { MailerSettingsSource } from "~/features/GetSettings/abstractions.js";
 import type { Context } from "@webiny/api/types.js";
-import { getSecret } from "~/features/Encryption/utils/secret.js";
+import type { TransportSettings } from "~/types.js";
 
 const emptyResolver = () => ({});
+
+// Strip `password` before the settings leave the server and tack on `source`
+// so the admin UI can branch on code-vs-storage. Accepts both the full
+// `TransportSettings` (from getSettings) and the already-stripped
+// `Omit<TransportSettings, "password">` (from saveSettings) — defense in depth
+// even when the input type carries no password to begin with.
+const toPublicSettings = (
+    settings: TransportSettings | Omit<TransportSettings, "password"> | null,
+    source: MailerSettingsSource
+): (Omit<TransportSettings, "password"> & { source: MailerSettingsSource }) | null => {
+    if (!settings) {
+        return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, ...publicSettings } = settings as TransportSettings;
+    return { ...publicSettings, source };
+};
 
 export const createSettingsGraphQL = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -21,6 +40,7 @@ export const createSettingsGraphQL = () => {
                 user: String
                 from: String
                 replyTo: String
+                source: String
             }
 
             type MailerTransportSettingsResponse {
@@ -59,23 +79,22 @@ export const createSettingsGraphQL = () => {
             MailerQuery: {
                 getSettings: async (_, __, context) => {
                     try {
-                        // First check of encryption key is set!
-                        // If not, this function will throw an error.
-                        // TODO: refactor this to make more sense.
-                        getSecret();
+                        const activeTransport = context.container.resolve(ActiveTransport);
+                        const transportName = activeTransport.name();
+
+                        if (!transportName) {
+                            return { data: null, error: null };
+                        }
 
                         const getSettings = context.container.resolve(GetSettingsUseCase);
-                        const result = await getSettings.execute();
+                        const result = await getSettings.execute(transportName);
 
-                        const settings = result.value;
+                        const { settings, source } = result.value;
 
-                        // Remove password from response
-                        if (settings?.password) {
-                            // oxlint-disable-next-line typescript/no-unused-vars
-                            const { password, ...settingsWithoutPassword } = settings;
-                            return new Response(settingsWithoutPassword);
-                        }
-                        return new Response(settings);
+                        return {
+                            data: toPublicSettings(settings, source),
+                            error: null
+                        };
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }
@@ -94,16 +113,10 @@ export const createSettingsGraphQL = () => {
                             return new ErrorResponse(result.error);
                         }
 
-                        const settings = result.value;
-
-                        // Remove password from response
-                        // TODO: create a GraphQL output mapper
-                        if (settings?.password) {
-                            // oxlint-disable-next-line typescript/no-unused-vars
-                            const { password, ...settingsWithoutPassword } = settings;
-                            return new Response(settingsWithoutPassword);
-                        }
-                        return new Response(settings);
+                        return {
+                            data: toPublicSettings(result.value, "storage"),
+                            error: null
+                        };
                     } catch (ex) {
                         return new ErrorResponse(ex);
                     }

@@ -8,6 +8,7 @@ const SETTINGS_FIELDS = `
         user
         from
         replyTo
+        source
     }
 `;
 
@@ -19,10 +20,17 @@ const ERROR_FIELDS = `
     }
 `;
 
+export type MailerSettingsSource = "code" | "storage" | null;
+
+/** Settings as they appear in GraphQL responses — never includes the password. */
+export type PublicTransportSettings = Omit<TransportSettings, "password"> & {
+    source?: MailerSettingsSource;
+};
+
 export interface SettingsQueryResponse {
     mailer: {
         settings: {
-            data: TransportSettings | null;
+            data: PublicTransportSettings | null;
             error: ApiError | null;
         };
     };
@@ -39,15 +47,13 @@ export const GET_SETTINGS_QUERY = gql`
 `;
 
 export interface SaveSettingsMutationVariables {
-    data: TransportSettings & {
-        password?: string;
-    };
+    data: TransportSettings;
 }
 
 export interface SaveSettingsMutationResponse {
     mailer: {
         settings: {
-            data: TransportSettings | null;
+            data: PublicTransportSettings | null;
             error: ApiError<ValidationErrors> | null;
         };
     };

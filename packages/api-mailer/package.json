@@ -20,10 +20,10 @@
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
-    "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/plugins": "0.0.0",
+    "email-addresses": "^5.0.0",
     "nodemailer": "^8.0.7",
     "zod": "^4.3.6"
   },
@@ -46,12 +46,5 @@
     "access": "public",
     "directory": "dist"
   },
-  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
-  "adio": {
-    "ignore": {
-      "src": [
-        "node:crypto"
-      ]
-    }
-  }
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }
