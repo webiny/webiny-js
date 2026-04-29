@@ -163,8 +163,10 @@ class CreateModelRepositoryImpl implements RepositoryAbstraction.Interface {
 
             // Persist to storage
             await this.storageOperations.models.create({
-                ...model,
-                fields
+                model: {
+                    ...model,
+                    fields
+                }
             });
 
             // Clear cache

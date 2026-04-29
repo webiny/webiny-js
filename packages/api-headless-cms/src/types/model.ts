@@ -155,6 +155,15 @@ export interface CmsModel {
     isPlugin?: boolean;
 }
 
+export interface StorageCmsModelFields {
+    compression: string;
+    value: string;
+}
+
+export interface StorageCmsModel extends Omit<CmsModel, "fields"> {
+    fields: StorageCmsModelFields;
+}
+
 export interface CmsModelAuthorization {
     permissions: boolean;
 
