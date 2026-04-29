@@ -1,13 +1,14 @@
-import type {
-    SelfCleanup,
-    SelfCleanupEvent
-} from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
-const ALL_EVENTS: ReadonlyArray<SelfCleanupEvent> = ["onSuccess", "onError", "onAbort"];
+const ALL_EVENTS: ReadonlyArray<TaskDefinition.SelfCleanupEvent> = [
+    "onSuccess",
+    "onError",
+    "onAbort"
+];
 
 export const normalizeSelfCleanup = (
-    value: SelfCleanup | undefined
-): ReadonlySet<SelfCleanupEvent> => {
+    value: TaskDefinition.SelfCleanup | undefined
+): ReadonlySet<TaskDefinition.SelfCleanupEvent> => {
     if (value === undefined || value === "never") {
         return new Set();
     }

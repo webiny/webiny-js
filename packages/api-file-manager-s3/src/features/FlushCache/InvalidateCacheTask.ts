@@ -23,6 +23,8 @@ class InvalidateCloudfrontCacheTask implements TaskDefinition.Interface<Invalida
     maxIterations = 100;
     isPrivate = true;
 
+    selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     private continueIfCode = ["TooManyInvalidationsInProgress", "Throttling"];
 
     public async run({ input, controller }: TaskDefinition.RunParams<InvalidateCacheInput>) {

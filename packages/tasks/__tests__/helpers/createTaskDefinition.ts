@@ -1,12 +1,12 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { createContextPlugin } from "@webiny/api";
-import type { SelfCleanup } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import type { ISelfCleanup } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 interface TaskParams<T> {
     id: string;
     title: string;
     description?: string;
-    selfCleanup?: SelfCleanup;
+    selfCleanup?: ISelfCleanup;
     databaseLogs?: boolean;
     run: (params: TaskDefinition.RunParams) => T;
     createInputValidation?: TaskDefinition.Interface["createInputValidation"];

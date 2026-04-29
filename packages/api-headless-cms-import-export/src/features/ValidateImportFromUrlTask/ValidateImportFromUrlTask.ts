@@ -19,6 +19,7 @@ class ValidateImportFromUrlTaskDefinition implements TaskDefinition.Interface<
     maxIterations = 1;
     isPrivate = true;
     description = "Validates given URLs to verify that they are what we need to import the data.";
+    selfCleanup = "always" as const;
 
     async run(params: IRunParams) {
         const { createValidateImportFromUrl } = await import(

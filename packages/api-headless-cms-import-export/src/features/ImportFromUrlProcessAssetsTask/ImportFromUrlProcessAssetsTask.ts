@@ -22,6 +22,8 @@ class ImportFromUrlProcessAssetsTaskDefinition implements TaskDefinition.Interfa
     isPrivate = true;
     description = "Process entries import.";
 
+    selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {

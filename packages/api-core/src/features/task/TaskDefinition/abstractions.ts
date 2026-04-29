@@ -87,9 +87,9 @@ export type ITaskResult<I = ITaskInput, O extends ITaskOutput = ITaskOutput> =
     | ITaskResultError
     | ITaskResultAborted;
 
-export type SelfCleanupEvent = "onSuccess" | "onError" | "onAbort";
+export type ISelfCleanupEvent = "onSuccess" | "onError" | "onAbort";
 
-export type SelfCleanup = "always" | "never" | SelfCleanupEvent | SelfCleanupEvent[];
+export type ISelfCleanup = "always" | "never" | ISelfCleanupEvent | ISelfCleanupEvent[];
 
 export type ITaskLifecycleHook<
     I extends ITaskInput = ITaskInput,
@@ -111,7 +111,7 @@ export interface ITaskDefinition<
     maxIterations?: number;
     databaseLogs?: boolean;
     isPrivate?: boolean;
-    selfCleanup?: SelfCleanup;
+    selfCleanup?: ISelfCleanup;
 
     /**
      * Core run method - receives ONLY input params
@@ -200,6 +200,6 @@ export namespace TaskDefinition {
         O extends ITaskOutput = ITaskOutput
     > = ITaskLifecycleHook<I, O>;
 
-    export type SelfCleanupEvent = import("./abstractions.js").SelfCleanupEvent;
-    export type SelfCleanup = import("./abstractions.js").SelfCleanup;
+    export type SelfCleanupEvent = ISelfCleanupEvent;
+    export type SelfCleanup = ISelfCleanup;
 }

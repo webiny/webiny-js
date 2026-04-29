@@ -22,6 +22,8 @@ class ImportFromUrlControllerTaskDefinition implements TaskDefinition.Interface<
     isPrivate = true;
     description = "Imports the data from the given URL list - controller.";
 
+    selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {

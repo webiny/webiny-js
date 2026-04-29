@@ -22,6 +22,8 @@ class ImportFromUrlDownloadTaskDefinition implements TaskDefinition.Interface<
     isPrivate = true;
     description = "Downloads the files from external URL.";
 
+    selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {

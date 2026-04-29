@@ -19,6 +19,8 @@ class ExportContentEntriesTaskDefinition implements TaskDefinition.Interface<
     isPrivate = true;
     description = "Export content entries from a specific model.";
 
+    selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {

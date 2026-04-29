@@ -19,6 +19,8 @@ class ExportContentEntriesControllerTaskDefinition implements TaskDefinition.Int
     isPrivate = true;
     description = "Export content entries and assets from a specific model - controller.";
 
+    selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {

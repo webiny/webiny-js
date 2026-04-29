@@ -8,14 +8,10 @@ import type { IResponseError } from "~/response/abstractions/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { IStepFunctionServiceFetchResult } from "~/service/StepFunctionServicePlugin.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import type { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { BaseError, Result } from "@webiny/feature/api";
 import type { IdInterfaceGenerator, NumericInterfaceGenerator } from "@webiny/api";
-import type {
-    SelfCleanup,
-    SelfCleanupEvent
-} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 // TODO had to import for augmentation to work, but is there a better way to do this?
 import "./features/TaskController/augmentation.js";
 
@@ -271,4 +267,5 @@ export type ITask<
     O extends TaskService.GenericOutput = TaskService.GenericOutput
 > = TaskService.Task<I, O>;
 
-export type { SelfCleanup, SelfCleanupEvent };
+export type SelfCleanup = TaskDefinition.SelfCleanup;
+export type SelfCleanupEvent = TaskDefinition.SelfCleanupEvent;

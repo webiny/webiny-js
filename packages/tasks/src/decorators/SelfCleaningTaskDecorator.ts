@@ -1,5 +1,5 @@
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type { SelfCleanupEvent } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import type { ISelfCleanupEvent } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { normalizeSelfCleanup } from "~/utils/normalizeSelfCleanup.js";
 import { CleanupTaskSubtreeUseCase } from "~/features/CleanupTaskSubtree/index.js";
 import { getErrorProperties } from "~/utils/getErrorProperties.js";
@@ -8,7 +8,7 @@ type LifecycleHook = TaskDefinition.Interface["onDone"];
 type HookParams = Parameters<NonNullable<LifecycleHook>>[0];
 
 export class SelfCleaningTaskDecoratorImpl implements TaskDefinition.Interface {
-    private readonly events: ReadonlySet<SelfCleanupEvent>;
+    private readonly events: ReadonlySet<ISelfCleanupEvent>;
 
     public constructor(
         private readonly cleanupTaskSubtree: CleanupTaskSubtreeUseCase.Interface,
