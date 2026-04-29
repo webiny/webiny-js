@@ -56,6 +56,18 @@ export class ReactLicense implements ILicense {
         return this.license.canUseWorkflows();
     }
 
+    canUseAiImageEnrichment(): boolean {
+        return this.license.canUseAiImageEnrichment();
+    }
+
+    canUseAiPageGeneration(): boolean {
+        return this.license.canUseAiPageGeneration();
+    }
+
+    canUseAiLexicalGeneration(): boolean {
+        return this.license.canUseAiLexicalGeneration();
+    }
+
     toDto(): DecryptedWcpProjectLicense | null {
         return this.license.toDto();
     }

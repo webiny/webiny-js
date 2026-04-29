@@ -2,7 +2,10 @@
   "name": "@webiny/app-website-builder",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -51,7 +54,7 @@
     "graphql-tag": "^2.12.6",
     "is-hotkey": "^0.2.0",
     "lodash": "^4.18.1",
-    "markdown-to-jsx": "^9.7.15",
+    "markdown-to-jsx": "^9.7.16",
     "matcher": "^6.0.0",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^4.1.1",
@@ -70,8 +73,8 @@
     "@webiny/build-tools": "0.0.0",
     "execa": "^5.1.1",
     "rimraf": "^6.1.3",
-    "typescript": "5.9.3",
-    "vitest": "^4.1.4"
+    "typescript": "6.0.3",
+    "vitest": "^4.1.5"
   },
   "publishConfig": {
     "access": "public",

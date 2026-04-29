@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as RadioGroupStories from './RadioGroup.stories';
+import * as RadioGroupStories from "./RadioGroup.stories";
 
 <Meta of={RadioGroupStories} />
 
@@ -16,8 +16,8 @@ import React, { useState } from "react";
 import { RadioGroup } from "@webiny/admin-ui";
 
 const RadioGroupExample = () => {
-    const [value, setValue] = useState("");
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+const [value, setValue] = useState("");
+const [validation, setValidation] = useState({ isValid: true, message: "" });
 
     const handleValidation = () => {
         if (!value) {
@@ -53,27 +53,28 @@ const RadioGroupExample = () => {
             onBlur={handleValidation}
         />
     );
+
 };
 
 export default RadioGroupExample;
 
 `} }
-    additionalActions={[
-        {
-            title: 'Open in GitHub',
-            onClick: () => {
-                window.open(
-                    'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/RadioGroup/RadioGroup.tsx',
-                    '_blank'
-                );
-            },
-        }
-    ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/RadioGroup/RadioGroup.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={RadioGroupStories.Documentation} />
 
-> **Note:** While the `required` prop will show the required indicator (*) next to the label, you need to implement the validation logic using the `validation` and `onBlur` props to handle the actual validation behavior.
+> **Note:** While the `required` prop will show the required indicator (\*) next to the label, you need to implement the validation logic using the `validation` and `onBlur` props to handle the actual validation behavior.
 
 ```jsx
 import React, { useState } from "react";
@@ -81,43 +82,43 @@ import React, { useState } from "react";
 import { RadioGroup } from "@webiny/admin-ui";
 
 const RadioGroupExample = () => {
-    const [value, setValue] = useState("");
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+  const [value, setValue] = useState("");
+  const [validation, setValidation] = useState({ isValid: true, message: "" });
 
-    const handleValidation = () => {
-        if (!value) {
-            setValidation({ isValid: false, message: "This field is required" });
-        } else {
-            setValidation({ isValid: true, message: "" });
+  const handleValidation = () => {
+    if (!value) {
+      setValidation({ isValid: false, message: "This field is required" });
+    } else {
+      setValidation({ isValid: true, message: "" });
+    }
+  };
+
+  return (
+    <RadioGroup
+      label="Deployment Option"
+      description="Choose your preferred deployment method"
+      note="This setting will determine how your application is deployed"
+      required={true}
+      items={[
+        {
+          label: "Automatic Deployment",
+          value: "automatic"
+        },
+        {
+          label: "Manual Deployment",
+          value: "manual"
+        },
+        {
+          label: "Scheduled Deployment",
+          value: "scheduled"
         }
-    };
-
-    return (
-        <RadioGroup
-            label="Deployment Option"
-            description="Choose your preferred deployment method"
-            note="This setting will determine how your application is deployed"
-            required={true}
-            items={[
-                {
-                    label: "Automatic Deployment",
-                    value: "automatic"
-                },
-                {
-                    label: "Manual Deployment",
-                    value: "manual"
-                },
-                {
-                    label: "Scheduled Deployment",
-                    value: "scheduled"
-                }
-            ]}
-            value={value}
-            validation={validation}
-            onChange={newValue => setValue(newValue)}
-            onBlur={handleValidation}
-        />
-    );
+      ]}
+      value={value}
+      validation={validation}
+      onChange={newValue => setValue(newValue)}
+      onBlur={handleValidation}
+    />
+  );
 };
 
 export default RadioGroupExample;
@@ -126,23 +127,25 @@ export default RadioGroupExample;
 ## Anatomy
 
 ### General
+
 Radio input enable users to select a single item from a list of offered choices. A radio input group organizes related radio input options together for better clarity and functionality.
 
-<img src="/images/storybook/radio-group/anatomy.png" alt="Anatomy"/>
+<img src="/images/storybook/radio-group/anatomy.png" alt="Anatomy" />
 
 ### Radio input options
+
 Radio inputs can exist in two different states: Selected and Not Selected. When a radio input is used for bulk selection, all other options must be excluded since the very purpose of a radio input is to provide only one selectable option.
-<img src="/images/storybook/radio-group/options.png" alt="Radio input options"/>
+
+<img src="/images/storybook/radio-group/options.png" alt="Radio input options" />
 
 ### States
-<img src="/images/storybook/radio-group/states.png" alt="States"/>
+
+<img src="/images/storybook/radio-group/states.png" alt="States" />
 
 ## Usage
 
 ### Text overflow
+
 When the radio item text content is too long for the horizontal space available, the content should wrap to form another line aligning the text and checkbox on top.
 
-<img src="/images/storybook/radio-group/text-overflow.png" alt="Text overflow"/>
-
-
-
+<img src="/images/storybook/radio-group/text-overflow.png" alt="Text overflow" />

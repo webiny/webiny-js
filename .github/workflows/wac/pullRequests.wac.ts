@@ -19,6 +19,9 @@ import { AbstractStorageOps, DdbOsStorageOps, DdbStorageOps } from "./storageOps
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ github.base_ref }}";
 
+// Skip all jobs for release/x.y.z → next PRs (handled by a dedicated release workflow).
+const NOT_RELEASE_PR = "!startsWith(github.head_ref, 'release/')";
+
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
 const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
@@ -123,16 +126,16 @@ export const pullRequests = createWorkflow({
     jobs: {
         validateCommits: createJob({
             name: "Validate commit messages",
-            if: "github.base_ref != 'dev'",
-            steps: [{ uses: "webiny/action-conventional-commits@v1.3.1" }]
+            if: `github.base_ref != 'dev' && ${NOT_RELEASE_PR}`,
+            steps: [{ uses: "webiny/action-conventional-commits@v1.4.2" }]
         }),
         // Don't allow "feat" commits to be merged into "dev" branch.
         validateCommitsDev: createJob({
             name: "Validate commit messages (dev branch, 'feat' commits not allowed)",
-            if: "github.base_ref == 'dev'",
+            if: `github.base_ref == 'dev' && ${NOT_RELEASE_PR}`,
             steps: [
                 {
-                    uses: "webiny/action-conventional-commits@v1.3.1",
+                    uses: "webiny/action-conventional-commits@v1.4.2",
                     with: {
                         // If dev, use "dev" commit types, otherwise use "next" commit types.
                         "allowed-commit-types":
@@ -141,32 +144,9 @@ export const pullRequests = createWorkflow({
                 }
             ]
         }),
-        // autoFormat: createJob({
-        //     name: "Auto-format code",
-        //     if: "github.event.pull_request.head.repo.fork == false",
-        //     checkout: { path: DIR_WEBINY_JS },
-        //     steps: [
-        //         ...yarnCacheSteps,
-        //         ...withCommonParams(
-        //             [
-        //                 { name: "Install dependencies", run: "yarn --immutable" },
-        //                 { name: "Run Prettier", run: "yarn prettier:fix" },
-        //             ],
-        //             { "working-directory": DIR_WEBINY_JS }
-        //         ),
-        //         {
-        //             name: "Commit and push changes",
-        //             uses: "stefanzweifel/git-auto-commit-action@v5",
-        //             with: {
-        //                 "commit_message": "chore: auto-format code",
-        //                 "file_pattern": "*.js *.jsx *.ts *.tsx *.json *.scss *.yml",
-        //                 "repository": DIR_WEBINY_JS
-        //             }
-        //         }
-        //     ]
-        // }),
         constants: createJob({
             name: "Create constants",
+            if: NOT_RELEASE_PR,
             outputs: {
                 "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
                 "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}",
@@ -203,7 +183,7 @@ export const pullRequests = createWorkflow({
                 {
                     name: "Detect changed files",
                     id: "detect-changed-files",
-                    uses: "dorny/paths-filter@v3",
+                    uses: "dorny/paths-filter@v4",
                     with: {
                         filters: "changed:\n  - 'packages/**/*'\n",
                         "list-files": "json"
@@ -250,10 +230,10 @@ export const pullRequests = createWorkflow({
                 ...withCommonParams(
                     [
                         { name: "Install dependencies", run: "yarn --immutable" },
-                        { name: "Check code formatting", run: "yarn prettier:check" },
+                        { name: "Check code formatting", run: "yarn format:check" },
                         { name: "Check dependencies", run: "yarn adio" },
                         { name: "Check TS configs", run: "yarn check-ts-configs" },
-                        { name: "ESLint", run: "yarn eslint" },
+                        { name: "Lint", run: "yarn lint" },
                         {
                             name: "Check Package Node Modules",
                             run: "yarn check-package-dependencies"
@@ -284,6 +264,7 @@ export const pullRequests = createWorkflow({
         }),
         staticCodeAnalysisTs: createJob({
             name: "Static code analysis (TypeScript)",
+            if: NOT_RELEASE_PR,
             "runs-on": BUILD_PACKAGES_RUNNER,
             checkout: { path: DIR_WEBINY_JS },
             steps: [
@@ -319,18 +300,18 @@ export const pullRequests = createWorkflow({
                 // Run deterministic fixes as real shell commands so changes definitely land on disk.
                 {
                     name: "Fix code formatting",
-                    run: "yarn prettier:fix",
+                    run: "yarn format:fix",
                     "working-directory": DIR_WEBINY_JS,
                     "continue-on-error": true
                 },
                 {
-                    name: "Fix ESLint issues (auto-fixable)",
-                    run: "yarn eslint:fix",
+                    name: "Fix lint issues (auto-fixable)",
+                    run: "yarn lint:fix",
                     "working-directory": DIR_WEBINY_JS,
                     "continue-on-error": true
                 },
                 // Let Claude handle whatever can't be auto-fixed: adio, ts-configs,
-                // remaining ESLint errors, and check-package-dependencies.
+                // remaining lint errors, and check-package-dependencies.
                 {
                     name: "Install Claude Code",
                     run: "npm install -g @anthropic-ai/claude-code"
@@ -343,7 +324,7 @@ export const pullRequests = createWorkflow({
                         `"Some static analysis checks may still be failing. Fix any remaining issues:`,
                         `1. Run 'yarn adio' — if it reports dependency errors, fix the relevant package.json files.`,
                         `2. Run 'yarn check-ts-configs' — if it reports errors, fix them.`,
-                        `3. Run 'yarn eslint' — if there are still non-auto-fixable errors, read the affected files and fix them.`,
+                        `3. Run 'yarn lint' — if there are still non-auto-fixable errors, read the affected files and fix them.`,
                         `4. Run 'yarn check-package-dependencies' — if it reports errors, fix them.`,
                         `Work in the current directory."`
                     ].join(" ")

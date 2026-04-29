@@ -21,7 +21,8 @@ export const fullRelease = createWorkflow({
             name: "Create release branch (webiny-js)",
             checkout: false,
             env: {
-                GH_TOKEN: "${{ secrets.GH_TOKEN }}"
+                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
+                SLACK_RELEASE_CHANNEL_WEBHOOK: "${{ secrets.SLACK_RELEASE_CHANNEL_WEBHOOK }}"
             },
             steps: [
                 {
@@ -43,12 +44,24 @@ export const fullRelease = createWorkflow({
                 },
                 {
                     name: `Create and push release branch`,
-                    run: `git checkout -b release/${VERSION} && git push origin release/${VERSION}`
+                    run: `git checkout -b release/${VERSION} && git commit --allow-empty -m "chore: start release ${VERSION} [no ci]" -m "Empty commit to allow PR creation." && git push origin release/${VERSION}`
                 },
                 {
                     name: "Open pull request",
+                    id: "pr",
                     env: { GITHUB_TOKEN: "${{ secrets.GH_TOKEN }}" },
-                    run: `gh pr create --title "Release ${VERSION}" --body "Release ${VERSION}" --base next --head release/${VERSION}`
+                    run: `PR_URL=$(gh pr create --title "📦  Release ${VERSION}" --body "Release ${VERSION}\n\n**Docs PR:** https://github.com/webiny/docs.webiny.com/pulls?q=Release+${VERSION}" --base next --head release/${VERSION}) && echo "pr-url=$PR_URL" >> $GITHUB_OUTPUT`
+                },
+                {
+                    name: "Notify Slack - Release PR Created",
+                    env: { PR_URL: "${{ steps.pr.outputs.pr-url }}" },
+                    run: [
+                        `MSG="📦 Release PR for Webiny ${VERSION} has been created: $PR_URL"`,
+                        "curl -s -o /dev/null -X POST \\",
+                        '  -H "Content-type: application/json" \\',
+                        '  --data "{\\"text\\":\\"${MSG}\\"}" \\',
+                        '  "$SLACK_RELEASE_CHANNEL_WEBHOOK"'
+                    ].join("\n")
                 }
             ]
         }),

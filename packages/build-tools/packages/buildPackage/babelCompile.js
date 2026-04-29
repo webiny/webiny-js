@@ -1,5 +1,5 @@
 import fs from "fs";
-import { dirname, extname, join, parse, relative } from "path";
+import { dirname, join, parse, relative } from "path";
 import * as babel from "@babel/core";
 import glob from "fast-glob";
 

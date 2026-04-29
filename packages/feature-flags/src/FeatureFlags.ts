@@ -74,4 +74,20 @@ export class FeatureFlags {
     isFileManagerThreatDetectionEnabled(): boolean {
         return this.flags.fileManager?.threatDetection !== false;
     }
+
+    isAiPowerupsEnabled(): boolean {
+        return this.flags.aiPowerups?.enabled !== false;
+    }
+
+    isAiPageGenerationEnabled(): boolean {
+        return this.flags.aiPowerups?.options?.websiteBuilder?.pageGeneration !== false;
+    }
+
+    isAiImageEnrichmentEnabled(): boolean {
+        return this.flags.aiPowerups?.options?.fileManager?.imageEnrichment !== false;
+    }
+
+    isAiLexicalGenerationEnabled(): boolean {
+        return this.flags.aiPowerups?.options?.lexicalGeneration !== false;
+    }
 }

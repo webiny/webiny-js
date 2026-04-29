@@ -38,18 +38,7 @@ import type { GenericRecord } from "@webiny/api/types.js";
 
 export type EntityConstructor<
     T extends Readonly<AttributeDefinitions> = Readonly<AttributeDefinitions>
-> = BaseEntityConstructor<
-    TableDef,
-    string,
-    true,
-    true,
-    true,
-    "created",
-    "modified",
-    "entity",
-    false,
-    T
->;
+> = BaseEntityConstructor<T>;
 
 export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<T> {
     public readonly entity: BaseEntity;
@@ -66,6 +55,7 @@ export class Entity<T extends GenericRecord = GenericRecord> implements IEntity<
     }
 
     public constructor(params: EntityConstructor) {
+        // @ts-expect-error
         this.entity = new BaseEntity(params);
     }
 

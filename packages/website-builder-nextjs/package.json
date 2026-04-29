@@ -2,7 +2,6 @@
   "name": "@webiny/website-builder-nextjs",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -20,15 +19,15 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/website-builder-react": "0.0.0",
-    "postcss": "^8.5.9",
+    "postcss": "^8.5.10",
     "postcss-import": "^16.1.1"
   },
   "devDependencies": {
     "@types/postcss-import": "^14.0.3",
     "@webiny/build-tools": "0.0.0",
-    "typescript": "5.9.3",
-    "vitest": "^4.1.4",
-    "webpack": "^5.106.1"
+    "typescript": "6.0.3",
+    "vitest": "^4.1.5",
+    "webpack": "^5.106.2"
   },
   "peerDependencies": {
     "next": ">=15"

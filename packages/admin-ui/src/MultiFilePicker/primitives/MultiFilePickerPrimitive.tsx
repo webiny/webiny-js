@@ -17,8 +17,10 @@ import { Button } from "~/Button/index.js";
 import { inputVariants } from "~/Input/index.js";
 import { useMultiFilePicker } from "~/MultiFilePicker/primitives/useMultiFilePicker.js";
 
-interface MultiFilePickerPrimitiveProps
-    extends Omit<FilePickerPrimitiveProps, "value" | "onEditItem" | "onRemoveItem"> {
+interface MultiFilePickerPrimitiveProps extends Omit<
+    FilePickerPrimitiveProps,
+    "value" | "onEditItem" | "onRemoveItem"
+> {
     /**
      * The list of file items or file paths.
      */

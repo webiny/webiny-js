@@ -23,6 +23,7 @@
 A thin vertical slice from GraphQL response all the way to a React component. No filtering, sorting, or search — just load data and expose it reactively.
 
 Contracts to define:
+
 - `BaseListParams`, `ListResponse<TDto>`
 - `ListGateway<TDto, TParams>` (single method: `fetchList(params): Promise<ListResponse<TDto>>`)
 - `ListMapper<TDto, TEntity>` (single method: `toDomain(dto): TEntity`)
@@ -30,19 +31,23 @@ Contracts to define:
 - `ListModuleConfig` (runtime knobs only: `name`, `gateway`, `mapper`, `initialParams`)
 
 Repositories to implement:
+
 - `ListQueryParamsRepository` — holds current params, supports `get()` and `reset()`
 - `ListDataRepository` — holds `items[]`, `cursor`, `hasMore`, `total`
 - `LoadingRepository` — tracks `isInitialLoading`, `isLoading`
 
 Presenter + factory:
+
 - `GenericListPresenter` — computes `ListViewModel` from repositories, exposes `init()` and `dispose()`
 - `createListModule()` — wires gateway → mapper → repositories → presenter, returns `{ useListModule }`
 
 React layer:
+
 - `useListModule` hook — returns `{ vm, actions }` (actions is minimal: just `refresh()` and `reset()`)
 - `ListModuleContext` — React context holding the presenter instance
 
 Example module to validate the slice:
+
 - `PagesGateway` implementing `ListGateway` against the Pages GraphQL API
 - `PageMapper` implementing `ListMapper`
 - A minimal React component consuming `useListModule` and rendering a list

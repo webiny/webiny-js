@@ -17,6 +17,7 @@ export interface CreateFileInput {
     metadata?: Record<string, any>;
     extensions?: Record<string, any>;
     tags?: string[];
+    description?: string;
     location?: { folderId: string };
     // System attributes
     createdOn?: string;

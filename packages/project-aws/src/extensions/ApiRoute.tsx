@@ -75,7 +75,7 @@ export const ApiRoute = defineExtension({
         });
 
         // Ensure createContextPlugin import exists.
-        const ctxPluginPath = "@webiny/api/plugins/ContextPlugin";
+        const ctxPluginPath = "@webiny/api/plugins/ContextPlugin.js";
         if (!source.getImportDeclaration(ctxPluginPath)) {
             const lastIdx =
                 source

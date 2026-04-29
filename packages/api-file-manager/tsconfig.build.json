@@ -2,14 +2,17 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../ai-powerups/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../tasks/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" }
@@ -21,12 +24,16 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/ai-powerups/*": ["../ai-powerups/src/*"],
+      "@webiny/ai-powerups": ["../ai-powerups/src"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-websockets/*": ["../api-websockets/src/*"],
+      "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],
@@ -39,13 +46,14 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/tasks/*": ["../tasks/src/*"],
+      "@webiny/tasks": ["../tasks/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

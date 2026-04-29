@@ -106,7 +106,6 @@ reply.code(201).header("X-Custom", "value").send({ created: true });
 The `<Api.Route>` extension does two things at build/deploy time:
 
 1. **Build time** — injects two entries into `apps/api/graphql/src/extensions.ts`:
-
    - A `createContextPlugin` that registers your handler in the DI container
    - A `createRoute` that registers the Fastify route with the hardcoded `path` and `method`
 

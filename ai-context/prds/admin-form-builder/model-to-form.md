@@ -34,6 +34,7 @@ A CMS model's fields come from the API as `CmsModelField[]`. Example (from File 
 ```
 
 Key properties per field:
+
 - `type` — maps to a FormModel field type (`text`, `number`, `boolean`, `datetime`, `file`, `rich-text`, `object`, `ref`, `dynamicZone`, `json`, `long-text`, `searchable-json`)
 - `label`, `help`, `placeholder`, `description`, `note` — display metadata
 - `list` — if `true`, the field is a list (maps to `.list()`)
@@ -55,20 +56,20 @@ A function that takes the CMS field definitions and produces a FormModel. The ma
 
 ### Type Mapping
 
-| CmsModelField.type | FormModel field | Notes |
-|---|---|---|
-| `text` | `fields.text()` | |
-| `long-text` | `fields.text()` | `.renderer("textarea")` by default |
-| `number` | `fields.number()` | |
-| `boolean` | `fields.boolean()` | |
-| `datetime` | `fields.datetime()` | `settings.type` determines subtype |
-| `file` | `fields.file()` | `settings.imagesOnly` flag |
-| `rich-text` | `fields.richText()` | |
-| `object` | `fields.object()` | Recurse into `settings.fields` |
-| `ref` | `fields.ref()` | `settings.models` for referenced models |
-| `dynamicZone` | `fields.dynamicZone()` | `settings.templates` |
-| `json` | `fields.json()` | |
-| `searchable-json` | `fields.json()` | Same rendering, different storage concern |
+| CmsModelField.type | FormModel field        | Notes                                     |
+| ------------------ | ---------------------- | ----------------------------------------- |
+| `text`             | `fields.text()`        |                                           |
+| `long-text`        | `fields.text()`        | `.renderer("textarea")` by default        |
+| `number`           | `fields.number()`      |                                           |
+| `boolean`          | `fields.boolean()`     |                                           |
+| `datetime`         | `fields.datetime()`    | `settings.type` determines subtype        |
+| `file`             | `fields.file()`        | `settings.imagesOnly` flag                |
+| `rich-text`        | `fields.richText()`    |                                           |
+| `object`           | `fields.object()`      | Recurse into `settings.fields`            |
+| `ref`              | `fields.ref()`         | `settings.models` for referenced models   |
+| `dynamicZone`      | `fields.dynamicZone()` | `settings.templates`                      |
+| `json`             | `fields.json()`        |                                           |
+| `searchable-json`  | `fields.json()`        | Same rendering, different storage concern |
 
 ### Metadata Mapping
 
@@ -92,36 +93,36 @@ CMS validators are `{ name, message, settings }` objects. These need to be conve
 
 ```ts
 function cmsValidatorToZod(validator: CmsModelFieldValidation, baseSchema: ZodSchema): ZodSchema {
-    switch (validator.name) {
-        case "required":
-            // For strings: z.string().min(1, message)
-            // For numbers: z.number({ required_error: message })
-            // For arrays (list fields): z.array().min(1, message)
-            break;
-        case "minLength":
-            return baseSchema.min(Number(validator.settings.value), validator.message);
-        case "maxLength":
-            return baseSchema.max(Number(validator.settings.value), validator.message);
-        case "pattern":
-            if (validator.settings.preset === "email") {
-                return baseSchema.email(validator.message);
-            }
-            if (validator.settings.preset === "url") {
-                return baseSchema.url(validator.message);
-            }
-            if (validator.settings.regex) {
-                return baseSchema.regex(
-                    new RegExp(validator.settings.regex, validator.settings.flags),
-                    validator.message
-                );
-            }
-            break;
-        case "gte":
-            return baseSchema.gte(Number(validator.settings.value), validator.message);
-        case "lte":
-            return baseSchema.lte(Number(validator.settings.value), validator.message);
-        // dateGte, dateLte — handled similarly
-    }
+  switch (validator.name) {
+    case "required":
+      // For strings: z.string().min(1, message)
+      // For numbers: z.number({ required_error: message })
+      // For arrays (list fields): z.array().min(1, message)
+      break;
+    case "minLength":
+      return baseSchema.min(Number(validator.settings.value), validator.message);
+    case "maxLength":
+      return baseSchema.max(Number(validator.settings.value), validator.message);
+    case "pattern":
+      if (validator.settings.preset === "email") {
+        return baseSchema.email(validator.message);
+      }
+      if (validator.settings.preset === "url") {
+        return baseSchema.url(validator.message);
+      }
+      if (validator.settings.regex) {
+        return baseSchema.regex(
+          new RegExp(validator.settings.regex, validator.settings.flags),
+          validator.message
+        );
+      }
+      break;
+    case "gte":
+      return baseSchema.gte(Number(validator.settings.value), validator.message);
+    case "lte":
+      return baseSchema.lte(Number(validator.settings.value), validator.message);
+    // dateGte, dateLte — handled similarly
+  }
 }
 ```
 
@@ -129,13 +130,13 @@ The function chains validators onto the base zod schema for the field type:
 
 ```ts
 function buildFieldSchema(field: CmsModelField): ZodSchema {
-    let schema = baseSchemaForType(field.type); // z.string(), z.number(), etc.
+  let schema = baseSchemaForType(field.type); // z.string(), z.number(), etc.
 
-    for (const v of field.validation) {
-        schema = cmsValidatorToZod(v, schema);
-    }
+  for (const v of field.validation) {
+    schema = cmsValidatorToZod(v, schema);
+  }
 
-    return schema;
+  return schema;
 }
 ```
 
@@ -143,11 +144,11 @@ For list fields, `listValidation` maps to `.listSchema()`:
 
 ```ts
 if (field.list) {
-    let listSchema = z.array(itemSchema);
-    for (const v of field.listValidation) {
-        listSchema = cmsListValidatorToZod(v, listSchema);
-    }
-    formField.listSchema(listSchema);
+  let listSchema = z.array(itemSchema);
+  for (const v of field.listValidation) {
+    listSchema = cmsListValidatorToZod(v, listSchema);
+  }
+  formField.listSchema(listSchema);
 }
 ```
 
@@ -155,18 +156,18 @@ if (field.list) {
 
 ```ts
 if (field.predefinedValues?.enabled) {
-    formField.options(
-        field.predefinedValues.values.map(v => ({
-            label: v.label,
-            value: v.value,
-        }))
-    );
+  formField.options(
+    field.predefinedValues.values.map(v => ({
+      label: v.label,
+      value: v.value
+    }))
+  );
 
-    // If a value has `selected: true`, use it as defaultValue
-    const selected = field.predefinedValues.values.find(v => v.selected);
-    if (selected) {
-        formField.defaultValue(selected.value);
-    }
+  // If a value has `selected: true`, use it as defaultValue
+  const selected = field.predefinedValues.values.find(v => v.selected);
+  if (selected) {
+    formField.defaultValue(selected.value);
+  }
 }
 ```
 
@@ -176,18 +177,19 @@ Object fields have `settings.fields: CmsModelField[]`. The conversion recurses:
 
 ```ts
 function convertField(cmsField: CmsModelField): FieldBuilder {
-    if (cmsField.type === "object" && cmsField.settings?.fields) {
-        return fields.object()
-            .label(cmsField.label)
-            .fields(fields => {
-                const result: Record<string, FieldBuilder> = {};
-                for (const nested of cmsField.settings.fields) {
-                    result[nested.fieldId] = convertField(nested);
-                }
-                return result;
-            });
-    }
-    // ... other types
+  if (cmsField.type === "object" && cmsField.settings?.fields) {
+    return fields
+      .object()
+      .label(cmsField.label)
+      .fields(fields => {
+        const result: Record<string, FieldBuilder> = {};
+        for (const nested of cmsField.settings.fields) {
+          result[nested.fieldId] = convertField(nested);
+        }
+        return result;
+      });
+  }
+  // ... other types
 }
 ```
 
@@ -195,66 +197,66 @@ function convertField(cmsField: CmsModelField): FieldBuilder {
 
 ```ts
 function createFormFromCmsFields(cmsFields: CmsModelField[]): FormModel {
-    return new FormModel(fields => {
-        const result: Record<string, FieldBuilder> = {};
+  return new FormModel(fields => {
+    const result: Record<string, FieldBuilder> = {};
 
-        for (const cmsField of cmsFields) {
-            result[cmsField.fieldId] = convertField(cmsField, fields);
-        }
+    for (const cmsField of cmsFields) {
+      result[cmsField.fieldId] = convertField(cmsField, fields);
+    }
 
-        return result;
-    });
+    return result;
+  });
 }
 
 function convertField(cmsField: CmsModelField, fields: FieldBuilderRegistry): FieldBuilder {
-    // 1. Create the right field type
-    let builder = createBuilderForType(cmsField.type, fields);
+  // 1. Create the right field type
+  let builder = createBuilderForType(cmsField.type, fields);
 
-    // 2. Apply metadata
-    builder.label(cmsField.label);
-    if (cmsField.help) builder.help(cmsField.help);
-    if (cmsField.placeholder) builder.placeholder(cmsField.placeholder);
-    if (cmsField.description) builder.description(cmsField.description);
-    if (cmsField.note) builder.note(cmsField.note);
-    if (cmsField.renderer) builder.renderer(cmsField.renderer.name);
-    if (cmsField.tags?.length) builder.tags(cmsField.tags);
-    if (cmsField.settings?.defaultValue !== undefined) {
-        builder.defaultValue(cmsField.settings.defaultValue);
-    }
+  // 2. Apply metadata
+  builder.label(cmsField.label);
+  if (cmsField.help) builder.help(cmsField.help);
+  if (cmsField.placeholder) builder.placeholder(cmsField.placeholder);
+  if (cmsField.description) builder.description(cmsField.description);
+  if (cmsField.note) builder.note(cmsField.note);
+  if (cmsField.renderer) builder.renderer(cmsField.renderer.name);
+  if (cmsField.tags?.length) builder.tags(cmsField.tags);
+  if (cmsField.settings?.defaultValue !== undefined) {
+    builder.defaultValue(cmsField.settings.defaultValue);
+  }
 
-    // 3. Apply list modifier
-    if (cmsField.list) builder.list();
+  // 3. Apply list modifier
+  if (cmsField.list) builder.list();
 
-    // 4. Apply validation → zod schema
-    if (cmsField.validation?.length) {
-        builder.schema(buildFieldSchema(cmsField));
-    }
-    if (cmsField.list && cmsField.listValidation?.length) {
-        builder.listSchema(buildListSchema(cmsField));
-    }
+  // 4. Apply validation → zod schema
+  if (cmsField.validation?.length) {
+    builder.schema(buildFieldSchema(cmsField));
+  }
+  if (cmsField.list && cmsField.listValidation?.length) {
+    builder.listSchema(buildListSchema(cmsField));
+  }
 
-    // 5. Apply predefined values → options
-    if (cmsField.predefinedValues?.enabled) {
-        builder.options(
-            cmsField.predefinedValues.values.map(v => ({
-                label: v.label,
-                value: v.value,
-            }))
-        );
-    }
+  // 5. Apply predefined values → options
+  if (cmsField.predefinedValues?.enabled) {
+    builder.options(
+      cmsField.predefinedValues.values.map(v => ({
+        label: v.label,
+        value: v.value
+      }))
+    );
+  }
 
-    // 6. Recurse for object fields
-    if (cmsField.type === "object" && cmsField.settings?.fields) {
-        builder.fields(nestedFields => {
-            const result: Record<string, FieldBuilder> = {};
-            for (const nested of cmsField.settings.fields) {
-                result[nested.fieldId] = convertField(nested, nestedFields);
-            }
-            return result;
-        });
-    }
+  // 6. Recurse for object fields
+  if (cmsField.type === "object" && cmsField.settings?.fields) {
+    builder.fields(nestedFields => {
+      const result: Record<string, FieldBuilder> = {};
+      for (const nested of cmsField.settings.fields) {
+        result[nested.fieldId] = convertField(nested, nestedFields);
+      }
+      return result;
+    });
+  }
 
-    return builder;
+  return builder;
 }
 ```
 
@@ -264,57 +266,57 @@ Given the File Manager model (`file.model.ts` → `file.fields.json`), the conve
 
 ```ts
 new FormModel(fields => ({
-    name: fields.text()
-        .label("Name")
-        .schema(z.string().min(1, "Value is required.")),
+  name: fields.text().label("Name").schema(z.string().min(1, "Value is required.")),
 
-    key: fields.text()
-        .label("Key")
-        .schema(z.string().min(1, "Value is required.")),
+  key: fields.text().label("Key").schema(z.string().min(1, "Value is required.")),
 
-    type: fields.text()
+  type: fields.text().label("Type").schema(z.string().min(1, "Value is required.")),
+
+  size: fields
+    .number()
+    .label("Size")
+    .schema(z.number({ required_error: "Value is required." })),
+
+  metadata: fields
+    .object()
+    .label("Metadata")
+    .renderer("hidden")
+    .fields(fields => ({
+      image: fields
+        .object()
+        .label("Image")
+        .fields(fields => ({
+          width: fields.number().label("Width"),
+          height: fields.number().label("Height"),
+          format: fields.text().label("Format"),
+          orientation: fields.number().label("Orientation")
+        })),
+      exif: fields.json().label("EXIF Data"),
+      iptc: fields.json().label("IPTC Data")
+    })),
+
+  tags: fields
+    .text()
+    .label("Tags")
+    .list()
+    .tags(["$bulk-edit"])
+    .schema(z.string().min(1, "Value is required.")),
+
+  accessControl: fields
+    .object()
+    .label("Access Control")
+    .tags(["$bulk-edit"])
+    .fields(fields => ({
+      type: fields
+        .text()
         .label("Type")
-        .schema(z.string().min(1, "Value is required.")),
-
-    size: fields.number()
-        .label("Size")
-        .schema(z.number({ required_error: "Value is required." })),
-
-    metadata: fields.object()
-        .label("Metadata")
-        .renderer("hidden")
-        .fields(fields => ({
-            image: fields.object()
-                .label("Image")
-                .fields(fields => ({
-                    width: fields.number().label("Width"),
-                    height: fields.number().label("Height"),
-                    format: fields.text().label("Format"),
-                    orientation: fields.number().label("Orientation"),
-                })),
-            exif: fields.json().label("EXIF Data"),
-            iptc: fields.json().label("IPTC Data"),
-        })),
-
-    tags: fields.text()
-        .label("Tags")
-        .list()
-        .tags(["$bulk-edit"])
-        .schema(z.string().min(1, "Value is required.")),
-
-    accessControl: fields.object()
-        .label("Access Control")
-        .tags(["$bulk-edit"])
-        .fields(fields => ({
-            type: fields.text()
-                .label("Type")
-                .options([
-                    { label: "Public", value: "public" },
-                    { label: "Private", value: "private-authenticated" },
-                ])
-                .defaultValue("public"),
-        })),
-}))
+        .options([
+          { label: "Public", value: "public" },
+          { label: "Private", value: "private-authenticated" }
+        ])
+        .defaultValue("public")
+    }))
+}));
 ```
 
 ## Presenter Lifecycle
@@ -323,52 +325,52 @@ The CMS model comes from an async use case (`GetModel`), so the FormModel can't 
 
 ```ts
 class EntryPresenter {
-    private form: FormModel;
-    private entry: CmsEntry | null = null;
+  private form: FormModel;
+  private entry: CmsEntry | null = null;
 
-    constructor(
-        private getModel: GetModel.Interface,
-        private repository: EntryRepository.Interface,
-        private modifiers: FormModifier.Interface[]
-    ) {}
+  constructor(
+    private getModel: GetModel.Interface,
+    private repository: EntryRepository.Interface,
+    private modifiers: FormModifier.Interface[]
+  ) {}
 
-    async init(modelId: string, entryId?: string) {
-        // 1. Load model (and entry if editing)
-        const model = await this.getModel.execute(modelId);
+  async init(modelId: string, entryId?: string) {
+    // 1. Load model (and entry if editing)
+    const model = await this.getModel.execute(modelId);
 
-        // 2. Build form from CMS model fields
-        this.form = createFormFromCmsFields(model.fields);
+    // 2. Build form from CMS model fields
+    this.form = createFormFromCmsFields(model.fields);
 
-        // 3. Apply modifiers — they can add fields, visibility rules, etc.
-        for (const modifier of this.modifiers) {
-            modifier.modify(this.form, { entry: null, model });
-        }
-
-        // 4. Hydrate with entry data (if editing existing entry)
-        if (entryId) {
-            this.entry = await this.repository.getEntry(entryId);
-            this.form.setData(this.entry.values);
-        }
-        // For new entries: form starts with default values, no setData()
+    // 3. Apply modifiers — they can add fields, visibility rules, etc.
+    for (const modifier of this.modifiers) {
+      modifier.modify(this.form, { entry: null, model });
     }
 
-    async save() {
-        const values = await this.form.submit();
-        if (this.entry) {
-            await this.repository.updateEntry(this.entry.id, values);
-        } else {
-            this.entry = await this.repository.createEntry(values);
-        }
+    // 4. Hydrate with entry data (if editing existing entry)
+    if (entryId) {
+      this.entry = await this.repository.getEntry(entryId);
+      this.form.setData(this.entry.values);
     }
+    // For new entries: form starts with default values, no setData()
+  }
 
-    get vm() {
-        return {
-            entryId: this.entry?.id,
-            status: this.entry?.status,
-            form: this.form.vm,
-            // ...
-        };
+  async save() {
+    const values = await this.form.submit();
+    if (this.entry) {
+      await this.repository.updateEntry(this.entry.id, values);
+    } else {
+      this.entry = await this.repository.createEntry(values);
     }
+  }
+
+  get vm() {
+    return {
+      entryId: this.entry?.id,
+      status: this.entry?.status,
+      form: this.form.vm
+      // ...
+    };
+  }
 }
 ```
 
@@ -378,7 +380,7 @@ class EntryPresenter {
 
 ```ts
 interface FormModifier {
-    modify(form: FormModel, context: { entry: CmsEntry | null; model: CmsModel }): void;
+  modify(form: FormModel, context: { entry: CmsEntry | null; model: CmsModel }): void;
 }
 ```
 
@@ -402,7 +404,7 @@ const fullForm = createFormFromCmsFields(model.fields);
 
 // Partial form — only specific fields
 const quickEditForm = createFormFromCmsFields(model.fields, {
-    include: ["name", "tags", "accessControl"]
+  include: ["name", "tags", "accessControl"]
 });
 ```
 
@@ -414,13 +416,13 @@ The base FormModel is generated from the CMS model definition (which comes from 
 
 ```ts
 class AddVisibilityRulesModifier implements FormModifier.Interface {
-    modify(form: FormModel, context: { entry: CmsEntry | null; model: CmsModel }) {
-        // Add presentation-only concerns
-        form.field("accessControl").visible(() => userCanManageAccess);
+  modify(form: FormModel, context: { entry: CmsEntry | null; model: CmsModel }) {
+    // Add presentation-only concerns
+    form.field("accessControl").visible(() => userCanManageAccess);
 
-        // Add field that doesn't exist in the CMS model
-        form.addField("internalNote", fields => fields.text().label("Internal Note"));
-    }
+    // Add field that doesn't exist in the CMS model
+    form.addField("internalNote", fields => fields.text().label("Internal Note"));
+  }
 }
 ```
 
@@ -434,30 +436,33 @@ No dedicated `dynamicZone` field type. CMS dynamic zone fields convert to `objec
 // CMS field type "dynamicZone" with settings.templates
 // converts to:
 
-content: fields.object()
-    .label("Content Blocks")
-    .list()
-    .templates(cmsField.settings.templates.map(t => ({
-        id: t.id,
-        name: t.name,
-        fields: fields => convertFields(t.fields, fields),  // recurse per template
-    })))
+content: fields
+  .object()
+  .label("Content Blocks")
+  .list()
+  .templates(
+    cmsField.settings.templates.map(t => ({
+      id: t.id,
+      name: t.name,
+      fields: fields => convertFields(t.fields, fields) // recurse per template
+    }))
+  );
 ```
 
 The data uses `_templateId` as the discriminator, matching the existing CMS data format:
 
 ```json
 [
-    { "_templateId": "hero", "heading": "Welcome", "image": "..." },
-    { "_templateId": "richText", "body": "Lorem ipsum..." }
+  { "_templateId": "hero", "heading": "Welcome", "image": "..." },
+  { "_templateId": "richText", "body": "Lorem ipsum..." }
 ]
 ```
 
 The type mapping table entry:
 
-| CmsModelField.type | FormModel field | Notes |
-|---|---|---|
-| `dynamicZone` | `fields.object().list().templates(...)` | Templates from `settings.templates`, `_templateId` discriminator |
+| CmsModelField.type | FormModel field                         | Notes                                                            |
+| ------------------ | --------------------------------------- | ---------------------------------------------------------------- |
+| `dynamicZone`      | `fields.object().list().templates(...)` | Templates from `settings.templates`, `_templateId` discriminator |
 
 ## Open Questions
 

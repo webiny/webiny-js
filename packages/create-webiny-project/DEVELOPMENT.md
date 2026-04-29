@@ -21,12 +21,13 @@ npx create-webiny-project@local-npm my-test-project
 
 In Windows PowerShell, you need to escape the double quotes in the JSON strings, and also add `--%` after `npx` command,
 which will disable PowerShell's argument parsing, and will pass the arguments as they are to the `create-webiny-project` package.
-````shell
+
+```shell
 npx --% create-webiny-project@6.1.0-local-npm.1 testing-windows
             --tag=6.1.0-local-npm.1
             --assign-to-yarnrc="{\"npmRegistryServer\":\"http://localhost:4873\",\"unsafeHttpWhitelist\":[\"localhost\"]}"
             --template-options="{\"region\":\"eu-central-1\",\"vpc\":false}"
-````
+```
 
 This usage is more ideal for CI/CD environments, where interactivity is not available.
 
@@ -35,6 +36,7 @@ because in real project's CI/CD pipelines, users would simply start off by cloni
 repository, and not create a new one with the above command.
 
 ### Testing
+
 Testing this, and related packages (like [cwp-template-aws](./../cwp-template-aws)) is a bit complicated, because in
 order to get the best results, it's recommended to test everything with packages published to a real NPM.
 
@@ -121,14 +123,14 @@ Once you're done, do the following:
 ### Commands Cheat Sheet
 
 | Description                       | Command                                                                                                                                                                     |
-|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
 | Remove `.verdaccio` folder        | `rm -rf .verdaccio`                                                                                                                                                         |
 | List all v5\* tags                | `git tag -l "v5*"`                                                                                                                                                          |
 | Remove specific tag               | `git tag -d "v5.0.0-next.5"`                                                                                                                                                |
 | Set Verdaccio as the NPM registry | `npm config set registry http://localhost:4873`                                                                                                                             |
 | Reset NPM registry                | `npm config set registry https://registry.npmjs.org/`                                                                                                                       |
 | Start Verdaccio                   | `yarn verdaccio:start`                                                                                                                                                      |
-| Release to Verdaccio              | `yarn release --type=verdaccio`                                                                                                                                             |                                                                                                                                 |
+| Release to Verdaccio              | `yarn release --type=verdaccio`                                                                                                                                             |     |
 | Create a new Webiny project       | `npx create-webiny-project@local-npm my-test-project --tag local-npm --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}` |
 | Revert versioning commit          | `git reset HEAD~ && git reset --hard HEAD`                                                                                                                                  |
 
@@ -158,4 +160,4 @@ the [following command](https://yarnpkg.com/features/offline-cache#cleaning-the-
 
 ```bash
 yarn cache clean --mirror
-````
+```

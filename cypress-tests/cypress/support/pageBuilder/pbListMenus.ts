@@ -26,7 +26,6 @@ export const pbListMenus = createGqlQuery<
 >(LIST_MENUS_QUERY);
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             pbListMenus: typeof pbListMenus;

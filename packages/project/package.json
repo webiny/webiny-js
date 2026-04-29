@@ -2,7 +2,10 @@
   "name": "@webiny/project",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -31,7 +34,7 @@
     "exit-hook": "^5.1.0",
     "fast-glob": "^3.3.3",
     "find-up": "^8.0.0",
-    "get-tsconfig": "^4.13.7",
+    "get-tsconfig": "^4.14.0",
     "graphql-request": "^7.4.0",
     "humanize-duration": "3.33.2",
     "jsdom": "^29.0.2",
@@ -58,8 +61,8 @@
     "@types/jsdom": "^28.0.1",
     "@types/lodash": "^4.17.24",
     "rimraf": "^6.1.3",
-    "type-fest": "^5.5.0",
-    "typescript": "5.9.3"
+    "type-fest": "^5.6.0",
+    "typescript": "6.0.3"
   },
   "adio": {
     "ignore": {

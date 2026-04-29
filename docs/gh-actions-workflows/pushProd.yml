@@ -49,7 +49,7 @@ jobs:
       - name: Check code formatting
         run: yarn format
 
-      - name: ESLint
+      - name: Lint
         run: yarn lint
 
       - name: Deploy

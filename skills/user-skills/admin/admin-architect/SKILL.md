@@ -317,27 +317,27 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { WcpService as ServiceAbstraction, WcpGateway } from "./abstractions.js";
 
 class WcpServiceImpl implements ServiceAbstraction.Interface {
-    private project: ILicense | null = null;
+  private project: ILicense | null = null;
 
-    constructor(private gateway: WcpGateway.Interface) {
-        makeAutoObservable(this);
-    }
+  constructor(private gateway: WcpGateway.Interface) {
+    makeAutoObservable(this);
+  }
 
-    getProject(): ILicense {
-        return this.project;
-    }
+  getProject(): ILicense {
+    return this.project;
+  }
 
-    async loadProject(): Promise<void> {
-        const data = await this.gateway.fetchProject();
-        runInAction(() => {
-            this.project = data;
-        });
-    }
+  async loadProject(): Promise<void> {
+    const data = await this.gateway.fetchProject();
+    runInAction(() => {
+      this.project = data;
+    });
+  }
 }
 
 export const WcpService = ServiceAbstraction.createImplementation({
-    implementation: WcpServiceImpl,
-    dependencies: [WcpGateway]
+  implementation: WcpServiceImpl,
+  dependencies: [WcpGateway]
 });
 ```
 
@@ -352,37 +352,37 @@ Repositories own domain data and cache. They use MobX for reactivity:
 ```ts
 import { makeAutoObservable, runInAction } from "mobx";
 import {
-    NextjsConfigRepository as RepositoryAbstraction,
-    NextjsConfigGateway,
-    NextjsConfig
+  NextjsConfigRepository as RepositoryAbstraction,
+  NextjsConfigGateway,
+  NextjsConfig
 } from "./abstractions.js";
 
 class NextjsConfigRepositoryImpl implements RepositoryAbstraction.Interface {
-    private config: NextjsConfig | undefined = undefined;
+  private config: NextjsConfig | undefined = undefined;
 
-    constructor(private gateway: NextjsConfigGateway.Interface) {
-        makeAutoObservable(this);
+  constructor(private gateway: NextjsConfigGateway.Interface) {
+    makeAutoObservable(this);
+  }
+
+  getConfig(): NextjsConfig | undefined {
+    return this.config;
+  }
+
+  async loadConfig(): Promise<void> {
+    if (this.config) {
+      return; // Already loaded — cache hit
     }
 
-    getConfig(): NextjsConfig | undefined {
-        return this.config;
-    }
-
-    async loadConfig(): Promise<void> {
-        if (this.config) {
-            return; // Already loaded — cache hit
-        }
-
-        const config = await this.gateway.getConfig();
-        runInAction(() => {
-            this.config = config;
-        });
-    }
+    const config = await this.gateway.getConfig();
+    runInAction(() => {
+      this.config = config;
+    });
+  }
 }
 
 export const NextjsConfigRepository = RepositoryAbstraction.createImplementation({
-    implementation: NextjsConfigRepositoryImpl,
-    dependencies: [NextjsConfigGateway]
+  implementation: NextjsConfigRepositoryImpl,
+  dependencies: [NextjsConfigGateway]
 });
 ```
 
@@ -395,48 +395,53 @@ import { NextjsConfigGateway as GatewayAbstraction } from "./abstractions.js";
 import { GraphQLClient } from "@webiny/app/features/graphqlClient";
 
 const GET_NEXTJS_CONFIG = /* GraphQL */ `
-    query GetNextjsConfig {
-        websiteBuilder {
-            getNextjsConfig {
-                data
-                error { code message data }
-            }
+  query GetNextjsConfig {
+    websiteBuilder {
+      getNextjsConfig {
+        data
+        error {
+          code
+          message
+          data
         }
+      }
     }
+  }
 `;
 
 type GetNextjsConfigResponse = {
-    websiteBuilder: {
-        getNextjsConfig:
-            | { data: string; error: null }
-            | { data: null; error: { code: string; message: string; data: any } };
-    };
+  websiteBuilder: {
+    getNextjsConfig:
+      | { data: string; error: null }
+      | { data: null; error: { code: string; message: string; data: any } };
+  };
 };
 
 class NextjsGraphQLGateway implements GatewayAbstraction.Interface {
-    constructor(private client: GraphQLClient.Interface) {}
+  constructor(private client: GraphQLClient.Interface) {}
 
-    async getConfig(): Promise<string> {
-        const response = await this.client.execute<GetNextjsConfigResponse>({
-            query: GET_NEXTJS_CONFIG
-        });
+  async getConfig(): Promise<string> {
+    const response = await this.client.execute<GetNextjsConfigResponse>({
+      query: GET_NEXTJS_CONFIG
+    });
 
-        const envelope = response.websiteBuilder.getNextjsConfig;
-        if (envelope.error) {
-            throw new Error(envelope.error.message);
-        }
-
-        return envelope.data;
+    const envelope = response.websiteBuilder.getNextjsConfig;
+    if (envelope.error) {
+      throw new Error(envelope.error.message);
     }
+
+    return envelope.data;
+  }
 }
 
 export const NextjsConfigGateway = GatewayAbstraction.createImplementation({
-    implementation: NextjsGraphQLGateway,
-    dependencies: [GraphQLClient]
+  implementation: NextjsGraphQLGateway,
+  dependencies: [GraphQLClient]
 });
 ```
 
 **Key points:**
+
 - Define the GraphQL query as a string constant with `/* GraphQL */` comment for syntax highlighting
 - Type the response shape explicitly
 - Handle the `data`/`error` envelope pattern
@@ -450,12 +455,12 @@ When grouping related features, create a composite with no `resolve`:
 import { createFeature } from "webiny/admin";
 
 export const FoldersFeature = createFeature({
-    name: "Folders",
-    register(container) {
-        CreateFolderFeature.register(container);
-        UpdateFolderFeature.register(container);
-        DeleteFolderFeature.register(container);
-    }
+  name: "Folders",
+  register(container) {
+    CreateFolderFeature.register(container);
+    UpdateFolderFeature.register(container);
+    DeleteFolderFeature.register(container);
+  }
 });
 ```
 
@@ -465,17 +470,14 @@ Decorators add cross-cutting concerns without modifying the core implementation:
 
 ```ts
 class ListFoldersUseCaseWithLoading implements UseCaseAbstraction.Interface {
-    constructor(
-        private loadingRepository: FoldersLoadingRepository.Interface,
-        private decoratee: UseCaseAbstraction.Interface  // decoratee is LAST
-    ) {}
+  constructor(
+    private loadingRepository: FoldersLoadingRepository.Interface,
+    private decoratee: UseCaseAbstraction.Interface // decoratee is LAST
+  ) {}
 
-    async execute() {
-        await this.loadingRepository.runCallBack(
-            this.decoratee.execute(),
-            LoadingActionsEnum.list
-        );
-    }
+  async execute() {
+    await this.loadingRepository.runCallBack(this.decoratee.execute(), LoadingActionsEnum.list);
+  }
 }
 ```
 
@@ -483,14 +485,15 @@ Register with `container.registerDecorator()`:
 
 ```ts
 export const MyExtensionFeature = createFeature({
-    name: "MyExtension",
-    register(container) {
-        container.registerDecorator(MyPresenterDecorator);
-    }
+  name: "MyExtension",
+  register(container) {
+    container.registerDecorator(MyPresenterDecorator);
+  }
 });
 ```
 
 **Rules:**
+
 - Implements the same interface as the decorated abstraction
 - Constructor: extra dependencies first, `decoratee` **last**
 - The `dependencies` array does NOT include the decoratee

@@ -32,9 +32,7 @@ export const BooleanFieldType = FieldType.createImplementation({
 
 // Module augmentation for TypeScript autocomplete
 declare module "../abstractions.js" {
-    namespace FieldBuilderRegistry {
-        interface Interface {
-            boolean(): IBooleanFieldBuilder;
-        }
+    interface IFieldBuilderRegistry {
+        boolean(): IBooleanFieldBuilder;
     }
 }

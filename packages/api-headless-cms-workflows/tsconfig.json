@@ -39,7 +39,6 @@
       "@webiny/testing": ["../testing/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

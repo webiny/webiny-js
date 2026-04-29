@@ -16,6 +16,7 @@ description: >
 ## Abstractions
 
 ---
+
 **Name:** `CliCommandFactory`
 **Import:** `import { CliCommandFactory } from "webiny/cli/command"`
 **Source:** `@webiny/cli-core/abstractions/features/CliCommand.ts`

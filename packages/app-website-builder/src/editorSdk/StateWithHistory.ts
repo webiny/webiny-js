@@ -12,9 +12,9 @@ export type StateChangeEvent<TState> = {
 
 export type StateChangeListener<T> = (event: StateChangeEvent<T>) => void;
 
-export class StateWithHistory<TState extends GenericRecord = GenericRecord>
-    implements IState<TState>
-{
+export class StateWithHistory<
+    TState extends GenericRecord = GenericRecord
+> implements IState<TState> {
     private readonly history: EditorHistory;
     private state: State<TState>;
     private previousState: TState | undefined;

@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as CheckboxGroupStories from './CheckboxGroup.stories';
+import * as CheckboxGroupStories from "./CheckboxGroup.stories";
 
 <Meta of={CheckboxGroupStories} />
 
@@ -18,8 +18,8 @@ import React, { useState } from "react";
 import { CheckboxGroup } from "@webiny/admin-ui";
 
 const CheckboxGroupExample = () => {
-    const [selectedValues, setSelectedValues] = useState<string[]>([]);
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+const [selectedValues, setSelectedValues] = useState<string[]>([]);
+const [validation, setValidation] = useState({ isValid: true, message: "" });
 
     const handleChange = (newValues: string[]) => {
         setSelectedValues(newValues);
@@ -50,25 +50,26 @@ const CheckboxGroupExample = () => {
             />
         </div>
     );
+
 };
 
 export default CheckboxGroupExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/CheckboxGroup/CheckboxGroup.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/CheckboxGroup/CheckboxGroup.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={CheckboxGroupStories.Documentation} exclude={"onChange"}/>
+<Controls of={CheckboxGroupStories.Documentation} exclude={"onChange"} />
 
 ```tsx
 import React, { useState } from "react";
@@ -76,38 +77,38 @@ import React, { useState } from "react";
 import { CheckboxGroup } from "@webiny/admin-ui";
 
 const CheckboxGroupExample = () => {
-    const [selectedValues, setSelectedValues] = useState<string[]>([]);
-    const [validation, setValidation] = useState({ isValid: true, message: "" });
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
+  const [validation, setValidation] = useState({ isValid: true, message: "" });
 
-    const handleChange = (newValues: string[]) => {
-        setSelectedValues(newValues);
+  const handleChange = (newValues: string[]) => {
+    setSelectedValues(newValues);
 
-        // Simple required validation
-        if (!newValues || newValues.length === 0) {
-            setValidation({ isValid: false, message: "Please select at least one option." });
-        } else {
-            setValidation({ isValid: true, message: "" });
-        }
-    };
+    // Simple required validation
+    if (!newValues || newValues.length === 0) {
+      setValidation({ isValid: false, message: "Please select at least one option." });
+    } else {
+      setValidation({ isValid: true, message: "" });
+    }
+  };
 
-    return (
-        <div>
-            <CheckboxGroup
-                label="Select your preferences"
-                description="Choose one or more options."
-                note="Note: You can select multiple values."
-                required={true}
-                items={[
-                    { label: "Value 1", value: "value-1" },
-                    { label: "Value 2", value: "value-2" },
-                    { label: "Value 3", value: "value-3" }
-                ]}
-                value={selectedValues}
-                onChange={handleChange}
-                validation={validation}
-            />
-        </div>
-    );
+  return (
+    <div>
+      <CheckboxGroup
+        label="Select your preferences"
+        description="Choose one or more options."
+        note="Note: You can select multiple values."
+        required={true}
+        items={[
+          { label: "Value 1", value: "value-1" },
+          { label: "Value 2", value: "value-2" },
+          { label: "Value 3", value: "value-3" }
+        ]}
+        value={selectedValues}
+        onChange={handleChange}
+        validation={validation}
+      />
+    </div>
+  );
 };
 
 export default CheckboxGroupExample;
@@ -116,10 +117,7 @@ export default CheckboxGroupExample;
 ## Anatomy
 
 ### General
+
 Checkbox Group input enable users to select a single or multiple items from a list of offered choices. A checkbox input group organizes related checkbox input options together for better clarity and functionality.
 
-<img src="/images/storybook/checkbox-group/general.png" alt="General"/>
-
-
-
-
+<img src="/images/storybook/checkbox-group/general.png" alt="General" />

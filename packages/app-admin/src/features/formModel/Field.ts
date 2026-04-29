@@ -6,11 +6,14 @@ import type {
     IValueOption,
     IFormModel,
     IField,
+    IRule,
     FieldTypeMap,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
-    OnBlurCallback
+    OnBlurCallback,
+    RequiredWhenCallback,
+    ComputedFieldCallback
 } from "./abstractions.js";
 
 /**
@@ -25,14 +28,30 @@ export class Field implements IField {
     private _afterChangeCallbacks: AfterChangeCallback[] = [];
     private _afterSetValueCallbacks: AfterSetValueCallback[] = [];
     private _onBlurCallbacks: OnBlurCallback[] = [];
+    private _requiredWhenCallbacks: RequiredWhenCallback[] = [];
+    private _computed: ComputedFieldCallback | null = null;
+    private _computedUntilDirty: ComputedFieldCallback | null = null;
+    /** Set once a computedUntilDirty field receives its first user edit. */
+    private _computedOverridden = false;
+    private _validating = false;
+    private _validationCacheKey: string | undefined = undefined;
+    private _validationCache: boolean | undefined = undefined;
     private _isUIChange = false;
+    private _focusRequested = false;
+    private _qualifiedName: string = "";
     private _form: IFormModel | null = null;
+    private _ancestorRules: IRule[] = [];
 
     readonly config: IFieldConfig;
 
     constructor(config: IFieldConfig) {
         this.config = config;
-        this._value = config.defaultValue ?? null;
+        this._qualifiedName = config.name;
+        const defaultValue =
+            typeof config.defaultValue === "function"
+                ? (config.defaultValue as () => unknown)()
+                : config.defaultValue;
+        this._value = defaultValue ?? (config.isList ? [] : null);
         this._disabled = config.disabled;
         this._hidden = config.hidden;
 
@@ -47,6 +66,14 @@ export class Field implements IField {
         }
         if (config.onBlurCallbacks) {
             this._onBlurCallbacks = [...config.onBlurCallbacks];
+        }
+        if (config.requiredWhenCallbacks) {
+            this._requiredWhenCallbacks = [...config.requiredWhenCallbacks];
+        }
+        if (config.computed) {
+            this._computed = config.computed;
+        } else if (config.computedUntilDirty) {
+            this._computedUntilDirty = config.computedUntilDirty;
         }
 
         makeAutoObservable(this, {
@@ -64,6 +91,12 @@ export class Field implements IField {
     }
 
     getValue<T = unknown>(): T {
+        if (this._computed && this._form) {
+            return this._computed(this._form) as T;
+        }
+        if (this._computedUntilDirty && !this._computedOverridden && this._form) {
+            return this._computedUntilDirty(this._form) as T;
+        }
         return this._value as T;
     }
 
@@ -73,7 +106,7 @@ export class Field implements IField {
      * afterChange only fires when value actually changed.
      */
     setValue(raw: unknown): void {
-        let transformed = raw;
+        let transformed = this.config.parseValue ? this.config.parseValue(raw) : raw;
         for (const cb of this._beforeChangeCallbacks) {
             transformed = cb(transformed, this._form!);
         }
@@ -83,6 +116,9 @@ export class Field implements IField {
         }
 
         this._value = transformed;
+        if (this._computedUntilDirty && this._isUIChange) {
+            this._computedOverridden = true;
+        }
 
         for (const cb of this._afterChangeCallbacks) {
             cb(transformed, this._form!);
@@ -96,22 +132,54 @@ export class Field implements IField {
     }
 
     /**
-     * Set value directly without running pipelines. Used by setData().
+     * Set value directly without running pipelines. Used by setData() and reset().
      */
     setValueSilent(value: unknown): void {
-        this._value = value;
+        const parsed = this.config.parseValue ? this.config.parseValue(value) : value;
+        this._value = parsed;
+        if (this._computedUntilDirty) {
+            this._computedOverridden = parsed !== null && parsed !== undefined;
+        }
     }
 
     setDisabled(value: boolean): void {
         this._disabled = value;
     }
 
+    private _evaluateRules(): { visible: boolean; disabled: boolean } {
+        if (!this._form) {
+            return { visible: true, disabled: false };
+        }
+        const own = this.config.rules ?? [];
+        const all = [...this._ancestorRules, ...own];
+        if (all.length === 0) {
+            return { visible: true, disabled: false };
+        }
+        return this._form.evaluateRules(all);
+    }
+
     get visible(): boolean {
-        return !this._hidden;
+        if (this._hidden) {
+            return false;
+        }
+        return this._evaluateRules().visible;
+    }
+
+    get disabled(): boolean {
+        if (this._disabled) {
+            return true;
+        }
+        return this._evaluateRules().disabled;
     }
 
     setVisible(value: boolean): void {
         this._hidden = !value;
+    }
+
+    setAncestorRules(rules: IRule[]): void {
+        runInAction(() => {
+            this._ancestorRules = rules;
+        });
     }
 
     setValidation(validation: IFieldValidation): void {
@@ -120,6 +188,8 @@ export class Field implements IField {
 
     resetValidation(): void {
         this._validation = { isValid: null };
+        this._validationCacheKey = undefined;
+        this._validationCache = undefined;
     }
 
     addBeforeChange(cb: BeforeChangeCallback): void {
@@ -138,14 +208,73 @@ export class Field implements IField {
         this._onBlurCallbacks.push(cb);
     }
 
+    addRequiredWhen(fn: (form: IFormModel) => boolean, message?: string): void {
+        this._requiredWhenCallbacks.push({ fn, message });
+    }
+
+    setComputed(fn: ComputedFieldCallback): void {
+        this._computed = fn;
+        this._computedUntilDirty = null;
+        this._computedOverridden = false;
+    }
+
+    setComputedUntilDirty(fn: ComputedFieldCallback): void {
+        this._computedUntilDirty = fn;
+        this._computed = null;
+        this._computedOverridden = false;
+    }
+
+    /**
+     * Effective `required` state — true if the built-in `.required()` flag is
+     * set, or if any `requiredWhen()` callback returns `true` for the current
+     * form state. The first truthy callback wins; its message is used.
+     */
+    resolveRequired(): { required: boolean; message?: string } {
+        return this._resolveRequired();
+    }
+
+    private _resolveRequired(): { required: boolean; message?: string } {
+        if (this.config.required) {
+            return { required: true, message: this.config.requiredMessage };
+        }
+        if (this._form && this._requiredWhenCallbacks.length > 0) {
+            for (const cb of this._requiredWhenCallbacks) {
+                if (cb.fn(this._form)) {
+                    return { required: true, message: cb.message };
+                }
+            }
+        }
+        return { required: false };
+    }
+
     blur(): void {
         for (const cb of this._onBlurCallbacks) {
             cb(this._value, this._form!);
         }
     }
 
-    setForm(form: IFormModel): void {
+    setForm(form: IFormModel, parentPath?: string): void {
         this._form = form;
+        this._qualifiedName = parentPath ? `${parentPath}.${this.config.name}` : this.config.name;
+    }
+
+    get qualifiedName(): string {
+        return this._qualifiedName;
+    }
+
+    focus(): void {
+        if (!this._form) {
+            throw new Error(`Field "${this.config.name}" is not attached to a form.`);
+        }
+        this._form.focusField(this._qualifiedName);
+    }
+
+    requestFocus(): void {
+        this._focusRequested = true;
+    }
+
+    clearFocusRequest(): void {
+        this._focusRequested = false;
     }
 
     as<T extends keyof FieldTypeMap>(type: T): FieldTypeMap[T] {
@@ -166,20 +295,39 @@ export class Field implements IField {
 
     get vm(): IFieldVM {
         const options = this._resolveOptions();
+        const required = this._resolveRequired().required;
 
         return {
             name: this.config.name,
             type: this.config.type,
             label: this.config.label,
+            help: this.config.help,
+            description: this.config.description,
+            note: this.config.note,
             placeholder: this.config.placeholder,
-            value: this._value,
+            value: this.getValue(),
             validation: this._validation,
-            required: this.config.required,
-            disabled: this._disabled,
+            validating: this._validating,
+            required,
+            visible: this.visible,
+            disabled: this.disabled,
             renderer: this.config.renderer,
+            rendererSettings: this.config.rendererSettings,
+            isList: !!this.config.isList,
             options,
             onChange: (value: unknown) => this._setValueFromUI(value),
-            onBlur: () => this.blur()
+            onBlur: () => {
+                if (this._form?.submitted) {
+                    void this.validate();
+                }
+                this.blur();
+            },
+            addItem: (value?: unknown) => this._addItem(value),
+            removeItem: (index: number) => this._removeItem(index),
+            focusRequested: this._focusRequested,
+            clearFocusRequest: () => {
+                this._focusRequested = false;
+            }
         };
     }
 
@@ -190,6 +338,16 @@ export class Field implements IField {
         } finally {
             this._isUIChange = false;
         }
+    }
+
+    private _addItem(value?: unknown): void {
+        const current = Array.isArray(this._value) ? this._value : [];
+        this._setValueFromUI([...current, value ?? null]);
+    }
+
+    private _removeItem(index: number): void {
+        const current = Array.isArray(this._value) ? this._value : [];
+        this._setValueFromUI(current.filter((_: unknown, i: number) => i !== index));
     }
 
     private _resolveOptions(): IValueOption[] | undefined {
@@ -205,38 +363,108 @@ export class Field implements IField {
     /**
      * Validate this field. Returns true if valid.
      * Validation order: required check → zod schema.
+     * Hidden fields are excluded from validation.
+     *
+     * Pass `{ force: true }` to bypass the memoization cache (used by
+     * `form.validate()` / `form.submit()`). Blur-triggered validation
+     * omits the flag so unchanged values return the cached result.
      */
-    async validate(): Promise<boolean> {
-        // Required check
-        if (this.config.required) {
-            const value = this._value;
-            if (value === null || value === undefined || value === "") {
-                this._validation = {
-                    isValid: false,
-                    message: this.config.requiredMessage || "This field is required."
-                };
-                return false;
-            }
+    async validate(options?: { force?: boolean }): Promise<boolean> {
+        if (!this.visible) {
+            runInAction(() => {
+                this._validation = { isValid: null };
+            });
+            return true;
         }
 
-        // Zod schema check
-        if (this.config.schema) {
-            const result = await this.config.schema.safeParseAsync(this._value);
-            if (!result.success) {
-                const firstIssue = result.error.issues[0];
-                runInAction(() => {
-                    this._validation = {
-                        isValid: false,
-                        message: firstIssue?.message || "Invalid value."
-                    };
-                });
-                return false;
+        const effectiveValue = this.getValue();
+
+        // Memoization: return cached result when value hasn't changed.
+        if (!options?.force && this._validationCache !== undefined) {
+            const cacheKey = this._serializeValue(effectiveValue);
+            if (this._validationCacheKey === cacheKey) {
+                return this._validationCache;
             }
         }
 
         runInAction(() => {
-            this._validation = { isValid: true };
+            this._validating = true;
         });
-        return true;
+
+        try {
+            const requiredState = this._resolveRequired();
+
+            // Required check
+            if (requiredState.required) {
+                const isEmpty =
+                    effectiveValue === null ||
+                    effectiveValue === undefined ||
+                    effectiveValue === "" ||
+                    (this.config.isList &&
+                        Array.isArray(effectiveValue) &&
+                        effectiveValue.length === 0);
+
+                if (isEmpty) {
+                    const cacheKey = this._serializeValue(effectiveValue);
+                    runInAction(() => {
+                        this._validation = {
+                            isValid: false,
+                            message: requiredState.message || "This field is required."
+                        };
+                        this._validationCacheKey = cacheKey;
+                        this._validationCache = false;
+                    });
+                    return false;
+                }
+            }
+
+            // Zod schema check
+            if (this.config.schema) {
+                const result = await this.config.schema.safeParseAsync(effectiveValue);
+                if (!result.success) {
+                    const firstIssue = result.error.issues[0];
+                    const cacheKey = this._serializeValue(effectiveValue);
+                    runInAction(() => {
+                        this._validation = {
+                            isValid: false,
+                            message: firstIssue?.message || "Invalid value."
+                        };
+                        this._validationCacheKey = cacheKey;
+                        this._validationCache = false;
+                    });
+                    return false;
+                }
+            }
+
+            const cacheKey = this._serializeValue(effectiveValue);
+            runInAction(() => {
+                this._validation = { isValid: true };
+                this._validationCacheKey = cacheKey;
+                this._validationCache = true;
+            });
+            return true;
+        } finally {
+            runInAction(() => {
+                this._validating = false;
+            });
+        }
+    }
+
+    private _serializeValue(value: unknown): string {
+        try {
+            return JSON.stringify(value);
+        } catch {
+            return String(Math.random());
+        }
+    }
+
+    /** True if this field has any computed callback configured. */
+    get isComputed(): boolean {
+        return this._computed !== null || this._computedUntilDirty !== null;
+    }
+
+    /** True if a computedUntilDirty field has been overridden by user edit. */
+    get isComputedOverridden(): boolean {
+        return this._computedOverridden;
     }
 }

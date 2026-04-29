@@ -30,6 +30,26 @@ export const FeatureFlags = defineExtension({
                 .object({
                     threatDetection: z.boolean().optional()
                 })
+                .optional(),
+            aiPowerups: z
+                .object({
+                    enabled: z.boolean().optional(),
+                    options: z
+                        .object({
+                            websiteBuilder: z
+                                .object({
+                                    pageGeneration: z.boolean().optional()
+                                })
+                                .optional(),
+                            fileManager: z
+                                .object({
+                                    imageEnrichment: z.boolean().optional()
+                                })
+                                .optional(),
+                            lexicalGeneration: z.boolean().optional()
+                        })
+                        .optional()
+                })
                 .optional()
         })
     }),

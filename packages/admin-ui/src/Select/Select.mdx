@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as SelectStories from './Select.stories';
+import * as SelectStories from "./Select.stories";
 
 <Meta of={SelectStories} />
 
@@ -16,7 +16,7 @@ import React, { useState } from "react";
 import { Select } from "@webiny/admin-ui";
 
 const SelectExample = () => {
-    const [value, setValue] = useState("");
+const [value, setValue] = useState("");
 
     return (
         <Select
@@ -36,25 +36,26 @@ const SelectExample = () => {
             onChange={setValue}
         />
     );
+
 };
 
 export default SelectExample;
 
 `} }
-    additionalActions={[
-        {
-            title: 'Open in GitHub',
-            onClick: () => {
-                window.open(
-                    'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Select/Select.tsx',
-                    '_blank'
-                );
-            },
-        }
-    ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Select/Select.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={SelectStories.Documentation} exclude={["onChange", "onOpenChange"]}/>
+<Controls of={SelectStories.Documentation} exclude={["onChange", "onOpenChange"]} />
 
 ```jsx
 import React, { useState } from "react";
@@ -62,26 +63,26 @@ import React, { useState } from "react";
 import { Select } from "@webiny/admin-ui";
 
 const SelectExample = () => {
-    const [value, setValue] = useState("");
+  const [value, setValue] = useState("");
 
-    return (
-        <Select
-            label="Time Zone"
-            description="Select your preferred time zone"
-            note="This setting will affect how times are displayed throughout the application"
-            required={true}
-            options={[
-                { value: "EST", label: "Eastern Standard Time (UTC-5)" },
-                { value: "CST", label: "Central Standard Time (UTC-6)" },
-                { value: "PST", label: "Pacific Standard Time (UTC-8)" },
-                { value: "GMT", label: "Greenwich Mean Time (UTC+0)" },
-                { value: "CET", label: "Central European Time (UTC+1)" },
-                { value: "IST", label: "India Standard Time (UTC+5:30)" }
-            ]}
-            value={value}
-            onChange={setValue}
-        />
-    );
+  return (
+    <Select
+      label="Time Zone"
+      description="Select your preferred time zone"
+      note="This setting will affect how times are displayed throughout the application"
+      required={true}
+      options={[
+        { value: "EST", label: "Eastern Standard Time (UTC-5)" },
+        { value: "CST", label: "Central Standard Time (UTC-6)" },
+        { value: "PST", label: "Pacific Standard Time (UTC-8)" },
+        { value: "GMT", label: "Greenwich Mean Time (UTC+0)" },
+        { value: "CET", label: "Central European Time (UTC+1)" },
+        { value: "IST", label: "India Standard Time (UTC+5:30)" }
+      ]}
+      value={value}
+      onChange={setValue}
+    />
+  );
 };
 
 export default SelectExample;
@@ -90,27 +91,35 @@ export default SelectExample;
 ## Anatomy
 
 ### Select Anatomy
-<img src="/images/storybook/select/anatomy.png" alt="Select Anatomy"/>
+
+<img src="/images/storybook/select/anatomy.png" alt="Select Anatomy" />
 
 ### Styles
-<img src="/images/storybook/select/styles.png" alt="Styles"/>
+
+<img src="/images/storybook/select/styles.png" alt="Styles" />
 
 ### Options
-<img src="/images/storybook/select/options.png" alt="Options"/>
+
+<img src="/images/storybook/select/options.png" alt="Options" />
 
 ### States and Styles
-<img src="/images/storybook/select/states-and-styles.png" alt="States and Styles"/>
+
+<img src="/images/storybook/select/states-and-styles.png" alt="States and Styles" />
 
 ### Label Anatomy
-<img src="/images/storybook/select/label-anatomy.png" alt="Label Anatomy"/>
+
+<img src="/images/storybook/select/label-anatomy.png" alt="Label Anatomy" />
 
 ### Label Properties
-<img src="/images/storybook/select/label-properties.png" alt="Label Properties"/>
+
+<img src="/images/storybook/select/label-properties.png" alt="Label Properties" />
 
 ### Label Options
-<img src="/images/storybook/select/label-options.png" alt="Label Options"/>
+
+<img src="/images/storybook/select/label-options.png" alt="Label Options" />
 
 ## Usage
 
 ### Used in forms
-<img src="/images/storybook/select/used-in-forms.png" alt="Used in forms"/>
+
+<img src="/images/storybook/select/used-in-forms.png" alt="Used in forms" />

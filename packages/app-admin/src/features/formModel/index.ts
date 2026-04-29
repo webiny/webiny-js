@@ -1,18 +1,34 @@
 // Feature
 export { FormModelFeature } from "./feature.js";
 
+// Renderer registry augmentations
+import "./renderers.js";
+
 // Abstractions (types + DI tokens)
-export { FormModelFactory, FormModel } from "./abstractions.js";
+export { FormModelFactory, FormModel, RuleEvaluator } from "./abstractions.js";
 export type {
+    IFieldRendererRegistry,
+    FieldRendererName,
+    FieldRendererSettings,
     IFormModelFactory,
     IFormModelConfig,
     ILayoutBuilder,
     IFieldBuilder,
-    ISelectFieldBuilder,
+    IOptionsFieldBuilder,
+    IObjectFieldBuilder,
     IFieldBuilderRegistry,
     IFormModel,
     IField,
-    ISelectField,
+    IObjectField,
+    IObjectFieldConfig,
+    IListItemField,
+    IObjectFieldVM,
+    IObjectFieldItemVM,
+    ITemplate,
+    ITemplateIcon,
+    ITemplateConfig,
+    ITemplateVM,
+    IObjectFieldTemplatesAPI,
     FieldTypeMap,
     IFieldConfig,
     IFieldVM,
@@ -41,6 +57,9 @@ export type {
     ILayoutNodeHandle,
     ILayoutModifier,
     IFormModifier,
+    IRule,
+    IRuleEvaluator,
+    RuleAction,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
@@ -53,12 +72,27 @@ export { Field } from "./Field.js";
 export {
     FieldBuilder,
     TextFieldBuilder,
-    SelectFieldBuilder,
+    NumberFieldBuilder,
+    BooleanFieldBuilder,
+    DateTimeFieldBuilder,
+    ObjectFieldBuilder,
     createFieldBuilderRegistry
 } from "./FieldBuilder.js";
 export type { IFieldTypeFactory } from "./FieldBuilder.js";
 
+// Object field
+export { ObjectField, isObjectField } from "./ObjectField.js";
+
+// Rule evaluators
+export { ConditionRuleEvaluator } from "./ConditionRuleEvaluator.js";
+
 // View
-export { FormView } from "./FormView.js";
+export { FormView, LayoutNodeRenderer, useFormViewRenderers } from "./FormView.js";
 export { useFieldRenderers } from "./useFieldRenderers.js";
-export type { FieldRenderers, FieldRendererComponent } from "./FormView.js";
+export { useLayoutRenderers } from "./useLayoutRenderers.js";
+export type {
+    FieldRenderers,
+    FieldRendererComponent,
+    LayoutRenderers,
+    TabsNodeRendererProps
+} from "./FormView.js";

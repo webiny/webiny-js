@@ -1,6 +1,6 @@
 # Dependencies by Age
 
-Generated: 2026-04-01
+Generated: 2026-04-23
 
 ```
 Name                                       Version   Published   Age
@@ -22,7 +22,6 @@ pluralize                                  8.0.0     2019-05-25  6y 10mo
   @types/pluralize                         0.0.33    2023-11-07  2y 4mo
 react-butterfiles                          1.3.3     2019-08-15  6y 7mo
 fast-json-stable-stringify                 2.1.0     2019-12-14  6y 3mo
-eslint-plugin-node                         11.1.0    2020-03-28  6y
 decompress                                 4.2.1     2020-04-01  6y
 @apollo/react-common                       3.1.4     2020-04-03  5y 12mo
 apollo-link                                1.2.14    2020-04-09  5y 11mo
@@ -46,7 +45,6 @@ raw-loader                                 4.0.2     2020-10-09  5y 5mo
 file-loader                                6.2.0     2020-10-27  5y 5mo
 react-color                                2.19.3    2020-10-28  5y 5mo
   @types/react-color                       3.0.13    2024-12-11  1y 3mo
-eslint-plugin-standard                     5.0.0     2020-11-23  5y 4mo
 is-hotkey                                  0.2.0     2020-11-24  5y 4mo
   @types/is-hotkey                         0.1.10    2023-11-21  2y 4mo
 ts-expect                                  1.3.0     2021-02-13  5y 1mo
@@ -83,11 +81,9 @@ react-transition-group                     4.4.5     2022-08-01  3y 8mo
 react-lazy-load                            4.0.1     2022-09-01  3y 7mo
 bson-objectid                              2.0.4     2022-11-21  3y 4mo
 ttypescript                                1.5.15    2022-12-09  3y 3mo
-eslint-import-resolver-babel-module        5.3.2     2023-01-16  3y 2mo
 tinycolor2                                 1.6.0     2023-02-03  3y 1mo
   @types/tinycolor2                        1.4.6     2023-11-07  2y 4mo
 deepmerge                                  4.3.1     2023-03-16  3y
-eslint-config-standard                     17.1.0    2023-05-29  2y 10mo
 reset-css                                  5.0.2     2023-07-21  2y 8mo
 @svgr/webpack                              8.1.0     2023-08-15  2y 7mo
 jwt-decode                                 4.0.0     2023-10-27  2y 5mo
@@ -123,7 +119,6 @@ react                                      18.3.1    2024-04-26  1y 11mo
 react-dom                                  18.3.1    2024-04-26  1y 11mo
   @types/react-dom                         18.3.7    2025-04-30  11mo
 dynamodb-toolbox                           0.9.5     2024-05-05  1y 11mo
-eslint-plugin-lodash                       8.0.0     2024-05-12  1y 10mo
 cli-table3                                 0.6.5     2024-05-12  1y 10mo
 @babel/helper-environment-visitor          7.24.7    2024-06-05  1y 10mo
 @types/react-resizable                     3.0.8     2024-07-01  1y 9mo
@@ -138,7 +133,6 @@ husky                                      9.1.7     2024-11-18  1y 4mo
 @emotion/css                               11.13.5   2024-11-20  1y 4mo
 @emotion/babel-plugin                      11.13.5   2024-11-20  1y 4mo
 class-variance-authority                   0.7.1     2024-11-26  1y 4mo
-eslint-plugin-promise                      7.2.1     2024-11-27  1y 4mo
 dataloader                                 2.2.3     2024-12-03  1y 3mo
 @emotion/react                             11.14.0   2024-12-09  1y 3mo
 jsesc                                      3.1.0     2024-12-11  1y 3mo
@@ -157,7 +151,6 @@ neverthrow                                 8.2.0     2025-02-21  1y 1mo
 timeago-react                              3.0.7     2025-03-04  1y
 cmdk                                       1.1.1     2025-03-14  1y
 @storybook/addon-webpack5-compiler-babel   3.0.6     2025-04-01  1y
-eslint-plugin-react                        7.37.5    2025-04-03  12mo
 @opensearch-project/opensearch             3.5.1     2025-04-04  12mo
 @tanstack/react-table                      8.21.3    2025-04-14  11mo
 nanoid-dictionary                          5.0.0     2025-04-26  11mo
@@ -165,9 +158,8 @@ nanoid-dictionary                          5.0.0     2025-04-26  11mo
 yargs                                      18.0.0    2025-05-27  10mo
 jsonwebtoken                               9.0.3     2025-12-04  3mo
   @types/jsonwebtoken                      9.0.10    2025-06-16  9mo
-eslint-plugin-import                       2.32.0    2025-06-20  9mo
 @emotion/styled                            11.14.1   2025-06-26  9mo
-prettier                                   3.6.2     2025-06-27  9mo
+oxfmt                                      0.45.0    2025-06-27  9mo
 @minoru/react-dnd-treeview                 3.5.3     2025-07-13  8mo
 @types/hoist-non-react-statics             3.3.7     2025-07-21  8mo
 sonner                                     2.0.7     2025-08-02  8mo
@@ -237,7 +229,6 @@ exit-hook                                  5.1.0     2026-02-04  1mo
 ora                                        9.3.0     2026-02-05  1mo
 semver                                     7.7.4     2026-02-05  1mo
 sass-loader                                16.0.7    2026-02-05  1mo
-@eslint/js                                 10.0.1    2026-02-06  1mo
 pino                                       10.3.1    2026-02-09  1mo
 cache-control-parser                       2.2.0     2026-02-09  1mo
 @fortawesome/fontawesome-svg-core          7.2.0     2026-02-10  1mo
@@ -268,7 +259,6 @@ storybook                                  9.1.20    2026-03-05  26d
 @storybook/react-webpack5                  9.1.20    2026-03-05  26d
 folder-hash                                4.1.2     2026-03-05  26d
 @types/node                                24.12.0   2026-03-06  26d
-@eslint/eslintrc                           3.3.5     2026-03-06  25d
 babel-loader                               10.1.1    2026-03-09  23d
 sass                                       1.98.0    2026-03-10  21d
 @rsbuild/plugin-react                      1.4.6     2026-03-11  21d
@@ -314,12 +304,10 @@ lexical                                    0.42.0    2026-03-19  12d
 @lexical/text                              0.42.0    2026-03-19  12d
 @lexical/utils                             0.42.0    2026-03-19  12d
 @fortawesome/react-fontawesome             3.3.0     2026-03-20  12d
-eslint                                     10.1.0    2026-03-20  12d
 sanitize-filename                          1.6.4     2026-03-20  11d
 markdown-to-jsx                            9.7.13    2026-03-21  10d
 get-tsconfig                               4.13.7    2026-03-22  10d
 fastify                                    5.8.4     2026-03-23  9d
-eslint-plugin-storybook                    10.3.3    2026-03-23  9d
 tar                                        7.5.13    2026-03-23  9d
 @faker-js/faker                            10.4.0    2026-03-23  8d
 mqtt                                       5.15.1    2026-03-24  8d
@@ -333,13 +321,10 @@ react-resizable-panels                     4.8.0     2026-03-28  4d
 @auth0/auth0-spa-js                        2.18.3    2026-03-30  2d
 @smithy/node-http-handler                  4.5.1     2026-03-30  2d
 @modelcontextprotocol/sdk                  1.29.0    2026-03-30  2d
-@typescript-eslint/parser                  8.58.0    2026-03-30  2d
-@typescript-eslint/eslint-plugin           8.58.0    2026-03-30  2d
 @pulumi/random                             4.19.2    2026-03-30  2d
 minimatch                                  10.2.5    2026-03-30  2d
 @iconify/json                              2.2.458   2026-03-31  1d
 @rspack/core                               1.7.11    2026-03-31  1d
-@vitest/eslint-plugin                      1.6.14    2026-03-31  1d
 @aws-sdk/client-apigatewaymanagementapi    3.1021.0  2026-03-31  0d
 @aws-sdk/client-cloudfront                 3.1021.0  2026-03-31  0d
 @aws-sdk/client-cloudwatch-events          3.1021.0  2026-03-31  0d

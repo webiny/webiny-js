@@ -15,7 +15,8 @@ import { CloseDialogIconButton } from "~/Dialog/components/CloseDialogIconButton
 import { DialogClose } from "~/Dialog/components/DialogClose.js";
 
 interface DialogProps
-    extends React.ComponentPropsWithoutRef<typeof DialogRoot>,
+    extends
+        React.ComponentPropsWithoutRef<typeof DialogRoot>,
         Omit<React.ComponentPropsWithoutRef<typeof DialogContent>, "title"> {
     trigger?: React.ReactNode;
     title?: React.ReactNode;
@@ -23,6 +24,7 @@ interface DialogProps
     showCloseButton?: boolean;
     dismissible?: boolean;
     bodyPadding?: boolean;
+    scrollable?: boolean;
     description?: React.ReactNode;
     children: React.ReactNode;
     actions?: React.ReactNode;
@@ -65,6 +67,7 @@ const DialogBase = (props: DialogProps) => {
             // Body props.
             children,
             bodyPadding,
+            scrollable,
 
             // Footer props.
             actions,
@@ -105,7 +108,7 @@ const DialogBase = (props: DialogProps) => {
                 children: <div>{trigger}</div>
             },
             headerProps: { title, icon, description, size },
-            bodyProps: { children, bodyPadding, size },
+            bodyProps: { children, bodyPadding, scrollable, size },
             footerProps: { info, actions, size },
             closeButtonProps: { show: showCloseButton, size },
             contentProps: { ...rest, size }
@@ -118,13 +121,17 @@ const DialogBase = (props: DialogProps) => {
             <DialogPortal>
                 <div data-role="dialog" className={"z-overlay absolute"}>
                     <DialogOverlay />
-                    <DialogContent {...contentProps}>
-                        <DialogHeader {...headerProps} />
+                    <DialogContent
+                        {...contentProps}
+                        header={<DialogHeader {...headerProps} />}
+                        footer={<DialogFooter {...footerProps} />}
+                        closeButton={
+                            closeButtonProps.show ? (
+                                <CloseDialogIconButton size={closeButtonProps.size} />
+                            ) : undefined
+                        }
+                    >
                         <DialogBody {...bodyProps} />
-                        <DialogFooter {...footerProps} />
-                        {closeButtonProps.show && (
-                            <CloseDialogIconButton size={closeButtonProps.size} />
-                        )}
                     </DialogContent>
                 </div>
             </DialogPortal>

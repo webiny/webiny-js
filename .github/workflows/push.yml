@@ -91,7 +91,7 @@ jobs:
         run: yarn --immutable
         working-directory: v6
       - name: Check code formatting
-        run: yarn prettier:check
+        run: yarn format:check
         working-directory: v6
       - name: Check dependencies
         run: yarn adio
@@ -99,8 +99,8 @@ jobs:
       - name: Check TS configs
         run: yarn check-ts-configs
         working-directory: v6
-      - name: ESLint
-        run: yarn eslint
+      - name: Lint
+        run: yarn lint
         working-directory: v6
       - name: Check Package Node Modules
         run: yarn check-package-dependencies
@@ -509,6 +509,9 @@ jobs:
             !new-webiny-project/node_modules/**/*
             !new-webiny-project/**/node_modules/**/*
             !new-webiny-project/.yarn/cache/**/*
+      - name: Enable extension whitelabeling
+        working-directory: new-webiny-project
+        run: yarn webiny extension whitelabeling
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev
@@ -668,6 +671,9 @@ jobs:
             !new-webiny-project/node_modules/**/*
             !new-webiny-project/**/node_modules/**/*
             !new-webiny-project/.yarn/cache/**/*
+      - name: Enable extension whitelabeling
+        working-directory: new-webiny-project
+        run: yarn webiny extension whitelabeling
       - name: Deploy Core
         working-directory: new-webiny-project
         run: yarn webiny deploy core --env dev

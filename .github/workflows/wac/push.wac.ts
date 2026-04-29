@@ -19,10 +19,18 @@ const ddbOsStorageOps = new DdbOsStorageOps();
 const DIR_WEBINY_JS = "v6";
 const DIR_TEST_PROJECT = "new-webiny-project";
 
-const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
-const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
-const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
+const installBuildSteps = createInstallBuildSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
+const yarnCacheSteps = createYarnCacheSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
+const globalBuildCacheSteps = createGlobalBuildCacheSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
+const runBuildCacheSteps = createRunBuildCacheSteps({
+    workingDirectory: DIR_WEBINY_JS
+});
 
 const createE2EJobs = (storageOps: AbstractStorageOps) => {
     const jobNames = {
@@ -149,6 +157,11 @@ const createE2EJobs = (storageOps: AbstractStorageOps) => {
                         `!${DIR_TEST_PROJECT}/.yarn/cache/**/*`
                     ].join("\n")
                 }
+            },
+            {
+                name: "Enable extension whitelabeling",
+                "working-directory": DIR_TEST_PROJECT,
+                run: "yarn webiny extension whitelabeling"
             },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
             ...(storageOps.shortId === "ddb-os"
@@ -348,10 +361,10 @@ export const push = createWorkflow({
                 ...withCommonParams(
                     [
                         { name: "Install dependencies", run: "yarn --immutable" },
-                        { name: "Check code formatting", run: "yarn prettier:check" },
+                        { name: "Check code formatting", run: "yarn format:check" },
                         { name: "Check dependencies", run: "yarn adio" },
                         { name: "Check TS configs", run: "yarn check-ts-configs" },
-                        { name: "ESLint", run: "yarn eslint" },
+                        { name: "Lint", run: "yarn lint" },
                         {
                             name: "Check Package Node Modules",
                             run: "yarn check-package-dependencies"

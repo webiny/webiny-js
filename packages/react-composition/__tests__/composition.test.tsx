@@ -20,13 +20,13 @@ interface BaseComponentProps {
 
 describe("Decoration of Hooks and Components", () => {
     it("should decorate components", async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const BaseComponent = makeDecoratable("BaseComponent", (_: BaseComponentProps) => {
             return <span>BaseComponent</span>;
         });
 
         const DecorateBaseComponent = createDecorator(
             BaseComponent,
+            // oxlint-disable-next-line react/display-name
             function BaseComponentDecorator(Original) {
                 return function DecoratedBaseComponent() {
                     return (
@@ -118,7 +118,6 @@ describe("Decoration of Hooks and Components", () => {
             name: string;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const BaseComponent = makeDecoratable("BaseComponent", (_: BaseComponentProps) => {
             return <span>BaseComponent</span>;
         });

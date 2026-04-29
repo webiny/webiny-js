@@ -15,9 +15,7 @@ interface Params {
     client: IRecordLockingClient;
 }
 
-export class RecordLockingGetLockedEntryLockRecord
-    implements IRecordLockingGetLockedEntryLockRecord
-{
+export class RecordLockingGetLockedEntryLockRecord implements IRecordLockingGetLockedEntryLockRecord {
     private readonly client: IRecordLockingClient;
 
     public constructor(params: Params) {

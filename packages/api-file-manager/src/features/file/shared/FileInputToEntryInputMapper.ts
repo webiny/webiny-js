@@ -22,6 +22,7 @@ export class FileInputToEntryInputMapper {
                     type: "public"
                 },
                 tags: file.tags || [],
+                description: file.description ?? "",
                 extensions: file.extensions
             }
         };

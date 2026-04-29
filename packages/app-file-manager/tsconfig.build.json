@@ -10,10 +10,12 @@
     { "path": "../app-headless-cms-common/tsconfig.build.json" },
     { "path": "../app-websockets/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
     { "path": "../react-properties/tsconfig.build.json" },
+    { "path": "../sdk/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ],
@@ -40,6 +42,10 @@
       "@webiny/app-websockets": ["../app-websockets/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
@@ -48,11 +54,12 @@
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
       "@webiny/react-properties": ["../react-properties/src"],
+      "@webiny/sdk/*": ["../sdk/src/*"],
+      "@webiny/sdk": ["../sdk/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

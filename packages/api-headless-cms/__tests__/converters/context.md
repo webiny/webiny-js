@@ -9,6 +9,7 @@ The storage converter system transforms field values from their plain format (as
 ## Test Structure
 
 All tests follow the same pattern:
+
 1. **Plain Value** - The human-readable format with actual field names
 2. **Converted Value** - The storage format with type prefixes and storage IDs
 3. **Model Definition** - The field schema defining the structure
@@ -18,15 +19,15 @@ All tests follow the same pattern:
 
 ```typescript
 const plainValue = {
-    profile: {
-        name: "John Doe"
-    }
+  profile: {
+    name: "John Doe"
+  }
 };
 
 const convertedValue = {
-    "object@profileId": {
-        "text@nameId": "John Doe"
-    }
+  "object@profileId": {
+    "text@nameId": "John Doe"
+  }
 };
 ```
 
@@ -35,52 +36,62 @@ const convertedValue = {
 Tests are organized by nesting patterns and field types:
 
 ### 1. Simple Fields (`/converters/`)
+
 - Single value: `text.test.ts`, `number.test.ts`, etc.
 - Multiple values: `text.multiple.test.ts`, `number.multiple.test.ts`, etc.
 - Tests root-level fields without any object wrapping
 
 ### 2. Object + Field (`/converters/object/{fieldType}/`)
+
 - Pattern: `object.field` → `profile.name`
 - Tests single object containing a field
 - Both single and multiple value variants
 
 ### 3. Nested Objects (`/converters/object/object/`)
+
 - Pattern: `object.object.field` → `profile.settings.isActive`
 - Tests 2-level object nesting
 - Files named: `object.{fieldType}.test.ts`
 
 ### 4. Multiple Objects (`/converters/multipleObject/`)
+
 - Pattern: `multipleObject.field` → `profiles[].name`
 - Tests arrays of objects
 - Files named: `multipleObject.{fieldType}.test.ts`
 
 ### 5. Object + Multiple Object + Object (`/converters/object/multipleObject/object/`)
+
 - Pattern: `object.multipleObject.object.field` → `profile.settings[].config.name`
 - Tests: single object → array of objects → single nested object → field
 - 4 levels deep
 
 ### 6. Object + Multiple Object + Multiple Object (`/converters/object/multipleObject/multipleObject/`)
+
 - Pattern: `object.multipleObject.multipleObject.field` → `profile.settings[].configs[].name`
 - Tests: single object → array of objects → array of nested objects → field
 - 4 levels deep
 
 ### 7. Dynamic Zones (`/converters/dynamicZone/`)
+
 - Pattern: `dynamicZone.field` → `content._templateId` + `content.title`
 - Tests dynamic zones with various field types
 - Each template can have different fields
 - Special `_templateId` field identifies which template is active
 
 ### 8. Dynamic Zone + Object (`/converters/dynamicZone/`)
+
 - `dynamicZone.object.test.ts` - Single object with multiple fields
 - `dynamicZone.multipleObject.test.ts` - Multiple objects with fields
 - `dynamicZone.objectMixed.test.ts` - Both single and multiple objects
 
 ### 9. Object + Dynamic Zone (`/converters/object/dynamicZone/`)
+
 - Pattern: `object.dynamicZone.field` → `profile.content._templateId` + `profile.content.title`
 - Tests object wrapping a dynamic zone
 - All field types including nested objects
 
 ### 10. Complex Nested (`/converters/object/dynamicZone/object.dynamicZone.complex.test.ts`)
+
 - **Most comprehensive test** - all combinations in one test
 - Structure: object → multiple DZs → single/multiple objects → nested DZs → fields
 - 4+ levels deep with multiple templates
@@ -89,6 +100,7 @@ Tests are organized by nesting patterns and field types:
 ## Field Types Tested
 
 All tests cover these field types (both single and multiple values where applicable):
+
 - `text` - Short text strings
 - `number` - Numeric values
 - `boolean` - True/false values
@@ -107,6 +119,7 @@ All tests cover these field types (both single and multiple values where applica
 Storage IDs follow the pattern: `{type}@{fieldId}`
 
 Examples:
+
 - `text@nameId` - Text field named "name"
 - `object@profileId` - Object field named "profile"
 - `dynamicZone@contentId` - Dynamic zone field named "content"
@@ -153,40 +166,44 @@ When adding new field types or nesting patterns:
 ## Common Patterns
 
 ### Simple Object Field
+
 ```typescript
 plainValue: { profile: { name: "John" } }
 convertedValue: { "object@profileId": { "text@nameId": "John" } }
 ```
 
 ### Multiple Objects
+
 ```typescript
 plainValue: { profiles: [{ name: "John" }, { name: "Jane" }] }
 convertedValue: { "object@profilesId": [{ "text@nameId": "John" }, { "text@nameId": "Jane" }] }
 ```
 
 ### Dynamic Zone
+
 ```typescript
 plainValue: { content: { _templateId: "textTemplate", title: "Hello" } }
 convertedValue: { "dynamicZone@contentId": { _templateId: "textTemplate", "text@titleId": "Hello" } }
 ```
 
 ### Nested Objects in Dynamic Zone
+
 ```typescript
-plainValue: { 
-    profile: { 
-        content: { 
-            _templateId: "template1", 
-            settings: { name: "Config" } 
-        } 
-    } 
+plainValue: {
+    profile: {
+        content: {
+            _templateId: "template1",
+            settings: { name: "Config" }
+        }
+    }
 }
-convertedValue: { 
-    "object@profileId": { 
-        "dynamicZone@contentId": { 
-            _templateId: "template1", 
-            "object@settingsId": { "text@nameId": "Config" } 
-        } 
-    } 
+convertedValue: {
+    "object@profileId": {
+        "dynamicZone@contentId": {
+            _templateId: "template1",
+            "object@settingsId": { "text@nameId": "Config" }
+        }
+    }
 }
 ```
 
@@ -197,4 +214,3 @@ convertedValue: {
 - **Maintainability**: Consistent naming and structure across all tests
 - **Bidirectional Validation**: Ensures data integrity in both directions
 - **Type Safety**: Uses TypeScript for model definitions and assertions
-

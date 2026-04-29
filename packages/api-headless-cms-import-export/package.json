@@ -2,7 +2,10 @@
   "name": "@webiny/api-headless-cms-import-export",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "description": "Import / Export for Webiny Headless CMS",
   "keywords": [
     "api-headless-cms-import-export:base"
@@ -14,7 +17,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@smithy/node-http-handler": "^4.5.2",
+    "@smithy/node-http-handler": "^4.6.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
@@ -45,8 +48,8 @@
     "adm-zip": "^0.5.17",
     "aws-sdk-client-mock": "^4.1.0",
     "graphql": "^16.13.2",
-    "typescript": "5.9.3",
-    "vitest": "^4.1.4"
+    "typescript": "6.0.3",
+    "vitest": "^4.1.5"
   },
   "publishConfig": {
     "access": "public",

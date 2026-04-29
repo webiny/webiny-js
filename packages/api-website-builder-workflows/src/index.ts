@@ -12,7 +12,7 @@ export const createWebsiteBuilderWorkflows = () => {
         }
 
         // Register features
-        PageWorkflowsFeature.register(context.container, context);
+        PageWorkflowsFeature.register(context.container);
     });
 
     plugin.name = "website-builder-workflows.context";

@@ -25,6 +25,7 @@ const createResolvedAsset = (file: File): IResolvedAsset => {
         metadata: file.metadata,
         location: file.location,
         tags: file.tags,
+        description: file.description,
         extensions: file.extensions
     };
 };

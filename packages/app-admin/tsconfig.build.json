@@ -12,6 +12,7 @@
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
     { "path": "../react-properties/tsconfig.build.json" },
+    { "path": "../sdk/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
@@ -46,6 +47,8 @@
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
       "@webiny/react-properties": ["../react-properties/src"],
+      "@webiny/sdk/*": ["../sdk/src/*"],
+      "@webiny/sdk": ["../sdk/src"],
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
       "@webiny/utils/*": ["../utils/src/*"],
@@ -54,7 +57,6 @@
       "@webiny/validation": ["../validation/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

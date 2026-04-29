@@ -2,7 +2,10 @@
   "name": "@webiny/api-headless-cms-scheduler",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "description": "Schedule for Webiny Headless CMS",
   "keywords": [
     "api-headless-cms-scheduler:base"
@@ -30,8 +33,8 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "aws-sdk-client-mock": "^4.1.0",
-    "typescript": "5.9.3",
-    "vitest": "^4.1.4"
+    "typescript": "6.0.3",
+    "vitest": "^4.1.5"
   },
   "publishConfig": {
     "access": "public",

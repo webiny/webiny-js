@@ -72,16 +72,16 @@ The generator script at `scripts/generateSkills/` does three things:
 
 ### Key Files
 
-| File | Purpose |
-|------|---------|
-| `src/bin.ts` | CLI entry point |
-| `src/pipeline.ts` | Orchestrates discover → resolve → write |
-| `src/discovery.ts` | Scans webiny barrel files for matching exports |
-| `src/source-resolver.ts` | ts-morph utilities for following re-exports |
-| `src/config.ts` | Category map, description builders |
-| `src/plugins/` | Plugin per abstraction type (event-handler, use-case) |
-| `src/name-utils.ts` | PascalCase/kebab-case converters |
-| `src/types.ts` | TypeScript interfaces |
+| File                     | Purpose                                               |
+| ------------------------ | ----------------------------------------------------- |
+| `src/bin.ts`             | CLI entry point                                       |
+| `src/pipeline.ts`        | Orchestrates discover → resolve → write               |
+| `src/discovery.ts`       | Scans webiny barrel files for matching exports        |
+| `src/source-resolver.ts` | ts-morph utilities for following re-exports           |
+| `src/config.ts`          | Category map, description builders                    |
+| `src/plugins/`           | Plugin per abstraction type (event-handler, use-case) |
+| `src/name-utils.ts`      | PascalCase/kebab-case converters                      |
+| `src/types.ts`           | TypeScript interfaces                                 |
 
 ### Plugin Interface
 

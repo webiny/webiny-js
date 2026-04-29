@@ -1,9 +1,9 @@
 import * as React from "react";
 import { cn, cva } from "~/utils.js";
 import type { DialogProps } from "~/Dialog/index.js";
+import { ScrollArea } from "~/ScrollArea/index.js";
 
-const dialogBodyVariants = cva("flex-1", {
-    // Flex grows to fill available space - we need this for the body to expand in case of a "fullscreen" dialog.
+const dialogBodyVariants = cva("", {
     variants: {
         size: {
             sm: "px-md-extra",
@@ -23,8 +23,14 @@ const dialogBodyVariants = cva("flex-1", {
     }
 });
 
-export type DialogBodyProps = Pick<DialogProps, "children" | "bodyPadding" | "size">;
+export type DialogBodyProps = Pick<DialogProps, "children" | "bodyPadding" | "scrollable" | "size">;
 
-export const DialogBody = ({ bodyPadding, size, children }: DialogBodyProps) => {
-    return <div className={cn(dialogBodyVariants({ size, bodyPadding }))}>{children}</div>;
+export const DialogBody = ({ bodyPadding, scrollable = true, size, children }: DialogBodyProps) => {
+    const content = <div className={cn(dialogBodyVariants({ size, bodyPadding }))}>{children}</div>;
+
+    if (!scrollable) {
+        return content;
+    }
+
+    return <ScrollArea className="h-full">{content}</ScrollArea>;
 };

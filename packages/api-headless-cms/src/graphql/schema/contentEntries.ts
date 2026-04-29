@@ -338,7 +338,7 @@ export const createContentEntriesSchema = ({
     }).join("\n");
 
     const plugin = createCmsGraphQLSchemaPlugin({
-        // Had to remove /* GraphQL */ because prettier would not format the code correctly.
+        // Had to remove /* GraphQL */ because it causes issues with oxfmt formatting.
         typeDefs: `
             type CmsModelMeta {
                 modelId: String!

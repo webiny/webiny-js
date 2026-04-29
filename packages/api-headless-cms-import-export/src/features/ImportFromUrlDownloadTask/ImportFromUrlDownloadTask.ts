@@ -12,9 +12,10 @@ type IRunParams = TaskDefinition.RunParams<
     IImportFromUrlDownloadOutput
 >;
 
-class ImportFromUrlDownloadTaskDefinition
-    implements TaskDefinition.Interface<IImportFromUrlDownloadInput, IImportFromUrlDownloadOutput>
-{
+class ImportFromUrlDownloadTaskDefinition implements TaskDefinition.Interface<
+    IImportFromUrlDownloadInput,
+    IImportFromUrlDownloadOutput
+> {
     id = IMPORT_FROM_URL_DOWNLOAD_TASK;
     title = "Import from URL List - Download";
     maxIterations = 500;

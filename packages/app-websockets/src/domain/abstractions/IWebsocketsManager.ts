@@ -11,8 +11,9 @@ import type {
     WebsocketsCloseCode
 } from "./types.js";
 
-export interface IWebsocketManagerSendData<T extends IGenericData = IGenericData>
-    extends IGenericData {
+export interface IWebsocketManagerSendData<
+    T extends IGenericData = IGenericData
+> extends IGenericData {
     /**
      * A user token, which will identify the user sending the message.
      */
