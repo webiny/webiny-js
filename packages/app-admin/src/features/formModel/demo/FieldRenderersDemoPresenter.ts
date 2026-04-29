@@ -304,7 +304,7 @@ export class FieldRenderersDemoPresenter {
                                     .text()
                                     .label("UUID")
                                     .defaultValue(() => Date.now())
-                                    .onClone(value => `${value}/${Date.now()}`)
+                                    .cloneValue(value => `${value}/${Date.now()}`)
                             })
                         },
                         {

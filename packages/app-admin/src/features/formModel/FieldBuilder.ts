@@ -15,7 +15,7 @@ import type {
     AfterSetValueCallback,
     ComputedFieldCallback,
     OnBlurCallback,
-    OnCloneCallback
+    CloneValueCallback
 } from "./abstractions.js";
 
 /**
@@ -161,8 +161,8 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
-    onClone(fn: OnCloneCallback): this {
-        this._config.onClone = fn;
+    cloneValue(fn: CloneValueCallback): this {
+        this._config.cloneValue = fn;
         return this;
     }
 

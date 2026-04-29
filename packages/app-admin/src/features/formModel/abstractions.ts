@@ -63,7 +63,7 @@ export interface IFieldConfig {
     computed?: ComputedFieldCallback;
     computedUntilDirty?: ComputedFieldCallback;
     tags?: string[];
-    onClone?: OnCloneCallback;
+    cloneValue?: CloneValueCallback;
     rules?: IRule[];
 }
 
@@ -388,7 +388,7 @@ export type BeforeChangeCallback = (value: unknown, form: IFormModel) => unknown
 export type AfterChangeCallback = (value: unknown, form: IFormModel) => void;
 export type AfterSetValueCallback = (value: unknown, form: IFormModel) => void;
 export type OnBlurCallback = (value: unknown, form: IFormModel) => void;
-export type OnCloneCallback = (value: unknown) => unknown;
+export type CloneValueCallback = (value: unknown) => unknown;
 
 // ---------------------------------------------------------------------------
 // Layout types
@@ -659,7 +659,7 @@ export namespace FormModel {
     export type AfterChange = AfterChangeCallback;
     export type AfterSetValue = AfterSetValueCallback;
     export type OnBlur = OnBlurCallback;
-    export type OnClone = OnCloneCallback;
+    export type CloneValue = CloneValueCallback;
     export type RowNode = IRowNode;
     export type RowNodeHandle = IRowNodeHandle;
     export type RowNodeVM = IRowNodeVM;
@@ -767,7 +767,7 @@ export interface IFieldBuilder<TType extends string = string, TOptions extends b
     afterChange(fn: AfterChangeCallback): this;
     afterSetValue(fn: AfterSetValueCallback): this;
     onBlur(fn: OnBlurCallback): this;
-    onClone(fn: OnCloneCallback): this;
+    cloneValue(fn: CloneValueCallback): this;
     getTags(): string[];
     tags(tags: string[]): this;
     /**

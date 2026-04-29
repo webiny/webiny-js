@@ -69,8 +69,8 @@ function hydrateChildren(
     }
     for (const [name, field] of children) {
         if (name in data) {
-            if (options?.clone && field.config.onClone) {
-                field.setValueSilent(field.config.onClone(data[name]));
+            if (options?.clone && field.config.cloneValue) {
+                field.setValueSilent(field.config.cloneValue(data[name]));
             } else {
                 field.setValueSilent(data[name]);
             }
