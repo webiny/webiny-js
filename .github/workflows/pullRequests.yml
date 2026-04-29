@@ -266,10 +266,9 @@ jobs:
           may still be failing. Fix any remaining issues: 1. Run 'yarn adio' —
           if it reports dependency errors, fix the relevant package.json files.
           2. Run 'yarn check-ts-configs' — if it reports errors, fix them. 3.
-          Run 'yarn lint' — if there are still non-auto-fixable errors, read
-          the affected files and fix them. 4. Run 'yarn
-          check-package-dependencies' — if it reports errors, fix them. Work in
-          the current directory."
+          Run 'yarn lint' — if there are still non-auto-fixable errors, read the
+          affected files and fix them. 4. Run 'yarn check-package-dependencies'
+          — if it reports errors, fix them. Work in the current directory."
       - name: Update yarn.lock
         run: yarn
         working-directory: ${{ github.base_ref }}

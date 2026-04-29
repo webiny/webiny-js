@@ -6,7 +6,7 @@ import type { IFieldVM } from "~/features/formModel/index.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
-        input: { fieldType: "text"; settings: undefined };
+        textInput: { fieldType: "text"; settings: undefined };
     }
 }
 

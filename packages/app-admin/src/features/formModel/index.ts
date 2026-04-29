@@ -5,7 +5,7 @@ export { FormModelFeature } from "./feature.js";
 import "./renderers.js";
 
 // Abstractions (types + DI tokens)
-export { FormModelFactory, FormModel } from "./abstractions.js";
+export { FormModelFactory, FormModel, RuleEvaluator } from "./abstractions.js";
 export type {
     IFieldRendererRegistry,
     FieldRendererName,
@@ -14,17 +14,21 @@ export type {
     IFormModelConfig,
     ILayoutBuilder,
     IFieldBuilder,
-    ISelectFieldBuilder,
+    IOptionsFieldBuilder,
     IObjectFieldBuilder,
     IFieldBuilderRegistry,
     IFormModel,
     IField,
-    ISelectField,
     IObjectField,
     IObjectFieldConfig,
     IListItemField,
     IObjectFieldVM,
     IObjectFieldItemVM,
+    ITemplate,
+    ITemplateIcon,
+    ITemplateConfig,
+    ITemplateVM,
+    IObjectFieldTemplatesAPI,
     FieldTypeMap,
     IFieldConfig,
     IFieldVM,
@@ -42,6 +46,7 @@ export type {
     ITabDefinitionVM,
     IElementNode,
     IElementNodeVM,
+    IObjectNode,
     ILayoutNodeAccessHandle,
     ITabsHandle,
     ITabHandle,
@@ -52,6 +57,9 @@ export type {
     ILayoutNodeHandle,
     ILayoutModifier,
     IFormModifier,
+    IRule,
+    IRuleEvaluator,
+    RuleAction,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
@@ -64,7 +72,9 @@ export { Field } from "./Field.js";
 export {
     FieldBuilder,
     TextFieldBuilder,
-    SelectFieldBuilder,
+    NumberFieldBuilder,
+    BooleanFieldBuilder,
+    DateTimeFieldBuilder,
     ObjectFieldBuilder,
     createFieldBuilderRegistry
 } from "./FieldBuilder.js";
@@ -72,6 +82,9 @@ export type { IFieldTypeFactory } from "./FieldBuilder.js";
 
 // Object field
 export { ObjectField, isObjectField } from "./ObjectField.js";
+
+// Rule evaluators
+export { ConditionRuleEvaluator } from "./ConditionRuleEvaluator.js";
 
 // View
 export { FormView, LayoutNodeRenderer, useFormViewRenderers } from "./FormView.js";

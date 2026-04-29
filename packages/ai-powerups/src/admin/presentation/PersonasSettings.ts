@@ -10,7 +10,8 @@ class PersonasSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
         form.fields(fields => ({
             presets: fields
                 .object()
-                .renderer("objectListFlat", {
+                .renderer("objectAccordionMultiple", {
+                    container: false,
                     addItemLabel: "Add persona",
                     itemTitle: (data, index) => String(data.name || `Persona #${index + 1}`)
                 })

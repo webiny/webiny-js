@@ -21,7 +21,8 @@ class ProviderSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
         form.fields(fields => ({
             presets: fields
                 .object()
-                .renderer("objectListFlat", {
+                .renderer("objectAccordionMultiple", {
+                    container: false,
                     addItemLabel: "Add provider",
                     itemTitle: (data, index) => String(data.name || `Preset #${index + 1}`)
                 })
@@ -32,7 +33,7 @@ class ProviderSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                         .defaultValue(() => generateAlphaNumericId(10)),
                     name: f.text().label("Name").required("Name is required"),
                     model: f
-                        .select()
+                        .text()
                         .label("Model")
                         .required("Model is required")
                         .options(() => this.getModelOptions()),
