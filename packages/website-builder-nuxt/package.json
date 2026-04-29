@@ -21,13 +21,13 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/website-builder-vue": "0.0.0",
-    "postcss": "^8.5.9",
+    "postcss": "^8.5.10",
     "postcss-import": "^16.1.1"
   },
   "devDependencies": {
     "@types/postcss-import": "^14.0.3",
     "@webiny/build-tools": "0.0.0",
-    "typescript": "5.9.3",
+    "typescript": "6.0.3",
     "vite": "^6.0.0",
     "vue": "^3.5.0"
   },

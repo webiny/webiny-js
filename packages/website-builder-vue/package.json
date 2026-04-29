@@ -20,11 +20,11 @@
   "dependencies": {
     "@webiny/website-builder-sdk": "0.0.0",
     "deep-equal": "^2.2.3",
-    "mobx": "^6.13.7"
+    "mobx": "^6.15.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "typescript": "5.9.3",
+    "typescript": "6.0.3",
     "vue": "^3.5.0"
   },
   "peerDependencies": {
