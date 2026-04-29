@@ -2,9 +2,8 @@ import { makeAutoObservable, computed } from "mobx";
 import { FormModelFactory, FormModel } from "@webiny/app-admin";
 import type { LayoutNode } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { PageSettingsPresenter as PresenterAbstraction } from "./abstractions.js";
-import { PageSettingsGroup } from "./settingsGroup.js";
-import { PageSettingsGroupModifier } from "./settingsGroupModifier.js";
-import type { IPageDocument } from "./settingsGroup.js";
+import { PageSettingsGroup } from "./abstractions.js";
+import { PageSettingsGroupModifier } from "./abstractions.js";
 
 type FieldsFactory = (
     fields: FormModelFactory.FieldBuilderRegistry
@@ -21,7 +20,7 @@ interface CollectedGroup {
 class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
     private form: FormModel.Interface | null = null;
     private error: string | null = null;
-    private originalData: IPageDocument | null = null;
+    private originalData: PageSettingsGroup.PageDocument | null = null;
 
     constructor(
         private factory: FormModelFactory.Interface,
@@ -38,7 +37,7 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
         };
     }
 
-    init(data: IPageDocument): void {
+    init(data: PageSettingsGroup.PageDocument): void {
         this.error = null;
         this.originalData = data;
 
@@ -59,7 +58,7 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
         this.form.setData(mapped);
     }
 
-    async submit(): Promise<IPageDocument | false> {
+    async submit(): Promise<PageSettingsGroup.PageDocument | false> {
         if (!this.form || !this.originalData) {
             return false;
         }
@@ -69,7 +68,7 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
             return false;
         }
 
-        const doc: IPageDocument = structuredClone(this.originalData);
+        const doc = structuredClone(this.originalData);
 
         for (const group of this.groups) {
             group.mapFromForm(data[group.name] ?? {}, doc);

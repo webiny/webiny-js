@@ -14,7 +14,8 @@ import type {
     AfterChangeCallback,
     AfterSetValueCallback,
     ComputedFieldCallback,
-    OnBlurCallback
+    OnBlurCallback,
+    OnCloneCallback
 } from "./abstractions.js";
 
 /**
@@ -157,6 +158,11 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
             this._config.onBlurCallbacks = [];
         }
         this._config.onBlurCallbacks.push(fn);
+        return this;
+    }
+
+    onClone(fn: OnCloneCallback): this {
+        this._config.onClone = fn;
         return this;
     }
 

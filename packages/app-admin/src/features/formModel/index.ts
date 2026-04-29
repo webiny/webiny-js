@@ -63,7 +63,8 @@ export type {
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
-    OnBlurCallback
+    OnBlurCallback,
+    OnCloneCallback
 } from "./abstractions.js";
 
 // Implementations

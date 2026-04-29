@@ -1,5 +1,4 @@
-import { PageSettingsGroup } from "../settingsGroup.js";
-import type { IPageDocument } from "../settingsGroup.js";
+import { PageSettingsGroup } from "~/modules/pages/PageEditor/PageSettings/abstractions.js";
 
 class SchemaSettingsGroupImpl implements PageSettingsGroup.Interface {
     name = "schema";
@@ -19,13 +18,13 @@ class SchemaSettingsGroupImpl implements PageSettingsGroup.Interface {
         form.layout(layout => [layout.row("structuredSchema")]);
     }
 
-    mapToForm(doc: IPageDocument): Record<string, any> {
+    mapToForm(doc: PageSettingsGroup.PageDocument): Record<string, any> {
         return {
             structuredSchema: doc.properties?.seo?.structuredSchema ?? ""
         };
     }
 
-    mapFromForm(formData: Record<string, any>, doc: IPageDocument): void {
+    mapFromForm(formData: Record<string, any>, doc: PageSettingsGroup.PageDocument): void {
         doc.properties.seo = doc.properties.seo ?? {};
         doc.properties.seo.structuredSchema = formData.structuredSchema;
     }

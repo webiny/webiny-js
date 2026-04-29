@@ -61,14 +61,19 @@ function createFieldFromConfig(config: any, form: IFormModel | null, parentPath?
 
 function hydrateChildren(
     children: Map<string, IField>,
-    data: Record<string, unknown> | null | undefined
+    data: Record<string, unknown> | null | undefined,
+    options?: { clone?: boolean }
 ): void {
     if (!data) {
         return;
     }
     for (const [name, field] of children) {
         if (name in data) {
-            field.setValueSilent(data[name]);
+            if (options?.clone && field.config.onClone) {
+                field.setValueSilent(field.config.onClone(data[name]));
+            } else {
+                field.setValueSilent(data[name]);
+            }
         }
     }
 }
@@ -682,7 +687,7 @@ export class ObjectField implements IObjectField {
             this._form,
             this.qualifiedName
         );
-        hydrateChildren(children, data);
+        hydrateChildren(children, data, { clone: true });
         const key = `item_${++itemKeyCounter}`;
         this._items.splice(index + 1, 0, { key, children, templateId: source.templateId });
         const inner = this._innerLayoutFor(source.templateId);

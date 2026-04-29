@@ -62,6 +62,7 @@ export interface IFieldConfig {
     requiredWhenCallbacks?: RequiredWhenCallback[];
     computed?: ComputedFieldCallback;
     computedUntilDirty?: ComputedFieldCallback;
+    onClone?: OnCloneCallback;
     rules?: IRule[];
 }
 
@@ -385,6 +386,7 @@ export type BeforeChangeCallback = (value: unknown, form: IFormModel) => unknown
 export type AfterChangeCallback = (value: unknown, form: IFormModel) => void;
 export type AfterSetValueCallback = (value: unknown, form: IFormModel) => void;
 export type OnBlurCallback = (value: unknown, form: IFormModel) => void;
+export type OnCloneCallback = (value: unknown) => unknown;
 
 // ---------------------------------------------------------------------------
 // Layout types
@@ -648,6 +650,7 @@ export namespace FormModel {
     export type AfterChange = AfterChangeCallback;
     export type AfterSetValue = AfterSetValueCallback;
     export type OnBlur = OnBlurCallback;
+    export type OnClone = OnCloneCallback;
     export type RowNode = IRowNode;
     export type RowNodeVM = IRowNodeVM;
     export type SeparatorNode = ISeparatorNode;
@@ -754,6 +757,7 @@ export interface IFieldBuilder<TType extends string = string, TOptions extends b
     afterChange(fn: AfterChangeCallback): this;
     afterSetValue(fn: AfterSetValueCallback): this;
     onBlur(fn: OnBlurCallback): this;
+    onClone(fn: OnCloneCallback): this;
     /**
      * Mark this field as a derived value computed from `fn(form)`. The field
      * stays editable; user edits are accepted but the computed value continues

@@ -299,7 +299,12 @@ export class FieldRenderersDemoPresenter {
                             },
                             fields: f => ({
                                 heading: f.text().label("Heading"),
-                                subheading: f.text().label("Subheading")
+                                subheading: f.text().label("Subheading"),
+                                uuid: f
+                                    .text()
+                                    .label("UUID")
+                                    .defaultValue(() => Date.now())
+                                    .onClone(() => Date.now())
                             })
                         },
                         {
@@ -376,7 +381,10 @@ export class FieldRenderersDemoPresenter {
                                     text: inner => [inner.row("body")]
                                 }),
                                 l.object("sections", {
-                                    hero: inner => [inner.row("heading", "subheading")],
+                                    hero: inner => [
+                                        inner.row("heading", "subheading"),
+                                        inner.row("uuid")
+                                    ],
                                     cta: inner => [inner.row("label", "url")]
                                 })
                             ]

@@ -6,9 +6,9 @@ import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { useFeature } from "@webiny/app";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
-import { PageSettingsFeature } from "~/modules/pages/PageEditor/PageSettings/index.js";
+import { PageSettingsFeature } from "~/modules/pages/PageEditor/PageSettings/feature.js";
 import { PageSettingsDrawer } from "./PageSettingsDrawer.js";
-import type { IPageDocument } from "~/modules/pages/PageEditor/PageSettings/index.js";
+import { PageSettingsGroup } from "~/modules/pages/PageEditor/PageSettings/index.js";
 
 export const SettingsButton = () => {
     const editor = useDocumentEditor();
@@ -20,7 +20,7 @@ export const SettingsButton = () => {
             properties: toJS(document.properties),
             metadata: toJS(document.metadata),
             extensions: toJS(document.extensions)
-        }) as IPageDocument;
+        }) as PageSettingsGroup.PageDocument;
     });
 
     const openOverlay = useCallback(() => {

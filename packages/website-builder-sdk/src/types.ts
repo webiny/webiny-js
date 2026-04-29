@@ -341,6 +341,7 @@ export type Page = Document & {
             canonicalUrl: string;
             noIndex: boolean;
             noFollow: boolean;
+            structuredSchema: string;
         };
         social: {
             title: string;
