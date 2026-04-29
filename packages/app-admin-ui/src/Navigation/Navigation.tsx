@@ -15,11 +15,17 @@ export const Navigation = NavigationRenderer.createDecorator(() => {
             </SimpleLink>
         );
 
+        const hasFooterMenus = menus.some(m => (m.tags || []).includes("footer"));
+
         return (
             <Sidebar
                 title={titleElement}
                 icon={icon}
-                footer={<SidebarMenuItems menus={menus} where={{ tags: ["footer"] }} />}
+                footer={
+                    hasFooterMenus ? (
+                        <SidebarMenuItems menus={menus} where={{ tags: ["footer"] }} />
+                    ) : undefined
+                }
             >
                 <SidebarMenuItems menus={menus} />
             </Sidebar>
