@@ -29,16 +29,15 @@ export const AiPowerUpsSettingsDialog = observer(() => {
 
     return (
         <Dialog
-            scrollable={false}
             open={true}
             onClose={closeDialog}
             title="AI Power-Ups"
             size={"xl"}
-            className={"w-[1000px]"}
+            className={"w-[1000px] min-h-1/2"}
             actions={
                 <>
                     <Dialog.CancelAction onClick={closeDialog} text="Cancel" />
-                    <Dialog.ConfirmAction onClick={handleSave} text="Save" />
+                    <Dialog.ConfirmAction onClick={handleSave} text="Save Settings" />
                 </>
             }
         >

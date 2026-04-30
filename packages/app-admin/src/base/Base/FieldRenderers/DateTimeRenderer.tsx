@@ -1,5 +1,4 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
 import {
     FormComponentDescription,
     FormComponentLabel,
@@ -9,13 +8,16 @@ import {
     Select
 } from "@webiny/admin-ui";
 import type { IFieldVM } from "~/features/formModel/index.js";
+import { createFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { UTC_TIMEZONES } from "@webiny/utils";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
         dateTimeInput: {
             fieldType: "datetime";
-            settings: { type: "date" | "dateTime" | "dateTimeTimezone" | "time" };
+            settings: {
+                type: "date" | "dateTimeWithoutTimezone" | "dateTimeWithTimezone" | "time";
+            };
         };
     }
 }
@@ -61,7 +63,7 @@ const getHHmmss = (time?: string) => {
     return parts.join(":");
 };
 
-const DateOnlyInput = observer(({ field }: { field: IFieldVM }) => {
+const DateOnlyInput = createFieldRenderer(({ field }) => {
     return (
         <Input
             value={(field.value as string) || ""}
@@ -74,7 +76,7 @@ const DateOnlyInput = observer(({ field }: { field: IFieldVM }) => {
     );
 });
 
-const TimeInput = observer(({ field }: { field: IFieldVM }) => {
+const TimeInput = createFieldRenderer(({ field }) => {
     return (
         <Input
             value={getHHmm((field.value as string) || "")}
@@ -93,7 +95,7 @@ const TimeInput = observer(({ field }: { field: IFieldVM }) => {
     );
 });
 
-const DateTimeInput = observer(({ field }: { field: IFieldVM }) => {
+const DateTimeWithoutTimezoneInput = createFieldRenderer(({ field }) => {
     const raw = (field.value as string) || "";
     let date = "";
     let time = "";
@@ -144,7 +146,7 @@ const DateTimeInput = observer(({ field }: { field: IFieldVM }) => {
     );
 });
 
-const DateTimeTimezoneInput = observer(({ field }: { field: IFieldVM }) => {
+const DateTimeWithTimezoneInput = createFieldRenderer(({ field }) => {
     const defaultTz = getCurrentTimeZone() || DEFAULT_TIMEZONE;
     const raw = (field.value as string) || "";
     let date = "";
@@ -216,17 +218,16 @@ const DateTimeTimezoneInput = observer(({ field }: { field: IFieldVM }) => {
     );
 });
 
-export const DateTimeRenderer = observer(({ field }: { field: IFieldVM }) => {
-    const settings = field.rendererSettings as { type?: string } | undefined;
-    const type = settings?.type ?? "date";
+export const DateTimeRenderer = createFieldRenderer<"dateTimeInput">(({ field }) => {
+    const type = field.rendererSettings?.type ?? "date";
 
     let Component: React.ComponentType<{ field: IFieldVM }>;
     switch (type) {
-        case "dateTime":
-            Component = DateTimeInput;
+        case "dateTimeWithoutTimezone":
+            Component = DateTimeWithoutTimezoneInput;
             break;
-        case "dateTimeTimezone":
-            Component = DateTimeTimezoneInput;
+        case "dateTimeWithTimezone":
+            Component = DateTimeWithTimezoneInput;
             break;
         case "time":
             Component = TimeInput;

@@ -1,7 +1,6 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+import { createFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { Tags } from "@webiny/admin-ui";
-import type { IFieldVM } from "~/features/formModel/index.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -9,7 +8,7 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
-export const TagsRenderer = observer(({ field }: { field: IFieldVM }) => {
+export const TagsRenderer = createFieldRenderer(({ field }) => {
     const value = (field.value as string[]) ?? [];
 
     return (

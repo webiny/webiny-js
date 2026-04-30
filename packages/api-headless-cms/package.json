@@ -46,7 +46,7 @@
     "p-reduce": "^3.0.0",
     "pluralize": "^8.0.0",
     "slugify": "^1.6.9",
-    "zod": "^4.3.6"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/babel__code-frame": "^7.27.0",

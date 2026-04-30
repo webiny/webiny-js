@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { z } from "zod";
+import type { Icon } from "~/components/IconPicker/types.js";
 
 // ---------------------------------------------------------------------------
 // Renderer registry — augmented by each renderer via declare module
@@ -53,7 +54,7 @@ export interface IFieldConfig {
     disabled: boolean;
     schema?: z.ZodTypeAny;
     options?: IValueOption[] | ((form: IFormModel) => IValueOption[]);
-    parseValue?: (value: unknown) => unknown;
+    normalizeValue?: (value: unknown) => unknown;
     beforeChangeCallbacks?: BeforeChangeCallback[];
     afterChangeCallbacks?: AfterChangeCallback[];
     afterSetValueCallbacks?: AfterSetValueCallback[];
@@ -61,6 +62,8 @@ export interface IFieldConfig {
     requiredWhenCallbacks?: RequiredWhenCallback[];
     computed?: ComputedFieldCallback;
     computedUntilDirty?: ComputedFieldCallback;
+    tags?: string[];
+    cloneValue?: CloneValueCallback;
     rules?: IRule[];
 }
 
@@ -196,7 +199,7 @@ export interface ITemplateIcon {
 
 export interface ITemplateVM {
     id: string;
-    name: string;
+    label: string;
     icon?: ITemplateIcon;
 }
 
@@ -253,13 +256,31 @@ export interface IField {
  * Maps field type strings to their typed field interfaces.
  * Extended via module augmentation when new field types are registered.
  */
-export interface FieldTypeMap {
-    text: IField;
-    number: IField;
-    boolean: IField;
-    datetime: IField;
-    object: IObjectField;
+export interface ITypedField<V> extends IField {
+    getValue<T = V>(): T;
 }
+
+type InferFieldTypeMap = {
+    [K in keyof IFieldBuilderRegistry]: ReturnType<
+        IFieldBuilderRegistry[K]
+    > extends IObjectFieldBuilder
+        ? IObjectField
+        : ReturnType<IFieldBuilderRegistry[K]> extends { readonly __valueType?: infer V }
+          ? ITypedField<V>
+          : IField;
+};
+
+export type FieldTypeMap = { [K in keyof InferFieldTypeMap]: InferFieldTypeMap[K] };
+
+export type FileValue = {
+    id: string;
+    name: string;
+    size: number;
+    mimeType: string;
+    src: string;
+    width: number | undefined;
+    height: number | undefined;
+};
 
 // ---------------------------------------------------------------------------
 // Object / List field types
@@ -272,36 +293,22 @@ export interface IObjectFieldConfig extends IFieldConfig {
     templates?: ITemplateConfig[];
 }
 
-/**
- * Template definition on an object field.
- * A template is an atomic, named variant of the object's children.
- *
- * Modifiers may add or remove whole templates but cannot mutate a template's fields piecemeal.
- */
-export interface ITemplate {
-    id: string;
-    name: string;
-    icon?: ITemplateIcon;
-    fields: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>;
-    /**
-     * Reactive callback — when false, the template is hidden from the picker.
-     * Does not retroactively hide existing items/data.
-     */
-    visible?: (form: IFormModel) => boolean;
+export interface ITemplateBuilder {
+    label(text: string): this;
+    icon(icon: ITemplateIcon): this;
+    fields(factory: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this;
+    visible(predicate: (form: IFormModel) => boolean): this;
 }
 
-/**
- * Resolved template config (post-build) — `fields` has been materialised into builders.
- */
 export interface ITemplateConfig {
     id: string;
-    name: string;
+    label: string;
     icon?: ITemplateIcon;
     childBuilders: Record<string, IFieldBuilder>;
     visible?: (form: IFormModel) => boolean;
 }
 
-export interface IObjectField extends IField {
+export interface IObjectField extends ITypedField<Record<string, unknown> | null> {
     readonly isList: boolean;
     readonly children: Map<string, IField>;
     readonly items: IListItemField[];
@@ -346,25 +353,13 @@ export interface IObjectField extends IField {
      * Runtime template management. Available on every object field but throws
      * when called on a non-templated field (`isTemplated === false`).
      */
-    readonly templates: IObjectFieldTemplatesAPI;
+    readonly templates: IObjectFieldTemplates;
     getInnerLayout(): LayoutNode[] | null;
     getData(): Record<string, unknown> | Record<string, unknown>[];
 }
 
-export interface IObjectFieldTemplatesAPI {
-    /**
-     * Append a new template. Throws on duplicate id or reserved `_templateId`.
-     * Throws when called on a non-templated object field.
-     */
-    add(template: ITemplate): void;
-    /**
-     * Remove a template by id. No-op if the id does not exist.
-     * - Single-object templated field: clears active template if it matches.
-     * - Templated list: drops list items whose `_templateId` matches.
-     * - Layout entries for the removed id are kept silently and reused if the
-     *   id is later re-added.
-     * Throws when called on a non-templated object field.
-     */
+export interface IObjectFieldTemplates {
+    add(id: string, configure: (t: ITemplateBuilder) => void): void;
     remove(templateId: string): void;
 }
 
@@ -383,6 +378,7 @@ export type BeforeChangeCallback = (value: unknown, form: IFormModel) => unknown
 export type AfterChangeCallback = (value: unknown, form: IFormModel) => void;
 export type AfterSetValueCallback = (value: unknown, form: IFormModel) => void;
 export type OnBlurCallback = (value: unknown, form: IFormModel) => void;
+export type CloneValueCallback = (value: unknown) => unknown;
 
 // ---------------------------------------------------------------------------
 // Layout types
@@ -393,7 +389,11 @@ export type LayoutNode = IRowNode | ISeparatorNode | ITabsNode | IElementNode | 
 export interface IRowNode {
     type: "row";
     fieldIds: string[];
+    position?: LayoutPosition;
 }
+
+/** @deprecated Use IRowBuilder instead */
+export type IRowNodeHandle = IRowBuilder;
 
 export interface ISeparatorNode {
     type: "separator";
@@ -403,7 +403,7 @@ export interface ITabDefinition {
     id: string;
     label: string;
     description?: string;
-    icon?: string;
+    icon?: Icon;
     layout: LayoutNode[];
     rules?: IRule[];
 }
@@ -417,8 +417,8 @@ export interface ITabDefinitionInput {
     id: string;
     label: string;
     description?: string;
-    icon?: string;
-    layout: (layout: ILayoutBuilder) => LayoutNode[];
+    icon?: Icon;
+    layout: (layout: ILayoutBuilder) => ILayoutNodeBuilder[];
     rules?: IRule[];
 }
 
@@ -456,6 +456,49 @@ export interface IObjectNode {
 }
 
 // ---------------------------------------------------------------------------
+// Layout node builders
+// ---------------------------------------------------------------------------
+
+export interface ILayoutNodeBuilder {
+    build(): LayoutNode;
+}
+
+export interface IRowBuilder extends ILayoutNodeBuilder {
+    before(target: string): IRowBuilder;
+    after(target: string): IRowBuilder;
+    build(): IRowNode;
+}
+
+export interface ISeparatorBuilder extends ILayoutNodeBuilder {
+    build(): ISeparatorNode;
+}
+
+export interface ITabBuilder {
+    label(text: string): this;
+    description(text: string): this;
+    icon(icon: Icon): this;
+    layout(factory: (l: ILayoutBuilder) => ILayoutNodeBuilder[]): this;
+    rules(rules: IRule[]): this;
+}
+
+export interface ITabsBuilder extends ILayoutNodeBuilder {
+    renderer(name: string): this;
+    tab(id: string, configure: (tab: ITabBuilder) => void): this;
+    before(target: string): this;
+    after(target: string): this;
+    rules(rules: IRule[]): this;
+    build(): ITabsNode;
+}
+
+export interface IElementBuilder extends ILayoutNodeBuilder {
+    build(): IElementNode;
+}
+
+export interface IObjectBuilder extends ILayoutNodeBuilder {
+    build(): IObjectNode;
+}
+
+// ---------------------------------------------------------------------------
 // Layout VM types
 // ---------------------------------------------------------------------------
 
@@ -474,7 +517,7 @@ export interface ITabDefinitionVM {
     id: string;
     label: string;
     description?: string;
-    icon?: string;
+    icon?: Icon;
     hasErrors: boolean;
     disabled: boolean;
     layout: LayoutNodeVM[];
@@ -524,20 +567,21 @@ export interface ILayoutNodeHandle extends IPositionedLayoutNode {
 // Named layout node access types
 // ---------------------------------------------------------------------------
 
-export interface ITabsHandle {
-    tab(definition: ITabDefinitionInput): ITabHandle;
-    tab(id: string): ITabHandle;
-}
-
-export interface ITabHandle {
-    layout(factory: (layout: ILayoutBuilder) => LayoutNode[]): void;
-    before(target: string): void;
-    after(target: string): void;
+export interface LayoutNodeHandleMap {
+    tabs: ITabsBuilder;
+    element: IElementNode;
+    object: IObjectNode;
 }
 
 export interface ILayoutNodeAccessHandle {
-    as(type: "tabs"): ITabsHandle;
+    as<T extends keyof LayoutNodeHandleMap>(type: T): LayoutNodeHandleMap[T];
 }
+
+/** @deprecated Use ITabsBuilder instead */
+export type ITabsHandle = ITabsBuilder;
+
+/** @deprecated Use ITabBuilder instead */
+export type ITabHandle = ITabBuilder;
 
 // ---------------------------------------------------------------------------
 // Modifier types
@@ -557,10 +601,13 @@ export interface ILayoutModifier {
         rules?: IRule[];
     }): ILayoutNodeHandle;
     element(renderer: string, props?: Record<string, unknown>): ILayoutNodeHandle;
-    object(fieldName: string, layout: (layout: ILayoutBuilder) => LayoutNode[]): ILayoutNodeHandle;
     object(
         fieldName: string,
-        templateLayouts: Record<string, (layout: ILayoutBuilder) => LayoutNode[]>
+        layout: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]
+    ): ILayoutNodeHandle;
+    object(
+        fieldName: string,
+        templateLayouts: Record<string, (layout: ILayoutBuilder) => ILayoutNodeBuilder[]>
     ): ILayoutNodeHandle;
     remove(target: string): void;
 }
@@ -609,7 +656,7 @@ export interface IFormModel<T = Record<string, any>> {
      * propagates ancestor rules. Use `layout()` (modifier form) for additive
      * changes.
      */
-    setLayout(factory: (layout: ILayoutBuilder) => LayoutNode[]): void;
+    setLayout(factory: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]): void;
     /**
      * Append a form-level validation rule. Runs after per-field validation.
      * Accepts a Zod schema (validated against `getData()`) or an imperative
@@ -628,6 +675,9 @@ export interface IFormModel<T = Record<string, any>> {
     readonly submitted: boolean;
     readonly errors: IFormError[];
     readonly vm: IFormVM;
+    getFieldBuilders(predicate?: (builder: IFieldBuilder) => boolean): IFieldBuilder[];
+    resolveChildLayout(layout: LayoutNode[], children: Map<string, IField>): LayoutNodeVM[];
+    readonly registry: IFieldBuilderRegistry;
 }
 
 // ---------------------------------------------------------------------------
@@ -646,7 +696,17 @@ export namespace FormModel {
     export type AfterChange = AfterChangeCallback;
     export type AfterSetValue = AfterSetValueCallback;
     export type OnBlur = OnBlurCallback;
+    export type CloneValue = CloneValueCallback;
+    export type LayoutNodeBuilder = ILayoutNodeBuilder;
+    export type RowBuilder = IRowBuilder;
+    export type SeparatorBuilder = ISeparatorBuilder;
+    export type TabBuilder = ITabBuilder;
+    export type TabsBuilder = ITabsBuilder;
+    export type ElementBuilder = IElementBuilder;
+    export type ObjectBuilder = IObjectBuilder;
     export type RowNode = IRowNode;
+    /** @deprecated Use RowBuilder instead */
+    export type RowNodeHandle = IRowNodeHandle;
     export type RowNodeVM = IRowNodeVM;
     export type SeparatorNode = ISeparatorNode;
     export type SeparatorNodeVM = ISeparatorNodeVM;
@@ -655,16 +715,17 @@ export namespace FormModel {
     export type TabDefinitionInput = ITabDefinitionInput;
     export type TabsNodeVM = ITabsNodeVM;
     export type TabDefinitionVM = ITabDefinitionVM;
+    export type TabIcon = Icon;
     export type ElementNode = IElementNode;
     export type ElementNodeVM = IElementNodeVM;
     export type ObjectNode = IObjectNode;
     export type ObjectFieldVM = IObjectFieldVM;
     export type ObjectFieldItemVM = IObjectFieldItemVM;
-    export type Template = ITemplate;
+    export type TemplateBuilder = ITemplateBuilder;
     export type TemplateConfig = ITemplateConfig;
     export type TemplateIcon = ITemplateIcon;
     export type TemplateVM = ITemplateVM;
-    export type ObjectFieldTemplatesAPI = IObjectFieldTemplatesAPI;
+    export type ObjectFieldTemplatesAPI = IObjectFieldTemplates;
     export type FormError = IFormError;
     export type FormVM = IFormVM;
     export type Interface<T = Record<string, any>> = IFormModel<T>;
@@ -689,21 +750,16 @@ export interface IFormModelFactory {
 
 export interface IFormModelConfig {
     fields: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>;
-    layout?: (layout: ILayoutBuilder) => LayoutNode[];
+    layout?: (layout: ILayoutBuilder) => ILayoutNodeBuilder[];
     validateOnSubmit?: boolean;
     ruleEvaluators?: IRuleEvaluator[];
 }
 
 export interface ILayoutBuilder {
-    row(...fieldIds: string[]): IRowNode;
-    separator(): ISeparatorNode;
-    tabs(config: {
-        id?: string;
-        renderer?: string;
-        tabs: ITabDefinitionInput[];
-        rules?: IRule[];
-    }): ITabsNode;
-    element(renderer: string, props?: Record<string, unknown>): IElementNode;
+    row(...fieldIds: string[]): IRowBuilder;
+    separator(): ISeparatorBuilder;
+    tabs(id?: string): ITabsBuilder;
+    element(renderer: string, props?: Record<string, unknown>): IElementBuilder;
     /**
      * Reference an object field and register its inner layout.
      *
@@ -713,14 +769,22 @@ export interface ILayoutBuilder {
      * (or for each list item with that template). Templates without an entry
      * fall back to default one-row-per-visible-child.
      */
-    object(fieldName: string, layout: (layout: ILayoutBuilder) => LayoutNode[]): IObjectNode;
     object(
         fieldName: string,
-        templateLayouts: Record<string, (layout: ILayoutBuilder) => LayoutNode[]>
-    ): IObjectNode;
+        layout: (layout: ILayoutBuilder) => ILayoutNodeBuilder[]
+    ): IObjectBuilder;
+    object(
+        fieldName: string,
+        templateLayouts: Record<string, (layout: ILayoutBuilder) => ILayoutNodeBuilder[]>
+    ): IObjectBuilder;
 }
 
-export interface IFieldBuilder<TType extends string = string, TOptions extends boolean = false> {
+export interface IFieldBuilder<
+    TType extends string = string,
+    TOptions extends boolean = false,
+    TValue = unknown
+> {
+    readonly __valueType?: TValue;
     label(text: string): this;
     help(text: string): this;
     description(text: string): this;
@@ -751,6 +815,9 @@ export interface IFieldBuilder<TType extends string = string, TOptions extends b
     afterChange(fn: AfterChangeCallback): this;
     afterSetValue(fn: AfterSetValueCallback): this;
     onBlur(fn: OnBlurCallback): this;
+    cloneValue(fn: CloneValueCallback): this;
+    getTags(): string[];
+    tags(tags: string[]): this;
     /**
      * Mark this field as a derived value computed from `fn(form)`. The field
      * stays editable; user edits are accepted but the computed value continues
@@ -767,27 +834,54 @@ export interface IFieldBuilder<TType extends string = string, TOptions extends b
     build(name: string): IFieldConfig;
 }
 
-export interface IOptionsFieldBuilder<TType extends string> extends IFieldBuilder<TType, false> {
+export interface IOptionsFieldBuilder<TType extends string, TValue = unknown> extends IFieldBuilder<
+    TType,
+    false,
+    TValue
+> {
     options(
         opts:
             | IValueOption<OptionValueType<TType>>[]
             | ((form: IFormModel) => IValueOption<OptionValueType<TType>>[])
-    ): IFieldBuilder<TType, true>;
+    ): IFieldBuilder<TType, true, TValue>;
 }
 
-export interface IObjectFieldBuilder extends IFieldBuilder<"object"> {
+export interface IObjectFieldBuilder extends IFieldBuilder<
+    "object",
+    false,
+    Record<string, unknown> | null
+> {
     fields(fn: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this;
     list(): this;
     listSchema(schema: z.ZodTypeAny): this;
-    templates(templates: ITemplate[]): this;
+    template(id: string, configure: (t: ITemplateBuilder) => void): this;
 }
 
-export interface IFieldBuilderRegistry {
-    text(): IOptionsFieldBuilder<"text">;
-    number(): IOptionsFieldBuilder<"number">;
-    boolean(): IFieldBuilder<"boolean">;
-    datetime(): IFieldBuilder<"datetime">;
-    object(): IObjectFieldBuilder;
+export interface IFieldBuilderRegistry {}
+
+// ---------------------------------------------------------------------------
+// Field type plugin system
+// ---------------------------------------------------------------------------
+
+export interface IFieldTypeFactory {
+    readonly type: string;
+    create(registry: IFieldBuilderRegistry): IFieldBuilder;
+}
+
+export const FieldType = createAbstraction<IFieldTypeFactory>("FormModel/FieldType");
+
+export namespace FieldType {
+    export type Interface = IFieldTypeFactory;
+    export type FieldBuilder = IFieldBuilder;
+    export type FieldBuilderRegistry = IFieldBuilderRegistry;
+}
+
+export const FieldBuilderRegistry = createAbstraction<IFieldBuilderRegistry>(
+    "FormModel/FieldBuilderRegistry"
+);
+
+export namespace FieldBuilderRegistry {
+    export type Interface = IFieldBuilderRegistry;
 }
 
 export const FormModelFactory = createAbstraction<IFormModelFactory>("FormModelFactory");

@@ -5,7 +5,13 @@ export { FormModelFeature } from "./feature.js";
 import "./renderers.js";
 
 // Abstractions (types + DI tokens)
-export { FormModelFactory, FormModel, RuleEvaluator } from "./abstractions.js";
+export {
+    FormModelFactory,
+    FormModel,
+    RuleEvaluator,
+    FieldType,
+    FieldBuilderRegistry
+} from "./abstractions.js";
 export type {
     IFieldRendererRegistry,
     FieldRendererName,
@@ -13,6 +19,13 @@ export type {
     IFormModelFactory,
     IFormModelConfig,
     ILayoutBuilder,
+    ILayoutNodeBuilder,
+    IRowBuilder,
+    ISeparatorBuilder,
+    ITabBuilder,
+    ITabsBuilder,
+    IElementBuilder,
+    IObjectBuilder,
     IFieldBuilder,
     IOptionsFieldBuilder,
     IObjectFieldBuilder,
@@ -24,12 +37,13 @@ export type {
     IListItemField,
     IObjectFieldVM,
     IObjectFieldItemVM,
-    ITemplate,
+    ITemplateBuilder,
     ITemplateIcon,
     ITemplateConfig,
     ITemplateVM,
-    IObjectFieldTemplatesAPI,
+    IObjectFieldTemplates,
     FieldTypeMap,
+    ITypedField,
     IFieldConfig,
     IFieldVM,
     IFieldValidation,
@@ -37,6 +51,7 @@ export type {
     IFormError,
     IValueOption,
     IRowNode,
+    IRowNodeHandle,
     IRowNodeVM,
     ISeparatorNode,
     ISeparatorNodeVM,
@@ -48,6 +63,7 @@ export type {
     IElementNodeVM,
     IObjectNode,
     ILayoutNodeAccessHandle,
+    LayoutNodeHandleMap,
     ITabsHandle,
     ITabHandle,
     LayoutNode,
@@ -63,28 +79,52 @@ export type {
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
-    OnBlurCallback
+    OnBlurCallback,
+    CloneValueCallback,
+    IFieldTypeFactory,
+    FileValue
 } from "./abstractions.js";
 
 // Implementations
 export { FormModel as FormModelImpl } from "./FormModel.js";
 export { Field } from "./Field.js";
+export { FieldBuilder, createFieldBuilderRegistry } from "./FieldBuilder.js";
+
+// Field type augmentations (side-effect imports ensure declare module blocks are included)
+import "./fieldTypes/TextFieldType.js";
+import "./fieldTypes/NumberFieldType.js";
+import "./fieldTypes/BooleanFieldType.js";
+import "./fieldTypes/DateTimeFieldType.js";
+import "./fieldTypes/FileFieldType.js";
+import "./fieldTypes/FileUrlFieldType.js";
+import "./fieldTypes/ObjectFieldType.js";
+
+// Field types (DI-registered)
 export {
-    FieldBuilder,
+    TextFieldType,
     TextFieldBuilder,
+    NumberFieldType,
     NumberFieldBuilder,
+    BooleanFieldType,
     BooleanFieldBuilder,
+    DateTimeFieldType,
     DateTimeFieldBuilder,
-    ObjectFieldBuilder,
-    createFieldBuilderRegistry
-} from "./FieldBuilder.js";
-export type { IFieldTypeFactory } from "./FieldBuilder.js";
+    FileFieldType,
+    FileFieldBuilder,
+    FileUrlFieldType,
+    FileUrlFieldBuilder,
+    ObjectFieldType,
+    ObjectFieldBuilder
+} from "./fieldTypes/index.js";
 
 // Object field
 export { ObjectField, isObjectField } from "./ObjectField.js";
 
 // Rule evaluators
 export { ConditionRuleEvaluator } from "./ConditionRuleEvaluator.js";
+
+// Renderer factory
+export { createFieldRenderer, createObjectFieldRenderer } from "./createFieldRenderer.js";
 
 // View
 export { FormView, LayoutNodeRenderer, useFormViewRenderers } from "./FormView.js";

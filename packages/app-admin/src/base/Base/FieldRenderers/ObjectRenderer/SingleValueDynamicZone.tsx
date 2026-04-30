@@ -38,7 +38,7 @@ export const SingleValueDynamicZone = observer(
                 {activeTemplate ? (
                     <Accordion background={"base"} variant={"container"}>
                         <Accordion.Item
-                            title={activeTemplate.name}
+                            title={activeTemplate.label}
                             actions={
                                 field.disabled ? null : (
                                     <Accordion.Item.Action

@@ -32,18 +32,34 @@ class DateTimeFieldBuilder extends DataFieldBuilder<"datetime"> implements IDate
         return this;
     }
 
+    /**
+     * Just a calendar date, no time, no timezone. Useful for things like birthdays, holidays, or due dates where the time of day doesn't matter.
+     * Example: 2026-04-30
+     */
     dateOnly(): this {
         return this.dateTimeType("date");
     }
 
+    /**
+     * Time in 24-hours format.
+     * Example: 19:35
+     */
     timeOnly(): this {
         return this.dateTimeType("time");
     }
 
+    /**
+     * This is an ISO 8601 datetime with an explicit timezone offset.
+     * Example: 2026-04-29T13:25:00+02:00
+     */
     withTimezone(): this {
         return this.dateTimeType("dateTimeWithTimezone");
     }
 
+    /**
+     * This is an ISO 8601 datetime in UTC (Zulu time). "Z" means "this is UTC, no offset."
+     * Example: 2026-04-30T13:25:00.000Z
+     */
     withoutTimezone(): this {
         return this.dateTimeType("dateTimeWithoutTimezone");
     }

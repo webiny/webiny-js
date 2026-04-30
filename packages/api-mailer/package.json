@@ -25,7 +25,7 @@
     "@webiny/plugins": "0.0.0",
     "email-addresses": "^5.0.0",
     "nodemailer": "^8.0.7",
-    "zod": "^4.3.6"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/nodemailer": "^8.0.0",

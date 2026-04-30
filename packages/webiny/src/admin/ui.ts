@@ -1,3 +1,9 @@
+export {
+    FormComponentDescription,
+    FormComponentLabel,
+    FormComponentNote,
+    FormComponentErrorMessage
+} from "@webiny/admin-ui/FormComponent/index.js";
 export { Accordion } from "@webiny/admin-ui/Accordion/index.js";
 export { Alert } from "@webiny/admin-ui/Alert/index.js";
 export { AutoComplete } from "@webiny/admin-ui/AutoComplete/index.js";
