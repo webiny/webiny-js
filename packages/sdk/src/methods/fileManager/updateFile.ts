@@ -1,6 +1,4 @@
-import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import type { FmFile, FmIdentity, FmLocationInput } from "./fileManagerTypes.js";
 import { buildFieldsSelection } from "./buildFieldsSelection.js";
 import { createMethod } from "../../utils/createMethod.js";

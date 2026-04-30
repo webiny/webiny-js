@@ -1,6 +1,4 @@
-import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { deleteEntryRevisionSchema } from "./schemas.js";
 
