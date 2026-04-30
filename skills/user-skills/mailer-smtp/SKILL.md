@@ -76,14 +76,16 @@ Add `SENDGRID_API_KEY=your-secret` to your `.env` file (never commit it).
 | Hard-coding the password | Use `process.env.SMTP_PASSWORD!` |
 | `process.env.SMTP_PASSWORD` undefined at build time → "expected string, received object" error | Ensure the env var is set before deploying |
 | `from`/`replyTo` value fails validation | Must be a valid RFC 5322 mailbox address |
-| Settings not taking effect | Run `yarn webiny deploy api` after editing `webiny.config.tsx` |
+| Settings not taking effect | Run `yarn webiny build api` after editing `webiny.config.tsx` |
 
 ## Quick Reference
 
 ```bash
-# After editing webiny.config.tsx, deploy the API
-yarn webiny deploy api
+# After editing webiny.config.tsx, build the API
+yarn webiny build api
 ```
+
+> **Note:** This command only works in a `dev` environment. If you are on a different environment, build the API yourself.
 
 ```ts
 // Environment variable in .env
