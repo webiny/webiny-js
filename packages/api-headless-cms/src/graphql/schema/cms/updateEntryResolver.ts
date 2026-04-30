@@ -43,6 +43,16 @@ export const createUpdateEntryRevisionResolver = () => {
                 variables: { revisionId, data }
             })) as ExecutionResult;
 
+            if (result.errors && result.errors.length > 0) {
+                return {
+                    data: null,
+                    error: {
+                        message: result.errors.map(e => e.message).join("; "),
+                        code: "UPDATE_ENTRY_ERROR"
+                    }
+                };
+            }
+
             const operationName = `update${model.singularApiName}`;
             return result.data?.[operationName] || { data: null, error: null };
         } catch (error) {

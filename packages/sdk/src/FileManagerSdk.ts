@@ -18,7 +18,7 @@ import type {
     MultiPartUploadResponse
 } from "./methods/fileManager/createMultiPartUpload.js";
 import type { CompleteMultiPartUploadParams } from "./methods/fileManager/completeMultiPartUpload.js";
-import type { HttpError, GraphQLError, NetworkError } from "./errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "./errors.js";
 import type { Result } from "./Result.js";
 import { getFile as getFileFn } from "./methods/fileManager/getFile.js";
 import { listFiles as listFilesFn } from "./methods/fileManager/listFiles.js";
@@ -43,67 +43,67 @@ export class FileManagerSdk {
 
     async getFile(
         params: GetFileParams
-    ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<FmFile, HttpError | ApiError | NetworkError | ValidationError>> {
         return getFileFn(this.config, this.fetchFn, params);
     }
 
     async listFiles(
         params: ListFilesParams
-    ): Promise<Result<ListFilesResult, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<ListFilesResult, HttpError | ApiError | NetworkError | ValidationError>> {
         return listFilesFn(this.config, this.fetchFn, params);
     }
 
     async createFile(
         params: CreateFileParams
-    ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<FmFile, HttpError | ApiError | NetworkError>> {
         return createFileFn(this.config, this.fetchFn, params);
     }
 
     async createFiles(
         params: CreateFilesParams
-    ): Promise<Result<CreateFilesResult, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<CreateFilesResult, HttpError | ApiError | NetworkError>> {
         return createFilesFn(this.config, this.fetchFn, params);
     }
 
     async updateFile(
         params: UpdateFileParams
-    ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<FmFile, HttpError | ApiError | NetworkError | ValidationError>> {
         return updateFileFn(this.config, this.fetchFn, params);
     }
 
     async deleteFile(
         params: DeleteFileParams
-    ): Promise<Result<boolean, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<boolean, HttpError | ApiError | NetworkError>> {
         return deleteFileFn(this.config, this.fetchFn, params);
     }
 
     async listTags(
         params?: ListTagsParams
-    ): Promise<Result<FmTag[], HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<FmTag[], HttpError | ApiError | NetworkError>> {
         return listTagsFn(this.config, this.fetchFn, params);
     }
 
     async getPresignedPostPayload(
         params: GetPresignedPostPayloadParams
-    ): Promise<Result<PresignedPostPayloadResponse, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<PresignedPostPayloadResponse, HttpError | ApiError | NetworkError>> {
         return getPresignedPostPayloadFn(this.config, this.fetchFn, params);
     }
 
     async getPresignedPostPayloads(
         params: GetPresignedPostPayloadsParams
-    ): Promise<Result<PresignedPostPayloadResponse[], HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<PresignedPostPayloadResponse[], HttpError | ApiError | NetworkError>> {
         return getPresignedPostPayloadsFn(this.config, this.fetchFn, params);
     }
 
     async createMultiPartUpload(
         params: CreateMultiPartUploadParams
-    ): Promise<Result<MultiPartUploadResponse, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<MultiPartUploadResponse, HttpError | ApiError | NetworkError>> {
         return createMultiPartUploadFn(this.config, this.fetchFn, params);
     }
 
     async completeMultiPartUpload(
         params: CompleteMultiPartUploadParams
-    ): Promise<Result<boolean, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<boolean, HttpError | ApiError | NetworkError>> {
         return completeMultiPartUploadFn(this.config, this.fetchFn, params);
     }
 }

@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { createContextHandler } from "./contextHandler";
 import { SendMailUseCase } from "~/features/SendMail/abstractions.js";
+import { SaveSettingsUseCase } from "~/features/SaveSettings/abstractions.js";
 import { TransportSendData } from "~/types";
 
 vi.mock("nodemailer", () => {
@@ -33,17 +34,27 @@ const subject = "Some dummy subject";
 const text = "Some dummy body";
 const html = "<p>Some dummy body</p>";
 
+const persistTransportSettings = async (
+    context: Awaited<ReturnType<ReturnType<typeof createContextHandler>["handle"]>>
+) => {
+    const saveSettings = context.container.resolve(SaveSettingsUseCase);
+    const result = await saveSettings.execute({
+        host: "dummy-host.webiny",
+        user: "user",
+        password: "password",
+        from,
+        replyTo
+    });
+
+    if (result.isFail()) {
+        throw new Error(
+            `Failed to persist mailer settings for test setup: ${result.error.message}`
+        );
+    }
+};
+
 describe("Mailer Transporter CRUD", () => {
     const { handle } = createContextHandler();
-
-    beforeEach(() => {
-        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
-        process.env.WEBINY_API_MAILER_HOST = "dummy-host.webiny";
-        process.env.WEBINY_API_MAILER_USER = "user";
-        process.env.WEBINY_API_MAILER_PASSWORD = "password";
-        process.env.WEBINY_API_MAILER_REPLY_TO = "replyTo@dummy-host.webiny";
-        process.env.WEBINY_API_MAILER_FROM = "from@dummy-host.webiny";
-    });
 
     it(`should throw error before sending because of missing "to"`, async () => {
         const context = await handle();
@@ -131,6 +142,7 @@ describe("Mailer Transporter CRUD", () => {
 
     it("should send an email", async () => {
         const context = await handle();
+        await persistTransportSettings(context);
 
         const params: TransportSendData = {
             to,

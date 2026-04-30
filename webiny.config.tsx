@@ -118,6 +118,18 @@ export const Extensions = () => {
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
             {/* 🚧 WIP 👇 */}
             {/*<AuditLogs.RetentionPeriod days={90} />*/}
+
+            {/* Tasks */}
+            <Api.Extension src={"/extensions/tasks/SelfCleaningTask.ts"} />
+            {/* Mailer */}
+            <Api.Mailer.Smtp
+                host={"smtp.webiny.com"}
+                port={587}
+                user={"smtp-user"}
+                password={process.env.SMTP_PASSWORD || "unknown"}
+                from={"Webiny <test@webiny.com>"}
+                replyTo={"No-reply <no-reply@webiny.com>"}
+            />
         </>
     );
 };

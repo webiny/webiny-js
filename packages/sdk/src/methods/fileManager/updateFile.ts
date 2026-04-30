@@ -1,8 +1,10 @@
-import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { FmFile, FmIdentity, FmLocationInput } from "./fileManagerTypes.js";
 import { buildFieldsSelection } from "./buildFieldsSelection.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { updateFileSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface UpdateFileData {
     createdOn?: Date | string;
@@ -36,18 +38,12 @@ export interface UpdateFileParams {
  * @param params.data - The file data to update
  * @returns Result containing the updated file data or an error
  */
-export async function updateFile(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: UpdateFileParams
-): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
-    const { id, data, fields } = params;
+export const updateFile = createMethod(
+    updateFileSchema,
+    async (config, fetchFn, { id, data, fields }) => {
+        const fieldsSelection = buildFieldsSelection(fields);
 
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
-    const fieldsSelection = buildFieldsSelection(fields);
-
-    const query = `
+        const query = `
         mutation UpdateFile($id: ID!, $data: FmFileUpdateInput!) {
             fileManager {
                 updateFile(id: $id, data: $data) {
@@ -63,23 +59,23 @@ ${fieldsSelection}
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, { id, data });
+        const result = await executeGraphQL(config, fetchFn, query, { id, data });
 
-    if (result.isFail()) {
-        return Result.fail(result.error);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const responseData = result.value;
+
+        if (responseData.fileManager.updateFile.error) {
+            return Result.fail(
+                new ApiError(
+                    responseData.fileManager.updateFile.error.message,
+                    responseData.fileManager.updateFile.error.code
+                )
+            );
+        }
+
+        return Result.ok(responseData.fileManager.updateFile.data as FmFile);
     }
-
-    const responseData = result.value;
-
-    if (responseData.fileManager.updateFile.error) {
-        const { GraphQLError } = await import("../../errors.js");
-        return Result.fail(
-            new GraphQLError(
-                responseData.fileManager.updateFile.error.message,
-                responseData.fileManager.updateFile.error.code
-            )
-        );
-    }
-
-    return Result.ok(responseData.fileManager.updateFile.data);
-}
+);

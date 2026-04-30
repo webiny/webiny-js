@@ -249,12 +249,12 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
         working-directory: ${{ github.base_ref }}
-      - name: Fix code formatting
-        run: yarn format:fix
-        working-directory: ${{ github.base_ref }}
-        continue-on-error: true
       - name: Fix lint issues (auto-fixable)
         run: yarn lint:fix
+        working-directory: ${{ github.base_ref }}
+        continue-on-error: true
+      - name: Fix code formatting
+        run: yarn format:fix
         working-directory: ${{ github.base_ref }}
         continue-on-error: true
       - name: Install Claude Code

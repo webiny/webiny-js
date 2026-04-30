@@ -24,6 +24,8 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
     isPrivate = true;
     databaseLogs = false;
 
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(
         private getFile: GetFileUseCase.Interface,
         private getSettings: GetSettingsUseCase.Interface,

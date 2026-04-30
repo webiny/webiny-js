@@ -47,6 +47,23 @@ export interface CmsEntryData<TValues extends CmsEntryValues = CmsEntryValues> {
     status?: CmsEntryStatus;
 
     /**
+     * Entry meta object, accessible when requested via the "meta.*" field prefix
+     * (e.g. fields: ["meta.status", "meta.version"]).
+     * Corresponds to the ${ModelName}Meta GraphQL type on the Manage API.
+     */
+    meta: {
+        status: CmsEntryStatus;
+        modelId: string;
+        version: number;
+        locked: boolean;
+        title: string;
+        description: string;
+        image: string;
+        /** Advanced Publishing Workflow data. */
+        data: Record<string, unknown>;
+    };
+
+    /**
      * Entry-level meta fields.
      */
     createdOn?: Date | string;

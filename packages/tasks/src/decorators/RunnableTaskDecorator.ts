@@ -42,6 +42,10 @@ class RunnableTaskDecoratorImpl implements TaskDefinition.Interface {
         return this.decoratee.maxIterations || DEFAULT_MAX_ITERATIONS;
     }
 
+    get selfCleanup() {
+        return this.decoratee.selfCleanup;
+    }
+
     get createInputValidation() {
         return this.decoratee.createInputValidation;
     }

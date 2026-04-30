@@ -181,18 +181,14 @@ export class TaskControl implements ITaskControl {
     ): Promise<void> {
         if (result.status === TaskResultStatus.ERROR && definition.onError) {
             try {
-                await definition.onError({
-                    task
-                });
+                await definition.onError({ task });
             } catch (ex) {
                 console.error(`Error executing onError hook for task "${task.id}".`);
                 console.log(getErrorProperties(ex));
             }
         } else if (result.status === TaskResultStatus.DONE && definition.onDone) {
             try {
-                await definition.onDone({
-                    task
-                });
+                await definition.onDone({ task });
             } catch (ex) {
                 console.error(`Error executing onDone hook for task "${task.id}".`);
                 console.log(getErrorProperties(ex));

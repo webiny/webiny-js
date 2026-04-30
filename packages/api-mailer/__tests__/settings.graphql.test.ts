@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { createGraphQLHandler } from "./graphQLHandler";
 
 vi.mock("nodemailer", () => {
@@ -11,10 +11,6 @@ vi.mock("nodemailer", () => {
 
 describe("Mailer Settings GraphQL", () => {
     const handler = createGraphQLHandler();
-
-    beforeEach(() => {
-        process.env.WEBINY_API_MAILER_PASSWORD_SECRET = "really secret secret";
-    });
 
     it("should fetch settings and there should be nothing in it", async () => {
         const [response] = await handler.getSettings();
@@ -49,8 +45,10 @@ describe("Mailer Settings GraphQL", () => {
                         data: {
                             from: "from@dummy-host.webiny",
                             host: "dummy-host.webiny",
+                            port: 25,
                             replyTo: "replyTo@dummy-host.webiny",
-                            user: "user"
+                            user: "user",
+                            source: "storage"
                         },
                         error: null
                     }
@@ -67,8 +65,10 @@ describe("Mailer Settings GraphQL", () => {
                         data: {
                             from: "from@dummy-host.webiny",
                             host: "dummy-host.webiny",
+                            port: 25,
                             replyTo: "replyTo@dummy-host.webiny",
-                            user: "user"
+                            user: "user",
+                            source: "storage"
                         },
                         error: null
                     }
@@ -94,9 +94,11 @@ describe("Mailer Settings GraphQL", () => {
                     saveSettings: {
                         data: {
                             host: "dummy-host2.webiny",
+                            port: 25,
                             user: "user2",
                             from: "from2@dummy-host.webiny",
-                            replyTo: "replyTo2@dummy-host.webiny"
+                            replyTo: "replyTo2@dummy-host.webiny",
+                            source: "storage"
                         },
                         error: null
                     }
@@ -120,58 +122,13 @@ describe("Mailer Settings GraphQL", () => {
                     saveSettings: {
                         data: {
                             host: "dummy-host3.webiny",
+                            port: 25,
                             user: "user3",
                             from: "from3@dummy-host.webiny",
-                            replyTo: "replyTo3@dummy-host.webiny"
+                            replyTo: "replyTo3@dummy-host.webiny",
+                            source: "storage"
                         },
                         error: null
-                    }
-                }
-            }
-        });
-    });
-
-    // TODO: @bruno - this test is no longer failing
-    it.skip("should not be possible to get or save settings when no secret is available", async () => {
-        delete process.env.WEBINY_API_MAILER_PASSWORD_SECRET;
-
-        const [getResponse] = await handler.getSettings();
-
-        expect(getResponse).toEqual({
-            data: {
-                mailer: {
-                    getSettings: {
-                        data: null,
-                        error: {
-                            data: null,
-                            message: "There must be a password secret defined!",
-                            code: "PASSWORD_SECRET_ERROR"
-                        }
-                    }
-                }
-            }
-        });
-
-        const [saveResponse] = await handler.saveSettings({
-            data: {
-                host: "dummy-host.webiny",
-                user: "user",
-                password: "password",
-                from: "from@dummy-host.webiny",
-                replyTo: "replyTo@dummy-host.webiny"
-            }
-        });
-
-        expect(saveResponse).toEqual({
-            data: {
-                mailer: {
-                    saveSettings: {
-                        data: null,
-                        error: {
-                            data: null,
-                            message: "There must be a password secret defined!",
-                            code: "PASSWORD_SECRET_ERROR"
-                        }
                     }
                 }
             }

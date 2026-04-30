@@ -1,13 +1,13 @@
 import type { WebinyConfig } from "../types.js";
 import { Result } from "../Result.js";
-import { HttpError, GraphQLError, NetworkError } from "../errors.js";
+import { HttpError, ApiError, NetworkError } from "../errors.js";
 
 export async function executeGraphQL(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     query: string,
     variables: Record<string, unknown> = {}
-): Promise<Result<any, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<any, HttpError | ApiError | NetworkError>> {
     const url = `${config.endpoint}/graphql`;
 
     let response: Response;
@@ -53,7 +53,7 @@ export async function executeGraphQL(
 
     if (result.errors) {
         const error = result.errors[0];
-        return Result.fail(new GraphQLError(error?.message || "GraphQL error", error?.code));
+        return Result.fail(new ApiError(error?.message || "GraphQL error", error?.code));
     }
 
     return Result.ok(result.data);
