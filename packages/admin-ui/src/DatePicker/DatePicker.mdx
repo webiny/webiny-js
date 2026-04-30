@@ -1,0 +1,147 @@
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
+
+import * as DatePickerStories from "./DatePicker.stories";
+
+<Meta of={DatePickerStories} />
+
+# DatePicker
+
+The DatePicker component is a form control for selecting dates, times, months, years, date ranges, and multiple selections. It supports 10 variant types and includes built-in validation support.
+
+## Usage
+
+<Canvas of={DatePickerStories.Documentation} source={ { code: `
+import React, { useState } from "react";
+
+import { DatePicker } from "@webiny/admin-ui";
+
+const DatePickerExample = () => {
+const [value, setValue] = useState(undefined);
+const [validation, setValidation] = useState({ isValid: true, message: "" });
+
+    const handleChange = (newValue) => {
+        setValue(newValue);
+        if (!newValue) {
+            setValidation({ isValid: false, message: "Please select a date" });
+        } else {
+            setValidation({ isValid: true, message: "" });
+        }
+    };
+
+    return (
+        <DatePicker
+            type="date"
+            label="Event Date"
+            required={true}
+            description="Select the date for your event"
+            note="Choose a date that works for all participants"
+            placeholder="Pick a date"
+            value={value}
+            onChange={handleChange}
+            validation={validation}
+        />
+    );
+
+};
+
+export default DatePickerExample;
+
+` } }
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/next/packages/admin-ui/src/DatePicker/DatePicker.tsx',
+'_blank'
+);
+},
+}
+]}
+/>
+
+<Controls of={DatePickerStories.Documentation} />
+
+## Examples
+
+### Date
+
+The default date picker for selecting a single date.
+
+<Canvas of={DatePickerStories.WithLabel} />
+
+### With Presets
+
+Date picker with preset buttons (Today, Tomorrow, In a week, etc.) displayed alongside the calendar.
+
+<Canvas of={DatePickerStories.WithPresets} />
+
+### Time
+
+A time-only picker using a native time input.
+
+<Canvas of={DatePickerStories.TypeTime} />
+
+### Date & Time (local)
+
+Combines a calendar with a time input, storing the value as a local Date object.
+
+<Canvas of={DatePickerStories.TypeDateTimeLocal} />
+
+### Date & Time (with timezone)
+
+Combines a calendar with a time input, storing the value as an ISO string with timezone offset.
+
+<Canvas of={DatePickerStories.TypeDateTimeTz} />
+
+### Month
+
+Select a month and year. Value is stored as `"YYYY-MM"`.
+
+<Canvas of={DatePickerStories.TypeMonth} />
+
+### Year
+
+Select a year from a scrollable grid. Use the `yearRange` prop to control the available range.
+
+<Canvas of={DatePickerStories.TypeYear} />
+
+### Date Range
+
+Select a start and end date using a two-month calendar.
+
+<Canvas of={DatePickerStories.TypeDateRange} />
+
+### Multiple Dates
+
+Select multiple individual dates. Selected dates appear as dismissable tags.
+
+<Canvas of={DatePickerStories.TypeMultipleDates} />
+
+### Multiple Months
+
+Select multiple months. Selected months appear as dismissable tags.
+
+<Canvas of={DatePickerStories.TypeMultipleMonths} />
+
+### Multiple Years
+
+Select multiple years. Selected years appear as dismissable tags.
+
+<Canvas of={DatePickerStories.TypeMultipleYears} />
+
+## Form States
+
+### With Validation Error
+
+<Canvas of={DatePickerStories.WithErrors} />
+
+### Disabled
+
+<Canvas of={DatePickerStories.Disabled} />
+
+### Full Example
+
+Shows all form component features together: label, required indicator, description, validation error, and note.
+
+<Canvas of={DatePickerStories.FullExample} />
