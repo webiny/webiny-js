@@ -1,6 +1,8 @@
 import { Result } from "../../Result.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { deleteEntryRevisionSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface DeleteEntryRevisionParams {
     modelId: string;
@@ -22,8 +24,6 @@ export interface DeleteEntryRevisionParams {
 export const deleteEntryRevision = createMethod(
     deleteEntryRevisionSchema,
     async (config, fetchFn, { modelId, revisionId, permanent = false }) => {
-        const { executeGraphQL } = await import("../executeGraphQL.js");
-
         const query = `
         mutation DeleteEntryRevision($modelId: ID!, $revisionId: ID!, $permanent: Boolean) {
             cms {
@@ -51,7 +51,6 @@ export const deleteEntryRevision = createMethod(
         const data = result.value;
 
         if (data.cms.deleteEntryRevision.error) {
-            const { ApiError } = await import("../../errors.js");
             return Result.fail(
                 new ApiError(
                     data.cms.deleteEntryRevision.error.message,

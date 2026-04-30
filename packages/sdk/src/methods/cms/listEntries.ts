@@ -1,10 +1,12 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
 import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { listEntriesSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface ListEntriesParams {
     modelId: string;
@@ -50,8 +52,6 @@ const _impl = createMethod(
         fetchFn,
         { modelId, where, sort, limit = 10, after, search, fields, preview }
     ) => {
-        const { executeGraphQL } = await import("../executeGraphQL.js");
-
         const query = `
         query ListEntries(
             $modelId: ID!
@@ -107,7 +107,6 @@ const _impl = createMethod(
         const responseData = result.value;
 
         if (responseData.cms.listEntries.error) {
-            const { ApiError } = await import("../../errors.js");
             return Result.fail(
                 new ApiError(
                     transformFieldErrors(responseData.cms.listEntries.error.message, fields),

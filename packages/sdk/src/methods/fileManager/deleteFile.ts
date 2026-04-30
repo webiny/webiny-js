@@ -1,6 +1,8 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError } from "../../errors.js";
+import type { HttpError, NetworkError } from "../../errors.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface DeleteFileParams {
     id: string;
@@ -15,14 +17,13 @@ export interface DeleteFileParams {
  * @param params.id - ID of the file to delete
  * @returns Result containing true on success or an error
  */
+// Not using createMethod: params are simple but no Zod schema exists; trivial to add if needed.
 export async function deleteFile(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: DeleteFileParams
 ): Promise<Result<boolean, HttpError | ApiError | NetworkError>> {
     const { id } = params;
-
-    const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
         mutation DeleteFile($id: ID!) {
@@ -47,7 +48,6 @@ export async function deleteFile(
     const responseData = result.value;
 
     if (responseData.fileManager.deleteFile.error) {
-        const { ApiError } = await import("../../errors.js");
         return Result.fail(
             new ApiError(
                 responseData.fileManager.deleteFile.error.message,

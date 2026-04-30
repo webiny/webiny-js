@@ -2,6 +2,8 @@ import { Result } from "../../Result.js";
 import type { TaskRun } from "./taskTypes.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { abortTaskSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface AbortTaskParams {
     /** The task run ID to abort. */
@@ -11,8 +13,6 @@ export interface AbortTaskParams {
 }
 
 export const abortTask = createMethod(abortTaskSchema, async (config, fetchFn, { id, message }) => {
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
     const query = `
         mutation AbortTask($id: ID!, $message: String) {
             backgroundTasks {
@@ -51,7 +51,6 @@ export const abortTask = createMethod(abortTaskSchema, async (config, fetchFn, {
     const responseData = result.value;
 
     if (responseData.backgroundTasks.abortTask.error) {
-        const { ApiError } = await import("../../errors.js");
         return Result.fail(
             new ApiError(
                 responseData.backgroundTasks.abortTask.error.message,

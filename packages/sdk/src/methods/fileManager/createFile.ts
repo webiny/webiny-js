@@ -1,9 +1,14 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError } from "../../errors.js";
+import type { HttpError, NetworkError } from "../../errors.js";
 import type { FmFile, FmIdentity, FmLocationInput, UploadProgress } from "./fileManagerTypes.js";
 import { getFileSize } from "./utils/fileTypeDetection.js";
 import { buildFieldsSelection } from "./buildFieldsSelection.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
+import { getPresignedPostPayload } from "./getPresignedPostPayload.js";
+import { uploadToS3 } from "./utils/uploadToS3.js";
+import { uploadLargeFile } from "./utils/uploadLargeFile.js";
 
 export interface CreateFileData {
     id?: string;
@@ -47,6 +52,7 @@ export interface CreateFileParams {
  * @param params.signal - Optional: AbortSignal for cancellation
  * @returns Result containing the created file data or an error
  */
+// Not using createMethod: params include File/Buffer/Blob, onProgress callback, and AbortSignal — types Zod cannot validate.
 export async function createFile(
     config: WebinyConfig,
     fetchFn: typeof fetch,
@@ -103,7 +109,6 @@ async function uploadSmallFile(
     signal?: AbortSignal
 ): Promise<Result<FmFile, HttpError | ApiError | NetworkError>> {
     // 1. Get presigned POST payload.
-    const { getPresignedPostPayload } = await import("./getPresignedPostPayload.js");
     const presignedResult = await getPresignedPostPayload(config, fetchFn, {
         name: data.name!,
         type: data.type!,
@@ -117,7 +122,6 @@ async function uploadSmallFile(
     }
 
     // 2. Upload to S3.
-    const { uploadToS3 } = await import("./utils/uploadToS3.js");
     await uploadToS3(file, presignedResult.value.data, { onProgress, signal });
 
     // 3. Create file record with S3 key from presigned response.
@@ -144,7 +148,6 @@ async function uploadLargeFileWrapper(
     signal?: AbortSignal
 ): Promise<Result<FmFile, HttpError | ApiError | NetworkError>> {
     try {
-        const { uploadLargeFile } = await import("./utils/uploadLargeFile.js");
         const uploadedFile = await uploadLargeFile(
             file,
             {
@@ -182,8 +185,6 @@ async function createFileRecord(
     data: CreateFileData,
     fields: string[]
 ): Promise<Result<FmFile, HttpError | ApiError | NetworkError>> {
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
     const fieldsSelection = buildFieldsSelection(fields);
 
     const query = `
@@ -211,7 +212,6 @@ ${fieldsSelection}
     const responseData = result.value;
 
     if (responseData.fileManager.createFile.error) {
-        const { ApiError } = await import("../../errors.js");
         return Result.fail(
             new ApiError(
                 responseData.fileManager.createFile.error.message,

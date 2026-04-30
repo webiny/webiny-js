@@ -1,14 +1,14 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError } from "../../errors.js";
+import type { HttpError, NetworkError } from "../../errors.js";
 import type { TaskRun } from "./taskTypes.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export async function listTasks(
     config: WebinyConfig,
     fetchFn: typeof fetch
 ): Promise<Result<TaskRun[], HttpError | ApiError | NetworkError>> {
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
     const query = `
         query ListTasks {
             backgroundTasks {
@@ -45,7 +45,6 @@ export async function listTasks(
     const responseData = result.value;
 
     if (responseData.backgroundTasks.listTasks.error) {
-        const { ApiError } = await import("../../errors.js");
         return Result.fail(
             new ApiError(
                 responseData.backgroundTasks.listTasks.error.message,

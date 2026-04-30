@@ -2,6 +2,8 @@ import { Result } from "../../Result.js";
 import type { TaskRun } from "./taskTypes.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { triggerTaskSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface TriggerTaskParams {
     /** The task definition ID to trigger. */
@@ -13,8 +15,6 @@ export interface TriggerTaskParams {
 export const triggerTask = createMethod(
     triggerTaskSchema,
     async (config, fetchFn, { definition, input }) => {
-        const { executeGraphQL } = await import("../executeGraphQL.js");
-
         const query = `
         mutation TriggerTask($definition: WebinyBackgroundTaskDefinitionEnum!, $input: JSON) {
             backgroundTasks {
@@ -51,7 +51,6 @@ export const triggerTask = createMethod(
         const responseData = result.value;
 
         if (responseData.backgroundTasks.triggerTask.error) {
-            const { ApiError } = await import("../../errors.js");
             return Result.fail(
                 new ApiError(
                     responseData.backgroundTasks.triggerTask.error.message,

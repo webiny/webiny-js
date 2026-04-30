@@ -1,10 +1,12 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
 import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { unpublishEntryRevisionSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface UnpublishEntryRevisionParams {
     modelId: string;
@@ -27,8 +29,6 @@ export interface UnpublishEntryRevisionParams {
 const _impl = createMethod(
     unpublishEntryRevisionSchema,
     async (config, fetchFn, { modelId, revisionId, fields }) => {
-        const { executeGraphQL } = await import("../executeGraphQL.js");
-
         const query = `
         mutation UnpublishEntryRevision($modelId: ID!, $revisionId: ID!, $fields: [String!]!) {
             cms {
@@ -56,7 +56,6 @@ const _impl = createMethod(
         const data = result.value;
 
         if (data.cms.unpublishEntryRevision.error) {
-            const { ApiError } = await import("../../errors.js");
             return Result.fail(
                 new ApiError(
                     transformFieldErrors(data.cms.unpublishEntryRevision.error.message, fields),

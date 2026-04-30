@@ -3,6 +3,8 @@ import type { FmFile, FmIdentity, FmLocationInput } from "./fileManagerTypes.js"
 import { buildFieldsSelection } from "./buildFieldsSelection.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { updateFileSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface UpdateFileData {
     createdOn?: Date | string;
@@ -39,8 +41,6 @@ export interface UpdateFileParams {
 export const updateFile = createMethod(
     updateFileSchema,
     async (config, fetchFn, { id, data, fields }) => {
-        const { executeGraphQL } = await import("../executeGraphQL.js");
-
         const fieldsSelection = buildFieldsSelection(fields);
 
         const query = `
@@ -68,7 +68,6 @@ ${fieldsSelection}
         const responseData = result.value;
 
         if (responseData.fileManager.updateFile.error) {
-            const { ApiError } = await import("../../errors.js");
             return Result.fail(
                 new ApiError(
                     responseData.fileManager.updateFile.error.message,

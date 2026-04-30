@@ -2,6 +2,8 @@ import { Result } from "../../Result.js";
 import type { TaskLog } from "./taskTypes.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { listLogsSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface ListLogsParams {
     where?: {
@@ -11,8 +13,6 @@ export interface ListLogsParams {
 }
 
 export const listLogs = createMethod(listLogsSchema, async (config, fetchFn, { where }) => {
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
     const query = `
         query ListBackgroundTaskLogs($where: BackgroundTaskLogListWhereInput) {
             backgroundTasks {
@@ -48,7 +48,6 @@ export const listLogs = createMethod(listLogsSchema, async (config, fetchFn, { w
     const responseData = result.value;
 
     if (responseData.backgroundTasks.listLogs.error) {
-        const { ApiError } = await import("../../errors.js");
         return Result.fail(
             new ApiError(
                 responseData.backgroundTasks.listLogs.error.message,

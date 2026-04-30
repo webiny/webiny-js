@@ -1,6 +1,8 @@
 import { Result } from "../../Result.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { installTenantSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface InstallTenantParams {
     tenantId: string;
@@ -18,8 +20,6 @@ export interface InstallTenantParams {
 export const installTenant = createMethod(
     installTenantSchema,
     async (config, fetchFn, { tenantId }) => {
-        const { executeGraphQL } = await import("../executeGraphQL.js");
-
         const query = `
         mutation InstallTenant($tenantId: ID!) {
             tenantManager {
@@ -43,7 +43,6 @@ export const installTenant = createMethod(
         const responseData = result.value;
 
         if (responseData.tenantManager.installTenant.error) {
-            const { ApiError } = await import("../../errors.js");
             return Result.fail(
                 new ApiError(
                     responseData.tenantManager.installTenant.error.message,

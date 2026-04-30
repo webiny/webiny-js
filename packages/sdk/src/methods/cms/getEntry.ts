@@ -1,10 +1,12 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
 import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { getEntrySchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface GetEntryWhere {
     id?: string;
@@ -35,8 +37,6 @@ export interface GetEntryParams {
 const _impl = createMethod(
     getEntrySchema,
     async (config, fetchFn, { modelId, where, fields, preview }) => {
-        const { executeGraphQL } = await import("../executeGraphQL.js");
-
         const query = `
         query GetEntry($modelId: ID!, $where: JSON!, $fields: [String!]!, $preview: Boolean) {
             cms {
@@ -65,7 +65,6 @@ const _impl = createMethod(
         const responseData = result.value;
 
         if (responseData.cms.getEntry.error) {
-            const { ApiError } = await import("../../errors.js");
             return Result.fail(
                 new ApiError(
                     transformFieldErrors(responseData.cms.getEntry.error.message, fields),

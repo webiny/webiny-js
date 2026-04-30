@@ -4,6 +4,8 @@ import { isBrowser } from "../../../utils/platform.js";
 import { isBuffer, isFile, getFileSize } from "./fileTypeDetection.js";
 import pMap from "p-map";
 import pRetry from "p-retry";
+import { createMultiPartUpload } from "../createMultiPartUpload.js";
+import { completeMultiPartUpload } from "../completeMultiPartUpload.js";
 
 export interface UploadLargeFileOptions {
     onProgress?: (progress: UploadProgress) => void;
@@ -36,7 +38,6 @@ export async function uploadLargeFile(
     const numberOfParts = Math.ceil(fileSize / chunkSizeBytes);
 
     // 1. Create multi-part upload.
-    const { createMultiPartUpload } = await import("../createMultiPartUpload.js");
     const createResult = await createMultiPartUpload(config, fetchFn, {
         data: fileData,
         numberOfParts
@@ -109,7 +110,6 @@ export async function uploadLargeFile(
     );
 
     // 3. Complete multi-part upload.
-    const { completeMultiPartUpload } = await import("../completeMultiPartUpload.js");
     const completeResult = await completeMultiPartUpload(config, fetchFn, {
         fileKey: uploadData.file.key,
         uploadId: uploadData.uploadId

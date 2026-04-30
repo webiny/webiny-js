@@ -2,6 +2,8 @@ import { Result } from "../../Result.js";
 import type { CreateTenantInput } from "./tenantManagerTypes.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { createTenantSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface CreateTenantParams {
     data: CreateTenantInput;
@@ -17,8 +19,6 @@ export interface CreateTenantParams {
  * @returns Result containing true on success or an error
  */
 export const createTenant = createMethod(createTenantSchema, async (config, fetchFn, { data }) => {
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
     const query = `
         mutation CreateTenant($input: CreateTenantInput!) {
             tenantManager {
@@ -42,7 +42,6 @@ export const createTenant = createMethod(createTenantSchema, async (config, fetc
     const responseData = result.value;
 
     if (responseData.tenantManager.createTenant.error) {
-        const { ApiError } = await import("../../errors.js");
         return Result.fail(
             new ApiError(
                 responseData.tenantManager.createTenant.error.message,

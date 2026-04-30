@@ -1,6 +1,8 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError } from "../../errors.js";
+import type { HttpError, NetworkError } from "../../errors.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface Language {
     id: string;
@@ -14,8 +16,6 @@ export async function listLanguages(
     config: WebinyConfig,
     fetchFn: typeof fetch
 ): Promise<Result<Language[], HttpError | ApiError | NetworkError>> {
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
     const query = `
         query ListLanguages {
             languages {
@@ -45,7 +45,6 @@ export async function listLanguages(
     const responseData = result.value;
 
     if (responseData.languages.listLanguages.error) {
-        const { ApiError } = await import("../../errors.js");
         return Result.fail(
             new ApiError(
                 responseData.languages.listLanguages.error.message,

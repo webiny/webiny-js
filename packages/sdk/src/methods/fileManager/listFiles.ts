@@ -1,5 +1,5 @@
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError } from "../../errors.js";
+import type { HttpError, NetworkError } from "../../errors.js";
 import type {
     FmFile,
     FmFileListWhereInput,
@@ -10,6 +10,8 @@ import { buildFieldsSelection } from "./buildFieldsSelection.js";
 import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { listFilesSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface ListFilesParams {
     search?: string;
@@ -46,7 +48,6 @@ export const listFiles = createMethod(
         params
     ): Promise<Result<ListFilesResult, HttpError | ApiError | NetworkError>> => {
         const { search, where, limit, after, sort, fields } = params;
-        const { executeGraphQL } = await import("../executeGraphQL.js");
 
         const fieldsSelection = buildFieldsSelection(fields);
 
@@ -80,7 +81,6 @@ ${fieldsSelection}
         });
 
         if (result.isFail()) {
-            const { ApiError } = await import("../../errors.js");
             const error = result.error;
             if (error instanceof ApiError) {
                 return Result.fail(
@@ -93,7 +93,6 @@ ${fieldsSelection}
         const responseData = result.value;
 
         if (responseData.fileManager.listFiles.error) {
-            const { ApiError } = await import("../../errors.js");
             return Result.fail(
                 new ApiError(
                     responseData.fileManager.listFiles.error.message,

@@ -3,6 +3,8 @@ import { Result } from "../../Result.js";
 import type { HttpError, ApiError, NetworkError } from "../../errors.js";
 import type { FmFile, UploadProgress, BatchUploadStrategy } from "./fileManagerTypes.js";
 import type { CreateFileData } from "./createFile.js";
+import { createFile } from "./createFile.js";
+import pMap from "p-map";
 
 export interface CreateFilesParams {
     files: Array<{
@@ -40,6 +42,7 @@ export interface CreateFilesResult {
  * @param params.signal - Optional: AbortSignal for cancellation
  * @returns Result containing the created files or an error
  */
+// Not using createMethod: params include File/Buffer/Blob entries and a BatchUploadStrategy callback.
 export async function createFiles(
     config: WebinyConfig,
     fetchFn: typeof fetch,
@@ -57,7 +60,6 @@ export async function createFiles(
     const failed: Array<{ data: CreateFileData; error: Error }> = [];
 
     // Use p-map for controlled concurrency.
-    const pMap = (await import("p-map")).default;
 
     try {
         await pMap(
@@ -70,7 +72,6 @@ export async function createFiles(
                     }
 
                     // Upload single file.
-                    const { createFile } = await import("./createFile.js");
                     const result = await createFile(config, fetchFn, {
                         file: fileItem.file,
                         data: fileItem.data,

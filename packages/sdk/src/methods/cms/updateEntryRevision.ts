@@ -1,10 +1,12 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsIdentity } from "./cmsTypes.js";
 import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { updateEntryRevisionSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 /**
  * Update entry revision data.
@@ -77,8 +79,6 @@ export interface UpdateEntryRevisionParams<TValues extends CmsEntryValues = CmsE
 const _impl = createMethod(
     updateEntryRevisionSchema,
     async (config, fetchFn, { modelId, revisionId, data, fields }) => {
-        const { executeGraphQL } = await import("../executeGraphQL.js");
-
         const query = `
         mutation UpdateEntryRevision($modelId: ID!, $revisionId: ID!, $data: JSON!, $fields: [String!]!) {
             cms {
@@ -107,7 +107,6 @@ const _impl = createMethod(
         const responseData = result.value;
 
         if (responseData.cms.updateEntryRevision.error) {
-            const { ApiError } = await import("../../errors.js");
             return Result.fail(
                 new ApiError(
                     transformFieldErrors(

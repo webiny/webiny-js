@@ -1,10 +1,12 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryStatus, CmsIdentity } from "./cmsTypes.js";
 import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
 import { createMethod } from "../../utils/createMethod.js";
 import { createEntrySchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 /**
  * Create entry data.
@@ -78,8 +80,6 @@ export interface CreateEntryParams<TValues extends CmsEntryValues = CmsEntryValu
 const _impl = createMethod(
     createEntrySchema,
     async (config, fetchFn, { modelId, data, fields }) => {
-        const { executeGraphQL } = await import("../executeGraphQL.js");
-
         const query = `
         mutation CreateEntry($modelId: ID!, $data: JSON!, $fields: [String!]!) {
             cms {
@@ -103,7 +103,6 @@ const _impl = createMethod(
         const responseData = result.value;
 
         if (responseData.cms.createEntry.error) {
-            const { ApiError } = await import("../../errors.js");
             return Result.fail(
                 new ApiError(
                     transformFieldErrors(responseData.cms.createEntry.error.message, fields),

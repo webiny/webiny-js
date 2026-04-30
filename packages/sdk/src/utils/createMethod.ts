@@ -12,6 +12,11 @@ import { parseParams } from "./validateParams.js";
  * The handler receives the already-validated params object. Runtime type safety is
  * guaranteed by the Zod schema; TypeScript inference covers TResult and TError from
  * the handler's return type.
+ *
+ * Use this for methods whose params can be fully described by a Zod schema (scalars,
+ * plain objects, arrays of primitives). Do NOT use it for methods whose params include
+ * runtime-only types that Zod cannot validate — e.g. File, Buffer, Blob, AbortSignal,
+ * callback functions. Those methods stay as plain async functions.
  */
 export const createMethod = <TResult, TError>(
     schema: ZodType,
