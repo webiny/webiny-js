@@ -1,4 +1,4 @@
-import { FieldType, type IFieldTypeFactory, type IOptionsFieldBuilder } from "../abstractions.js";
+import { FieldType, type IFieldTypeFactory } from "../abstractions.js";
 import { FieldBuilder } from "../FieldBuilder.js";
 
 export class NumberFieldBuilder extends FieldBuilder<"number"> {
@@ -18,7 +18,7 @@ export class NumberFieldBuilder extends FieldBuilder<"number"> {
 
 class NumberFieldTypeFactory implements IFieldTypeFactory {
     readonly type = "number";
-    create(_registry: any) {
+    create() {
         return new NumberFieldBuilder();
     }
 }

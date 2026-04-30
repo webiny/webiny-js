@@ -27,63 +27,48 @@ export class FormModelDemoPresenter {
                     .object()
                     .label("Content Block")
                     .required("Pick a template")
-                    .templates([
-                        {
-                            id: "hero",
-                            name: "Hero Banner",
-                            fields: f => ({
-                                heading: f.text().label("Heading").required("Required"),
-                                subheading: f.text().label("Subheading"),
-                                image: f.text().label("Image URL"),
-                                cta: f.text().label("Call To Action")
-                            })
-                        },
-                        {
-                            id: "text",
-                            name: "Rich Text",
-                            fields: f => ({
-                                body: f.text().label("Body").required("Required")
-                            })
-                        },
-                        {
-                            id: "premium",
-                            name: "Premium Widget",
-                            visible: form => form.field("plan").getValue() === "enterprise",
-                            fields: f => ({
+                    .template("hero", t => {
+                        t.label("Hero Banner").fields(f => ({
+                            heading: f.text().label("Heading").required("Required"),
+                            subheading: f.text().label("Subheading"),
+                            image: f.text().label("Image URL"),
+                            cta: f.text().label("Call To Action")
+                        }));
+                    })
+                    .template("text", t => {
+                        t.label("Rich Text").fields(f => ({
+                            body: f.text().label("Body").required("Required")
+                        }));
+                    })
+                    .template("premium", t => {
+                        t.label("Premium Widget")
+                            .visible(form => form.field("plan").getValue() === "enterprise")
+                            .fields(f => ({
                                 config: f.text().label("Widget Config")
-                            })
-                        }
-                    ]),
+                            }));
+                    }),
                 sections: fields
                     .object()
                     .label("Page Sections")
                     .list()
-                    .templates([
-                        {
-                            id: "hero",
-                            name: "Hero Banner",
-                            fields: f => ({
-                                heading: f.text().label("Heading").required("Required"),
-                                subheading: f.text().label("Subheading"),
-                                image: f.text().label("Image URL")
-                            })
-                        },
-                        {
-                            id: "text",
-                            name: "Rich Text",
-                            fields: f => ({
-                                body: f.text().label("Body").required("Required")
-                            })
-                        },
-                        {
-                            id: "cta",
-                            name: "Call To Action",
-                            fields: f => ({
-                                label: f.text().label("Button Label").required("Required"),
-                                url: f.text().label("Link URL")
-                            })
-                        }
-                    ]),
+                    .template("hero", t => {
+                        t.label("Hero Banner").fields(f => ({
+                            heading: f.text().label("Heading").required("Required"),
+                            subheading: f.text().label("Subheading"),
+                            image: f.text().label("Image URL")
+                        }));
+                    })
+                    .template("text", t => {
+                        t.label("Rich Text").fields(f => ({
+                            body: f.text().label("Body").required("Required")
+                        }));
+                    })
+                    .template("cta", t => {
+                        t.label("Call To Action").fields(f => ({
+                            label: f.text().label("Button Label").required("Required"),
+                            url: f.text().label("Link URL")
+                        }));
+                    }),
                 plan: fields
                     .text()
                     .label("Plan")
@@ -145,13 +130,11 @@ export class FormModelDemoPresenter {
             sections.templates.remove(RUNTIME_TEMPLATE_ID);
             this.runtimeTemplateAdded = false;
         } else {
-            sections.templates.add({
-                id: RUNTIME_TEMPLATE_ID,
-                name: "Runtime Banner",
-                fields: f => ({
+            sections.templates.add(RUNTIME_TEMPLATE_ID, t => {
+                t.label("Runtime Banner").fields(f => ({
                     headline: f.text().label("Headline").required("Required"),
                     note: f.text().label("Note")
-                })
+                }));
             });
             this.runtimeTemplateAdded = true;
         }
@@ -160,12 +143,10 @@ export class FormModelDemoPresenter {
     toggleTextTemplate(): void {
         const content = this.form.field("content").as("object");
         if (this.textTemplateRemoved) {
-            content.templates.add({
-                id: "text",
-                name: "Rich Text",
-                fields: f => ({
+            content.templates.add("text", t => {
+                t.label("Rich Text").fields(f => ({
                     body: f.text().label("Body").required("Required")
-                })
+                }));
             });
             this.textTemplateRemoved = false;
         } else {

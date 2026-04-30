@@ -257,31 +257,27 @@ export class FieldRenderersDemoPresenter {
                 contentBlock: fields
                     .object()
                     .label("Content Block")
-                    .templates([
-                        {
-                            id: "hero",
-                            name: "Hero Banner",
-                            icon: {
+                    .template("hero", t => {
+                        t.label("Hero Banner")
+                            .icon({
                                 type: "icon",
                                 name: "fab/behance-square"
-                            },
-                            fields: f => ({
+                            })
+                            .fields(f => ({
                                 heading: f.text().label("Heading").required("Required"),
                                 image: f.text().label("Image URL")
-                            })
-                        },
-                        {
-                            id: "text",
-                            name: "Rich Text",
-                            icon: {
+                            }));
+                    })
+                    .template("text", t => {
+                        t.label("Rich Text")
+                            .icon({
                                 type: "icon",
                                 name: "fab/behance-square"
-                            },
-                            fields: f => ({
-                                body: f.text().label("Body").renderer("textarea")
                             })
-                        }
-                    ]),
+                            .fields(f => ({
+                                body: f.text().label("Body").renderer("textarea")
+                            }));
+                    }),
 
                 // --- Dynamic Zone (multi-value template list) ---
                 sections: fields
@@ -289,15 +285,13 @@ export class FieldRenderersDemoPresenter {
                     .list()
                     .label("Page Sections")
                     .renderer("dynamicZone", { container: false })
-                    .templates([
-                        {
-                            id: "hero",
-                            name: "Hero Banner",
-                            icon: {
+                    .template("hero", t => {
+                        t.label("Hero Banner")
+                            .icon({
                                 type: "icon",
                                 name: "fab/behance-square"
-                            },
-                            fields: f => ({
+                            })
+                            .fields(f => ({
                                 heading: f.text().label("Heading"),
                                 subheading: f.text().label("Subheading"),
                                 uuid: f
@@ -305,21 +299,19 @@ export class FieldRenderersDemoPresenter {
                                     .label("UUID")
                                     .defaultValue(() => Date.now())
                                     .cloneValue(value => `${value}/${Date.now()}`)
-                            })
-                        },
-                        {
-                            id: "cta",
-                            name: "Call To Action",
-                            icon: {
+                            }));
+                    })
+                    .template("cta", t => {
+                        t.label("Call To Action")
+                            .icon({
                                 type: "icon",
                                 name: "fab/behance-square"
-                            },
-                            fields: f => ({
+                            })
+                            .fields(f => ({
                                 label: f.text().label("Button Label"),
                                 url: f.text().label("URL")
-                            })
-                        }
-                    ]),
+                            }));
+                    }),
 
                 // --- Files ---
                 fileImage: fields

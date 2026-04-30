@@ -199,7 +199,7 @@ export interface ITemplateIcon {
 
 export interface ITemplateVM {
     id: string;
-    name: string;
+    label: string;
     icon?: ITemplateIcon;
 }
 
@@ -293,30 +293,16 @@ export interface IObjectFieldConfig extends IFieldConfig {
     templates?: ITemplateConfig[];
 }
 
-/**
- * Template definition on an object field.
- * A template is an atomic, named variant of the object's children.
- *
- * Modifiers may add or remove whole templates but cannot mutate a template's fields piecemeal.
- */
-export interface ITemplate {
-    id: string;
-    name: string;
-    icon?: ITemplateIcon;
-    fields: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>;
-    /**
-     * Reactive callback — when false, the template is hidden from the picker.
-     * Does not retroactively hide existing items/data.
-     */
-    visible?: (form: IFormModel) => boolean;
+export interface ITemplateBuilder {
+    label(text: string): this;
+    icon(icon: ITemplateIcon): this;
+    fields(factory: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this;
+    visible(predicate: (form: IFormModel) => boolean): this;
 }
 
-/**
- * Resolved template config (post-build) — `fields` has been materialised into builders.
- */
 export interface ITemplateConfig {
     id: string;
-    name: string;
+    label: string;
     icon?: ITemplateIcon;
     childBuilders: Record<string, IFieldBuilder>;
     visible?: (form: IFormModel) => boolean;
@@ -373,19 +359,7 @@ export interface IObjectField extends ITypedField<Record<string, unknown> | null
 }
 
 export interface IObjectFieldTemplatesAPI {
-    /**
-     * Append a new template. Throws on duplicate id or reserved `_templateId`.
-     * Throws when called on a non-templated object field.
-     */
-    add(template: ITemplate): void;
-    /**
-     * Remove a template by id. No-op if the id does not exist.
-     * - Single-object templated field: clears active template if it matches.
-     * - Templated list: drops list items whose `_templateId` matches.
-     * - Layout entries for the removed id are kept silently and reused if the
-     *   id is later re-added.
-     * Throws when called on a non-templated object field.
-     */
+    add(id: string, configure: (t: ITemplateBuilder) => void): void;
     remove(templateId: string): void;
 }
 
@@ -745,7 +719,7 @@ export namespace FormModel {
     export type ObjectNode = IObjectNode;
     export type ObjectFieldVM = IObjectFieldVM;
     export type ObjectFieldItemVM = IObjectFieldItemVM;
-    export type Template = ITemplate;
+    export type TemplateBuilder = ITemplateBuilder;
     export type TemplateConfig = ITemplateConfig;
     export type TemplateIcon = ITemplateIcon;
     export type TemplateVM = ITemplateVM;
@@ -878,7 +852,7 @@ export interface IObjectFieldBuilder extends IFieldBuilder<
     fields(fn: (registry: IFieldBuilderRegistry) => Record<string, IFieldBuilder>): this;
     list(): this;
     listSchema(schema: z.ZodTypeAny): this;
-    templates(templates: ITemplate[]): this;
+    template(id: string, configure: (t: ITemplateBuilder) => void): this;
 }
 
 export interface IFieldBuilderRegistry {}

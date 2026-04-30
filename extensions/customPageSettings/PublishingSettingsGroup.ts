@@ -20,7 +20,7 @@ class PublishingSettingsGroupImpl implements PageSettingsGroup.Interface {
                 ])
                 .defaultValue("public")
                 .afterChange((value, form) => {
-                    const path = form.field("general.path").getValue<string>() ?? "";
+                    const path = form.field("general.path").as("text").getValue() ?? "";
                     if (value === "password") {
                         form.field("general.path").setValue(path + "/password");
                     } else {

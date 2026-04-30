@@ -1,5 +1,6 @@
 import { makeAutoObservable, runInAction, toJS } from "mobx";
 import { Field } from "./Field.js";
+import { createTemplateBuilder } from "./fieldTypes/ObjectFieldType.js";
 import type {
     IObjectFieldConfig,
     IObjectField,
@@ -12,7 +13,7 @@ import type {
     IFieldBuilder,
     IFieldBuilderRegistry,
     IRule,
-    ITemplate,
+    ITemplateBuilder,
     ITemplateConfig,
     ITemplateVM,
     FieldTypeMap,
@@ -312,7 +313,7 @@ export class ObjectField implements IObjectField {
                     continue;
                 }
             }
-            result.push({ id: template.id, name: template.name, icon: template.icon });
+            result.push({ id: template.id, label: template.label, icon: template.icon });
         }
         return result;
     }
@@ -326,45 +327,35 @@ export class ObjectField implements IObjectField {
 
     get templates(): IObjectFieldTemplatesAPI {
         return {
-            add: (template: ITemplate) => this._addTemplate(template),
+            add: (id: string, configure: (t: ITemplateBuilder) => void) =>
+                this._addTemplate(id, configure),
             remove: (templateId: string) => this._removeTemplate(templateId)
         };
     }
 
-    private _addTemplate(template: ITemplate): void {
+    private _addTemplate(id: string, configure: (t: ITemplateBuilder) => void): void {
         if (!this.isTemplated) {
             throw new Error(
-                `Object field "${this.config.name}" is not templated; templates.add() requires the field to be defined with .templates([...]).`
+                `Object field "${this.config.name}" is not templated; templates.add() requires the field to be defined with .template().`
             );
         }
-        if (template.id === TEMPLATE_DISCRIMINATOR) {
+        if (id === TEMPLATE_DISCRIMINATOR) {
             throw new Error(
                 `Template id "${TEMPLATE_DISCRIMINATOR}" is reserved. Choose a different id.`
             );
         }
-        if (this._findTemplate(template.id)) {
-            throw new Error(`Duplicate template id "${template.id}".`);
+        if (this._findTemplate(id)) {
+            throw new Error(`Duplicate template id "${id}".`);
         }
-        const childBuilders = template.fields((this._form as FormModel).registry);
-        if (TEMPLATE_DISCRIMINATOR in childBuilders) {
-            throw new Error(
-                `Template "${template.id}" defines a reserved field "${TEMPLATE_DISCRIMINATOR}". ` +
-                    `The discriminator is added automatically.`
-            );
-        }
-        this._templates.push({
-            id: template.id,
-            name: template.name,
-            icon: template.icon,
-            childBuilders,
-            visible: template.visible
-        });
+        const tb = createTemplateBuilder();
+        configure(tb);
+        this._templates.push(tb._build(id, (this._form as FormModel).registry));
     }
 
     private _removeTemplate(templateId: string): void {
         if (!this.isTemplated) {
             throw new Error(
-                `Object field "${this.config.name}" is not templated; templates.remove() requires the field to be defined with .templates([...]).`
+                `Object field "${this.config.name}" is not templated; templates.remove() requires the field to be defined with .template().`
             );
         }
         const index = this._templates.findIndex(t => t.id === templateId);

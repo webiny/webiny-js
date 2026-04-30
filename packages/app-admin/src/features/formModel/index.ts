@@ -37,7 +37,7 @@ export type {
     IListItemField,
     IObjectFieldVM,
     IObjectFieldItemVM,
-    ITemplate,
+    ITemplateBuilder,
     ITemplateIcon,
     ITemplateConfig,
     ITemplateVM,

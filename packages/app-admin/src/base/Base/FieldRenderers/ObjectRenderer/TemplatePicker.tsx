@@ -87,7 +87,7 @@ const TemplateCard = ({ template, onSelect }: TemplateCardProps) => {
                 </div>
                 <div className={"py-sm-extra px-md"}>
                     <Text size={"md"} className={"mb-xs text-neutral-primary font-semibold"}>
-                        {template.name}
+                        {template.label}
                     </Text>
                 </div>
             </div>

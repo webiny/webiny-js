@@ -1760,23 +1760,17 @@ describe("FormModel", () => {
                     content: fields
                         .object()
                         .label("Content")
-                        .templates([
-                            {
-                                id: "hero",
-                                name: "Hero Banner",
-                                fields: f => ({
-                                    heading: f.text().label("Heading").required("Required"),
-                                    image: f.text().label("Image")
-                                })
-                            },
-                            {
-                                id: "text",
-                                name: "Rich Text",
-                                fields: f => ({
-                                    body: f.text().label("Body").required("Required")
-                                })
-                            }
-                        ])
+                        .template("hero", t => {
+                            t.label("Hero Banner").fields(f => ({
+                                heading: f.text().label("Heading").required("Required"),
+                                image: f.text().label("Image")
+                            }));
+                        })
+                        .template("text", t => {
+                            t.label("Rich Text").fields(f => ({
+                                body: f.text().label("Body").required("Required")
+                            }));
+                        })
                 })
             });
         }
@@ -1795,34 +1789,40 @@ describe("FormModel", () => {
                 const vm = form.field("content").vm as IObjectFieldVM;
                 expect(vm.isTemplated).toBe(true);
                 expect(vm.availableTemplates).toEqual([
-                    { id: "hero", name: "Hero Banner" },
-                    { id: "text", name: "Rich Text" }
+                    { id: "hero", label: "Hero Banner" },
+                    { id: "text", label: "Rich Text" }
                 ]);
                 expect(vm.activeTemplateId).toBeNull();
                 expect(vm.fields).toEqual([]);
             });
 
-            it("rejects .fields() alongside .templates() at build time", () => {
+            it("rejects .fields() alongside .template() at build time", () => {
                 expect(() =>
                     createForm({
                         fields: fields => ({
                             content: fields
                                 .object()
                                 .fields(f => ({ x: f.text() }))
-                                .templates([{ id: "a", name: "A", fields: f => ({ y: f.text() }) }])
+                                .template("a", t => {
+                                    t.label("A").fields(f => ({ y: f.text() }));
+                                })
                         })
                     })
-                ).toThrow(/both .fields\(\) and .templates\(\)/);
+                ).toThrow(/both .fields\(\) and .template\(\)/);
             });
 
             it("rejects duplicate template ids", () => {
                 expect(() =>
                     createForm({
                         fields: fields => ({
-                            content: fields.object().templates([
-                                { id: "a", name: "A1", fields: f => ({ x: f.text() }) },
-                                { id: "a", name: "A2", fields: f => ({ y: f.text() }) }
-                            ])
+                            content: fields
+                                .object()
+                                .template("a", t => {
+                                    t.label("A1").fields(f => ({ x: f.text() }));
+                                })
+                                .template("a", t => {
+                                    t.label("A2").fields(f => ({ y: f.text() }));
+                                })
                         })
                     })
                 ).toThrow(/Duplicate template id "a"/);
@@ -1832,13 +1832,9 @@ describe("FormModel", () => {
                 expect(() =>
                     createForm({
                         fields: fields => ({
-                            content: fields.object().templates([
-                                {
-                                    id: "_templateId",
-                                    name: "X",
-                                    fields: f => ({ x: f.text() })
-                                }
-                            ])
+                            content: fields.object().template("_templateId", t => {
+                                t.label("X").fields(f => ({ x: f.text() }));
+                            })
                         })
                     })
                 ).toThrow(/reserved/);
@@ -1848,26 +1844,24 @@ describe("FormModel", () => {
                 expect(() =>
                     createForm({
                         fields: fields => ({
-                            content: fields.object().templates([
-                                {
-                                    id: "hero",
-                                    name: "Hero",
-                                    fields: f => ({ _templateId: f.text() })
-                                }
-                            ])
+                            content: fields.object().template("hero", t => {
+                                t.label("Hero").fields(f => ({ _templateId: f.text() }));
+                            })
                         })
                     })
                 ).toThrow(/reserved field "_templateId"/);
             });
 
-            it("allows combining .list() with .templates() (Phase 8b)", () => {
+            it("allows combining .list() with .template() (Phase 8b)", () => {
                 expect(() =>
                     createForm({
                         fields: fields => ({
                             content: fields
                                 .object()
                                 .list()
-                                .templates([{ id: "a", name: "A", fields: f => ({ x: f.text() }) }])
+                                .template("a", t => {
+                                    t.label("A").fields(f => ({ x: f.text() }));
+                                })
                         })
                     })
                 ).not.toThrow();
@@ -1987,13 +1981,9 @@ describe("FormModel", () => {
                         content: fields
                             .object()
                             .required("Pick a template")
-                            .templates([
-                                {
-                                    id: "hero",
-                                    name: "Hero",
-                                    fields: f => ({ heading: f.text() })
-                                }
-                            ])
+                            .template("hero", t => {
+                                t.label("Hero").fields(f => ({ heading: f.text() }));
+                            })
                     })
                 });
 
@@ -2008,15 +1998,11 @@ describe("FormModel", () => {
                         content: fields
                             .object()
                             .required("Pick a template")
-                            .templates([
-                                {
-                                    id: "hero",
-                                    name: "Hero",
-                                    fields: f => ({
-                                        heading: f.text().required("Required")
-                                    })
-                                }
-                            ])
+                            .template("hero", t => {
+                                t.label("Hero").fields(f => ({
+                                    heading: f.text().required("Required")
+                                }));
+                            })
                     })
                 });
 
@@ -2049,19 +2035,16 @@ describe("FormModel", () => {
                 const form = createForm({
                     fields: fields => ({
                         plan: fields.text().defaultValue("free"),
-                        content: fields.object().templates([
-                            {
-                                id: "basic",
-                                name: "Basic",
-                                fields: f => ({ x: f.text() })
-                            },
-                            {
-                                id: "premium",
-                                name: "Premium",
-                                visible: f => f.field("plan").getValue() === "enterprise",
-                                fields: f => ({ y: f.text() })
-                            }
-                        ])
+                        content: fields
+                            .object()
+                            .template("basic", t => {
+                                t.label("Basic").fields(f => ({ x: f.text() }));
+                            })
+                            .template("premium", t => {
+                                t.label("Premium")
+                                    .visible(f => f.field("plan").getValue() === "enterprise")
+                                    .fields(f => ({ y: f.text() }));
+                            })
                     })
                 });
 
@@ -2077,14 +2060,11 @@ describe("FormModel", () => {
                 const form = createForm({
                     fields: fields => ({
                         plan: fields.text().defaultValue("enterprise"),
-                        content: fields.object().templates([
-                            {
-                                id: "premium",
-                                name: "Premium",
-                                visible: f => f.field("plan").getValue() === "enterprise",
-                                fields: f => ({ y: f.text() })
-                            }
-                        ])
+                        content: fields.object().template("premium", t => {
+                            t.label("Premium")
+                                .visible(f => f.field("plan").getValue() === "enterprise")
+                                .fields(f => ({ y: f.text() }));
+                        })
                     })
                 });
 
@@ -2130,23 +2110,17 @@ describe("FormModel", () => {
                         .object()
                         .label("Sections")
                         .list()
-                        .templates([
-                            {
-                                id: "hero",
-                                name: "Hero",
-                                fields: f => ({
-                                    heading: f.text().required("Required"),
-                                    image: f.text()
-                                })
-                            },
-                            {
-                                id: "text",
-                                name: "Text",
-                                fields: f => ({
-                                    body: f.text().required("Required")
-                                })
-                            }
-                        ])
+                        .template("hero", t => {
+                            t.label("Hero").fields(f => ({
+                                heading: f.text().required("Required"),
+                                image: f.text()
+                            }));
+                        })
+                        .template("text", t => {
+                            t.label("Text").fields(f => ({
+                                body: f.text().required("Required")
+                            }));
+                        })
                 })
             });
         }
@@ -2306,15 +2280,14 @@ describe("FormModel", () => {
                         sections: fields
                             .object()
                             .list()
-                            .templates([
-                                { id: "basic", name: "Basic", fields: f => ({ x: f.text() }) },
-                                {
-                                    id: "premium",
-                                    name: "Premium",
-                                    visible: f => f.field("plan").getValue() === "enterprise",
-                                    fields: f => ({ y: f.text() })
-                                }
-                            ])
+                            .template("basic", t => {
+                                t.label("Basic").fields(f => ({ x: f.text() }));
+                            })
+                            .template("premium", t => {
+                                t.label("Premium")
+                                    .visible(f => f.field("plan").getValue() === "enterprise")
+                                    .fields(f => ({ y: f.text() }));
+                            })
                     })
                 });
 
@@ -2447,24 +2420,20 @@ describe("FormModel", () => {
             function buildTemplatedForm(layoutFactory?: IFormModelConfig["layout"]) {
                 return createForm({
                     fields: fields => ({
-                        content: fields.object().templates([
-                            {
-                                id: "hero",
-                                name: "Hero",
-                                fields: f => ({
+                        content: fields
+                            .object()
+                            .template("hero", t => {
+                                t.label("Hero").fields(f => ({
                                     heading: f.text().label("Heading"),
                                     subheading: f.text().label("Subheading")
-                                })
-                            },
-                            {
-                                id: "cta",
-                                name: "CTA",
-                                fields: f => ({
+                                }));
+                            })
+                            .template("cta", t => {
+                                t.label("CTA").fields(f => ({
                                     text: f.text().label("Text"),
                                     url: f.text().label("URL")
-                                })
-                            }
-                        ])
+                                }));
+                            })
                     }),
                     layout: layoutFactory
                 });
@@ -2558,24 +2527,18 @@ describe("FormModel", () => {
                         sections: fields
                             .object()
                             .list()
-                            .templates([
-                                {
-                                    id: "hero",
-                                    name: "Hero",
-                                    fields: f => ({
-                                        heading: f.text().label("Heading"),
-                                        subheading: f.text().label("Subheading")
-                                    })
-                                },
-                                {
-                                    id: "cta",
-                                    name: "CTA",
-                                    fields: f => ({
-                                        text: f.text().label("Text"),
-                                        url: f.text().label("URL")
-                                    })
-                                }
-                            ])
+                            .template("hero", t => {
+                                t.label("Hero").fields(f => ({
+                                    heading: f.text().label("Heading"),
+                                    subheading: f.text().label("Subheading")
+                                }));
+                            })
+                            .template("cta", t => {
+                                t.label("CTA").fields(f => ({
+                                    text: f.text().label("Text"),
+                                    url: f.text().label("URL")
+                                }));
+                            })
                     }),
                     layout: layout => [
                         layout.object("sections", {
@@ -2604,16 +2567,12 @@ describe("FormModel", () => {
             it("hides hidden child fields from the resolved layout row", () => {
                 const form = createForm({
                     fields: fields => ({
-                        content: fields.object().templates([
-                            {
-                                id: "hero",
-                                name: "Hero",
-                                fields: f => ({
-                                    heading: f.text(),
-                                    secret: f.text().hidden()
-                                })
-                            }
-                        ])
+                        content: fields.object().template("hero", t => {
+                            t.label("Hero").fields(f => ({
+                                heading: f.text(),
+                                secret: f.text().hidden()
+                            }));
+                        })
                     }),
                     layout: layout => [
                         layout.object("content", {
@@ -2632,11 +2591,9 @@ describe("FormModel", () => {
             it("the form layout exposes a single-field row for the object", () => {
                 const form = createForm({
                     fields: fields => ({
-                        content: fields
-                            .object()
-                            .templates([
-                                { id: "hero", name: "Hero", fields: f => ({ heading: f.text() }) }
-                            ])
+                        content: fields.object().template("hero", t => {
+                            t.label("Hero").fields(f => ({ heading: f.text() }));
+                        })
                     }),
                     layout: layout => [layout.object("content", { hero: l => [l.row("heading")] })]
                 });
@@ -2652,9 +2609,9 @@ describe("FormModel", () => {
                         content: fields
                             .object()
                             .hidden()
-                            .templates([
-                                { id: "hero", name: "Hero", fields: f => ({ heading: f.text() }) }
-                            ])
+                            .template("hero", t => {
+                                t.label("Hero").fields(f => ({ heading: f.text() }));
+                            })
                     }),
                     layout: layout => [layout.object("content", { hero: l => [l.row("heading")] })]
                 });
@@ -2720,19 +2677,15 @@ describe("FormModel", () => {
         it("registers nested layouts on a templated single object when its template activates", () => {
             const form = createForm({
                 fields: fields => ({
-                    block: fields.object().templates([
-                        {
-                            id: "hero",
-                            name: "Hero",
-                            fields: f => ({
-                                heading: f.text(),
-                                seo: f.object().fields(g => ({
-                                    metaTitle: g.text(),
-                                    metaDescription: g.text()
-                                }))
-                            })
-                        }
-                    ])
+                    block: fields.object().template("hero", t => {
+                        t.label("Hero").fields(f => ({
+                            heading: f.text(),
+                            seo: f.object().fields(g => ({
+                                metaTitle: g.text(),
+                                metaDescription: g.text()
+                            }))
+                        }));
+                    })
                 }),
                 layout: layout => [
                     layout.object("block", {
@@ -2760,19 +2713,15 @@ describe("FormModel", () => {
                     sections: fields
                         .object()
                         .list()
-                        .templates([
-                            {
-                                id: "hero",
-                                name: "Hero",
-                                fields: f => ({
-                                    heading: f.text(),
-                                    seo: f.object().fields(g => ({
-                                        metaTitle: g.text(),
-                                        metaDescription: g.text()
-                                    }))
-                                })
-                            }
-                        ])
+                        .template("hero", t => {
+                            t.label("Hero").fields(f => ({
+                                heading: f.text(),
+                                seo: f.object().fields(g => ({
+                                    metaTitle: g.text(),
+                                    metaDescription: g.text()
+                                }))
+                            }));
+                        })
                 }),
                 layout: layout => [
                     layout.object("sections", {
@@ -2945,13 +2894,9 @@ describe("FormModel", () => {
         function createSingleTemplatedForm() {
             return createForm({
                 fields: fields => ({
-                    content: fields.object().templates([
-                        {
-                            id: "hero",
-                            name: "Hero",
-                            fields: f => ({ heading: f.text() })
-                        }
-                    ])
+                    content: fields.object().template("hero", t => {
+                        t.label("Hero").fields(f => ({ heading: f.text() }));
+                    })
                 })
             });
         }
@@ -2962,18 +2907,12 @@ describe("FormModel", () => {
                     blocks: fields
                         .object()
                         .list()
-                        .templates([
-                            {
-                                id: "hero",
-                                name: "Hero",
-                                fields: f => ({ heading: f.text() })
-                            },
-                            {
-                                id: "text",
-                                name: "Text",
-                                fields: f => ({ body: f.text() })
-                            }
-                        ])
+                        .template("hero", t => {
+                            t.label("Hero").fields(f => ({ heading: f.text() }));
+                        })
+                        .template("text", t => {
+                            t.label("Text").fields(f => ({ body: f.text() }));
+                        })
                 })
             });
         }
@@ -2981,10 +2920,8 @@ describe("FormModel", () => {
         it("templates.add appends a template and the picker lists it", () => {
             const form = createSingleTemplatedForm();
             const field = form.field("content").as("object");
-            field.templates.add({
-                id: "text",
-                name: "Text",
-                fields: f => ({ body: f.text() })
+            field.templates.add("text", t => {
+                t.label("Text").fields(f => ({ body: f.text() }));
             });
             const vm = form.field("content").vm as IObjectFieldVM;
             expect(vm.availableTemplates.map(t => t.id)).toEqual(["hero", "text"]);
@@ -2994,10 +2931,8 @@ describe("FormModel", () => {
             const form = createSingleTemplatedForm();
             const field = form.field("content").as("object");
             expect(() =>
-                field.templates.add({
-                    id: "hero",
-                    name: "Other",
-                    fields: f => ({ x: f.text() })
+                field.templates.add("hero", t => {
+                    t.label("Other").fields(f => ({ x: f.text() }));
                 })
             ).toThrow(/Duplicate template id "hero"/);
         });
@@ -3006,10 +2941,8 @@ describe("FormModel", () => {
             const form = createSingleTemplatedForm();
             const field = form.field("content").as("object");
             expect(() =>
-                field.templates.add({
-                    id: "_templateId",
-                    name: "Reserved",
-                    fields: f => ({ x: f.text() })
+                field.templates.add("_templateId", t => {
+                    t.label("Reserved").fields(f => ({ x: f.text() }));
                 })
             ).toThrow(/reserved/);
         });
@@ -3018,10 +2951,8 @@ describe("FormModel", () => {
             const form = createSingleTemplatedForm();
             const field = form.field("content").as("object");
             expect(() =>
-                field.templates.add({
-                    id: "bad",
-                    name: "Bad",
-                    fields: f => ({ _templateId: f.text() })
+                field.templates.add("bad", t => {
+                    t.label("Bad").fields(f => ({ _templateId: f.text() }));
                 })
             ).toThrow(/reserved field "_templateId"/);
         });
@@ -3074,10 +3005,8 @@ describe("FormModel", () => {
             });
             const field = form.field("plain").as("object");
             expect(() =>
-                field.templates.add({
-                    id: "x",
-                    name: "X",
-                    fields: f => ({ y: f.text() })
+                field.templates.add("x", t => {
+                    t.label("X").fields(f => ({ y: f.text() }));
                 })
             ).toThrow(/not templated/);
         });
@@ -3095,13 +3024,9 @@ describe("FormModel", () => {
         it("orphan layout entry persists silently and is reused when the same template id is re-added", () => {
             const form = createForm({
                 fields: fields => ({
-                    content: fields.object().templates([
-                        {
-                            id: "hero",
-                            name: "Hero",
-                            fields: f => ({ heading: f.text(), subheading: f.text() })
-                        }
-                    ])
+                    content: fields.object().template("hero", t => {
+                        t.label("Hero").fields(f => ({ heading: f.text(), subheading: f.text() }));
+                    })
                 }),
                 layout: layout => [
                     layout.object("content", {
@@ -3116,10 +3041,8 @@ describe("FormModel", () => {
             expect(rowBefore.fields.map(f => f.name)).toEqual(["heading", "subheading"]);
 
             field.templates.remove("hero");
-            field.templates.add({
-                id: "hero",
-                name: "Hero v2",
-                fields: f => ({ heading: f.text(), subheading: f.text() })
+            field.templates.add("hero", t => {
+                t.label("Hero v2").fields(f => ({ heading: f.text(), subheading: f.text() }));
             });
             field.setTemplate("hero");
 
@@ -3410,13 +3333,9 @@ describe("FormModel", () => {
         it("throws when called on a templated object field", () => {
             const form = createForm({
                 fields: fields => ({
-                    block: fields.object().templates([
-                        {
-                            id: "a",
-                            name: "A",
-                            fields: f => ({ x: f.text() })
-                        }
-                    ])
+                    block: fields.object().template("a", t => {
+                        t.label("A").fields(f => ({ x: f.text() }));
+                    })
                 })
             });
 
