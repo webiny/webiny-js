@@ -85,7 +85,7 @@ Add `SENDGRID_API_KEY=your-secret` to your `.env` file (never commit it).
 yarn webiny build api
 ```
 
-> **Note:** This command only works in a `dev` environment. If you are on a different environment, build the API yourself.
+> **Note:** This command only works in a `dev` environment. For other environments, run `yarn webiny build api --env=YOUR_ENV` instead.
 
 ```ts
 // Environment variable in .env
