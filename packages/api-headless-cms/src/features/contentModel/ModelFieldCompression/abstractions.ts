@@ -7,7 +7,9 @@ export interface IModelFieldCompressionCompressResult {
 }
 
 export interface IModelFieldCompression {
-    compress(fields: CmsModelField[]): Promise<IModelFieldCompressionCompressResult>;
+    compress(
+        fields: CmsModelField[]
+    ): Promise<IModelFieldCompressionCompressResult | CmsModelField[]>;
     decompress(
         data: IModelFieldCompressionCompressResult | CmsModelField[] | unknown
     ): Promise<CmsModelField[]>;
@@ -20,7 +22,7 @@ export const ModelFieldCompression = createAbstraction<IModelFieldCompression>(
 export namespace ModelFieldCompression {
     export type Interface = IModelFieldCompression;
     export type CompressParams = CmsModelField[];
-    export type CompressResponse = Promise<IModelFieldCompressionCompressResult>;
+    export type CompressResponse = Promise<IModelFieldCompressionCompressResult | CmsModelField[]>;
     export type DecompressParams = IModelFieldCompressionCompressResult | CmsModelField[] | unknown;
     export type DecompressResponse = Promise<CmsModelField[]>;
 }

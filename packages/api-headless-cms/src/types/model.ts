@@ -161,7 +161,7 @@ export interface StorageCmsModelFields {
 }
 
 export interface StorageCmsModel extends Omit<CmsModel, "fields"> {
-    fields: StorageCmsModelFields;
+    fields: StorageCmsModelFields | CmsModelField[];
 }
 
 export interface CmsModelAuthorization {
