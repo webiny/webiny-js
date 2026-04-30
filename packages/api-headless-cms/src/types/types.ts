@@ -9,7 +9,12 @@ import type { CmsModelToAstConverter } from "~/utils/contentModelAst/CmsModelToA
 import type { ICmsModelFieldToGraphQLRegistry } from "~/features/graphql/fields/abstractions/CmsModelFieldToGraphQLRegistry.js";
 import type { CmsEntryContext } from "./context.js";
 import type { CmsModelField, CmsModelFieldValidation, CmsModelUpdateInput } from "./modelField.js";
-import type { CmsModel, CmsModelCreateFromInput, CmsModelCreateInput } from "./model.js";
+import type {
+    CmsModel,
+    CmsModelCreateFromInput,
+    CmsModelCreateInput,
+    StorageCmsModel
+} from "./model.js";
 import type { CmsGroup } from "./modelGroup.js";
 import type { CmsIdentity } from "./identity.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
@@ -1020,11 +1025,11 @@ export interface CmsModelStorageOperationsListParams {
 }
 
 export interface CmsModelStorageOperationsCreateParams {
-    model: CmsModel;
+    model: StorageCmsModel;
 }
 
 export interface CmsModelStorageOperationsUpdateParams {
-    model: CmsModel;
+    model: StorageCmsModel;
 }
 
 export interface CmsModelStorageOperationsDeleteParams {
@@ -1040,23 +1045,23 @@ export interface CmsModelStorageOperations {
     /**
      * Gets content model by given id.
      */
-    get: (params: CmsModelStorageOperationsGetParams) => Promise<CmsModel | null>;
+    get: (params: CmsModelStorageOperationsGetParams) => Promise<StorageCmsModel | null>;
     /**
      * List all content models. Filterable via params.
      */
-    list: (params: CmsModelStorageOperationsListParams) => Promise<CmsModel[]>;
+    list: (params: CmsModelStorageOperationsListParams) => Promise<StorageCmsModel[]>;
     /**
      * Create a new content model.
      */
-    create: (params: CmsModelStorageOperationsCreateParams) => Promise<CmsModel>;
+    create: (params: CmsModelStorageOperationsCreateParams) => Promise<StorageCmsModel>;
     /**
      * Update existing content model.
      */
-    update: (params: CmsModelStorageOperationsUpdateParams) => Promise<CmsModel>;
+    update: (params: CmsModelStorageOperationsUpdateParams) => Promise<StorageCmsModel>;
     /**
      * Delete the content model.
      */
-    delete: (params: CmsModelStorageOperationsDeleteParams) => Promise<CmsModel>;
+    delete: (params: CmsModelStorageOperationsDeleteParams) => Promise<void>;
 }
 
 export interface CmsEntryStorageOperationsGetParams {

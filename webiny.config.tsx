@@ -121,6 +121,9 @@ export const Extensions = () => {
 
             {/* Tasks */}
             <Api.Extension src={"/extensions/tasks/SelfCleaningTask.ts"} />
+            {/* Headless CMS */}
+            {/* Set to true to compress model fields before storing them in the database. */}
+            <Api.Cms.ModelFieldCompression enabled={false} />
             {/* Mailer */}
             <Api.Mailer.Smtp
                 host={"smtp.webiny.com"}
