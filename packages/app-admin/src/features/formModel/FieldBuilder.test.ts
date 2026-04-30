@@ -227,16 +227,12 @@ describe("normalizeValue", () => {
         expect(builder.normalizeValue("0")).toBe(0);
     });
 
-    it("should pass through null, undefined, and empty string for NumberFieldBuilder", () => {
+    it("should return null for non-numeric values in NumberFieldBuilder", () => {
         const builder = new NumberFieldBuilder();
         expect(builder.normalizeValue(null)).toBe(null);
-        expect(builder.normalizeValue(undefined)).toBe(undefined);
-        expect(builder.normalizeValue("")).toBe("");
-    });
-
-    it("should pass through NaN-producing strings for NumberFieldBuilder", () => {
-        const builder = new NumberFieldBuilder();
-        expect(builder.normalizeValue("abc")).toBe("abc");
+        expect(builder.normalizeValue(undefined)).toBe(null);
+        expect(builder.normalizeValue("")).toBe(null);
+        expect(builder.normalizeValue("abc")).toBe(null);
     });
 
     it("should coerce to boolean for BooleanFieldBuilder", () => {

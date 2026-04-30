@@ -1,5 +1,5 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+import { createFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import {
@@ -10,7 +10,6 @@ import {
     Input,
     Separator
 } from "@webiny/admin-ui";
-import type { IFieldVM } from "~/features/formModel/index.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -18,9 +17,8 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
-export const NumberInputsRenderer = observer(({ field }: { field: IFieldVM }) => {
+export const NumberInputsRenderer = createFieldRenderer<"numberInputs">(({ field }) => {
     const values = Array.isArray(field.value) ? field.value : [];
-    const settings = field.rendererSettings as { addItemLabel?: string } | undefined;
 
     const updateAt = (index: number, val: unknown) => {
         const next = [...values];
@@ -59,7 +57,7 @@ export const NumberInputsRenderer = observer(({ field }: { field: IFieldVM }) =>
                 disabled={field.disabled}
                 variant={"tertiary"}
                 icon={<AddIcon />}
-                text={settings?.addItemLabel ?? "Add Value"}
+                text={field.rendererSettings?.addItemLabel ?? "Add Value"}
                 onClick={() => field.addItem("")}
             />
         </div>

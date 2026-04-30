@@ -3723,7 +3723,7 @@ describe("FormModel", () => {
             expect(form.field("count").getValue()).toBe(42);
         });
 
-        it("should pass through null and empty string for number fields", () => {
+        it("should normalize invalid values to null for number fields", () => {
             const form = createForm({
                 fields: fields => ({
                     count: fields.number().label("Count")
@@ -3731,21 +3731,13 @@ describe("FormModel", () => {
             });
 
             form.field("count").setValue("");
-            expect(form.field("count").getValue()).toBe("");
+            expect(form.field("count").getValue()).toBe(null);
 
             form.field("count").setValue(null);
             expect(form.field("count").getValue()).toBe(null);
-        });
-
-        it("should pass through NaN-producing strings for number fields", () => {
-            const form = createForm({
-                fields: fields => ({
-                    count: fields.number().label("Count")
-                })
-            });
 
             form.field("count").setValue("abc");
-            expect(form.field("count").getValue()).toBe("abc");
+            expect(form.field("count").getValue()).toBe(null);
         });
 
         it("should store number for number field with options", () => {

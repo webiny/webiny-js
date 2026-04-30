@@ -1,10 +1,8 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+import { createFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { Button, FormComponentDescription, Icon, Input, Separator } from "@webiny/admin-ui";
-import type { IFieldVM, IFieldRendererRegistry } from "~/features/formModel/index.js";
-
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
         dateTimeInputs: {
@@ -17,12 +15,9 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
-type DateTimeInputsSettings = IFieldRendererRegistry["dateTimeInputs"]["settings"];
-
-export const DateTimeInputsRenderer = observer(({ field }: { field: IFieldVM }) => {
+export const DateTimeInputsRenderer = createFieldRenderer<"dateTimeInputs">(({ field }) => {
     const values = (field.value as string[]) ?? [];
-    const settings = field.rendererSettings as DateTimeInputsSettings | undefined;
-    const inputType = settings?.type ?? "date";
+    const inputType = field.rendererSettings?.type ?? "date";
 
     const updateAt = (index: number, val: string) => {
         const next = [...values];
@@ -60,7 +55,7 @@ export const DateTimeInputsRenderer = observer(({ field }: { field: IFieldVM }) 
                 disabled={field.disabled}
                 variant={"tertiary"}
                 icon={<AddIcon />}
-                text={settings?.addItemLabel ?? "Add Value"}
+                text={field.rendererSettings?.addItemLabel ?? "Add Value"}
                 onClick={() => field.addItem("")}
             />
         </div>

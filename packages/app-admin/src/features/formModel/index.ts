@@ -41,7 +41,7 @@ export type {
     ITemplateIcon,
     ITemplateConfig,
     ITemplateVM,
-    IObjectFieldTemplatesAPI,
+    IObjectFieldTemplates,
     FieldTypeMap,
     ITypedField,
     IFieldConfig,
@@ -122,6 +122,9 @@ export { ObjectField, isObjectField } from "./ObjectField.js";
 
 // Rule evaluators
 export { ConditionRuleEvaluator } from "./ConditionRuleEvaluator.js";
+
+// Renderer factory
+export { createFieldRenderer, createObjectFieldRenderer } from "./createFieldRenderer.js";
 
 // View
 export { FormView, LayoutNodeRenderer, useFormViewRenderers } from "./FormView.js";

@@ -1,9 +1,7 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+import { createFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { DelayedOnChange } from "@webiny/admin-ui";
 import { Textarea } from "@webiny/admin-ui";
-import type { IFieldVM } from "~/features/formModel/index.js";
-import type { IFieldRendererRegistry } from "~/features/formModel/index.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -11,10 +9,7 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
-type TextareaSettings = NonNullable<IFieldRendererRegistry["textarea"]["settings"]>;
-
-export const TextareaRenderer = observer(({ field }: { field: IFieldVM }) => {
-    const settings = field.rendererSettings as TextareaSettings | undefined;
+export const TextareaRenderer = createFieldRenderer<"textarea">(({ field }) => {
     return (
         <DelayedOnChange value={field.value} onChange={value => field.onChange(value)}>
             <Textarea
@@ -26,7 +21,7 @@ export const TextareaRenderer = observer(({ field }: { field: IFieldVM }) => {
                 disabled={field.disabled}
                 validation={field.validation}
                 onBlur={() => field.onBlur()}
-                rows={settings?.rows ?? 5}
+                rows={field.rendererSettings?.rows ?? 5}
             />
         </DelayedOnChange>
     );
