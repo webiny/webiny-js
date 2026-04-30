@@ -4,6 +4,7 @@ import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
 import { parseParams } from "../../utils/validateParams.js";
 import { listEntriesSchema } from "./schemas.js";
+import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
 
 export interface ListEntriesParams {
     modelId: string;
@@ -115,7 +116,7 @@ export async function listEntries<TValues extends CmsEntryValues = CmsEntryValue
         const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
             new GraphQLError(
-                responseData.cms.listEntries.error.message,
+                transformFieldErrors(responseData.cms.listEntries.error.message, fields),
                 responseData.cms.listEntries.error.code
             )
         );

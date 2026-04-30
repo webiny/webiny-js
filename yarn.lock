@@ -13421,6 +13421,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-headless-cms-import-export@workspace:packages/api-headless-cms-import-export":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-headless-cms-import-export@workspace:packages/api-headless-cms-import-export"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-headless-cms-scheduler@npm:0.0.0, @webiny/api-headless-cms-scheduler@workspace:packages/api-headless-cms-scheduler":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-scheduler@workspace:packages/api-headless-cms-scheduler"

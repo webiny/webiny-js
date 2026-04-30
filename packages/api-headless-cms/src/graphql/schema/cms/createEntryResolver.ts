@@ -1,12 +1,7 @@
 import type { CmsContext } from "~/types/index.js";
 import type { ApiEndpoint } from "~/types/index.js";
 import type { ExecutionResult } from "graphql";
-import {
-    getModel,
-    getErrorMessage,
-    buildFieldsSelection,
-    transformFieldErrors
-} from "./helpers.js";
+import { getModel, getErrorMessage, buildFieldsSelection } from "./helpers.js";
 
 export interface CreateEntryArgs {
     modelId: string;
@@ -51,7 +46,7 @@ export const createCreateEntryResolver = () => {
                 return {
                     data: null,
                     error: {
-                        message: transformFieldErrors(result.errors, fields),
+                        message: result.errors.map(e => e.message).join("; "),
                         code: "CREATE_ENTRY_ERROR"
                     }
                 };

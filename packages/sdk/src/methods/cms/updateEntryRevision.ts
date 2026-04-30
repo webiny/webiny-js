@@ -4,6 +4,7 @@ import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../
 import type { CmsEntryValues, CmsIdentity } from "./cmsTypes.js";
 import { parseParams } from "../../utils/validateParams.js";
 import { updateEntryRevisionSchema } from "./schemas.js";
+import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
 
 /**
  * Update entry revision data.
@@ -118,7 +119,7 @@ export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEn
         const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
             new GraphQLError(
-                responseData.cms.updateEntryRevision.error.message,
+                transformFieldErrors(responseData.cms.updateEntryRevision.error.message, fields),
                 responseData.cms.updateEntryRevision.error.code
             )
         );

@@ -4,6 +4,7 @@ import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../
 import type { CmsEntryValues, CmsEntryStatus, CmsIdentity } from "./cmsTypes.js";
 import { parseParams } from "../../utils/validateParams.js";
 import { createEntrySchema } from "./schemas.js";
+import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
 
 /**
  * Create entry data.
@@ -114,7 +115,7 @@ export async function createEntry<TValues extends CmsEntryValues = CmsEntryValue
         const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
             new GraphQLError(
-                responseData.cms.createEntry.error.message,
+                transformFieldErrors(responseData.cms.createEntry.error.message, fields),
                 responseData.cms.createEntry.error.code
             )
         );
