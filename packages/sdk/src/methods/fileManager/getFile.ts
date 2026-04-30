@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import { parseParams } from "../../utils/validateParams.js";
 import { getFileSchema } from "./schemas.js";
 import type { FmFile } from "./fileManagerTypes.js";
@@ -25,7 +25,7 @@ export async function getFile(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: GetFileParams
-): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError | ValidationError>> {
+): Promise<Result<FmFile, HttpError | ApiError | NetworkError | ValidationError>> {
     const parsed = parseParams(getFileSchema, params);
     if (!parsed.ok) {
         return parsed.result;
@@ -55,11 +55,11 @@ ${fieldsSelection}
     const result = await executeGraphQL(config, fetchFn, query, { id });
 
     if (result.isFail()) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         const error = result.error;
-        if (error instanceof GraphQLError) {
+        if (error instanceof ApiError) {
             return Result.fail(
-                new GraphQLError(transformFieldError(error.message, fields), error.data?.code)
+                new ApiError(transformFieldError(error.message, fields), error.data?.code)
             );
         }
         return Result.fail(error);
@@ -68,9 +68,9 @@ ${fieldsSelection}
     const responseData = result.value;
 
     if (responseData.fileManager.getFile.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.fileManager.getFile.error.message,
                 responseData.fileManager.getFile.error.code
             )

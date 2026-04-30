@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError } from "../../errors.js";
 import type { PresignedPostPayloadResponse } from "./fileManagerTypes.js";
 
 export interface GetPresignedPostPayloadParams {
@@ -28,7 +28,7 @@ export async function getPresignedPostPayload(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: GetPresignedPostPayloadParams
-): Promise<Result<PresignedPostPayloadResponse, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<PresignedPostPayloadResponse, HttpError | ApiError | NetworkError>> {
     const { name, type, size, key, keyPrefix } = params;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
@@ -67,9 +67,9 @@ export async function getPresignedPostPayload(
     const responseData = result.value;
 
     if (responseData.fileManager.getPreSignedPostPayload.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.fileManager.getPreSignedPostPayload.error.message,
                 responseData.fileManager.getPreSignedPostPayload.error.code
             )

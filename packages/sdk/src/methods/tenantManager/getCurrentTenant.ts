@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError } from "../../errors.js";
 
 export interface Tenant {
     id: string;
@@ -17,7 +17,7 @@ export interface Tenant {
 export async function getCurrentTenant(
     config: WebinyConfig,
     fetchFn: typeof fetch
-): Promise<Result<Tenant, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<Tenant, HttpError | ApiError | NetworkError>> {
     const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
@@ -46,9 +46,9 @@ export async function getCurrentTenant(
     const responseData = result.value;
 
     if (responseData.tenantManager.getCurrentTenant.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.tenantManager.getCurrentTenant.error.message,
                 responseData.tenantManager.getCurrentTenant.error.code
             )

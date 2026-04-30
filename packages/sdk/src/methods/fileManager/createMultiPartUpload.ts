@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError } from "../../errors.js";
 
 export interface CreateMultiPartUploadParams {
     data: {
@@ -42,7 +42,7 @@ export async function createMultiPartUpload(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: CreateMultiPartUploadParams
-): Promise<Result<MultiPartUploadResponse, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<MultiPartUploadResponse, HttpError | ApiError | NetworkError>> {
     const { data, numberOfParts } = params;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
@@ -83,9 +83,9 @@ export async function createMultiPartUpload(
     const responseData = result.value;
 
     if (responseData.fileManager.createMultiPartUpload.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.fileManager.createMultiPartUpload.error.message,
                 responseData.fileManager.createMultiPartUpload.error.code
             )

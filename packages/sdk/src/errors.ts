@@ -18,15 +18,15 @@ export class HttpError extends BaseError<HttpErrorData> {
     }
 }
 
-type GraphQLErrorData = {
+type ApiErrorData = {
     code?: string;
 };
 
 /**
  * GraphQL error from the API.
  */
-export class GraphQLError extends BaseError<GraphQLErrorData> {
-    override readonly code = "GRAPHQL_ERROR" as const;
+export class ApiError extends BaseError<ApiErrorData> {
+    override readonly code = "API_ERROR" as const;
 
     constructor(message: string, errorCode?: string) {
         super({

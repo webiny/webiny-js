@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryStatus, CmsIdentity } from "./cmsTypes.js";
 import { parseParams } from "../../utils/validateParams.js";
 import { createEntrySchema } from "./schemas.js";
@@ -79,7 +79,7 @@ export async function createEntry<TValues extends CmsEntryValues = CmsEntryValue
     fetchFn: typeof fetch,
     params: CreateEntryParams<TValues>
 ): Promise<
-    Result<CreateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
+    Result<CreateCmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
 > {
     const parsed = parseParams(createEntrySchema, params);
     if (!parsed.ok) {
@@ -112,9 +112,9 @@ export async function createEntry<TValues extends CmsEntryValues = CmsEntryValue
     const responseData = result.value;
 
     if (responseData.cms.createEntry.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 transformFieldErrors(responseData.cms.createEntry.error.message, fields),
                 responseData.cms.createEntry.error.code
             )

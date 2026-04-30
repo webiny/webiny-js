@@ -1,12 +1,12 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError } from "../../errors.js";
 import type { TaskDefinition } from "./taskTypes.js";
 
 export async function listDefinitions(
     config: WebinyConfig,
     fetchFn: typeof fetch
-): Promise<Result<TaskDefinition[], HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<TaskDefinition[], HttpError | ApiError | NetworkError>> {
     const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
@@ -36,9 +36,9 @@ export async function listDefinitions(
     const responseData = result.value;
 
     if (responseData.backgroundTasks.listDefinitions.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.backgroundTasks.listDefinitions.error.message,
                 responseData.backgroundTasks.listDefinitions.error.code
             )

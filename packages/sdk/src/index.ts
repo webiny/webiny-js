@@ -6,7 +6,7 @@ export * from "./LanguagesSdk.js";
 export * from "./TasksSdk.js";
 export * from "./types.js";
 export { Result } from "./Result.js";
-export { HttpError, GraphQLError, NetworkError, ValidationError } from "./errors.js";
+export { HttpError, ApiError, NetworkError, ValidationError } from "./errors.js";
 
 // Export shared CMS types.
 export type {

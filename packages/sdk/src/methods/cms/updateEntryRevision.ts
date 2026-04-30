@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsIdentity } from "./cmsTypes.js";
 import { parseParams } from "../../utils/validateParams.js";
 import { updateEntryRevisionSchema } from "./schemas.js";
@@ -78,7 +78,7 @@ export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEn
     fetchFn: typeof fetch,
     params: UpdateEntryRevisionParams<TValues>
 ): Promise<
-    Result<UpdateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
+    Result<UpdateCmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
 > {
     const parsed = parseParams(updateEntryRevisionSchema, params);
     if (!parsed.ok) {
@@ -116,9 +116,9 @@ export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEn
     const responseData = result.value;
 
     if (responseData.cms.updateEntryRevision.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 transformFieldErrors(responseData.cms.updateEntryRevision.error.message, fields),
                 responseData.cms.updateEntryRevision.error.code
             )

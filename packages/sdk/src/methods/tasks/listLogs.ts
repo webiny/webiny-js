@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError } from "../../errors.js";
 import type { TaskLog } from "./taskTypes.js";
 
 export interface ListLogsParams {
@@ -14,7 +14,7 @@ export async function listLogs(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: ListLogsParams = {}
-): Promise<Result<TaskLog[], HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<TaskLog[], HttpError | ApiError | NetworkError>> {
     const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
@@ -52,9 +52,9 @@ export async function listLogs(
     const responseData = result.value;
 
     if (responseData.backgroundTasks.listLogs.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.backgroundTasks.listLogs.error.message,
                 responseData.backgroundTasks.listLogs.error.code
             )

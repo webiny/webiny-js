@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError } from "../../errors.js";
 import type { FmTag, FmTagsListWhereInput } from "./fileManagerTypes.js";
 
 export interface ListTagsParams {
@@ -20,7 +20,7 @@ export async function listTags(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: ListTagsParams = {}
-): Promise<Result<FmTag[], HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<FmTag[], HttpError | ApiError | NetworkError>> {
     const { where } = params;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
@@ -51,9 +51,9 @@ export async function listTags(
     const responseData = result.value;
 
     if (responseData.fileManager.listTags.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.fileManager.listTags.error.message,
                 responseData.fileManager.listTags.error.code
             )

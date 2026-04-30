@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import type { FmFile, FmIdentity, FmLocationInput } from "./fileManagerTypes.js";
 import { buildFieldsSelection } from "./buildFieldsSelection.js";
 import { parseParams } from "../../utils/validateParams.js";
@@ -42,7 +42,7 @@ export async function updateFile(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: UpdateFileParams
-): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError | ValidationError>> {
+): Promise<Result<FmFile, HttpError | ApiError | NetworkError | ValidationError>> {
     const parsed = parseParams(updateFileSchema, params);
     if (!parsed.ok) {
         return parsed.result;
@@ -78,9 +78,9 @@ ${fieldsSelection}
     const responseData = result.value;
 
     if (responseData.fileManager.updateFile.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.fileManager.updateFile.error.message,
                 responseData.fileManager.updateFile.error.code
             )

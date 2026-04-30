@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import { parseParams } from "../../utils/validateParams.js";
 import { listFilesSchema } from "./schemas.js";
 import type {
@@ -43,7 +43,7 @@ export async function listFiles(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: ListFilesParams
-): Promise<Result<ListFilesResult, HttpError | GraphQLError | NetworkError | ValidationError>> {
+): Promise<Result<ListFilesResult, HttpError | ApiError | NetworkError | ValidationError>> {
     const parsed = parseParams(listFilesSchema, params);
     if (!parsed.ok) {
         return parsed.result;
@@ -84,11 +84,11 @@ ${fieldsSelection}
     });
 
     if (result.isFail()) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         const error = result.error;
-        if (error instanceof GraphQLError) {
+        if (error instanceof ApiError) {
             return Result.fail(
-                new GraphQLError(transformFieldError(error.message, fields), error.data?.code)
+                new ApiError(transformFieldError(error.message, fields), error.data?.code)
             );
         }
         return Result.fail(error);
@@ -97,9 +97,9 @@ ${fieldsSelection}
     const responseData = result.value;
 
     if (responseData.fileManager.listFiles.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.fileManager.listFiles.error.message,
                 responseData.fileManager.listFiles.error.code
             )

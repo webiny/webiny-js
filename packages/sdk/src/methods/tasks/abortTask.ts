@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError } from "../../errors.js";
 import type { TaskRun } from "./taskTypes.js";
 
 export interface AbortTaskParams {
@@ -14,7 +14,7 @@ export async function abortTask(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: AbortTaskParams
-): Promise<Result<TaskRun, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<TaskRun, HttpError | ApiError | NetworkError>> {
     const { id, message } = params;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
@@ -57,9 +57,9 @@ export async function abortTask(
     const responseData = result.value;
 
     if (responseData.backgroundTasks.abortTask.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.backgroundTasks.abortTask.error.message,
                 responseData.backgroundTasks.abortTask.error.code
             )

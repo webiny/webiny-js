@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError } from "../../errors.js";
 import type { FmFile, UploadProgress, BatchUploadStrategy } from "./fileManagerTypes.js";
 import type { CreateFileData } from "./createFile.js";
 
@@ -44,7 +44,7 @@ export async function createFiles(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: CreateFilesParams
-): Promise<Result<CreateFilesResult, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<CreateFilesResult, HttpError | ApiError | NetworkError>> {
     const {
         files,
         multiPartThreshold = 100,

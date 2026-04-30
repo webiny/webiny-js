@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import { parseParams } from "../../utils/validateParams.js";
 import { deleteEntryRevisionSchema } from "./schemas.js";
 
@@ -25,7 +25,7 @@ export async function deleteEntryRevision(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: DeleteEntryRevisionParams
-): Promise<Result<boolean, HttpError | GraphQLError | NetworkError | ValidationError>> {
+): Promise<Result<boolean, HttpError | ApiError | NetworkError | ValidationError>> {
     const parsed = parseParams(deleteEntryRevisionSchema, params);
     if (!parsed.ok) {
         return parsed.result;
@@ -57,9 +57,9 @@ export async function deleteEntryRevision(
     const data = result.value;
 
     if (data.cms.deleteEntryRevision.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 data.cms.deleteEntryRevision.error.message,
                 data.cms.deleteEntryRevision.error.code
             )

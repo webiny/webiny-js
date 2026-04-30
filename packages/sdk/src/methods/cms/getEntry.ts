@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
 import { parseParams } from "../../utils/validateParams.js";
 import { getEntrySchema } from "./schemas.js";
@@ -39,9 +39,7 @@ export async function getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: GetEntryParams
-): Promise<
-    Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
-> {
+): Promise<Result<CmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>> {
     const parsed = parseParams(getEntrySchema, params);
     if (!parsed.ok) {
         return parsed.result;
@@ -78,9 +76,9 @@ export async function getEntry<TValues extends CmsEntryValues = CmsEntryValues>(
     const responseData = result.value;
 
     if (responseData.cms.getEntry.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 transformFieldErrors(responseData.cms.getEntry.error.message, fields),
                 responseData.cms.getEntry.error.code
             )

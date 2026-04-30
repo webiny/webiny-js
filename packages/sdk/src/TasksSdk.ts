@@ -1,5 +1,5 @@
 import type { WebinyConfig } from "./types.js";
-import type { HttpError, GraphQLError, NetworkError } from "./errors.js";
+import type { HttpError, ApiError, NetworkError } from "./errors.js";
 import type { Result } from "./Result.js";
 import type { TaskDefinition, TaskRun, TaskLog } from "./methods/tasks/taskTypes.js";
 import type { ListLogsParams } from "./methods/tasks/listLogs.js";
@@ -21,30 +21,30 @@ export class TasksSdk {
     }
 
     async listDefinitions(): Promise<
-        Result<TaskDefinition[], HttpError | GraphQLError | NetworkError>
+        Result<TaskDefinition[], HttpError | ApiError | NetworkError>
     > {
         return listDefinitionsFn(this.config, this.fetchFn);
     }
 
-    async listTasks(): Promise<Result<TaskRun[], HttpError | GraphQLError | NetworkError>> {
+    async listTasks(): Promise<Result<TaskRun[], HttpError | ApiError | NetworkError>> {
         return listTasksFn(this.config, this.fetchFn);
     }
 
     async listLogs(
         params?: ListLogsParams
-    ): Promise<Result<TaskLog[], HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<TaskLog[], HttpError | ApiError | NetworkError>> {
         return listLogsFn(this.config, this.fetchFn, params);
     }
 
     async triggerTask(
         params: TriggerTaskParams
-    ): Promise<Result<TaskRun, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<TaskRun, HttpError | ApiError | NetworkError>> {
         return triggerTaskFn(this.config, this.fetchFn, params);
     }
 
     async abortTask(
         params: AbortTaskParams
-    ): Promise<Result<TaskRun, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<TaskRun, HttpError | ApiError | NetworkError>> {
         return abortTaskFn(this.config, this.fetchFn, params);
     }
 }

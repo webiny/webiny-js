@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError } from "../../errors.js";
 import type { FmFile, FmIdentity, FmLocationInput, UploadProgress } from "./fileManagerTypes.js";
 import { getFileSize } from "./utils/fileTypeDetection.js";
 import { buildFieldsSelection } from "./buildFieldsSelection.js";
@@ -51,7 +51,7 @@ export async function createFile(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: CreateFileParams
-): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<FmFile, HttpError | ApiError | NetworkError>> {
     const { file, data, fields, onProgress, multiPartThreshold = 100, signal } = params;
 
     // If no file provided, just create metadata record (existing behavior).
@@ -101,7 +101,7 @@ async function uploadSmallFile(
     fields: string[],
     onProgress?: (progress: UploadProgress) => void,
     signal?: AbortSignal
-): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<FmFile, HttpError | ApiError | NetworkError>> {
     // 1. Get presigned POST payload.
     const { getPresignedPostPayload } = await import("./getPresignedPostPayload.js");
     const presignedResult = await getPresignedPostPayload(config, fetchFn, {
@@ -142,7 +142,7 @@ async function uploadLargeFileWrapper(
     fields: string[],
     onProgress?: (progress: UploadProgress) => void,
     signal?: AbortSignal
-): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<FmFile, HttpError | ApiError | NetworkError>> {
     try {
         const { uploadLargeFile } = await import("./utils/uploadLargeFile.js");
         const uploadedFile = await uploadLargeFile(
@@ -181,7 +181,7 @@ async function createFileRecord(
     fetchFn: typeof fetch,
     data: CreateFileData,
     fields: string[]
-): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<FmFile, HttpError | ApiError | NetworkError>> {
     const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const fieldsSelection = buildFieldsSelection(fields);
@@ -211,9 +211,9 @@ ${fieldsSelection}
     const responseData = result.value;
 
     if (responseData.fileManager.createFile.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.fileManager.createFile.error.message,
                 responseData.fileManager.createFile.error.code
             )

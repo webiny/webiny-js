@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError, ValidationError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryData } from "./cmsTypes.js";
 import { parseParams } from "../../utils/validateParams.js";
 import { unpublishEntryRevisionSchema } from "./schemas.js";
@@ -28,9 +28,7 @@ export async function unpublishEntryRevision<TValues extends CmsEntryValues = Cm
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: UnpublishEntryRevisionParams
-): Promise<
-    Result<CmsEntryData<TValues>, HttpError | GraphQLError | NetworkError | ValidationError>
-> {
+): Promise<Result<CmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>> {
     const parsed = parseParams(unpublishEntryRevisionSchema, params);
     if (!parsed.ok) {
         return parsed.result;
@@ -62,9 +60,9 @@ export async function unpublishEntryRevision<TValues extends CmsEntryValues = Cm
     const data = result.value;
 
     if (data.cms.unpublishEntryRevision.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 transformFieldErrors(data.cms.unpublishEntryRevision.error.message, fields),
                 data.cms.unpublishEntryRevision.error.code
             )

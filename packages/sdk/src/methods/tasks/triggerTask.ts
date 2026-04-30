@@ -1,6 +1,6 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError } from "../../errors.js";
 import type { TaskRun } from "./taskTypes.js";
 
 export interface TriggerTaskParams {
@@ -14,7 +14,7 @@ export async function triggerTask(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: TriggerTaskParams
-): Promise<Result<TaskRun, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<TaskRun, HttpError | ApiError | NetworkError>> {
     const { definition, input } = params;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
@@ -55,9 +55,9 @@ export async function triggerTask(
     const responseData = result.value;
 
     if (responseData.backgroundTasks.triggerTask.error) {
-        const { GraphQLError } = await import("../../errors.js");
+        const { ApiError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.backgroundTasks.triggerTask.error.message,
                 responseData.backgroundTasks.triggerTask.error.code
             )
