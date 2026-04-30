@@ -21,7 +21,7 @@ import { Api } from "@webiny/project-aws/api";
     host={"smtp.example.com"}
     port={587}
     user={"smtp-user"}
-    password={process.env.SMTP_PASSWORD || "unknown"}
+    password={process.env.SMTP_PASSWORD!}
     from={"noreply@example.com"}
     replyTo={"support@example.com"}   {/* optional */}
 />
@@ -58,7 +58,7 @@ const MyConfig = () => {
                 host={"smtp.sendgrid.net"}
                 port={587}
                 user={"apikey"}
-                password={process.env.SENDGRID_API_KEY || "unknown"}
+                password={process.env.SENDGRID_API_KEY!}
                 from={"noreply@acme.com"}
                 replyTo={"support@acme.com"}
             />
@@ -73,8 +73,8 @@ Add `SENDGRID_API_KEY=your-secret` to your `.env` file (never commit it).
 
 | Mistake | Fix |
 |---------|-----|
-| Hard-coding the password | Use `process.env.SMTP_PASSWORD \|\| "unknown"` |
-| `process.env.SMTP_PASSWORD` undefined at build time → "expected string, received object" error | Add a fallback: `\|\| "unknown"` or assert with `!` |
+| Hard-coding the password | Use `process.env.SMTP_PASSWORD!` |
+| `process.env.SMTP_PASSWORD` undefined at build time → "expected string, received object" error | Ensure the env var is set before deploying |
 | `from`/`replyTo` value fails validation | Must be a valid RFC 5322 mailbox address |
 | Settings not taking effect | Run `yarn webiny deploy api` after editing `webiny.config.tsx` |
 
