@@ -23,13 +23,17 @@ const DateRangePicker = ({
 
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
-        onOpenChange?.(isOpen);
+        if (onOpenChange) {
+            onOpenChange(isOpen);
+        }
     };
 
     const displayValue = formatDateForDisplay(value, "date-range", displayFormat);
 
     const handleRangeSelect = (range: DateRange | undefined) => {
-        onChange?.(range ? { from: range.from, to: range.to } : undefined);
+        if (onChange) {
+            onChange(range ? { from: range.from, to: range.to } : undefined);
+        }
     };
 
     const selected: DateRange | undefined = value?.from

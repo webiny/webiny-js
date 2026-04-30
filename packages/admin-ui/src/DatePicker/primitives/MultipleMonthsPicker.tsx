@@ -24,22 +24,31 @@ const MultipleMonthsPicker = ({
 
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
-        onOpenChange?.(isOpen);
+        if (onOpenChange) {
+            onOpenChange(isOpen);
+        }
     };
 
     const displayValue = formatDateForDisplay(value, "multiple-months");
 
     const handleMonthSelect = (month: number) => {
+        if (!onChange) {
+            return;
+        }
         const monthValue = formatMonthValue(viewYear, month);
         if (value.includes(monthValue)) {
-            onChange?.(value.filter(v => v !== monthValue));
+            onChange(value.filter(v => v !== monthValue));
         } else {
-            onChange?.([...value, monthValue]);
+            const next = [...value, monthValue];
+            next.sort();
+            onChange(next);
         }
     };
 
     const handleRemove = (key: string) => {
-        onChange?.(value.filter(v => v !== key));
+        if (onChange) {
+            onChange(value.filter(v => v !== key));
+        }
     };
 
     const selectedMonthsInView = value

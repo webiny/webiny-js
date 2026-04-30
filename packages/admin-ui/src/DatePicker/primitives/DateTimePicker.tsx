@@ -34,7 +34,9 @@ const DateTimePicker = ({
 
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
-        onOpenChange?.(isOpen);
+        if (onOpenChange) {
+            onOpenChange(isOpen);
+        }
     };
 
     const currentDate: Date | undefined = withTimezone
@@ -50,10 +52,13 @@ const DateTimePicker = ({
     const timeValue = currentDate ? formatTimeValue(currentDate) : "";
 
     const emitChange = (date: Date) => {
+        if (!onChange) {
+            return;
+        }
         if (withTimezone) {
-            (onChange as (v: string | undefined) => void)?.(toIsoWithTz(date));
+            (onChange as (v: string | undefined) => void)(toIsoWithTz(date));
         } else {
-            (onChange as (v: Date | undefined) => void)?.(date);
+            (onChange as (v: Date | undefined) => void)(date);
         }
     };
 

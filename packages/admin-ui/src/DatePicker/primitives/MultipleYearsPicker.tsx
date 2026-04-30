@@ -22,21 +22,30 @@ const MultipleYearsPicker = ({
 
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
-        onOpenChange?.(isOpen);
+        if (onOpenChange) {
+            onOpenChange(isOpen);
+        }
     };
 
     const displayValue = formatDateForDisplay(value, "multiple-years");
 
     const handleYearSelect = (year: number) => {
+        if (!onChange) {
+            return;
+        }
         if (value.includes(year)) {
-            onChange?.(value.filter(v => v !== year));
+            onChange(value.filter(v => v !== year));
         } else {
-            onChange?.([...value, year]);
+            const next = [...value, year];
+            next.sort((a, b) => a - b);
+            onChange(next);
         }
     };
 
     const handleRemove = (key: string) => {
-        onChange?.(value.filter(v => String(v) !== key));
+        if (onChange) {
+            onChange(value.filter(v => String(v) !== key));
+        }
     };
 
     const tagItems = value.map(y => ({

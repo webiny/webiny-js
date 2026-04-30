@@ -23,17 +23,25 @@ const MultipleDatesPicker = ({
 
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
-        onOpenChange?.(isOpen);
+        if (onOpenChange) {
+            onOpenChange(isOpen);
+        }
     };
 
     const displayValue = formatDateForDisplay(value, "multiple-dates");
 
+    const sortDates = (dates: Date[]) => [...dates].sort((a, b) => a.getTime() - b.getTime());
+
     const handleSelect = (dates: Date[] | undefined) => {
-        onChange?.(dates ?? []);
+        if (onChange) {
+            onChange(sortDates(dates ?? []));
+        }
     };
 
     const handleRemove = (key: string) => {
-        onChange?.(value.filter(d => d.toISOString() !== key));
+        if (onChange) {
+            onChange(value.filter(d => d.toISOString() !== key));
+        }
     };
 
     const tagItems = value.map(d => ({

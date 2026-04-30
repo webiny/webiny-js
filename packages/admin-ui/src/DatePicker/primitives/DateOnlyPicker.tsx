@@ -25,11 +25,15 @@ const DateOnlyPicker = ({
 
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
-        onOpenChange?.(isOpen);
+        if (onOpenChange) {
+            onOpenChange(isOpen);
+        }
     };
 
     const handlePresetClick = (computeDate: () => Date) => {
-        onChange?.(format(computeDate(), "yyyy-MM-dd"));
+        if (onChange) {
+            onChange(format(computeDate(), "yyyy-MM-dd"));
+        }
         handleOpenChange(false);
     };
 
@@ -53,7 +57,9 @@ const DateOnlyPicker = ({
                             mode="single"
                             selected={selectedDate}
                             onSelect={date => {
-                                onChange?.(date ? format(date, "yyyy-MM-dd") : undefined);
+                                if (onChange) {
+                                    onChange(date ? format(date, "yyyy-MM-dd") : undefined);
+                                }
                                 handleOpenChange(false);
                             }}
                             weekStartsOn={weekStartsOn}

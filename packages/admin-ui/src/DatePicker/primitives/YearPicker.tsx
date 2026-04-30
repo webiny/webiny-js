@@ -21,13 +21,17 @@ const YearPicker = ({
 
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
-        onOpenChange?.(isOpen);
+        if (onOpenChange) {
+            onOpenChange(isOpen);
+        }
     };
 
     const displayValue = formatDateForDisplay(value, "year");
 
     const handleYearSelect = (year: number) => {
-        onChange?.(year);
+        if (onChange) {
+            onChange(year);
+        }
         handleOpenChange(false);
     };
 

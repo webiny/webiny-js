@@ -29,7 +29,7 @@ const YearGrid = ({ selectedYears, onSelectYear, yearRange }: YearGridProps) => 
     }, []);
 
     return (
-        <ScrollArea className="h-[280px]">
+        <ScrollArea className="max-h-[280px]">
             <div ref={scrollRef} className="grid grid-cols-3 gap-xs p-sm">
                 {years.map(year => {
                     const isSelected = selectedYears.includes(year);

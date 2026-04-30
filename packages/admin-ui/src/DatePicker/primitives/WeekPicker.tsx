@@ -32,7 +32,9 @@ const WeekPicker = ({
         if (!isOpen) {
             setHoveredDay(undefined);
         }
-        onOpenChange?.(isOpen);
+        if (onOpenChange) {
+            onOpenChange(isOpen);
+        }
     };
 
     const displayValue = formatDateForDisplay(value, "week", displayFormat);
@@ -91,7 +93,9 @@ const WeekPicker = ({
                         modifiers={modifiers}
                         modifiersClassNames={modifiersClassNames}
                         onDayClick={date => {
-                            onChange?.(formatWeekValue(date));
+                            if (onChange) {
+                                onChange(formatWeekValue(date));
+                            }
                             handleOpenChange(false);
                         }}
                         onDayMouseEnter={day => setHoveredDay(day)}

@@ -24,13 +24,17 @@ const MonthPicker = ({
 
     const handleOpenChange = (isOpen: boolean) => {
         setOpen(isOpen);
-        onOpenChange?.(isOpen);
+        if (onOpenChange) {
+            onOpenChange(isOpen);
+        }
     };
 
     const displayValue = formatDateForDisplay(value, "month", displayFormat);
 
     const handleMonthSelect = (month: number) => {
-        onChange?.(formatMonthValue(viewYear, month));
+        if (onChange) {
+            onChange(formatMonthValue(viewYear, month));
+        }
         handleOpenChange(false);
     };
 

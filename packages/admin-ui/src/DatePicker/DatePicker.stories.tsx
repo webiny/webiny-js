@@ -32,6 +32,10 @@ const meta: Meta<typeof DatePicker> = {
     },
     parameters: {
         layout: "padded"
+    },
+    render: args => {
+        const [value, setValue] = useState<any>();
+        return <DatePicker {...args} value={value} onChange={setValue} />;
     }
 };
 
@@ -127,51 +131,79 @@ export const WithPresets: Story = {
 };
 
 export const TypeTime: Story = {
+    render: args => {
+        const [value, setValue] = useState<string | undefined>();
+        return <DatePicker {...args} type="time" value={value} onChange={setValue} />;
+    },
     args: {
-        type: "time",
         label: "Time"
     }
 };
 
 export const TypeDateTimeLocal: Story = {
+    render: args => {
+        const [value, setValue] = useState<Date | undefined>();
+        return <DatePicker {...args} type="datetime-local" value={value} onChange={setValue} />;
+    },
     args: {
-        type: "datetime-local",
         label: "Date & Time (local)"
     }
 };
 
 export const TypeDateTimeTz: Story = {
+    render: args => {
+        const [value, setValue] = useState<string | undefined>();
+        return <DatePicker {...args} type="datetime-tz" value={value} onChange={setValue} />;
+    },
     args: {
-        type: "datetime-tz",
         label: "Date & Time (with timezone)"
     }
 };
 
 export const TypeMonth: Story = {
+    render: args => {
+        const [value, setValue] = useState<string | undefined>();
+        return <DatePicker {...args} type="month" value={value} onChange={setValue} />;
+    },
     args: {
-        type: "month",
         label: "Month"
     }
 };
 
 export const TypeWeek: Story = {
+    render: args => {
+        const [value, setValue] = useState<string | undefined>();
+        return <DatePicker {...args} type="week" value={value} onChange={setValue} />;
+    },
     args: {
-        type: "week",
         label: "Week"
     }
 };
 
 export const TypeYear: Story = {
+    render: args => {
+        const [value, setValue] = useState<number | undefined>();
+        return (
+            <DatePicker
+                {...args}
+                type="year"
+                value={value}
+                onChange={setValue}
+                yearRange={[2015, 2035]}
+            />
+        );
+    },
     args: {
-        type: "year",
-        label: "Year",
-        yearRange: [2015, 2035]
+        label: "Year"
     }
 };
 
 export const TypeDateRange: Story = {
+    render: args => {
+        const [value, setValue] = useState<{ from?: Date; to?: Date } | undefined>();
+        return <DatePicker {...args} type="date-range" value={value} onChange={setValue} />;
+    },
     args: {
-        type: "date-range",
         label: "Date Range"
     }
 };
@@ -268,7 +300,6 @@ const DocumentationInner = (args: any) => {
 
 export const Documentation: Story = {
     render: args => {
-        // Key on type to fully remount and reset state when the variant changes.
         return <DocumentationInner key={args.type as string} {...args} />;
     },
     args: {
