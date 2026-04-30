@@ -1,7 +1,7 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
 import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
-import { parseParams } from "../../utils/validateParams.js";
+import { createMethod } from "../../utils/createMethod.js";
 import { enableTenantSchema } from "./schemas.js";
 
 export interface EnableTenantParams {
@@ -17,20 +17,12 @@ export interface EnableTenantParams {
  * @param params.tenantId - ID of the tenant to enable
  * @returns Result containing true on success or an error
  */
-export async function enableTenant(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: EnableTenantParams
-): Promise<Result<boolean, HttpError | ApiError | NetworkError | ValidationError>> {
-    const parsed = parseParams(enableTenantSchema, params);
-    if (!parsed.ok) {
-        return parsed.result;
-    }
-    const { tenantId } = parsed.data;
+export const enableTenant = createMethod(
+    enableTenantSchema,
+    async (config, fetchFn, { tenantId }) => {
+        const { executeGraphQL } = await import("../executeGraphQL.js");
 
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
-    const query = `
+        const query = `
         mutation EnableTenant($tenantId: ID!) {
             tenantManager {
                 enableTenant(tenantId: $tenantId) {
@@ -44,23 +36,24 @@ export async function enableTenant(
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, { tenantId });
+        const result = await executeGraphQL(config, fetchFn, query, { tenantId });
 
-    if (result.isFail()) {
-        return Result.fail(result.error);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const responseData = result.value;
+
+        if (responseData.tenantManager.enableTenant.error) {
+            const { ApiError } = await import("../../errors.js");
+            return Result.fail(
+                new ApiError(
+                    responseData.tenantManager.enableTenant.error.message,
+                    responseData.tenantManager.enableTenant.error.code
+                )
+            );
+        }
+
+        return Result.ok(responseData.tenantManager.enableTenant.data as boolean);
     }
-
-    const responseData = result.value;
-
-    if (responseData.tenantManager.enableTenant.error) {
-        const { ApiError } = await import("../../errors.js");
-        return Result.fail(
-            new ApiError(
-                responseData.tenantManager.enableTenant.error.message,
-                responseData.tenantManager.enableTenant.error.code
-            )
-        );
-    }
-
-    return Result.ok(responseData.tenantManager.enableTenant.data);
-}
+);

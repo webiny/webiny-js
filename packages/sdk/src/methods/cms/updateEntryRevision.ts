@@ -2,9 +2,9 @@ import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
 import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsIdentity } from "./cmsTypes.js";
-import { parseParams } from "../../utils/validateParams.js";
-import { updateEntryRevisionSchema } from "./schemas.js";
 import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { updateEntryRevisionSchema } from "./schemas.js";
 
 /**
  * Update entry revision data.
@@ -73,22 +73,13 @@ export interface UpdateEntryRevisionParams<TValues extends CmsEntryValues = CmsE
  * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @returns Result containing the updated entry data or an error
  */
-export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: UpdateEntryRevisionParams<TValues>
-): Promise<
-    Result<UpdateCmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
-> {
-    const parsed = parseParams(updateEntryRevisionSchema, params);
-    if (!parsed.ok) {
-        return parsed.result;
-    }
-    const { modelId, revisionId, data, fields } = parsed.data;
 
-    const { executeGraphQL } = await import("../executeGraphQL.js");
+const _impl = createMethod(
+    updateEntryRevisionSchema,
+    async (config, fetchFn, { modelId, revisionId, data, fields }) => {
+        const { executeGraphQL } = await import("../executeGraphQL.js");
 
-    const query = `
+        const query = `
         mutation UpdateEntryRevision($modelId: ID!, $revisionId: ID!, $data: JSON!, $fields: [String!]!) {
             cms {
                 updateEntryRevision(modelId: $modelId, revisionId: $revisionId, data: $data, fields: $fields) {
@@ -102,28 +93,44 @@ export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEn
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, {
-        modelId,
-        revisionId,
-        data,
-        fields
-    });
+        const result = await executeGraphQL(config, fetchFn, query, {
+            modelId,
+            revisionId,
+            data,
+            fields
+        });
 
-    if (result.isFail()) {
-        return Result.fail(result.error);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const responseData = result.value;
+
+        if (responseData.cms.updateEntryRevision.error) {
+            const { ApiError } = await import("../../errors.js");
+            return Result.fail(
+                new ApiError(
+                    transformFieldErrors(
+                        responseData.cms.updateEntryRevision.error.message,
+                        fields
+                    ),
+                    responseData.cms.updateEntryRevision.error.code
+                )
+            );
+        }
+
+        return Result.ok(responseData.cms.updateEntryRevision.data);
     }
+);
 
-    const responseData = result.value;
-
-    if (responseData.cms.updateEntryRevision.error) {
-        const { ApiError } = await import("../../errors.js");
-        return Result.fail(
-            new ApiError(
-                transformFieldErrors(responseData.cms.updateEntryRevision.error.message, fields),
-                responseData.cms.updateEntryRevision.error.code
-            )
-        );
-    }
-
-    return Result.ok(responseData.cms.updateEntryRevision.data);
+export function updateEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
+    config: WebinyConfig,
+    fetchFn: typeof fetch,
+    params: UpdateEntryRevisionParams<TValues>
+): Promise<
+    Result<UpdateCmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
+> {
+    return _impl(config, fetchFn, params) as Promise<
+        Result<UpdateCmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
+    >;
 }

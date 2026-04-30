@@ -1,7 +1,7 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
 import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
-import { parseParams } from "../../utils/validateParams.js";
+import { createMethod } from "../../utils/createMethod.js";
 import { deleteEntryRevisionSchema } from "./schemas.js";
 
 export interface DeleteEntryRevisionParams {
@@ -21,20 +21,12 @@ export interface DeleteEntryRevisionParams {
  * @param params.permanent - Whether to permanently delete the entry (default: false)
  * @returns Result containing true if deletion succeeded or an error
  */
-export async function deleteEntryRevision(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: DeleteEntryRevisionParams
-): Promise<Result<boolean, HttpError | ApiError | NetworkError | ValidationError>> {
-    const parsed = parseParams(deleteEntryRevisionSchema, params);
-    if (!parsed.ok) {
-        return parsed.result;
-    }
-    const { modelId, revisionId, permanent = false } = parsed.data;
+export const deleteEntryRevision = createMethod(
+    deleteEntryRevisionSchema,
+    async (config, fetchFn, { modelId, revisionId, permanent = false }) => {
+        const { executeGraphQL } = await import("../executeGraphQL.js");
 
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
-    const query = `
+        const query = `
         mutation DeleteEntryRevision($modelId: ID!, $revisionId: ID!, $permanent: Boolean) {
             cms {
                 deleteEntryRevision(modelId: $modelId, revisionId: $revisionId, permanent: $permanent) {
@@ -48,23 +40,28 @@ export async function deleteEntryRevision(
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, { modelId, revisionId, permanent });
+        const result = await executeGraphQL(config, fetchFn, query, {
+            modelId,
+            revisionId,
+            permanent
+        });
 
-    if (result.isFail()) {
-        return result;
+        if (result.isFail()) {
+            return result;
+        }
+
+        const data = result.value;
+
+        if (data.cms.deleteEntryRevision.error) {
+            const { ApiError } = await import("../../errors.js");
+            return Result.fail(
+                new ApiError(
+                    data.cms.deleteEntryRevision.error.message,
+                    data.cms.deleteEntryRevision.error.code
+                )
+            );
+        }
+
+        return Result.ok(data.cms.deleteEntryRevision.data as boolean);
     }
-
-    const data = result.value;
-
-    if (data.cms.deleteEntryRevision.error) {
-        const { ApiError } = await import("../../errors.js");
-        return Result.fail(
-            new ApiError(
-                data.cms.deleteEntryRevision.error.message,
-                data.cms.deleteEntryRevision.error.code
-            )
-        );
-    }
-
-    return Result.ok(data.cms.deleteEntryRevision.data);
-}
+);

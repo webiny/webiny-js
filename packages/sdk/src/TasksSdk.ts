@@ -33,7 +33,7 @@ export class TasksSdk {
     async listLogs(
         params?: ListLogsParams
     ): Promise<Result<TaskLog[], HttpError | ApiError | NetworkError | ValidationError>> {
-        return listLogsFn(this.config, this.fetchFn, params);
+        return listLogsFn(this.config, this.fetchFn, params ?? {});
     }
 
     async triggerTask(

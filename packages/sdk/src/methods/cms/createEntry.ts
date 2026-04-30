@@ -2,9 +2,9 @@ import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
 import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryStatus, CmsIdentity } from "./cmsTypes.js";
-import { parseParams } from "../../utils/validateParams.js";
-import { createEntrySchema } from "./schemas.js";
 import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { createEntrySchema } from "./schemas.js";
 
 /**
  * Create entry data.
@@ -74,22 +74,13 @@ export interface CreateEntryParams<TValues extends CmsEntryValues = CmsEntryValu
  * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @returns Result containing the created entry data or an error
  */
-export async function createEntry<TValues extends CmsEntryValues = CmsEntryValues>(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: CreateEntryParams<TValues>
-): Promise<
-    Result<CreateCmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
-> {
-    const parsed = parseParams(createEntrySchema, params);
-    if (!parsed.ok) {
-        return parsed.result;
-    }
-    const { modelId, data, fields } = parsed.data;
 
-    const { executeGraphQL } = await import("../executeGraphQL.js");
+const _impl = createMethod(
+    createEntrySchema,
+    async (config, fetchFn, { modelId, data, fields }) => {
+        const { executeGraphQL } = await import("../executeGraphQL.js");
 
-    const query = `
+        const query = `
         mutation CreateEntry($modelId: ID!, $data: JSON!, $fields: [String!]!) {
             cms {
                 createEntry(modelId: $modelId, data: $data, fields: $fields) {
@@ -103,23 +94,36 @@ export async function createEntry<TValues extends CmsEntryValues = CmsEntryValue
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, { modelId, data, fields });
+        const result = await executeGraphQL(config, fetchFn, query, { modelId, data, fields });
 
-    if (result.isFail()) {
-        return Result.fail(result.error);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const responseData = result.value;
+
+        if (responseData.cms.createEntry.error) {
+            const { ApiError } = await import("../../errors.js");
+            return Result.fail(
+                new ApiError(
+                    transformFieldErrors(responseData.cms.createEntry.error.message, fields),
+                    responseData.cms.createEntry.error.code
+                )
+            );
+        }
+
+        return Result.ok(responseData.cms.createEntry.data);
     }
+);
 
-    const responseData = result.value;
-
-    if (responseData.cms.createEntry.error) {
-        const { ApiError } = await import("../../errors.js");
-        return Result.fail(
-            new ApiError(
-                transformFieldErrors(responseData.cms.createEntry.error.message, fields),
-                responseData.cms.createEntry.error.code
-            )
-        );
-    }
-
-    return Result.ok(responseData.cms.createEntry.data);
+export function createEntry<TValues extends CmsEntryValues = CmsEntryValues>(
+    config: WebinyConfig,
+    fetchFn: typeof fetch,
+    params: CreateEntryParams<TValues>
+): Promise<
+    Result<CreateCmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
+> {
+    return _impl(config, fetchFn, params) as Promise<
+        Result<CreateCmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
+    >;
 }

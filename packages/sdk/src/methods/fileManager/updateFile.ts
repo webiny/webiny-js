@@ -3,7 +3,7 @@ import { Result } from "../../Result.js";
 import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
 import type { FmFile, FmIdentity, FmLocationInput } from "./fileManagerTypes.js";
 import { buildFieldsSelection } from "./buildFieldsSelection.js";
-import { parseParams } from "../../utils/validateParams.js";
+import { createMethod } from "../../utils/createMethod.js";
 import { updateFileSchema } from "./schemas.js";
 
 export interface UpdateFileData {
@@ -38,22 +38,14 @@ export interface UpdateFileParams {
  * @param params.data - The file data to update
  * @returns Result containing the updated file data or an error
  */
-export async function updateFile(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: UpdateFileParams
-): Promise<Result<FmFile, HttpError | ApiError | NetworkError | ValidationError>> {
-    const parsed = parseParams(updateFileSchema, params);
-    if (!parsed.ok) {
-        return parsed.result;
-    }
-    const { id, data, fields } = parsed.data;
+export const updateFile = createMethod(
+    updateFileSchema,
+    async (config, fetchFn, { id, data, fields }) => {
+        const { executeGraphQL } = await import("../executeGraphQL.js");
 
-    const { executeGraphQL } = await import("../executeGraphQL.js");
+        const fieldsSelection = buildFieldsSelection(fields);
 
-    const fieldsSelection = buildFieldsSelection(fields);
-
-    const query = `
+        const query = `
         mutation UpdateFile($id: ID!, $data: FmFileUpdateInput!) {
             fileManager {
                 updateFile(id: $id, data: $data) {
@@ -69,23 +61,24 @@ ${fieldsSelection}
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, { id, data });
+        const result = await executeGraphQL(config, fetchFn, query, { id, data });
 
-    if (result.isFail()) {
-        return Result.fail(result.error);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const responseData = result.value;
+
+        if (responseData.fileManager.updateFile.error) {
+            const { ApiError } = await import("../../errors.js");
+            return Result.fail(
+                new ApiError(
+                    responseData.fileManager.updateFile.error.message,
+                    responseData.fileManager.updateFile.error.code
+                )
+            );
+        }
+
+        return Result.ok(responseData.fileManager.updateFile.data as FmFile);
     }
-
-    const responseData = result.value;
-
-    if (responseData.fileManager.updateFile.error) {
-        const { ApiError } = await import("../../errors.js");
-        return Result.fail(
-            new ApiError(
-                responseData.fileManager.updateFile.error.message,
-                responseData.fileManager.updateFile.error.code
-            )
-        );
-    }
-
-    return Result.ok(responseData.fileManager.updateFile.data);
-}
+);

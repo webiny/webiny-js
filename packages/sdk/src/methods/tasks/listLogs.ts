@@ -1,9 +1,9 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
 import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
-import { parseParams } from "../../utils/validateParams.js";
-import { listLogsSchema } from "./schemas.js";
 import type { TaskLog } from "./taskTypes.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { listLogsSchema } from "./schemas.js";
 
 export interface ListLogsParams {
     where?: {
@@ -12,16 +12,7 @@ export interface ListLogsParams {
     };
 }
 
-export async function listLogs(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: ListLogsParams = {}
-): Promise<Result<TaskLog[], HttpError | ApiError | NetworkError | ValidationError>> {
-    const parsed = parseParams(listLogsSchema, params);
-    if (!parsed.ok) {
-        return parsed.result;
-    }
-
+export const listLogs = createMethod(listLogsSchema, async (config, fetchFn, { where }) => {
     const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
@@ -50,7 +41,7 @@ export async function listLogs(
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, { where: params.where });
+    const result = await executeGraphQL(config, fetchFn, query, { where });
 
     if (result.isFail()) {
         return Result.fail(result.error);
@@ -68,5 +59,5 @@ export async function listLogs(
         );
     }
 
-    return Result.ok(responseData.backgroundTasks.listLogs.data);
-}
+    return Result.ok(responseData.backgroundTasks.listLogs.data as TaskLog[]);
+});
