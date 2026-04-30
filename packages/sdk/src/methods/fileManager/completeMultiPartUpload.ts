@@ -1,6 +1,8 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, NetworkError } from "../../errors.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface CompleteMultiPartUploadParams {
     fileKey: string;
@@ -17,14 +19,13 @@ export interface CompleteMultiPartUploadParams {
  * @param params.uploadId - Upload ID from createMultiPartUpload
  * @returns Result containing true on success or an error
  */
+// Not using createMethod: params include raw upload part data that Zod cannot validate.
 export async function completeMultiPartUpload(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: CompleteMultiPartUploadParams
-): Promise<Result<boolean, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<boolean, HttpError | ApiError | NetworkError>> {
     const { fileKey, uploadId } = params;
-
-    const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
         mutation CompleteMultiPartUpload($fileKey: String!, $uploadId: String!) {
@@ -49,9 +50,8 @@ export async function completeMultiPartUpload(
     const responseData = result.value;
 
     if (responseData.fileManager.completeMultiPartUpload.error) {
-        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.fileManager.completeMultiPartUpload.error.message,
                 responseData.fileManager.completeMultiPartUpload.error.code
             )

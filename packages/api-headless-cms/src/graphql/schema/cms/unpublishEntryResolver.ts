@@ -42,6 +42,16 @@ export const createUnpublishEntryRevisionResolver = () => {
                 variables: { revisionId }
             })) as ExecutionResult;
 
+            if (result.errors && result.errors.length > 0) {
+                return {
+                    data: null,
+                    error: {
+                        message: result.errors.map(e => e.message).join("; "),
+                        code: "UNPUBLISH_ENTRY_ERROR"
+                    }
+                };
+            }
+
             const operationName = `unpublish${model.singularApiName}`;
             return result.data?.[operationName] || { data: null, error: null };
         } catch (error) {

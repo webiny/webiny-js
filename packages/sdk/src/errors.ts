@@ -18,15 +18,15 @@ export class HttpError extends BaseError<HttpErrorData> {
     }
 }
 
-type GraphQLErrorData = {
+type ApiErrorData = {
     code?: string;
 };
 
 /**
  * GraphQL error from the API.
  */
-export class GraphQLError extends BaseError<GraphQLErrorData> {
-    override readonly code = "GRAPHQL_ERROR" as const;
+export class ApiError extends BaseError<ApiErrorData> {
+    override readonly code = "API_ERROR" as const;
 
     constructor(message: string, errorCode?: string) {
         super({
@@ -46,5 +46,16 @@ export class NetworkError extends BaseError {
         super({
             message
         });
+    }
+}
+
+/**
+ * Input validation error — params failed schema validation before any network request was made.
+ */
+export class ValidationError extends BaseError {
+    override readonly code = "VALIDATION_ERROR" as const;
+
+    constructor(message: string) {
+        super({ message });
     }
 }
