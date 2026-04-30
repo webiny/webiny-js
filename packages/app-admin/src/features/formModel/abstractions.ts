@@ -676,6 +676,8 @@ export interface IFormModel<T = Record<string, any>> {
     readonly errors: IFormError[];
     readonly vm: IFormVM;
     getFieldBuilders(predicate?: (builder: IFieldBuilder) => boolean): IFieldBuilder[];
+    resolveChildLayout(layout: LayoutNode[], children: Map<string, IField>): LayoutNodeVM[];
+    readonly registry: IFieldBuilderRegistry;
 }
 
 // ---------------------------------------------------------------------------

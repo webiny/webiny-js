@@ -25,7 +25,6 @@ import type {
     OnBlurCallback,
     ComputedFieldCallback
 } from "./abstractions.js";
-import type { FormModel } from "./FormModel.js";
 
 /** Reserved key used as the template discriminator in templated object data. */
 export const TEMPLATE_DISCRIMINATOR = "_templateId";
@@ -349,7 +348,7 @@ export class ObjectField implements IObjectField {
         }
         const tb = createTemplateBuilder();
         configure(tb);
-        this._templates.push(tb._build(id, (this._form as FormModel).registry));
+        this._templates.push(tb._build(id, this._form!.registry));
     }
 
     private _removeTemplate(templateId: string): void {
@@ -451,14 +450,13 @@ export class ObjectField implements IObjectField {
         children: Map<string, IField>,
         templateId: string | null
     ): LayoutNodeVM[] {
-        const formImpl = this._form as FormModel | null;
         const layoutNodes = this.isTemplated
             ? templateId !== null
                 ? this._templateLayouts[templateId]
                 : undefined
             : (this._ownLayout ?? undefined);
-        if (layoutNodes && formImpl?.resolveChildLayout) {
-            return formImpl.resolveChildLayout(layoutNodes, children);
+        if (layoutNodes && this._form?.resolveChildLayout) {
+            return this._form.resolveChildLayout(layoutNodes, children);
         }
         // Default: one row per visible child, in insertion order.
         const fallback: LayoutNodeVM[] = [];
@@ -503,7 +501,7 @@ export class ObjectField implements IObjectField {
                 `Object field "${this.config.name}" is templated; use templates.add()/remove() to manage children. Each template owns its own fields.`
             );
         }
-        const builders = factory((this._form as FormModel).registry);
+        const builders = factory(this._form!.registry);
 
         for (const [name, builder] of Object.entries(builders)) {
             if (builder === undefined) {
