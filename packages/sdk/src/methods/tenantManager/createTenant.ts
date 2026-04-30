@@ -24,7 +24,9 @@ export async function createTenant(
     params: CreateTenantParams
 ): Promise<Result<boolean, HttpError | ApiError | NetworkError | ValidationError>> {
     const parsed = parseParams(createTenantSchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { data } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");

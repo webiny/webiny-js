@@ -23,7 +23,9 @@ export async function disableTenant(
     params: DisableTenantParams
 ): Promise<Result<boolean, HttpError | ApiError | NetworkError | ValidationError>> {
     const parsed = parseParams(disableTenantSchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { tenantId } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");

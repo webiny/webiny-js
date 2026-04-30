@@ -18,7 +18,9 @@ export async function listLogs(
     params: ListLogsParams = {}
 ): Promise<Result<TaskLog[], HttpError | ApiError | NetworkError | ValidationError>> {
     const parsed = parseParams(listLogsSchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 

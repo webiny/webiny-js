@@ -18,7 +18,9 @@ export async function triggerTask(
     params: TriggerTaskParams
 ): Promise<Result<TaskRun, HttpError | ApiError | NetworkError | ValidationError>> {
     const parsed = parseParams(triggerTaskSchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { definition, input } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");

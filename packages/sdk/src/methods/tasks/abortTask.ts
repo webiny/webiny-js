@@ -18,7 +18,9 @@ export async function abortTask(
     params: AbortTaskParams
 ): Promise<Result<TaskRun, HttpError | ApiError | NetworkError | ValidationError>> {
     const parsed = parseParams(abortTaskSchema, params);
-    if (!parsed.ok) return parsed.result;
+    if (!parsed.ok) {
+        return parsed.result;
+    }
     const { id, message } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
