@@ -49,6 +49,12 @@ interface MonthPickerProps extends DatePickerBaseProps {
     onChange?: (value: string | undefined) => void;
 }
 
+interface WeekPickerProps extends DatePickerBaseProps {
+    type: "week";
+    value?: string;
+    onChange?: (value: string | undefined) => void;
+}
+
 interface YearPickerProps extends DatePickerBaseProps {
     type: "year";
     value?: number;
@@ -85,6 +91,7 @@ type DatePickerPrimitiveProps =
     | DateTimeLocalPickerProps
     | DateTimeTzPickerProps
     | MonthPickerProps
+    | WeekPickerProps
     | YearPickerProps
     | DateRangePickerProps
     | MultipleDatesPickerProps
@@ -100,6 +107,7 @@ export {
     type DateTimeLocalPickerProps,
     type DateTimeTzPickerProps,
     type MonthPickerProps,
+    type WeekPickerProps,
     type YearPickerProps,
     type DateRangePickerProps,
     type MultipleDatesPickerProps,

@@ -5,6 +5,7 @@ import { DateOnlyPicker } from "./DateOnlyPicker.js";
 import { TimeOnlyPicker } from "./TimeOnlyPicker.js";
 import { DateTimePicker } from "./DateTimePicker.js";
 import { MonthPicker } from "./MonthPicker.js";
+import { WeekPicker } from "./WeekPicker.js";
 import { YearPicker } from "./YearPicker.js";
 import { DateRangePicker } from "./DateRangePicker.js";
 import { MultipleDatesPicker } from "./MultipleDatesPicker.js";
@@ -23,6 +24,8 @@ const DecoratableDatePickerPrimitive = (props: DatePickerPrimitiveProps) => {
             return <DateTimePicker {...props} withTimezone={true} />;
         case "month":
             return <MonthPicker {...props} />;
+        case "week":
+            return <WeekPicker {...props} />;
         case "year":
             return <YearPicker {...props} />;
         case "date-range":

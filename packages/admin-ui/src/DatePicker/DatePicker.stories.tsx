@@ -16,6 +16,7 @@ const meta: Meta<typeof DatePicker> = {
                 "datetime-local",
                 "datetime-tz",
                 "month",
+                "week",
                 "year",
                 "date-range",
                 "multiple-dates",
@@ -153,6 +154,13 @@ export const TypeMonth: Story = {
     }
 };
 
+export const TypeWeek: Story = {
+    args: {
+        type: "week",
+        label: "Week"
+    }
+};
+
 export const TypeYear: Story = {
     args: {
         type: "year",
@@ -283,6 +291,7 @@ export const Documentation: Story = {
                 "datetime-local",
                 "datetime-tz",
                 "month",
+                "week",
                 "year",
                 "date-range",
                 "multiple-dates",

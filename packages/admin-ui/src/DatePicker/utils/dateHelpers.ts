@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, getISOWeek, getISOWeekYear, startOfISOWeek, endOfISOWeek } from "date-fns";
 import { DEFAULT_YEAR_RANGE_SIZE, MONTH_NAMES_SHORT } from "./constants.js";
 
 export function formatDateForDisplay(
@@ -42,6 +42,18 @@ export function formatDateForDisplay(
                 return undefined;
             }
             return `${MONTH_NAMES_SHORT[parsed.month]} ${parsed.year}`;
+        }
+        case "week": {
+            const parsed = parseWeekValue(value as string);
+            if (!parsed) {
+                return undefined;
+            }
+            const weekStart = startOfISOWeek(new Date(parsed.year, 0, 4 + (parsed.week - 1) * 7));
+            const weekEnd = endOfISOWeek(weekStart);
+            if (displayFormat) {
+                return `${format(weekStart, displayFormat)} – ${format(weekEnd, displayFormat)}`;
+            }
+            return `Week ${parsed.week}, ${format(weekStart, "MMM d")} – ${format(weekEnd, "MMM d, yyyy")}`;
         }
         case "year":
             return String(value);
@@ -123,4 +135,18 @@ export function toIsoWithTz(date: Date): string {
 
 export function toLocalNaive(isoString: string): Date {
     return new Date(isoString);
+}
+
+export function formatWeekValue(date: Date): string {
+    const week = getISOWeek(date);
+    const year = getISOWeekYear(date);
+    return `${year}-W${String(week).padStart(2, "0")}`;
+}
+
+export function parseWeekValue(value: string): { year: number; week: number } | undefined {
+    const match = value.match(/^(\d{4})-W(\d{2})$/);
+    if (!match) {
+        return undefined;
+    }
+    return { year: Number(match[1]), week: Number(match[2]) };
 }
