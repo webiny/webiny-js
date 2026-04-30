@@ -1,7 +1,5 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import type { IFieldVM } from "~/features/formModel/index.js";
-import { isObjectFieldVM } from "./ObjectFieldComponents.js";
+import { createObjectFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { SingleValueDynamicZone } from "./SingleValueDynamicZone.js";
 import { MultiValueDynamicZone } from "./MultiValueDynamicZone.js";
 
@@ -16,22 +14,20 @@ declare module "../../../../features/formModel/abstractions.js" {
     }
 }
 
-export interface DynamicZoneSettings {
-    container?: boolean;
-}
-
-export const DynamicZoneRenderer = observer(({ field }: { field: IFieldVM }) => {
-    if (!isObjectFieldVM(field)) {
-        return null;
-    }
-
-    const settings = field.rendererSettings as DynamicZoneSettings | undefined;
-
+export const DynamicZoneRenderer = createObjectFieldRenderer<"dynamicZone">(({ field }) => {
     if (field.isList) {
         return (
-            <MultiValueDynamicZone field={field} showContainer={settings?.container !== false} />
+            <MultiValueDynamicZone
+                field={field}
+                showContainer={field.rendererSettings?.container !== false}
+            />
         );
     }
 
-    return <SingleValueDynamicZone field={field} showContainer={settings?.container !== false} />;
+    return (
+        <SingleValueDynamicZone
+            field={field}
+            showContainer={field.rendererSettings?.container !== false}
+        />
+    );
 });

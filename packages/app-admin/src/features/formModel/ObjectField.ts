@@ -4,7 +4,7 @@ import { createTemplateBuilder } from "./fieldTypes/ObjectFieldType.js";
 import type {
     IObjectFieldConfig,
     IObjectField,
-    IObjectFieldTemplatesAPI,
+    IObjectFieldTemplates,
     IListItemField,
     IField,
     IObjectFieldVM,
@@ -324,7 +324,7 @@ export class ObjectField implements IObjectField {
         this._rebuildChildrenForTemplate(templateId);
     }
 
-    get templates(): IObjectFieldTemplatesAPI {
+    get templates(): IObjectFieldTemplates {
         return {
             add: (id: string, configure: (t: ITemplateBuilder) => void) =>
                 this._addTemplate(id, configure),

@@ -353,12 +353,12 @@ export interface IObjectField extends ITypedField<Record<string, unknown> | null
      * Runtime template management. Available on every object field but throws
      * when called on a non-templated field (`isTemplated === false`).
      */
-    readonly templates: IObjectFieldTemplatesAPI;
+    readonly templates: IObjectFieldTemplates;
     getInnerLayout(): LayoutNode[] | null;
     getData(): Record<string, unknown> | Record<string, unknown>[];
 }
 
-export interface IObjectFieldTemplatesAPI {
+export interface IObjectFieldTemplates {
     add(id: string, configure: (t: ITemplateBuilder) => void): void;
     remove(templateId: string): void;
 }
@@ -725,7 +725,7 @@ export namespace FormModel {
     export type TemplateConfig = ITemplateConfig;
     export type TemplateIcon = ITemplateIcon;
     export type TemplateVM = ITemplateVM;
-    export type ObjectFieldTemplatesAPI = IObjectFieldTemplatesAPI;
+    export type ObjectFieldTemplatesAPI = IObjectFieldTemplates;
     export type FormError = IFormError;
     export type FormVM = IFormVM;
     export type Interface<T = Record<string, any>> = IFormModel<T>;

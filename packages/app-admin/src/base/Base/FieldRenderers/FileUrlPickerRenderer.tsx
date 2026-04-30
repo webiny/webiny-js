@@ -1,8 +1,7 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+import { createFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { FileManager } from "~/base/ui/FileManager.js";
 import { FilePicker } from "@webiny/admin-ui";
-import type { IFieldVM } from "~/features/formModel/abstractions.js";
 import type { FileManagerFileItem } from "~/base/ui/FileManager.js";
 
 declare module "../../../features/formModel/abstractions.js" {
@@ -11,7 +10,7 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
-export const FileUrlPickerRenderer = observer(({ field }: { field: IFieldVM }) => {
+export const FileUrlPickerRenderer = createFieldRenderer(({ field }) => {
     return (
         <FileManager
             images={true}

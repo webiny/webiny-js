@@ -5,10 +5,7 @@ class GeneralSettingsModifierImpl implements PageSettingsGroupModifier.Interface
 
     modifyForm(form: PageSettingsGroupModifier.FormBuilder): void {
         form.fields(fields => ({
-            expirationDate: fields
-                .datetime()
-                .label("Expiration date")
-                .renderer("dateTimeInput", { type: "dateTime" })
+            expirationDate: fields.month().label("Expiration month")
         }));
 
         form.layout(layout => [layout.row("expirationDate").after("snippet")]);

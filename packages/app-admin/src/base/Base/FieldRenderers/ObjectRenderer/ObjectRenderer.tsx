@@ -1,8 +1,7 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
 import { Accordion } from "@webiny/admin-ui";
-import type { IFieldVM, IObjectFieldVM } from "~/features/formModel/index.js";
-import { isObjectFieldVM, NestedLayout } from "./ObjectFieldComponents.js";
+import { createObjectFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
+import { NestedLayout } from "./ObjectFieldComponents.js";
 
 declare module "../../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -15,15 +14,7 @@ declare module "../../../../features/formModel/abstractions.js" {
     }
 }
 
-export const ObjectRenderer = observer(({ field }: { field: IFieldVM }) => {
-    if (!isObjectFieldVM(field)) {
-        return null;
-    }
-
-    return <SingleObjectRenderer field={field} />;
-});
-
-const SingleObjectRenderer = observer(({ field }: { field: IObjectFieldVM }) => {
+export const ObjectRenderer = createObjectFieldRenderer<"objectAccordionSingle">(({ field }) => {
     return (
         <Accordion background={"base"} variant={"container"}>
             <Accordion.Item title={field.label} defaultOpen={true} className={"pl-sm"}>

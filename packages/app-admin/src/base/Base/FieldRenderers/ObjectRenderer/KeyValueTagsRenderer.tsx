@@ -3,8 +3,9 @@ import { observer } from "mobx-react-lite";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { Button, FormComponentDescription, FormComponentLabel, IconButton } from "@webiny/admin-ui";
-import type { IFieldVM, IObjectFieldVM, IObjectFieldItemVM } from "~/features/formModel/index.js";
-import { isObjectFieldVM, NestedLayout } from "./ObjectFieldComponents.js";
+import { createObjectFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
+import type { IObjectFieldItemVM } from "~/features/formModel/index.js";
+import { NestedLayout } from "./ObjectFieldComponents.js";
 
 declare module "../../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -15,16 +16,16 @@ declare module "../../../../features/formModel/abstractions.js" {
     }
 }
 
-export const KeyValueTagsRenderer = observer(({ field }: { field: IFieldVM }) => {
-    if (!isObjectFieldVM(field) || !field.isList) {
+export const KeyValueTagsRenderer = createObjectFieldRenderer(({ field }) => {
+    if (!field.isList) {
         return null;
     }
 
     return <KeyValueTagsList field={field} />;
 });
 
-const KeyValueTagsList = observer(({ field }: { field: IObjectFieldVM }) => {
-    const settings = field.rendererSettings as { addItemLabel?: string } | undefined;
+const KeyValueTagsList = createObjectFieldRenderer<"keyValueTags">(({ field }) => {
+    const settings = field.rendererSettings;
 
     const hasItems = field.items.length > 0;
 
@@ -39,7 +40,7 @@ const KeyValueTagsList = observer(({ field }: { field: IObjectFieldVM }) => {
                     ))}
                 </div>
             ) : null}
-            {!field.disabled && (
+            {!field.disabled ? (
                 <div className={"mt-md"}>
                     <Button
                         onClick={() => field.addItem()}
@@ -49,7 +50,7 @@ const KeyValueTagsList = observer(({ field }: { field: IObjectFieldVM }) => {
                         icon={<AddIcon />}
                     />
                 </div>
-            )}
+            ) : null}
         </>
     );
 });
