@@ -1,6 +1,8 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
+import { parseParams } from "../../utils/validateParams.js";
+import { installTenantSchema } from "./schemas.js";
 
 export interface InstallTenantParams {
     tenantId: string;
@@ -19,8 +21,10 @@ export async function installTenant(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: InstallTenantParams
-): Promise<Result<boolean, HttpError | ApiError | NetworkError>> {
-    const { tenantId } = params;
+): Promise<Result<boolean, HttpError | ApiError | NetworkError | ValidationError>> {
+    const parsed = parseParams(installTenantSchema, params);
+    if (!parsed.ok) return parsed.result;
+    const { tenantId } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 

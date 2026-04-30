@@ -1,6 +1,8 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
+import { parseParams } from "../../utils/validateParams.js";
+import { triggerTaskSchema } from "./schemas.js";
 import type { TaskRun } from "./taskTypes.js";
 
 export interface TriggerTaskParams {
@@ -14,8 +16,10 @@ export async function triggerTask(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: TriggerTaskParams
-): Promise<Result<TaskRun, HttpError | ApiError | NetworkError>> {
-    const { definition, input } = params;
+): Promise<Result<TaskRun, HttpError | ApiError | NetworkError | ValidationError>> {
+    const parsed = parseParams(triggerTaskSchema, params);
+    if (!parsed.ok) return parsed.result;
+    const { definition, input } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 

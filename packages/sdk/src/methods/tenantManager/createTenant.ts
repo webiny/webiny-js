@@ -1,6 +1,8 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
+import { parseParams } from "../../utils/validateParams.js";
+import { createTenantSchema } from "./schemas.js";
 import type { CreateTenantInput } from "./tenantManagerTypes.js";
 
 export interface CreateTenantParams {
@@ -20,8 +22,10 @@ export async function createTenant(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: CreateTenantParams
-): Promise<Result<boolean, HttpError | ApiError | NetworkError>> {
-    const { data } = params;
+): Promise<Result<boolean, HttpError | ApiError | NetworkError | ValidationError>> {
+    const parsed = parseParams(createTenantSchema, params);
+    if (!parsed.ok) return parsed.result;
+    const { data } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 

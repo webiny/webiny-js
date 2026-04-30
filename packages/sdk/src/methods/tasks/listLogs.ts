@@ -1,6 +1,8 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
+import { parseParams } from "../../utils/validateParams.js";
+import { listLogsSchema } from "./schemas.js";
 import type { TaskLog } from "./taskTypes.js";
 
 export interface ListLogsParams {
@@ -14,7 +16,10 @@ export async function listLogs(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: ListLogsParams = {}
-): Promise<Result<TaskLog[], HttpError | ApiError | NetworkError>> {
+): Promise<Result<TaskLog[], HttpError | ApiError | NetworkError | ValidationError>> {
+    const parsed = parseParams(listLogsSchema, params);
+    if (!parsed.ok) return parsed.result;
+
     const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `

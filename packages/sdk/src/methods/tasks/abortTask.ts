@@ -1,6 +1,8 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, ApiError, NetworkError } from "../../errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "../../errors.js";
+import { parseParams } from "../../utils/validateParams.js";
+import { abortTaskSchema } from "./schemas.js";
 import type { TaskRun } from "./taskTypes.js";
 
 export interface AbortTaskParams {
@@ -14,8 +16,10 @@ export async function abortTask(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: AbortTaskParams
-): Promise<Result<TaskRun, HttpError | ApiError | NetworkError>> {
-    const { id, message } = params;
+): Promise<Result<TaskRun, HttpError | ApiError | NetworkError | ValidationError>> {
+    const parsed = parseParams(abortTaskSchema, params);
+    if (!parsed.ok) return parsed.result;
+    const { id, message } = parsed.data;
 
     const { executeGraphQL } = await import("../executeGraphQL.js");
 

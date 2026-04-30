@@ -3,7 +3,7 @@ import type { CreateTenantParams } from "./methods/tenantManager/createTenant.js
 import type { InstallTenantParams } from "./methods/tenantManager/installTenant.js";
 import type { DisableTenantParams } from "./methods/tenantManager/disableTenant.js";
 import type { EnableTenantParams } from "./methods/tenantManager/enableTenant.js";
-import type { HttpError, ApiError, NetworkError } from "./errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "./errors.js";
 import type { Result } from "./Result.js";
 import { createTenant as createTenantFn } from "./methods/tenantManager/createTenant.js";
 import { installTenant as installTenantFn } from "./methods/tenantManager/installTenant.js";
@@ -23,25 +23,25 @@ export class TenantManagerSdk {
 
     async createTenant(
         params: CreateTenantParams
-    ): Promise<Result<boolean, HttpError | ApiError | NetworkError>> {
+    ): Promise<Result<boolean, HttpError | ApiError | NetworkError | ValidationError>> {
         return createTenantFn(this.config, this.fetchFn, params);
     }
 
     async installTenant(
         params: InstallTenantParams
-    ): Promise<Result<boolean, HttpError | ApiError | NetworkError>> {
+    ): Promise<Result<boolean, HttpError | ApiError | NetworkError | ValidationError>> {
         return installTenantFn(this.config, this.fetchFn, params);
     }
 
     async disableTenant(
         params: DisableTenantParams
-    ): Promise<Result<boolean, HttpError | ApiError | NetworkError>> {
+    ): Promise<Result<boolean, HttpError | ApiError | NetworkError | ValidationError>> {
         return disableTenantFn(this.config, this.fetchFn, params);
     }
 
     async enableTenant(
         params: EnableTenantParams
-    ): Promise<Result<boolean, HttpError | ApiError | NetworkError>> {
+    ): Promise<Result<boolean, HttpError | ApiError | NetworkError | ValidationError>> {
         return enableTenantFn(this.config, this.fetchFn, params);
     }
 

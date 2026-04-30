@@ -1,5 +1,5 @@
 import type { WebinyConfig } from "./types.js";
-import type { HttpError, ApiError, NetworkError } from "./errors.js";
+import type { HttpError, ApiError, NetworkError, ValidationError } from "./errors.js";
 import type { Result } from "./Result.js";
 import type { TaskDefinition, TaskRun, TaskLog } from "./methods/tasks/taskTypes.js";
 import type { ListLogsParams } from "./methods/tasks/listLogs.js";
@@ -32,19 +32,19 @@ export class TasksSdk {
 
     async listLogs(
         params?: ListLogsParams
-    ): Promise<Result<TaskLog[], HttpError | ApiError | NetworkError>> {
+    ): Promise<Result<TaskLog[], HttpError | ApiError | NetworkError | ValidationError>> {
         return listLogsFn(this.config, this.fetchFn, params);
     }
 
     async triggerTask(
         params: TriggerTaskParams
-    ): Promise<Result<TaskRun, HttpError | ApiError | NetworkError>> {
+    ): Promise<Result<TaskRun, HttpError | ApiError | NetworkError | ValidationError>> {
         return triggerTaskFn(this.config, this.fetchFn, params);
     }
 
     async abortTask(
         params: AbortTaskParams
-    ): Promise<Result<TaskRun, HttpError | ApiError | NetworkError>> {
+    ): Promise<Result<TaskRun, HttpError | ApiError | NetworkError | ValidationError>> {
         return abortTaskFn(this.config, this.fetchFn, params);
     }
 }
