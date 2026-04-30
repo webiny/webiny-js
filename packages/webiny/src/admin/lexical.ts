@@ -12,7 +12,4 @@ export { Divider } from "@webiny/lexical-editor/ui/Divider.js";
 export { DropDownItem } from "@webiny/lexical-editor/ui/DropDown.js";
 export { DropDown } from "@webiny/lexical-editor/ui/DropDown.js";
 export type { Klass, LexicalNode } from "@webiny/lexical-editor/types.js";
-export {
-    LexicalEditorConfig,
-    useLexicalEditorConfig
-} from "@webiny/lexical-editor/components/LexicalEditorConfig/LexicalEditorConfig.js";
+export { LexicalEditorConfig, useLexicalEditorConfig } from "@webiny/lexical-editor/components/LexicalEditorConfig/LexicalEditorConfig.js";
