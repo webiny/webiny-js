@@ -88,7 +88,7 @@ const DecoratableTabs = ({
                 });
             },
             removeTab(id) {
-                setTabs(tabs => tabs.filter(tab => tab.id === id));
+                setTabs(tabs => tabs.filter(tab => tab.id !== id));
             }
         }),
         [setTabs]

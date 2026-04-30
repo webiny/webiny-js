@@ -1,6 +1,6 @@
 import { makeAutoObservable, computed, runInAction } from "mobx";
 import { FormModelFactory, FormModel } from "@webiny/app-admin";
-import type { LayoutNode } from "@webiny/app-admin/features/formModel/abstractions.js";
+import type { ILayoutNodeBuilder } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { GetSettingsUseCase } from "../../features/settings/getSettings/abstractions.js";
 import { UpdateSettingsUseCase } from "../../features/settings/updateSettings/abstractions.js";
 import { AiPowerUpsSettingsPresenter as PresenterAbstraction } from "./abstractions.js";
@@ -11,7 +11,7 @@ type FieldsFactory = (
     fields: FormModelFactory.FieldBuilderRegistry
 ) => Record<string, FormModelFactory.FieldBuilder>;
 
-type LayoutFactory = (layout: FormModelFactory.LayoutBuilder) => LayoutNode[];
+type LayoutFactory = (layout: FormModelFactory.LayoutBuilder) => ILayoutNodeBuilder[];
 
 interface CollectedGroup {
     group: AiPowerUpsSettingsGroup.Interface;
@@ -143,19 +143,22 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
                     return [];
                 }
 
-                return [
-                    layout.tabs({
-                        id: "settings-tabs",
-                        renderer: "tabs-vertical",
-                        tabs: collected.map(({ group }) => ({
-                            id: group.name,
-                            label: group.label,
-                            description: group.description,
-                            icon: group.icon,
-                            layout: l => [l.row(group.name)]
-                        }))
-                    })
-                ];
+                const tabsBuilder = layout.tabs("settings-tabs").renderer("tabs-vertical");
+
+                for (const { group } of collected) {
+                    tabsBuilder.tab(group.name, tab => {
+                        tab.label(group.label);
+                        if (group.description) {
+                            tab.description(group.description);
+                        }
+                        if (group.icon) {
+                            tab.icon(group.icon);
+                        }
+                        tab.layout(l => [l.row(group.name)]);
+                    });
+                }
+
+                return [tabsBuilder];
             }
         });
     }

@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { List, Heading, Text } from "@webiny/admin-ui";
-import { LayoutNodeRenderer } from "~/features/formModel/FormView.js";
+import { LayoutNodeRenderer, renderTabIcon } from "~/features/formModel/FormView.js";
 import type { TabsNodeRendererProps } from "~/features/formModel/FormView.js";
 
 export const VerticalTabsRenderer = observer(function VerticalTabsRenderer({
@@ -17,7 +17,7 @@ export const VerticalTabsRenderer = observer(function VerticalTabsRenderer({
                         <List.Item
                             key={tab.id}
                             className={"fill-neutral-strong"}
-                            icon={tab.icon}
+                            icon={renderTabIcon(tab.icon)}
                             title={tab.label}
                             description={tab.description}
                             activated={tab.id === node.activeTabId}

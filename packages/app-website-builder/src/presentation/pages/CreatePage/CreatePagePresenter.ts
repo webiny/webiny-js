@@ -115,7 +115,7 @@ class CreatePagePresenterImpl implements PresenterAbstraction.Interface {
                     .label("Title")
                     .required("Title is required")
                     .onBlur((value, form) => {
-                        const currentPath = form.field("path").getValue<string>();
+                        const currentPath = form.field("path").as("text").getValue() ?? "";
                         if (!PagePath.create(currentPath).isEmpty()) {
                             return;
                         }

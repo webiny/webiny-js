@@ -10,32 +10,12 @@ import type {
     IObjectFieldItemVM,
     LayoutNodeVM
 } from "~/features/formModel/index.js";
-import { useFormViewRenderers, LayoutNodeRenderer } from "~/features/formModel/FormView.js";
+import { LayoutNodeRenderer } from "~/features/formModel/FormView.js";
 import { resolveItemTitle } from "./resolveItemTitle.js";
 
 export const isObjectFieldVM = (field: IFieldVM): field is IObjectFieldVM => {
     return field.type === "object";
 };
-
-export const ChildFields = observer(({ fields }: { fields: IFieldVM[] }) => {
-    const { fieldRenderers } = useFormViewRenderers();
-
-    return (
-        <div className={"flex flex-col gap-4 p-sm"}>
-            {fields.map(childField => {
-                const Renderer = childField.renderer
-                    ? fieldRenderers[childField.renderer]
-                    : undefined;
-
-                if (!Renderer) {
-                    return null;
-                }
-
-                return <Renderer key={childField.name} field={childField} />;
-            })}
-        </div>
-    );
-});
 
 /**
  * Walks a resolved layout sub-tree. Used by dynamic-zone renderers to render
@@ -43,7 +23,7 @@ export const ChildFields = observer(({ fields }: { fields: IFieldVM[] }) => {
  */
 export const NestedLayout = observer(({ layout }: { layout: LayoutNodeVM[] }) => {
     return (
-        <div className={"flex flex-col gap-4 p-sm"}>
+        <div className={"flex flex-col gap-md"}>
             {layout.map((node, index) => (
                 <LayoutNodeRenderer key={index} node={node} />
             ))}

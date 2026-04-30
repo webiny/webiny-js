@@ -350,7 +350,7 @@ cat node_modules/@webiny/api-core/features/security/roles/shared/abstractions.d.
 ### Backend: Plugin Classes → v6 Equivalents
 
 | v5 Plugin                                       | v6 Equivalent                                                                        |
-| ----------------------------------------------- |--------------------------------------------------------------------------------------|
+| ----------------------------------------------- | ------------------------------------------------------------------------------------ |
 | `ContextPlugin`                                 | DI-registered implementations                                                        |
 | `createContextPlugin`                           | DI-registered implementations                                                        |
 | `CmsModelPlugin`                                | `ModelFactory`                                                                       |

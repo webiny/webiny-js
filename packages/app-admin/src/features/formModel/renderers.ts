@@ -18,3 +18,5 @@ import "../../base/Base/FieldRenderers/CheckboxesRenderer.js";
 import "../../base/Base/FieldRenderers/DateTimeRenderer.js";
 import "../../base/Base/FieldRenderers/DateTimeInputsRenderer.js";
 import "../../base/Base/FieldRenderers/HiddenRenderer.js";
+import "../../base/Base/FieldRenderers/FilePickerRenderer.js";
+import "../../base/Base/FieldRenderers/CodeEditorRenderer.js";

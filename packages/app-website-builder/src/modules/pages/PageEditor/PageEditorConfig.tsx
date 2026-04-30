@@ -2,7 +2,6 @@ import React from "react";
 import { CompositionScope } from "@webiny/app-admin";
 import { EditorConfig, EditorConfigComponents } from "~/BaseEditor/index.js";
 import { EDITOR_NAME } from "~/modules/pages/constants.js";
-import { PageSettings } from "./PageSettings/PageSettings.js";
 
 interface PageEditorConfigProps {
     children: React.ReactNode;
@@ -27,11 +26,8 @@ const SecondaryPageEditorConfig = ({ children }: PageEditorConfigProps) => {
 /* This one is an internal API for the base app. It ensures this config is always applied first. */
 export const InternalPageEditorConfig = Object.assign(
     PrimaryPageEditorConfig,
-    EditorConfigComponents,
-    { PageSettings }
+    EditorConfigComponents
 );
 
 /* This one is a public API for other apps and third party developers. */
-export const PageEditorConfig = Object.assign(SecondaryPageEditorConfig, EditorConfigComponents, {
-    PageSettings
-});
+export const PageEditorConfig = Object.assign(SecondaryPageEditorConfig, EditorConfigComponents);

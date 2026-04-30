@@ -50,7 +50,7 @@ interface TemplateGalleryProps {
 
 const TemplateGallery = ({ templates, onSelect }: TemplateGalleryProps) => {
     return (
-        <div className={"gap-md flex flex-wrap"}>
+        <div className={"gap-md flex flex-wrap p-xs"}>
             {templates.map(template => (
                 <TemplateCard key={template.id} template={template} onSelect={onSelect} />
             ))}
@@ -87,7 +87,7 @@ const TemplateCard = ({ template, onSelect }: TemplateCardProps) => {
                 </div>
                 <div className={"py-sm-extra px-md"}>
                     <Text size={"md"} className={"mb-xs text-neutral-primary font-semibold"}>
-                        {template.name}
+                        {template.label}
                     </Text>
                 </div>
             </div>

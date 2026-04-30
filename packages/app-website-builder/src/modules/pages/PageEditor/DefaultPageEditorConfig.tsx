@@ -7,7 +7,6 @@ import { RevisionsMenu } from "./TopBar/RevisionsMenu.js";
 import { SettingsButton } from "./TopBar/SettingsButton.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { InternalPageEditorConfig } from "./PageEditorConfig.js";
-import { PageSettingsConfig } from "~/modules/pages/PageEditor/PageSettings/PageSettingsConfig.js";
 import { TopBarOptionsMenu } from "~/BaseEditor/config/TopBar/Layout.js";
 
 const { Ui } = InternalPageEditorConfig;
@@ -33,7 +32,6 @@ export const DefaultPageEditorConfig = () => {
             <HasPermission entity={"page"} action={"edit"}>
                 <Ui.TopBar.Element group={"left"} name={"autoSave"} element={<PageAutoSave />} />
             </HasPermission>
-            <PageSettingsConfig />
         </InternalPageEditorConfig>
     );
 };
