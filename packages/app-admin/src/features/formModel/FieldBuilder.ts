@@ -180,12 +180,17 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
-    parseValue(value: unknown): unknown {
+    /**
+     * Normalize value before it's set. If field value is an array, this method runs on each individual value in the array.
+     * Useful for converting strings to numbers, ensuring specific date format, etc.
+     * @param value
+     */
+    normalizeValue(value: unknown): unknown {
         return value;
     }
 
     build(name: string): IFieldConfig {
-        return { ...this._config, name, parseValue: (v: unknown) => this.parseValue(v) };
+        return { ...this._config, name, normalizeValue: (v: unknown) => this.normalizeValue(v) };
     }
 }
 

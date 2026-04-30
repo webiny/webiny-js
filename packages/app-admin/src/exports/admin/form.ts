@@ -1,3 +1,9 @@
+// New Form Model
+export type { IFieldRendererRegistry } from "~/features/formModel/abstractions.js";
+export { FieldType } from "~/features/formModel/abstractions.js";
+export { FormModelFactory } from "~/features/formModel/abstractions.js";
+
+// Old React-based form
 export { Bind } from "@webiny/form";
 export { Form } from "@webiny/form";
 export { UnsetOnUnmount } from "@webiny/form";

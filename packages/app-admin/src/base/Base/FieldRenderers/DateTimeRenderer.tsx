@@ -15,7 +15,9 @@ declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
         dateTimeInput: {
             fieldType: "datetime";
-            settings: { type: "date" | "dateTime" | "dateTimeTimezone" | "time" };
+            settings: {
+                type: "date" | "dateTimeWithoutTimezone" | "dateTimeWithTimezone" | "time";
+            };
         };
     }
 }
@@ -93,7 +95,7 @@ const TimeInput = observer(({ field }: { field: IFieldVM }) => {
     );
 });
 
-const DateTimeInput = observer(({ field }: { field: IFieldVM }) => {
+const DateTimeWithoutTimezoneInput = observer(({ field }: { field: IFieldVM }) => {
     const raw = (field.value as string) || "";
     let date = "";
     let time = "";
@@ -144,7 +146,7 @@ const DateTimeInput = observer(({ field }: { field: IFieldVM }) => {
     );
 });
 
-const DateTimeTimezoneInput = observer(({ field }: { field: IFieldVM }) => {
+const DateTimeWithTimezoneInput = observer(({ field }: { field: IFieldVM }) => {
     const defaultTz = getCurrentTimeZone() || DEFAULT_TIMEZONE;
     const raw = (field.value as string) || "";
     let date = "";
@@ -222,11 +224,11 @@ export const DateTimeRenderer = observer(({ field }: { field: IFieldVM }) => {
 
     let Component: React.ComponentType<{ field: IFieldVM }>;
     switch (type) {
-        case "dateTime":
-            Component = DateTimeInput;
+        case "dateTimeWithoutTimezone":
+            Component = DateTimeWithoutTimezoneInput;
             break;
-        case "dateTimeTimezone":
-            Component = DateTimeTimezoneInput;
+        case "dateTimeWithTimezone":
+            Component = DateTimeWithTimezoneInput;
             break;
         case "time":
             Component = TimeInput;

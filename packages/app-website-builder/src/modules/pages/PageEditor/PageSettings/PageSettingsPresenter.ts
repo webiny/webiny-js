@@ -150,7 +150,7 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
                         if (group.icon) {
                             tab.icon(group.icon);
                         }
-                        tab.layout((l: FormModelFactory.LayoutBuilder) => {
+                        tab.layout(l => {
                             if (layoutFns.length > 0) {
                                 return [
                                     l.object(group.name, inner => {

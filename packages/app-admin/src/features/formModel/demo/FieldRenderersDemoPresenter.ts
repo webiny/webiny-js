@@ -140,37 +140,38 @@ export class FieldRenderersDemoPresenter {
                 // --- Date/Time ---
                 dateOnly: fields
                     .datetime()
+                    .dateOnly()
                     .label("Date Only")
-                    .renderer("dateTimeInput", { type: "date" })
                     .description("Pick a calendar date")
                     .help("Format: YYYY-MM-DD")
                     .note("Time is not stored"),
                 dateTime: fields
                     .datetime()
+                    .withoutTimezone()
                     .label("Date & Time")
-                    .renderer("dateTimeInput", { type: "dateTime" })
                     .description("Date with time of day")
                     .help("Stored without timezone")
                     .note("Seconds default to :00"),
                 dateTimeTz: fields
                     .datetime()
+                    .withTimezone()
                     .label("Date Time + Timezone")
-                    .renderer("dateTimeInput", { type: "dateTimeTimezone" })
                     .description("Full date, time, and timezone")
                     .help("ISO 8601 with offset")
                     .note("Timezone defaults to your local zone"),
                 timeOnly: fields
                     .datetime()
+                    .timeOnly()
                     .label("Time Only")
-                    .renderer("dateTimeInput", { type: "time" })
                     .description("Time without a date")
                     .help("Format: HH:MM:SS")
                     .note("24-hour format"),
                 dateTimeList: fields
                     .datetime()
+                    .dateOnly()
                     .list()
                     .label("Dates (multi)")
-                    .renderer("dateTimeInputs", { type: "date" })
+                    .renderer("dateTimeInputs")
                     .description("Multiple date entries")
                     .help("Add as many dates as needed")
                     .note("Each date is independent"),

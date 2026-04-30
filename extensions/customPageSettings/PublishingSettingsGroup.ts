@@ -8,8 +8,9 @@ class PublishingSettingsGroupImpl implements PageSettingsGroup.Interface {
 
     buildForm(form: PageSettingsGroup.FormBuilder): void {
         form.fields(fields => ({
-            publishDate: fields.datetime().label("Publish date"),
-            unpublishDate: fields.datetime().label("Unpublish date"),
+            withTimezone: fields.datetime().withTimezone().label("Publish date"),
+            withoutTimezone: fields.datetime().withoutTimezone().label("Publish date"),
+            unpublishDate: fields.datetime().dateOnly().label("Unpublish date"),
             visibility: fields
                 .text()
                 .label("Visibility")
@@ -31,7 +32,9 @@ class PublishingSettingsGroupImpl implements PageSettingsGroup.Interface {
         }));
 
         form.layout(layout => [
-            layout.row("publishDate", "unpublishDate"),
+            layout.row("withTimezone"),
+            layout.row("withoutTimezone"),
+            layout.row("unpublishDate"),
             layout.row("visibility"),
             layout.row("featured")
         ]);
@@ -40,7 +43,8 @@ class PublishingSettingsGroupImpl implements PageSettingsGroup.Interface {
     mapToForm(doc: PageSettingsGroup.PageDocument): Record<string, any> {
         const publishing = doc.extensions?.publishing;
         return {
-            publishDate: publishing?.publishDate ?? null,
+            withTimezone: publishing?.withTimezone ?? null,
+            withoutTimezone: publishing?.withoutTimezone ?? null,
             unpublishDate: publishing?.unpublishDate ?? null,
             visibility: publishing?.visibility ?? "public",
             featured: publishing?.featured ?? false
@@ -49,7 +53,8 @@ class PublishingSettingsGroupImpl implements PageSettingsGroup.Interface {
 
     mapFromForm(formData: Record<string, any>, doc: PageSettingsGroup.PageDocument): void {
         doc.extensions.publishing = doc.extensions.publishing ?? {};
-        doc.extensions.publishing.publishDate = formData.publishDate;
+        doc.extensions.publishing.withTimezone = formData.withTimezone;
+        doc.extensions.publishing.withoutTimezone = formData.withoutTimezone;
         doc.extensions.publishing.unpublishDate = formData.unpublishDate;
         doc.extensions.publishing.visibility = formData.visibility;
         doc.extensions.publishing.featured = formData.featured;

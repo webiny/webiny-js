@@ -54,7 +54,7 @@ export interface IFieldConfig {
     disabled: boolean;
     schema?: z.ZodTypeAny;
     options?: IValueOption[] | ((form: IFormModel) => IValueOption[]);
-    parseValue?: (value: unknown) => unknown;
+    normalizeValue?: (value: unknown) => unknown;
     beforeChangeCallbacks?: BeforeChangeCallback[];
     afterChangeCallbacks?: AfterChangeCallback[];
     afterSetValueCallbacks?: AfterSetValueCallback[];
@@ -872,6 +872,8 @@ export const FieldType = createAbstraction<IFieldTypeFactory>("FormModel/FieldTy
 
 export namespace FieldType {
     export type Interface = IFieldTypeFactory;
+    export type FieldBuilder = IFieldBuilder;
+    export type FieldBuilderRegistry = IFieldBuilderRegistry;
 }
 
 export const FieldBuilderRegistry = createAbstraction<IFieldBuilderRegistry>(

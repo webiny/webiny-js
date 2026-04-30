@@ -3711,7 +3711,7 @@ describe("FormModel", () => {
         });
     });
 
-    describe("parseValue", () => {
+    describe("normalizeValue", () => {
         it("should coerce string to number on setValue for number fields", () => {
             const form = createForm({
                 fields: fields => ({
@@ -3780,7 +3780,7 @@ describe("FormModel", () => {
             expect(form.field("active").getValue()).toBe(false);
         });
 
-        it("should apply parseValue on setData (via setValueSilent)", () => {
+        it("should apply normalizeValue on setData (via setValueSilent)", () => {
             const form = createForm({
                 fields: fields => ({
                     count: fields.number().label("Count")
@@ -3806,7 +3806,7 @@ describe("FormModel", () => {
             expect(form.field("name").getValue()).toBe(42);
         });
 
-        it("should run parseValue before beforeChange", () => {
+        it("should run normalizeValue before beforeChange", () => {
             const log: unknown[] = [];
             const form = createForm({
                 fields: fields => ({

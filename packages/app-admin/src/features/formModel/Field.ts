@@ -106,8 +106,8 @@ export class Field implements IField {
      * afterChange only fires when value actually changed.
      */
     setValue(raw: unknown): void {
-        let transformed = this.config.parseValue
-            ? this._applyParseValue(raw, this.config.parseValue)
+        let transformed = this.config.normalizeValue
+            ? this._applyNormalizeValue(raw, this.config.normalizeValue)
             : raw;
         for (const cb of this._beforeChangeCallbacks) {
             transformed = cb(transformed, this._form!);
@@ -137,8 +137,8 @@ export class Field implements IField {
      * Set value directly without running pipelines. Used by setData() and reset().
      */
     setValueSilent(value: unknown): void {
-        const parsed = this.config.parseValue
-            ? this._applyParseValue(value, this.config.parseValue)
+        const parsed = this.config.normalizeValue
+            ? this._applyNormalizeValue(value, this.config.normalizeValue)
             : value;
         this._value = parsed;
         if (this._computedUntilDirty) {
@@ -344,11 +344,11 @@ export class Field implements IField {
         }
     }
 
-    private _applyParseValue(value: unknown, parseValue: (v: unknown) => unknown): unknown {
+    private _applyNormalizeValue(value: unknown, normalizeValue: (v: unknown) => unknown): unknown {
         if (this.config.isList && Array.isArray(value)) {
-            return value.map(item => parseValue(item));
+            return value.map(item => normalizeValue(item));
         }
-        return parseValue(value);
+        return normalizeValue(value);
     }
 
     private _addItem(value?: unknown): void {

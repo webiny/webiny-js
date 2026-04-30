@@ -1,3 +1,6 @@
+export type { IFieldRendererRegistry } from "@webiny/app-admin/features/formModel/abstractions.js";
+export { FieldType } from "@webiny/app-admin/features/formModel/abstractions.js";
+export { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 export { Bind } from "@webiny/form";
 export { Form } from "@webiny/form";
 export { UnsetOnUnmount } from "@webiny/form";

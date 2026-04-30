@@ -1,4 +1,4 @@
-import { FieldType, type IFieldTypeFactory, type IFieldBuilder } from "../abstractions.js";
+import { FieldType, type IFieldTypeFactory } from "../abstractions.js";
 import { FieldBuilder } from "../FieldBuilder.js";
 
 export class BooleanFieldBuilder extends FieldBuilder<"boolean"> {
@@ -7,14 +7,14 @@ export class BooleanFieldBuilder extends FieldBuilder<"boolean"> {
         this._config.renderer = "switch";
     }
 
-    override parseValue(value: unknown): unknown {
+    override normalizeValue(value: unknown): unknown {
         return Boolean(value);
     }
 }
 
 class BooleanFieldTypeFactory implements IFieldTypeFactory {
     readonly type = "boolean";
-    create(_registry: any) {
+    create() {
         return new BooleanFieldBuilder();
     }
 }

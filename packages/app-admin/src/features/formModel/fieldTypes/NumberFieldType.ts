@@ -7,12 +7,14 @@ export class NumberFieldBuilder extends FieldBuilder<"number"> {
         this._config.renderer = "numberInput";
     }
 
-    override parseValue(value: unknown): unknown {
-        if (value == null || value === "") {
-            return value;
+    override normalizeValue(value: unknown): unknown {
+        if (value === null || value === undefined || value === "") {
+            return null;
         }
+
         const n = Number(value);
-        return Number.isNaN(n) ? value : n;
+
+        return Number.isNaN(n) ? null : n;
     }
 }
 
