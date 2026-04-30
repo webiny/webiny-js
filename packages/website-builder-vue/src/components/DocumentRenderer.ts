@@ -73,7 +73,7 @@ export const DocumentRenderer = defineComponent({
             const allComponents = [...editorComponents, ...components];
             allComponents.forEach(c => contentSdk.registerComponent(c));
 
-            if (!document) {
+            if (!document && !contentSdk.isEditing()) {
                 return h("div", { "data-role": "document-renderer" }, slots.default?.());
             }
 
@@ -84,12 +84,15 @@ export const DocumentRenderer = defineComponent({
                     {
                         default: () =>
                             contentSdk.isEditing()
-                                ? h(ConnectToEditor, { document, components })
+                                ? h(ConnectToEditor, {
+                                      document: document ?? undefined,
+                                      components
+                                  })
                                 : h(
                                       DocumentStoreProvider,
                                       {
-                                          id: document.properties.id,
-                                          document
+                                          id: document!.properties.id,
+                                          document: document!
                                       },
                                       {
                                           default: () => h(ElementRenderer, { id: "root" })
