@@ -18,7 +18,7 @@ import type {
     MultiPartUploadResponse
 } from "./methods/fileManager/createMultiPartUpload.js";
 import type { CompleteMultiPartUploadParams } from "./methods/fileManager/completeMultiPartUpload.js";
-import type { HttpError, GraphQLError, NetworkError } from "./errors.js";
+import type { HttpError, GraphQLError, NetworkError, ValidationError } from "./errors.js";
 import type { Result } from "./Result.js";
 import { getFile as getFileFn } from "./methods/fileManager/getFile.js";
 import { listFiles as listFilesFn } from "./methods/fileManager/listFiles.js";
@@ -43,13 +43,13 @@ export class FileManagerSdk {
 
     async getFile(
         params: GetFileParams
-    ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError | ValidationError>> {
         return getFileFn(this.config, this.fetchFn, params);
     }
 
     async listFiles(
         params: ListFilesParams
-    ): Promise<Result<ListFilesResult, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<ListFilesResult, HttpError | GraphQLError | NetworkError | ValidationError>> {
         return listFilesFn(this.config, this.fetchFn, params);
     }
 
@@ -67,7 +67,7 @@ export class FileManagerSdk {
 
     async updateFile(
         params: UpdateFileParams
-    ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError>> {
+    ): Promise<Result<FmFile, HttpError | GraphQLError | NetworkError | ValidationError>> {
         return updateFileFn(this.config, this.fetchFn, params);
     }
 
