@@ -31,14 +31,14 @@ Place this inside the JSX returned by your config component in `webiny.config.ts
 
 ## Props Reference
 
-| Prop      | Type     | Required | Description |
-|-----------|----------|----------|-------------|
-| `host`    | `string` | Yes      | SMTP server hostname |
-| `port`    | `number` | Yes      | SMTP server port (positive integer) |
-| `user`    | `string` | Yes      | SMTP authentication username |
-| `password`| `string` | Yes      | SMTP authentication password — **use env var** |
-| `from`    | `string` | Yes      | Default sender address |
-| `replyTo` | `string` | No       | Default reply-to address |
+| Prop       | Type     | Required | Description                                    |
+| ---------- | -------- | -------- | ---------------------------------------------- |
+| `host`     | `string` | Yes      | SMTP server hostname                           |
+| `port`     | `number` | Yes      | SMTP server port (positive integer)            |
+| `user`     | `string` | Yes      | SMTP authentication username                   |
+| `password` | `string` | Yes      | SMTP authentication password — **use env var** |
+| `from`     | `string` | Yes      | Default sender address                         |
+| `replyTo`  | `string` | No       | Default reply-to address                       |
 
 `from` and `replyTo` are validated by the [`email-addresses`](https://www.npmjs.com/package/email-addresses) package against RFC 5322.
 
@@ -49,21 +49,21 @@ import React from "react";
 import { Api, Admin, Core } from "@webiny/project-aws/api";
 
 const MyConfig = () => {
-    return (
-        <>
-            {/* ... other extensions ... */}
+  return (
+    <>
+      {/* ... other extensions ... */}
 
-            {/* Mailer: configure SMTP transport via code */}
-            <Api.Mailer.Smtp
-                host={"smtp.sendgrid.net"}
-                port={587}
-                user={"apikey"}
-                password={process.env.SENDGRID_API_KEY!}
-                from={"noreply@acme.com"}
-                replyTo={"support@acme.com"}
-            />
-        </>
-    );
+      {/* Mailer: configure SMTP transport via code */}
+      <Api.Mailer.Smtp
+        host={"smtp.sendgrid.net"}
+        port={587}
+        user={"apikey"}
+        password={process.env.SENDGRID_API_KEY!}
+        from={"noreply@acme.com"}
+        replyTo={"support@acme.com"}
+      />
+    </>
+  );
 };
 ```
 
@@ -71,12 +71,12 @@ Add `SENDGRID_API_KEY=your-secret` to your `.env` file (never commit it).
 
 ## Common Mistakes
 
-| Mistake | Fix |
-|---------|-----|
-| Hard-coding the password | Use `process.env.SMTP_PASSWORD!` |
-| `process.env.SMTP_PASSWORD` undefined at build time → "expected string, received object" error | Ensure the env var is set before deploying |
-| `from`/`replyTo` value fails validation | Must be a valid RFC 5322 mailbox address |
-| Settings not taking effect | Run `yarn webiny build api` after editing `webiny.config.tsx` |
+| Mistake                                                                                        | Fix                                                           |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Hard-coding the password                                                                       | Use `process.env.SMTP_PASSWORD!`                              |
+| `process.env.SMTP_PASSWORD` undefined at build time → "expected string, received object" error | Ensure the env var is set before deploying                    |
+| `from`/`replyTo` value fails validation                                                        | Must be a valid RFC 5322 mailbox address                      |
+| Settings not taking effect                                                                     | Run `yarn webiny build api` after editing `webiny.config.tsx` |
 
 ## Quick Reference
 
@@ -89,7 +89,7 @@ yarn webiny build api
 
 ```ts
 // Environment variable in .env
-SMTP_PASSWORD=your-smtp-password-here
+SMTP_PASSWORD = your - smtp - password - here;
 ```
 
 ## Related Skills
