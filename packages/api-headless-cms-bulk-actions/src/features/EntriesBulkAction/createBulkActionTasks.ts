@@ -44,6 +44,8 @@ export const createBulkActionTasks = (
         public readonly context: BulkActionContext.Interface;
         public readonly getModel: GetModelUseCase.Interface;
 
+        public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
         constructor(context: BulkActionContext.Interface, getModel: GetModelUseCase.Interface) {
             this.context = context;
             this.getModel = getModel;
@@ -131,6 +133,8 @@ export const createBulkActionTasks = (
         public readonly databaseLogs = false;
         public readonly isPrivate = true;
         public readonly getModel: GetModelUseCase.Interface;
+
+        public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
 
         constructor(getModel: GetModelUseCase.Interface) {
             this.getModel = getModel;

@@ -21,7 +21,7 @@
     "@emotion/styled": "11.14.1",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/react-fontawesome": "^3.3.1",
-    "@iconify/json": "^2.2.465",
+    "@iconify/json": "^2.2.467",
     "@svgr/webpack": "^8.1.0",
     "@types/react": "18.3.28",
     "@webiny/admin-ui": "0.0.0",
@@ -52,7 +52,7 @@
     "graphql-tag": "^2.12.6",
     "history": "^5.3.0",
     "is-hotkey": "^0.2.0",
-    "lexical": "^0.43.0",
+    "lexical": "^0.44.0",
     "lodash": "^4.18.1",
     "markdown-to-jsx": "^9.7.16",
     "minimatch": "^10.2.5",
@@ -67,7 +67,7 @@
     "reset-css": "^5.0.2",
     "tinycolor2": "^1.6.0",
     "unicode-emoji-json": "^0.9.0",
-    "zod": "^4.3.6"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.13.5",

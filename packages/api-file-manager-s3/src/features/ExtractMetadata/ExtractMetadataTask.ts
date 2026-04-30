@@ -17,6 +17,8 @@ class ExtractMetadataTask implements TaskDefinition.Interface<ExtractMetadataInp
     isPrivate = true;
     databaseLogs = false;
 
+    selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(
         private keyValueStore: GlobalKeyValueStore.Interface,
         private updateFileUseCase: UpdateFileUseCase.Interface

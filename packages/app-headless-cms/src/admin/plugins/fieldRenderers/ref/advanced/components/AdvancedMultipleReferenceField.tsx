@@ -199,7 +199,7 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
 
     return (
-        <>
+        <div className={"@container"}>
             <div className={"flex items-center justify-between"}>
                 <FormComponentLabel text={field.label} invalid={invalid} disabled={disabled} />
             </div>
@@ -264,6 +264,6 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
                     onDialogClose={onLinkEntryDialogClose}
                 />
             )}
-        </>
+        </div>
     );
 };

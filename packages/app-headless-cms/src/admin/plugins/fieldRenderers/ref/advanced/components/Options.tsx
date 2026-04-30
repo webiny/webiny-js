@@ -43,7 +43,7 @@ export const Options = ({ models, onNewRecord, onLinkExistingRecord }: OptionsPr
 
     if (hasMultipleModels) {
         return (
-            <div className={"flex gap-sm"}>
+            <div className={"flex flex-wrap gap-sm"}>
                 <DropdownMenu
                     trigger={
                         <Button
@@ -71,9 +71,8 @@ export const Options = ({ models, onNewRecord, onLinkExistingRecord }: OptionsPr
     }
 
     return (
-        <div>
+        <div className={"flex flex-wrap gap-sm"}>
             <CreateNewRecordButton onClick={onSingleNewRecord} />
-            &nbsp;
             <LinkExistingRecordButton onClick={onSingleExistingRecord} />
         </div>
     );

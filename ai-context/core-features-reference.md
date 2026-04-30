@@ -84,6 +84,12 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-file-manager/src/features/file/CreateFile/events.ts`
 - **Usage:** Hook into file creation. Implement `.handle(event)` where `event.payload.file` is the created file. Register via `FileAfterCreateEventHandler.createImplementation({ implementation, dependencies })`.
 
+### Encryption
+
+- **Import:** `import { Encryption } from "@webiny/api-core/features/encryption"`
+- **Interface Type:** See `packages/api-core/src/features/encryption/abstractions.ts`
+- **Usage:** Synchronous symmetric encrypt/decrypt backed by AES-GCM. Reads `EncryptionPassphrase`, `EncryptionSalt`, `EncryptionAlgorithm` from `BuildParams` (driven by `<Infra.Encryption>` in `webiny.config.tsx`). When no passphrase is configured, `encrypt`/`decrypt` are no-op passthroughs — callers receive and emit plaintext. Use this wherever a feature needs to protect secrets at rest.
+
 ---
 
 ## Headless CMS Features
@@ -272,6 +278,52 @@ This document provides the correct import paths and type definitions for commonl
 - **Import:** `import { CreateAndInstallTenantUseCase } from "packages/tenant-manager/src/api/features/CreateAndInstallTenant/abstractions.js"`
 - **Interface Type:** See `packages/tenant-manager/src/api/features/CreateAndInstallTenant/abstractions.ts`
 - **Usage:** Create and install a tenant in one operation
+
+---
+
+## Mailer Features
+
+### MailerService
+
+- **Import:** `import { MailerService } from "@webiny/api-mailer"`
+- **Interface Type:** See `packages/api-mailer/src/domain/MailerService/abstractions.ts`
+- **Usage:** Send email via the currently-active transport. Resolves settings through `GetSettingsRepository` (code source first, KV second) and delegates to a `MailTransportFactory`. Returns `Result<TransportSendResponse, NoTransportAvailable | NoSettingsConfigured | TransportSend>`.
+
+### SendMailUseCase
+
+- **Import:** `import { SendMailUseCase } from "@webiny/api-mailer/features/SendMail"`
+- **Interface Type:** See `packages/api-mailer/src/features/SendMail/abstractions.ts`
+- **Usage:** Validated wrapper around `MailerService.sendMail`. Accepts `TransportSendData` (`to`, `from`, `subject`, `text|html`, …), validates with zod, publishes `MailBeforeSend`/`MailAfterSend`/`MailSendError` domain events.
+
+### GetSettingsUseCase (Mailer)
+
+- **Import:** `import { GetSettingsUseCase } from "@webiny/api-mailer/features/GetSettings"`
+- **Interface Type:** See `packages/api-mailer/src/features/GetSettings/abstractions.ts`
+- **Usage:** Read mailer transport settings. Takes a `transportName` argument; returns `{ settings: TransportSettings | null, source: "code" | "storage" | null }`. `source: "code"` means `<Infra.Mailer.*>` is driving the config; `"storage"` means settings were saved via the admin UI.
+
+### SaveSettingsUseCase (Mailer)
+
+- **Import:** `import { SaveSettingsUseCase } from "@webiny/api-mailer/features/SaveSettings"`
+- **Interface Type:** See `packages/api-mailer/src/features/SaveSettings/abstractions.ts`
+- **Usage:** Persist mailer settings to the KV store. Requires `mailer.settings` permission. Fails with `SettingsLockedByCode` when code-driven settings exist for the active transport. Password is always stripped from event payloads (`MailerSettingsBeforeSaveEvent`, `MailerSettingsAfterSaveEvent`).
+
+### CodeMailerSettings
+
+- **Import:** `import { CodeMailerSettings } from "@webiny/api-mailer/domain/CodeMailerSettings/abstractions"`
+- **Interface Type:** See `packages/api-mailer/src/domain/CodeMailerSettings/abstractions.ts`
+- **Usage:** Read code-driven mailer settings from `BuildParams`. `get(transportName)` returns the SMTP settings if `<Infra.Mailer.Smtp>` registered a `Mailer.SmtpSettings` build param; returns `null` otherwise. When non-null, code settings win over the KV store in `GetSettingsRepository`.
+
+### ActiveTransport (Mailer)
+
+- **Import:** `import { ActiveTransport } from "@webiny/api-mailer/domain/MailTransport/abstractions"`
+- **Interface Type:** See `packages/api-mailer/src/domain/MailTransport/abstractions.ts`
+- **Usage:** Centralized resolver for the currently-active transport. `name()` returns the last-registered `MailTransportFactory`'s `name` (`"Mailer/SmtpTransport"` or `"Mailer/DummyTransport"` for built-ins), or `null` when none are registered. Used by `MailerService` and `SaveSettingsUseCase` to know which transport they're dealing with.
+
+### MailTransportFactory
+
+- **Import:** `import { MailTransportFactory } from "@webiny/api-mailer/domain/MailTransport/abstractions"`
+- **Interface Type:** See `packages/api-mailer/src/domain/MailTransport/abstractions.ts`
+- **Usage:** Register a custom mail transport. Implementations expose a stable `name: string` (used to route code-driven settings from `<Infra.Mailer.*>` BuildParams) and a `createTransport(settings)` factory method. Multiple factories can be registered; `ActiveTransport.name()` returns the last-registered one.
 
 ---
 

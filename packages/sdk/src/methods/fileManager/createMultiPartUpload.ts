@@ -1,6 +1,8 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, NetworkError } from "../../errors.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface CreateMultiPartUploadParams {
     data: {
@@ -38,14 +40,13 @@ export interface MultiPartUploadResponse {
  * @param params.numberOfParts - Number of parts to split the file into
  * @returns Result containing the multi-part upload data or an error
  */
+// Not using createMethod: params include File/Buffer/Blob and an onProgress callback.
 export async function createMultiPartUpload(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: CreateMultiPartUploadParams
-): Promise<Result<MultiPartUploadResponse, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<MultiPartUploadResponse, HttpError | ApiError | NetworkError>> {
     const { data, numberOfParts } = params;
-
-    const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
         mutation CreateMultiPartUpload($data: PreSignedPostPayloadInput!, $numberOfParts: Number!) {
@@ -83,9 +84,8 @@ export async function createMultiPartUpload(
     const responseData = result.value;
 
     if (responseData.fileManager.createMultiPartUpload.error) {
-        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.fileManager.createMultiPartUpload.error.message,
                 responseData.fileManager.createMultiPartUpload.error.code
             )

@@ -1,6 +1,6 @@
 import { createStandardEntity, type ITable } from "@webiny/db-dynamodb";
 import type { IModelEntity } from "./types.js";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { StorageCmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 interface Params {
     table: ITable;
@@ -9,7 +9,7 @@ interface Params {
 
 export const createModelEntity = (params: Params): IModelEntity => {
     const { table, entityName } = params;
-    return createStandardEntity<CmsModel>({
+    return createStandardEntity<StorageCmsModel>({
         table: table.table,
         name: entityName
     });

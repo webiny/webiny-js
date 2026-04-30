@@ -349,22 +349,22 @@ cat node_modules/@webiny/api-core/features/security/roles/shared/abstractions.d.
 
 ### Backend: Plugin Classes → v6 Equivalents
 
-| v5 Plugin                                       | v6 Equivalent                 |
-| ----------------------------------------------- | ----------------------------- |
-| `ContextPlugin`                                 | DI-registered implementations |
-| `createContextPlugin`                           | DI-registered implementations |
-| `CmsModelPlugin`                                | `ModelFactory`                |
-| `GraphQLSchemaPlugin`                           | `GraphQLSchemaFactory`        |
-| `createGraphQLSchemaPlugin`                     | `GraphQLSchemaFactory`        |
-| `createTaskDefinition`                          | `TaskDefinition`              |
-| `CmsModelFieldToGraphQLPlugin`                  | TODO                          |
-| `createSecurityRolePlugin`                      | `RoleFactory`                 |
-| `createSecurityTeamPlugin`                      | `TeamFactory`                 |
-| `StorageTransformPlugin`                        | TODO                          |
-| `createApiGatewayRoute`                         | TODO (Adrian)                 |
-| `CmsModelFieldValidatorPlugin`                  | TODO                          |
-| `createCmsGraphQLSchemaSorterPlugin`            | TODO                          |
-| `createCmsEntryElasticsearchBodyModifierPlugin` | TODO                          |
+| v5 Plugin                                       | v6 Equivalent                                                                        |
+| ----------------------------------------------- |--------------------------------------------------------------------------------------|
+| `ContextPlugin`                                 | DI-registered implementations                                                        |
+| `createContextPlugin`                           | DI-registered implementations                                                        |
+| `CmsModelPlugin`                                | `ModelFactory`                                                                       |
+| `GraphQLSchemaPlugin`                           | `GraphQLSchemaFactory`                                                               |
+| `createGraphQLSchemaPlugin`                     | `GraphQLSchemaFactory`                                                               |
+| `createTaskDefinition`                          | `TaskDefinition`                                                                     |
+| `CmsModelFieldToGraphQLPlugin`                  | TODO                                                                                 |
+| `createSecurityRolePlugin`                      | `RoleFactory`                                                                        |
+| `createSecurityTeamPlugin`                      | `TeamFactory`                                                                        |
+| `StorageTransformPlugin`                        | TODO                                                                                 |
+| `createApiGatewayRoute`                         | `Api.Route` (`webiny.config.tsx`) and `Route.Interface` (imported from `webiny/api`) |
+| `CmsModelFieldValidatorPlugin`                  | TODO                                                                                 |
+| `createCmsGraphQLSchemaSorterPlugin`            | TODO                                                                                 |
+| `createCmsEntryElasticsearchBodyModifierPlugin` | TODO                                                                                 |
 
 ### Admin: React Plugins → AdminConfig API
 

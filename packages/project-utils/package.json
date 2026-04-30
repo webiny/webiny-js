@@ -39,11 +39,6 @@
     "@webiny/tasks": "*"
   },
   "license": "MIT",
-  "adio": {
-    "ignore": {
-      "src": []
-    }
-  },
   "publishConfig": {
     "access": "public",
     "directory": "."

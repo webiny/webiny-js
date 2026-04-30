@@ -1,7 +1,9 @@
-import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { TaskLog } from "./taskTypes.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { listLogsSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface ListLogsParams {
     where?: {
@@ -10,13 +12,7 @@ export interface ListLogsParams {
     };
 }
 
-export async function listLogs(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: ListLogsParams = {}
-): Promise<Result<TaskLog[], HttpError | GraphQLError | NetworkError>> {
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
+export const listLogs = createMethod(listLogsSchema, async (config, fetchFn, { where }) => {
     const query = `
         query ListBackgroundTaskLogs($where: BackgroundTaskLogListWhereInput) {
             backgroundTasks {
@@ -43,7 +39,7 @@ export async function listLogs(
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, { where: params.where });
+    const result = await executeGraphQL(config, fetchFn, query, { where });
 
     if (result.isFail()) {
         return Result.fail(result.error);
@@ -52,14 +48,13 @@ export async function listLogs(
     const responseData = result.value;
 
     if (responseData.backgroundTasks.listLogs.error) {
-        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.backgroundTasks.listLogs.error.message,
                 responseData.backgroundTasks.listLogs.error.code
             )
         );
     }
 
-    return Result.ok(responseData.backgroundTasks.listLogs.data);
-}
+    return Result.ok(responseData.backgroundTasks.listLogs.data as TaskLog[]);
+});

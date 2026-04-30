@@ -3,15 +3,15 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
-    "@lexical/headless": "^0.43.0",
-    "@lexical/html": "^0.43.0",
+    "@lexical/headless": "^0.44.0",
+    "@lexical/html": "^0.44.0",
     "@webiny/lexical-nodes": "0.0.0",
     "cheerio": "^1.2.0",
-    "lexical": "^0.43.0"
+    "lexical": "^0.44.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "jsdom": "^29.0.2",
+    "jsdom": "^29.1.0",
     "vitest": "^4.1.5"
   },
   "publishConfig": {

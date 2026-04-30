@@ -62,14 +62,5 @@ declare namespace NodeJS {
         AUTH0_CLIENT_ID?: string;
         REACT_APP_AUTH0_ISSUER?: string;
         REACT_APP_AUTH0_CLIENT_ID?: string;
-        /**
-         * api-mailer
-         */
-        WEBINY_API_MAILER_HOST?: string;
-        WEBINY_API_MAILER_USER?: string;
-        WEBINY_API_MAILER_PASSWORD?: string;
-        WEBINY_API_MAILER_REPLY_TO?: string;
-        WEBINY_API_MAILER_FROM?: string;
-        WEBINY_API_MAILER_PASSWORD_SECRET?: string;
     }
 }

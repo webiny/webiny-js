@@ -17,7 +17,7 @@
     "@emotion/css": "^11.13.5",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
-    "@lexical/utils": "^0.43.0",
+    "@lexical/utils": "^0.44.0",
     "@monaco-editor/react": "^4.7.0",
     "@svgr/webpack": "^8.1.0",
     "@types/react": "18.3.28",
@@ -64,7 +64,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "18.3.1",
     "slugify": "^1.6.9",
-    "zod": "^4.3.6"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.13.5",

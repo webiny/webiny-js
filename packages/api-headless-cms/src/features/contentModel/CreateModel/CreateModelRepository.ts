@@ -1,15 +1,15 @@
 import camelCase from "lodash/camelCase.js";
 import { Result } from "@webiny/feature/api";
 import { CreateModelRepository as RepositoryAbstraction } from "./abstractions.js";
-import { ModelCache } from "~/features/contentModel/shared/abstractions.js";
-import { PluginModelsProvider } from "~/features/contentModel/shared/abstractions.js";
+import { ModelCache, PluginModelsProvider } from "~/features/contentModel/shared/abstractions.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
-import { ModelAlreadyExistsError } from "~/domain/contentModel/errors.js";
-import { ModelPersistenceError } from "~/domain/contentModel/errors.js";
-import { ModelValidationError } from "~/domain/contentModel/errors.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
+import {
+    ModelAlreadyExistsError,
+    ModelPersistenceError,
+    ModelValidationError
+} from "~/domain/contentModel/errors.js";
+import { CmsContext, StorageOperations } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
 import {
     validateExistingModelId,
     validateModelIdAllowed
@@ -20,6 +20,7 @@ import { ensureTypeTag } from "~/domain/contentModel/ensureTypeTag.js";
 import { validateSingularApiName } from "~/domain/contentModel/validation/singularApiName.js";
 import { validatePluralApiName } from "~/domain/contentModel/validation/pluralApiName.js";
 import { validateModelFields } from "~/domain/contentModel/validation/modelFields.js";
+import { ModelFieldCompression } from "~/features/contentModel/ModelFieldCompression/index.js";
 
 /**
  * Generate modelId from model following the exact logic from beforeCreate.ts
@@ -57,12 +58,13 @@ const getModelId = (model: { modelId?: string; name?: string }): string => {
  */
 class CreateModelRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
-        private modelCache: ModelCache.Interface,
-        private pluginModelsProvider: PluginModelsProvider.Interface,
-        private listModelsUseCase: ListModelsUseCase.Interface,
-        private storageOperations: StorageOperations.Interface,
-        private tenantContext: TenantContext.Interface,
-        private cmsContext: CmsContext.Interface
+        private readonly modelCache: ModelCache.Interface,
+        private readonly pluginModelsProvider: PluginModelsProvider.Interface,
+        private readonly listModelsUseCase: ListModelsUseCase.Interface,
+        private readonly storageOperations: StorageOperations.Interface,
+        private readonly tenantContext: TenantContext.Interface,
+        private readonly cmsContext: CmsContext.Interface,
+        private readonly modelFieldCompression: ModelFieldCompression.Interface
     ) {}
 
     async execute(model: CmsModel): Promise<Result<void, RepositoryAbstraction.Error>> {
@@ -157,8 +159,15 @@ class CreateModelRepositoryImpl implements RepositoryAbstraction.Interface {
             // TODO: ideally, this will eventually be handled by the Model domain object
             model.tags = ensureTypeTag(model);
 
+            const fields = await this.modelFieldCompression.compress(model.fields);
+
             // Persist to storage
-            await this.storageOperations.models.create({ model });
+            await this.storageOperations.models.create({
+                model: {
+                    ...model,
+                    fields
+                }
+            });
 
             // Clear cache
             this.modelCache.clear();
@@ -179,6 +188,7 @@ export const CreateModelRepository = RepositoryAbstraction.createImplementation(
         ListModelsUseCase,
         StorageOperations,
         TenantContext,
-        CmsContext
+        CmsContext,
+        ModelFieldCompression
     ]
 });

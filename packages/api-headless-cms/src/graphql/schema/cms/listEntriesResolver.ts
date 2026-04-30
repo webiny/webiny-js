@@ -79,6 +79,17 @@ export const createListEntriesResolver = () => {
                 variables: { where: transformedWhere, sort: transformedSort, limit, after, search }
             })) as ExecutionResult;
 
+            if (result.errors && result.errors.length > 0) {
+                return {
+                    data: [],
+                    meta: { cursor: null, hasMoreItems: false, totalCount: 0 },
+                    error: {
+                        message: result.errors.map(e => e.message).join("; "),
+                        code: "LIST_ENTRIES_ERROR"
+                    }
+                };
+            }
+
             const operationName = `list${model.pluralApiName}`;
             return (
                 result.data?.[operationName] || {

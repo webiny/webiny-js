@@ -16,6 +16,8 @@ class MockDataCreatorTask implements TaskDefinition.Interface<
     title = "Mock Data Creator";
     maxIterations = 500;
 
+    selfCleanup = "always" as const;
+
     constructor(private context: CmsContext.Interface) {}
 
     async run(params: TaskDefinition.RunParams<IMockDataCreatorInput, IMockDataCreatorOutput>) {
