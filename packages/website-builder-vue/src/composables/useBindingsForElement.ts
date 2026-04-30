@@ -18,13 +18,20 @@ export const useBindingsForElement = (elementId: string, breakpoint: Ref<string>
     const documentStore = useDocumentStore();
     const viewport = useViewport();
 
-    // Bridge MobX document → Vue shallowRef.
-    const document = useObservable(() => documentStore.getDocument());
+    // Observe this element's bindings directly inside the MobX autorun so that
+    // deep mutations from applyPatch (e.g. adding a child element) trigger a
+    // re-render without needing the top-level document reference to change.
+    // toJS() inside the autorun causes MobX to track all sub-properties.
+    const elementBindings = useObservable(() => {
+        const doc = documentStore.getDocument();
+        if (!doc) {
+            return undefined;
+        }
+        return toJS(doc.bindings[elementId]);
+    });
 
     return computed(() => {
-        if (!document.value) {return {};}
-
-        const bindings = toJS(document.value.bindings[elementId]) ?? {};
+        const bindings = elementBindings.value ?? {};
         const breakpoints =
             viewport.value?.breakpoints?.map((bp: { name: string }) => bp.name) ?? [];
         const processor = new BindingsProcessor(breakpoints);
