@@ -6,7 +6,7 @@ export function formatDateForDisplay(
         | Date
         | string
         | number
-        | { from?: Date; to?: Date }
+        | { from?: string; to?: string }
         | Date[]
         | string[]
         | number[]
@@ -23,12 +23,31 @@ export function formatDateForDisplay(
             return format(new Date(value as string), displayFormat ?? "PPP");
         case "time":
             return value as string;
-        case "datetime-local":
-            return format(value as Date, displayFormat ?? "PPP p");
-        case "datetime-tz":
-            return value
-                ? format(new Date(value as string), displayFormat ?? "PPP p (zzz)")
-                : undefined;
+        case "dateTimeLocal":
+            return format(new Date(value as string), displayFormat ?? "PPP p");
+        case "dateTimeTz": {
+            if (!value) {
+                return undefined;
+            }
+            const isoStr = value as string;
+            const tzMatch = isoStr.match(/([+-]\d{2}:\d{2})$/);
+            const tz = tzMatch ? `UTC${tzMatch[1]}` : "";
+            const dateWithoutTz = isoStr.replace(/[+-]\d{2}:\d{2}$/, "");
+            const parts = dateWithoutTz.split("T");
+            if (parts.length < 2) {
+                return isoStr;
+            }
+            const datePart = new Date(parts[0] + "T00:00:00");
+            const timeParts = parts[1].split(":");
+            const hours = Number(timeParts[0]);
+            const minutes = timeParts[1] ?? "00";
+            const ampm = hours >= 12 ? "PM" : "AM";
+            const h12 = hours % 12 || 12;
+            if (displayFormat) {
+                return `${format(datePart, displayFormat)} ${h12}:${minutes} ${ampm} (${tz})`;
+            }
+            return `${format(datePart, "PPP")} ${h12}:${minutes} ${ampm} (${tz})`;
+        }
         case "month": {
             if (displayFormat) {
                 const parsed = parseMonthValue(value as string);
@@ -57,32 +76,32 @@ export function formatDateForDisplay(
         }
         case "year":
             return String(value);
-        case "date-range": {
-            const range = value as { from?: Date; to?: Date };
+        case "dateRange": {
+            const range = value as { from?: string; to?: string };
             const fmt = displayFormat ?? "PPP";
             if (!range.from) {
                 return undefined;
             }
             if (!range.to) {
-                return format(range.from, fmt);
+                return format(new Date(range.from), fmt);
             }
-            return `${format(range.from, fmt)} – ${format(range.to, fmt)}`;
+            return `${format(new Date(range.from), fmt)} – ${format(new Date(range.to), fmt)}`;
         }
-        case "multiple-dates": {
-            const dates = value as Date[];
+        case "multipleDates": {
+            const dates = value as string[];
             if (dates.length === 0) {
                 return undefined;
             }
             return `${dates.length} date${dates.length > 1 ? "s" : ""} selected`;
         }
-        case "multiple-months": {
+        case "multipleMonths": {
             const months = value as string[];
             if (months.length === 0) {
                 return undefined;
             }
             return `${months.length} month${months.length > 1 ? "s" : ""} selected`;
         }
-        case "multiple-years": {
+        case "multipleYears": {
             const years = value as number[];
             if (years.length === 0) {
                 return undefined;
@@ -124,13 +143,33 @@ export function parseTimeValue(time: string): { hours: number; minutes: number }
     return { hours: Number(match[1]), minutes: Number(match[2]) };
 }
 
-export function toIsoWithTz(date: Date): string {
+export function toIsoWithTz(date: Date, timezone?: string): string {
+    if (timezone) {
+        return format(date, "yyyy-MM-dd'T'HH:mm:ss") + timezone;
+    }
     const offset = -date.getTimezoneOffset();
     const sign = offset >= 0 ? "+" : "-";
     const absOffset = Math.abs(offset);
     const hours = String(Math.floor(absOffset / 60)).padStart(2, "0");
     const minutes = String(absOffset % 60).padStart(2, "0");
     return format(date, "yyyy-MM-dd'T'HH:mm:ss") + `${sign}${hours}:${minutes}`;
+}
+
+export function getLocalTimezone(): string {
+    const offset = -new Date().getTimezoneOffset();
+    const sign = offset >= 0 ? "+" : "-";
+    const absOffset = Math.abs(offset);
+    const hours = String(Math.floor(absOffset / 60)).padStart(2, "0");
+    const minutes = String(absOffset % 60).padStart(2, "0");
+    return `${sign}${hours}:${minutes}`;
+}
+
+export function extractTimezone(isoString: string): string | undefined {
+    const match = isoString.match(/([+-]\d{2}:\d{2})$/);
+    if (match) {
+        return match[1];
+    }
+    return undefined;
 }
 
 export function toLocalNaive(isoString: string): Date {

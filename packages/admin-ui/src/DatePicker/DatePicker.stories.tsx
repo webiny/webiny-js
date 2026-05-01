@@ -13,15 +13,15 @@ const meta: Meta<typeof DatePicker> = {
             options: [
                 "date",
                 "time",
-                "datetime-local",
-                "datetime-tz",
+                "dateTimeLocal",
+                "dateTimeTz",
                 "month",
                 "week",
                 "year",
-                "date-range",
-                "multiple-dates",
-                "multiple-months",
-                "multiple-years"
+                "dateRange",
+                "multipleDates",
+                "multipleMonths",
+                "multipleYears"
             ],
             defaultValue: "date"
         },
@@ -142,8 +142,8 @@ export const TypeTime: Story = {
 
 export const TypeDateTimeLocal: Story = {
     render: args => {
-        const [value, setValue] = useState<Date | undefined>();
-        return <DatePicker {...args} type="datetime-local" value={value} onChange={setValue} />;
+        const [value, setValue] = useState<string | undefined>();
+        return <DatePicker {...args} type="dateTimeLocal" value={value} onChange={setValue} />;
     },
     args: {
         label: "Date & Time (local)"
@@ -153,7 +153,7 @@ export const TypeDateTimeLocal: Story = {
 export const TypeDateTimeTz: Story = {
     render: args => {
         const [value, setValue] = useState<string | undefined>();
-        return <DatePicker {...args} type="datetime-tz" value={value} onChange={setValue} />;
+        return <DatePicker {...args} type="dateTimeTz" value={value} onChange={setValue} />;
     },
     args: {
         label: "Date & Time (with timezone)"
@@ -200,8 +200,8 @@ export const TypeYear: Story = {
 
 export const TypeDateRange: Story = {
     render: args => {
-        const [value, setValue] = useState<{ from?: Date; to?: Date } | undefined>();
-        return <DatePicker {...args} type="date-range" value={value} onChange={setValue} />;
+        const [value, setValue] = useState<{ from?: string; to?: string } | undefined>();
+        return <DatePicker {...args} type="dateRange" value={value} onChange={setValue} />;
     },
     args: {
         label: "Date Range"
@@ -210,8 +210,8 @@ export const TypeDateRange: Story = {
 
 export const TypeMultipleDates: Story = {
     render: args => {
-        const [value, setValue] = useState<Date[]>([]);
-        return <DatePicker {...args} type="multiple-dates" value={value} onChange={setValue} />;
+        const [value, setValue] = useState<string[]>([]);
+        return <DatePicker {...args} type="multipleDates" value={value} onChange={setValue} />;
     },
     args: {
         label: "Multiple Dates"
@@ -221,7 +221,7 @@ export const TypeMultipleDates: Story = {
 export const TypeMultipleMonths: Story = {
     render: args => {
         const [value, setValue] = useState<string[]>([]);
-        return <DatePicker {...args} type="multiple-months" value={value} onChange={setValue} />;
+        return <DatePicker {...args} type="multipleMonths" value={value} onChange={setValue} />;
     },
     args: {
         label: "Multiple Months"
@@ -234,7 +234,7 @@ export const TypeMultipleYears: Story = {
         return (
             <DatePicker
                 {...args}
-                type="multiple-years"
+                type="multipleYears"
                 value={value}
                 onChange={setValue}
                 yearRange={[2015, 2035]}
@@ -267,7 +267,7 @@ const formatValue = (value: any): string => {
 };
 
 const DocumentationInner = (args: any) => {
-    const isMultiple = (args.type as string)?.startsWith("multiple-");
+    const isMultiple = (args.type as string)?.startsWith("multiple");
     const [value, setValue] = useState<any>(isMultiple ? [] : undefined);
     const [validation, setValidation] = useState({ isValid: true, message: "" });
 
@@ -319,15 +319,15 @@ export const Documentation: Story = {
             options: [
                 "date",
                 "time",
-                "datetime-local",
-                "datetime-tz",
+                "dateTimeLocal",
+                "dateTimeTz",
                 "month",
                 "week",
                 "year",
-                "date-range",
-                "multiple-dates",
-                "multiple-months",
-                "multiple-years"
+                "dateRange",
+                "multipleDates",
+                "multipleMonths",
+                "multipleYears"
             ],
             defaultValue: "date"
         },

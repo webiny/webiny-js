@@ -7,8 +7,10 @@ import { formatDateForDisplay } from "../utils/dateHelpers.js";
 import { DatePickerTrigger } from "./components/DatePickerTrigger.js";
 import { SelectedTagsList } from "./components/SelectedTagsList.js";
 
+const toDateStr = (d: Date) => format(d, "yyyy-MM-dd");
+
 const MultipleDatesPicker = ({
-    value = [],
+    value: valueProp,
     onChange,
     placeholder,
     disabled,
@@ -19,6 +21,7 @@ const MultipleDatesPicker = ({
     onOpenChange,
     className
 }: MultipleDatesPickerProps) => {
+    const value = valueProp ?? [];
     const [open, setOpen] = useState(false);
 
     const handleOpenChange = (isOpen: boolean) => {
@@ -28,25 +31,26 @@ const MultipleDatesPicker = ({
         }
     };
 
-    const displayValue = formatDateForDisplay(value, "multiple-dates");
+    const displayValue = formatDateForDisplay(value, "multipleDates");
 
-    const sortDates = (dates: Date[]) => [...dates].sort((a, b) => a.getTime() - b.getTime());
+    const selectedDates = value.map(s => new Date(s));
 
     const handleSelect = (dates: Date[] | undefined) => {
         if (onChange) {
-            onChange(sortDates(dates ?? []));
+            const sorted = [...(dates ?? [])].sort((a, b) => a.getTime() - b.getTime());
+            onChange(sorted.map(toDateStr));
         }
     };
 
     const handleRemove = (key: string) => {
         if (onChange) {
-            onChange(value.filter(d => d.toISOString() !== key));
+            onChange(value.filter(d => d !== key));
         }
     };
 
     const tagItems = value.map(d => ({
-        key: d.toISOString(),
-        label: format(d, "MMM d, yyyy")
+        key: d,
+        label: format(new Date(d), "MMM d, yyyy")
     }));
 
     return (
@@ -63,7 +67,7 @@ const MultipleDatesPicker = ({
                 <PopoverPrimitive.Content align="start">
                     <Calendar
                         mode="multiple"
-                        selected={value}
+                        selected={selectedDates}
                         onSelect={handleSelect}
                         weekStartsOn={weekStartsOn}
                     />

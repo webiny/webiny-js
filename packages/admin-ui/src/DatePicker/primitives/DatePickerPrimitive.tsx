@@ -18,9 +18,9 @@ const DecoratableDatePickerPrimitive = (props: DatePickerPrimitiveProps) => {
             return <DateOnlyPicker {...props} />;
         case "time":
             return <TimeOnlyPicker {...props} />;
-        case "datetime-local":
+        case "dateTimeLocal":
             return <DateTimePicker {...props} withTimezone={false} />;
-        case "datetime-tz":
+        case "dateTimeTz":
             return <DateTimePicker {...props} withTimezone={true} />;
         case "month":
             return <MonthPicker {...props} />;
@@ -28,13 +28,13 @@ const DecoratableDatePickerPrimitive = (props: DatePickerPrimitiveProps) => {
             return <WeekPicker {...props} />;
         case "year":
             return <YearPicker {...props} />;
-        case "date-range":
+        case "dateRange":
             return <DateRangePicker {...props} />;
-        case "multiple-dates":
+        case "multipleDates":
             return <MultipleDatesPicker {...props} />;
-        case "multiple-months":
+        case "multipleMonths":
             return <MultipleMonthsPicker {...props} />;
-        case "multiple-years":
+        case "multipleYears":
             return <MultipleYearsPicker {...props} />;
     }
 };

@@ -27,7 +27,7 @@ export const MonthRenderer = createFieldRenderer<"monthInput">(({ field }) => {
             {field.description && <FormComponentDescription text={field.description} />}
             <Input
                 value={(field.value as string) || ""}
-                onChange={value => field.onChange(value || "")}
+                onChange={(value: string) => field.onChange(value || "")}
                 disabled={field.disabled}
                 placeholder={field.placeholder}
                 type="month"

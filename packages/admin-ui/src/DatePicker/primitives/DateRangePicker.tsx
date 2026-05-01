@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
 import { Calendar } from "~/Calendar/index.js";
 import { PopoverPrimitive } from "~/Popover/index.js";
 import type { DateRangePickerProps } from "../utils/types.js";
 import { formatDateForDisplay } from "../utils/dateHelpers.js";
 import { DatePickerTrigger } from "./components/DatePickerTrigger.js";
+
+const toDateStr = (d: Date) => format(d, "yyyy-MM-dd");
 
 const DateRangePicker = ({
     value,
@@ -28,16 +31,23 @@ const DateRangePicker = ({
         }
     };
 
-    const displayValue = formatDateForDisplay(value, "date-range", displayFormat);
+    const displayValue = formatDateForDisplay(value, "dateRange", displayFormat);
 
     const handleRangeSelect = (range: DateRange | undefined) => {
         if (onChange) {
-            onChange(range ? { from: range.from, to: range.to } : undefined);
+            if (range?.from) {
+                onChange({
+                    from: toDateStr(range.from),
+                    to: range.to ? toDateStr(range.to) : undefined
+                });
+            } else {
+                onChange(undefined);
+            }
         }
     };
 
     const selected: DateRange | undefined = value?.from
-        ? { from: value.from, to: value.to }
+        ? { from: new Date(value.from), to: value.to ? new Date(value.to) : undefined }
         : undefined;
 
     return (

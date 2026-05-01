@@ -7,7 +7,7 @@ import { YearGrid } from "./components/YearGrid.js";
 import { SelectedTagsList } from "./components/SelectedTagsList.js";
 
 const MultipleYearsPicker = ({
-    value = [],
+    value: valueProp,
     onChange,
     placeholder,
     disabled,
@@ -18,6 +18,7 @@ const MultipleYearsPicker = ({
     onOpenChange,
     className
 }: MultipleYearsPickerProps) => {
+    const value = valueProp ?? [];
     const [open, setOpen] = useState(false);
 
     const handleOpenChange = (isOpen: boolean) => {
@@ -27,7 +28,7 @@ const MultipleYearsPicker = ({
         }
     };
 
-    const displayValue = formatDateForDisplay(value, "multiple-years");
+    const displayValue = formatDateForDisplay(value, "multipleYears");
 
     const handleYearSelect = (year: number) => {
         if (!onChange) {

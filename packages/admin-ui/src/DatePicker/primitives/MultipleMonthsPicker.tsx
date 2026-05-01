@@ -9,7 +9,7 @@ import { MonthGrid } from "./components/MonthGrid.js";
 import { SelectedTagsList } from "./components/SelectedTagsList.js";
 
 const MultipleMonthsPicker = ({
-    value = [],
+    value: valueProp,
     onChange,
     placeholder,
     disabled,
@@ -19,6 +19,7 @@ const MultipleMonthsPicker = ({
     onOpenChange,
     className
 }: MultipleMonthsPickerProps) => {
+    const value = valueProp ?? [];
     const [open, setOpen] = useState(false);
     const [viewYear, setViewYear] = useState(new Date().getFullYear());
 
@@ -29,7 +30,7 @@ const MultipleMonthsPicker = ({
         }
     };
 
-    const displayValue = formatDateForDisplay(value, "multiple-months");
+    const displayValue = formatDateForDisplay(value, "multipleMonths");
 
     const handleMonthSelect = (month: number) => {
         if (!onChange) {

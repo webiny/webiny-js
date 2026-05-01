@@ -32,13 +32,13 @@ interface TimeOnlyPickerProps extends DatePickerBaseProps {
 }
 
 interface DateTimeLocalPickerProps extends DatePickerBaseProps {
-    type: "datetime-local";
-    value?: Date;
-    onChange?: (value: Date | undefined) => void;
+    type: "dateTimeLocal";
+    value?: string;
+    onChange?: (value: string | undefined) => void;
 }
 
 interface DateTimeTzPickerProps extends DatePickerBaseProps {
-    type: "datetime-tz";
+    type: "dateTimeTz";
     value?: string;
     onChange?: (value: string | undefined) => void;
 }
@@ -62,25 +62,25 @@ interface YearPickerProps extends DatePickerBaseProps {
 }
 
 interface DateRangePickerProps extends DatePickerBaseProps {
-    type: "date-range";
-    value?: { from?: Date; to?: Date };
-    onChange?: (value: { from?: Date; to?: Date } | undefined) => void;
+    type: "dateRange";
+    value?: { from?: string; to?: string };
+    onChange?: (value: { from?: string; to?: string } | undefined) => void;
 }
 
 interface MultipleDatesPickerProps extends DatePickerBaseProps {
-    type: "multiple-dates";
-    value?: Date[];
-    onChange?: (value: Date[]) => void;
+    type: "multipleDates";
+    value?: string[];
+    onChange?: (value: string[]) => void;
 }
 
 interface MultipleMonthsPickerProps extends DatePickerBaseProps {
-    type: "multiple-months";
+    type: "multipleMonths";
     value?: string[];
     onChange?: (value: string[]) => void;
 }
 
 interface MultipleYearsPickerProps extends DatePickerBaseProps {
-    type: "multiple-years";
+    type: "multipleYears";
     value?: number[];
     onChange?: (value: number[]) => void;
 }
