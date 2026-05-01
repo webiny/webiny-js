@@ -140,40 +140,88 @@ export class FieldRenderersDemoPresenter {
                 // --- Date/Time ---
                 dateOnly: fields
                     .datetime()
+                    .required()
                     .dateOnly()
                     .label("Date Only")
                     .description("Pick a calendar date")
-                    .help("Format: YYYY-MM-DD")
-                    .note("Time is not stored"),
-                dateTime: fields
-                    .datetime()
-                    .withoutTimezone()
-                    .label("Date & Time")
-                    .description("Date with time of day")
-                    .help("Stored without timezone")
-                    .note("Seconds default to :00"),
-                dateTimeTz: fields
-                    .datetime()
-                    .withTimezone()
-                    .label("Date Time + Timezone")
-                    .description("Full date, time, and timezone")
-                    .help("ISO 8601 with offset")
-                    .note("Timezone defaults to your local zone"),
+                    .note("Value: YYYY-MM-DD"),
                 timeOnly: fields
                     .datetime()
+                    .required()
                     .timeOnly()
                     .label("Time Only")
                     .description("Time without a date")
-                    .help("Format: HH:MM:SS")
                     .note("24-hour format"),
+                dateTime: fields
+                    .datetime()
+                    .required()
+                    .withoutTimezone()
+                    .label("Date & Time")
+                    .description("Date with time of day")
+                    .note("Seconds default to :00"),
+                dateTimeTz: fields
+                    .datetime()
+                    .required()
+                    .withTimezone()
+                    .label("Date Time + Timezone")
+                    .description("Full date, time, and timezone")
+                    .note("Timezone defaults to your local zone"),
+                monthOnly: fields
+                    .datetime()
+                    .required()
+                    .monthOnly()
+                    .label("Month")
+                    .description("Pick a month and year")
+                    .note("Value: YYYY-MM"),
+                weekOnly: fields
+                    .datetime()
+                    .required()
+                    .weekOnly({ startsOn: 1 })
+                    .label("Week")
+                    .description("Pick an ISO week")
+                    .note("Value: YYYY-Www"),
+                yearOnly: fields
+                    .datetime()
+                    .required()
+                    .yearOnly({ range: [2020, 2035] })
+                    .label("Year")
+                    .description("Pick a year")
+                    .note("Value: number"),
+                dateRange: fields
+                    .datetime()
+                    .required()
+                    .dateRange()
+                    .label("Date Range")
+                    .description("Pick a start and end date")
+                    .note("Value: { from, to }"),
+                multipleDates: fields
+                    .datetime()
+                    .required()
+                    .multipleDates()
+                    .label("Multiple Dates")
+                    .description("Select multiple dates")
+                    .note("Value: string[]"),
+                multipleMonths: fields
+                    .datetime()
+                    .required()
+                    .multipleMonths()
+                    .label("Multiple Months")
+                    .description("Select multiple months")
+                    .note("Value: string[]"),
+                multipleYears: fields
+                    .datetime()
+                    .required()
+                    .multipleYears({ range: [2020, 2035] })
+                    .label("Multiple Years")
+                    .description("Select multiple years")
+                    .note("Value: number[]"),
                 dateTimeList: fields
                     .datetime()
-                    .dateOnly()
+                    .required()
+                    .withTimezone()
                     .list()
-                    .label("Dates (multi)")
-                    .renderer("dateTimeInputs")
+                    .label("Dates with TZ (multi)")
                     .description("Multiple date entries")
-                    .help("Add as many dates as needed")
                     .note("Each date is independent"),
 
                 // --- Hidden ---
@@ -357,6 +405,14 @@ export class FieldRenderersDemoPresenter {
                             l.row("dateOnly", "timeOnly"),
                             l.row("dateTime"),
                             l.row("dateTimeTz"),
+                            l.separator(),
+                            l.row("monthOnly", "weekOnly"),
+                            l.row("yearOnly"),
+                            l.separator(),
+                            l.row("dateRange"),
+                            l.row("multipleDates"),
+                            l.row("multipleMonths", "multipleYears"),
+                            l.separator(),
                             l.row("dateTimeList")
                         ]);
                     })
