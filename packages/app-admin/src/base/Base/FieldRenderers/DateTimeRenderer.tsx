@@ -1,10 +1,5 @@
 import React from "react";
-import {
-    DatePickerPrimitive,
-    FormComponentDescription,
-    FormComponentLabel,
-    FormComponentNote
-} from "@webiny/admin-ui";
+import { DatePicker } from "@webiny/admin-ui";
 import { createFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 
 declare module "../../../features/formModel/abstractions.js" {
@@ -53,24 +48,26 @@ export const DateTimeRenderer = createFieldRenderer<"dateTimeInput">(({ field })
 
     return (
         <div className="w-full">
-            <FormComponentLabel
-                text={field.label}
-                required={field.required}
-                disabled={field.disabled}
-            />
-            {field.description && <FormComponentDescription text={field.description} />}
-            <DatePickerPrimitive
+            <DatePicker
+                hint={field.help}
                 type={pickerType as any}
                 value={field.value as any}
-                onChange={(v: any) => field.onChange(v)}
+                onChange={(v: any) => {
+                    field.onChange(v);
+                    field.onBlur();
+                }}
                 disabled={field.disabled}
                 placeholder={field.placeholder}
                 displayFormat={field.rendererSettings?.displayFormat}
                 yearRange={field.rendererSettings?.yearRange}
                 weekStartsOn={field.rendererSettings?.weekStartsOn}
                 presets={field.rendererSettings?.presets}
+                label={field.label}
+                description={field.description}
+                note={field.note}
+                required={field.required}
+                validation={field.validation}
             />
-            <FormComponentNote text={field.note} disabled={field.disabled} />
         </div>
     );
 });
