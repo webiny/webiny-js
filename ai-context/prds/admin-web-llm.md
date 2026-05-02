@@ -63,6 +63,7 @@ src/
 ### Tool Registry Pattern
 
 Tools are defined as a single typed registry keyed by tool name. Each entry contains:
+
 - `description`: string passed to the model
 - `schema`: Zod v4 schema for arguments
 - `impl`: async function that executes the tool
@@ -78,10 +79,10 @@ Standard OpenAI-style loop, capped at 5 iterations to prevent runaway tool chain
 1. Send `messages` + `tools` + `tool_choice: "auto"` to the engine.
 2. If response has no `tool_calls`, return the assistant message as the final reply.
 3. Otherwise, for each tool call:
-    - Look up the tool in the registry.
-    - `safeParse` the arguments against the Zod schema.
-    - If invalid, append the validation errors as the tool result so the model can self-correct.
-    - If valid, execute the implementation and append the result.
+   - Look up the tool in the registry.
+   - `safeParse` the arguments against the Zod schema.
+   - If invalid, append the validation errors as the tool result so the model can self-correct.
+   - If valid, execute the implementation and append the result.
 4. Loop.
 
 The `safeParse` step matters — even Hermes-2-Pro occasionally produces arguments that nearly-but-don't-quite match. Returning validation errors to the model lets it retry rather than crashing the app.
@@ -122,6 +123,7 @@ toolName: {
 ```
 
 Initial tools to wire up:
+
 - `get_user_todos` — fetch current user's todo list
 - `add_todo` — add a new todo item
 - _(extend with the actual app's tools)_
