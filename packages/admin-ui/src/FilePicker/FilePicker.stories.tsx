@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { type FileItemDto, FilePicker } from "~/FilePicker/index.js";
-import { AdminUiProvider } from "~/AdminUiProvider/index.js";
 
 const getRandomNumber = (min: number, max: number): number =>
     Math.floor(Math.random() * (max - min + 1)) + min;
@@ -37,15 +36,13 @@ const meta: Meta<typeof FilePicker> = {
     render: args => {
         const [selectedFile, setSelectedFile] = useState(args.value);
         return (
-            <AdminUiProvider>
-                <FilePicker
-                    {...args}
-                    value={selectedFile}
-                    onSelectItem={() => setSelectedFile(getFile())}
-                    onRemoveItem={() => setSelectedFile(null)}
-                    onEditItem={() => alert(`Editing File`)}
-                />
-            </AdminUiProvider>
+            <FilePicker
+                {...args}
+                value={selectedFile}
+                onSelectItem={() => setSelectedFile(getFile())}
+                onRemoveItem={() => setSelectedFile(null)}
+                onEditItem={() => alert(`Editing File`)}
+            />
         );
     }
 };
@@ -261,16 +258,14 @@ export const Documentation: Story = {
         }, [args.required, selectedFile]);
 
         return (
-            <AdminUiProvider>
-                <FilePicker
-                    {...args}
-                    value={selectedFile}
-                    onSelectItem={handleSelect}
-                    onRemoveItem={handleRemove}
-                    onEditItem={handleEdit}
-                    validation={validation}
-                />
-            </AdminUiProvider>
+            <FilePicker
+                {...args}
+                value={selectedFile}
+                onSelectItem={handleSelect}
+                onRemoveItem={handleRemove}
+                onEditItem={handleEdit}
+                validation={validation}
+            />
         );
     },
     args: {

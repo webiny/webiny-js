@@ -1,7 +1,5 @@
-## Plan Mode
+## Exploration
 
-- Make the plan extremely concise. Sacrifice grammar for the sake of concision.
-- At the end of each plan, give me a list of unresolved questions to answer, if any.
 - DO NOT read code in `dist` folders.
 
 ## Persist Learnings
@@ -14,7 +12,6 @@ When new backend features are discovered, update `ai-context/core-features-refer
 - Use ES modules (import/export) syntax, not CommonJS (require)
 - When generating code, once done, run `git add .` to stage all changes
 - Only import one named import per line
-- You MUST USE `import { createAbstraction } from "@webiny/feature/api";` instead of `new Abstraction()`
 - when generating code, one file MUST only contain one class
 - When refactoring, we don't care about backwards compatibility, unless explicitly stated in the prompt
 
