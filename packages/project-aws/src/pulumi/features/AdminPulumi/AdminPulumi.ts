@@ -1,5 +1,5 @@
 import { createComposite } from "@webiny/di";
-import { AdminPulumi } from "~/abstractions/index.js";
+import { AdminPulumi } from "~/abstractions/features/pulumi/index.js";
 
 export class CompositeAdminPulumi implements AdminPulumi.Interface {
     constructor(private adminPulumi: AdminPulumi.Interface[]) {}
