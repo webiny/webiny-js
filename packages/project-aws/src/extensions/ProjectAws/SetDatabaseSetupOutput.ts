@@ -1,10 +1,12 @@
-import { CorePulumi, GetProjectConfigService } from "@webiny/project/abstractions/index.js";
+import { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
 import { DatabaseSetup } from "@webiny/project/extensions/index.js";
+import { CorePulumi } from "~/abstractions/features/pulumi/index.js";
+import type { CorePulumiApp } from "~/pulumi/apps/core/createCorePulumiApp.js";
 
 class SetDatabaseSetupOutputImpl implements CorePulumi.Interface {
     constructor(private getProjectConfigService: GetProjectConfigService.Interface) {}
 
-    async execute(app: any): Promise<void> {
+    async execute(app: CorePulumiApp): Promise<void> {
         // Get the DatabaseSetup extension value
         const projectConfig = await this.getProjectConfigService.execute();
 

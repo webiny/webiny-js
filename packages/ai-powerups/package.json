@@ -31,7 +31,7 @@
     "@webiny/project-aws": "0.0.0",
     "@webiny/tasks": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "ai": "^6.0.170",
+    "ai": "^6.0.174",
     "lodash": "^4.18.1",
     "mobx": "^6.15.0",
     "mobx-react-lite": "^4.1.1",

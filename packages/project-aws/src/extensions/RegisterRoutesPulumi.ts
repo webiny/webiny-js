@@ -1,4 +1,6 @@
-import { ApiPulumi, GetProjectConfigService } from "@webiny/project/abstractions/index.js";
+import { GetProjectConfigService } from "@webiny/project/abstractions/index.js";
+import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
+import type { ApiPulumiApp } from "~/pulumi/apps/api/createApiPulumiApp.js";
 import { ApiRoute } from "./ApiRoute.js";
 import { ApiGraphql } from "~/pulumi/apps/api/ApiGraphql.js";
 
@@ -17,7 +19,7 @@ function deriveRouteName(routePath: string, method: string): string {
 class RegisterRoutesPulumiImpl implements ApiPulumi.Interface {
     constructor(private getProjectConfigService: GetProjectConfigService.Interface) {}
 
-    async execute(app: any): Promise<void> {
+    async execute(app: ApiPulumiApp): Promise<void> {
         // No tags filter — finds ApiRestRoute extensions regardless of their runtimeContext.
         const projectConfig = await this.getProjectConfigService.execute();
         const routeExtensions = projectConfig.extensionsByType(ApiRoute);
