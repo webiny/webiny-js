@@ -24,7 +24,8 @@ import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
-import { ApiPulumi } from "@webiny/project/abstractions/index.js";
+import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
+import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
 import { ApiCustomDomains as apiCustomDomainsExt } from "~/pulumi/extensions/ApiCustomDomains.js";
 import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 
@@ -140,10 +141,11 @@ export const createApiPulumiApp = () => {
 
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied to late.
+            sdk.getContainer().registerComposite(apiPulumi);
             const pulumiHandlers = sdk.getContainer().resolve(ApiPulumi);
 
             app.addHandler(() => {
-                return pulumiHandlers.execute(app as unknown as ApiPulumiApp);
+                return pulumiHandlers.execute(app as ApiPulumiApp);
             });
 
             const isProduction = app.env.isProduction;

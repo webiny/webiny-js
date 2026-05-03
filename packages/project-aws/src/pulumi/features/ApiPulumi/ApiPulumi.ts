@@ -1,5 +1,5 @@
 import { createComposite } from "@webiny/di";
-import { ApiPulumi } from "~/abstractions/index.js";
+import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
 
 export class CompositeApiPulumi implements ApiPulumi.Interface {
     constructor(private apiPulumi: ApiPulumi.Interface[]) {}

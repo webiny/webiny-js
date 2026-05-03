@@ -3,4 +3,3 @@ export { AdminBeforeBuild as AdminBeforeBuildHook } from "~/abstractions/feature
 export { AdminAfterDeploy as AdminAfterDeployHook } from "~/abstractions/features/hooks/AdminAfterDeploy.js";
 export { AdminBeforeDeploy as AdminBeforeDeployHook } from "~/abstractions/features/hooks/AdminBeforeDeploy.js";
 export { AdminBeforeWatch as AdminBeforeWatchHook } from "~/abstractions/features/hooks/AdminBeforeWatch.js";
-export { AdminPulumi } from "~/abstractions/features/pulumi/AdminPulumi.js";

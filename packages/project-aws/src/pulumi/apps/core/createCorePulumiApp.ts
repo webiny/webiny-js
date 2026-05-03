@@ -15,7 +15,8 @@ import {
 import * as random from "@pulumi/random";
 
 import { getProjectSdk } from "@webiny/project";
-import { CorePulumi } from "@webiny/project/abstractions/index.js";
+import { CorePulumi } from "~/abstractions/features/pulumi/index.js";
+import { corePulumi } from "~/pulumi/features/CorePulumi/index.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { applyAwsResourceTags, getAwsRegion } from "~/pulumi/apps/awsUtils.js";
@@ -220,10 +221,11 @@ export function createCorePulumiApp() {
 
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied to late.
+            sdk.getContainer().registerComposite(corePulumi);
             const pulumiHandlers = sdk.getContainer().resolve(CorePulumi);
 
             app.addHandler(() => {
-                return pulumiHandlers.execute(app as unknown as CorePulumiApp);
+                return pulumiHandlers.execute(app as CorePulumiApp);
             });
 
             const isProduction = app.env.isProduction;

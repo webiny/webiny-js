@@ -4,25 +4,24 @@ import {
     AdminBeforeBuild,
     AdminBeforeDeploy,
     AdminBeforeWatch,
-    AdminPulumi,
     AdminStackOutputValue,
     ApiAfterBuild,
     ApiAfterDeploy,
     ApiBeforeBuild,
     ApiBeforeDeploy,
     ApiBeforeWatch,
-    ApiPulumi,
     ApiStackOutputValue,
     CoreAfterBuild,
     CoreAfterDeploy,
     CoreBeforeBuild,
     CoreBeforeDeploy,
     CoreBeforeWatch,
-    CorePulumi,
     CoreStackOutputValue,
     ProductionEnvironments,
     PulumiResourceNamePrefix
 } from "@webiny/project/extensions/index.js";
+
+import { CorePulumi, ApiPulumi, AdminPulumi } from "./pulumi/extensions/index.js";
 
 import {
     AdminCustomDomains,
