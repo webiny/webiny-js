@@ -3,8 +3,9 @@ import { observer } from "mobx-react-lite";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { Button, FormComponentDescription, FormComponentLabel, IconButton } from "@webiny/admin-ui";
-import type { IFieldVM, IObjectFieldVM, IObjectFieldItemVM } from "~/features/formModel/index.js";
-import { isObjectFieldVM, NestedLayout } from "./ObjectFieldComponents.js";
+import { createObjectFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
+import type { IObjectFieldItemVM } from "~/features/formModel/index.js";
+import { NestedLayout } from "./ObjectFieldComponents.js";
 
 declare module "../../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -15,26 +16,32 @@ declare module "../../../../features/formModel/abstractions.js" {
     }
 }
 
-export const KeyValueTagsRenderer = observer(({ field }: { field: IFieldVM }) => {
-    if (!isObjectFieldVM(field) || !field.isList) {
+export const KeyValueTagsRenderer = createObjectFieldRenderer(({ field }) => {
+    if (!field.isList) {
         return null;
     }
 
     return <KeyValueTagsList field={field} />;
 });
 
-const KeyValueTagsList = observer(({ field }: { field: IObjectFieldVM }) => {
-    const settings = field.rendererSettings as { addItemLabel?: string } | undefined;
+const KeyValueTagsList = createObjectFieldRenderer<"keyValueTags">(({ field }) => {
+    const settings = field.rendererSettings;
+
+    const hasItems = field.items.length > 0;
 
     return (
-        <div className={"flex flex-col gap-sm"}>
+        <>
             {field.label && <FormComponentLabel text={field.label} />}
             {field.description && <FormComponentDescription text={field.description} />}
-            {field.items.map(item => (
-                <TagRow key={item.key} item={item} disabled={field.disabled} />
-            ))}
-            {!field.disabled && (
-                <div>
+            {hasItems ? (
+                <div className={"flex flex-col gap-md"}>
+                    {field.items.map(item => (
+                        <TagRow key={item.key} item={item} disabled={field.disabled} />
+                    ))}
+                </div>
+            ) : null}
+            {!field.disabled ? (
+                <div className={"mt-md"}>
                     <Button
                         onClick={() => field.addItem()}
                         text={settings?.addItemLabel ?? "Add tag"}
@@ -43,8 +50,8 @@ const KeyValueTagsList = observer(({ field }: { field: IObjectFieldVM }) => {
                         icon={<AddIcon />}
                     />
                 </div>
-            )}
-        </div>
+            ) : null}
+        </>
     );
 });
 
@@ -53,7 +60,7 @@ const TagRow = observer(({ item, disabled }: { item: IObjectFieldItemVM; disable
 
     return (
         <div className={"flex items-center gap-sm"}>
-            <div className={"flex-1"}>
+            <div className={"flex-1 gap-md"}>
                 <NestedLayout layout={inlineLayout} />
             </div>
             {!disabled && (

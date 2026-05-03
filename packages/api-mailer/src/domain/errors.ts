@@ -47,3 +47,13 @@ export class SettingsPersistenceError extends BaseError<{ error: Error }> {
         });
     }
 }
+
+export class SettingsLockedByCode extends BaseError {
+    override readonly code = "Mailer/Settings/LockedByCode" as const;
+
+    constructor() {
+        super({
+            message: "Mailer settings are managed by code and cannot be saved via the API."
+        });
+    }
+}

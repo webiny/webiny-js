@@ -2,8 +2,15 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { TransportSettings } from "~/types.js";
 
+export type MailerSettingsSource = "code" | "storage" | null;
+
+export interface ISettingsWithSource {
+    settings: TransportSettings | null;
+    source: MailerSettingsSource;
+}
+
 export interface IGetSettingsRepository {
-    get(): Promise<Result<TransportSettings | null>>;
+    get(transportName: string): Promise<Result<ISettingsWithSource>>;
 }
 
 export const GetSettingsRepository =
@@ -11,14 +18,15 @@ export const GetSettingsRepository =
 
 export namespace GetSettingsRepository {
     export type Interface = IGetSettingsRepository;
+    export type Return = Promise<Result<ISettingsWithSource>>;
 }
 
-export interface IGetSettingsUSeCase {
-    execute(): Promise<Result<TransportSettings | null>>;
+export interface IGetSettingsUseCase {
+    execute(transportName: string): Promise<Result<ISettingsWithSource>>;
 }
 
-export const GetSettingsUseCase = createAbstraction<IGetSettingsUSeCase>("GetSettingsUseCase");
+export const GetSettingsUseCase = createAbstraction<IGetSettingsUseCase>("GetSettingsUseCase");
 
 export namespace GetSettingsUseCase {
-    export type Interface = IGetSettingsUSeCase;
+    export type Interface = IGetSettingsUseCase;
 }

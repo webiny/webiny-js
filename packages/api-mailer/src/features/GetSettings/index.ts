@@ -1,1 +1,1 @@
-export { GetSettingsUseCase } from "./abstractions.js";
+export { GetSettingsUseCase, GetSettingsRepository } from "./abstractions.js";

@@ -4,7 +4,6 @@ import {
     GetProjectConfig,
     InitProjectSdkService
 } from "~/abstractions/index.js";
-import { corePulumi, apiPulumi, adminPulumi } from "~/features/index.js";
 import {
     buildAppWithHooks,
     deployAppClearWatchedLambdaFunctions,
@@ -44,11 +43,6 @@ export class DefaultInitProjectSdkService implements InitProjectSdkService.Inter
 
         // Register Pulumi extensions.
         await registerPulumiExtensions(container, projectExtensions, project);
-
-        // Pulumi composites.
-        container.registerComposite(corePulumi);
-        container.registerComposite(apiPulumi);
-        container.registerComposite(adminPulumi);
 
         // Decorators that must be applied last on top of potentially custom ones.
         container.registerDecorator(buildAppWithHooks);

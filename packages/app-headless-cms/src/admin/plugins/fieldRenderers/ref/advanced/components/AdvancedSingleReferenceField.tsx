@@ -173,7 +173,7 @@ export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceField
     const disabled = !rules.canEdit || rules.disabled;
 
     return (
-        <>
+        <div className={"@container"}>
             <FormComponentLabel text={field.label} invalid={invalid} disabled={disabled} />
             <div className={"webiny_ref-field-container"}>
                 {loading && <OverlayLoader size={"md"} />}
@@ -219,6 +219,6 @@ export const AdvancedSingleReferenceField = (props: AdvancedSingleReferenceField
                     onDialogClose={onLinkEntryDialogClose}
                 />
             )}
-        </>
+        </div>
     );
 };

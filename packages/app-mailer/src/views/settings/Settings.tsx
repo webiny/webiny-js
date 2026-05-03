@@ -17,7 +17,6 @@ import type {
 import { GET_SETTINGS_QUERY, SAVE_SETTINGS_MUTATION } from "./graphql.js";
 import type { TransportSettings, ValidationError } from "~/types.js";
 import type { Validator } from "@webiny/validation/types.js";
-import dotPropImmutable from "dot-prop-immutable";
 import { Alert, Button, Grid, Input, OverlayLoader } from "@webiny/admin-ui";
 
 const displayErrors = (errors?: ValidationError[]) => {
@@ -34,7 +33,6 @@ const displayErrors = (errors?: ValidationError[]) => {
                 return (
                     <Alert key={`${field}`} title={"Error"} type="danger">
                         {error.message}
-                        {"ssss"}
                     </Alert>
                 );
             })}
@@ -71,44 +69,96 @@ export const Settings = () => {
                     {(update, result) => {
                         const { data: settingsData, error: settingsError } =
                             response?.mailer.settings || {};
+                        const settingsSource = settingsData?.source;
                         const { loading: mutationInProgress } = result;
 
                         const onSubmit = async (data: TransportSettings): Promise<void> => {
                             setErrors([]);
-                            await update({
-                                variables: {
-                                    data
-                                },
-                                update: (cache, result) => {
-                                    const data = structuredClone(
-                                        cache.readQuery<SettingsQueryResponse>({
-                                            query: GET_SETTINGS_QUERY
-                                        })
-                                    );
-
-                                    const { data: updateData, error: updateError } =
-                                        result.data?.mailer.settings || {};
-
-                                    const errors = updateError?.data.errors;
-                                    if (errors) {
-                                        setErrors(errors);
-                                        showSnackbar(
-                                            "Settings not updated! Please check your network and console logs for detailed information."
-                                        );
-                                        return;
-                                    }
-
-                                    cache.writeQuery({
-                                        query: GET_SETTINGS_QUERY,
-                                        data: dotPropImmutable.set(data, "mailer.settings.data", {
-                                            ...settingsData,
-                                            ...updateData
-                                        })
-                                    });
-                                    showSnackbar("Settings updated successfully.");
-                                }
+                            const response = await update({
+                                variables: { data },
+                                refetchQueries: [{ query: GET_SETTINGS_QUERY }],
+                                awaitRefetchQueries: true
                             });
+
+                            const saveError = response.data?.mailer.settings.error;
+                            if (saveError) {
+                                const validationErrors = saveError.data?.errors;
+                                if (validationErrors) {
+                                    setErrors(validationErrors);
+                                }
+                                showSnackbar(
+                                    "Settings not updated! Please check your network and console logs for detailed information."
+                                );
+                                return;
+                            }
+                            showSnackbar("Settings updated successfully.");
                         };
+                        if (settingsSource === "code") {
+                            return (
+                                <CenteredView>
+                                    <SimpleForm>
+                                        <SimpleFormHeader title="Mailer Settings" />
+                                        <SimpleFormContent>
+                                            <Grid>
+                                                <Grid.Column span={12}>
+                                                    <Alert title="Managed by code" type="info">
+                                                        Mailer settings are managed by code. Edit{" "}
+                                                        <code>webiny.config.tsx</code> to change
+                                                        them.
+                                                    </Alert>
+                                                </Grid.Column>
+                                                <Grid.Column span={12}>
+                                                    <Input
+                                                        size="lg"
+                                                        type="text"
+                                                        label="Hostname"
+                                                        value={settingsData?.host ?? ""}
+                                                        disabled
+                                                    />
+                                                </Grid.Column>
+                                                <Grid.Column span={12}>
+                                                    <Input
+                                                        size="lg"
+                                                        type="number"
+                                                        label="Port"
+                                                        value={String(settingsData?.port ?? "")}
+                                                        disabled
+                                                    />
+                                                </Grid.Column>
+                                                <Grid.Column span={12}>
+                                                    <Input
+                                                        size="lg"
+                                                        type="text"
+                                                        label="User"
+                                                        value={settingsData?.user ?? ""}
+                                                        disabled
+                                                    />
+                                                </Grid.Column>
+                                                <Grid.Column span={12}>
+                                                    <Input
+                                                        size="lg"
+                                                        type="text"
+                                                        label="From"
+                                                        value={settingsData?.from ?? ""}
+                                                        disabled
+                                                    />
+                                                </Grid.Column>
+                                                <Grid.Column span={12}>
+                                                    <Input
+                                                        size="lg"
+                                                        type="text"
+                                                        label="Reply-To"
+                                                        value={settingsData?.replyTo ?? ""}
+                                                        disabled
+                                                    />
+                                                </Grid.Column>
+                                            </Grid>
+                                        </SimpleFormContent>
+                                        <SimpleFormFooter>{""}</SimpleFormFooter>
+                                    </SimpleForm>
+                                </CenteredView>
+                            );
+                        }
                         if (settingsError) {
                             return (
                                 <SimpleForm>
@@ -116,16 +166,10 @@ export const Settings = () => {
                                     <SimpleFormContent>
                                         <Grid>
                                             <Grid.Column span={12}>
-                                                <Alert title={settingsError.message} type="danger">
-                                                    {settingsError.code ===
-                                                        "PASSWORD_SECRET_ERROR" && (
-                                                        <p>
-                                                            To store the Mailer settings, you must
-                                                            have a password secret environment
-                                                            variable defined.
-                                                        </p>
-                                                    )}
-                                                </Alert>
+                                                <Alert
+                                                    title={settingsError.message}
+                                                    type="danger"
+                                                />
                                             </Grid.Column>
                                         </Grid>
                                     </SimpleFormContent>

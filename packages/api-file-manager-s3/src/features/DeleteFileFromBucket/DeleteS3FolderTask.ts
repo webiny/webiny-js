@@ -27,6 +27,8 @@ class DeleteS3FolderTask implements TaskDefinition.Interface<DeleteS3FolderInput
     maxIterations = 5;
     isPrivate = true;
 
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     public async run({
         input,
         controller

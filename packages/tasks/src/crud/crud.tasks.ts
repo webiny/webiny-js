@@ -42,6 +42,7 @@ import {
     TaskBeforeUpdateEvent
 } from "~/events/index.js";
 import { CmsWhereMapper } from "@webiny/api-headless-cms";
+import { createCleanupTaskSubtree } from "./cleanupTaskSubtree.js";
 
 const createRevisionId = (id: string) => {
     const { id: entryId } = parseIdentifier(id);
@@ -430,6 +431,8 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         return convertToLog(entry as unknown as CmsEntry<ITaskLog>);
     };
 
+    const cleanupTaskSubtree = createCleanupTaskSubtree(context);
+
     const listLogs = async (params: IListTaskLogParams) => {
         const identityContext = context.container.resolve(IdentityContext);
         const { entries, meta } = await identityContext.withoutAuthorization(async () => {
@@ -460,6 +463,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         createTask,
         updateTask,
         deleteTask,
+        cleanupTaskSubtree,
         createLog,
         updateLog,
         deleteLog,

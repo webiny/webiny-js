@@ -1,7 +1,7 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+import { createFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { Select } from "@webiny/admin-ui";
-import type { IFieldVM, IValueOption } from "~/features/formModel/index.js";
+import type { IValueOption } from "~/features/formModel/index.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
@@ -9,7 +9,7 @@ declare module "../../../features/formModel/abstractions.js" {
     }
 }
 
-export const SelectRenderer = observer(({ field }: { field: IFieldVM }) => {
+export const SelectRenderer = createFieldRenderer(({ field }) => {
     const options: IValueOption[] = field.options ?? [];
 
     return (

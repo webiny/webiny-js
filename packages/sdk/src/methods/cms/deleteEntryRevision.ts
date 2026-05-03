@@ -1,6 +1,8 @@
-import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { deleteEntryRevisionSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface DeleteEntryRevisionParams {
     modelId: string;
@@ -19,16 +21,10 @@ export interface DeleteEntryRevisionParams {
  * @param params.permanent - Whether to permanently delete the entry (default: false)
  * @returns Result containing true if deletion succeeded or an error
  */
-export async function deleteEntryRevision(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: DeleteEntryRevisionParams
-): Promise<Result<boolean, HttpError | GraphQLError | NetworkError>> {
-    const { modelId, revisionId, permanent = false } = params;
-
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
-    const query = `
+export const deleteEntryRevision = createMethod(
+    deleteEntryRevisionSchema,
+    async (config, fetchFn, { modelId, revisionId, permanent = false }) => {
+        const query = `
         mutation DeleteEntryRevision($modelId: ID!, $revisionId: ID!, $permanent: Boolean) {
             cms {
                 deleteEntryRevision(modelId: $modelId, revisionId: $revisionId, permanent: $permanent) {
@@ -42,23 +38,27 @@ export async function deleteEntryRevision(
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, { modelId, revisionId, permanent });
+        const result = await executeGraphQL(config, fetchFn, query, {
+            modelId,
+            revisionId,
+            permanent
+        });
 
-    if (result.isFail()) {
-        return result;
+        if (result.isFail()) {
+            return result;
+        }
+
+        const data = result.value;
+
+        if (data.cms.deleteEntryRevision.error) {
+            return Result.fail(
+                new ApiError(
+                    data.cms.deleteEntryRevision.error.message,
+                    data.cms.deleteEntryRevision.error.code
+                )
+            );
+        }
+
+        return Result.ok(data.cms.deleteEntryRevision.data as boolean);
     }
-
-    const data = result.value;
-
-    if (data.cms.deleteEntryRevision.error) {
-        const { GraphQLError } = await import("../../errors.js");
-        return Result.fail(
-            new GraphQLError(
-                data.cms.deleteEntryRevision.error.message,
-                data.cms.deleteEntryRevision.error.code
-            )
-        );
-    }
-
-    return Result.ok(data.cms.deleteEntryRevision.data);
-}
+);

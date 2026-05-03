@@ -105,7 +105,6 @@ export const createModelsStorageOperations = (
 
         try {
             await entity.delete(keys);
-            return model;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete model.",

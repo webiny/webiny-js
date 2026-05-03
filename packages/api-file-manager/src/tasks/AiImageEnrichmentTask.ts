@@ -1,6 +1,9 @@
 import "~/types.js";
+import { Output } from "ai";
+import { z } from "zod";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
+import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetFileUseCase } from "~/features/file/GetFile/index.js";
 import { UpdateFileUseCase } from "~/features/file/UpdateFile/index.js";
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
@@ -10,7 +13,14 @@ import { WebsocketService } from "@webiny/api-websockets/features/WebsocketServi
 export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
 
 const AI_PROMPT =
-    'Analyze this image and return a JSON object with two keys: "tags" (array of up to 5 lowercase descriptive tags) and "description" (one short sentence describing the image). Return only the JSON object, nothing else. Example: {"tags":["nature","landscape","mountain"],"description":"A mountain landscape with a clear blue sky."}';
+    "Analyze this image and return up to 5 lowercase descriptive tags and one short sentence describing the image.";
+
+const aiOutputSchema = Output.object({
+    schema: z.object({
+        tags: z.array(z.string()),
+        description: z.string()
+    })
+});
 
 export interface IAiImageEnrichmentTaskInput {
     fileId: string;
@@ -24,12 +34,15 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
     isPrivate = true;
     databaseLogs = false;
 
+    public readonly selfCleanup = ["onSuccess" as const, "onAbort" as const];
+
     constructor(
         private getFile: GetFileUseCase.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private updateFile: UpdateFileUseCase.Interface,
         private ai: Ai.Interface,
         private aiPowerUpsSettings: AiPowerUpsGetSettingsUseCase.Interface,
+        private encryption: Encryption.Interface,
         private websocketService?: WebsocketService.Interface
     ) {}
 
@@ -85,9 +98,10 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
         try {
             const aiResult = await this.ai.generateText({
                 model: firstProvider.model,
+                output: aiOutputSchema,
                 connection: {
                     sdkName: firstProvider.model.split("/")[0],
-                    apiKey: firstProvider.apiKey
+                    apiKey: this.encryption.decrypt(firstProvider.apiKeyEncrypted)
                 },
                 messages: [
                     {
@@ -106,16 +120,10 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
                 ]
             });
 
-            const parsed = JSON.parse(aiResult.text);
-            if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-                if (Array.isArray(parsed.tags)) {
-                    tags = parsed.tags.filter((t: unknown): t is string => typeof t === "string");
-                }
-                if (typeof parsed.description === "string") {
-                    description = parsed.description;
-                }
-            }
+            tags = aiResult.output.tags;
+            description = aiResult.output.description;
         } catch (error) {
+            console.log("error", error.message);
             return controller.response.error({
                 message: `AI enrichment failed: ${error instanceof Error ? error.message : String(error)}`
             });
@@ -161,6 +169,7 @@ export const AiImageEnrichmentTask = TaskDefinition.createImplementation({
         UpdateFileUseCase,
         Ai,
         AiPowerUpsGetSettingsUseCase,
+        Encryption,
         [WebsocketService, { optional: true }]
     ]
 });

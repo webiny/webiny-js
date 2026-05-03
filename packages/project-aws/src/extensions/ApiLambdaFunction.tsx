@@ -6,8 +6,8 @@ import { replaceInPath } from "replace-in-path";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { zodSrcPath } from "@webiny/project/defineExtension/zodTypes/zodSrcPath.js";
 import { ExtensionSrcResolver } from "@webiny/project/utils/index.js";
-import { ApiPulumi as ApiPulumiAbstraction } from "@webiny/project/abstractions/features/pulumi/index.js";
-import { ApiPulumi } from "@webiny/project/extensions/index.js";
+import { ApiPulumi as ApiPulumiAbstraction } from "~/abstractions/features/pulumi/index.js";
+import { ApiPulumi } from "~/pulumi/extensions/ApiPulumi.js";
 import { getTemplatesFolderPath } from "~/utils/index.js";
 
 export const ApiLambdaFunction = defineExtension({

@@ -140,45 +140,94 @@ export class FieldRenderersDemoPresenter {
                 // --- Date/Time ---
                 dateOnly: fields
                     .datetime()
+                    .required()
+                    .dateOnly()
                     .label("Date Only")
-                    .renderer("dateTimeInput", { type: "date" })
                     .description("Pick a calendar date")
-                    .help("Format: YYYY-MM-DD")
-                    .note("Time is not stored"),
+                    .note("Value: YYYY-MM-DD"),
+                timeOnly: fields
+                    .datetime()
+                    .required()
+                    .timeOnly()
+                    .label("Time Only")
+                    .description("Time without a date")
+                    .note("24-hour format"),
                 dateTime: fields
                     .datetime()
+                    .required()
+                    .withoutTimezone()
                     .label("Date & Time")
-                    .renderer("dateTimeInput", { type: "dateTime" })
                     .description("Date with time of day")
-                    .help("Stored without timezone")
                     .note("Seconds default to :00"),
                 dateTimeTz: fields
                     .datetime()
+                    .required()
+                    .withTimezone()
                     .label("Date Time + Timezone")
-                    .renderer("dateTimeInput", { type: "dateTimeTimezone" })
                     .description("Full date, time, and timezone")
-                    .help("ISO 8601 with offset")
                     .note("Timezone defaults to your local zone"),
-                timeOnly: fields
+                monthOnly: fields
                     .datetime()
-                    .label("Time Only")
-                    .renderer("dateTimeInput", { type: "time" })
-                    .description("Time without a date")
-                    .help("Format: HH:MM:SS")
-                    .note("24-hour format"),
+                    .required()
+                    .monthOnly()
+                    .label("Month")
+                    .description("Pick a month and year")
+                    .note("Value: YYYY-MM"),
+                weekOnly: fields
+                    .datetime()
+                    .required()
+                    .weekOnly({ startsOn: 1 })
+                    .label("Week")
+                    .description("Pick an ISO week")
+                    .note("Value: YYYY-Www"),
+                yearOnly: fields
+                    .datetime()
+                    .required()
+                    .yearOnly({ range: [2020, 2035] })
+                    .label("Year")
+                    .description("Pick a year")
+                    .note("Value: number"),
+                dateRange: fields
+                    .datetime()
+                    .required()
+                    .dateRange()
+                    .label("Date Range")
+                    .description("Pick a start and end date")
+                    .note("Value: { from, to }"),
+                multipleDates: fields
+                    .datetime()
+                    .required()
+                    .multipleDates()
+                    .label("Multiple Dates")
+                    .description("Select multiple dates")
+                    .note("Value: string[]"),
+                multipleMonths: fields
+                    .datetime()
+                    .required()
+                    .multipleMonths()
+                    .label("Multiple Months")
+                    .description("Select multiple months")
+                    .note("Value: string[]"),
+                multipleYears: fields
+                    .datetime()
+                    .required()
+                    .multipleYears({ range: [2020, 2035] })
+                    .label("Multiple Years")
+                    .description("Select multiple years")
+                    .note("Value: number[]"),
                 dateTimeList: fields
                     .datetime()
+                    .required()
+                    .withTimezone()
                     .list()
-                    .label("Dates (multi)")
-                    .renderer("dateTimeInputs", { type: "date" })
+                    .label("Dates with TZ (multi)")
                     .description("Multiple date entries")
-                    .help("Add as many dates as needed")
                     .note("Each date is independent"),
 
                 // --- Hidden ---
                 hiddenField: fields
                     .text()
-                    .renderer("hidden")
+                    .hidden()
                     .defaultValue("secret-value")
                     .description("Not visible in the UI")
                     .help("Carried in form data silently")
@@ -257,31 +306,27 @@ export class FieldRenderersDemoPresenter {
                 contentBlock: fields
                     .object()
                     .label("Content Block")
-                    .templates([
-                        {
-                            id: "hero",
-                            name: "Hero Banner",
-                            icon: {
+                    .template("hero", t => {
+                        t.label("Hero Banner")
+                            .icon({
                                 type: "icon",
                                 name: "fab/behance-square"
-                            },
-                            fields: f => ({
+                            })
+                            .fields(f => ({
                                 heading: f.text().label("Heading").required("Required"),
                                 image: f.text().label("Image URL")
-                            })
-                        },
-                        {
-                            id: "text",
-                            name: "Rich Text",
-                            icon: {
+                            }));
+                    })
+                    .template("text", t => {
+                        t.label("Rich Text")
+                            .icon({
                                 type: "icon",
                                 name: "fab/behance-square"
-                            },
-                            fields: f => ({
-                                body: f.text().label("Body").renderer("textarea")
                             })
-                        }
-                    ]),
+                            .fields(f => ({
+                                body: f.text().label("Body").renderer("textarea")
+                            }));
+                    }),
 
                 // --- Dynamic Zone (multi-value template list) ---
                 sections: fields
@@ -289,100 +334,113 @@ export class FieldRenderersDemoPresenter {
                     .list()
                     .label("Page Sections")
                     .renderer("dynamicZone", { container: false })
-                    .templates([
-                        {
-                            id: "hero",
-                            name: "Hero Banner",
-                            icon: {
+                    .template("hero", t => {
+                        t.label("Hero Banner")
+                            .icon({
                                 type: "icon",
                                 name: "fab/behance-square"
-                            },
-                            fields: f => ({
-                                heading: f.text().label("Heading"),
-                                subheading: f.text().label("Subheading")
                             })
-                        },
-                        {
-                            id: "cta",
-                            name: "Call To Action",
-                            icon: {
+                            .fields(f => ({
+                                heading: f.text().label("Heading"),
+                                subheading: f.text().label("Subheading"),
+                                uuid: f
+                                    .text()
+                                    .label("UUID")
+                                    .defaultValue(() => Date.now())
+                                    .cloneValue(value => `${value}/${Date.now()}`)
+                            }));
+                    })
+                    .template("cta", t => {
+                        t.label("Call To Action")
+                            .icon({
                                 type: "icon",
                                 name: "fab/behance-square"
-                            },
-                            fields: f => ({
+                            })
+                            .fields(f => ({
                                 label: f.text().label("Button Label"),
                                 url: f.text().label("URL")
-                            })
-                        }
-                    ])
+                            }));
+                    }),
+
+                // --- Files ---
+                fileImage: fields
+                    .file()
+                    .label("Image (full metadata)")
+                    .description("Stores the full file object (id, name, size, src, etc.)"),
+                fileUrl: fields
+                    .fileUrl()
+                    .label("Image URL")
+                    .description("Stores only the file URL as a string")
             }),
             layout: layout => [
-                layout.tabs({
-                    id: "mainTabs",
-                    tabs: [
-                        {
-                            id: "text",
-                            label: "Text",
-                            layout: l => [
-                                l.row("textInput"),
-                                l.row("textInputs"),
-                                l.row("tags"),
-                                l.row("textarea"),
-                                l.row("textareas"),
-                                l.row("metaTags")
-                            ]
-                        },
-                        {
-                            id: "numbers",
-                            label: "Numbers & Boolean",
-                            layout: l => [
-                                l.row("numberInput"),
-                                l.row("numberInputs"),
-                                l.row("numberOptions"),
-                                l.separator(),
-                                l.row("boolSwitch")
-                            ]
-                        },
-                        {
-                            id: "selects",
-                            label: "Selects",
-                            layout: l => [l.row("dropdown", "radioButtons"), l.row("checkboxes")]
-                        },
-                        {
-                            id: "datetime",
-                            label: "Date / Time",
-                            layout: l => [
-                                l.row("dateOnly", "timeOnly"),
-                                l.row("dateTime"),
-                                l.row("dateTimeTz"),
-                                l.row("dateTimeList")
-                            ]
-                        },
-                        {
-                            id: "rules",
-                            label: "Rules",
-                            layout: l => [
-                                l.row("enableFeature"),
-                                l.row("featureName", "featureMode"),
-                                l.row("advancedConfig")
-                            ]
-                        },
-                        {
-                            id: "dynamic",
-                            label: "Dynamic Zones",
-                            layout: l => [
-                                l.object("contentBlock", {
-                                    hero: inner => [inner.row("heading"), inner.row("image")],
-                                    text: inner => [inner.row("body")]
-                                }),
-                                l.object("sections", {
-                                    hero: inner => [inner.row("heading", "subheading")],
-                                    cta: inner => [inner.row("label", "url")]
-                                })
-                            ]
-                        }
-                    ]
-                })
+                layout
+                    .tabs("mainTabs")
+                    .tab("text", tab => {
+                        tab.label("Text").layout(l => [
+                            l.row("textInput"),
+                            l.row("textInputs"),
+                            l.row("tags"),
+                            l.row("textarea"),
+                            l.row("textareas"),
+                            l.row("metaTags")
+                        ]);
+                    })
+                    .tab("numbers", tab => {
+                        tab.label("Numbers & Boolean").layout(l => [
+                            l.row("numberInput"),
+                            l.row("numberInputs"),
+                            l.row("numberOptions"),
+                            l.separator(),
+                            l.row("boolSwitch")
+                        ]);
+                    })
+                    .tab("selects", tab => {
+                        tab.label("Selects").layout(l => [
+                            l.row("dropdown", "radioButtons"),
+                            l.row("checkboxes")
+                        ]);
+                    })
+                    .tab("datetime", tab => {
+                        tab.label("Date / Time").layout(l => [
+                            l.row("dateOnly", "timeOnly"),
+                            l.row("dateTime"),
+                            l.row("dateTimeTz"),
+                            l.separator(),
+                            l.row("monthOnly", "weekOnly"),
+                            l.row("yearOnly"),
+                            l.separator(),
+                            l.row("dateRange"),
+                            l.row("multipleDates"),
+                            l.row("multipleMonths", "multipleYears"),
+                            l.separator(),
+                            l.row("dateTimeList")
+                        ]);
+                    })
+                    .tab("rules", tab => {
+                        tab.label("Rules").layout(l => [
+                            l.row("enableFeature"),
+                            l.row("featureName", "featureMode"),
+                            l.row("advancedConfig")
+                        ]);
+                    })
+                    .tab("dynamic", tab => {
+                        tab.label("Dynamic Zones").layout(l => [
+                            l.object("contentBlock", {
+                                hero: inner => [inner.row("heading"), inner.row("image")],
+                                text: inner => [inner.row("body")]
+                            }),
+                            l.object("sections", {
+                                hero: inner => [
+                                    inner.row("heading", "subheading"),
+                                    inner.row("uuid")
+                                ],
+                                cta: inner => [inner.row("label", "url")]
+                            })
+                        ]);
+                    })
+                    .tab("files", tab => {
+                        tab.label("Files").layout(l => [l.row("fileImage", "fileUrl")]);
+                    })
             ]
         });
 

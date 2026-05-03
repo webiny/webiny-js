@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { type FileItemDto, MultiFilePicker } from "~/MultiFilePicker/index.js";
-import { AdminUiProvider } from "~/AdminUiProvider/index.js";
 
 const getRandomNumber = (min: number, max: number): number =>
     Math.floor(Math.random() * (max - min + 1)) + min;
@@ -39,32 +38,30 @@ const meta: Meta<typeof MultiFilePicker> = {
     render: args => {
         const [selectedFiles, setSelectedFiles] = useState<FileItemDto[]>([]);
         return (
-            <AdminUiProvider>
-                <MultiFilePicker
-                    {...args}
-                    values={selectedFiles}
-                    onSelectItem={() => setSelectedFiles(createFileList())}
-                    onReplaceItem={(_, index) =>
-                        setSelectedFiles(prevState => {
-                            if (!prevState) {
-                                return [];
-                            }
+            <MultiFilePicker
+                {...args}
+                values={selectedFiles}
+                onSelectItem={() => setSelectedFiles(createFileList())}
+                onReplaceItem={(_, index) =>
+                    setSelectedFiles(prevState => {
+                        if (!prevState) {
+                            return [];
+                        }
 
-                            return [
-                                ...prevState.slice(0, index),
-                                ...createFileList(1),
-                                ...prevState.slice(index + 1)
-                            ];
-                        })
-                    }
-                    onRemoveItem={item =>
-                        setSelectedFiles(prevState =>
-                            prevState?.filter(value => value.name !== item?.name)
-                        )
-                    }
-                    onEditItem={(item, i) => alert(`Editing ${item?.name} at position ${i}`)}
-                />
-            </AdminUiProvider>
+                        return [
+                            ...prevState.slice(0, index),
+                            ...createFileList(1),
+                            ...prevState.slice(index + 1)
+                        ];
+                    })
+                }
+                onRemoveItem={item =>
+                    setSelectedFiles(prevState =>
+                        prevState?.filter(value => value.name !== item?.name)
+                    )
+                }
+                onEditItem={(item, i) => alert(`Editing ${item?.name} at position ${i}`)}
+            />
         );
     }
 };
@@ -311,17 +308,15 @@ export const Documentation: Story = {
         }, [args.required, selectedFiles]);
 
         return (
-            <AdminUiProvider>
-                <MultiFilePicker
-                    {...args}
-                    values={selectedFiles}
-                    onSelectItem={handleSelect}
-                    onReplaceItem={handleReplace}
-                    onRemoveItem={handleRemove}
-                    onEditItem={handleEdit}
-                    validation={validation}
-                />
-            </AdminUiProvider>
+            <MultiFilePicker
+                {...args}
+                values={selectedFiles}
+                onSelectItem={handleSelect}
+                onReplaceItem={handleReplace}
+                onRemoveItem={handleRemove}
+                onEditItem={handleEdit}
+                validation={validation}
+            />
         );
     },
     args: {

@@ -1,12 +1,15 @@
 import { Result } from "@webiny/feature/api";
-import { GetSettingsUseCase, GetSettingsRepository } from "./abstractions.js";
-import type { TransportSettings } from "~/types.js";
+import {
+    GetSettingsUseCase,
+    GetSettingsRepository,
+    type ISettingsWithSource
+} from "./abstractions.js";
 
 class GetSettingsUseCaseImpl implements GetSettingsUseCase.Interface {
     constructor(private repository: GetSettingsRepository.Interface) {}
 
-    execute(): Promise<Result<TransportSettings | null>> {
-        return this.repository.get();
+    execute(transportName: string): Promise<Result<ISettingsWithSource>> {
+        return this.repository.get(transportName);
     }
 }
 

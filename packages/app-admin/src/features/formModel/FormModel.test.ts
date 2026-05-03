@@ -1,15 +1,24 @@
 import { describe, it, expect, vi } from "vitest";
 import { z } from "zod";
-import { FormModel } from "./FormModel.js";
-import type {
-    IFormModel,
-    IRowNodeVM,
-    ITabsNodeVM,
-    IElementNodeVM,
-    IObjectFieldVM,
-    ILayoutNodeAccessHandle,
-    LayoutNodeVM
+import { Container } from "@webiny/di";
+import { FormModelFeature } from "./feature.js";
+import {
+    FormModelFactory,
+    type IFormModel,
+    type IFormModelConfig,
+    type IRowNodeVM,
+    type ITabsNodeVM,
+    type IElementNodeVM,
+    type IObjectFieldVM,
+    type ILayoutNodeAccessHandle,
+    type LayoutNodeVM
 } from "./abstractions.js";
+
+function createForm(config: IFormModelConfig): IFormModel {
+    const container = new Container();
+    FormModelFeature.register(container);
+    return container.resolve(FormModelFactory).create(config);
+}
 
 function asRow(node: LayoutNodeVM): IRowNodeVM {
     if (node.type !== "row") {
@@ -19,7 +28,7 @@ function asRow(node: LayoutNodeVM): IRowNodeVM {
 }
 
 function createBasicForm() {
-    return new FormModel({
+    return createForm({
         fields: fields => ({
             title: fields.text().label("Title").required("Title is required"),
             path: fields.text().label("Path").required("Path is required")
@@ -54,7 +63,7 @@ describe("FormModel", () => {
         });
 
         it("should use defaultValue when provided", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     status: fields.text().defaultValue("draft")
                 })
@@ -65,7 +74,7 @@ describe("FormModel", () => {
 
     describe("getData / setData", () => {
         it("should return all field values including hidden", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields.text().label("Title"),
                     pageType: fields.text().hidden().defaultValue("static")
@@ -173,7 +182,7 @@ describe("FormModel", () => {
         });
 
         it("should validate zod schemas", async () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     email: fields.text().label("Email").schema(z.string().email("Invalid email"))
                 })
@@ -187,7 +196,7 @@ describe("FormModel", () => {
         });
 
         it("should run required check before zod schema", async () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     email: fields
                         .text()
@@ -251,7 +260,7 @@ describe("FormModel", () => {
         });
 
         it("should exclude hidden fields from layout", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields.text().label("Title"),
                     pageType: fields.text().hidden().defaultValue("static")
@@ -284,7 +293,7 @@ describe("FormModel", () => {
         });
 
         it("should use explicit layout when provided", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields.text().label("Title"),
                     path: fields.text().label("Path")
@@ -299,7 +308,7 @@ describe("FormModel", () => {
         it("should warn about orphan fields in explicit layout", () => {
             const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-            new FormModel({
+            createForm({
                 fields: fields => ({
                     title: fields.text().label("Title"),
                     path: fields.text().label("Path")
@@ -317,7 +326,7 @@ describe("FormModel", () => {
         it("should not warn about hidden orphan fields", () => {
             const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-            new FormModel({
+            createForm({
                 fields: fields => ({
                     title: fields.text().label("Title"),
                     pageType: fields.text().hidden().defaultValue("static")
@@ -332,7 +341,7 @@ describe("FormModel", () => {
 
     describe("beforeChange / afterChange", () => {
         it("should run beforeChange pipeline in order, transforming value", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     path: fields
                         .text()
@@ -348,7 +357,7 @@ describe("FormModel", () => {
 
         it("should run afterChange after value is stored", () => {
             const received: unknown[] = [];
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields
                         .text()
@@ -365,7 +374,7 @@ describe("FormModel", () => {
 
         it("should pass transformed value to afterChange", () => {
             const received: unknown[] = [];
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     path: fields
                         .text()
@@ -384,7 +393,7 @@ describe("FormModel", () => {
 
         it("should not fire afterChange when value does not change (recursion guard)", () => {
             const calls: string[] = [];
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields
                         .text()
@@ -408,7 +417,7 @@ describe("FormModel", () => {
 
         it("should not trigger beforeChange or afterChange on setData", () => {
             const calls: string[] = [];
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields
                         .text()
@@ -429,7 +438,7 @@ describe("FormModel", () => {
         });
 
         it("should support cross-field afterChange triggering target field pipeline", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields
                         .text()
@@ -455,7 +464,7 @@ describe("FormModel", () => {
         });
 
         it("should allow appending callbacks to existing fields at runtime", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields.text().label("Title")
                 })
@@ -468,7 +477,7 @@ describe("FormModel", () => {
         });
 
         it("should chain builder callbacks with runtime-appended callbacks", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     path: fields
                         .text()
@@ -484,7 +493,7 @@ describe("FormModel", () => {
         });
 
         it("should demonstrate title→path with path-dirty tracking", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields
                         .text()
@@ -536,7 +545,7 @@ describe("FormModel", () => {
 
     describe("field with options", () => {
         it("should resolve static options in field VM", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     lang: fields
                         .text()
@@ -556,7 +565,7 @@ describe("FormModel", () => {
         });
 
         it("should resolve reactive options function in field VM", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     lang: fields
                         .text()
@@ -593,7 +602,7 @@ describe("FormModel", () => {
             });
 
             it("should add a field that appears in getData but not layout until positioned", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title")
                     })
@@ -689,7 +698,7 @@ describe("FormModel", () => {
 
         describe("form.field().as() — type narrowing", () => {
             it("should return the field when type matches", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         lang: fields
                             .text()
@@ -712,7 +721,7 @@ describe("FormModel", () => {
 
         describe("modifier appends callbacks to existing fields", () => {
             it("should append beforeChange to an existing field", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         path: fields
                             .text()
@@ -730,7 +739,7 @@ describe("FormModel", () => {
 
             it("should append afterChange to an existing field", () => {
                 const received: unknown[] = [];
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         path: fields.text().label("Path")
@@ -751,7 +760,7 @@ describe("FormModel", () => {
 
         describe("layout positional modifiers", () => {
             function createFormWithLayout() {
-                return new FormModel({
+                return createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         path: fields.text().label("Path"),
@@ -840,7 +849,7 @@ describe("FormModel", () => {
 
         describe("IFormModifier integration", () => {
             it("should support a full modifier workflow: add field + position in layout + append callbacks", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title").required("Title is required"),
                         path: fields
@@ -911,7 +920,7 @@ describe("FormModel", () => {
     describe("layout system expansion (Phase 5)", () => {
         describe("separator", () => {
             it("should include separator nodes in the resolved layout", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         description: fields.text().label("Description")
@@ -931,7 +940,7 @@ describe("FormModel", () => {
             });
 
             it("should support separator via modifier layout API", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         description: fields.text().label("Description")
@@ -948,7 +957,7 @@ describe("FormModel", () => {
 
         describe("tabs", () => {
             function createFormWithTabs() {
-                return new FormModel({
+                return createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         slug: fields.text().label("Slug"),
@@ -958,25 +967,19 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title", "slug"),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                },
-                                {
-                                    id: "seo",
-                                    label: "SEO",
-                                    description: "Optimize how this page appears in search",
-                                    layout: layout => [
+                        layout
+                            .tabs("settings")
+                            .tab("general", tab => {
+                                tab.label("General").layout(layout => [layout.row("description")]);
+                            })
+                            .tab("seo", tab => {
+                                tab.label("SEO")
+                                    .description("Optimize how this page appears in search")
+                                    .layout(layout => [
                                         layout.row("metaTitle"),
                                         layout.row("metaDescription")
-                                    ]
-                                }
-                            ]
-                        })
+                                    ]);
+                            })
                     ]
                 });
             }
@@ -1042,27 +1045,20 @@ describe("FormModel", () => {
             });
 
             it("should compute hasErrors for tabs based on referenced fields", async () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title").required("Title is required"),
                         metaTitle: fields.text().label("Meta Title").required("Required")
                     }),
                     layout: layout => [
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("title")]
-                                },
-                                {
-                                    id: "seo",
-                                    label: "SEO",
-                                    layout: layout => [layout.row("metaTitle")]
-                                }
-                            ]
-                        })
+                        layout
+                            .tabs("settings")
+                            .tab("general", tab => {
+                                tab.label("General").layout(layout => [layout.row("title")]);
+                            })
+                            .tab("seo", tab => {
+                                tab.label("SEO").layout(layout => [layout.row("metaTitle")]);
+                            })
                     ]
                 });
 
@@ -1083,22 +1079,15 @@ describe("FormModel", () => {
             it("should not warn about fields inside tabs as orphans", () => {
                 const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-                new FormModel({
+                createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         description: fields.text().label("Description")
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                }
-                            ]
+                        layout.tabs("settings").tab("general", tab => {
+                            tab.label("General").layout(layout => [layout.row("description")]);
                         })
                     ]
                 });
@@ -1108,11 +1097,11 @@ describe("FormModel", () => {
             });
 
             it("should return null for tabs with empty tabs array", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title")
                     }),
-                    layout: layout => [layout.row("title"), layout.tabs({ id: "empty", tabs: [] })]
+                    layout: layout => [layout.row("title"), layout.tabs("empty")]
                 });
 
                 expect(form.vm.layout).toHaveLength(1);
@@ -1122,7 +1111,7 @@ describe("FormModel", () => {
 
         describe("element", () => {
             it("should include element nodes in the resolved layout", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title")
                     }),
@@ -1142,7 +1131,7 @@ describe("FormModel", () => {
             });
 
             it("should support element without props", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title")
                     }),
@@ -1157,7 +1146,7 @@ describe("FormModel", () => {
 
         describe("named layout node access — form.layout(nodeId)", () => {
             function createFormWithTabs() {
-                return new FormModel({
+                return createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         description: fields.text().label("Description"),
@@ -1165,21 +1154,14 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                },
-                                {
-                                    id: "seo",
-                                    label: "SEO",
-                                    layout: layout => [layout.row("metaTitle")]
-                                }
-                            ]
-                        })
+                        layout
+                            .tabs("settings")
+                            .tab("general", tab => {
+                                tab.label("General").layout(layout => [layout.row("description")]);
+                            })
+                            .tab("seo", tab => {
+                                tab.label("SEO").layout(layout => [layout.row("metaTitle")]);
+                            })
                     ]
                 });
             }
@@ -1193,10 +1175,8 @@ describe("FormModel", () => {
 
                 (form.layout("settings") as ILayoutNodeAccessHandle)
                     .as("tabs")
-                    .tab({
-                        id: "analytics",
-                        label: "Analytics",
-                        layout: () => [{ type: "row", fieldIds: ["trackingId"] }]
+                    .tab("analytics", tab => {
+                        tab.label("Analytics").layout(layout => [layout.row("trackingId")]);
                     })
                     .after("seo");
 
@@ -1215,10 +1195,8 @@ describe("FormModel", () => {
 
                 (form.layout("settings") as ILayoutNodeAccessHandle)
                     .as("tabs")
-                    .tab({
-                        id: "analytics",
-                        label: "Analytics",
-                        layout: () => [{ type: "row", fieldIds: ["trackingId"] }]
+                    .tab("analytics", tab => {
+                        tab.label("Analytics").layout(layout => [layout.row("trackingId")]);
                     })
                     .before("seo");
 
@@ -1229,46 +1207,17 @@ describe("FormModel", () => {
                 expect(tabsNode.tabs[2].id).toBe("seo");
             });
 
-            it("should append to an existing tab's layout", () => {
-                const form = createFormWithTabs();
-
-                form.fields(fields => ({
-                    ogImage: fields.text().label("OG Image")
-                }));
-
-                (form.layout("settings") as ILayoutNodeAccessHandle)
-                    .as("tabs")
-                    .tab("seo")
-                    .layout(layout => [layout.row("ogImage")]);
-
-                const tabsNode = form.vm.layout[1] as ITabsNodeVM;
-                const seoTab = tabsNode.tabs.find(t => t.id === "seo")!;
-                expect(seoTab.layout).toHaveLength(2);
-
-                const lastRow = seoTab.layout[1] as IRowNodeVM;
-                expect(lastRow.fields[0].name).toBe("ogImage");
-            });
-
             it("should throw when accessing a non-existent node ID", () => {
                 const form = createFormWithTabs();
                 expect(() =>
                     (form.layout("nonexistent") as ILayoutNodeAccessHandle).as("tabs")
                 ).toThrow('Layout node "nonexistent" not found.');
             });
-
-            it("should throw when accessing a non-existent tab ID", () => {
-                const form = createFormWithTabs();
-                expect(() =>
-                    (form.layout("settings") as ILayoutNodeAccessHandle)
-                        .as("tabs")
-                        .tab("nonexistent")
-                ).toThrow('Tab "nonexistent" not found in tabs node "settings".');
-            });
         });
 
         describe("positional modifiers targeting tabs/element nodes", () => {
             it("should insert a row before a tabs node by ID", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         subtitle: fields.text().label("Subtitle"),
@@ -1276,15 +1225,8 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                }
-                            ]
+                        layout.tabs("settings").tab("general", tab => {
+                            tab.label("General").layout(layout => [layout.row("description")]);
                         })
                     ]
                 });
@@ -1301,22 +1243,15 @@ describe("FormModel", () => {
             });
 
             it("should remove a tabs node by ID", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         description: fields.text().label("Description")
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                }
-                            ]
+                        layout.tabs("settings").tab("general", tab => {
+                            tab.label("General").layout(layout => [layout.row("description")]);
                         })
                     ]
                 });
@@ -1331,7 +1266,7 @@ describe("FormModel", () => {
             });
 
             it("should replace a tabs node by ID", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         description: fields.text().label("Description"),
@@ -1339,15 +1274,8 @@ describe("FormModel", () => {
                     }),
                     layout: layout => [
                         layout.row("title"),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                }
-                            ]
+                        layout.tabs("settings").tab("general", tab => {
+                            tab.label("General").layout(layout => [layout.row("description")]);
                         })
                     ]
                 });
@@ -1364,7 +1292,7 @@ describe("FormModel", () => {
 
         describe("modifier integration with tabs", () => {
             it("should support a full modifier workflow: base form with tabs + modifier adds tab + modifier appends to existing tab", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         description: fields.text().label("Description"),
@@ -1373,21 +1301,14 @@ describe("FormModel", () => {
                     layout: layout => [
                         layout.row("title"),
                         layout.separator(),
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("description")]
-                                },
-                                {
-                                    id: "seo",
-                                    label: "SEO",
-                                    layout: layout => [layout.row("metaTitle")]
-                                }
-                            ]
-                        })
+                        layout
+                            .tabs("settings")
+                            .tab("general", tab => {
+                                tab.label("General").layout(layout => [layout.row("description")]);
+                            })
+                            .tab("seo", tab => {
+                                tab.label("SEO").layout(layout => [layout.row("metaTitle")]);
+                            })
                     ]
                 });
 
@@ -1398,22 +1319,10 @@ describe("FormModel", () => {
 
                 (form.layout("settings") as ILayoutNodeAccessHandle)
                     .as("tabs")
-                    .tab({
-                        id: "analytics",
-                        label: "Analytics",
-                        layout: () => [{ type: "row", fieldIds: ["trackingId"] }]
+                    .tab("analytics", tab => {
+                        tab.label("Analytics").layout(layout => [layout.row("trackingId")]);
                     })
                     .after("seo");
-
-                // Modifier B: append OG Image to SEO tab
-                form.fields(fields => ({
-                    ogImage: fields.text().label("OG Image")
-                }));
-
-                (form.layout("settings") as ILayoutNodeAccessHandle)
-                    .as("tabs")
-                    .tab("seo")
-                    .layout(layout => [layout.row("ogImage")]);
 
                 // Verify full layout
                 const vm = form.vm;
@@ -1428,14 +1337,13 @@ describe("FormModel", () => {
                 expect(tabsNode.tabs[1].id).toBe("seo");
                 expect(tabsNode.tabs[2].id).toBe("analytics");
 
-                // SEO tab now has metaTitle + ogImage
+                // SEO tab has metaTitle
                 const seoTab = tabsNode.tabs[1];
-                expect(seoTab.layout).toHaveLength(2);
+                expect(seoTab.layout).toHaveLength(1);
 
                 // Verify all fields are in getData
                 const data = form.getData();
                 expect(data).toHaveProperty("trackingId");
-                expect(data).toHaveProperty("ogImage");
             });
         });
     });
@@ -1443,7 +1351,7 @@ describe("FormModel", () => {
     describe("object fields (Phase 6)", () => {
         describe("non-list object field", () => {
             function createFormWithObject() {
-                return new FormModel({
+                return createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         address: fields
@@ -1557,7 +1465,7 @@ describe("FormModel", () => {
             });
 
             it("should render object field in a row via default layout", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         address: fields
                             .object()
@@ -1611,7 +1519,7 @@ describe("FormModel", () => {
 
         describe("list object field", () => {
             function createFormWithList() {
-                return new FormModel({
+                return createForm({
                     fields: fields => ({
                         presets: fields
                             .object()
@@ -1743,7 +1651,7 @@ describe("FormModel", () => {
             });
 
             it("should validate with listSchema", async () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         presets: fields
                             .object()
@@ -1813,7 +1721,7 @@ describe("FormModel", () => {
 
         describe("hasErrors rollup through tabs", () => {
             it("should report hasErrors in tabs containing object fields", async () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         title: fields.text().label("Title"),
                         address: fields
@@ -1824,21 +1732,14 @@ describe("FormModel", () => {
                             }))
                     }),
                     layout: layout => [
-                        layout.tabs({
-                            id: "settings",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: layout => [layout.row("title")]
-                                },
-                                {
-                                    id: "details",
-                                    label: "Details",
-                                    layout: layout => [layout.row("address")]
-                                }
-                            ]
-                        })
+                        layout
+                            .tabs("settings")
+                            .tab("general", tab => {
+                                tab.label("General").layout(layout => [layout.row("title")]);
+                            })
+                            .tab("details", tab => {
+                                tab.label("Details").layout(layout => [layout.row("address")]);
+                            })
                     ]
                 });
 
@@ -1854,28 +1755,22 @@ describe("FormModel", () => {
 
     describe("templated object fields (Phase 8a)", () => {
         function createFormWithTemplatedObject() {
-            return new FormModel({
+            return createForm({
                 fields: fields => ({
                     content: fields
                         .object()
                         .label("Content")
-                        .templates([
-                            {
-                                id: "hero",
-                                name: "Hero Banner",
-                                fields: f => ({
-                                    heading: f.text().label("Heading").required("Required"),
-                                    image: f.text().label("Image")
-                                })
-                            },
-                            {
-                                id: "text",
-                                name: "Rich Text",
-                                fields: f => ({
-                                    body: f.text().label("Body").required("Required")
-                                })
-                            }
-                        ])
+                        .template("hero", t => {
+                            t.label("Hero Banner").fields(f => ({
+                                heading: f.text().label("Heading").required("Required"),
+                                image: f.text().label("Image")
+                            }));
+                        })
+                        .template("text", t => {
+                            t.label("Rich Text").fields(f => ({
+                                body: f.text().label("Body").required("Required")
+                            }));
+                        })
                 })
             });
         }
@@ -1894,90 +1789,81 @@ describe("FormModel", () => {
                 const vm = form.field("content").vm as IObjectFieldVM;
                 expect(vm.isTemplated).toBe(true);
                 expect(vm.availableTemplates).toEqual([
-                    { id: "hero", name: "Hero Banner" },
-                    { id: "text", name: "Rich Text" }
+                    { id: "hero", label: "Hero Banner" },
+                    { id: "text", label: "Rich Text" }
                 ]);
                 expect(vm.activeTemplateId).toBeNull();
                 expect(vm.fields).toEqual([]);
             });
 
-            it("rejects .fields() alongside .templates() at build time", () => {
-                expect(
-                    () =>
-                        new FormModel({
-                            fields: fields => ({
-                                content: fields
-                                    .object()
-                                    .fields(f => ({ x: f.text() }))
-                                    .templates([
-                                        { id: "a", name: "A", fields: f => ({ y: f.text() }) }
-                                    ])
-                            })
+            it("rejects .fields() alongside .template() at build time", () => {
+                expect(() =>
+                    createForm({
+                        fields: fields => ({
+                            content: fields
+                                .object()
+                                .fields(f => ({ x: f.text() }))
+                                .template("a", t => {
+                                    t.label("A").fields(f => ({ y: f.text() }));
+                                })
                         })
-                ).toThrow(/both .fields\(\) and .templates\(\)/);
+                    })
+                ).toThrow(/both .fields\(\) and .template\(\)/);
             });
 
             it("rejects duplicate template ids", () => {
-                expect(
-                    () =>
-                        new FormModel({
-                            fields: fields => ({
-                                content: fields.object().templates([
-                                    { id: "a", name: "A1", fields: f => ({ x: f.text() }) },
-                                    { id: "a", name: "A2", fields: f => ({ y: f.text() }) }
-                                ])
-                            })
+                expect(() =>
+                    createForm({
+                        fields: fields => ({
+                            content: fields
+                                .object()
+                                .template("a", t => {
+                                    t.label("A1").fields(f => ({ x: f.text() }));
+                                })
+                                .template("a", t => {
+                                    t.label("A2").fields(f => ({ y: f.text() }));
+                                })
                         })
+                    })
                 ).toThrow(/Duplicate template id "a"/);
             });
 
             it("rejects reserved _templateId as template id", () => {
-                expect(
-                    () =>
-                        new FormModel({
-                            fields: fields => ({
-                                content: fields.object().templates([
-                                    {
-                                        id: "_templateId",
-                                        name: "X",
-                                        fields: f => ({ x: f.text() })
-                                    }
-                                ])
+                expect(() =>
+                    createForm({
+                        fields: fields => ({
+                            content: fields.object().template("_templateId", t => {
+                                t.label("X").fields(f => ({ x: f.text() }));
                             })
                         })
+                    })
                 ).toThrow(/reserved/);
             });
 
             it("rejects _templateId as a child field name in a template", () => {
-                expect(
-                    () =>
-                        new FormModel({
-                            fields: fields => ({
-                                content: fields.object().templates([
-                                    {
-                                        id: "hero",
-                                        name: "Hero",
-                                        fields: f => ({ _templateId: f.text() })
-                                    }
-                                ])
+                expect(() =>
+                    createForm({
+                        fields: fields => ({
+                            content: fields.object().template("hero", t => {
+                                t.label("Hero").fields(f => ({ _templateId: f.text() }));
                             })
                         })
+                    })
                 ).toThrow(/reserved field "_templateId"/);
             });
 
-            it("allows combining .list() with .templates() (Phase 8b)", () => {
-                expect(
-                    () =>
-                        new FormModel({
-                            fields: fields => ({
-                                content: fields
-                                    .object()
-                                    .list()
-                                    .templates([
-                                        { id: "a", name: "A", fields: f => ({ x: f.text() }) }
-                                    ])
-                            })
+            it("allows combining .list() with .template() (Phase 8b)", () => {
+                expect(() =>
+                    createForm({
+                        fields: fields => ({
+                            content: fields
+                                .object()
+                                .list()
+                                .template("a", t => {
+                                    t.label("A").fields(f => ({ x: f.text() }));
+                                })
                         })
+                    })
                 ).not.toThrow();
             });
         });
@@ -2090,18 +1976,14 @@ describe("FormModel", () => {
 
         describe("validation", () => {
             it("required templated object fails validation when no template active", async () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         content: fields
                             .object()
                             .required("Pick a template")
-                            .templates([
-                                {
-                                    id: "hero",
-                                    name: "Hero",
-                                    fields: f => ({ heading: f.text() })
-                                }
-                            ])
+                            .template("hero", t => {
+                                t.label("Hero").fields(f => ({ heading: f.text() }));
+                            })
                     })
                 });
 
@@ -2111,20 +1993,16 @@ describe("FormModel", () => {
             });
 
             it("required templated object passes when template active with valid children", async () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         content: fields
                             .object()
                             .required("Pick a template")
-                            .templates([
-                                {
-                                    id: "hero",
-                                    name: "Hero",
-                                    fields: f => ({
-                                        heading: f.text().required("Required")
-                                    })
-                                }
-                            ])
+                            .template("hero", t => {
+                                t.label("Hero").fields(f => ({
+                                    heading: f.text().required("Required")
+                                }));
+                            })
                     })
                 });
 
@@ -2154,22 +2032,19 @@ describe("FormModel", () => {
 
         describe("template visibility", () => {
             it("filters availableTemplates by reactive visible callback", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         plan: fields.text().defaultValue("free"),
-                        content: fields.object().templates([
-                            {
-                                id: "basic",
-                                name: "Basic",
-                                fields: f => ({ x: f.text() })
-                            },
-                            {
-                                id: "premium",
-                                name: "Premium",
-                                visible: f => f.field("plan").getValue() === "enterprise",
-                                fields: f => ({ y: f.text() })
-                            }
-                        ])
+                        content: fields
+                            .object()
+                            .template("basic", t => {
+                                t.label("Basic").fields(f => ({ x: f.text() }));
+                            })
+                            .template("premium", t => {
+                                t.label("Premium")
+                                    .visible(f => f.field("plan").getValue() === "enterprise")
+                                    .fields(f => ({ y: f.text() }));
+                            })
                     })
                 });
 
@@ -2182,17 +2057,14 @@ describe("FormModel", () => {
             });
 
             it("hiding a template does not clear an already-active selection", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         plan: fields.text().defaultValue("enterprise"),
-                        content: fields.object().templates([
-                            {
-                                id: "premium",
-                                name: "Premium",
-                                visible: f => f.field("plan").getValue() === "enterprise",
-                                fields: f => ({ y: f.text() })
-                            }
-                        ])
+                        content: fields.object().template("premium", t => {
+                            t.label("Premium")
+                                .visible(f => f.field("plan").getValue() === "enterprise")
+                                .fields(f => ({ y: f.text() }));
+                        })
                     })
                 });
 
@@ -2232,29 +2104,23 @@ describe("FormModel", () => {
 
     describe("templated list fields (Phase 8b)", () => {
         function createFormWithTemplatedList() {
-            return new FormModel({
+            return createForm({
                 fields: fields => ({
                     sections: fields
                         .object()
                         .label("Sections")
                         .list()
-                        .templates([
-                            {
-                                id: "hero",
-                                name: "Hero",
-                                fields: f => ({
-                                    heading: f.text().required("Required"),
-                                    image: f.text()
-                                })
-                            },
-                            {
-                                id: "text",
-                                name: "Text",
-                                fields: f => ({
-                                    body: f.text().required("Required")
-                                })
-                            }
-                        ])
+                        .template("hero", t => {
+                            t.label("Hero").fields(f => ({
+                                heading: f.text().required("Required"),
+                                image: f.text()
+                            }));
+                        })
+                        .template("text", t => {
+                            t.label("Text").fields(f => ({
+                                body: f.text().required("Required")
+                            }));
+                        })
                 })
             });
         }
@@ -2408,21 +2274,20 @@ describe("FormModel", () => {
             });
 
             it("availableTemplates respects reactive visible() on templated lists", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         plan: fields.text().defaultValue("free"),
                         sections: fields
                             .object()
                             .list()
-                            .templates([
-                                { id: "basic", name: "Basic", fields: f => ({ x: f.text() }) },
-                                {
-                                    id: "premium",
-                                    name: "Premium",
-                                    visible: f => f.field("plan").getValue() === "enterprise",
-                                    fields: f => ({ y: f.text() })
-                                }
-                            ])
+                            .template("basic", t => {
+                                t.label("Basic").fields(f => ({ x: f.text() }));
+                            })
+                            .template("premium", t => {
+                                t.label("Premium")
+                                    .visible(f => f.field("plan").getValue() === "enterprise")
+                                    .fields(f => ({ y: f.text() }));
+                            })
                     })
                 });
 
@@ -2487,7 +2352,7 @@ describe("FormModel", () => {
     describe("per-template / inner object layouts (Phase 8c)", () => {
         describe("non-templated single object", () => {
             it("defaults to one row per visible child when no layout.object() is registered", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         meta: fields.object().fields(f => ({
                             a: f.text().label("A"),
@@ -2502,7 +2367,7 @@ describe("FormModel", () => {
             });
 
             it("resolves the registered inner layout against the children", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         meta: fields.object().fields(f => ({
                             a: f.text().label("A"),
@@ -2517,21 +2382,20 @@ describe("FormModel", () => {
             });
 
             it("throws when a per-template map is passed to a non-templated field", () => {
-                expect(
-                    () =>
-                        new FormModel({
-                            fields: fields => ({
-                                meta: fields.object().fields(f => ({ a: f.text() }))
-                            }),
-                            layout: layout => [layout.object("meta", { tplA: l => [l.row("a")] })]
-                        })
+                expect(() =>
+                    createForm({
+                        fields: fields => ({
+                            meta: fields.object().fields(f => ({ a: f.text() }))
+                        }),
+                        layout: layout => [layout.object("meta", { tplA: l => [l.row("a")] })]
+                    })
                 ).toThrow(/not templated/);
             });
         });
 
         describe("non-templated list", () => {
             it("applies the inner layout to every list item", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         rows: fields
                             .object()
@@ -2553,36 +2417,30 @@ describe("FormModel", () => {
         });
 
         describe("templated single object", () => {
-            function createForm(
-                layoutFactory?: ConstructorParameters<typeof FormModel>[0]["layout"]
-            ) {
-                return new FormModel({
+            function buildTemplatedForm(layoutFactory?: IFormModelConfig["layout"]) {
+                return createForm({
                     fields: fields => ({
-                        content: fields.object().templates([
-                            {
-                                id: "hero",
-                                name: "Hero",
-                                fields: f => ({
+                        content: fields
+                            .object()
+                            .template("hero", t => {
+                                t.label("Hero").fields(f => ({
                                     heading: f.text().label("Heading"),
                                     subheading: f.text().label("Subheading")
-                                })
-                            },
-                            {
-                                id: "cta",
-                                name: "CTA",
-                                fields: f => ({
+                                }));
+                            })
+                            .template("cta", t => {
+                                t.label("CTA").fields(f => ({
                                     text: f.text().label("Text"),
                                     url: f.text().label("URL")
-                                })
-                            }
-                        ])
+                                }));
+                            })
                     }),
                     layout: layoutFactory
                 });
             }
 
             it("uses the active template's per-template layout", () => {
-                const form = createForm(layout => [
+                const form = buildTemplatedForm(layout => [
                     layout.object("content", {
                         hero: l => [l.row("heading", "subheading")],
                         cta: l => [l.row("text"), l.row("url")]
@@ -2605,7 +2463,7 @@ describe("FormModel", () => {
             });
 
             it("falls back to default one-row-per-child when active template has no entry", () => {
-                const form = createForm(layout => [
+                const form = buildTemplatedForm(layout => [
                     layout.object("content", {
                         hero: l => [l.row("heading", "subheading")]
                         // no entry for "cta"
@@ -2620,7 +2478,7 @@ describe("FormModel", () => {
             });
 
             it("returns an empty layout when no template is active", () => {
-                const form = createForm(layout => [
+                const form = buildTemplatedForm(layout => [
                     layout.object("content", { hero: l => [l.row("heading", "subheading")] })
                 ]);
                 const vm = form.field("content").vm as IObjectFieldVM;
@@ -2629,7 +2487,7 @@ describe("FormModel", () => {
             });
 
             it("silently ignores an unknown template id in the layout map", () => {
-                const form = createForm(layout => [
+                const form = buildTemplatedForm(layout => [
                     layout.object("content", {
                         hero: l => [l.row("heading", "subheading")],
                         unknown: l => [l.row("xxx")]
@@ -2647,12 +2505,12 @@ describe("FormModel", () => {
 
             it("throws when a single LayoutNode[] is passed to a templated field", () => {
                 expect(() =>
-                    createForm(layout => [layout.object("content", l => [l.row("x")])])
+                    buildTemplatedForm(layout => [layout.object("content", l => [l.row("x")])])
                 ).toThrow(/is templated/);
             });
 
             it("falls back to default when no layout.object() is registered", () => {
-                const form = createForm();
+                const form = buildTemplatedForm();
                 const field = form.field("content") as any;
                 field.setTemplate("hero");
                 const vm = form.field("content").vm as IObjectFieldVM;
@@ -2663,30 +2521,24 @@ describe("FormModel", () => {
         });
 
         describe("templated list", () => {
-            function createForm() {
-                return new FormModel({
+            function buildTemplatedListForm() {
+                return createForm({
                     fields: fields => ({
                         sections: fields
                             .object()
                             .list()
-                            .templates([
-                                {
-                                    id: "hero",
-                                    name: "Hero",
-                                    fields: f => ({
-                                        heading: f.text().label("Heading"),
-                                        subheading: f.text().label("Subheading")
-                                    })
-                                },
-                                {
-                                    id: "cta",
-                                    name: "CTA",
-                                    fields: f => ({
-                                        text: f.text().label("Text"),
-                                        url: f.text().label("URL")
-                                    })
-                                }
-                            ])
+                            .template("hero", t => {
+                                t.label("Hero").fields(f => ({
+                                    heading: f.text().label("Heading"),
+                                    subheading: f.text().label("Subheading")
+                                }));
+                            })
+                            .template("cta", t => {
+                                t.label("CTA").fields(f => ({
+                                    text: f.text().label("Text"),
+                                    url: f.text().label("URL")
+                                }));
+                            })
                     }),
                     layout: layout => [
                         layout.object("sections", {
@@ -2698,7 +2550,7 @@ describe("FormModel", () => {
             }
 
             it("each item resolves layout against its own template", () => {
-                const form = createForm();
+                const form = buildTemplatedListForm();
                 const field = form.field("sections") as any;
                 field.addItem("hero");
                 field.addItem("cta");
@@ -2713,18 +2565,14 @@ describe("FormModel", () => {
             });
 
             it("hides hidden child fields from the resolved layout row", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
-                        content: fields.object().templates([
-                            {
-                                id: "hero",
-                                name: "Hero",
-                                fields: f => ({
-                                    heading: f.text(),
-                                    secret: f.text().hidden()
-                                })
-                            }
-                        ])
+                        content: fields.object().template("hero", t => {
+                            t.label("Hero").fields(f => ({
+                                heading: f.text(),
+                                secret: f.text().hidden()
+                            }));
+                        })
                     }),
                     layout: layout => [
                         layout.object("content", {
@@ -2741,13 +2589,11 @@ describe("FormModel", () => {
 
         describe("interaction with form.vm.layout", () => {
             it("the form layout exposes a single-field row for the object", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
-                        content: fields
-                            .object()
-                            .templates([
-                                { id: "hero", name: "Hero", fields: f => ({ heading: f.text() }) }
-                            ])
+                        content: fields.object().template("hero", t => {
+                            t.label("Hero").fields(f => ({ heading: f.text() }));
+                        })
                     }),
                     layout: layout => [layout.object("content", { hero: l => [l.row("heading")] })]
                 });
@@ -2758,14 +2604,14 @@ describe("FormModel", () => {
             });
 
             it("hides the object node from form.vm.layout when the field is not visible", () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         content: fields
                             .object()
                             .hidden()
-                            .templates([
-                                { id: "hero", name: "Hero", fields: f => ({ heading: f.text() }) }
-                            ])
+                            .template("hero", t => {
+                                t.label("Hero").fields(f => ({ heading: f.text() }));
+                            })
                     }),
                     layout: layout => [layout.object("content", { hero: l => [l.row("heading")] })]
                 });
@@ -2776,7 +2622,7 @@ describe("FormModel", () => {
 
     describe("nested object layouts (Phase 8c.1)", () => {
         it("registers layout.object() nested inside another object's inner layout (non-templated)", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     page: fields.object().fields(f => ({
                         title: f.text(),
@@ -2804,7 +2650,7 @@ describe("FormModel", () => {
         });
 
         it("supports three levels of nesting", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     a: fields.object().fields(f => ({
                         b: f.object().fields(g => ({
@@ -2829,21 +2675,17 @@ describe("FormModel", () => {
         });
 
         it("registers nested layouts on a templated single object when its template activates", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
-                    block: fields.object().templates([
-                        {
-                            id: "hero",
-                            name: "Hero",
-                            fields: f => ({
-                                heading: f.text(),
-                                seo: f.object().fields(g => ({
-                                    metaTitle: g.text(),
-                                    metaDescription: g.text()
-                                }))
-                            })
-                        }
-                    ])
+                    block: fields.object().template("hero", t => {
+                        t.label("Hero").fields(f => ({
+                            heading: f.text(),
+                            seo: f.object().fields(g => ({
+                                metaTitle: g.text(),
+                                metaDescription: g.text()
+                            }))
+                        }));
+                    })
                 }),
                 layout: layout => [
                     layout.object("block", {
@@ -2866,24 +2708,20 @@ describe("FormModel", () => {
         });
 
         it("registers nested layouts on a templated list — each item gets its own", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     sections: fields
                         .object()
                         .list()
-                        .templates([
-                            {
-                                id: "hero",
-                                name: "Hero",
-                                fields: f => ({
-                                    heading: f.text(),
-                                    seo: f.object().fields(g => ({
-                                        metaTitle: g.text(),
-                                        metaDescription: g.text()
-                                    }))
-                                })
-                            }
-                        ])
+                        .template("hero", t => {
+                            t.label("Hero").fields(f => ({
+                                heading: f.text(),
+                                seo: f.object().fields(g => ({
+                                    metaTitle: g.text(),
+                                    metaDescription: g.text()
+                                }))
+                            }));
+                        })
                 }),
                 layout: layout => [
                     layout.object("sections", {
@@ -2909,7 +2747,7 @@ describe("FormModel", () => {
         });
 
         it("registers nested layouts on a non-templated list item upon creation", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     rows: fields
                         .object()
@@ -2940,7 +2778,7 @@ describe("FormModel", () => {
         });
 
         it("registers nested layouts on children added via field.as('object').fields() at runtime", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     page: fields.object().fields(f => ({
                         title: f.text()
@@ -2972,7 +2810,7 @@ describe("FormModel", () => {
         });
 
         it("recurses through tabs nested inside an inner layout", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     page: fields.object().fields(f => ({
                         title: f.text(),
@@ -2984,24 +2822,18 @@ describe("FormModel", () => {
                 }),
                 layout: layout => [
                     layout.object("page", l => [
-                        l.tabs({
-                            tabs: [
-                                {
-                                    id: "main",
-                                    label: "Main",
-                                    layout: l => [l.row("title")]
-                                },
-                                {
-                                    id: "seoTab",
-                                    label: "SEO",
-                                    layout: l => [
-                                        l.object("seo", inner => [
-                                            inner.row("metaTitle", "metaDescription")
-                                        ])
-                                    ]
-                                }
-                            ]
-                        })
+                        l
+                            .tabs()
+                            .tab("main", tab => {
+                                tab.label("Main").layout(l => [l.row("title")]);
+                            })
+                            .tab("seoTab", tab => {
+                                tab.label("SEO").layout(l => [
+                                    l.object("seo", inner => [
+                                        inner.row("metaTitle", "metaDescription")
+                                    ])
+                                ]);
+                            })
                     ])
                 ]
             });
@@ -3013,7 +2845,7 @@ describe("FormModel", () => {
         });
 
         it("resolves tabs inside an inner layout against the children scope", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     page: fields.object().fields(f => ({
                         title: f.text(),
@@ -3026,25 +2858,18 @@ describe("FormModel", () => {
                 }),
                 layout: layout => [
                     layout.object("page", l => [
-                        l.tabs({
-                            id: "pageTabs",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: l => [l.row("title"), l.row("body")]
-                                },
-                                {
-                                    id: "seo",
-                                    label: "SEO",
-                                    layout: l => [
-                                        l.object("seo", inner => [
-                                            inner.row("metaTitle", "metaDescription")
-                                        ])
-                                    ]
-                                }
-                            ]
-                        })
+                        l
+                            .tabs("pageTabs")
+                            .tab("general", tab => {
+                                tab.label("General").layout(l => [l.row("title"), l.row("body")]);
+                            })
+                            .tab("seo", tab => {
+                                tab.label("SEO").layout(l => [
+                                    l.object("seo", inner => [
+                                        inner.row("metaTitle", "metaDescription")
+                                    ])
+                                ]);
+                            })
                     ])
                 ]
             });
@@ -3067,37 +2892,27 @@ describe("FormModel", () => {
 
     describe("runtime template modification (Phase 8d)", () => {
         function createSingleTemplatedForm() {
-            return new FormModel({
+            return createForm({
                 fields: fields => ({
-                    content: fields.object().templates([
-                        {
-                            id: "hero",
-                            name: "Hero",
-                            fields: f => ({ heading: f.text() })
-                        }
-                    ])
+                    content: fields.object().template("hero", t => {
+                        t.label("Hero").fields(f => ({ heading: f.text() }));
+                    })
                 })
             });
         }
 
         function createListTemplatedForm() {
-            return new FormModel({
+            return createForm({
                 fields: fields => ({
                     blocks: fields
                         .object()
                         .list()
-                        .templates([
-                            {
-                                id: "hero",
-                                name: "Hero",
-                                fields: f => ({ heading: f.text() })
-                            },
-                            {
-                                id: "text",
-                                name: "Text",
-                                fields: f => ({ body: f.text() })
-                            }
-                        ])
+                        .template("hero", t => {
+                            t.label("Hero").fields(f => ({ heading: f.text() }));
+                        })
+                        .template("text", t => {
+                            t.label("Text").fields(f => ({ body: f.text() }));
+                        })
                 })
             });
         }
@@ -3105,10 +2920,8 @@ describe("FormModel", () => {
         it("templates.add appends a template and the picker lists it", () => {
             const form = createSingleTemplatedForm();
             const field = form.field("content").as("object");
-            field.templates.add({
-                id: "text",
-                name: "Text",
-                fields: f => ({ body: f.text() })
+            field.templates.add("text", t => {
+                t.label("Text").fields(f => ({ body: f.text() }));
             });
             const vm = form.field("content").vm as IObjectFieldVM;
             expect(vm.availableTemplates.map(t => t.id)).toEqual(["hero", "text"]);
@@ -3118,10 +2931,8 @@ describe("FormModel", () => {
             const form = createSingleTemplatedForm();
             const field = form.field("content").as("object");
             expect(() =>
-                field.templates.add({
-                    id: "hero",
-                    name: "Other",
-                    fields: f => ({ x: f.text() })
+                field.templates.add("hero", t => {
+                    t.label("Other").fields(f => ({ x: f.text() }));
                 })
             ).toThrow(/Duplicate template id "hero"/);
         });
@@ -3130,10 +2941,8 @@ describe("FormModel", () => {
             const form = createSingleTemplatedForm();
             const field = form.field("content").as("object");
             expect(() =>
-                field.templates.add({
-                    id: "_templateId",
-                    name: "Reserved",
-                    fields: f => ({ x: f.text() })
+                field.templates.add("_templateId", t => {
+                    t.label("Reserved").fields(f => ({ x: f.text() }));
                 })
             ).toThrow(/reserved/);
         });
@@ -3142,10 +2951,8 @@ describe("FormModel", () => {
             const form = createSingleTemplatedForm();
             const field = form.field("content").as("object");
             expect(() =>
-                field.templates.add({
-                    id: "bad",
-                    name: "Bad",
-                    fields: f => ({ _templateId: f.text() })
+                field.templates.add("bad", t => {
+                    t.label("Bad").fields(f => ({ _templateId: f.text() }));
                 })
             ).toThrow(/reserved field "_templateId"/);
         });
@@ -3191,23 +2998,21 @@ describe("FormModel", () => {
         });
 
         it("templates.add throws when called on a non-templated object field", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     plain: fields.object().fields(f => ({ x: f.text() }))
                 })
             });
             const field = form.field("plain").as("object");
             expect(() =>
-                field.templates.add({
-                    id: "x",
-                    name: "X",
-                    fields: f => ({ y: f.text() })
+                field.templates.add("x", t => {
+                    t.label("X").fields(f => ({ y: f.text() }));
                 })
             ).toThrow(/not templated/);
         });
 
         it("templates.remove throws when called on a non-templated object field", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     plain: fields.object().fields(f => ({ x: f.text() }))
                 })
@@ -3217,15 +3022,11 @@ describe("FormModel", () => {
         });
 
         it("orphan layout entry persists silently and is reused when the same template id is re-added", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
-                    content: fields.object().templates([
-                        {
-                            id: "hero",
-                            name: "Hero",
-                            fields: f => ({ heading: f.text(), subheading: f.text() })
-                        }
-                    ])
+                    content: fields.object().template("hero", t => {
+                        t.label("Hero").fields(f => ({ heading: f.text(), subheading: f.text() }));
+                    })
                 }),
                 layout: layout => [
                     layout.object("content", {
@@ -3240,10 +3041,8 @@ describe("FormModel", () => {
             expect(rowBefore.fields.map(f => f.name)).toEqual(["heading", "subheading"]);
 
             field.templates.remove("hero");
-            field.templates.add({
-                id: "hero",
-                name: "Hero v2",
-                fields: f => ({ heading: f.text(), subheading: f.text() })
+            field.templates.add("hero", t => {
+                t.label("Hero v2").fields(f => ({ heading: f.text(), subheading: f.text() }));
             });
             field.setTemplate("hero");
 
@@ -3266,7 +3065,7 @@ describe("FormModel", () => {
 
     describe("requiredWhen (Phase 11)", () => {
         it("makes a field required when the callback returns true", async () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     plan: fields.text().defaultValue("free"),
                     seats: fields
@@ -3287,7 +3086,7 @@ describe("FormModel", () => {
         });
 
         it("chains requiredWhen callbacks — first truthy wins", async () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     plan: fields.text().defaultValue("free"),
                     flag: fields.text().defaultValue("off"),
@@ -3309,7 +3108,7 @@ describe("FormModel", () => {
         });
 
         it("hard .required() always wins over requiredWhen messages", async () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     seats: fields
                         .text()
@@ -3324,7 +3123,7 @@ describe("FormModel", () => {
         });
 
         it("modifier-added requiredWhen chains with builder-defined ones", async () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     plan: fields.text().defaultValue("free"),
                     other: fields.text().defaultValue("off"),
@@ -3351,7 +3150,7 @@ describe("FormModel", () => {
 
     describe("computed / computedUntilDirty (Phase 11)", () => {
         it("computed field exposes derived value reactively", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     first: fields.text().defaultValue("Ada"),
                     last: fields.text().defaultValue("Lovelace"),
@@ -3369,7 +3168,7 @@ describe("FormModel", () => {
         });
 
         it("computed field stays editable but value remains derived", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     src: fields.text().defaultValue("A"),
                     derived: fields.text().computed(f => f.field("src").getValue())
@@ -3385,7 +3184,7 @@ describe("FormModel", () => {
         });
 
         it("computedUntilDirty switches to manual after first UI edit", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     src: fields.text().defaultValue("A"),
                     derived: fields
@@ -3405,7 +3204,7 @@ describe("FormModel", () => {
         });
 
         it("computed field still participates in validation", async () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     src: fields.text().defaultValue(""),
                     derived: fields
@@ -3424,7 +3223,7 @@ describe("FormModel", () => {
         });
 
         it("modifier setComputed converts a regular field into a computed one", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     src: fields.text().defaultValue("X"),
                     derived: fields.text().defaultValue("initial")
@@ -3441,7 +3240,7 @@ describe("FormModel", () => {
 
     describe('field("...").as("object").fields() (Phase 11)', () => {
         it("adds new children to an existing object field at runtime", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     profile: fields.object().fields(f => ({
                         firstName: f.text().label("First")
@@ -3463,7 +3262,7 @@ describe("FormModel", () => {
         });
 
         it("replaces existing children when keys collide", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     profile: fields.object().fields(f => ({
                         firstName: f.text().label("Old")
@@ -3482,7 +3281,7 @@ describe("FormModel", () => {
         });
 
         it("removes children when factory returns undefined", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     profile: fields.object().fields(f => ({
                         firstName: f.text(),
@@ -3503,7 +3302,7 @@ describe("FormModel", () => {
         });
 
         it("propagates added children to existing list items", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     contacts: fields
                         .object()
@@ -3532,15 +3331,11 @@ describe("FormModel", () => {
         });
 
         it("throws when called on a templated object field", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
-                    block: fields.object().templates([
-                        {
-                            id: "a",
-                            name: "A",
-                            fields: f => ({ x: f.text() })
-                        }
-                    ])
+                    block: fields.object().template("a", t => {
+                        t.label("A").fields(f => ({ x: f.text() }));
+                    })
                 })
             });
 
@@ -3554,7 +3349,7 @@ describe("FormModel", () => {
 
     describe("form.addRule() (Phase 11)", () => {
         it("runs a Zod schema against getData() and surfaces issues", async () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     password: fields.text().defaultValue("a"),
                     confirm: fields.text().defaultValue("b")
@@ -3582,7 +3377,7 @@ describe("FormModel", () => {
         });
 
         it("runs an imperative function and merges returned errors", async () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     age: fields.text().defaultValue("17")
                 })
@@ -3603,7 +3398,7 @@ describe("FormModel", () => {
         });
 
         it("supports async imperative rules", async () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     name: fields.text().defaultValue("taken")
                 })
@@ -3624,7 +3419,7 @@ describe("FormModel", () => {
 
     describe("form.setLayout() (Phase 11)", () => {
         it("replaces the layout entirely", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     a: fields.text(),
                     b: fields.text(),
@@ -3643,7 +3438,7 @@ describe("FormModel", () => {
 
         it("emits orphan warnings for fields not in the new layout", () => {
             const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     a: fields.text(),
                     b: fields.text()
@@ -3669,7 +3464,7 @@ describe("FormModel", () => {
 
             it("should be true while async schema validates", async () => {
                 let resolveValidation!: () => void;
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         email: fields.text().schema(
                             z.string().refine(async () => {
@@ -3694,7 +3489,7 @@ describe("FormModel", () => {
             });
 
             it("should be false after sync-only validation", async () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         name: fields.text().required()
                     })
@@ -3750,7 +3545,7 @@ describe("FormModel", () => {
 
         describe("validate-on-blur after submit", () => {
             it("should not validate on blur before first submit", async () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         email: fields.text().required("Required")
                     })
@@ -3761,7 +3556,7 @@ describe("FormModel", () => {
             });
 
             it("should validate on blur after first submit", async () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         email: fields
                             .text()
@@ -3782,7 +3577,7 @@ describe("FormModel", () => {
             });
 
             it("should show error on blur for invalid value after submit", async () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         name: fields.text().required("Name is required")
                     })
@@ -3804,7 +3599,7 @@ describe("FormModel", () => {
         describe("validation memoization", () => {
             it("should not re-run schema on blur when value unchanged", async () => {
                 const schemaSpy = vi.fn().mockReturnValue(true);
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         slug: fields.text().schema(z.string().refine(schemaSpy, "fail"))
                     })
@@ -3822,7 +3617,7 @@ describe("FormModel", () => {
 
             it("should re-run schema on blur when value changed", async () => {
                 const schemaSpy = vi.fn().mockReturnValue(true);
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         slug: fields.text().schema(z.string().refine(schemaSpy, "fail"))
                     })
@@ -3841,7 +3636,7 @@ describe("FormModel", () => {
 
             it("should always re-run schema on form.validate()", async () => {
                 const schemaSpy = vi.fn().mockReturnValue(true);
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         slug: fields.text().schema(z.string().refine(schemaSpy, "fail"))
                     })
@@ -3858,7 +3653,7 @@ describe("FormModel", () => {
 
             it("should clear cache on resetValidation()", async () => {
                 const schemaSpy = vi.fn().mockReturnValue(true);
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         slug: fields.text().schema(z.string().refine(schemaSpy, "fail"))
                     })
@@ -3880,7 +3675,7 @@ describe("FormModel", () => {
 
         describe("async validation with z.refine", () => {
             it("should validate async refine on submit", async () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         slug: fields.text().schema(
                             z.string().refine(async value => {
@@ -3898,7 +3693,7 @@ describe("FormModel", () => {
             });
 
             it("should pass async refine with valid value", async () => {
-                const form = new FormModel({
+                const form = createForm({
                     fields: fields => ({
                         slug: fields.text().schema(
                             z.string().refine(async value => {
@@ -3916,9 +3711,9 @@ describe("FormModel", () => {
         });
     });
 
-    describe("parseValue", () => {
+    describe("normalizeValue", () => {
         it("should coerce string to number on setValue for number fields", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     count: fields.number().label("Count")
                 })
@@ -3928,33 +3723,25 @@ describe("FormModel", () => {
             expect(form.field("count").getValue()).toBe(42);
         });
 
-        it("should pass through null and empty string for number fields", () => {
-            const form = new FormModel({
+        it("should normalize invalid values to null for number fields", () => {
+            const form = createForm({
                 fields: fields => ({
                     count: fields.number().label("Count")
                 })
             });
 
             form.field("count").setValue("");
-            expect(form.field("count").getValue()).toBe("");
+            expect(form.field("count").getValue()).toBe(null);
 
             form.field("count").setValue(null);
             expect(form.field("count").getValue()).toBe(null);
-        });
-
-        it("should pass through NaN-producing strings for number fields", () => {
-            const form = new FormModel({
-                fields: fields => ({
-                    count: fields.number().label("Count")
-                })
-            });
 
             form.field("count").setValue("abc");
-            expect(form.field("count").getValue()).toBe("abc");
+            expect(form.field("count").getValue()).toBe(null);
         });
 
         it("should store number for number field with options", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     tier: fields
                         .number()
@@ -3972,7 +3759,7 @@ describe("FormModel", () => {
         });
 
         it("should coerce to boolean on setValue for boolean fields", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     active: fields.boolean().label("Active")
                 })
@@ -3985,8 +3772,8 @@ describe("FormModel", () => {
             expect(form.field("active").getValue()).toBe(false);
         });
 
-        it("should apply parseValue on setData (via setValueSilent)", () => {
-            const form = new FormModel({
+        it("should apply normalizeValue on setData (via setValueSilent)", () => {
+            const form = createForm({
                 fields: fields => ({
                     count: fields.number().label("Count")
                 })
@@ -3998,7 +3785,7 @@ describe("FormModel", () => {
         });
 
         it("should not alter text field values", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     name: fields.text().label("Name")
                 })
@@ -4011,9 +3798,9 @@ describe("FormModel", () => {
             expect(form.field("name").getValue()).toBe(42);
         });
 
-        it("should run parseValue before beforeChange", () => {
+        it("should run normalizeValue before beforeChange", () => {
             const log: unknown[] = [];
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     count: fields
                         .number()
@@ -4032,7 +3819,7 @@ describe("FormModel", () => {
 
     describe("focusField", () => {
         it("should set focusRequested on the target field", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields.text().label("Title"),
                     path: fields.text().label("Path")
@@ -4045,27 +3832,20 @@ describe("FormModel", () => {
         });
 
         it("should activate the correct tab", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields.text().label("Title"),
                     slug: fields.text().label("Slug")
                 }),
                 layout: layout => [
-                    layout.tabs({
-                        id: "mainTabs",
-                        tabs: [
-                            {
-                                id: "general",
-                                label: "General",
-                                layout: l => [l.row("title")]
-                            },
-                            {
-                                id: "seo",
-                                label: "SEO",
-                                layout: l => [l.row("slug")]
-                            }
-                        ]
-                    })
+                    layout
+                        .tabs("mainTabs")
+                        .tab("general", tab => {
+                            tab.label("General").layout(l => [l.row("title")]);
+                        })
+                        .tab("seo", tab => {
+                            tab.label("SEO").layout(l => [l.row("slug")]);
+                        })
                 ]
             });
 
@@ -4078,7 +3858,7 @@ describe("FormModel", () => {
         });
 
         it("should activate nested tabs inside object fields", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     page: fields.object().fields(f => ({
                         title: f.text().label("Title"),
@@ -4087,21 +3867,14 @@ describe("FormModel", () => {
                 }),
                 layout: layout => [
                     layout.object("page", l => [
-                        l.tabs({
-                            id: "pageTabs",
-                            tabs: [
-                                {
-                                    id: "general",
-                                    label: "General",
-                                    layout: l => [l.row("title")]
-                                },
-                                {
-                                    id: "seo",
-                                    label: "SEO",
-                                    layout: l => [l.row("metaTitle")]
-                                }
-                            ]
-                        })
+                        l
+                            .tabs("pageTabs")
+                            .tab("general", tab => {
+                                tab.label("General").layout(l => [l.row("title")]);
+                            })
+                            .tab("seo", tab => {
+                                tab.label("SEO").layout(l => [l.row("metaTitle")]);
+                            })
                     ])
                 ]
             });
@@ -4111,7 +3884,7 @@ describe("FormModel", () => {
         });
 
         it("should clear previous focus when focusing a new field", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields.text().label("Title"),
                     path: fields.text().label("Path")
@@ -4127,7 +3900,7 @@ describe("FormModel", () => {
         });
 
         it("should allow renderer to clear focus via clearFocusRequest", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields.text().label("Title")
                 })
@@ -4141,7 +3914,7 @@ describe("FormModel", () => {
         });
 
         it("should not throw on unknown field", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields.text().label("Title")
                 })
@@ -4151,7 +3924,7 @@ describe("FormModel", () => {
         });
 
         it("should propagate qualifiedName through nested objects", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     page: fields.object().fields(f => ({
                         seo: f.object().fields(g => ({
@@ -4166,27 +3939,20 @@ describe("FormModel", () => {
         });
 
         it("field.focus() should delegate to form.focusField", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: fields => ({
                     title: fields.text().label("Title"),
                     path: fields.text().label("Path")
                 }),
                 layout: layout => [
-                    layout.tabs({
-                        id: "tabs",
-                        tabs: [
-                            {
-                                id: "t1",
-                                label: "T1",
-                                layout: l => [l.row("title")]
-                            },
-                            {
-                                id: "t2",
-                                label: "T2",
-                                layout: l => [l.row("path")]
-                            }
-                        ]
-                    })
+                    layout
+                        .tabs("tabs")
+                        .tab("t1", tab => {
+                            tab.label("T1").layout(l => [l.row("title")]);
+                        })
+                        .tab("t2", tab => {
+                            tab.label("T2").layout(l => [l.row("path")]);
+                        })
                 ]
             });
 
@@ -4198,7 +3964,7 @@ describe("FormModel", () => {
 
     describe("primitive list addItem / removeItem", () => {
         it("addItem appends to empty list", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: f => ({
                     tags: f.text().list()
                 }),
@@ -4213,7 +3979,7 @@ describe("FormModel", () => {
         });
 
         it("addItem appends with default null when no value given", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: f => ({
                     tags: f.text().list()
                 }),
@@ -4225,7 +3991,7 @@ describe("FormModel", () => {
         });
 
         it("addItem appends to existing values", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: f => ({
                     tags: f.text().list().defaultValue(["a", "b"])
                 }),
@@ -4237,7 +4003,7 @@ describe("FormModel", () => {
         });
 
         it("removeItem removes at index", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: f => ({
                     tags: f.text().list().defaultValue(["a", "b", "c"])
                 }),
@@ -4249,7 +4015,7 @@ describe("FormModel", () => {
         });
 
         it("removeItem from beginning preserves order", () => {
-            const form = new FormModel({
+            const form = createForm({
                 fields: f => ({
                     tags: f.text().list().defaultValue(["a", "b", "c"])
                 }),
@@ -4262,7 +4028,7 @@ describe("FormModel", () => {
 
         it("operations go through beforeChange pipeline", () => {
             const log: unknown[] = [];
-            const form = new FormModel({
+            const form = createForm({
                 fields: f => ({
                     tags: f
                         .text()

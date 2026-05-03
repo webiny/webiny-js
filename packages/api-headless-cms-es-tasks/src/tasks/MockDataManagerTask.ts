@@ -17,6 +17,9 @@ class MockDataManagerTask implements TaskDefinition.Interface<
     id = MOCK_DATA_MANAGER_TASK_ID;
     title = "Mock Data Manager";
     maxIterations = 500;
+
+    selfCleanup = "always" as const;
+
     private readonly context: Context;
 
     constructor(context: CmsContext.Interface) {

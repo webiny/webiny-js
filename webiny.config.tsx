@@ -10,6 +10,9 @@ export const Extensions = () => {
             {/* Admin 👇 */}
             <Admin.Extension src={"@/extensions/sampleEcommerce/index.tsx"} />
             <Admin.Extension src={"@/extensions/customPageTypes/index.tsx"} />
+            <Admin.Extension src={"@/extensions/customPageSettings/index.tsx"} />
+            <Admin.Extension src={"@/extensions/customFormFieldType/index.tsx"} />
+
             {/*<Admin.Extension src={"@/extensions/AdminTitleLogo/AdminTitleLogo.tsx"} />*/}
             {/*<Admin.Extension src={"/extensions/AdminTheme/AdminTheme.tsx"} />*/}
             {/*<Admin.Extension src={"@/extensions/LexicalPlugin.tsx"} />*/}
@@ -118,6 +121,21 @@ export const Extensions = () => {
             <Cli.Command src={"/extensions/MyCustomCommand.ts"} />
             {/* 🚧 WIP 👇 */}
             {/*<AuditLogs.RetentionPeriod days={90} />*/}
+
+            {/* Tasks */}
+            <Api.Extension src={"/extensions/tasks/SelfCleaningTask.ts"} />
+            {/* Headless CMS */}
+            {/* Set to true to compress model fields before storing them in the database. */}
+            <Api.Cms.ModelFieldCompression enabled={false} />
+            {/* Mailer */}
+            <Api.Mailer.Smtp
+                host={"smtp.webiny.com"}
+                port={587}
+                user={"smtp-user"}
+                password={process.env.SMTP_PASSWORD || "unknown"}
+                from={"Webiny <test@webiny.com>"}
+                replyTo={"No-reply <no-reply@webiny.com>"}
+            />
         </>
     );
 };

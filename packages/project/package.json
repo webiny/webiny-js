@@ -37,7 +37,7 @@
     "get-tsconfig": "^4.14.0",
     "graphql-request": "^7.4.0",
     "humanize-duration": "3.33.2",
-    "jsdom": "^29.0.2",
+    "jsdom": "^29.1.1",
     "load-json-file": "^7.0.1",
     "lodash": "^4.18.1",
     "minimatch": "^10.2.5",
@@ -53,7 +53,7 @@
     "ts-morph": "^28.0.0",
     "tsx": "^4.21.0",
     "write-json-file": "^7.0.0",
-    "zod": "^4.3.6"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/debounce": "^1.2.4",
@@ -66,9 +66,6 @@
   },
   "adio": {
     "ignore": {
-      "src": [
-        "@webiny/project-aws"
-      ],
       "dependencies": [
         "exit-hook"
       ]

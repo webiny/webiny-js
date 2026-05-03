@@ -79,7 +79,7 @@ interface TemplatedListItemProps {
     item: IObjectFieldItemVM;
     index: number;
     total: number;
-    templates: { id: string; name: string }[];
+    templates: { id: string; label: string }[];
     disabled: boolean;
 }
 
@@ -93,7 +93,7 @@ const TemplatedListItem = observer(
         });
 
         const template = templates.find(t => t.id === item.templateId);
-        const title = template?.name || `Item #${index + 1}`;
+        const title = template?.label || `Item #${index + 1}`;
 
         const onDelete = () => {
             showConfirmation(() => {

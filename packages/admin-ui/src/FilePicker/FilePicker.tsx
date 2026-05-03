@@ -17,7 +17,7 @@ import {
     TextOnlyPreview
 } from "~/FilePicker/primitives/components/index.js";
 
-type FilePickerProps = FilePickerPrimitiveProps & FormComponentProps;
+type FilePickerProps = FilePickerPrimitiveProps & Omit<FormComponentProps, "value">;
 
 const BaseFilePicker = ({
     label,

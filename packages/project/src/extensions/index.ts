@@ -35,11 +35,8 @@ import {
     CoreBeforeWatch
 } from "./hooks/index.js";
 
-// Pulumi.
+// Pulumi (non-app-specific).
 import {
-    AdminPulumi,
-    ApiPulumi,
-    CorePulumi,
     ProductionEnvironments,
     PulumiResourceNamePrefix,
     CoreStackOutputValue,
@@ -83,10 +80,7 @@ export { CoreBeforeWatch };
 export { CoreAfterBuild };
 export { CoreAfterDeploy };
 
-// Pulumi.
-export { CorePulumi };
-export { AdminPulumi };
-export { ApiPulumi };
+// Pulumi (non-app-specific).
 export { PulumiResourceNamePrefix };
 export { ProductionEnvironments };
 export { CoreStackOutputValue };
@@ -125,10 +119,7 @@ export const definitions = [
     CoreBeforeDeploy.def,
     CoreBeforeWatch.def,
 
-    // Pulumi.
-    AdminPulumi.def,
-    ApiPulumi.def,
-    CorePulumi.def,
+    // Pulumi (non-app-specific).
     PulumiResourceNamePrefix.def,
     ProductionEnvironments.def,
     CoreStackOutputValue.def,

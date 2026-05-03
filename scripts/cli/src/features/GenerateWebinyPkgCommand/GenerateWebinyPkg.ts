@@ -8,7 +8,7 @@ import {
     UiService
 } from "../../abstractions/index.js";
 
-const ambientDeclaration = (file: string) => !file.endsWith(".d.ts");
+const ambientDeclaration = (file: string) => !file.includes("/ambient/");
 
 export interface GenerateWebinyPkg {
     execute(): Promise<void>;

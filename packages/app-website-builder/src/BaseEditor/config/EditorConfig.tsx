@@ -17,7 +17,7 @@ import { IsNotReadOnly } from "~/BaseEditor/config/IsNotReadOnly.js";
 import { IsReadOnly } from "~/BaseEditor/config/IsReadOnly.js";
 import { ElementOverlay } from "./ElementOverlay.js";
 
-interface EditorConfig {
+export interface EditorConfig {
     elements: ElementConfig[];
     inputRenderers: ElementInputConfig[];
 }
