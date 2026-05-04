@@ -7,11 +7,11 @@ export const DefaultLayoutRenderers = () => {
     return (
         <AdminConfig>
             <AdminConfig.Form.LayoutRenderer
-                name={"tabs-vertical"}
+                name={"tabsVertical"}
                 component={VerticalTabsRenderer}
             />
             <AdminConfig.Form.LayoutRenderer
-                name={"tabs-horizontal"}
+                name={"tabsHorizontal"}
                 component={HorizontalTabsRenderer}
             />
         </AdminConfig>
