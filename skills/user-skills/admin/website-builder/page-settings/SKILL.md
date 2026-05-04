@@ -134,10 +134,7 @@ class GeneralSettingsModifierImpl implements PageSettingsGroupModifier.Interface
 
   modifyForm(form: PageSettingsGroupModifier.FormBuilder): void {
     form.fields(fields => ({
-      expirationDate: fields
-        .datetime()
-        .monthOnly()
-        .label("Expiration month")
+      expirationDate: fields.datetime().monthOnly().label("Expiration month")
     }));
 
     // .after("snippet") places the field after the "snippet" field in the General tab
