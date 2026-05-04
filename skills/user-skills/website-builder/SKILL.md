@@ -183,21 +183,21 @@ a component. These shapes come from the actual SDK usage (see e.g.
 `@webiny/website-builder-nextjs/editorComponents/Image.d.ts` in the project's
 `node_modules` for the canonical file-input shape).
 
-| Input factory           | Type of `inputs.<name>` in the component                                                                                                                              |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `createTextInput`       | `string`                                                                                                                                                              |
-| `createLongTextInput`   | `string`                                                                                                                                                              |
-| `createNumberInput`     | `number`                                                                                                                                                              |
-| `createBooleanInput`    | `boolean`                                                                                                                                                             |
-| `createColorInput`      | `string` (CSS color value, e.g. `"#4632f5"` or `"var(--wb-theme-color-primary)"`)                                                                                     |
-| `createDateInput`       | `string` (ISO-8601, e.g. `"2026-04-16T14:06:00.000Z"`)                                                                                                                |
-| `createSelectInput`     | `string` (the `value` of the chosen option)                                                                                                                           |
-| `createRadioInput`      | `string` (the `value` of the chosen option)                                                                                                                           |
-| `createTagsInput`       | `string[]`                                                                                                                                                            |
-| `createFileInput`       | `{ id: string; name: string; size: number; mimeType: string; src: string; width: number; height: number }` — **object, NOT a string.** Use `.src` for the URL.        |
-| `createLexicalInput`    | `{ html?: string; state?: string }` — render with `<div dangerouslySetInnerHTML={{ __html: inputs.<name>.html ?? "" }} />`                                            |
-| `createObjectInput`     | An object literal matching the shape of its nested `fields` (e.g. `{ street: string; city: string; zip: string }`)                                                    |
-| `createSlotInput`       | `React.ReactNode` (rendered children). With `list: true`, the factory wraps inside the field value — see Grid pattern below.                                          |
+| Input factory         | Type of `inputs.<name>` in the component                                                                                                                       |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `createTextInput`     | `string`                                                                                                                                                       |
+| `createLongTextInput` | `string`                                                                                                                                                       |
+| `createNumberInput`   | `number`                                                                                                                                                       |
+| `createBooleanInput`  | `boolean`                                                                                                                                                      |
+| `createColorInput`    | `string` (CSS color value, e.g. `"#4632f5"` or `"var(--wb-theme-color-primary)"`)                                                                              |
+| `createDateInput`     | `string` (ISO-8601, e.g. `"2026-04-16T14:06:00.000Z"`)                                                                                                         |
+| `createSelectInput`   | `string` (the `value` of the chosen option)                                                                                                                    |
+| `createRadioInput`    | `string` (the `value` of the chosen option)                                                                                                                    |
+| `createTagsInput`     | `string[]`                                                                                                                                                     |
+| `createFileInput`     | `{ id: string; name: string; size: number; mimeType: string; src: string; width: number; height: number }` — **object, NOT a string.** Use `.src` for the URL. |
+| `createLexicalInput`  | `{ html?: string; state?: string }` — render with `<div dangerouslySetInnerHTML={{ __html: inputs.<name>.html ?? "" }} />`                                     |
+| `createObjectInput`   | An object literal matching the shape of its nested `fields` (e.g. `{ street: string; city: string; zip: string }`)                                             |
+| `createSlotInput`     | `React.ReactNode` (rendered children). With `list: true`, the factory wraps inside the field value — see Grid pattern below.                                   |
 
 #### List inputs (`list: true`)
 
