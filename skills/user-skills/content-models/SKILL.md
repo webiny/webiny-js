@@ -5,10 +5,19 @@ description: >
   Creating Headless CMS content models via code using the ModelFactory pattern.
   Use this skill when the developer wants to create, modify, or understand content model
   definitions, define fields and validators, set up reference fields between models,
-  configure field layouts, or work with the ModelFactory builder API. Also covers field types
-  (text, number, boolean, datetime, file, ref, object, richText) and validation (required,
-  unique, email, pattern, minLength, maxLength, gte, predefinedValues),
+  configure field layouts (including nested layouts inside object or dynamicZone fields),
+  pick the correct Admin UI renderer for a field type (textInput/textInputs,
+  lexicalEditor/lexicalEditors, file/files, objectAccordionSingle/objectAccordionMultiple, etc.),
+  or work with the ModelFactory builder API. Also covers field types
+  (text, longText, number, boolean, datetime, file, ref, object, richText, dynamicZone),
+  list (array) fields via .list() and the singular-vs-plural renderer rule,
+  validation (required, unique, email, pattern, minLength, maxLength, gte, predefinedValues),
   single-entry (singleton) models via .singleEntry(), and model/field tags via .tags().
+  Includes the correct `fields` projection syntax when querying entries via the SDK:
+  `ref` fields use double-`values.` nesting (e.g. `values.author.values.name`) because
+  they resolve to another entry, while `object` and `dynamicZone` sub-fields are inline
+  and use a single `values.` (e.g. `values.author.name`) — getting this wrong silently
+  returns null.
 ---
 
 # Creating Content Models via Code
@@ -74,19 +83,183 @@ Register in `webiny.config.tsx`:
 | `.singleEntry()`                              | Makes the model a singleton (only one entry can exist). Automatically adds the `"singleEntry"` tag.                                   |
 | `.tags(["tag1", "tag2"])`                     | Assign custom tags to the model. The tag `"type:model"` is always added automatically. Duplicates are removed.                        |
 
-## Field Types
+## Layout
 
-| Builder Method      | Description                   | Common Renderers                             |
-| ------------------- | ----------------------------- | -------------------------------------------- |
-| `fields.text()`     | Single-line text              | `"textInput"`                                |
-| `fields.longText()` | Multi-line text               | `"textarea"`                                 |
-| `fields.richText()` | Rich text (Lexical)           | `"lexicalTextInput"`                         |
-| `fields.number()`   | Numeric value                 | `"numberInput"`                              |
-| `fields.boolean()`  | True/false toggle             | `"boolean"`                                  |
-| `fields.datetime()` | Date/time picker              | `"dateTimeInput"`                            |
-| `fields.file()`     | File/image attachment         | `"fileInput"`                                |
-| `fields.ref()`      | Reference to another model    | `"refDialogSingle"`, `"refAdvancedMultiple"` |
-| `fields.object()`   | Nested object with sub-fields | `"objectInput"`                              |
+`.layout()` takes a two-dimensional array of field IDs. Each inner array is one row in
+the Admin editor, and each entry within a row is a column cell. Field IDs must exactly
+match the keys used in `.fields()`.
+
+### Top-level layout
+
+```typescript
+.layout([
+  ["name", "slug"],   // row 1: two columns
+  ["description"],    // row 2: one column, full width
+  ["category", "price"]
+])
+```
+
+### Nested layout inside an `object` field
+
+`object` fields have their own `.fields()` and `.layout()` that only reference the
+object's own sub-fields. The outer model layout should refer to the object field as a
+whole; its internal arrangement is owned by the object itself.
+
+```typescript
+.fields((fields) => ({
+  name: fields.text().renderer("textInput").label("Name"),
+  address: fields
+    .object()
+    .renderer("objectAccordionSingle")
+    .label("Address")
+    .fields((sub) => ({
+      street: sub.text().renderer("textInput").label("Street"),
+      city:   sub.text().renderer("textInput").label("City"),
+      zip:    sub.text().renderer("textInput").label("ZIP")
+    }))
+    .layout([
+      ["street"],           // inner layout — only uses sub-field IDs
+      ["city", "zip"]
+    ])
+}))
+.layout([
+  ["name"],
+  ["address"]               // outer layout just references the object field
+])
+```
+
+### Nested layout inside a `dynamicZone` field
+
+`dynamicZone` is an array field where each entry is one of several named templates.
+Every template declares its own fields **and** its own layout, scoped to that template.
+The outer model layout simply references the dynamicZone field by its ID.
+
+```typescript
+.fields((fields) => ({
+  blocks: fields
+    .dynamicZone()
+    .label("Content blocks")
+    .template("hero", {
+      name: "Hero",
+      gqlTypeName: "HeroBlock",
+      fields: (t) => ({
+        heading: t.text().renderer("textInput").label("Heading"),
+        image:   t.file().renderer("file").label("Image")
+      }),
+      layout: [
+        ["heading"],          // layout inside the "hero" template only
+        ["image"]
+      ]
+    })
+    .template("quote", {
+      name: "Quote",
+      gqlTypeName: "QuoteBlock",
+      fields: (t) => ({
+        text:   t.longText().renderer("textarea").label("Quote text"),
+        author: t.text().renderer("textInput").label("Author")
+      }),
+      layout: [
+        ["text"],
+        ["author"]
+      ]
+    })
+}))
+.layout([
+  ["blocks"]                  // outer layout references the dynamicZone as a whole
+])
+```
+
+Rule of thumb: **a layout can only reference field IDs in the same scope it's declared
+in.** Model layout references model fields. Object layout references that object's
+sub-fields. Each dynamicZone template's layout references only that template's fields.
+
+## Field Types and Renderers
+
+Every field type exposes two renderer variants: a **single-value** renderer (used by
+default) and a **multi-value** renderer (used when the field is marked as a list via
+`.list()`). You **MUST** pair the renderer with the cardinality: calling `.list()`
+requires a renderer from the `list: true` column, and omitting `.list()` requires one
+from the `list: false` column. Using the wrong variant will render incorrectly in the
+Admin UI and the field may fail to save values. Invented names (e.g. `"fileInput"`,
+`"lexicalTextInput"`, `"objectInput"`, `"boolean"`) will silently misbehave the same way.
+
+Exception: `fields.boolean()` has no multi-value variant — do not call `.list()` on
+boolean fields.
+
+The authoritative source for this list is
+`@webiny/api-headless-cms/features/modelBuilder/fields/DataFieldBuilder.d.ts` (in the
+project's `node_modules`) — if you're unsure, grep there first.
+
+| Builder Method         | Description                              | Single (`list: false`)       | Multiple (`list: true`)         |
+| ---------------------- | ---------------------------------------- | ---------------------------- | ------------------------------- |
+| `fields.text()`        | Single-line text                         | `"textInput"`                | `"textInputs"`                  |
+| `fields.longText()`    | Multi-line text                          | `"textarea"`                 | `"textareas"`                   |
+| `fields.richText()`    | Rich text (Lexical)                      | `"lexicalEditor"`            | `"lexicalEditors"`              |
+| `fields.number()`      | Numeric value                            | `"numberInput"`              | `"numberInputs"`                |
+| `fields.boolean()`     | True/false toggle                        | `"switch"`                   | — (not supported)               |
+| `fields.datetime()`    | Date/time picker                         | `"dateTimeInput"`            | `"dateTimeInputs"`              |
+| `fields.file()`        | File/image attachment                    | `"file"`                     | `"files"`                       |
+| `fields.ref()`         | Reference to another model               | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
+| `fields.object()`      | Nested object with sub-fields            | `"objectAccordionSingle"`    | `"objectAccordionMultiple"`     |
+| `fields.dynamicZone()` | Dynamic zone (choose-one-of-N templates) | `"dynamicZone"`              | *(implicitly a list; see below)* |
+
+### Ref renderer families
+
+The three `ref` renderer families look and behave very differently in the Admin UI —
+pick the one that fits your UX:
+
+- **Dialog** (`refDialogSingle` / `refDialogMultiple`) — opens a modal with a searchable,
+  filterable picker. Best for large reference sets.
+- **Autocomplete** (`refAutocompleteSingle` / `refAutocompleteMultiple`) — inline
+  typeahead input. Best for moderate reference sets.
+- **Inline** (`refRadioButtons` / `refCheckboxes`) — renders all referenced entries as
+  inline controls. Best for small, fixed reference sets.
+
+### Alternative text/number renderers (with `predefinedValues`)
+
+When a `text` or `number` field uses `.predefinedValues([...])`, additional renderers
+become available:
+
+- `"radioButtons"` — single-value; requires `list: false` and `predefinedValues`.
+- `"dropdown"` — single-value; requires `list: false` and `predefinedValues`.
+- `"checkboxes"` — multi-value; requires `list: true` and `predefinedValues`.
+- `"tags"` — multi-value free-form entry; `text` only, requires `list: true` and NO
+  `predefinedValues`.
+
+### List fields and renderer pluralization
+
+When a field uses `.list()` (i.e. stores an array of values), the renderer **must** be the
+plural variant from the right-hand column above. Pairing `.list()` with the singular
+renderer causes the Admin UI to render the wrong component and the field will fail to
+save correctly.
+
+**Correct** — list of tags uses the plural `"textInputs"` renderer:
+
+```typescript
+tags: fields
+  .text()
+  .list()
+  .renderer("textInputs")     // plural, because .list() is chained
+  .label("Tags")
+```
+
+**Wrong** — singular renderer on a list field (this is the pattern that breaks silently):
+
+```typescript
+tags: fields
+  .text()
+  .list()
+  .renderer("textInput")      // WRONG: should be "textInputs"
+  .label("Tags")
+```
+
+The same rule applies to every field type that has both variants:
+`richText().list()` → `"lexicalEditors"`, `file().list()` → `"files"`,
+`longText().list()` → `"textareas"`, `number().list()` → `"numberInputs"`,
+`object().list()` → `"objectAccordionMultiple"`, and so on.
+
+For `ref()` fields the pluralization rule is the same but the singular/multiple renderers
+have distinct names (e.g. `refDialogSingle` → `refDialogMultiple`) — see the table.
 
 ## Field Validators (Chainable)
 
@@ -108,9 +281,74 @@ Register in `webiny.config.tsx`:
 | `.renderer("rendererName")`     | Set the Admin UI renderer                          |
 | `.label("Display Name")`        | Field label in the editor                          |
 | `.help("Helper text")`          | Helper text shown below the field                  |
-| `.list()`                       | Make the field accept multiple values (arrays)     |
+| `.list()`                       | Make the field accept multiple values (arrays). Requires a multi-value renderer variant — see Field Types table. |
 | `.models([{ modelId: "..." }])` | For `ref()` fields: which models can be referenced |
 | `.tags(["tag1"])`               | Assign tags to a field (e.g., `"$bulk-edit"`)      |
+
+## Querying `ref`, `object`, and `dynamicZone` fields
+
+When you read entries via the Webiny SDK (or GraphQL), the `fields` array tells the API
+which fields to return. **The nesting syntax depends on the field type**, and getting it
+wrong silently returns `null` for the nested value.
+
+### `ref` fields — double `values.` nesting
+
+A reference field returns the **referenced entry**, which itself has its own `values`
+wrapper around its fields. To project a sub-field of a referenced entry, you must
+include the inner `values.` segment.
+
+```typescript
+// article model has: author: fields.ref().models([{ modelId: "author" }])
+const { result } = await cms.articles.list({
+  fields: [
+    "id",
+    "values.title",
+    "values.author.values.name" // ref → double "values."
+    // ^^^^^^^^^^^^^^^^^^^^^^^^^
+  ]
+});
+```
+
+If `author` is a `.list()` ref field, the same rule applies — each item in the returned
+array is an entry with its own `values` wrapper, so you still write
+`values.authors.values.name`.
+
+### `object` and `dynamicZone` fields — no inner `values.`
+
+Object and dynamicZone sub-fields are stored **inline** on the parent entry, with no
+intermediate `values` wrapper. Access sub-fields with a plain dotted path.
+
+```typescript
+// article model has:
+//   author: fields.object().fields(sub => ({ name: sub.text(), bio: sub.longText() }))
+const { result } = await cms.articles.list({
+  fields: [
+    "id",
+    "values.title",
+    "values.author.name", // object → single "values."
+    "values.author.bio"
+    // ^^^^^^^^^^^^^^^^^
+  ]
+});
+```
+
+For `dynamicZone`, address sub-fields through the template name (still no inner
+`values.`):
+
+```typescript
+// blocks: fields.dynamicZone().template("hero", { fields: t => ({ heading: t.text() }) })
+fields: ["values.blocks.hero.heading"];
+```
+
+### Rule of thumb
+
+- **`fields.ref()`** → the field resolves to another entry, so its sub-path goes through
+  `.values.` (e.g. `values.author.values.name`).
+- **`fields.object()` / `fields.dynamicZone()`** → the field is inline, so its sub-path
+  is plain (e.g. `values.author.name`).
+
+Mixing the two up is the most common cause of "the query worked but the field is
+`null`" bugs. If you're unsure, cross-check the field definition in the model file.
 
 ## Full Examples
 
