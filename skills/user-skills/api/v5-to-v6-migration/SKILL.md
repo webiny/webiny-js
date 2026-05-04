@@ -48,7 +48,7 @@ new ContextPlugin(async context => {
 
 ```typescript
 // features/lingotekService/abstractions.ts
-import { createAbstraction } from "webiny/api.js";
+import { createAbstraction } from "webiny/api";
 
 export interface ILingotekService {
   translate(docId: string, locale: string): Promise<Result<void, Error>>;
@@ -443,8 +443,8 @@ new CmsModelFieldToGraphQLPlugin({
 Import from `webiny/api/cms/graphql.js`. Implement `CmsModelFieldToGraphQL.Interface` — split read/manage into separate classes, export via `CmsModelFieldToGraphQL.createImplementation`, and register in a `createFeature` container.
 
 ```ts
-import { createFeature } from "webiny/api.js";
-import { CmsModelFieldToGraphQL } from "webiny/api/cms/graphql.js";
+import { createFeature } from "webiny/api";
+import { CmsModelFieldToGraphQL } from "webiny/api/cms/graphql";
 
 class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
   createTypeField({ field }: CmsModelFieldToGraphQL.TypeFieldParams): string {
@@ -497,8 +497,8 @@ export const MyGraphQLFeature = createFeature({
 Use `CmsModelFieldToGraphQLRegistry` (also from `webiny/api/cms/graphql.js`) to retrieve any registered field handler by its `fieldType` string. Inject it as a dependency:
 
 ```ts
-import { CmsModelFieldToGraphQL } from "webiny/api/cms/graphql.js";
-import { CmsModelFieldToGraphQLRegistry } from "webiny/api/cms/graphql.js";
+import { CmsModelFieldToGraphQL } from "webiny/api/cms/graphql";
+import { CmsModelFieldToGraphQLRegistry } from "webiny/api/cms/graphql";
 
 class MyFieldToGraphQL implements CmsModelFieldToGraphQL.Interface {
   constructor(private readonly registry: CmsModelFieldToGraphQLRegistry.Interface) {}
@@ -537,8 +537,8 @@ createCmsGraphQLSchemaSorterPlugin({
 ### v6
 
 ```ts
-import { createFeature } from "webiny/api.js";
-import { CmsGraphQLSchemaSorter } from "webiny/api/cms/graphql.js";
+import { createFeature } from "webiny/api";
+import { CmsGraphQLSchemaSorter } from "webiny/api/cms/graphql";
 
 class MyCustomSorter implements CmsGraphQLSchemaSorter.Interface {
   execute({ model, sorters }: CmsGraphQLSchemaSorter.Params): string[] {
@@ -582,8 +582,8 @@ new StorageTransformPlugin({
 Import from `webiny/api/cms/storage.js`. Implement `StorageTransform.Interface` with `toStorage` and `fromStorage` async methods. Register in a `createFeature` container.
 
 ```ts
-import { createFeature } from "webiny/api.js";
-import { StorageTransform } from "webiny/api/cms/storage.js";
+import { createFeature } from "webiny/api";
+import { StorageTransform } from "webiny/api/cms/storage";
 
 class MyStorageTransform implements StorageTransform.Interface {
   public readonly fieldType = "myField";
@@ -617,8 +617,8 @@ Use `fieldType: "*"` for a catch-all transform that applies to all field types w
 Inject `StorageTransformRegistry` (also from `webiny/api/cms/storage.js`) to retrieve any registered transform:
 
 ```ts
-import { StorageTransform } from "webiny/api/cms/storage.js";
-import { StorageTransformRegistry } from "webiny/api/cms/storage.js";
+import { StorageTransform } from "webiny/api/cms/storage";
+import { StorageTransformRegistry } from "webiny/api/cms/storage";
 
 class MyStorageTransform implements StorageTransform.Interface {
   constructor(private readonly registry: StorageTransformRegistry.Interface) {}
@@ -661,8 +661,8 @@ new CmsModelFieldValidatorPlugin({
 Import from `webiny/api/cms/validation.js`. Implement `CmsModelFieldValidator.Interface` with a `name` string and an async `validate` method that returns `boolean`. Register in a `createFeature` container.
 
 ```ts
-import { createFeature } from "webiny/api.js";
-import { CmsModelFieldValidator } from "webiny/api/cms/validation.js";
+import { createFeature } from "webiny/api";
+import { CmsModelFieldValidator } from "webiny/api/cms/validation";
 
 class MyValidatorImpl implements CmsModelFieldValidator.Interface {
   public readonly name = "myValidator";
@@ -690,8 +690,8 @@ export const MyValidationFeature = createFeature({
 Inject `CmsModelFieldValidatorRegistry` (also from `webiny/api/cms/validation.js`) to retrieve any registered validator:
 
 ```ts
-import { CmsModelFieldValidator } from "webiny/api/cms/validation.js";
-import { CmsModelFieldValidatorRegistry } from "webiny/api/cms/validation.js";
+import { CmsModelFieldValidator } from "webiny/api/cms/validation";
+import { CmsModelFieldValidatorRegistry } from "webiny/api/cms/validation";
 
 class MyValidatorImpl implements CmsModelFieldValidator.Interface {
   constructor(private readonly registry: CmsModelFieldValidatorRegistry.Interface) {}
@@ -733,8 +733,8 @@ createCmsEntryElasticsearchBodyModifierPlugin({
 Import from `webiny/api/cms/opensearch.js`. Implement `CmsEntryOpenSearchBodyModifier.Interface` with a synchronous `modifyBody` method. The optional `modelId` property scopes the modifier to a single model; omit it to apply to all models.
 
 ```ts
-import { createFeature } from "webiny/api.js";
-import { CmsEntryOpenSearchBodyModifier } from "webiny/api/cms/opensearch.js";
+import { createFeature } from "webiny/api";
+import { CmsEntryOpenSearchBodyModifier } from "webiny/api/cms/opensearch";
 
 class MyBodyModifier implements CmsEntryOpenSearchBodyModifier.Interface {
   public readonly modelId = "myModel"; // omit to apply to all models
