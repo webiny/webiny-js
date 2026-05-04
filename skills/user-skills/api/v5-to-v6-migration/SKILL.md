@@ -374,7 +374,7 @@ cat node_modules/@webiny/api-core/features/security/roles/shared/abstractions.d.
 | `RoutePlugin`                      | `<AdminConfig.Route/>`                                   |
 | `AddMenu` / menu components        | `<AdminConfig.Menu/>`                                    |
 | `HasPermission`                    | `HasPermission` or `createHasPermission` with new schema |
-| `GraphQLPlaygroundTabPlugin`       | TODO                                                     |
+| `GraphQLPlaygroundTabPlugin`       | Not migratable.                                          |
 | `CmsModelFieldTypePlugin`          | `<CmsModelFieldType/>`                                   |
 | `CmsModelFieldRendererPlugin`      | `<CmsModelFieldRenderer/>`                               |
 | `AdminAppPermissionRendererPlugin` | `createPermissionSchema` / `<Security.Permissions/>`     |
