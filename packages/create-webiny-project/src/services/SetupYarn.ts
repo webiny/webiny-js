@@ -9,7 +9,7 @@ const { yellow } = chalk;
 
 export class SetupYarn {
     async execute(cliArgs: CliParams) {
-        const yarnVersion = "4.10.2";
+        const yarnVersion = "4.14.1";
         const yarnFile = `yarn-${yarnVersion}.cjs`;
         const yarnPath = `.yarn`;
         const yarnReleasesPath = path.join(yarnPath, "releases");

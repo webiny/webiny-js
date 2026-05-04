@@ -2,6 +2,10 @@
   "name": "@webiny/lexical-editor-actions",
   "version": "0.0.0",
   "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "dependencies": {
     "@emotion/css": "^11.13.5",
     "@emotion/styled": "^11.14.1",

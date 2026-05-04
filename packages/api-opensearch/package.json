@@ -2,6 +2,10 @@
   "name": "@webiny/api-opensearch",
   "version": "0.0.0",
   "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
