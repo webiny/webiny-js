@@ -4,8 +4,7 @@ import { DocumentStoreProvider } from "./DocumentStoreProvider.js";
 import { ConnectToEditor } from "./ConnectToEditor.js";
 import {
     FragmentsProvider,
-    type DocumentFragmentConfig,
-    type DocumentFragments
+    type DocumentFragmentConfig
 } from "./FragmentsProvider.js";
 import { ElementRenderer } from "./ElementRenderer.js";
 import { editorComponents } from "~/editorComponents/index.js";

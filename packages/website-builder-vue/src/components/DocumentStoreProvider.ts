@@ -3,7 +3,6 @@ import {
     provide,
     inject,
     watchEffect,
-    h,
     type InjectionKey,
     type PropType
 } from "vue";

@@ -3,7 +3,6 @@ import {
     provide,
     inject,
     watch,
-    h,
     type InjectionKey,
     type PropType,
     type Slot
@@ -54,10 +53,14 @@ export const FragmentsProvider = defineComponent({
         watch(
             () => props.fragments.length,
             () => {
-                if (!contentSdk.isEditing()) {return;}
+                if (!contentSdk.isEditing()) {
+                    return;
+                }
 
                 const data = props.fragments.map(f => {
-                    if (f.type === "fixed") {return { type: "fixed", name: f.name };}
+                    if (f.type === "fixed") {
+                        return { type: "fixed", name: f.name };
+                    }
                     return { type: "component", component: f.component, inputs: f.inputs };
                 });
 

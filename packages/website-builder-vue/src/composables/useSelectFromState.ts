@@ -1,4 +1,3 @@
-import deepEqual from "deep-equal";
 import { computed, type Ref } from "vue";
 import { useObservable } from "./useObservable.js";
 

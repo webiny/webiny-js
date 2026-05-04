@@ -1,4 +1,4 @@
-import { defineComponent, provide, inject, h, type InjectionKey, type PropType } from "vue";
+import { defineComponent, provide, inject, type InjectionKey, type PropType } from "vue";
 
 const INDEX_KEY: InjectionKey<number> = Symbol("WebinyElementIndex");
 

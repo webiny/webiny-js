@@ -1,12 +1,6 @@
 import { defineComponent, h, type PropType } from "vue";
 import { useElementSlotDepth } from "./ElementSlotDepthProvider.js";
 
-interface PreviewElementSlotProps {
-    parentId: string;
-    slot: string;
-    elements: string[];
-}
-
 // Forward-declare to avoid circular dep at module init time.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let LiveElementSlot: any;

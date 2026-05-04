@@ -16,6 +16,8 @@ type LexicalProps = ComponentProps<{
  */
 export const LexicalComponent = (props: LexicalProps) => {
     const html = props.inputs?.content?.html;
-    if (!html) {return null;}
+    if (!html) {
+        return null;
+    }
     return h("div", { innerHTML: html });
 };

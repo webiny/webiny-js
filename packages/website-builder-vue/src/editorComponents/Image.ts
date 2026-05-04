@@ -1,7 +1,6 @@
 import { defineComponent, ref, watch, h, Fragment, type PropType } from "vue";
 import { contentSdk } from "@webiny/website-builder-sdk";
 import type { CssProperties } from "@webiny/website-builder-sdk";
-import type { ComponentProps } from "~/types.js";
 
 const SUPPORTED_WIDTHS = [100, 300, 500, 750, 1000, 1500, 2500];
 
@@ -17,8 +16,6 @@ type ImageInputs = {
     };
 };
 
-type ImageProps = ComponentProps<ImageInputs>;
-
 const getSrcSet = (src: string, widths: number[]) =>
     widths.map(w => `${src}?width=${w} ${w}w`).join(", ");
 
@@ -28,7 +25,9 @@ const computeSrcSetWidths = (width?: string | number): number[] => {
         const widths: number[] = [];
         for (const w of SUPPORTED_WIDTHS) {
             widths.push(w);
-            if (w >= px) {break;}
+            if (w >= px) {
+                break;
+            }
         }
         return widths;
     }
@@ -86,7 +85,9 @@ export const ImageComponent = defineComponent({
         watch(
             () => props.inputs?.image?.src,
             src => {
-                if (!src) {isLoaded.value = false;}
+                if (!src) {
+                    isLoaded.value = false;
+                }
             }
         );
 

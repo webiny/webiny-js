@@ -26,7 +26,9 @@ export const ElementRenderer = defineComponent({
         const element = useObservable(() => documentStore.getElement(props.id));
 
         return () => {
-            if (!element.value) {return null;}
+            if (!element.value) {
+                return null;
+            }
 
             if (environment.isEditing()) {
                 return h(EditingElementRenderer, { element: element.value });

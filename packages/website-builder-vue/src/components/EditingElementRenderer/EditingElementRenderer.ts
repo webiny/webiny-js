@@ -1,4 +1,4 @@
-import { defineComponent, onMounted, onUnmounted, watch, h, type PropType } from "vue";
+import { defineComponent, onUnmounted, watch, h, type PropType } from "vue";
 import { type DocumentElement } from "@webiny/website-builder-sdk";
 import { EditingElementRendererPresenter } from "./EditingElementRenderer.presenter.js";
 import { LiveElementRenderer } from "../LiveElementRenderer.js";
@@ -32,7 +32,9 @@ export const EditingElementRenderer = defineComponent({
         const stopWatch = watch(
             () => props.element?.id,
             () => {
-                if (props.element) {presenter.init(props.element);}
+                if (props.element) {
+                    presenter.init(props.element);
+                }
             },
             { immediate: true }
         );
@@ -47,7 +49,9 @@ export const EditingElementRenderer = defineComponent({
 
         return () => {
             const element = vm.value?.element;
-            if (!element?.id) {return null;}
+            if (!element?.id) {
+                return null;
+            }
 
             return h(
                 "div",
