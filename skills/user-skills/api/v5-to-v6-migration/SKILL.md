@@ -350,21 +350,21 @@ cat node_modules/@webiny/api-core/features/security/roles/shared/abstractions.d.
 ### Backend: Plugin Classes → v6 Equivalents
 
 | v5 Plugin                                       | v6 Equivalent                                                                        |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------ |
+| ----------------------------------------------- |--------------------------------------------------------------------------------------|
 | `ContextPlugin`                                 | DI-registered implementations                                                        |
 | `createContextPlugin`                           | DI-registered implementations                                                        |
 | `CmsModelPlugin`                                | `ModelFactory`                                                                       |
 | `GraphQLSchemaPlugin`                           | `GraphQLSchemaFactory`                                                               |
 | `createGraphQLSchemaPlugin`                     | `GraphQLSchemaFactory`                                                               |
 | `createTaskDefinition`                          | `TaskDefinition`                                                                     |
-| `CmsModelFieldToGraphQLPlugin`                  | `CmsModelFieldToGraphQL` (from `webiny/api/cms/graphql.js`)                          |
+| `CmsModelFieldToGraphQLPlugin`                  | `CmsModelFieldToGraphQL`                                                             |
 | `createSecurityRolePlugin`                      | `RoleFactory`                                                                        |
 | `createSecurityTeamPlugin`                      | `TeamFactory`                                                                        |
-| `StorageTransformPlugin`                        | `StorageTransform` (from `webiny/api/cms/storage.js`)                                |
+| `StorageTransformPlugin`                        | `StorageTransform`                                                                   |
 | `createApiGatewayRoute`                         | `Api.Route` (`webiny.config.tsx`) and `Route.Interface` (imported from `webiny/api`) |
-| `CmsModelFieldValidatorPlugin`                  | `CmsModelFieldValidator` (from `webiny/api/cms/validation.js`)                       |
-| `createCmsGraphQLSchemaSorterPlugin`            | `CmsGraphQLSchemaSorter` (from `webiny/api/cms/graphql.js`)                          |
-| `createCmsEntryElasticsearchBodyModifierPlugin` | `CmsEntryOpenSearchBodyModifier` (from `webiny/api/cms/opensearch.js`)               |
+| `CmsModelFieldValidatorPlugin`                  | `CmsModelFieldValidator`                                                             |
+| `createCmsGraphQLSchemaSorterPlugin`            | `CmsGraphQLSchemaSorter`                                                             |
+| `createCmsEntryElasticsearchBodyModifierPlugin` | `CmsEntryOpenSearchBodyModifier`                                                     |
 
 ### Admin: React Plugins → AdminConfig API
 
