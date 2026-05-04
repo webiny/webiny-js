@@ -2,6 +2,10 @@
   "name": "@webiny/lexical-nodes",
   "version": "0.0.0",
   "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "dependencies": {
     "@lexical/code": "^0.44.0",
     "@lexical/hashtag": "^0.44.0",
