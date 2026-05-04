@@ -1,0 +1,334 @@
+{
+  "live": {
+    "version": 1
+  },
+  "id": "69de6c03f6424900024752a6#0002",
+  "entryId": "69de6c03f6424900024752a6",
+  "status": "draft",
+  "version": 2,
+  "location": {
+    "folderId": "root"
+  },
+  "properties": {
+    "snippet": "asdfasdf",
+    "path": "/en/contact",
+    "image": {
+      "size": 223435,
+      "src": "https://d2sq6ot96kqfjq.cloudfront.net/files/69e7414ce6d5860002d8ccd6/image-39.jpg",
+      "name": "image-39.jpg",
+      "width": 1920,
+      "id": "69e7414ce6d5860002d8ccd6",
+      "mimeType": "image/jpeg",
+      "height": 1080
+    },
+    "social": {
+      "metaTags": [
+        {
+          "property": "Property1",
+          "content": "Content1"
+        }
+      ],
+      "image": {
+        "size": 97317,
+        "src": "https://d2sq6ot96kqfjq.cloudfront.net/files/69e7414de6d5860002d8ccdb/image-17.jpg",
+        "name": "image-17.jpg",
+        "width": 1920,
+        "id": "69e7414de6d5860002d8ccdb",
+        "mimeType": "image/jpeg",
+        "height": 1080
+      }
+    },
+    "language": "en",
+    "title": "Contact",
+    "seo": {
+      "metaTags": [
+        {
+          "name": "Name1",
+          "content": "Content1"
+        }
+      ],
+      "structuredSchema": null,
+      "noFollow": false,
+      "noIndex": false
+    },
+    "publishing": {
+      "publishDate": "2026-04-12",
+      "unpublishDate": "2026-04-18",
+      "featured": true,
+      "visibility": "private"
+    },
+    "tags": ["translation", "test"]
+  },
+  "metadata": {
+    "documentType": "page",
+    "pageType": "static"
+  },
+  "bindings": {
+    "root": {
+      "inputs": {
+        "children": {
+          "type": "slot",
+          "list": true,
+          "static": [
+            "vpc0mbhn7yaign0lb4pql",
+            "9h9t3cqxi1yfweut6qicx",
+            "akfwbfglh0dhe4mdrsi1q",
+            "3voa1gntaqt98vc8hyp0a",
+            "o5mhmw2fi2b7gqsbp0qk7"
+          ]
+        }
+      }
+    },
+    "vpc0mbhn7yaign0lb4pql": {
+      "inputs": {
+        "content": {
+          "id": "6b2syzefxn83yeumycz5w",
+          "static": {
+            "state": "{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Song of the Wild Earth\",\"type\":\"text\",\"version\":1}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"wby-heading\",\"version\":1,\"tag\":\"h1\"},{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"The morning wind hums softly through the pines, and the river answers in a silver refrain. This is a song for \",\"type\":\"text\",\"version\":1},{\"detail\":0,\"format\":1,\"mode\":\"normal\",\"style\":\"\",\"text\":\"nature\",\"type\":\"text\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"—for forests, waters, sunlight, and the quiet wonder of the living world.\",\"type\":\"text\",\"version\":1}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"wby-paragraph\",\"version\":1,\"textFormat\":0,\"textStyle\":\"\"},{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Verse One\",\"type\":\"text\",\"version\":1}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"wby-heading\",\"version\":1,\"tag\":\"h2\"},{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"The dawn wakes up in the branches,\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"With a golden hand on the leaves;\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"The meadow sways in hush and shimmer,\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"And the whole wide world breathes.\",\"type\":\"text\",\"version\":1}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"wby-paragraph\",\"version\":1,\"textFormat\":0,\"textStyle\":\"\"}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}",
+            "html": "<h1 class=\"wb-heading-1\"><span style=\"white-space: pre-wrap;\">Song of the Wild Earth</span></h1><p class=\"wb-paragraph-1\"><span style=\"white-space: pre-wrap;\">The morning wind hums softly through the pines, and the river answers in a silver refrain. This is a song for </span><strong style=\"white-space: pre-wrap;\">nature</strong><span style=\"white-space: pre-wrap;\">—for forests, waters, sunlight, and the quiet wonder of the living world.</span></p><h2 class=\"wb-heading-2\"><span style=\"white-space: pre-wrap;\">Verse One</span></h2><p class=\"wb-paragraph-1\"><span style=\"white-space: pre-wrap;\">The dawn wakes up in the branches,</span><br><span style=\"white-space: pre-wrap;\">With a golden hand on the leaves;</span><br><span style=\"white-space: pre-wrap;\">The meadow sways in hush and shimmer,</span><br><span style=\"white-space: pre-wrap;\">And the whole wide world breathes.</span></p>"
+          },
+          "type": "lexical",
+          "list": false
+        }
+      },
+      "styles": {
+        "display": {
+          "static": "flex"
+        },
+        "flexDirection": {
+          "static": "column"
+        }
+      }
+    },
+    "9h9t3cqxi1yfweut6qicx": {
+      "inputs": {
+        "image": {
+          "id": "qtazjo3ynse5by6jja2qz",
+          "static": {
+            "id": "69e7414de6d5860002d8ccdb",
+            "name": "image-17.jpg",
+            "mimeType": "image/jpeg",
+            "src": "https://d2sq6ot96kqfjq.cloudfront.net/files/69e7414de6d5860002d8ccdb/image-17.jpg",
+            "size": 97317,
+            "width": 1920,
+            "height": 1080
+          },
+          "type": "file",
+          "list": false
+        },
+        "title": {
+          "id": "bzpfr2e6y01jlttugbs3j",
+          "static": "Nature image: forest lake at sunrise",
+          "type": "text",
+          "list": false
+        },
+        "altText": {
+          "id": "bq4f8sba0hj8ibn5vcoxr",
+          "static": "Mist rising over a forest lake at sunrise",
+          "type": "text",
+          "list": false
+        },
+        "highPriority": {
+          "id": "amc5307d9uxcwoud3840e",
+          "static": false,
+          "type": "boolean",
+          "list": false
+        }
+      },
+      "styles": {
+        "display": {
+          "static": "flex"
+        },
+        "flexDirection": {
+          "static": "column"
+        },
+        "width": {
+          "static": "100%"
+        }
+      }
+    },
+    "akfwbfglh0dhe4mdrsi1q": {
+      "inputs": {
+        "content": {
+          "id": "vygddujotxlo0as2zi66c",
+          "static": {
+            "state": "{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Verse Two\",\"type\":\"text\",\"version\":1}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"wby-heading\",\"version\":1,\"tag\":\"h2\"},{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"The mountains keep their patient silence,\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"While birds sketch songs across the sky;\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Each root, each stone, each drifting cloudscape\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Knows the reason why.\",\"type\":\"text\",\"version\":1}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"wby-paragraph\",\"version\":1,\"textFormat\":0,\"textStyle\":\"\"},{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"We walk among the wild and growing,\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"And the earth returns our care;\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"In every branch and blade and shadow,\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"There is a promise there.\",\"type\":\"text\",\"version\":1}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"wby-paragraph\",\"version\":1,\"textFormat\":0,\"textStyle\":\"\"}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}",
+            "html": "<h2 class=\"wb-heading-2\"><span style=\"white-space: pre-wrap;\">Verse Two</span></h2><p class=\"wb-paragraph-1\"><span style=\"white-space: pre-wrap;\">The mountains keep their patient silence,</span><br><span style=\"white-space: pre-wrap;\">While birds sketch songs across the sky;</span><br><span style=\"white-space: pre-wrap;\">Each root, each stone, each drifting cloudscape</span><br><span style=\"white-space: pre-wrap;\">Knows the reason why.</span></p><p class=\"wb-paragraph-1\"><span style=\"white-space: pre-wrap;\">We walk among the wild and growing,</span><br><span style=\"white-space: pre-wrap;\">And the earth returns our care;</span><br><span style=\"white-space: pre-wrap;\">In every branch and blade and shadow,</span><br><span style=\"white-space: pre-wrap;\">There is a promise there.</span></p>"
+          },
+          "type": "lexical",
+          "list": false
+        }
+      },
+      "styles": {
+        "display": {
+          "static": "flex"
+        },
+        "flexDirection": {
+          "static": "column"
+        }
+      }
+    },
+    "3voa1gntaqt98vc8hyp0a": {
+      "inputs": {
+        "image": {
+          "id": "8xmyfal8rki3wrdn2cg53",
+          "static": {
+            "id": "69e74147e6d5860002d8ccc2",
+            "name": "image-41.jpg",
+            "mimeType": "image/jpeg",
+            "src": "https://d2sq6ot96kqfjq.cloudfront.net/files/69e74147e6d5860002d8ccc2/image-41.jpg",
+            "size": 286270,
+            "width": 1920,
+            "height": 1080
+          },
+          "type": "file",
+          "list": false
+        },
+        "title": {
+          "id": "4a6nqnh0qd2w5vv5du5fc",
+          "static": "Nature image: misty forest sunlight",
+          "type": "text",
+          "list": false
+        },
+        "altText": {
+          "id": "5ums7cpno59wb2k9g5vf6",
+          "static": "Sunlight filtering through a misty forest with tall trees",
+          "type": "text",
+          "list": false
+        },
+        "highPriority": {
+          "id": "adazuq2mwh6w3pwlhevc3",
+          "static": false,
+          "type": "boolean",
+          "list": false
+        }
+      },
+      "styles": {
+        "display": {
+          "static": "flex"
+        },
+        "flexDirection": {
+          "static": "column"
+        },
+        "width": {
+          "static": "100%"
+        }
+      }
+    },
+    "o5mhmw2fi2b7gqsbp0qk7": {
+      "inputs": {
+        "content": {
+          "id": "0oxtpk7e0qbij3dscj33v",
+          "static": {
+            "state": "{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Verse Three\",\"type\":\"text\",\"version\":1}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"wby-heading\",\"version\":1,\"tag\":\"h2\"},{\"children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"So let us sing for the cedar,\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"For the tide, the bloom, the rain;\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"For the hush of dawn in woodland valleys,\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"For the healing of the plain.\",\"type\":\"text\",\"version\":1}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"wby-paragraph\",\"version\":1,\"textFormat\":0,\"textStyle\":\"\"},{\"children\":[{\"detail\":0,\"format\":1,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Nature\",\"type\":\"text\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\" is the first great chorus,\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"And we are but a note inside;\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"When we honor the green and glorious,\",\"type\":\"text\",\"version\":1},{\"type\":\"linebreak\",\"version\":1},{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"We let the whole world glide.\",\"type\":\"text\",\"version\":1}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"wby-paragraph\",\"version\":1,\"textFormat\":1,\"textStyle\":\"\"},{\"children\":[{\"detail\":0,\"format\":2,\"mode\":\"normal\",\"style\":\"\",\"text\":\"Let the earth keep singing through us.\",\"type\":\"text\",\"version\":1}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"wby-paragraph\",\"version\":1,\"textFormat\":2,\"textStyle\":\"\"}],\"direction\":null,\"format\":\"\",\"indent\":0,\"type\":\"root\",\"version\":1}}",
+            "html": "<h2 class=\"wb-heading-2\"><span style=\"white-space: pre-wrap;\">Verse Three</span></h2><p class=\"wb-paragraph-1\"><span style=\"white-space: pre-wrap;\">So let us sing for the cedar,</span><br><span style=\"white-space: pre-wrap;\">For the tide, the bloom, the rain;</span><br><span style=\"white-space: pre-wrap;\">For the hush of dawn in woodland valleys,</span><br><span style=\"white-space: pre-wrap;\">For the healing of the plain.</span></p><p class=\"wb-paragraph-1\"><strong style=\"white-space: pre-wrap;\">Nature</strong><span style=\"white-space: pre-wrap;\"> is the first great chorus,</span><br><span style=\"white-space: pre-wrap;\">And we are but a note inside;</span><br><span style=\"white-space: pre-wrap;\">When we honor the green and glorious,</span><br><span style=\"white-space: pre-wrap;\">We let the whole world glide.</span></p><p class=\"wb-paragraph-1\"><i><em style=\"white-space: pre-wrap;\">Let the earth keep singing through us.</em></i></p>"
+          },
+          "type": "lexical",
+          "list": false
+        }
+      },
+      "styles": {
+        "display": {
+          "static": "flex"
+        },
+        "flexDirection": {
+          "static": "column"
+        }
+      }
+    }
+  },
+  "elements": {
+    "root": {
+      "type": "Webiny/Element",
+      "id": "root",
+      "component": {
+        "name": "Webiny/Root"
+      }
+    },
+    "vpc0mbhn7yaign0lb4pql": {
+      "type": "Webiny/Element",
+      "id": "vpc0mbhn7yaign0lb4pql",
+      "parent": {
+        "id": "root",
+        "slot": "children"
+      },
+      "component": {
+        "name": "Webiny/Lexical"
+      }
+    },
+    "9h9t3cqxi1yfweut6qicx": {
+      "type": "Webiny/Element",
+      "id": "9h9t3cqxi1yfweut6qicx",
+      "parent": {
+        "id": "root",
+        "slot": "children"
+      },
+      "component": {
+        "name": "Webiny/Image"
+      }
+    },
+    "akfwbfglh0dhe4mdrsi1q": {
+      "type": "Webiny/Element",
+      "id": "akfwbfglh0dhe4mdrsi1q",
+      "parent": {
+        "id": "root",
+        "slot": "children"
+      },
+      "component": {
+        "name": "Webiny/Lexical"
+      }
+    },
+    "3voa1gntaqt98vc8hyp0a": {
+      "type": "Webiny/Element",
+      "id": "3voa1gntaqt98vc8hyp0a",
+      "parent": {
+        "id": "root",
+        "slot": "children"
+      },
+      "component": {
+        "name": "Webiny/Image"
+      }
+    },
+    "o5mhmw2fi2b7gqsbp0qk7": {
+      "type": "Webiny/Element",
+      "id": "o5mhmw2fi2b7gqsbp0qk7",
+      "parent": {
+        "id": "root",
+        "slot": "children"
+      },
+      "component": {
+        "name": "Webiny/Lexical"
+      }
+    }
+  },
+  "extensions": {
+    "publishing": {
+      "unpublishDate": "2026-04-15",
+      "withTimezone": "2026-04-16T16:38:00+08:45",
+      "featured": true,
+      "visibility": "private",
+      "withoutTimezone": "2026-05-02T13:35:00.000Z"
+    },
+    "expirationDate": "2026-10"
+  },
+  "createdBy": {
+    "id": "69b298a44344a70002fc2a1b",
+    "displayName": "Pavel Denisjuk",
+    "type": ""
+  },
+  "createdOn": "2026-04-14T16:32:03.272Z",
+  "savedBy": {
+    "id": "69b298a44344a70002fc2a1b",
+    "displayName": "Pavel Denisjuk",
+    "type": ""
+  },
+  "savedOn": "2026-04-30T18:25:14.565Z",
+  "modifiedBy": {
+    "id": "69b298a44344a70002fc2a1b",
+    "displayName": "Pavel Denisjuk",
+    "type": ""
+  },
+  "modifiedOn": "2026-04-30T18:25:14.565Z",
+  "system": null,
+  "state": {}
+}
