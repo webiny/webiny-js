@@ -190,18 +190,18 @@ The authoritative source for this list is
 `@webiny/api-headless-cms/features/modelBuilder/fields/DataFieldBuilder.d.ts` (in the
 project's `node_modules`) — if you're unsure, grep there first.
 
-| Builder Method         | Description                              | Single (`list: false`)       | Multiple (`list: true`)         |
-| ---------------------- | ---------------------------------------- | ---------------------------- | ------------------------------- |
-| `fields.text()`        | Single-line text                         | `"textInput"`                | `"textInputs"`                  |
-| `fields.longText()`    | Multi-line text                          | `"textarea"`                 | `"textareas"`                   |
-| `fields.richText()`    | Rich text (Lexical)                      | `"lexicalEditor"`            | `"lexicalEditors"`              |
-| `fields.number()`      | Numeric value                            | `"numberInput"`              | `"numberInputs"`                |
-| `fields.boolean()`     | True/false toggle                        | `"switch"`                   | — (not supported)               |
-| `fields.datetime()`    | Date/time picker                         | `"dateTimeInput"`            | `"dateTimeInputs"`              |
-| `fields.file()`        | File/image attachment                    | `"file"`                     | `"files"`                       |
+| Builder Method         | Description                              | Single (`list: false`)                                              | Multiple (`list: true`)                                               |
+| ---------------------- | ---------------------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `fields.text()`        | Single-line text                         | `"textInput"`                                                       | `"textInputs"`                                                        |
+| `fields.longText()`    | Multi-line text                          | `"textarea"`                                                        | `"textareas"`                                                         |
+| `fields.richText()`    | Rich text (Lexical)                      | `"lexicalEditor"`                                                   | `"lexicalEditors"`                                                    |
+| `fields.number()`      | Numeric value                            | `"numberInput"`                                                     | `"numberInputs"`                                                      |
+| `fields.boolean()`     | True/false toggle                        | `"switch"`                                                          | — (not supported)                                                     |
+| `fields.datetime()`    | Date/time picker                         | `"dateTimeInput"`                                                   | `"dateTimeInputs"`                                                    |
+| `fields.file()`        | File/image attachment                    | `"file"`                                                            | `"files"`                                                             |
 | `fields.ref()`         | Reference to another model               | `"refDialogSingle"`, `"refAutocompleteSingle"`, `"refRadioButtons"` | `"refDialogMultiple"`, `"refAutocompleteMultiple"`, `"refCheckboxes"` |
-| `fields.object()`      | Nested object with sub-fields            | `"objectAccordionSingle"`    | `"objectAccordionMultiple"`     |
-| `fields.dynamicZone()` | Dynamic zone (choose-one-of-N templates) | `"dynamicZone"`              | *(implicitly a list; see below)* |
+| `fields.object()`      | Nested object with sub-fields            | `"objectAccordionSingle"`                                           | `"objectAccordionMultiple"`                                           |
+| `fields.dynamicZone()` | Dynamic zone (choose-one-of-N templates) | `"dynamicZone"`                                                     | _(implicitly a list; see below)_                                      |
 
 ### Ref renderer families
 
@@ -239,8 +239,8 @@ save correctly.
 tags: fields
   .text()
   .list()
-  .renderer("textInputs")     // plural, because .list() is chained
-  .label("Tags")
+  .renderer("textInputs") // plural, because .list() is chained
+  .label("Tags");
 ```
 
 **Wrong** — singular renderer on a list field (this is the pattern that breaks silently):
@@ -249,8 +249,8 @@ tags: fields
 tags: fields
   .text()
   .list()
-  .renderer("textInput")      // WRONG: should be "textInputs"
-  .label("Tags")
+  .renderer("textInput") // WRONG: should be "textInputs"
+  .label("Tags");
 ```
 
 The same rule applies to every field type that has both variants:
@@ -276,14 +276,14 @@ have distinct names (e.g. `refDialogSingle` → `refDialogMultiple`) — see the
 
 ## Field Configuration (Chainable)
 
-| Method                          | Description                                        |
-| ------------------------------- | -------------------------------------------------- |
-| `.renderer("rendererName")`     | Set the Admin UI renderer                          |
-| `.label("Display Name")`        | Field label in the editor                          |
-| `.help("Helper text")`          | Helper text shown below the field                  |
+| Method                          | Description                                                                                                      |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `.renderer("rendererName")`     | Set the Admin UI renderer                                                                                        |
+| `.label("Display Name")`        | Field label in the editor                                                                                        |
+| `.help("Helper text")`          | Helper text shown below the field                                                                                |
 | `.list()`                       | Make the field accept multiple values (arrays). Requires a multi-value renderer variant — see Field Types table. |
-| `.models([{ modelId: "..." }])` | For `ref()` fields: which models can be referenced |
-| `.tags(["tag1"])`               | Assign tags to a field (e.g., `"$bulk-edit"`)      |
+| `.models([{ modelId: "..." }])` | For `ref()` fields: which models can be referenced                                                               |
+| `.tags(["tag1"])`               | Assign tags to a field (e.g., `"$bulk-edit"`)                                                                    |
 
 ## Querying `ref`, `object`, and `dynamicZone` fields
 
