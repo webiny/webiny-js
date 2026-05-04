@@ -42,8 +42,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     // ---------------------------------------------------------------------------
 
     get vm(): IListViewModel<TRow> {
-        const hasFilters =
-            Object.keys(this._filters).length > 0 || this._search.length > 0;
+        const hasFilters = Object.keys(this._filters).length > 0 || this._search.length > 0;
 
         return {
             rows: this._rows,
@@ -60,12 +59,10 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             selection: {
                 selectedIds: this._selectedIds,
                 selectedCount: this._selectedIds.size,
-                allSelected:
-                    this._rows.length > 0 && this._selectedIds.size === this._rows.length
+                allSelected: this._rows.length > 0 && this._selectedIds.size === this._rows.length
             },
             empty: this._rows.length === 0 && !this._loading,
-            emptyWithFilters:
-                this._rows.length === 0 && !this._loading && hasFilters,
+            emptyWithFilters: this._rows.length === 0 && !this._loading && hasFilters,
             error: this._error
         };
     }
@@ -120,9 +117,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
         selection: {
             toggle: (id: string, shiftKey?: boolean) => {
                 if (shiftKey && this._lastSelectedIndex >= 0) {
-                    const currentIndex = this._rows.findIndex(
-                        row => this.getRowId(row) === id
-                    );
+                    const currentIndex = this._rows.findIndex(row => this.getRowId(row) === id);
                     if (currentIndex >= 0) {
                         const start = Math.min(this._lastSelectedIndex, currentIndex);
                         const end = Math.max(this._lastSelectedIndex, currentIndex);
@@ -143,14 +138,10 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
                     newSelected.add(id);
                 }
                 this._selectedIds = newSelected;
-                this._lastSelectedIndex = this._rows.findIndex(
-                    row => this.getRowId(row) === id
-                );
+                this._lastSelectedIndex = this._rows.findIndex(row => this.getRowId(row) === id);
             },
             selectAll: () => {
-                this._selectedIds = new Set(
-                    this._rows.map(row => this.getRowId(row))
-                );
+                this._selectedIds = new Set(this._rows.map(row => this.getRowId(row)));
             },
             deselectAll: () => {
                 this._selectedIds = new Set();

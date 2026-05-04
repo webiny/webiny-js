@@ -32,9 +32,8 @@ export interface IUpdateFileRepository {
     execute(params: UpdateFileGatewayParams): Promise<FmFile>;
 }
 
-export const UpdateFileRepository = createAbstraction<IUpdateFileRepository>(
-    "UpdateFileRepository"
-);
+export const UpdateFileRepository =
+    createAbstraction<IUpdateFileRepository>("UpdateFileRepository");
 
 export namespace UpdateFileRepository {
     export type Interface = IUpdateFileRepository;

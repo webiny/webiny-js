@@ -1,8 +1,5 @@
 import type { FmSettings } from "../shared/types.js";
-import {
-    GetSettingsUseCase as UseCaseAbstraction,
-    GetSettingsRepository
-} from "./abstractions.js";
+import { GetSettingsUseCase as UseCaseAbstraction, GetSettingsRepository } from "./abstractions.js";
 
 class GetSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: GetSettingsRepository.Interface) {}

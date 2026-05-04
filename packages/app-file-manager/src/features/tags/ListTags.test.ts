@@ -128,9 +128,7 @@ describe("ListTags Feature", () => {
             { tag: "tag-2", count: 5 }
         ];
 
-        mockGateway.execute
-            .mockResolvedValueOnce(initialTags)
-            .mockResolvedValueOnce(updatedTags);
+        mockGateway.execute.mockResolvedValueOnce(initialTags).mockResolvedValueOnce(updatedTags);
 
         const repository = container.resolve(RepositoryAbstraction);
 

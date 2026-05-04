@@ -16,6 +16,9 @@ import { FileUploaderFeature } from "~/features/fileUploader/index.js";
 import { ListTagsFeature } from "~/features/tags/index.js";
 import { GetSettingsFeature } from "~/features/settings/index.js";
 import { SharedCacheFeature } from "~/features/shared/index.js";
+import { FileListPresenterFeature } from "~/presentation/FileList/index.js";
+import { FileDetailsPresenterFeature } from "~/presentation/FileDetails/index.js";
+import { FileManagerRoutes } from "~/modules/FileManagerRoutes.js";
 
 export const FileManager = () => {
     return (
@@ -32,6 +35,11 @@ export const FileManager = () => {
             <RegisterFeature feature={FmPermissionsFeature} />
             <RegisterFeature feature={GetFileFeature} />
             <RegisterFeature feature={ResolveImageToolFeature} />
+            {/* Presentation features. */}
+            <RegisterFeature feature={FileListPresenterFeature} />
+            <RegisterFeature feature={FileDetailsPresenterFeature} />
+            {/* Legacy modules. */}
+            <FileManagerRoutes />
             <SettingsModule />
             <FileManagerApiProviderModule />
             <FileManagerRendererModule />

@@ -1,0 +1,449 @@
+// @vitest-environment jsdom
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { observable, runInAction } from "mobx";
+import { Container } from "@webiny/di";
+import { ListCache } from "@webiny/app-admin/features/listCache/index.js";
+import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
+import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import { FileManagerPermissions } from "../../features/permissions/abstractions.js";
+import { GetSettingsRepository } from "../../features/settings/abstractions.js";
+import { ListTagsRepository } from "../../features/tags/abstractions.js";
+import { FileUploader } from "../../features/fileUploader/abstractions.js";
+import { LocalStorage } from "@webiny/app/features/localStorage";
+import { ListFilesUseCase } from "../../features/listFiles/abstractions.js";
+import { FilesListCache } from "../../features/shared/abstractions.js";
+import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
+import { FileListPresenter as Abstraction, type IFileListPresenter } from "./abstractions.js";
+import { FileListPresenter } from "./FileListPresenter.js";
+import type { FmFile } from "../../features/shared/types.js";
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function createMockListPresenter(): ListPresenter.Interface<FmFile> {
+    return {
+        vm: {
+            rows: [],
+            sort: null,
+            filters: {},
+            search: "",
+            pagination: {
+                hasMore: false,
+                loading: false,
+                loadingMore: false,
+                totalCount: 0,
+                currentCount: 0
+            },
+            selection: {
+                selectedIds: new Set(),
+                selectedCount: 0,
+                allSelected: false
+            },
+            empty: true,
+            emptyWithFilters: false,
+            error: null
+        },
+        actions: {
+            search: { set: vi.fn(), clear: vi.fn() },
+            sort: { set: vi.fn(), toggle: vi.fn() },
+            filter: { set: vi.fn(), clear: vi.fn(), clearAll: vi.fn() },
+            selection: {
+                toggle: vi.fn(),
+                selectAll: vi.fn(),
+                deselectAll: vi.fn(),
+                selectRows: vi.fn(),
+                isSelected: vi.fn().mockReturnValue(false)
+            },
+            loadMore: vi.fn().mockResolvedValue(undefined),
+            refresh: vi.fn().mockResolvedValue(undefined)
+        },
+        init: vi.fn()
+    };
+}
+
+function createMockFolderTreePresenter(): FolderTreePresenter.Interface {
+    const state = observable({
+        tree: [],
+        currentFolderId: null as string | null,
+        currentFolder: null,
+        loading: false,
+        operation: { active: false, mode: null }
+    });
+
+    return {
+        get vm() {
+            return state;
+        },
+        selectFolder: vi.fn(),
+        createFolder: vi.fn(),
+        editFolder: vi.fn(),
+        deleteFolder: vi.fn().mockResolvedValue(undefined),
+        cancelOperation: vi.fn(),
+        onFolderChange: vi.fn().mockReturnValue(() => {})
+    };
+}
+
+function createMockPermissions(): FileManagerPermissions.Interface {
+    return {
+        canAccess: vi.fn().mockReturnValue(true),
+        canRead: vi.fn().mockReturnValue(true),
+        canCreate: vi.fn().mockReturnValue(true),
+        canEdit: vi.fn().mockReturnValue(false),
+        canDelete: vi.fn().mockReturnValue(false),
+        canAction: vi.fn().mockReturnValue(true)
+    } as unknown as FileManagerPermissions.Interface;
+}
+
+function createMockSettingsRepository(): GetSettingsRepository.Interface {
+    return {
+        execute: vi.fn().mockResolvedValue({
+            uploadMinFileSize: "0",
+            uploadMaxFileSize: "10485760",
+            srcPrefix: "https://cdn.example.com/"
+        }),
+        save: vi.fn().mockImplementation(async (data: Record<string, unknown>) => data),
+        settings: null
+    };
+}
+
+function createMockTagsRepository(): ListTagsRepository.Interface {
+    return {
+        execute: vi.fn().mockResolvedValue([]),
+        tags: [{ tag: "photo", count: 5 }]
+    };
+}
+
+function createMockFileUploader(): FileUploader.Interface {
+    return {
+        vm: {
+            jobs: [],
+            overallProgress: { sent: 0, total: 0, percentage: 0 },
+            isUploading: false,
+            completedCount: 0,
+            failedCount: 0
+        },
+        upload: vi.fn().mockResolvedValue(undefined),
+        uploadMany: vi.fn().mockResolvedValue(undefined),
+        abort: vi.fn(),
+        clear: vi.fn()
+    };
+}
+
+function createMockLocalStorage(): LocalStorage.Interface {
+    const store = new Map<string, unknown>();
+    return {
+        get: vi.fn((key: string) => store.get(key)) as LocalStorage.Interface["get"],
+        set: vi.fn(<T>(key: string, value: T): void => {
+            store.set(key, value);
+        }),
+        remove: vi.fn((key: string) => {
+            store.delete(key);
+        }),
+        clear: vi.fn(() => store.clear()),
+        keys: vi.fn(() => Array.from(store.keys()))
+    };
+}
+
+function createMockListFilesUseCase(): ListFilesUseCase.Interface {
+    return {
+        execute: vi.fn().mockResolvedValue({
+            data: [],
+            meta: { cursor: null, hasMoreItems: false, totalCount: 0 }
+        })
+    };
+}
+
+function createMockGetDescendantFoldersUseCase(): GetDescendantFoldersUseCase.Interface {
+    return {
+        execute: vi.fn().mockReturnValue([])
+    };
+}
+
+// ---------------------------------------------------------------------------
+// Container setup
+// ---------------------------------------------------------------------------
+
+interface Mocks {
+    listPresenter: ListPresenter.Interface<FmFile>;
+    folderTreePresenter: FolderTreePresenter.Interface;
+    permissions: FileManagerPermissions.Interface;
+    settingsRepository: GetSettingsRepository.Interface;
+    tagsRepository: ListTagsRepository.Interface;
+    fileUploader: FileUploader.Interface;
+    localStorage: LocalStorage.Interface;
+    listFilesUseCase: ListFilesUseCase.Interface;
+    cache: ListCache<FmFile>;
+    getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface;
+}
+
+function createMocks(): Mocks {
+    return {
+        listPresenter: createMockListPresenter(),
+        folderTreePresenter: createMockFolderTreePresenter(),
+        permissions: createMockPermissions(),
+        settingsRepository: createMockSettingsRepository(),
+        tagsRepository: createMockTagsRepository(),
+        fileUploader: createMockFileUploader(),
+        localStorage: createMockLocalStorage(),
+        listFilesUseCase: createMockListFilesUseCase(),
+        cache: new ListCache<FmFile>(),
+        getDescendantFoldersUseCase: createMockGetDescendantFoldersUseCase()
+    };
+}
+
+function createContainer(mocks: Mocks) {
+    const container = new Container();
+
+    container.registerInstance(ListPresenter, mocks.listPresenter);
+    container.registerInstance(FolderTreePresenter, mocks.folderTreePresenter);
+    container.registerInstance(FileManagerPermissions, mocks.permissions);
+    container.registerInstance(GetSettingsRepository, mocks.settingsRepository);
+    container.registerInstance(ListTagsRepository, mocks.tagsRepository);
+    container.registerInstance(FileUploader, mocks.fileUploader);
+    container.registerInstance(LocalStorage, mocks.localStorage);
+    container.registerInstance(ListFilesUseCase, mocks.listFilesUseCase);
+    container.registerInstance(FilesListCache, mocks.cache);
+    container.registerInstance(GetDescendantFoldersUseCase, mocks.getDescendantFoldersUseCase);
+
+    // Register the real FileListPresenter implementation.
+    container.register(FileListPresenter).inSingletonScope();
+
+    return container;
+}
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+describe("FileListPresenter", () => {
+    let mocks: Mocks;
+    let presenter: IFileListPresenter;
+
+    beforeEach(() => {
+        mocks = createMocks();
+        const container = createContainer(mocks);
+        presenter = container.resolve(Abstraction);
+    });
+
+    // -----------------------------------------------------------------------
+    // Composition: ListPresenter and FolderTreePresenter initialized.
+    // -----------------------------------------------------------------------
+
+    it("should call listPresenter.init with a DataSource and initialSort on init()", () => {
+        presenter.init();
+
+        expect(mocks.listPresenter.init).toHaveBeenCalledTimes(1);
+        const config = (mocks.listPresenter.init as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        expect(config.dataSource).toBeDefined();
+        expect(config.initialSort).toEqual({ field: "createdOn", direction: "DESC" });
+    });
+
+    it("should forward ListPresenter.vm data as vm.list", () => {
+        presenter.init();
+        expect(presenter.vm.list.rows).toEqual(mocks.listPresenter.vm.rows);
+        expect(presenter.vm.list.sort).toEqual(mocks.listPresenter.vm.sort);
+        expect(presenter.vm.list.search).toBe(mocks.listPresenter.vm.search);
+        expect(presenter.vm.list.empty).toBe(mocks.listPresenter.vm.empty);
+    });
+
+    it("should forward FolderTreePresenter.vm as vm.folders", () => {
+        presenter.init();
+        expect(presenter.vm.folders).toBe(mocks.folderTreePresenter.vm);
+    });
+
+    // -----------------------------------------------------------------------
+    // Folder change wiring.
+    // -----------------------------------------------------------------------
+
+    it("should set folderId filter when folder changes", async () => {
+        presenter.init();
+
+        // Simulate folder selection via MobX observable change.
+        runInAction(() => {
+            (mocks.folderTreePresenter.vm as any).currentFolderId = "folder-abc";
+        });
+
+        // MobX reaction fires synchronously in the same tick after runInAction.
+        expect(mocks.listPresenter.actions.filter.set).toHaveBeenCalledWith(
+            "folderId",
+            "folder-abc"
+        );
+    });
+
+    it("should clear folderId filter when folder is set to null", () => {
+        presenter.init();
+
+        // First set a folder.
+        runInAction(() => {
+            (mocks.folderTreePresenter.vm as any).currentFolderId = "folder-1";
+        });
+
+        // Then clear it.
+        runInAction(() => {
+            (mocks.folderTreePresenter.vm as any).currentFolderId = null;
+        });
+
+        expect(mocks.listPresenter.actions.filter.clear).toHaveBeenCalledWith("folderId");
+    });
+
+    // -----------------------------------------------------------------------
+    // Permission flags forwarded to vm.
+    // -----------------------------------------------------------------------
+
+    it("should expose permission flags in vm.permissions", () => {
+        presenter.init();
+
+        expect(presenter.vm.permissions.canRead).toBe(true);
+        expect(presenter.vm.permissions.canCreate).toBe(true);
+        expect(presenter.vm.permissions.canEdit).toBe(false);
+        expect(presenter.vm.permissions.canDelete).toBe(false);
+    });
+
+    // -----------------------------------------------------------------------
+    // View mode persistence via LocalStorage.
+    // -----------------------------------------------------------------------
+
+    it("should default viewMode to 'table'", () => {
+        expect(presenter.vm.viewMode).toBe("table");
+    });
+
+    it("should update viewMode and persist to localStorage", () => {
+        presenter.actions.setViewMode("grid");
+
+        expect(presenter.vm.viewMode).toBe("grid");
+        expect(mocks.localStorage.set).toHaveBeenCalledWith("fm:viewMode", "grid");
+    });
+
+    it("should restore viewMode from localStorage on construction", () => {
+        // Pre-seed localStorage with "grid" before creating the presenter.
+        const seededMocks = createMocks();
+        (seededMocks.localStorage.get as ReturnType<typeof vi.fn>).mockReturnValue("grid");
+
+        const container = createContainer(seededMocks);
+        const seededPresenter = container.resolve(Abstraction);
+
+        expect(seededPresenter.vm.viewMode).toBe("grid");
+    });
+
+    // -----------------------------------------------------------------------
+    // Overlay mode config.
+    // -----------------------------------------------------------------------
+
+    it("should set isOverlay to false when init() is called without config", () => {
+        presenter.init();
+        expect(presenter.vm.isOverlay).toBe(false);
+    });
+
+    it("should set isOverlay to true when init() is called with overlay config", () => {
+        presenter.init({
+            onChange: vi.fn(),
+            onClose: vi.fn(),
+            multiple: false,
+            accept: ["image/*"]
+        });
+
+        expect(presenter.vm.isOverlay).toBe(true);
+    });
+
+    // -----------------------------------------------------------------------
+    // Upload action.
+    // -----------------------------------------------------------------------
+
+    it("should call fileUploader.uploadMany when actions.upload is called", async () => {
+        presenter.init();
+
+        const file1 = new File(["content"], "test.txt", { type: "text/plain" });
+        const file2 = new File(["img"], "photo.png", { type: "image/png" });
+
+        await presenter.actions.upload([file1, file2]);
+
+        expect(mocks.fileUploader.uploadMany).toHaveBeenCalledTimes(1);
+        const args = (mocks.fileUploader.uploadMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+        expect(args).toHaveLength(2);
+        expect(args[0].data.name).toBe("test.txt");
+        expect(args[0].data.type).toBe("text/plain");
+        expect(args[1].data.name).toBe("photo.png");
+        expect(args[1].data.type).toBe("image/png");
+    });
+
+    // -----------------------------------------------------------------------
+    // selectFile action in overlay mode.
+    // -----------------------------------------------------------------------
+
+    it("should call overlayConfig.onChange immediately in single-select overlay mode", () => {
+        const onChange = vi.fn();
+        presenter.init({ onChange, onClose: vi.fn() });
+
+        const file: FmFile = {
+            id: "file-1",
+            name: "photo.jpg",
+            key: "files/photo.jpg",
+            src: "https://cdn.example.com/files/photo.jpg",
+            type: "image/jpeg",
+            size: 1024,
+            metadata: {},
+            tags: [],
+            createdOn: "2025-01-01T00:00:00Z",
+            savedOn: "2025-01-01T00:00:00Z",
+            createdBy: { id: "user-1", displayName: "Test", type: "admin" },
+            savedBy: { id: "user-1", displayName: "Test", type: "admin" },
+            location: { folderId: "root" }
+        };
+
+        presenter.actions.selectFile(file);
+
+        expect(onChange).toHaveBeenCalledWith([file]);
+    });
+
+    it("should toggle selection in multi-select overlay mode instead of calling onChange", () => {
+        const onChange = vi.fn();
+        presenter.init({ onChange, onClose: vi.fn(), multiple: true });
+
+        const file: FmFile = {
+            id: "file-1",
+            name: "photo.jpg",
+            key: "files/photo.jpg",
+            src: "https://cdn.example.com/files/photo.jpg",
+            type: "image/jpeg",
+            size: 1024,
+            metadata: {},
+            tags: [],
+            createdOn: "2025-01-01T00:00:00Z",
+            savedOn: "2025-01-01T00:00:00Z",
+            createdBy: { id: "user-1", displayName: "Test", type: "admin" },
+            savedBy: { id: "user-1", displayName: "Test", type: "admin" },
+            location: { folderId: "root" }
+        };
+
+        presenter.actions.selectFile(file);
+
+        // In multi mode, onChange is NOT called immediately.
+        expect(onChange).not.toHaveBeenCalled();
+        // The file should be toggled in the selection.
+        expect(mocks.listPresenter.actions.selection.toggle).toHaveBeenCalledWith("file-1");
+    });
+
+    it("should not throw when actions.selectFile is called without overlay mode", () => {
+        presenter.init();
+
+        const file: FmFile = {
+            id: "file-1",
+            name: "photo.jpg",
+            key: "files/photo.jpg",
+            src: "https://cdn.example.com/files/photo.jpg",
+            type: "image/jpeg",
+            size: 1024,
+            metadata: {},
+            tags: [],
+            createdOn: "2025-01-01T00:00:00Z",
+            savedOn: "2025-01-01T00:00:00Z",
+            createdBy: { id: "user-1", displayName: "Test", type: "admin" },
+            savedBy: { id: "user-1", displayName: "Test", type: "admin" },
+            location: { folderId: "root" }
+        };
+
+        // Should not throw.
+        expect(() => presenter.actions.selectFile(file)).not.toThrow();
+    });
+});

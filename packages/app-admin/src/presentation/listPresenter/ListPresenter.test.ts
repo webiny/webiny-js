@@ -61,7 +61,6 @@ async function createInitializedPresenter(
     return { presenter, dataSource };
 }
 
-
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -247,7 +246,6 @@ describe("ListPresenter", () => {
             expect(presenter.vm.selection.selectedCount).toBe(0);
         });
     });
-
 
     // -----------------------------------------------------------------------
     // Filter actions
@@ -465,7 +463,6 @@ describe("ListPresenter", () => {
             expect(presenter.vm.selection.selectedCount).toBe(0);
         });
     });
-
 
     // -----------------------------------------------------------------------
     // Pagination: loadMore & refresh
@@ -726,7 +723,6 @@ describe("ListPresenter", () => {
             expect(presenter.vm.selection.allSelected).toBe(false);
         });
     });
-
 
     // -----------------------------------------------------------------------
     // ViewModel computed properties

@@ -1,7 +1,7 @@
 import React from "react";
 import { AdminConfig, useRouter, AdminLayout } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-admin";
-import { FileManagerSettings } from "./views/FileManagerSettings.js";
+import { SettingsView } from "~/presentation/Settings/components/SettingsView.js";
 import { Routes } from "~/routes.js";
 
 const { Menu, Route } = AdminConfig;
@@ -16,7 +16,7 @@ export const SettingsModule = () => {
                     route={Routes.Settings}
                     element={
                         <AdminLayout title={"File Manager - General Settings"}>
-                            <FileManagerSettings />
+                            <SettingsView />
                         </AdminLayout>
                     }
                 />

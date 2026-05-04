@@ -270,9 +270,7 @@ class FileUploaderImpl implements Abstraction.Interface {
 
     clear(): void {
         runInAction(() => {
-            this.jobs = this.jobs.filter(
-                j => j.status !== "completed" && j.status !== "failed"
-            );
+            this.jobs = this.jobs.filter(j => j.status !== "completed" && j.status !== "failed");
         });
     }
 }

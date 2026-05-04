@@ -26,3 +26,6 @@ export * from "./features/folders/getFolderExtensionsFields/useFolderExtensionsF
 export * from "./features/folders/loadFolderHierarchy/useLoadFolderHierarchy.js";
 export * from "./features/folders/listFolders/useListFolders.js";
 export * from "./features/folders/listFoldersByParentIds/useListFoldersByParentIds.js";
+
+// Presentation
+export * from "./presentation/folderTree/index.js";

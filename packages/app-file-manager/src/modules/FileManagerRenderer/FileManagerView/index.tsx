@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { createDecorator } from "@webiny/react-composition";
 import type { FileManagerFileItem, FileManagerOnChange } from "@webiny/app-admin";
 import { DialogsProvider, FileManagerRenderer as BaseFileManagerRenderer } from "@webiny/app-admin";
 import type { FileItem } from "~/types.js";
@@ -70,7 +69,7 @@ export function FileManagerProvider({
     );
 }
 
-export const FileManagerRenderer = createDecorator(BaseFileManagerRenderer, () => {
+export const FileManagerRenderer = BaseFileManagerRenderer.createDecorator(() => {
     return function FileManagerRenderer(props) {
         const { onChange, onUploadCompletion, ...forwardProps } = props;
 

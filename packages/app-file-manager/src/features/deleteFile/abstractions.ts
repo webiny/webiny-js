@@ -20,9 +20,8 @@ export interface IDeleteFileRepository {
     execute(params: DeleteFileGatewayParams): Promise<boolean>;
 }
 
-export const DeleteFileRepository = createAbstraction<IDeleteFileRepository>(
-    "DeleteFileRepository"
-);
+export const DeleteFileRepository =
+    createAbstraction<IDeleteFileRepository>("DeleteFileRepository");
 
 export namespace DeleteFileRepository {
     export type Interface = IDeleteFileRepository;

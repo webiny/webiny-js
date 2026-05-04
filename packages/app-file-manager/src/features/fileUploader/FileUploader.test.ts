@@ -136,9 +136,7 @@ describe("FileUploader Feature", () => {
 
     it("should mark job as failed when SDK returns error", async () => {
         const file = createBrowserFile("photo.jpg");
-        mockSdk.fileManager.createFile.mockResolvedValue(
-            Result.fail(new Error("Upload failed"))
-        );
+        mockSdk.fileManager.createFile.mockResolvedValue(Result.fail(new Error("Upload failed")));
 
         const uploader = container.resolve(Abstraction);
         await uploader.upload(file, { name: "photo.jpg", type: "image/jpeg" });
@@ -277,9 +275,7 @@ describe("FileUploader Feature", () => {
         );
 
         const uploader = container.resolve(Abstraction);
-        await uploader.uploadMany([
-            { file, data: { name: "photo.jpg", type: "image/jpeg" } }
-        ]);
+        await uploader.uploadMany([{ file, data: { name: "photo.jpg", type: "image/jpeg" } }]);
 
         const callArgs = mockSdk.fileManager.createFiles.mock.calls[0][0];
         expect(callArgs.signal).toBeInstanceOf(AbortSignal);
@@ -298,9 +294,7 @@ describe("FileUploader Feature", () => {
             Result.ok(createFile({ id: "ok-1", name: "ok.jpg" }))
         );
         // Second upload fails.
-        mockSdk.fileManager.createFile.mockResolvedValueOnce(
-            Result.fail(new Error("fail"))
-        );
+        mockSdk.fileManager.createFile.mockResolvedValueOnce(Result.fail(new Error("fail")));
 
         const uploader = container.resolve(Abstraction);
         await uploader.upload(file1, { name: "ok.jpg", type: "image/jpeg" });
