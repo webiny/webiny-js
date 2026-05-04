@@ -2,7 +2,7 @@
 name: webiny-admin-website-builder-catalog
 context: webiny-api
 description: >
-  admin/website-builder — 59 abstractions.
+  admin/website-builder — 63 abstractions.
 ---
 
 # admin/website-builder
@@ -225,6 +225,30 @@ which can be mutated in place.
 **Name:** `pagePathFromTitle`
 **Import:** `import { pagePathFromTitle } from "webiny/admin/website-builder"`
 **Source:** `@webiny/app-website-builder/index.ts`
+
+---
+
+**Name:** `PageSettingsGroup`
+**Import:** `import { PageSettingsGroup } from "webiny/admin/website-builder/page/editor"`
+**Source:** `@webiny/app-website-builder/modules/pages/PageEditor/PageSettings/index.ts`
+
+---
+
+**Name:** `PageSettingsGroupModifier`
+**Import:** `import { PageSettingsGroupModifier } from "webiny/admin/website-builder/page/editor"`
+**Source:** `@webiny/app-website-builder/modules/pages/PageEditor/PageSettings/index.ts`
+
+---
+
+**Name:** `PageType`
+**Import:** `import { PageType } from "webiny/admin/website-builder"`
+**Source:** `@webiny/app-website-builder/presentation/pages/CreatePage/abstractions.ts`
+
+---
+
+**Name:** `PageTypeProvider`
+**Import:** `import { PageTypeProvider } from "webiny/admin/website-builder"`
+**Source:** `@webiny/app-website-builder/presentation/pages/CreatePage/abstractions.ts`
 
 ---
 

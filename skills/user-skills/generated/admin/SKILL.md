@@ -2,7 +2,7 @@
 name: webiny-admin-catalog
 context: webiny-api
 description: >
-  admin — 16 abstractions.
+  admin — 22 abstractions.
 ---
 
 # admin
@@ -81,6 +81,18 @@ is automatically removed from DevTools.
 
 ---
 
+**Name:** `FormModelFactory`
+**Import:** `import { FormModelFactory } from "webiny/admin"`
+**Source:** `@webiny/app-admin/features/formModel/abstractions.ts`
+
+---
+
+**Name:** `LexicalContext`
+**Import:** `import { LexicalContext } from "webiny/admin"`
+**Source:** `@webiny/app-admin/features/tools/index.ts`
+
+---
+
 **Name:** `MainGraphQLClient`
 **Import:** `import { MainGraphQLClient } from "webiny/admin"`
 **Source:** `@webiny/app/features/mainGraphQLClient/index.ts`
@@ -115,6 +127,30 @@ is automatically removed from DevTools.
 **Name:** `Routes`
 **Import:** `import { Routes } from "webiny/admin"`
 **Source:** `@webiny/app-admin/routes.ts`
+
+---
+
+**Name:** `Tool`
+**Import:** `import { Tool } from "webiny/admin"`
+**Source:** `@webiny/app-admin/features/tools/index.ts`
+
+---
+
+**Name:** `ToolPipelineRunner`
+**Import:** `import { ToolPipelineRunner } from "webiny/admin"`
+**Source:** `@webiny/app-admin/features/tools/index.ts`
+
+---
+
+**Name:** `ToolsFeature`
+**Import:** `import { ToolsFeature } from "webiny/admin"`
+**Source:** `@webiny/app-admin/features/tools/index.ts`
+
+---
+
+**Name:** `useBuildParams`
+**Import:** `import { useBuildParams } from "webiny/admin"`
+**Source:** `@webiny/app-admin/presentation/buildParams/useBuildParams.ts`
 
 ---
 

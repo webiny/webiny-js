@@ -90,3 +90,4 @@ export { useDialogs } from "@webiny/app-admin/components/Dialogs/useDialogs.js";
 export { Logo } from "@webiny/app-admin/base/ui/Logo.js";
 export { TenantSelector } from "@webiny/app-admin/base/ui/TenantSelector.js";
 export { LexicalEditor } from "@webiny/app-admin/components/LexicalEditor/LexicalEditor.js";
+export { AdminLayout } from "@webiny/app-admin/components/AdminLayout.js";
