@@ -48,7 +48,7 @@ new ContextPlugin(async context => {
 
 ```typescript
 // features/lingotekService/abstractions.ts
-import { createAbstraction } from "@webiny/feature/api";
+import { createAbstraction } from "webiny/api.js";
 
 export interface ILingotekService {
   translate(docId: string, locale: string): Promise<Result<void, Error>>;
@@ -443,7 +443,7 @@ new CmsModelFieldToGraphQLPlugin({
 Import from `webiny/api/cms/graphql.js`. Implement `CmsModelFieldToGraphQL.Interface` — split read/manage into separate classes, export via `CmsModelFieldToGraphQL.createImplementation`, and register in a `createFeature` container.
 
 ```ts
-import { createFeature } from "@webiny/feature/api";
+import { createFeature } from "webiny/api.js";
 import { CmsModelFieldToGraphQL } from "webiny/api/cms/graphql.js";
 
 class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
@@ -537,7 +537,7 @@ createCmsGraphQLSchemaSorterPlugin({
 ### v6
 
 ```ts
-import { createFeature } from "@webiny/feature/api";
+import { createFeature } from "webiny/api.js";
 import { CmsGraphQLSchemaSorter } from "webiny/api/cms/graphql.js";
 
 class MyCustomSorter implements CmsGraphQLSchemaSorter.Interface {
@@ -582,7 +582,7 @@ new StorageTransformPlugin({
 Import from `webiny/api/cms/storage.js`. Implement `StorageTransform.Interface` with `toStorage` and `fromStorage` async methods. Register in a `createFeature` container.
 
 ```ts
-import { createFeature } from "@webiny/feature/api";
+import { createFeature } from "webiny/api.js";
 import { StorageTransform } from "webiny/api/cms/storage.js";
 
 class MyStorageTransform implements StorageTransform.Interface {
@@ -661,7 +661,7 @@ new CmsModelFieldValidatorPlugin({
 Import from `webiny/api/cms/validation.js`. Implement `CmsModelFieldValidator.Interface` with a `name` string and an async `validate` method that returns `boolean`. Register in a `createFeature` container.
 
 ```ts
-import { createFeature } from "@webiny/feature/api";
+import { createFeature } from "webiny/api.js";
 import { CmsModelFieldValidator } from "webiny/api/cms/validation.js";
 
 class MyValidatorImpl implements CmsModelFieldValidator.Interface {
@@ -733,7 +733,7 @@ createCmsEntryElasticsearchBodyModifierPlugin({
 Import from `webiny/api/cms/opensearch.js`. Implement `CmsEntryOpenSearchBodyModifier.Interface` with a synchronous `modifyBody` method. The optional `modelId` property scopes the modifier to a single model; omit it to apply to all models.
 
 ```ts
-import { createFeature } from "@webiny/feature/api";
+import { createFeature } from "webiny/api.js";
 import { CmsEntryOpenSearchBodyModifier } from "webiny/api/cms/opensearch.js";
 
 class MyBodyModifier implements CmsEntryOpenSearchBodyModifier.Interface {
