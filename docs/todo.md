@@ -1,0 +1,1 @@
+- seg controls in sidebars via presenters?
