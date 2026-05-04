@@ -1,24 +1,34 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+import { createFieldRenderer } from "~/features/formModel/createFieldRenderer.js";
 import { Select } from "@webiny/admin-ui";
-import type { IFieldVM } from "~/features/formModel/index.js";
 import type { IValueOption } from "~/features/formModel/index.js";
 
-export const SelectRenderer = observer(function SelectRenderer({ field }: { field: IFieldVM }) {
+declare module "../../../features/formModel/abstractions.js" {
+    interface IFieldRendererRegistry {
+        dropdown: { fieldType: "text" | "number"; options: true; settings: undefined };
+    }
+}
+
+export const SelectRenderer = createFieldRenderer(({ field }) => {
     const options: IValueOption[] = field.options ?? [];
 
     return (
         <Select
             label={field.label}
             placeholder={field.placeholder}
-            value={(field.value as string) ?? ""}
-            onChange={value => field.onChange(value)}
+            description={field.description}
+            note={field.note}
+            value={field.value != null ? String(field.value) : ""}
+            onChange={value => {
+                field.onChange(value);
+                field.onBlur();
+            }}
             required={field.required}
             disabled={field.disabled}
             validation={field.validation}
             options={options.map(opt => ({
                 label: opt.label,
-                value: opt.value,
+                value: String(opt.value),
                 disabled: opt.disabled
             }))}
         />

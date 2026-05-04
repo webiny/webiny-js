@@ -33,13 +33,13 @@ export interface FmFile {
     modifiedBy?: FmIdentity;
     savedBy: FmIdentity;
     location: FmLocation;
-    src?: string;
-    name?: string;
-    key?: string;
-    type?: string;
-    size?: number;
-    metadata?: FmFile_Metadata;
-    tags?: string[];
+    src: string;
+    name: string;
+    key: string;
+    type: string;
+    size: number;
+    metadata: FmFile_Metadata;
+    tags: string[];
     accessControl?: FmFile_AccessControl;
     [key: string]: any;
 }

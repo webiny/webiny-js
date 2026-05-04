@@ -1,5 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import { Encryption } from "~/domain/Encryption/abstractions.js";
+import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { SaveSettingsRepository, type SaveSettingsInput } from "./abstractions.js";
 import type { TransportSettings } from "~/types.js";
 import { SettingsPersistenceError } from "~/domain/errors.js";
@@ -24,11 +24,11 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
         // If updating and no password provided, keep the existing password
         let passwordToStore = input.password || "";
         if (!input.password && existingSettings) {
-            passwordToStore = await this.encryption.decrypt(transportSettings.password || "");
+            passwordToStore = this.encryption.decrypt(transportSettings.password || "");
         }
 
         // Encrypt password
-        const encryptedPassword = await this.encryption.encrypt(passwordToStore);
+        const encryptedPassword = this.encryption.encrypt(passwordToStore);
 
         // Prepare data
         const data = {
@@ -40,20 +40,18 @@ class SaveSettingsRepositoryImpl implements SaveSettingsRepository.Interface {
             replyTo: input.replyTo ?? transportSettings.replyTo
         };
 
-        // Save settings
+        // Save settings.
         const result = await this.keyValueStore.set(MAILER_TRANSPORT_SETTINGS, data);
 
         if (result.isFail()) {
             return Result.fail(new SettingsPersistenceError(result.error));
         }
 
-        // Return without encrypted password
-        const returnSettings: TransportSettings = {
-            ...data,
-            password: "" // Don't return password
-        };
-
-        return Result.ok(returnSettings);
+        // Return the stored state without the password. Callers that need the
+        // plaintext password go through GetSettingsRepository.get(transportName).
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password: _password, ...savedSettings } = data as TransportSettings;
+        return Result.ok(savedSettings);
     }
 }
 

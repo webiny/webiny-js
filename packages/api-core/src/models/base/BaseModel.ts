@@ -5,7 +5,7 @@ import z from "zod";
 type DataProperties<T> = Omit<T, "__schema">;
 
 export type IModelData<T> = {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    // oxlint-disable-next-line typescript/no-unsafe-function-type
     [K in keyof DataProperties<T> as T[K] extends Function ? never : K]: T[K];
 };
 

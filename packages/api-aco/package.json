@@ -2,7 +2,6 @@
   "name": "@webiny/api-aco",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
   "keywords": [
     "aco:base"
   ],
@@ -49,7 +48,7 @@
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.13.2",
     "rimraf": "^6.1.3",
-    "typescript": "6.0.2",
-    "vitest": "^4.1.4"
+    "typescript": "6.0.3",
+    "vitest": "^4.1.5"
   }
 }

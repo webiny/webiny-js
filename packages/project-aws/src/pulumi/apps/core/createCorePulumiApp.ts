@@ -15,7 +15,8 @@ import {
 import * as random from "@pulumi/random";
 
 import { getProjectSdk } from "@webiny/project";
-import { CorePulumi } from "@webiny/project/abstractions/index.js";
+import { CorePulumi } from "~/abstractions/features/pulumi/index.js";
+import { corePulumi } from "~/pulumi/features/CorePulumi/index.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { applyAwsResourceTags, getAwsRegion } from "~/pulumi/apps/awsUtils.js";
@@ -34,6 +35,10 @@ export function createCorePulumiApp() {
             const projectConfig = await sdk.getProjectConfig();
 
             const pulumiResourceNamePrefix = await sdk.getPulumiResourceNamePrefix();
+            const coreStackOutput = await sdk.getAppStackOutput<{
+                opensearchDomainName?: string;
+                primaryDynamodbTableName?: string;
+            }>("core");
             const vpcExtensionsConfig = getVpcConfigFromExtension(projectConfig);
             const opensearchExtensionConfig = getOsConfigFromExtension(projectConfig);
 
@@ -216,10 +221,11 @@ export function createCorePulumiApp() {
 
             // Overrides must be applied via a handler, registered at the very start of the program.
             // By doing this, we're ensuring user's adjustments are not applied to late.
+            sdk.getContainer().registerComposite(corePulumi);
             const pulumiHandlers = sdk.getContainer().resolve(CorePulumi);
 
             app.addHandler(() => {
-                return pulumiHandlers.execute(app as unknown as CorePulumiApp);
+                return pulumiHandlers.execute(app as CorePulumiApp);
             });
 
             const isProduction = app.env.isProduction;
@@ -251,7 +257,22 @@ export function createCorePulumiApp() {
 
             let opensearch;
             if (searchEngineType === "opensearch") {
-                opensearch = app.addModule(OpenSearch, { protect });
+                const prevDomainName = coreStackOutput?.opensearchDomainName;
+
+                // When upgrading from old code that never stored opensearchDomainName, the old
+                // code always generated domain names without any prefix (app.params.create
+                // .pulumiResourceNamePrefix was never a real Pulumi param, so it returned "").
+                // Using the SDK default "wby-" prefix here would generate a different name and
+                // cause Pulumi to destroy and recreate the cluster.
+                const isUpgradeFromOldCode =
+                    !!coreStackOutput?.primaryDynamodbTableName && !prevDomainName;
+                const namePrefixForOs = isUpgradeFromOldCode ? "" : pulumiResourceNamePrefix || "";
+
+                opensearch = app.addModule(OpenSearch, {
+                    protect,
+                    namePrefix: namePrefixForOs,
+                    prevDomainName
+                });
             }
 
             app.addModule(WatchCommand, { deploymentId: deploymentId.hex });

@@ -241,6 +241,88 @@ describe("SDK GraphQL - CMS Operations", () => {
             expect(list.data[0].values?.name).toBe("Keyboard");
         });
 
+        it("should return error when non-existent field is requested", async () => {
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id", "values.nonExistentField"]
+            });
+
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.message).toMatch(/nonExistentField/);
+        });
+
+        it("should return error when object field is requested without sub-selection", async () => {
+            // The 'category' field is a ref type — it has sub-fields, so selecting it as
+            // a plain leaf (without { id entryId modelId }) must surface a GraphQL error.
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id", "values.category"]
+            });
+
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.message).toMatch(/values\.category/);
+            expect(listResult.error?.message).toMatch(/object type/);
+        });
+
+        it("should return error when where references a non-existent field", async () => {
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id"],
+                where: { "values.nonExistentWhereField": "hello" }
+            });
+
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.message).toBe(
+                'Unknown filter field: "nonExistentWhereField".'
+            );
+        });
+
+        it("should return error when where uses an unknown operator on a known field", async () => {
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id"],
+                where: { "values.name_unknownop": "hello" }
+            });
+
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.message).toBe('Unknown filter field: "name_unknownop".');
+        });
+
+        it("should return validation error for limit 0", async () => {
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id"],
+                limit: 0
+            });
+
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.code).toBe("VALIDATION_ERROR");
+        });
+
+        it("should return validation error for non-integer limit", async () => {
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id"],
+                limit: "sd" as unknown as number
+            });
+
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.code).toBe("VALIDATION_ERROR");
+            expect(listResult.error?.message).toContain('"limit"');
+        });
+
+        it("should return validation error for non-string search", async () => {
+            const listResult = await sdk.cms.listEntries<ProductValues>({
+                modelId: "product",
+                fields: ["id"],
+                search: false as unknown as string
+            });
+
+            expect(listResult.isFail()).toBe(true);
+            expect(listResult.error?.code).toBe("VALIDATION_ERROR");
+            expect(listResult.error?.message).toContain('"search"');
+        });
+
         it("should list entries with limit and pagination", async () => {
             // Create 3 test products using SDK.
             for (let i = 1; i <= 3; i++) {
@@ -338,6 +420,17 @@ describe("SDK GraphQL - CMS Operations", () => {
             expect(entry?.values?.sku).toBe("TAB-001");
         });
 
+        it("should return error when non-existent field is requested", async () => {
+            const getResult = await sdk.cms.getEntry<ProductValues>({
+                modelId: "product",
+                where: { id: "someId#0001" },
+                fields: ["id", "values.nonExistentField"]
+            });
+
+            expect(getResult.isFail()).toBe(true);
+            expect(getResult.error?.message).toMatch(/nonExistentField/);
+        });
+
         it("should return null when entry not found", async () => {
             // Get non-existent entry using SDK.
             const getResult = await sdk.cms.getEntry<ProductValues>({
@@ -349,7 +442,7 @@ describe("SDK GraphQL - CMS Operations", () => {
             });
 
             expect(getResult.isOk()).toBe(false);
-            expect(getResult.error?.code).toBe("GRAPHQL_ERROR");
+            expect(getResult.error?.code).toBe("API_ERROR");
             expect(getResult.error?.message).toBe("Entry was not found!");
         });
     });

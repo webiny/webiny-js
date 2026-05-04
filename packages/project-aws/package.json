@@ -2,7 +2,10 @@
   "name": "@webiny/project-aws",
   "version": "0.0.0",
   "type": "module",
-  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -15,17 +18,19 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.25.0",
-    "@pulumi/pulumi": "^3.230.0",
+    "@pulumi/aws": "^7.28.0",
+    "@pulumi/pulumi": "^3.234.0",
     "@pulumi/random": "^4.19.2",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-layers": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/cli-core": "0.0.0",
+    "@webiny/di": "^0.2.3",
     "@webiny/project": "0.0.0",
     "@webiny/pulumi": "0.0.0",
     "@webiny/utils": "0.0.0",
     "chalk": "^5.6.2",
+    "email-addresses": "^5.0.0",
     "find-up": "^8.0.0",
     "invariant": "^2.2.4",
     "lodash": "^4.18.1",
@@ -33,13 +38,14 @@
     "react": "18.3.1",
     "replace-in-path": "^1.1.0",
     "ts-morph": "^28.0.0",
-    "zod": "^4.3.6"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",
     "@types/ncp": "^2.0.8",
     "@webiny/build-tools": "0.0.0",
-    "typescript": "6.0.2"
+    "typescript": "6.0.3",
+    "vitest": "^4.1.5"
   },
   "adio": {
     "ignoreDirs": [
@@ -47,12 +53,7 @@
     ],
     "ignore": {
       "src": [
-        "listr2",
         "cloudfront"
-      ],
-      "dependencies": [
-        "@pulumi/pulumi",
-        "@pulumi/aws"
       ]
     }
   }

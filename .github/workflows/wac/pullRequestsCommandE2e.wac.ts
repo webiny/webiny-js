@@ -152,6 +152,11 @@ const createCypressJobs = (dbSetup: string) => {
                     ].join("\n")
                 }
             },
+            {
+                name: "Enable extension whitelabeling",
+                "working-directory": DIR_TEST_PROJECT,
+                run: "yarn webiny extension whitelabeling"
+            },
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
             ...(dbSetup === "ddb-os"
                 ? [

@@ -4,7 +4,9 @@ import chalk from "chalk";
 export const printBuildStats =
     ({ cwd, label = "build", extensions = [".js", ".mjs", ".css"] }) =>
     ({ stats }) => {
-        if (!stats) return;
+        if (!stats) {
+            return;
+        }
 
         const statsJson = stats.toJson({ assets: true, children: false });
         const assets = statsJson.assets || [];

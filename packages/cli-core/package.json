@@ -2,7 +2,10 @@
   "name": "@webiny/cli-core",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -22,23 +25,23 @@
     "find-up": "^8.0.0",
     "get-yarn-workspaces": "1.0.2",
     "humanize-duration": "3.33.2",
-    "inquirer": "^13.4.1",
+    "inquirer": "^13.4.2",
     "load-json-file": "^7.0.1",
     "open": "^11.0.0",
-    "ora": "9.3.0",
+    "ora": "9.4.0",
     "pino": "^10.3.1",
     "pino-pretty": "^13.1.3",
     "semver": "^7.7.4",
-    "type-fest": "^5.5.0",
+    "type-fest": "^5.6.0",
     "write-json-file": "^7.0.0",
     "yargs": "^18.0.0",
-    "zod": "^4.3.6"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",
     "@webiny/build-tools": "0.0.0",
     "rimraf": "^6.1.3",
-    "typescript": "6.0.2"
+    "typescript": "6.0.3"
   },
   "publishConfig": {
     "access": "public",

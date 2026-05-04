@@ -2,7 +2,10 @@
   "name": "@webiny/api-headless-cms-ddb",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "keywords": [
     "@webiny/api-headless-cms",
     "storage-operations",
@@ -45,8 +48,8 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "jest-dynalite": "^3.6.1",
-    "typescript": "6.0.2",
-    "vitest": "^4.1.4"
+    "typescript": "6.0.3",
+    "vitest": "^4.1.5"
   },
   "publishConfig": {
     "access": "public",

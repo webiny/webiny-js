@@ -1,7 +1,9 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, NetworkError } from "../../errors.js";
 import type { PresignedPostPayloadResponse } from "./fileManagerTypes.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface GetPresignedPostPayloadParams {
     name: string;
@@ -24,14 +26,13 @@ export interface GetPresignedPostPayloadParams {
  * @param params.keyPrefix - Optional custom key prefix
  * @returns Result containing the presigned POST payload or an error
  */
+// Not using createMethod: simple params, no Zod schema defined for this method.
 export async function getPresignedPostPayload(
     config: WebinyConfig,
     fetchFn: typeof fetch,
     params: GetPresignedPostPayloadParams
-): Promise<Result<PresignedPostPayloadResponse, HttpError | GraphQLError | NetworkError>> {
+): Promise<Result<PresignedPostPayloadResponse, HttpError | ApiError | NetworkError>> {
     const { name, type, size, key, keyPrefix } = params;
-
-    const { executeGraphQL } = await import("../executeGraphQL.js");
 
     const query = `
         query GetPreSignedPostPayload($data: PreSignedPostPayloadInput!) {
@@ -67,9 +68,8 @@ export async function getPresignedPostPayload(
     const responseData = result.value;
 
     if (responseData.fileManager.getPreSignedPostPayload.error) {
-        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.fileManager.getPreSignedPostPayload.error.message,
                 responseData.fileManager.getPreSignedPostPayload.error.code
             )

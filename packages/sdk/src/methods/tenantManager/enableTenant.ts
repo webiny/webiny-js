@@ -1,6 +1,8 @@
-import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { enableTenantSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface EnableTenantParams {
     tenantId: string;
@@ -15,16 +17,10 @@ export interface EnableTenantParams {
  * @param params.tenantId - ID of the tenant to enable
  * @returns Result containing true on success or an error
  */
-export async function enableTenant(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: EnableTenantParams
-): Promise<Result<boolean, HttpError | GraphQLError | NetworkError>> {
-    const { tenantId } = params;
-
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
-    const query = `
+export const enableTenant = createMethod(
+    enableTenantSchema,
+    async (config, fetchFn, { tenantId }) => {
+        const query = `
         mutation EnableTenant($tenantId: ID!) {
             tenantManager {
                 enableTenant(tenantId: $tenantId) {
@@ -38,23 +34,23 @@ export async function enableTenant(
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, { tenantId });
+        const result = await executeGraphQL(config, fetchFn, query, { tenantId });
 
-    if (result.isFail()) {
-        return Result.fail(result.error);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const responseData = result.value;
+
+        if (responseData.tenantManager.enableTenant.error) {
+            return Result.fail(
+                new ApiError(
+                    responseData.tenantManager.enableTenant.error.message,
+                    responseData.tenantManager.enableTenant.error.code
+                )
+            );
+        }
+
+        return Result.ok(responseData.tenantManager.enableTenant.data as boolean);
     }
-
-    const responseData = result.value;
-
-    if (responseData.tenantManager.enableTenant.error) {
-        const { GraphQLError } = await import("../../errors.js");
-        return Result.fail(
-            new GraphQLError(
-                responseData.tenantManager.enableTenant.error.message,
-                responseData.tenantManager.enableTenant.error.code
-            )
-        );
-    }
-
-    return Result.ok(responseData.tenantManager.enableTenant.data);
-}
+);

@@ -164,21 +164,6 @@ setProperty(copy, "a.b.c", value);
 Status: reduce
 Node 22+ supports `node --env-file=.env`. Keep only if programmatic loading is needed.
 
-## @eslint/eslintrc, @eslint/js, eslint, eslint-config-standard, eslint-import-resolver-babel-module, eslint-plugin-import, eslint-plugin-lodash, eslint-plugin-promise, eslint-plugin-react
-
-Status: ok
-
-## eslint-plugin-node
-
-Status: replace
-Unmaintained. Use `eslint-plugin-n` (maintained fork, drop-in replacement).
-https://github.com/eslint-community/eslint-plugin-n
-
-## eslint-plugin-standard
-
-Status: replace
-Deprecated. Rules moved to eslint core. Remove entirely.
-
 ## exit-hook
 
 Status: ok
@@ -435,6 +420,10 @@ Status: ok
 
 Status: ok
 
+## oxlint
+
+Status: ok
+
 ## raw.macro
 
 Status: replace
@@ -513,7 +502,7 @@ https://github.com/nonara/ts-patch
 
 Status: ok
 
-## typescript, @typescript-eslint/eslint-plugin, @typescript-eslint/parser
+## typescript
 
 Status: ok
 
@@ -547,7 +536,7 @@ Status: ok
 
 Status: ok
 
-## vitest, @vitest/coverage-v8, @vitest/eslint-plugin
+## vitest, @vitest/coverage-v8
 
 Status: ok
 

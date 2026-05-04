@@ -1,17 +1,18 @@
 import { Result } from "@webiny/feature/api";
 import { UpdateModelRepository as RepositoryAbstraction } from "./abstractions.js";
-import { ModelCache } from "~/features/contentModel/shared/abstractions.js";
-import { ModelsFetcher } from "~/features/contentModel/shared/abstractions.js";
-import { ModelCannotUpdateCodeModelError } from "~/domain/contentModel/errors.js";
-import { ModelPersistenceError } from "~/domain/contentModel/errors.js";
-import { ModelValidationError } from "~/domain/contentModel/errors.js";
-import { StorageOperations } from "~/features/shared/abstractions.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
+import { ModelCache, ModelsFetcher } from "~/features/contentModel/shared/abstractions.js";
+import {
+    ModelCannotUpdateCodeModelError,
+    ModelPersistenceError,
+    ModelValidationError
+} from "~/domain/contentModel/errors.js";
+import { CmsContext, StorageOperations } from "~/features/shared/abstractions.js";
 import { validateEndingAllowed } from "~/crud/contentModel/validate/endingAllowed.js";
 import { validateSingularApiName } from "~/domain/contentModel/validation/singularApiName.js";
 import { validatePluralApiName } from "~/domain/contentModel/validation/pluralApiName.js";
 import { validateModelFields } from "~/domain/contentModel/validation/modelFields.js";
 import type { CmsModel } from "~/types/index.js";
+import { ModelFieldCompression } from "~/features/contentModel/ModelFieldCompression/index.js";
 
 /**
  * UpdateModelRepository - Validates domain rules and persists model updates.
@@ -26,10 +27,11 @@ import type { CmsModel } from "~/types/index.js";
  */
 class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
     public constructor(
-        private modelCache: ModelCache.Interface,
-        private modelsFetcher: ModelsFetcher.Interface,
-        private storageOperations: StorageOperations.Interface,
-        private cmsContext: CmsContext.Interface
+        private readonly modelCache: ModelCache.Interface,
+        private readonly modelsFetcher: ModelsFetcher.Interface,
+        private readonly storageOperations: StorageOperations.Interface,
+        private readonly cmsContext: CmsContext.Interface,
+        private readonly modelFieldCompression: ModelFieldCompression.Interface
     ) {}
 
     async execute(
@@ -94,8 +96,15 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
                 );
             }
 
+            const fields = await this.modelFieldCompression.compress(model.fields);
+
             // Persist to storage
-            await this.storageOperations.models.update({ model });
+            await this.storageOperations.models.update({
+                model: {
+                    ...model,
+                    fields
+                }
+            });
 
             // Clear cache
             this.modelCache.clear();
@@ -109,5 +118,5 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const UpdateModelRepository = RepositoryAbstraction.createImplementation({
     implementation: UpdateModelRepositoryImpl,
-    dependencies: [ModelCache, ModelsFetcher, StorageOperations, CmsContext]
+    dependencies: [ModelCache, ModelsFetcher, StorageOperations, CmsContext, ModelFieldCompression]
 });

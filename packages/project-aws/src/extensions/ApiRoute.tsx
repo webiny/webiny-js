@@ -6,7 +6,7 @@ import { Node, Project, ArrayLiteralExpression } from "ts-morph";
 import { defineExtension } from "@webiny/project/defineExtension/index.js";
 import { zodSrcPath } from "@webiny/project/defineExtension/zodTypes/zodSrcPath.js";
 import { ExtensionSrcResolver } from "@webiny/project/utils/index.js";
-import { ApiPulumi } from "@webiny/project/extensions/index.js";
+import { ApiPulumi } from "~/pulumi/extensions/ApiPulumi.js";
 import { createPathResolver } from "@webiny/project";
 
 const p = createPathResolver(import.meta.dirname);
@@ -75,7 +75,7 @@ export const ApiRoute = defineExtension({
         });
 
         // Ensure createContextPlugin import exists.
-        const ctxPluginPath = "@webiny/api/plugins/ContextPlugin";
+        const ctxPluginPath = "@webiny/api/plugins/ContextPlugin.js";
         if (!source.getImportDeclaration(ctxPluginPath)) {
             const lastIdx =
                 source

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { createContext, useContext, useMemo } from "react";
 import { observer } from "mobx-react-lite";
+import { Grid, Tabs } from "@webiny/admin-ui";
 import type {
     IFormVM,
     LayoutNodeVM,
@@ -8,7 +9,18 @@ import type {
     ITabsNodeVM,
     IElementNodeVM
 } from "./abstractions.js";
+import type { Icon } from "~/components/IconPicker/types.js";
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useFieldRenderers } from "~/features/formModel/useFieldRenderers.js";
+import { useLayoutRenderers } from "~/features/formModel/useLayoutRenderers.js";
+
+export function renderTabIcon(icon: Icon | undefined): React.ReactElement | undefined {
+    if (!icon) {
+        return undefined;
+    }
+    return <FontAwesomeIcon icon={icon.name.split("/") as IconProp} />;
+}
 
 /**
  * A field renderer component receives a FieldVM and renders the appropriate UI.
@@ -16,79 +28,98 @@ import { useFieldRenderers } from "~/features/formModel/useFieldRenderers.js";
 export type FieldRendererComponent = React.ComponentType<{ field: IFieldVM }>;
 
 /**
- * Map of renderer keys to React components.
+ * Map of renderer keys to React components for fields.
  * Lookup order: `{type}:{renderer}` → `{type}`.
  */
 export type FieldRenderers = Record<string, FieldRendererComponent>;
 
+/**
+ * Map of renderer keys to React components for layout nodes.
+ */
+export type LayoutRenderers = Record<string, React.ComponentType<any>>;
+
+interface FormViewRenderers {
+    fieldRenderers: FieldRenderers;
+    layoutRenderers: LayoutRenderers;
+}
+
+const FormViewRenderersContext = createContext<FormViewRenderers | null>(null);
+
+const useFormViewRenderers = (): FormViewRenderers => {
+    const ctx = useContext(FormViewRenderersContext);
+    if (!ctx) {
+        throw new Error("useFormViewRenderers must be used within a FormView.");
+    }
+    return ctx;
+};
+
+export { useFormViewRenderers };
+
 interface FormViewProps {
     form: IFormVM;
     renderers?: FieldRenderers;
+    layoutRenderers?: LayoutRenderers;
 }
 
 /**
  * Generic form view that walks layout nodes and renders fields.
  * This component is stateless — it reads from the FormVM and delegates to renderers.
  */
-export const FormView = observer(function FormView({ form, renderers }: FormViewProps) {
-    const fieldRenderers = useFieldRenderers();
+export const FormView = observer(({ form, renderers, layoutRenderers }: FormViewProps) => {
+    const defaultFieldRenderers = useFieldRenderers();
+    const defaultLayoutRenderers = useLayoutRenderers();
+
+    const value = useMemo(
+        () => ({
+            fieldRenderers: renderers ?? defaultFieldRenderers,
+            layoutRenderers: layoutRenderers ?? defaultLayoutRenderers
+        }),
+        [renderers, defaultFieldRenderers, layoutRenderers, defaultLayoutRenderers]
+    );
 
     return (
-        <div className="w-full flex flex-col gap-4">
-            {form.layout.map((node, index) => (
-                <LayoutNodeRenderer
-                    key={index}
-                    node={node}
-                    renderers={renderers ?? fieldRenderers}
-                />
-            ))}
-        </div>
+        <FormViewRenderersContext.Provider value={value}>
+            <div className="w-full flex flex-col gap-4">
+                {form.layout.map((node, index) => (
+                    <LayoutNodeRenderer key={index} node={node} />
+                ))}
+            </div>
+        </FormViewRenderersContext.Provider>
     );
 });
 
-interface LayoutNodeRendererProps {
-    node: LayoutNodeVM;
-    renderers: FieldRenderers;
-}
-
-const LayoutNodeRenderer = observer(function LayoutNodeRenderer({
-    node,
-    renderers
-}: LayoutNodeRendererProps) {
+export const LayoutNodeRenderer = observer(({ node }: { node: LayoutNodeVM }) => {
     switch (node.type) {
         case "row":
-            return <RowNodeRenderer node={node} renderers={renderers} />;
+            return <RowNodeRenderer node={node} />;
         case "separator":
             return <SeparatorNodeRenderer />;
         case "tabs":
-            return <TabsNodeRenderer node={node} renderers={renderers} />;
+            return <TabsNodeRenderer node={node} />;
         case "element":
-            return <ElementNodeRenderer node={node} renderers={renderers} />;
+            return <ElementNodeRenderer node={node} />;
         default:
             return null;
     }
 });
 
-interface RowNodeRendererProps {
-    node: IRowNodeVM;
-    renderers: FieldRenderers;
-}
+const RowNodeRenderer = observer(({ node }: { node: IRowNodeVM }) => {
+    const { fieldRenderers } = useFormViewRenderers();
 
-const RowNodeRenderer = observer(function RowNodeRenderer({
-    node,
-    renderers
-}: RowNodeRendererProps) {
     return (
-        <div className="grid grid-cols-12 gap-4">
+        <Grid>
             {node.fields.map(field => {
-                const span = Math.floor(12 / node.fields.length);
+                const span = Math.floor(12 / node.fields.length) as React.ComponentProps<
+                    typeof Grid.Column
+                >["span"];
+
                 return (
-                    <div key={field.name} className={`col-span-${span}`}>
-                        <FieldRenderer field={field} renderers={renderers} />
-                    </div>
+                    <Grid.Column key={field.name} span={span}>
+                        <FieldRenderer field={field} renderers={fieldRenderers} />
+                    </Grid.Column>
                 );
             })}
-        </div>
+        </Grid>
     );
 });
 
@@ -97,7 +128,7 @@ interface FieldRendererProps {
     renderers: FieldRenderers;
 }
 
-const FieldRenderer = observer(function FieldRenderer({ field, renderers }: FieldRendererProps) {
+const FieldRenderer = observer(({ field, renderers }: FieldRendererProps) => {
     const Renderer = field.renderer ? renderers[field.renderer] : undefined;
 
     if (!Renderer) {
@@ -116,66 +147,54 @@ const SeparatorNodeRenderer = observer(function SeparatorNodeRenderer() {
     return <hr className="border-neutral-dimmed my-2" />;
 });
 
-interface TabsNodeRendererProps {
+export interface TabsNodeRendererProps {
     node: ITabsNodeVM;
-    renderers: FieldRenderers;
 }
 
-const TabsNodeRenderer = observer(function TabsNodeRenderer({
-    node,
-    renderers
-}: TabsNodeRendererProps) {
-    const activeTab = node.tabs.find(t => t.id === node.activeTabId);
+const TabsNodeRenderer = observer(({ node }: TabsNodeRendererProps) => {
+    const { layoutRenderers } = useFormViewRenderers();
+
+    if (node.renderer) {
+        const CustomRenderer = layoutRenderers[node.renderer];
+        if (CustomRenderer) {
+            return <CustomRenderer node={node} />;
+        }
+    }
 
     return (
-        <div>
-            <div className="flex border-b border-neutral-dimmed">
-                {node.tabs.map(tab => (
-                    <button
-                        key={tab.id}
-                        type="button"
-                        className={`px-4 py-2 text-sm font-medium border-b-2 ${
-                            tab.id === node.activeTabId
-                                ? "border-primary text-primary"
-                                : "border-transparent text-neutral hover:text-neutral-strong"
-                        }`}
-                        onClick={() => node.setActiveTab(tab.id)}
-                    >
-                        {tab.label}
-                        {tab.hasErrors && <span className="ml-1 text-destructive text-xs">*</span>}
-                    </button>
-                ))}
-            </div>
-            {activeTab && (
-                <div className="pt-4">
-                    {activeTab.description && (
-                        <p className="text-sm text-neutral mb-4">{activeTab.description}</p>
-                    )}
-                    <div className="flex flex-col gap-4">
-                        {activeTab.layout.map((childNode, index) => (
-                            <LayoutNodeRenderer
-                                key={index}
-                                node={childNode}
-                                renderers={renderers}
-                            />
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
+        <Tabs
+            value={node.activeTabId}
+            onValueChange={id => node.setActiveTab(id)}
+            tabs={node.tabs.map(tab => (
+                <Tabs.Tab
+                    key={tab.id}
+                    value={tab.id}
+                    icon={renderTabIcon(tab.icon)}
+                    trigger={
+                        <>
+                            {tab.label}
+                            {tab.hasErrors && (
+                                <span className="ml-1 text-destructive-default text-xs">*</span>
+                            )}
+                        </>
+                    }
+                    disabled={tab.disabled}
+                    content={
+                        <div className={"flex flex-col gap-4 mt-md"}>
+                            {tab.layout.map((childNode, index) => (
+                                <LayoutNodeRenderer key={index} node={childNode} />
+                            ))}
+                        </div>
+                    }
+                />
+            ))}
+        />
     );
 });
 
-interface ElementNodeRendererProps {
-    node: IElementNodeVM;
-    renderers: FieldRenderers;
-}
-
-const ElementNodeRenderer = observer(function ElementNodeRenderer({
-    node,
-    renderers
-}: ElementNodeRendererProps) {
-    const Renderer = renderers[`element:${node.renderer}`];
+const ElementNodeRenderer = observer(({ node }: { node: IElementNodeVM }) => {
+    const { fieldRenderers } = useFormViewRenderers();
+    const Renderer = fieldRenderers[`element:${node.renderer}`];
 
     if (!Renderer) {
         if (process.env.NODE_ENV === "development") {

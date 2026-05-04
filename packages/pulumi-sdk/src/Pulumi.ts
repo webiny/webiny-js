@@ -199,7 +199,8 @@ export class Pulumi {
         }
 
         const pluginsDir = path.join(this.pulumiFolder, "plugins");
-        const requiredPluginDir = `resource-aws-${pulumiAwsVersion}`;
+        // Pulumi names plugin directories with a "v" prefix (e.g. resource-aws-v7.25.0).
+        const requiredPluginDir = `resource-aws-v${pulumiAwsVersion}`;
 
         const pluginExists = fs.pathExistsSync(
             path.join(pluginsDir, requiredPluginDir, "pulumi-resource-aws")

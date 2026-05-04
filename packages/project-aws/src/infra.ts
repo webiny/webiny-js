@@ -4,25 +4,24 @@ import {
     AdminBeforeBuild,
     AdminBeforeDeploy,
     AdminBeforeWatch,
-    AdminPulumi,
     AdminStackOutputValue,
     ApiAfterBuild,
     ApiAfterDeploy,
     ApiBeforeBuild,
     ApiBeforeDeploy,
     ApiBeforeWatch,
-    ApiPulumi,
     ApiStackOutputValue,
     CoreAfterBuild,
     CoreAfterDeploy,
     CoreBeforeBuild,
     CoreBeforeDeploy,
     CoreBeforeWatch,
-    CorePulumi,
     CoreStackOutputValue,
     ProductionEnvironments,
     PulumiResourceNamePrefix
 } from "@webiny/project/extensions/index.js";
+
+import { CorePulumi, ApiPulumi, AdminPulumi } from "./pulumi/extensions/index.js";
 
 import {
     AdminCustomDomains,
@@ -34,11 +33,23 @@ import {
 
 import { OpenSearch } from "./extensions/OpenSearch.js";
 import { AwsDefaultRegion } from "./extensions/AwsDefaultRegion.js";
+import { Encryption } from "./extensions/Encryption.js";
 import { ApiLambdaFunction } from "./extensions/ApiLambdaFunction.js";
 import { EnvVar } from "@webiny/project/extensions/index.js";
-import { EnvIs, EnvIsNot, CiIs, CiIsNot } from "@webiny/project/extensions/infra/index.js";
+import {
+    EnvIs,
+    EnvIsNot,
+    EnvIsProd,
+    EnvIsNotProd,
+    useEnv,
+    CiIs,
+    CiIsNot
+} from "@webiny/project/extensions/infra/index.js";
+
+export { useEnv };
 
 export const Infra = {
+    Encryption,
     Vpc,
     BlueGreenDeployments,
     OpenSearch,
@@ -50,8 +61,11 @@ export const Infra = {
         Tags: AwsTags
     },
     Env: {
+        useEnv,
         Is: EnvIs,
-        IsNot: EnvIsNot
+        IsNot: EnvIsNot,
+        IsProd: EnvIsProd,
+        IsNotProd: EnvIsNotProd
     },
     Ci: {
         Is: CiIs,

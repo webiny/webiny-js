@@ -1,7 +1,9 @@
-import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
 import type { CreateTenantInput } from "./tenantManagerTypes.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { createTenantSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 export interface CreateTenantParams {
     data: CreateTenantInput;
@@ -16,15 +18,7 @@ export interface CreateTenantParams {
  * @param params.data - The tenant data to create
  * @returns Result containing true on success or an error
  */
-export async function createTenant(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: CreateTenantParams
-): Promise<Result<boolean, HttpError | GraphQLError | NetworkError>> {
-    const { data } = params;
-
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
+export const createTenant = createMethod(createTenantSchema, async (config, fetchFn, { data }) => {
     const query = `
         mutation CreateTenant($input: CreateTenantInput!) {
             tenantManager {
@@ -48,14 +42,13 @@ export async function createTenant(
     const responseData = result.value;
 
     if (responseData.tenantManager.createTenant.error) {
-        const { GraphQLError } = await import("../../errors.js");
         return Result.fail(
-            new GraphQLError(
+            new ApiError(
                 responseData.tenantManager.createTenant.error.message,
                 responseData.tenantManager.createTenant.error.code
             )
         );
     }
 
-    return Result.ok(responseData.tenantManager.createTenant.data);
-}
+    return Result.ok(responseData.tenantManager.createTenant.data as boolean);
+});

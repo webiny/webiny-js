@@ -69,7 +69,7 @@ const getDefaultValue = (field: CmsModelField): (DefaultValue | DefaultValue[]) 
 const createEntryId = (input: CreateCmsEntryInput) => {
     let entryId = mdbid();
     if (input.id) {
-        if (input.id.match(/^([a-zA-Z0-9])([a-zA-Z0-9\-]+)([a-zA-Z0-9])$/) === null) {
+        if (input.id.match(/^([a-zA-Z0-9])([a-zA-Z0-9-]+)([a-zA-Z0-9])$/) === null) {
             throw new WebinyError(
                 "The provided ID is not valid. It must be a string which can be A-Z, a-z, 0-9, - and it cannot start or end with a -.",
                 "INVALID_ID",

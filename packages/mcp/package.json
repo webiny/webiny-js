@@ -2,7 +2,10 @@
   "name": "@webiny/mcp",
   "version": "0.0.0",
   "type": "module",
-  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "bin": {
     "webiny-mcp": "./bin.js"
   },
@@ -20,7 +23,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "front-matter": "^4.0.2",
-    "zod": "^4.3.6"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",
@@ -28,7 +31,7 @@
     "@webiny/build-tools": "0.0.0",
     "execa": "^5.1.1",
     "tsx": "^4.21.0",
-    "typescript": "6.0.2"
+    "typescript": "6.0.3"
   },
   "scripts": {
     "prepublishOnly": "bash ./prepublishOnly.sh"

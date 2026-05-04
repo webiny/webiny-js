@@ -40,7 +40,6 @@ export const pbListPages = ({ user, variables = {} }: PbListPagesParams) => {
 };
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             pbListPages(variables: Record<string, any>): ReturnType<typeof pbListPages>;

@@ -1,15 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { FormModel as FormModelImpl } from "@webiny/app-admin/features/formModel/FormModel.js";
+import { Container } from "@webiny/di";
+import { FormModelFeature } from "@webiny/app-admin/features/formModel/feature.js";
+import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { IFormModel, IFormModelConfig, IRowNodeVM } from "@webiny/app-admin";
 import type { LanguageDto } from "@webiny/languages/admin/features/listLanguages/abstractions.js";
 import { AddLanguageModifier } from "./AddLanguageModifier.js";
 import { PagePath } from "~/shared/PagePath.js";
 import type { IPageType, ICreatePageFormModifier } from "./abstractions.js";
 
-/**
- * Creates a mock use case + repository pair for the AddLanguageModifier.
- * Languages are pre-populated (simulating a completed fetch).
- */
 function createLanguageMocks(languages: LanguageDto[]) {
     const repository = {
         execute: async () => languages,
@@ -21,12 +19,12 @@ function createLanguageMocks(languages: LanguageDto[]) {
     return { useCase, repository };
 }
 
-/**
- * Creates the same base form that CreatePagePresenter builds,
- * without requiring DI or the page type cache.
- */
 function createBaseForm(config?: Partial<IFormModelConfig>) {
-    return new FormModelImpl({
+    const container = new Container();
+    FormModelFeature.register(container);
+    const factory = container.resolve(FormModelFactory);
+
+    return factory.create({
         fields: fields => ({
             title: fields
                 .text()
@@ -151,7 +149,7 @@ describe("PageType + Modifier 3-layer architecture", () => {
         modifyForm(form) {
             form.fields(fields => ({
                 product: fields
-                    .select()
+                    .text()
                     .label("Product")
                     .required("Product is required")
                     .options([
@@ -240,7 +238,7 @@ describe("Form rebuild on page type switch", () => {
         modifyForm(form) {
             form.fields(fields => ({
                 product: fields
-                    .select()
+                    .text()
                     .label("Product")
                     .required("Product is required")
                     .options([

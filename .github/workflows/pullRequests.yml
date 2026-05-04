@@ -10,26 +10,26 @@ concurrency:
 jobs:
   validateCommits:
     name: Validate commit messages
-    if: github.base_ref != 'dev'
+    if: github.base_ref != 'dev' && !startsWith(github.head_ref, 'release/')
     steps:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
       - uses: actions/checkout@v5
-      - uses: webiny/action-conventional-commits@v1.3.1
+      - uses: webiny/action-conventional-commits@v1.4.2
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   validateCommitsDev:
     name: Validate commit messages (dev branch, 'feat' commits not allowed)
-    if: github.base_ref == 'dev'
+    if: github.base_ref == 'dev' && !startsWith(github.head_ref, 'release/')
     steps:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
       - uses: actions/checkout@v5
-      - uses: webiny/action-conventional-commits@v1.3.1
+      - uses: webiny/action-conventional-commits@v1.4.2
         with:
           allowed-commit-types: fix,docs,style,refactor,test,build,perf,ci,chore,revert,merge,wip
     runs-on: ubuntu-latest
@@ -38,6 +38,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   constants:
     name: Create constants
+    if: '!startsWith(github.head_ref, ''release/'')'
     outputs:
       global-cache-key: ${{ steps.global-cache-key.outputs.global-cache-key }}
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
@@ -67,7 +68,7 @@ jobs:
           "$GITHUB_OUTPUT"
       - name: Detect changed files
         id: detect-changed-files
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         with:
           filters: |
             changed:
@@ -152,8 +153,8 @@ jobs:
       - name: Check TS configs
         run: yarn check-ts-configs
         working-directory: ${{ github.base_ref }}
-      - name: ESLint
-        run: yarn eslint
+      - name: Lint
+        run: yarn lint
         working-directory: ${{ github.base_ref }}
       - name: Check Package Node Modules
         run: yarn check-package-dependencies
@@ -197,6 +198,7 @@ jobs:
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysisTs:
     name: Static code analysis (TypeScript)
+    if: '!startsWith(github.head_ref, ''release/'')'
     runs-on: webiny-build-packages
     steps:
       - uses: actions/setup-node@v5
@@ -218,6 +220,64 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  aiFixStaticAnalysis:
+    name: AI Fix Static Analysis
+    needs:
+      - constants
+      - staticCodeAnalysis
+    if: >-
+      failure() && needs.staticCodeAnalysis.result == 'failure' &&
+      needs.constants.outputs.is-fork-pr != 'true' &&
+      github.event.pull_request.user.login == 'adrians5j'
+    permissions:
+      contents: write
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - uses: actions/checkout@v5
+        with:
+          path: ${{ github.base_ref }}
+      - uses: actions/cache@v5
+        with:
+          path: ${{ github.base_ref }}/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
+      - name: Fix lint issues (auto-fixable)
+        run: yarn lint:fix
+        working-directory: ${{ github.base_ref }}
+        continue-on-error: true
+      - name: Fix code formatting
+        run: yarn format:fix
+        working-directory: ${{ github.base_ref }}
+        continue-on-error: true
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+      - name: AI Fix Remaining Issues
+        working-directory: ${{ github.base_ref }}
+        run: >-
+          claude --dangerously-skip-permissions -p "Some static analysis checks
+          may still be failing. Fix any remaining issues: 1. Run 'yarn adio' —
+          if it reports dependency errors, fix the relevant package.json files.
+          2. Run 'yarn check-ts-configs' — if it reports errors, fix them. 3.
+          Run 'yarn lint' — if there are still non-auto-fixable errors, read the
+          affected files and fix them. 4. Run 'yarn check-package-dependencies'
+          — if it reports errors, fix them. Work in the current directory."
+      - name: Update yarn.lock
+        run: yarn
+        working-directory: ${{ github.base_ref }}
+      - name: Commit fixes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: ai fix static analysis [skip ci]'
+          repository: ${{ github.base_ref }}
+    runs-on: ubuntu-latest
   vitest-constants:
     needs:
       - constants

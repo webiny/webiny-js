@@ -41,6 +41,16 @@ export const createDeleteEntryRevisionResolver = () => {
                 }
             })) as ExecutionResult;
 
+            if (result.errors && result.errors.length > 0) {
+                return {
+                    data: false,
+                    error: {
+                        message: result.errors.map(e => e.message).join("; "),
+                        code: "DELETE_ENTRY_ERROR"
+                    }
+                };
+            }
+
             const operationName = `delete${model.singularApiName}`;
             return result.data?.[operationName] || { data: false, error: null };
         } catch (error) {

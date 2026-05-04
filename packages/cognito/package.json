@@ -4,7 +4,10 @@
   "type": "module",
   "license": "MIT",
   "sideEffects": false,
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "description": "Security plugins for Cognito",
   "author": "Webiny Ltd.",
   "dependencies": {
@@ -31,14 +34,14 @@
     "mobx": "^6.15.0",
     "mobx-react-lite": "^4.1.1",
     "react": "18.3.1",
-    "zod": "^4.3.6"
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@types/react": "18.3.28",
     "@webiny/build-tools": "*",
     "@webiny/project-utils": "*",
     "@webiny/wcp": "*",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.5"
   },
   "publishConfig": {
     "access": "public",

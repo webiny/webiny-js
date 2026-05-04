@@ -1,7 +1,12 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsEntryStatus, CmsIdentity } from "./cmsTypes.js";
+import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { createEntrySchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 /**
  * Create entry data.
@@ -71,16 +76,11 @@ export interface CreateEntryParams<TValues extends CmsEntryValues = CmsEntryValu
  * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @returns Result containing the created entry data or an error
  */
-export async function createEntry<TValues extends CmsEntryValues = CmsEntryValues>(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: CreateEntryParams<TValues>
-): Promise<Result<CreateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
-    const { modelId, data, fields } = params;
 
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
-    const query = `
+const _impl = createMethod(
+    createEntrySchema,
+    async (config, fetchFn, { modelId, data, fields }) => {
+        const query = `
         mutation CreateEntry($modelId: ID!, $data: JSON!, $fields: [String!]!) {
             cms {
                 createEntry(modelId: $modelId, data: $data, fields: $fields) {
@@ -94,23 +94,35 @@ export async function createEntry<TValues extends CmsEntryValues = CmsEntryValue
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, { modelId, data, fields });
+        const result = await executeGraphQL(config, fetchFn, query, { modelId, data, fields });
 
-    if (result.isFail()) {
-        return Result.fail(result.error);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const responseData = result.value;
+
+        if (responseData.cms.createEntry.error) {
+            return Result.fail(
+                new ApiError(
+                    transformFieldErrors(responseData.cms.createEntry.error.message, fields),
+                    responseData.cms.createEntry.error.code
+                )
+            );
+        }
+
+        return Result.ok(responseData.cms.createEntry.data);
     }
+);
 
-    const responseData = result.value;
-
-    if (responseData.cms.createEntry.error) {
-        const { GraphQLError } = await import("../../errors.js");
-        return Result.fail(
-            new GraphQLError(
-                responseData.cms.createEntry.error.message,
-                responseData.cms.createEntry.error.code
-            )
-        );
-    }
-
-    return Result.ok(responseData.cms.createEntry.data);
+export function createEntry<TValues extends CmsEntryValues = CmsEntryValues>(
+    config: WebinyConfig,
+    fetchFn: typeof fetch,
+    params: CreateEntryParams<TValues>
+): Promise<
+    Result<CreateCmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
+> {
+    return _impl(config, fetchFn, params) as Promise<
+        Result<CreateCmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
+    >;
 }

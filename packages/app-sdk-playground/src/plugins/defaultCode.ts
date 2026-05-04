@@ -11,9 +11,9 @@ async function run() {
 
     // Handle the result
     if (result.isOk()) {
-        console.log("Entries:", result.value);
+        console.log(result.value);
     } else {
-        console.error("Error:", result.error);
+        console.error(result.error);
     }
 }
 

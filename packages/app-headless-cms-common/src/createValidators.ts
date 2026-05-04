@@ -53,7 +53,7 @@ export const createValidators = (
                     const variables = getVariableValues({ validator: item });
 
                     Object.keys(variables).forEach(key => {
-                        const regex = new RegExp(`\{${key}\}`, "g");
+                        const regex = new RegExp(`{${key}}`, "g");
                         interpolated = interpolated.replace(regex, variables[key]);
                     });
                 }

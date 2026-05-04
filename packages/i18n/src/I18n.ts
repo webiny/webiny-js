@@ -81,7 +81,7 @@ export default class I18N {
 
         const hasVariables = base.includes("{") && base.includes("}");
         if (hasVariables) {
-            // eslint-disable-next-line @typescript-eslint/no-this-alias
+            // oxlint-disable-next-line typescript/no-this-alias
             const $this = this;
             return function i18n(values: I18NDataValues) {
                 const data: I18NData = {

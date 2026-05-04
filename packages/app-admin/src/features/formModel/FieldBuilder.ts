@@ -4,12 +4,15 @@ import type {
     IValueOption,
     IFormModel,
     IFieldBuilder,
-    ISelectFieldBuilder,
     IFieldBuilderRegistry,
+    IFieldTypeFactory,
+    IRule,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
-    OnBlurCallback
+    ComputedFieldCallback,
+    OnBlurCallback,
+    CloneValueCallback
 } from "./abstractions.js";
 
 /**
@@ -38,6 +41,21 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
+    help(text: string): this {
+        this._config.help = text;
+        return this;
+    }
+
+    description(text: string): this {
+        this._config.description = text;
+        return this;
+    }
+
+    note(text: string): this {
+        this._config.note = text;
+        return this;
+    }
+
     placeholder(text: string): this {
         this._config.placeholder = text;
         return this;
@@ -53,8 +71,14 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
-    renderer(name: string): this {
+    renderer(name: string, settings?: Record<string, unknown>): this {
         this._config.renderer = name;
+        this._config.rendererSettings = settings;
+        return this;
+    }
+
+    list(): this {
+        this._config.isList = true;
         return this;
     }
 
@@ -69,8 +93,36 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
+    requiredWhen(fn: (form: IFormModel) => boolean, message?: string): this {
+        if (!this._config.requiredWhenCallbacks) {
+            this._config.requiredWhenCallbacks = [];
+        }
+        this._config.requiredWhenCallbacks.push({ fn, message });
+        return this;
+    }
+
+    computed(fn: ComputedFieldCallback): this {
+        this._config.computed = fn;
+        this._config.computedUntilDirty = undefined;
+        return this;
+    }
+
+    computedUntilDirty(fn: ComputedFieldCallback): this {
+        this._config.computedUntilDirty = fn;
+        this._config.computed = undefined;
+        return this;
+    }
+
     disabled(value = true): this {
         this._config.disabled = value;
+        return this;
+    }
+
+    rules(rules: IRule[]): this {
+        if (!this._config.rules) {
+            this._config.rules = [];
+        }
+        this._config.rules.push(...rules);
         return this;
     }
 
@@ -106,82 +158,56 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
         return this;
     }
 
-    build(name: string): IFieldConfig {
-        return { ...this._config, name };
+    cloneValue(fn: CloneValueCallback): this {
+        this._config.cloneValue = fn;
+        return this;
     }
-}
 
-/**
- * Text field builder.
- */
-export class TextFieldBuilder extends FieldBuilder<"text"> {
-    constructor() {
-        super("text");
-        this._config.renderer = "text";
+    getTags(): string[] {
+        return this._config.tags ?? [];
     }
-}
 
-/**
- * Select field builder with .options() support.
- */
-export class SelectFieldBuilder extends FieldBuilder<"select"> implements ISelectFieldBuilder {
-    constructor() {
-        super("select");
-        this._config.renderer = "select";
+    tags(tags: string[]): this {
+        this._config.tags = tags;
+        return this;
     }
 
     options(opts: IValueOption[] | ((form: IFormModel) => IValueOption[])): this {
         this._config.options = opts;
+        if (this._config.renderer === "textInput" || this._config.renderer === "numberInput") {
+            this._config.renderer = "dropdown";
+        }
         return this;
     }
+
+    /**
+     * Normalize value before it's set. If field value is an array, this method runs on each individual value in the array.
+     * Useful for converting strings to numbers, ensuring specific date format, etc.
+     * @param value
+     */
+    normalizeValue(value: unknown): unknown {
+        return value;
+    }
+
+    build(name: string): IFieldConfig {
+        return { ...this._config, name, normalizeValue: (v: unknown) => this.normalizeValue(v) };
+    }
 }
 
-/**
- * Factory interface for creating field builders.
- */
-export interface IFieldTypeFactory {
-    readonly type: string;
-    create(): FieldBuilder;
-}
+export function createFieldBuilderRegistry(factories: IFieldTypeFactory[]): IFieldBuilderRegistry {
+    const fieldTypes = new Map<string, IFieldTypeFactory>();
+    for (const factory of factories) {
+        fieldTypes.set(factory.type, factory);
+    }
 
-/**
- * Proxy-based FieldBuilderRegistry.
- */
-class FieldBuilderRegistryImpl implements IFieldBuilderRegistry {
-    private fieldTypes = new Map<string, IFieldTypeFactory>();
-
-    constructor(factories?: IFieldTypeFactory[]) {
-        this.fieldTypes.set("text", { type: "text", create: () => new TextFieldBuilder() });
-        this.fieldTypes.set("select", { type: "select", create: () => new SelectFieldBuilder() });
-
-        if (factories) {
-            for (const factory of factories) {
-                this.fieldTypes.set(factory.type, factory);
+    const proxy: IFieldBuilderRegistry = new Proxy({} as IFieldBuilderRegistry, {
+        get(_target, prop: string) {
+            const factory = fieldTypes.get(prop);
+            if (factory) {
+                return () => factory.create(proxy);
             }
+            return undefined;
         }
-
-        const proxy = new Proxy(this, {
-            get(target, prop: string) {
-                const factory = target.fieldTypes.get(prop);
-                if (factory) {
-                    return () => factory.create();
-                }
-                return target[prop as keyof typeof target];
-            }
-        }) as any;
-
-        return proxy;
-    }
-
-    // These exist for TypeScript but are intercepted by the Proxy
-    text(): TextFieldBuilder {
-        throw new Error("Should be intercepted by Proxy");
-    }
-    select(): SelectFieldBuilder {
-        throw new Error("Should be intercepted by Proxy");
-    }
-}
-
-export function createFieldBuilderRegistry(factories?: IFieldTypeFactory[]): IFieldBuilderRegistry {
-    return new FieldBuilderRegistryImpl(factories);
+    });
+    return proxy;
 }

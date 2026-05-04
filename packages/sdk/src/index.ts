@@ -3,9 +3,10 @@ export * from "./CmsSdk.js";
 export * from "./TenantManagerSdk.js";
 export * from "./FileManagerSdk.js";
 export * from "./LanguagesSdk.js";
+export * from "./TasksSdk.js";
 export * from "./types.js";
 export { Result } from "./Result.js";
-export { HttpError, GraphQLError, NetworkError } from "./errors.js";
+export { HttpError, ApiError, NetworkError, ValidationError } from "./errors.js";
 
 // Export shared CMS types.
 export type {
@@ -92,3 +93,19 @@ export type { CompleteMultiPartUploadParams } from "./methods/fileManager/comple
 
 // Export Languages types.
 export type { Language } from "./methods/languages/listLanguages.js";
+
+// Export Tasks types.
+export type {
+    TaskStatus,
+    TaskDefinition,
+    TaskRun,
+    TaskLog,
+    TaskLogItem
+} from "./methods/tasks/taskTypes.js";
+
+// Export types from tasks methods.
+export type { ListLogsParams } from "./methods/tasks/listLogs.js";
+
+export type { TriggerTaskParams } from "./methods/tasks/triggerTask.js";
+
+export type { AbortTaskParams } from "./methods/tasks/abortTask.js";

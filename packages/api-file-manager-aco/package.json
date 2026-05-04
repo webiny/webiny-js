@@ -2,7 +2,10 @@
   "name": "@webiny/api-file-manager-aco",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "keywords": [
     "api-file-manager-aco:base"
   ],
@@ -37,7 +40,7 @@
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.13.2",
-    "typescript": "6.0.2",
-    "vitest": "^4.1.4"
+    "typescript": "6.0.3",
+    "vitest": "^4.1.5"
   }
 }

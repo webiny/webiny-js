@@ -138,6 +138,7 @@ const SidebarMenuItemBase = ({
                 color={"neutral-strong"}
                 data-sidebar={"menu-item-expanded-indicator"}
                 icon={<KeyboardArrowRightIcon />}
+                onClick={toggleSectionExpanded}
             />
         ) : null;
 

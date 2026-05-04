@@ -1,19 +1,49 @@
 // Feature
 export { FormModelFeature } from "./feature.js";
 
+// Renderer registry augmentations
+import "./renderers.js";
+
 // Abstractions (types + DI tokens)
-export { FormModelFactory, FormModel } from "./abstractions.js";
+export {
+    FormModelFactory,
+    FormModel,
+    RuleEvaluator,
+    FieldType,
+    FieldBuilderRegistry
+} from "./abstractions.js";
 export type {
+    IFieldRendererRegistry,
+    FieldRendererName,
+    FieldRendererSettings,
     IFormModelFactory,
     IFormModelConfig,
     ILayoutBuilder,
+    ILayoutNodeBuilder,
+    IRowBuilder,
+    ISeparatorBuilder,
+    ITabBuilder,
+    ITabsBuilder,
+    IElementBuilder,
+    IObjectBuilder,
     IFieldBuilder,
-    ISelectFieldBuilder,
+    IOptionsFieldBuilder,
+    IObjectFieldBuilder,
     IFieldBuilderRegistry,
     IFormModel,
     IField,
-    ISelectField,
+    IObjectField,
+    IObjectFieldConfig,
+    IListItemField,
+    IObjectFieldVM,
+    IObjectFieldItemVM,
+    ITemplateBuilder,
+    ITemplateIcon,
+    ITemplateConfig,
+    ITemplateVM,
+    IObjectFieldTemplates,
     FieldTypeMap,
+    ITypedField,
     IFieldConfig,
     IFieldVM,
     IFieldValidation,
@@ -21,6 +51,7 @@ export type {
     IFormError,
     IValueOption,
     IRowNode,
+    IRowNodeHandle,
     IRowNodeVM,
     ISeparatorNode,
     ISeparatorNodeVM,
@@ -32,6 +63,7 @@ export type {
     IElementNodeVM,
     IObjectNode,
     ILayoutNodeAccessHandle,
+    LayoutNodeHandleMap,
     ITabsHandle,
     ITabHandle,
     LayoutNode,
@@ -41,24 +73,66 @@ export type {
     ILayoutNodeHandle,
     ILayoutModifier,
     IFormModifier,
+    IRule,
+    IRuleEvaluator,
+    RuleAction,
     BeforeChangeCallback,
     AfterChangeCallback,
     AfterSetValueCallback,
-    OnBlurCallback
+    OnBlurCallback,
+    CloneValueCallback,
+    IFieldTypeFactory,
+    FileValue
 } from "./abstractions.js";
 
 // Implementations
 export { FormModel as FormModelImpl } from "./FormModel.js";
 export { Field } from "./Field.js";
+export { FieldBuilder, createFieldBuilderRegistry } from "./FieldBuilder.js";
+
+// Field type augmentations (side-effect imports ensure declare module blocks are included)
+import "./fieldTypes/TextFieldType.js";
+import "./fieldTypes/NumberFieldType.js";
+import "./fieldTypes/BooleanFieldType.js";
+import "./fieldTypes/DateTimeFieldType.js";
+import "./fieldTypes/FileFieldType.js";
+import "./fieldTypes/FileUrlFieldType.js";
+import "./fieldTypes/ObjectFieldType.js";
+
+// Field types (DI-registered)
 export {
-    FieldBuilder,
+    TextFieldType,
     TextFieldBuilder,
-    SelectFieldBuilder,
-    createFieldBuilderRegistry
-} from "./FieldBuilder.js";
-export type { IFieldTypeFactory } from "./FieldBuilder.js";
+    NumberFieldType,
+    NumberFieldBuilder,
+    BooleanFieldType,
+    BooleanFieldBuilder,
+    DateTimeFieldType,
+    DateTimeFieldBuilder,
+    FileFieldType,
+    FileFieldBuilder,
+    FileUrlFieldType,
+    FileUrlFieldBuilder,
+    ObjectFieldType,
+    ObjectFieldBuilder
+} from "./fieldTypes/index.js";
+
+// Object field
+export { ObjectField, isObjectField } from "./ObjectField.js";
+
+// Rule evaluators
+export { ConditionRuleEvaluator } from "./ConditionRuleEvaluator.js";
+
+// Renderer factory
+export { createFieldRenderer, createObjectFieldRenderer } from "./createFieldRenderer.js";
 
 // View
-export { FormView } from "./FormView.js";
+export { FormView, LayoutNodeRenderer, useFormViewRenderers } from "./FormView.js";
 export { useFieldRenderers } from "./useFieldRenderers.js";
-export type { FieldRenderers, FieldRendererComponent } from "./FormView.js";
+export { useLayoutRenderers } from "./useLayoutRenderers.js";
+export type {
+    FieldRenderers,
+    FieldRendererComponent,
+    LayoutRenderers,
+    TabsNodeRendererProps
+} from "./FormView.js";

@@ -1,7 +1,12 @@
 import type { WebinyConfig } from "../../types.js";
 import { Result } from "../../Result.js";
-import type { HttpError, GraphQLError, NetworkError } from "../../errors.js";
+import type { HttpError, NetworkError, ValidationError } from "../../errors.js";
 import type { CmsEntryValues, CmsIdentity } from "./cmsTypes.js";
+import { transformFieldErrors } from "../../utils/transformFieldErrors.js";
+import { createMethod } from "../../utils/createMethod.js";
+import { updateEntryRevisionSchema } from "./schemas.js";
+import { executeGraphQL } from "../executeGraphQL.js";
+import { ApiError } from "../../errors.js";
 
 /**
  * Update entry revision data.
@@ -70,16 +75,11 @@ export interface UpdateEntryRevisionParams<TValues extends CmsEntryValues = CmsE
  * @param params.fields - Fields to include in the response. Use "values." prefix for entry values (e.g., "values.author.name") or specify top-level fields like "createdOn"
  * @returns Result containing the updated entry data or an error
  */
-export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
-    config: WebinyConfig,
-    fetchFn: typeof fetch,
-    params: UpdateEntryRevisionParams<TValues>
-): Promise<Result<UpdateCmsEntryData<TValues>, HttpError | GraphQLError | NetworkError>> {
-    const { modelId, revisionId, data, fields } = params;
 
-    const { executeGraphQL } = await import("../executeGraphQL.js");
-
-    const query = `
+const _impl = createMethod(
+    updateEntryRevisionSchema,
+    async (config, fetchFn, { modelId, revisionId, data, fields }) => {
+        const query = `
         mutation UpdateEntryRevision($modelId: ID!, $revisionId: ID!, $data: JSON!, $fields: [String!]!) {
             cms {
                 updateEntryRevision(modelId: $modelId, revisionId: $revisionId, data: $data, fields: $fields) {
@@ -93,28 +93,43 @@ export async function updateEntryRevision<TValues extends CmsEntryValues = CmsEn
         }
     `;
 
-    const result = await executeGraphQL(config, fetchFn, query, {
-        modelId,
-        revisionId,
-        data,
-        fields
-    });
+        const result = await executeGraphQL(config, fetchFn, query, {
+            modelId,
+            revisionId,
+            data,
+            fields
+        });
 
-    if (result.isFail()) {
-        return Result.fail(result.error);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const responseData = result.value;
+
+        if (responseData.cms.updateEntryRevision.error) {
+            return Result.fail(
+                new ApiError(
+                    transformFieldErrors(
+                        responseData.cms.updateEntryRevision.error.message,
+                        fields
+                    ),
+                    responseData.cms.updateEntryRevision.error.code
+                )
+            );
+        }
+
+        return Result.ok(responseData.cms.updateEntryRevision.data);
     }
+);
 
-    const responseData = result.value;
-
-    if (responseData.cms.updateEntryRevision.error) {
-        const { GraphQLError } = await import("../../errors.js");
-        return Result.fail(
-            new GraphQLError(
-                responseData.cms.updateEntryRevision.error.message,
-                responseData.cms.updateEntryRevision.error.code
-            )
-        );
-    }
-
-    return Result.ok(responseData.cms.updateEntryRevision.data);
+export function updateEntryRevision<TValues extends CmsEntryValues = CmsEntryValues>(
+    config: WebinyConfig,
+    fetchFn: typeof fetch,
+    params: UpdateEntryRevisionParams<TValues>
+): Promise<
+    Result<UpdateCmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
+> {
+    return _impl(config, fetchFn, params) as Promise<
+        Result<UpdateCmsEntryData<TValues>, HttpError | ApiError | NetworkError | ValidationError>
+    >;
 }

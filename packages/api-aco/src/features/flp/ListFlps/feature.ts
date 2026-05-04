@@ -3,9 +3,9 @@ import { ListFlpsUseCase } from "./ListFlpsUseCase.js";
 import { ListFlpsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { AcoContext } from "~/types.js";
 
-export const ListFlpsFeature = createFeature({
+export const ListFlpsFeature = createFeature<AcoContext["aco"]["flp"]>({
     name: "ListFlpsFeature",
-    register(container, context: AcoContext["aco"]["flp"]) {
+    register(container, context) {
         container.registerFactory(UseCaseAbstraction, () => {
             return new ListFlpsUseCase(context.list);
         });

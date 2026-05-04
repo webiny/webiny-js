@@ -23,7 +23,7 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
 
         form.fields(fields => ({
             language: fields
-                .select()
+                .text()
                 .label("Language")
                 .hidden()
                 .options(() => this.getLanguageOptions())
@@ -37,7 +37,7 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
             if (!path) {
                 return;
             }
-            const langCode = String(f.field("language").getValue() || "");
+            const langCode = f.field("language").as("text").getValue() ?? "";
             if (!langCode || !this.shouldPrefixPath()) {
                 return;
             }
@@ -83,7 +83,7 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
 
     mapFromForm(data: Record<string, unknown>, input: CreatePageParams): void {
         if (data.language) {
-            input.properties ??= {};
+            input.properties = input.properties ?? {};
             input.properties.language = data.language;
         }
     }
@@ -106,14 +106,14 @@ class AddLanguagePageFormModifier implements CreatePageFormModifier.Interface {
         const langCode = String(value);
         const codes = this.getSupportedCodes();
 
-        const path = f.field("path").getValue<string>() || "";
+        const path = f.field("path").as("text").getValue() || "";
         const stripped = PagePath.create(path).stripLanguageCode(codes);
         const needsPrefix = langCode && this.shouldPrefixPath();
 
         // Determine the bare path — either from existing path or from title.
         let barePath = stripped;
         if (barePath.isEmpty()) {
-            const title = f.field("title").getValue<string>() || "";
+            const title = f.field("title").as("text").getValue() || "";
             if (title) {
                 barePath = PagePath.fromTitle(title);
             }

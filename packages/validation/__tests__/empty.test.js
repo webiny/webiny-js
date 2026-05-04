@@ -12,7 +12,7 @@ describe("empty validators test", () => {
 
         try {
             validation.validateSync("", {});
-        } catch (e) {
+        } catch {
             return;
         }
 

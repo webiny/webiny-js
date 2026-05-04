@@ -55,19 +55,37 @@ export const PanoramaFieldRenderer = ({ field }: PanoramaFieldRendererProps) => 
 
         const sp = config.sp;
         if (sp && typeof sp === "object") {
-            if (sp.horizontalYaw != null) cfg.yaw = Number(sp.horizontalYaw);
-            if (sp.verticalPitch != null) cfg.pitch = Number(sp.verticalPitch);
-            if (sp.zoom != null) cfg.hfov = Number(sp.zoom);
+            if (sp.horizontalYaw != null) {
+                cfg.yaw = Number(sp.horizontalYaw);
+            }
+            if (sp.verticalPitch != null) {
+                cfg.pitch = Number(sp.verticalPitch);
+            }
+            if (sp.zoom != null) {
+                cfg.hfov = Number(sp.zoom);
+            }
         }
 
         const pl = config.pl;
         if (pl && typeof pl === "object") {
-            if (pl.leftLimit != null) cfg.minYaw = Number(pl.leftLimit);
-            if (pl.rightLimit != null) cfg.maxYaw = Number(pl.rightLimit);
-            if (pl.downLimit != null) cfg.minPitch = Number(pl.downLimit);
-            if (pl.upLimit != null) cfg.maxPitch = Number(pl.upLimit);
-            if (pl.maxZoomIn != null) cfg.minHfov = Number(pl.maxZoomIn);
-            if (pl.maxZoomOut != null) cfg.maxHfov = Number(pl.maxZoomOut);
+            if (pl.leftLimit != null) {
+                cfg.minYaw = Number(pl.leftLimit);
+            }
+            if (pl.rightLimit != null) {
+                cfg.maxYaw = Number(pl.rightLimit);
+            }
+            if (pl.downLimit != null) {
+                cfg.minPitch = Number(pl.downLimit);
+            }
+            if (pl.upLimit != null) {
+                cfg.maxPitch = Number(pl.upLimit);
+            }
+            if (pl.maxZoomIn != null) {
+                cfg.minHfov = Number(pl.maxZoomIn);
+            }
+            if (pl.maxZoomOut != null) {
+                cfg.maxHfov = Number(pl.maxZoomOut);
+            }
         }
 
         return cfg;

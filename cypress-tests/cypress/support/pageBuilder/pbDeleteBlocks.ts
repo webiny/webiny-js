@@ -1,7 +1,6 @@
 import { GraphQLClient } from "graphql-request";
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             pbDeleteBlocks(): Record<string, any>;

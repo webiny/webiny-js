@@ -6,9 +6,9 @@ description: >
   Use this skill when the developer is building a Next.js, Vue, Node.js, or any external app
   that needs to fetch or write content to Webiny, set up the SDK, use the Result pattern,
   list/get/create/update/publish entries, filter and sort queries, use TypeScript generics
-  for type safety, work with the File Manager, list languages, or create API keys programmatically.
+  for type safety, work with the File Manager, list languages, trigger or monitor background tasks, or create API keys programmatically.
   Covers read vs preview mode, the `values` wrapper requirement, correct method names,
-  and the `fields` required parameter. Also covers common SDK errors and troubleshooting
+  and the `fields` required parameter, and background task management via `sdk.tasks`. Also covers common SDK errors and troubleshooting
   — especially "Content model '<modelName>' not found" (which usually means the API key
   lacks permission, not that the model is missing) and the Website Builder starter
   pitfall of reusing NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY for Headless CMS reads (that key
@@ -35,9 +35,9 @@ Initialize once and reuse:
 import { Webiny } from "@webiny/sdk";
 
 export const webiny = new Webiny({
-  token: process.env.WEBINY_API_TOKEN!,
-  endpoint: process.env.WEBINY_API_ENDPOINT!,
-  tenant: process.env.WEBINY_API_TENANT || "root"
+    token: process.env.WEBINY_API_TOKEN!,
+    endpoint: process.env.WEBINY_API_ENDPOINT!,
+    tenant: process.env.WEBINY_API_TENANT || "root"
 });
 ```
 
@@ -83,14 +83,14 @@ Every SDK method returns a `Result` object -- it never throws:
 
 ```typescript
 const result = await webiny.cms.listEntries({
-  modelId: "product",
-  fields: ["id", "values.name"]
+    modelId: "product",
+    fields: ["id", "values.name"]
 });
 
 if (result.isOk()) {
-  console.log(result.value.data); // success -- typed data
+    console.log(result.value.data); // success -- typed data
 } else {
-  console.error(result.error.message); // failure -- error info
+    console.error(result.error.message); // failure -- error info
 }
 ```
 
@@ -102,27 +102,27 @@ Pass a type parameter for full type safety on `values`:
 import type { CmsEntryData } from "@webiny/sdk";
 
 interface Product {
-  name: string;
-  price: number;
-  sku: string;
-  description: string;
-  category?: CmsEntryData<ProductCategory>;
+    name: string;
+    price: number;
+    sku: string;
+    description: string;
+    category?: CmsEntryData<ProductCategory>;
 }
 
 interface ProductCategory {
-  name: string;
-  slug: string;
+    name: string;
+    slug: string;
 }
 
 const result = await webiny.cms.listEntries<Product>({
-  modelId: "product",
-  fields: ["id", "entryId", "values.name", "values.price", "values.sku"]
+    modelId: "product",
+    fields: ["id", "entryId", "values.name", "values.price", "values.sku"]
 });
 
 if (result.isOk()) {
-  // result.value.data is CmsEntryData<Product>[]
-  const products = result.value.data;
-  // products[0].values.name -- fully typed
+    // result.value.data is CmsEntryData<Product>[]
+    const products = result.value.data;
+    // products[0].values.name -- fully typed
 }
 ```
 
@@ -134,10 +134,10 @@ Reference fields like `category` are typed as `CmsEntryData<T>`, which wraps ref
 
 ```typescript
 const result = await webiny.cms.listEntries<Product>({
-  modelId: "product",
-  fields: ["id", "entryId", "values.name", "values.price"],
-  sort: { "values.name": "asc" },
-  limit: 10
+    modelId: "product",
+    fields: ["id", "entryId", "values.name", "values.price"],
+    sort: { "values.name": "asc" },
+    limit: 10
 });
 ```
 
@@ -145,13 +145,13 @@ const result = await webiny.cms.listEntries<Product>({
 
 ```typescript
 const result = await webiny.cms.listEntries<Product>({
-  modelId: "product",
-  fields: ["id", "entryId", "values.name", "values.price"],
-  where: {
-    "values.price_gte": 100,
-    "values.name_contains": "Pro"
-  },
-  sort: { "values.price": "desc" }
+    modelId: "product",
+    fields: ["id", "entryId", "values.name", "values.price"],
+    where: {
+        "values.price_gte": 100,
+        "values.name_contains": "Pro"
+    },
+    sort: { "values.price": "desc" }
 });
 ```
 
@@ -184,16 +184,16 @@ Use `where` with either `id` (revision ID) or `entryId`:
 ```typescript
 // By revision ID
 const result = await webiny.cms.getEntry<Product>({
-  modelId: "product",
-  where: { id: "abc123#0001" },
-  fields: ["id", "entryId", "values.name", "values.price"]
+    modelId: "product",
+    where: { id: "abc123#0001" },
+    fields: ["id", "entryId", "values.name", "values.price"]
 });
 
 // By entry ID (gets latest published revision)
 const result = await webiny.cms.getEntry<Product>({
-  modelId: "product",
-  where: { entryId: "abc123" },
-  fields: ["id", "entryId", "values.name"]
+    modelId: "product",
+    where: { entryId: "abc123" },
+    fields: ["id", "entryId", "values.name"]
 });
 ```
 
@@ -203,9 +203,9 @@ Pass `preview: true` to `listEntries` or `getEntry` to access unpublished/draft 
 
 ```typescript
 const result = await webiny.cms.listEntries<Product>({
-  modelId: "product",
-  fields: ["id", "entryId", "values.name"],
-  preview: true // returns drafts + published
+    modelId: "product",
+    fields: ["id", "entryId", "values.name"],
+    preview: true // returns drafts + published
 });
 ```
 
@@ -217,16 +217,16 @@ const result = await webiny.cms.listEntries<Product>({
 
 ```typescript
 const result = await webiny.cms.createEntry({
-  modelId: "contactSubmission",
-  data: {
-    values: {
-      // ← REQUIRED: wrap all content fields in `values`
-      name: "John Doe",
-      email: "john@example.com",
-      message: "Hello from the contact form!"
-    }
-  },
-  fields: ["id", "entryId"]
+    modelId: "contactSubmission",
+    data: {
+        values: {
+            // ← REQUIRED: wrap all content fields in `values`
+            name: "John Doe",
+            email: "john@example.com",
+            message: "Hello from the contact form!"
+        }
+    },
+    fields: ["id", "entryId"]
 });
 ```
 
@@ -236,15 +236,15 @@ The method is `updateEntryRevision`, not `updateEntry`. Use `revisionId` (the fu
 
 ```typescript
 const result = await webiny.cms.updateEntryRevision({
-  modelId: "product",
-  revisionId: "abc123#0001", // ← note: revisionId, not id
-  data: {
-    values: {
-      // ← REQUIRED: wrap fields in `values`
-      price: 29.99
-    }
-  },
-  fields: ["id", "entryId", "values.price"]
+    modelId: "product",
+    revisionId: "abc123#0001", // ← note: revisionId, not id
+    data: {
+        values: {
+            // ← REQUIRED: wrap fields in `values`
+            price: 29.99
+        }
+    },
+    fields: ["id", "entryId", "values.price"]
 });
 ```
 
@@ -254,15 +254,15 @@ The methods are `publishEntryRevision` and `unpublishEntryRevision`, not `publis
 
 ```typescript
 await webiny.cms.publishEntryRevision({
-  modelId: "product",
-  revisionId: "abc123#0001",
-  fields: ["id", "entryId", "status"]
+    modelId: "product",
+    revisionId: "abc123#0001",
+    fields: ["id", "entryId", "status"]
 });
 
 await webiny.cms.unpublishEntryRevision({
-  modelId: "product",
-  revisionId: "abc123#0001",
-  fields: ["id", "entryId", "status"]
+    modelId: "product",
+    revisionId: "abc123#0001",
+    fields: ["id", "entryId", "status"]
 });
 ```
 
@@ -270,9 +270,9 @@ await webiny.cms.unpublishEntryRevision({
 
 ```typescript
 await webiny.cms.deleteEntryRevision({
-  modelId: "product",
-  revisionId: "abc123#0001",
-  fields: []
+    modelId: "product",
+    revisionId: "abc123#0001",
+    fields: []
 });
 ```
 
@@ -286,8 +286,8 @@ import type { Language } from "@webiny/sdk";
 const result = await webiny.languages.listLanguages();
 
 if (result.isOk()) {
-  const languages: Language[] = result.value;
-  // languages[0].code, .name, .direction, .isDefault
+    const languages: Language[] = result.value;
+    // languages[0].code, .name, .direction, .isDefault
 }
 ```
 
@@ -295,11 +295,11 @@ The `Language` type:
 
 ```typescript
 interface Language {
-  id: string;
-  code: string; // e.g. "en-US"
-  name: string; // e.g. "English (US)"
-  direction?: "ltr" | "rtl";
-  isDefault?: boolean;
+    id: string;
+    code: string; // e.g. "en-US"
+    name: string; // e.g. "English (US)"
+    direction?: "ltr" | "rtl";
+    isDefault?: boolean;
 }
 ```
 
@@ -308,8 +308,8 @@ interface Language {
 ```typescript
 // List files
 const files = await webiny.fileManager.listFiles({
-  limit: 20,
-  fields: ["id", "key", "name", "size", "type", "src"]
+    limit: 20,
+    fields: ["id", "key", "name", "size", "type", "src"]
 });
 
 // Upload a file (returns presigned URL for direct S3 upload)
@@ -325,21 +325,21 @@ For programmatic access, create API keys as an extension:
 import { ApiKeyFactory } from "webiny/api/security";
 
 class MyApiKeyImpl implements ApiKeyFactory.Interface {
-  execute(): ApiKeyFactory.Return {
-    return [
-      {
-        name: "Universal API Key",
-        slug: "universal-key",
-        token: "wat_12345678",
-        permissions: [{ name: "*" }]
-      }
-    ];
-  }
+    execute(): ApiKeyFactory.Return {
+        return [
+            {
+                name: "Universal API Key",
+                slug: "universal-key",
+                token: "wat_12345678",
+                permissions: [{ name: "*" }]
+            }
+        ];
+    }
 }
 
 export default ApiKeyFactory.createImplementation({
-  implementation: MyApiKeyImpl,
-  dependencies: []
+    implementation: MyApiKeyImpl,
+    dependencies: []
 });
 ```
 
@@ -349,27 +349,159 @@ Register (**YOU MUST include the `.ts` file extension in the `src` prop** — om
 <Api.Extension src={"/extensions/MyApiKey.ts"} />
 ```
 
+## Background Tasks
+
+`webiny.tasks` wraps the Background Tasks GraphQL API. All methods return a `Result` and never throw.
+
+### List Task Definitions
+
+Returns all registered task definitions — use this to discover valid `definition` IDs before triggering.
+
+```typescript
+const result = await webiny.tasks.listDefinitions();
+
+if (result.isOk()) {
+  // result.value: TaskDefinition[]
+  for (const def of result.value) {
+    console.log(def.id, def.title, def.description);
+  }
+}
+```
+
+### List Task Runs
+
+```typescript
+const result = await webiny.tasks.listTasks();
+
+if (result.isOk()) {
+  // result.value: TaskRun[]
+  for (const task of result.value) {
+    console.log(task.id, task.taskStatus, task.definitionId);
+  }
+}
+```
+
+### List Task Logs
+
+Optionally filter by a specific task run ID:
+
+```typescript
+// All logs
+const result = await webiny.tasks.listLogs();
+
+// Logs for a specific task run
+const result = await webiny.tasks.listLogs({
+  where: { task: "yourTaskRunId" }
+});
+
+if (result.isOk()) {
+  for (const log of result.value) {
+    for (const item of log.items) {
+      console.log(`[${item.type}] ${item.message}`);
+    }
+  }
+}
+```
+
+### Trigger a Task
+
+```typescript
+const result = await webiny.tasks.triggerTask({
+  definition: "myTaskDefinitionId",
+  input: {
+    someVariable: "someValue",
+    anotherVariable: 42
+  }
+});
+
+if (result.isOk()) {
+  const task = result.value; // TaskRun
+  console.log(task.id, task.taskStatus, task.executionName);
+}
+```
+
+### Abort a Task
+
+The task stops at its next safe checkpoint.
+
+```typescript
+const result = await webiny.tasks.abortTask({
+  id: "yourTaskRunId",
+  message: "Stopped by user request" // optional
+});
+
+if (result.isOk()) {
+  console.log(result.value.taskStatus); // "aborted"
+}
+```
+
+### Background Task Types
+
+```typescript
+import type { TaskDefinition, TaskRun, TaskLog, TaskLogItem, TaskStatus } from "@webiny/sdk";
+
+type TaskStatus = "pending" | "running" | "completed" | "failed" | "aborted" | "stopped";
+
+interface TaskDefinition {
+  id: string;
+  title: string;
+  description?: string;
+}
+
+interface TaskRun {
+  id: string;
+  definitionId: string;
+  taskStatus: TaskStatus;
+  input?: unknown;
+  output?: unknown;
+  startedOn?: string;
+  finishedOn?: string;
+  executionName?: string;
+  iterations?: number;
+  parentId?: string;
+}
+```
+
 ## SDK Modules Reference
 
-| Module                 | Webiny App    | What You Can Do                                                       |
-| ---------------------- | ------------- | --------------------------------------------------------------------- |
-| `webiny.cms`           | Headless CMS  | List, get, create, update, publish, unpublish, delete entry revisions |
-| `webiny.fileManager`   | File Manager  | List, upload, and manage files and folders                            |
-| `webiny.tenantManager` | Multi-tenancy | Create, install, enable, disable tenants                              |
-| `webiny.languages`     | Languages     | List enabled languages (id, code, name, direction, isDefault)         |
+| Module                 | Webiny App       | What You Can Do                                                       |
+| ---------------------- | ---------------- | --------------------------------------------------------------------- |
+| `webiny.cms`           | Headless CMS     | List, get, create, update, publish, unpublish, delete entry revisions |
+| `webiny.fileManager`   | File Manager     | List, upload, and manage files and folders                            |
+| `webiny.tenantManager` | Multi-tenancy    | Create, install, enable, disable tenants                              |
+| `webiny.languages`     | Languages        | List enabled languages (id, code, name, direction, isDefault)         |
+| `webiny.tasks`         | Background Tasks | Trigger, abort, list task runs, definitions, and logs                 |
 
 ## Common Mistakes
 
-| Mistake                     | Correct                                 |
-| --------------------------- | --------------------------------------- |
-| `data: { name: "..." }`     | `data: { values: { name: "..." } }`     |
-| `updateEntry(...)`          | `updateEntryRevision(...)`              |
-| `publishEntry(...)`         | `publishEntryRevision(...)`             |
-| `unpublishEntry(...)`       | `unpublishEntryRevision(...)`           |
-| `sort: ["values.name_ASC"]` | `sort: { "values.name": "asc" }`        |
-| `getEntry({ id: "..." })`   | `getEntry({ where: { id: "..." } })`    |
-| Omitting `fields`           | Always provide `fields: [...]`          |
-| Trailing slash in endpoint  | Remove trailing slash from endpoint URL |
+| Mistake                                        | Correct                                                                                                               |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `data: { name: "..." }`                        | `data: { values: { name: "..." } }`                                                                                   |
+| `updateEntry(...)`                             | `updateEntryRevision(...)`                                                                                            |
+| `publishEntry(...)`                            | `publishEntryRevision(...)`                                                                                           |
+| `unpublishEntry(...)`                          | `unpublishEntryRevision(...)`                                                                                         |
+| `sort: ["values.name_ASC"]`                    | `sort: { "values.name": "asc" }`                                                                                      |
+| `getEntry({ id: "..." })`                      | `getEntry({ where: { id: "..." } })`                                                                                  |
+| Omitting `fields`                              | Always provide `fields: [...]`                                                                                        |
+| Trailing slash in endpoint                     | Remove trailing slash from endpoint URL                                                                               |
+| `triggerTask` with unknown `definition` string | Use an ID returned by `listDefinitions()` — the GQL schema validates it against `WebinyBackgroundTaskDefinitionEnum!` |
+
+## Quick Reference
+
+```
+Install:              npm install @webiny/sdk
+Import:               import { Webiny } from "@webiny/sdk";
+Type import:          import type { CmsEntryData, TaskRun } from "@webiny/sdk";
+Initialize:           new Webiny({ token, endpoint, tenant })
+Result check:         result.isOk() -> result.value / result.error.message
+API endpoint:         yarn webiny info (in your Webiny project) -- NO trailing slash
+Preview mode:         pass preview: true to listEntries / getEntry
+fields required:      every CMS method needs a fields: string[] array
+values wrapper:       createEntry/updateEntryRevision data must use { values: { ... } }
+Background tasks:     webiny.tasks.triggerTask({ definition, input })
+Abort task:           webiny.tasks.abortTask({ id, message? })
+Filter logs by task:  webiny.tasks.listLogs({ where: { task: "id" } })
+```
 
 ## Troubleshooting
 
@@ -394,9 +526,9 @@ check, in order:
    common cause when the model clearly exists. The CMS returns "not found" rather than
    "forbidden" on purpose, so an attacker can't probe the schema with an unauthorized
    key. Open Settings → API Keys → *your key* and verify it has at least:
-   - **Headless CMS** access (`cms.contentEntry`, `cms.contentModel`, etc.)
-   - The relevant model group selected (or "All groups")
-   - For private models: the matching `read` permission scope
+    - **Headless CMS** access (`cms.contentEntry`, `cms.contentModel`, etc.)
+    - The relevant model group selected (or "All groups")
+    - For private models: the matching `read` permission scope
 
    Fix: grant the missing permission to the key, save, and retry. No code change needed.
 

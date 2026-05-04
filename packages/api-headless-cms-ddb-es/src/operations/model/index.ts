@@ -125,7 +125,7 @@ export const createModelsStorageOperations = (
         }
     };
 
-    const deleteModel = async (params: CmsModelStorageOperationsDeleteParams) => {
+    const deleteModel = async (params: CmsModelStorageOperationsDeleteParams): Promise<void> => {
         const { model } = params;
         const keys = createKeys(model);
 
@@ -165,8 +165,6 @@ export const createModelsStorageOperations = (
                 }
             );
         }
-
-        return model;
     };
 
     const get = async (params: CmsModelStorageOperationsGetParams) => {

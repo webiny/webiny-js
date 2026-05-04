@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mdbid } from "@webiny/utils";
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
-import { CmsEntry, CmsModel } from "~/types";
+import { CmsEntry } from "~/types";
 import { setupGroupAndModels } from "../testHelpers/setup";
 
 const NUMBER_OF_FRUITS = 200;
@@ -62,10 +62,9 @@ describe("entry pagination", () => {
             models: ["fruit"]
         });
         const storageOperations = manager.getContext().cms.storageOperations;
-        const model = (await storageOperations.models.get({
-            tenant: "root",
-            modelId: "fruit"
-        })) as CmsModel;
+
+        const models = await manager.getContext().cms.listModels();
+        const model = models.find(m => m.modelId === "fruit")!;
         for (let i = 1; i <= NUMBER_OF_FRUITS; i++) {
             const fruit = createFruitData(i);
             await storageOperations.entries.create(model, {
