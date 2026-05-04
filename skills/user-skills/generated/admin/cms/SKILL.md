@@ -2,7 +2,7 @@
 name: webiny-admin-cms-catalog
 context: webiny-api
 description: >
-  admin/cms — 63 abstractions.
+  admin/cms — 74 abstractions.
 ---
 
 # admin/cms
@@ -166,6 +166,51 @@ description: >
 
 ---
 
+**Name:** `EntryAfterCreateEventHandler`
+**Import:** `import { EntryAfterCreateEventHandler } from "webiny/admin/cms"`
+**Source:** `@webiny/app-headless-cms/features/contentEntry/events/index.ts`
+
+---
+
+**Name:** `EntryAfterCreatePayload`
+**Kind:** type
+**Import:** `import type { EntryAfterCreatePayload } from "webiny/admin/cms"`
+**Source:** `@webiny/app-headless-cms/features/contentEntry/events/index.ts`
+
+---
+
+**Name:** `EntryAfterDeleteEventHandler`
+**Import:** `import { EntryAfterDeleteEventHandler } from "webiny/admin/cms"`
+**Source:** `@webiny/app-headless-cms/features/contentEntry/events/index.ts`
+
+---
+
+**Name:** `EntryAfterDeletePayload`
+**Kind:** type
+**Import:** `import type { EntryAfterDeletePayload } from "webiny/admin/cms"`
+**Source:** `@webiny/app-headless-cms/features/contentEntry/events/index.ts`
+
+---
+
+**Name:** `EntryAfterUpdateEventHandler`
+**Import:** `import { EntryAfterUpdateEventHandler } from "webiny/admin/cms"`
+**Source:** `@webiny/app-headless-cms/features/contentEntry/events/index.ts`
+
+---
+
+**Name:** `EntryAfterUpdatePayload`
+**Kind:** type
+**Import:** `import type { EntryAfterUpdatePayload } from "webiny/admin/cms"`
+**Source:** `@webiny/app-headless-cms/features/contentEntry/events/index.ts`
+
+---
+
+**Name:** `Fields`
+**Import:** `import { Fields } from "webiny/admin/cms/field-renderers/common"`
+**Source:** `@webiny/app-headless-cms-common/index.ts`
+
+---
+
 **Name:** `getNodeFromSelection`
 **Import:** `import { getNodeFromSelection } from "webiny/admin/cms/lexical"`
 **Source:** `@webiny/lexical-editor/exports/admin/lexical.ts`
@@ -234,6 +279,18 @@ description: >
 
 ---
 
+**Name:** `ParentFieldProvider`
+**Import:** `import { ParentFieldProvider } from "webiny/admin/cms/field-renderers/common"`
+**Source:** `@webiny/app-headless-cms/admin/components/ContentEntryForm/ParentValue.tsx`
+
+---
+
+**Name:** `ParentValueIndexProvider`
+**Import:** `import { ParentValueIndexProvider } from "webiny/admin/cms/field-renderers/common"`
+**Source:** `@webiny/app-headless-cms-common/index.ts`
+
+---
+
 **Name:** `PermissionsEditor`
 **Import:** `import { PermissionsEditor } from "webiny/admin/cms/model"`
 **Source:** `@webiny/app-headless-cms/admin/components/FieldEditor/EditFieldDialog/PermissionsEditor/PermissionsEditor.tsx`
@@ -269,6 +326,18 @@ description: >
 **Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/dynamicZone/index.tsx`
 **Description:** We're wrapping each component with `withShouldRender`, because they're all decoratable, and `withShouldRender` attaches a
 conditional decorator, which optionally takes a `modelIds` prop, so you can control on which models that component will be decorated.
+
+---
+
+**Name:** `TemplateIcon`
+**Import:** `import { TemplateIcon } from "webiny/admin/cms/field-renderers/dynamic-zone"`
+**Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/dynamicZone/TemplateIcon.tsx`
+
+---
+
+**Name:** `TemplateProvider`
+**Import:** `import { TemplateProvider } from "webiny/admin/cms/field-renderers/dynamic-zone"`
+**Source:** `@webiny/app-headless-cms/admin/plugins/fieldRenderers/dynamicZone/index.tsx`
 
 ---
 
