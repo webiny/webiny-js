@@ -39,7 +39,8 @@ export const createRsbuildConfig = ({ cwd }) => {
                     ),
                     tailwindcss({
                         base: getTailwindBasePath(paths.projectRootFolder)
-                    })
+                    }),
+                    createStripTailwindSourceLeftoverPlugin()
                 ]);
             },
             rspack: {
@@ -122,6 +123,20 @@ const createInjectTailwindSourcePlugin = sourcePath => ({
     postcssPlugin: "inject-tailwind-source",
     Once(root) {
         root.prepend(`@source "${sourcePath}";`);
+    }
+});
+
+/*
+    Removes any leftover `@source` at-rule from the output. Tailwind v4 strips the
+    directive from files it processes, but `@tailwindcss/postcss` only processes
+    files containing one of its trigger at-rules; for other files (e.g., pre-bundled
+    component CSS imported through JS), the injected directive would otherwise
+    survive into the production bundle, exposing the absolute build-machine path.
+*/
+const createStripTailwindSourceLeftoverPlugin = () => ({
+    postcssPlugin: "strip-tailwind-source-leftover",
+    Once(root) {
+        root.walkAtRules("source", node => node.remove());
     }
 });
 

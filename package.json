@@ -213,7 +213,7 @@
     "apollo-link@^1.2.14": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch",
     "apollo-link@^1.0.0": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch"
   },
-  "packageManager": "yarn@4.13.0",
+  "packageManager": "yarn@4.14.1",
   "dependencies": {
     "@types/hoist-non-react-statics": "^3.3.7",
     "@webiny/di": "^0.2.3",

@@ -2,7 +2,7 @@
 name: webiny-admin-ui-catalog
 context: webiny-api
 description: >
-  admin/ui — 94 abstractions.
+  admin/ui — 99 abstractions.
 ---
 
 # admin/ui
@@ -20,6 +20,12 @@ description: >
 **Name:** `Accordion`
 **Import:** `import { Accordion } from "webiny/admin/ui"`
 **Source:** `@webiny/admin-ui/Accordion/index.ts`
+
+---
+
+**Name:** `AdminLayout`
+**Import:** `import { AdminLayout } from "webiny/admin/ui"`
+**Source:** `@webiny/app-admin/components/AdminLayout.tsx`
 
 ---
 
@@ -200,6 +206,30 @@ description: >
 **Name:** `FolderTree`
 **Import:** `import { FolderTree } from "webiny/admin/ui"`
 **Source:** `@webiny/app-aco/components/FolderTree/index.tsx`
+
+---
+
+**Name:** `FormComponentDescription`
+**Import:** `import { FormComponentDescription } from "webiny/admin/ui"`
+**Source:** `@webiny/admin-ui/FormComponent/index.ts`
+
+---
+
+**Name:** `FormComponentErrorMessage`
+**Import:** `import { FormComponentErrorMessage } from "webiny/admin/ui"`
+**Source:** `@webiny/admin-ui/FormComponent/index.ts`
+
+---
+
+**Name:** `FormComponentLabel`
+**Import:** `import { FormComponentLabel } from "webiny/admin/ui"`
+**Source:** `@webiny/admin-ui/FormComponent/index.ts`
+
+---
+
+**Name:** `FormComponentNote`
+**Import:** `import { FormComponentNote } from "webiny/admin/ui"`
+**Source:** `@webiny/admin-ui/FormComponent/index.ts`
 
 ---
 

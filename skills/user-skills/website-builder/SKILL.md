@@ -5,10 +5,13 @@ description: >
   Building Website Builder editor components, theming, and CMS integration using
   @webiny/website-builder-nextjs. Use this skill when the developer wants to create editor
   components for the Website Builder, register components with createComponent, define
-  configurable inputs (text, number, boolean, color, select, file, slot, lexical),
-  set up component groups, customize the theme (CSS variables, createTheme, Tailwind bridge,
-  fonts), build Server Components that fetch CMS data, or understand the WB architecture
-  (Admin iframe + Next.js). Also use for anything related to the Website Builder starter kit.
+  configurable inputs (text, number, boolean, color, select, file/image, slot, lexical, object,
+  tags), type the component's props correctly (especially file/image inputs, which are objects
+  with { src, width, height, ... } and NOT plain strings, and lexical inputs which are
+  { html, state } objects), set up component groups, customize the theme (CSS variables,
+  createTheme, Tailwind bridge, fonts), build Server Components that fetch CMS data, or
+  understand the WB architecture (Admin iframe + Next.js). Also use for anything related to
+  the Website Builder starter kit.
 ---
 
 # Website Builder
@@ -166,6 +169,90 @@ Use a namespaced string: `"YourNamespace/ComponentName"`. Component names are st
 | `createSlotInput`     | Slot for nesting other components   |
 
 Each factory accepts: `name`, `label`, `description`, `defaultValue`, and type-specific options.
+
+### TypeScript prop types for each input
+
+The input factories above define what the editor sidebar shows. Separately, each input
+produces a value at runtime that's passed into your React component via `props.inputs`.
+**The runtime shape is not always a primitive** — the most important case is `file` /
+image inputs, which are objects, not strings. Typing them as `string` compiles but
+breaks as soon as you try to read `.src`, `.width`, etc.
+
+Use this table as the source of truth when you write the `ComponentProps<T>` generic for
+a component. These shapes come from the actual SDK usage (see e.g.
+`@webiny/website-builder-nextjs/editorComponents/Image.d.ts` in the project's
+`node_modules` for the canonical file-input shape).
+
+| Input factory         | Type of `inputs.<name>` in the component                                                                                                                       |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `createTextInput`     | `string`                                                                                                                                                       |
+| `createLongTextInput` | `string`                                                                                                                                                       |
+| `createNumberInput`   | `number`                                                                                                                                                       |
+| `createBooleanInput`  | `boolean`                                                                                                                                                      |
+| `createColorInput`    | `string` (CSS color value, e.g. `"#4632f5"` or `"var(--wb-theme-color-primary)"`)                                                                              |
+| `createDateInput`     | `string` (ISO-8601, e.g. `"2026-04-16T14:06:00.000Z"`)                                                                                                         |
+| `createSelectInput`   | `string` (the `value` of the chosen option)                                                                                                                    |
+| `createRadioInput`    | `string` (the `value` of the chosen option)                                                                                                                    |
+| `createTagsInput`     | `string[]`                                                                                                                                                     |
+| `createFileInput`     | `{ id: string; name: string; size: number; mimeType: string; src: string; width: number; height: number }` — **object, NOT a string.** Use `.src` for the URL. |
+| `createLexicalInput`  | `{ html?: string; state?: string }` — render with `<div dangerouslySetInnerHTML={{ __html: inputs.<name>.html ?? "" }} />`                                     |
+| `createObjectInput`   | An object literal matching the shape of its nested `fields` (e.g. `{ street: string; city: string; zip: string }`)                                             |
+| `createSlotInput`     | `React.ReactNode` (rendered children). With `list: true`, the factory wraps inside the field value — see Grid pattern below.                                   |
+
+#### List inputs (`list: true`)
+
+When an input is declared with `list: true` (either directly, or via a factory like
+`createTagsInput` which does it internally), the type in the component becomes an array
+of the base type:
+
+- `createFileInput({ list: true })` → `Array<{ id; name; src; … }>`
+- `createObjectInput({ name: "rows", list: true, fields: [...] })` → an array of objects
+  matching the `fields` shape.
+- `createSlotInput({ name: "columns", list: true, ... })` → an array of `{ children: React.ReactNode }` (see the Grid component in `@webiny/website-builder-react` for the reference pattern).
+
+#### Worked example: image + rich-text component
+
+```tsx
+import React from "react";
+import type { ComponentProps } from "@webiny/website-builder-nextjs";
+
+interface FeatureCardInputs {
+  headline: string;
+  body: { html?: string };
+  image: {
+    id: string;
+    name: string;
+    size: number;
+    mimeType: string;
+    src: string;
+    width: number;
+    height: number;
+  };
+  tags: string[];
+}
+
+export function FeatureCard({
+  inputs: { headline, body, image, tags }
+}: ComponentProps<FeatureCardInputs>) {
+  return (
+    <article>
+      <h3>{headline}</h3>
+      {image?.src && (
+        <img src={image.src} width={image.width} height={image.height} alt={headline} />
+      )}
+      {body?.html && <div dangerouslySetInnerHTML={{ __html: body.html }} />}
+      <ul>
+        {tags.map(tag => (
+          <li key={tag}>{tag}</li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+```
+
+Note how `image` is typed as the full object, not a plain `string` — otherwise the
+component would compile but blow up at runtime when it tried to read `image.src`.
 
 ## Component Groups
 

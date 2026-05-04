@@ -20,14 +20,14 @@ description: >
 
 **Name:** `GetLanguageByCodeUseCase`
 **Import:** `import { GetLanguageByCodeUseCase } from "webiny/api/languages"`
-**Source:** `@webiny/languages/api/features/getLanguageByCode/index.ts`
+**Source:** `@webiny/languages/api/features/GetLanguageByCode/index.ts`
 **Description:** Get a language entry by its code.
 
 ---
 
 **Name:** `ListLanguagesUseCase`
 **Import:** `import { ListLanguagesUseCase } from "webiny/api/languages"`
-**Source:** `@webiny/languages/api/features/listLanguages/index.ts`
+**Source:** `@webiny/languages/api/features/ListLanguages/index.ts`
 **Description:** List all language entries.
 
 ---
