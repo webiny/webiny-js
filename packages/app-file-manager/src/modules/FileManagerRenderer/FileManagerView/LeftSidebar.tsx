@@ -7,10 +7,16 @@ import { Heading } from "@webiny/admin-ui";
 interface LeftSidebarProps {
     currentFolder: string;
     onFolderClick: (folderId: string) => void;
+    onCreateFolder?: () => void;
     children?: React.ReactNode;
 }
 
-export const LeftSidebar = ({ currentFolder, onFolderClick, children }: LeftSidebarProps) => {
+export const LeftSidebar = ({
+    currentFolder,
+    onFolderClick,
+    onCreateFolder,
+    children
+}: LeftSidebarProps) => {
     const { browser } = useFileManagerViewConfig();
     const { folders, loadFolderHierarchy } = useLoadFolderHierarchy();
     const { listFoldersByParentIds } = useListFoldersByParentIds();
@@ -19,7 +25,6 @@ export const LeftSidebar = ({ currentFolder, onFolderClick, children }: LeftSide
         if (folders.length === 0) {
             loadFolderHierarchy(currentFolder);
         } else {
-            // Otherwise let's load only the current folder sub-tree
             listFoldersByParentIds([currentFolder]);
         }
     }, [currentFolder]);
@@ -38,6 +43,7 @@ export const LeftSidebar = ({ currentFolder, onFolderClick, children }: LeftSide
                     onFolderClick={data => onFolderClick(data.id)}
                     enableActions={true}
                     enableCreate={true}
+                    onCreateFolder={onCreateFolder}
                 />
             </div>
             {children ? <Separator /> : null}

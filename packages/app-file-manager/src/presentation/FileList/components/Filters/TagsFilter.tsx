@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Select, Tag as AdminTag, Text } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 
 const t = i18n.ns("app-file-manager/presentation/tags-filter");
 
@@ -17,7 +17,7 @@ const FILTER_MODE_OPTIONS = [
  * and dispatches changes via presenter.actions.filter.set("tags", ...).
  */
 export const TagsFilter = observer(function TagsFilter() {
-    const { vm, actions } = useFileListPresenter();
+    const { vm, actions } = useFileManagerPresenter();
     const [filterMode, setFilterMode] = useState<"AND" | "OR">("OR");
 
     // Read the current active tags from the filter state.

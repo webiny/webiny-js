@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { observable } from "mobx";
-import type { IFileListPresenter, IFileListViewModel } from "../../abstractions.js";
+import type { IFileManagerPresenter, IFileManagerViewModel } from "../../abstractions.js";
 import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import type { FmFile } from "~/features/shared/types.js";
 
@@ -86,8 +86,10 @@ function createMockFolderNode(overrides: Partial<IFolderTreeNode> = {}): IFolder
     };
 }
 
-function createMockPresenter(vmOverrides: Partial<IFileListViewModel> = {}): IFileListPresenter {
-    const defaultVm: IFileListViewModel = observable({
+function createMockPresenter(
+    vmOverrides: Partial<IFileManagerViewModel> = {}
+): IFileManagerPresenter {
+    const defaultVm: IFileManagerViewModel = observable({
         list: {
             rows: [],
             sort: null,
@@ -114,7 +116,7 @@ function createMockPresenter(vmOverrides: Partial<IFileListViewModel> = {}): IFi
             currentFolderId: null,
             currentFolder: null,
             loading: false,
-            operation: { active: false, mode: null }
+            operation: { active: false, mode: null }, isRootFolder: true, currentFolderTitle: "All Files", childFolders: [], loadingNodeIds: []
         },
         permissions: {
             canRead: true,
@@ -130,7 +132,8 @@ function createMockPresenter(vmOverrides: Partial<IFileListViewModel> = {}): IFi
         tags: [],
         viewMode: "table" as const,
         dragging: false,
-        isOverlay: false,
+        showingFilters: false, isOverlay: false, accept: [], multiple: false, scope: undefined,
+        fileDetails: null,
         ...vmOverrides
     });
 
@@ -153,12 +156,14 @@ function createMockPresenter(vmOverrides: Partial<IFileListViewModel> = {}): IFi
             setViewMode: vi.fn(),
             selectFile: vi.fn(),
             confirmSelection: vi.fn(),
+            showFileDetails: vi.fn(),
+            hideFileDetails: vi.fn(), setDragging: vi.fn(), showFilters: vi.fn(), hideFilters: vi.fn(),
             folders: {
                 selectFolder: vi.fn(),
                 createFolder: vi.fn(),
                 editFolder: vi.fn(),
                 deleteFolder: vi.fn().mockResolvedValue(undefined),
-                cancelOperation: vi.fn()
+                moveFolder: vi.fn().mockResolvedValue(undefined), loadChildFolders: vi.fn().mockResolvedValue(undefined), submitOperation: vi.fn().mockResolvedValue(true), cancelOperation: vi.fn()
             }
         },
         init: vi.fn()

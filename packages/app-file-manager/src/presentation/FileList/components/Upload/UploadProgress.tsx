@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { cn, IconButton, ProgressBar, Text } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 
 const t = i18n.ns("app-file-manager/presentation/upload-progress");
 
@@ -13,7 +13,7 @@ const t = i18n.ns("app-file-manager/presentation/upload-progress");
  * and a close button.
  */
 export const UploadProgress = observer(function UploadProgress() {
-    const { vm } = useFileListPresenter();
+    const { vm } = useFileManagerPresenter();
     const { upload } = vm;
     const [isVisible, setIsVisible] = useState(true);
 

@@ -1,11 +1,11 @@
-export { FileListPresenterFeature } from "./feature.js";
-export { FileListPresenter } from "./abstractions.js";
+export { FileManagerPresenterFeature } from "./feature.js";
+export { FileManagerPresenter } from "./abstractions.js";
 export type {
-    IFileListPresenter,
-    IFileListViewModel,
-    IFileListActions,
+    IFileManagerPresenter,
+    IFileManagerViewModel,
+    IFileManagerActions,
     IFolderActions,
-    IFileListOverlayConfig
+    IFileManagerOverlayConfig
 } from "./abstractions.js";
-export { FileListPresenterProvider } from "./FileListPresenterProvider.js";
-export { useFileListPresenter } from "./FileListPresenterProvider.js";
+export { FileManagerPresenterProvider } from "./FileManagerPresenterProvider.js";
+export { useFileManagerPresenter } from "./FileManagerPresenterProvider.js";

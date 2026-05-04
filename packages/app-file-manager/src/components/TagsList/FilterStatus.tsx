@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { Button, Text } from "@webiny/admin-ui";
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 
 interface FilterStatusProps {
     activeTags: string[];
@@ -8,11 +8,11 @@ interface FilterStatusProps {
 }
 
 export const FilterStatus = ({ activeTags, onActivatedTagsChange }: FilterStatusProps) => {
-    const fmView = useFileManagerView();
+    const { actions } = useFileManagerPresenter();
 
     const resetTags = useCallback(() => {
         onActivatedTagsChange([]);
-        fmView.tags.setFilterMode("OR");
+        actions.filter.clear("tags_rule");
     }, []);
 
     return (

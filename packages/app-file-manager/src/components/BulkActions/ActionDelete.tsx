@@ -2,15 +2,16 @@ import React, { useMemo } from "react";
 import { Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { observer } from "mobx-react-lite";
+import { useFeature } from "@webiny/app";
 
 import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
-import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext/index.js";
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
+import { DeleteFileFeature } from "~/features/deleteFile/feature.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 import { getFilesLabel } from "~/components/BulkActions/BulkActions.js";
 
 export const ActionDelete = observer(() => {
-    const { deleteFile } = useFileManagerView();
-    const { canDelete } = useFileManagerApi();
+    const { useCase: deleteFileUseCase } = useFeature(DeleteFileFeature);
+    const { vm } = useFileManagerPresenter();
 
     const { useWorker, useButtons, useDialog } = FileManagerViewConfig.Browser.BulkAction;
     const { ButtonDefault } = useButtons();
@@ -21,10 +22,6 @@ export const ActionDelete = observer(() => {
         return getFilesLabel(worker.items.length);
     }, [worker.items.length]);
 
-    const canDeleteAll = useMemo(() => {
-        return worker.items.every(item => canDelete(item));
-    }, [worker.items]);
-
     const openDeleteDialog = () =>
         showConfirmationDialog({
             title: "Delete files",
@@ -33,7 +30,7 @@ export const ActionDelete = observer(() => {
             execute: async () => {
                 await worker.processInSeries(async ({ item, report }) => {
                     try {
-                        await deleteFile(item.id);
+                        await deleteFileUseCase.execute({ id: item.id });
 
                         report.success({
                             title: `${item.name}`,
@@ -42,7 +39,7 @@ export const ActionDelete = observer(() => {
                     } catch (e) {
                         report.error({
                             title: `${item.name}`,
-                            message: e.message
+                            message: (e as Error).message
                         });
                     }
                 });
@@ -57,8 +54,7 @@ export const ActionDelete = observer(() => {
             }
         });
 
-    if (!canDeleteAll) {
-        console.log("You don't have permissions to delete files.");
+    if (!vm.permissions.canDelete) {
         return null;
     }
 

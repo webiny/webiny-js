@@ -4,10 +4,10 @@ import LazyLoad from "react-lazy-load";
 import { cn, CheckboxPrimitive, Icon, Text, TimeAgo, OverlayLoader } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
+import { FileProvider } from "~/contexts/FileProvider.js";
 import type { FmFile } from "~/features/shared/types.js";
-import type { FileItem } from "~/types.js";
 import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 
 const t = i18n.ns("app-file-manager/presentation/file-grid");
@@ -66,7 +66,7 @@ const FileCard = observer(function FileCard({ file, selected, onToggle }: FileCa
     const { browser, getThumbnailRenderer } = useFileManagerViewConfig();
     const { itemActions } = browser.grid;
 
-    const renderer = getThumbnailRenderer(browser.grid.itemThumbnails, file as unknown as FileItem);
+    const renderer = getThumbnailRenderer(browser.grid.itemThumbnails, file as any);
 
     const handleClick = useCallback(
         (e: React.MouseEvent) => {
@@ -77,6 +77,7 @@ const FileCard = observer(function FileCard({ file, selected, onToggle }: FileCa
     );
 
     return (
+        <FileProvider file={file}>
         <div
             className={cn([
                 "group",
@@ -142,6 +143,7 @@ const FileCard = observer(function FileCard({ file, selected, onToggle }: FileCa
                 </Text>
             </div>
         </div>
+        </FileProvider>
     );
 });
 
@@ -155,7 +157,7 @@ const FileCard = observer(function FileCard({ file, selected, onToggle }: FileCa
  * Wires click-to-select through presenter.actions.selection.
  */
 export const FileGrid = observer(function FileGrid() {
-    const presenter = useFileListPresenter();
+    const presenter = useFileManagerPresenter();
     const { vm, actions } = presenter;
 
     // Determine child folders of the current folder.

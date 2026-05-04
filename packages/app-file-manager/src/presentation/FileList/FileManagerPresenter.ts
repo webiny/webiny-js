@@ -1,14 +1,15 @@
-import { makeAutoObservable, reaction, computed } from "mobx";
+import { makeAutoObservable, reaction, computed, runInAction } from "mobx";
 import {
-    FileListPresenter as Abstraction,
-    type IFileListPresenter,
-    type IFileListViewModel,
-    type IFileListActions,
-    type IFileListOverlayConfig
+    FileManagerPresenter as Abstraction,
+    type IFileManagerPresenter,
+    type IFileManagerViewModel,
+    type IFileManagerActions,
+    type IFileManagerOverlayConfig
 } from "./abstractions.js";
 import { FileListDataSource } from "./FileListDataSource.js";
 import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import { FileDetailsPresenter } from "../FileDetails/abstractions.js";
 import { FileManagerPermissions } from "../../features/permissions/abstractions.js";
 import { GetSettingsRepository } from "../../features/settings/abstractions.js";
 import { ListTagsRepository } from "../../features/tags/abstractions.js";
@@ -18,18 +19,22 @@ import { ListFilesUseCase } from "../../features/listFiles/abstractions.js";
 import { FilesListCache } from "../../features/shared/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import type { FmFile } from "../../features/shared/types.js";
+import type { IFileDetailsPresenter } from "../FileDetails/abstractions.js";
 
 const VIEW_MODE_KEY = "fm:viewMode";
 
-class FileListPresenterImpl implements IFileListPresenter {
+class FileManagerPresenterImpl implements IFileManagerPresenter {
     private _viewMode: "table" | "grid" = "table";
     private _dragging = false;
-    private _overlayConfig: IFileListOverlayConfig | null = null;
+    private _overlayConfig: IFileManagerOverlayConfig | null = null;
     private _disposeReaction: (() => void) | null = null;
+    private _fileDetails: IFileDetailsPresenter | null = null;
+    private _showingFilters = false;
 
     constructor(
         private listPresenter: ListPresenter.Interface<FmFile>,
         private folderTreePresenter: FolderTreePresenter.Interface,
+        private fileDetailsPresenter: FileDetailsPresenter.Interface,
         private permissions: FileManagerPermissions.Interface,
         private settingsRepository: GetSettingsRepository.Interface,
         private tagsRepository: ListTagsRepository.Interface,
@@ -39,23 +44,27 @@ class FileListPresenterImpl implements IFileListPresenter {
         private filesListCache: FilesListCache.Interface,
         private getDescendantFoldersUseCase: GetDescendantFoldersUseCase.Interface
     ) {
-        makeAutoObservable<FileListPresenterImpl, "_overlayConfig" | "_disposeReaction">(this, {
+        makeAutoObservable<
+            FileManagerPresenterImpl,
+            "_overlayConfig" | "_disposeReaction" | "fileDetailsPresenter"
+        >(this, {
             _overlayConfig: false,
             _disposeReaction: false,
+            fileDetailsPresenter: false,
             vm: computed
         });
 
-        // Restore persisted view mode.
         const stored = this.localStorage.get<"table" | "grid">(VIEW_MODE_KEY);
         if (stored === "table" || stored === "grid") {
             this._viewMode = stored;
         }
     }
 
-    get vm(): IFileListViewModel {
+    get vm(): IFileManagerViewModel {
         return {
             list: this.listPresenter.vm,
             folders: this.folderTreePresenter.vm,
+            fileDetails: this._fileDetails,
             permissions: {
                 canRead: this.permissions.canRead("file"),
                 canCreate: this.permissions.canCreate("file"),
@@ -74,12 +83,15 @@ class FileListPresenterImpl implements IFileListPresenter {
             tags: this.tagsRepository.tags,
             viewMode: this._viewMode,
             dragging: this._dragging,
-            isOverlay: this._overlayConfig !== null
+            showingFilters: this._showingFilters,
+            isOverlay: this._overlayConfig !== null,
+            accept: this._overlayConfig?.accept ?? [],
+            multiple: this._overlayConfig?.multiple ?? false,
+            scope: this._overlayConfig?.scope
         };
     }
 
-    // Actions forwarded from ListPresenter with domain-specific additions.
-    actions: IFileListActions = {
+    actions: IFileManagerActions = {
         search: {
             set: (query: string) => this.listPresenter.actions.search.set(query),
             clear: () => this.listPresenter.actions.search.clear()
@@ -104,7 +116,6 @@ class FileListPresenterImpl implements IFileListPresenter {
         },
         loadMore: () => this.listPresenter.actions.loadMore(),
         refresh: () => this.listPresenter.actions.refresh(),
-        // Domain-specific actions.
         upload: async (files: File[]) => {
             await this.fileUploader.uploadMany(
                 files.map(file => ({ file, data: { name: file.name, type: file.type } }))
@@ -114,16 +125,23 @@ class FileListPresenterImpl implements IFileListPresenter {
             this._viewMode = mode;
             this.localStorage.set(VIEW_MODE_KEY, mode);
         },
+        setDragging: (dragging: boolean) => {
+            this._dragging = dragging;
+        },
+        showFilters: () => {
+            this._showingFilters = true;
+        },
+        hideFilters: () => {
+            this._showingFilters = false;
+        },
         selectFile: (file: FmFile) => {
             if (!this._overlayConfig) {
                 return;
             }
 
             if (this._overlayConfig.multiple) {
-                // Multi mode: toggle the file in the selection set.
                 this.listPresenter.actions.selection.toggle(file.id);
             } else {
-                // Single mode: call onChange immediately.
                 this._overlayConfig.onChange([file]);
             }
         },
@@ -132,7 +150,6 @@ class FileListPresenterImpl implements IFileListPresenter {
                 return;
             }
 
-            // Collect selected files from the current rows.
             const selectedIds = this.listPresenter.vm.selection.selectedIds;
             const selectedFiles = this.listPresenter.vm.rows.filter(f => selectedIds.has(f.id));
 
@@ -140,7 +157,13 @@ class FileListPresenterImpl implements IFileListPresenter {
                 this._overlayConfig.onChange(selectedFiles);
             }
         },
-        // Folder actions forwarded from FolderTreePresenter.
+        showFileDetails: (id: string) => {
+            this._fileDetails = this.fileDetailsPresenter;
+            void this.fileDetailsPresenter.loadFile(id);
+        },
+        hideFileDetails: () => {
+            this._fileDetails = null;
+        },
         folders: {
             selectFolder: (folderId: string | null) =>
                 this.folderTreePresenter.selectFolder(folderId),
@@ -148,29 +171,31 @@ class FileListPresenterImpl implements IFileListPresenter {
                 this.folderTreePresenter.createFolder(parentFolderId),
             editFolder: (folderId: string) => this.folderTreePresenter.editFolder(folderId),
             deleteFolder: (folderId: string) => this.folderTreePresenter.deleteFolder(folderId),
+            moveFolder: (folderId: string, targetParentId: string | null) =>
+                this.folderTreePresenter.moveFolder(folderId, targetParentId),
+            loadChildFolders: (parentIds: string[]) =>
+                this.folderTreePresenter.loadChildFolders(parentIds),
+            submitOperation: () => this.folderTreePresenter.submitOperation(),
             cancelOperation: () => {
                 this.folderTreePresenter.cancelOperation();
             }
         }
     };
 
-    init(overlayConfig?: IFileListOverlayConfig): void {
+    init(overlayConfig?: IFileManagerOverlayConfig): void {
         this._overlayConfig = overlayConfig ?? null;
 
-        // Create the data source adapter.
         const dataSource = new FileListDataSource(
             this.listFilesUseCase,
             this.filesListCache,
             this.getDescendantFoldersUseCase
         );
 
-        // Initialize the list presenter with the data source and default sort.
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" }
         });
 
-        // Wire folder changes to list filtering via MobX reaction.
         this._disposeReaction = reaction(
             () => this.folderTreePresenter.vm.currentFolderId,
             folderId => {
@@ -184,11 +209,12 @@ class FileListPresenterImpl implements IFileListPresenter {
     }
 }
 
-export const FileListPresenter = Abstraction.createImplementation({
-    implementation: FileListPresenterImpl,
+export const FileManagerPresenter = Abstraction.createImplementation({
+    implementation: FileManagerPresenterImpl,
     dependencies: [
         ListPresenter,
         FolderTreePresenter,
+        FileDetailsPresenter,
         FileManagerPermissions,
         GetSettingsRepository,
         ListTagsRepository,

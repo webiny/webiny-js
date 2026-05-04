@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import { Select } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 
 const t = i18n.ns("app-file-manager/presentation/type-filter");
 
@@ -18,7 +18,7 @@ const TYPE_OPTIONS = [
  * Sets the "type" filter via presenter.actions.filter.set/clear.
  */
 export const TypeFilter = observer(function TypeFilter() {
-    const { vm, actions } = useFileListPresenter();
+    const { vm, actions } = useFileManagerPresenter();
 
     // Read the current type filter value.
     const currentValue = (vm.list.filters["type"] as string) ?? "";

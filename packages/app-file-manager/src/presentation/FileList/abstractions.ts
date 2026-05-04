@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/admin";
 import type { IListViewModel } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IListActions } from "@webiny/app-admin/presentation/listPresenter/abstractions.js";
 import type { IFolderTreeViewModel } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import type { IFileDetailsPresenter } from "../FileDetails/abstractions.js";
 import type { FmFile } from "../../features/shared/types.js";
 import type { FmTag } from "../../features/shared/types.js";
 import type { UploadJob } from "../../features/fileUploader/abstractions.js";
@@ -10,7 +11,7 @@ import type { UploadJob } from "../../features/fileUploader/abstractions.js";
 // Overlay configuration passed to init() for file picker mode.
 // ---------------------------------------------------------------------------
 
-export interface IFileListOverlayConfig {
+export interface IFileManagerOverlayConfig {
     onChange: (files: FmFile[]) => void;
     onClose: () => void;
     multiple?: boolean;
@@ -19,31 +20,36 @@ export interface IFileListOverlayConfig {
 }
 
 // ---------------------------------------------------------------------------
-// FileListViewModel
+// FileManagerViewModel
 // ---------------------------------------------------------------------------
 
-export interface IFileListViewModel {
+export interface IFileManagerViewModel {
     list: IListViewModel<FmFile>;
     folders: IFolderTreeViewModel;
+    fileDetails: IFileDetailsPresenter | null;
+    tags: FmTag[];
+    upload: {
+        jobs: UploadJob[];
+        overallProgress: { percentage: number; bytesSent: number; totalBytes: number };
+        isUploading: boolean;
+    };
+    viewMode: "table" | "grid";
+    dragging: boolean;
+    showingFilters: boolean;
     permissions: {
         canRead: boolean;
         canCreate: boolean;
         canEdit: boolean;
         canDelete: boolean;
     };
-    upload: {
-        jobs: UploadJob[];
-        overallProgress: { percentage: number; bytesSent: number; totalBytes: number };
-        isUploading: boolean;
-    };
-    tags: FmTag[];
-    viewMode: "table" | "grid";
-    dragging: boolean;
     isOverlay: boolean;
+    accept: string[];
+    multiple: boolean;
+    scope: string | undefined;
 }
 
 // ---------------------------------------------------------------------------
-// Folder actions exposed by the FileListPresenter.
+// Folder actions exposed by the FileManagerPresenter.
 // ---------------------------------------------------------------------------
 
 export interface IFolderActions {
@@ -51,36 +57,45 @@ export interface IFolderActions {
     createFolder(parentFolderId?: string): void;
     editFolder(folderId: string): void;
     deleteFolder(folderId: string): Promise<void>;
+    moveFolder(folderId: string, targetParentId: string | null): Promise<void>;
+    loadChildFolders(parentIds: string[]): Promise<void>;
+    submitOperation(): Promise<boolean>;
     cancelOperation(): void;
 }
 
 // ---------------------------------------------------------------------------
-// FileListPresenter actions (extends ListActions with domain-specific actions).
+// FileManagerPresenter actions (extends ListActions with domain-specific actions).
 // ---------------------------------------------------------------------------
 
-export interface IFileListActions extends IListActions {
+export interface IFileManagerActions extends IListActions {
+    showFileDetails(id: string): void;
+    hideFileDetails(): void;
     upload(files: File[]): Promise<void>;
     setViewMode(mode: "table" | "grid"): void;
+    setDragging(dragging: boolean): void;
+    showFilters(): void;
+    hideFilters(): void;
     selectFile(file: FmFile): void;
     confirmSelection(): void;
     folders: IFolderActions;
 }
 
 // ---------------------------------------------------------------------------
-// IFileListPresenter
+// IFileManagerPresenter
 // ---------------------------------------------------------------------------
 
-export interface IFileListPresenter {
-    vm: IFileListViewModel;
-    actions: IFileListActions;
-    init(overlayConfig?: IFileListOverlayConfig): void;
+export interface IFileManagerPresenter {
+    vm: IFileManagerViewModel;
+    actions: IFileManagerActions;
+    init(overlayConfig?: IFileManagerOverlayConfig): void;
 }
 
-export const FileListPresenter = createAbstraction<IFileListPresenter>("FileListPresenter");
+export const FileManagerPresenter =
+    createAbstraction<IFileManagerPresenter>("FileManagerPresenter");
 
-export namespace FileListPresenter {
-    export type Interface = IFileListPresenter;
-    export type ViewModel = IFileListViewModel;
-    export type Actions = IFileListActions;
-    export type OverlayConfig = IFileListOverlayConfig;
+export namespace FileManagerPresenter {
+    export type Interface = IFileManagerPresenter;
+    export type ViewModel = IFileManagerViewModel;
+    export type Actions = IFileManagerActions;
+    export type OverlayConfig = IFileManagerOverlayConfig;
 }

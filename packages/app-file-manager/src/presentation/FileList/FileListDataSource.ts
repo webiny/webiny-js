@@ -37,16 +37,18 @@ export class FileListDataSource implements IDataSource<FmFile> {
         // Remove tags_rule — it is a UI-only filter mode indicator.
         delete where["tags_rule"];
 
-        // When searching or when the sub-folders toggle is on, include descendant folder IDs.
-        if (
-            (params.search || includeSubFolders) &&
-            where["folderId"] &&
-            this.getDescendantFoldersUseCase
-        ) {
+        // Map folderId to the location filter expected by the API.
+        if (where["folderId"]) {
             const currentFolderId = where["folderId"] as string;
-            const descendants = this.getDescendantFoldersUseCase.execute(currentFolderId);
-            const folderIds = [currentFolderId, ...descendants.map(f => f.id)];
-            where["location"] = { folderId_in: folderIds };
+
+            if ((params.search || includeSubFolders) && this.getDescendantFoldersUseCase) {
+                const descendants = this.getDescendantFoldersUseCase.execute(currentFolderId);
+                const folderIds = [currentFolderId, ...descendants.map(f => f.id)];
+                where["location"] = { folderId_in: folderIds };
+            } else {
+                where["location"] = { folderId: currentFolderId };
+            }
+
             delete where["folderId"];
         }
 

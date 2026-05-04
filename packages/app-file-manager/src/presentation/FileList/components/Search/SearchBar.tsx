@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { DelayedOnChange, Icon, Input } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 
 const t = i18n.ns("app-file-manager/presentation/search-bar");
 
@@ -13,7 +13,7 @@ const t = i18n.ns("app-file-manager/presentation/search-bar");
  * and dispatches changes via presenter.actions.search.set().
  */
 export const SearchBar = observer(function SearchBar() {
-    const { vm, actions } = useFileListPresenter();
+    const { vm, actions } = useFileManagerPresenter();
 
     return (
         <DelayedOnChange

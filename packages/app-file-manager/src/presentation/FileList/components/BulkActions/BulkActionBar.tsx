@@ -3,7 +3,7 @@ import { Text, IconButton, cn } from "@webiny/admin-ui";
 import { ReactComponent as Close } from "@webiny/icons/close.svg";
 import { Buttons } from "@webiny/app-admin";
 import { observer } from "mobx-react-lite";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
 
 export const getFilesLabel = (count = 0): string => {
@@ -12,7 +12,7 @@ export const getFilesLabel = (count = 0): string => {
 
 export const BulkActionBar = observer(function BulkActionBar() {
     const { browser } = useFileManagerViewConfig();
-    const { vm, actions } = useFileListPresenter();
+    const { vm, actions } = useFileManagerPresenter();
 
     const selectedCount = vm.list.selection.selectedCount;
 

@@ -2,8 +2,9 @@ import React, { useCallback } from "react";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { OverlayLoader, Text } from "@webiny/admin-ui";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
+import { useContainer } from "@webiny/app";
+import { DeleteFileUseCase } from "~/features/deleteFile/abstractions.js";
 import type { FileItem } from "~/types.js";
-import { useFileManagerView } from "~/index.js";
 
 const t = i18n.ns("app-admin/file-manager/hooks/use-delete-file");
 
@@ -13,7 +14,8 @@ interface UseDeleteFileParams {
 }
 
 export const useDeleteFile = ({ onDelete, file }: UseDeleteFileParams) => {
-    const { deleteFile } = useFileManagerView();
+    const container = useContainer();
+    const deleteFileUseCase = container.resolve(DeleteFileUseCase);
     const { showSnackbar } = useSnackbar();
 
     const { showConfirmation } = useConfirmationDialog({
@@ -34,7 +36,7 @@ export const useDeleteFile = ({ onDelete, file }: UseDeleteFileParams) => {
     const openDialogDeleteFile = useCallback(
         () =>
             showConfirmation(async () => {
-                await deleteFile(file.id);
+                await deleteFileUseCase.execute({ id: file.id });
 
                 showSnackbar(t`File deleted successfully.`);
 

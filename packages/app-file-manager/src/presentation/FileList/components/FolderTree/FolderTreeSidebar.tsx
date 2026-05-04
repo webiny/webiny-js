@@ -11,7 +11,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as ChevronRightIcon } from "@webiny/icons/chevron_right.svg";
 import { ReactComponent as ExpandMoreIcon } from "@webiny/icons/expand_more.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import type { IFolderActions } from "../../abstractions.js";
 
@@ -225,8 +225,8 @@ const FolderNode = observer(function FolderNode({
 // FolderOperationDialog — renders create/edit form or delete confirmation.
 // ---------------------------------------------------------------------------
 
-const FolderOperationDialog = observer(function FolderOperationDialog() {
-    const { vm, actions } = useFileListPresenter();
+export const FolderOperationDialog = observer(function FolderOperationDialog() {
+    const { vm, actions } = useFileManagerPresenter();
     const { operation } = vm.folders;
 
     if (!operation.active) {
@@ -280,7 +280,7 @@ const FolderOperationDialog = observer(function FolderOperationDialog() {
                         <Dialog.CancelAction onClick={handleClose} text={t`Cancel`} />
                         <Dialog.ConfirmAction
                             onClick={() => {
-                                void operation.form!.submit();
+                                void actions.folders.submitOperation();
                             }}
                             text={confirmLabel}
                         />
@@ -305,7 +305,7 @@ const FolderOperationDialog = observer(function FolderOperationDialog() {
  * and CRUD actions through the presenter's folder actions API.
  */
 export const FolderTreeSidebar = observer(function FolderTreeSidebar() {
-    const { vm, actions } = useFileListPresenter();
+    const { vm, actions } = useFileManagerPresenter();
     const { tree, currentFolderId, loading } = vm.folders;
     const { canCreate, canEdit, canDelete } = vm.permissions;
 

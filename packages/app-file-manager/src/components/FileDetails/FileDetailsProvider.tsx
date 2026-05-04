@@ -1,5 +1,5 @@
 import React, { createContext } from "react";
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 import type { FileItem } from "~/types.js";
 
 export interface FileDetailsContext {
@@ -22,12 +22,12 @@ export const FileDetailsProvider = ({
     onSetFile,
     children
 }: FileDetailsProviderProps) => {
-    const view = useFileManagerView();
+    const { vm } = useFileManagerPresenter();
 
     const value: FileDetailsContext = {
         close: hideFileDetails,
-        scope: view.scope,
-        own: view.own,
+        scope: vm.scope,
+        own: false,
         setFile: onSetFile
     };
 

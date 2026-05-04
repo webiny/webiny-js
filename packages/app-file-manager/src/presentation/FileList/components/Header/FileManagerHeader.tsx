@@ -7,7 +7,7 @@ import { ReactComponent as ChevronRightIcon } from "@webiny/icons/chevron_right.
 import { ReactComponent as GridIcon } from "@webiny/icons/view_module.svg";
 import { ReactComponent as TableIcon } from "@webiny/icons/view_list.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 
 const t = i18n.ns("app-file-manager/presentation/header");
@@ -166,7 +166,7 @@ const FolderBreadcrumb = ({ currentFolder, tree, onNavigate }: FolderBreadcrumbP
  * Reads vm.viewMode and vm.folders.currentFolder from the FileListPresenter.
  */
 export const FileManagerHeader = observer(function FileManagerHeader() {
-    const { vm, actions } = useFileListPresenter();
+    const { vm, actions } = useFileManagerPresenter();
 
     // Navigate to a folder via the breadcrumb.
     const handleNavigate = useCallback(

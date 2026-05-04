@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Select, Text } from "@webiny/admin-ui";
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 
 const options = [
     {
@@ -14,17 +14,25 @@ const options = [
 ];
 
 export const FilterSelect = () => {
-    const fmView = useFileManagerView();
+    const { vm, actions } = useFileManagerPresenter();
+    const activeTags = (vm.list.filters["tags"] as string[] | undefined) ?? [];
+    const [filterMode, setFilterMode] = useState<"AND" | "OR">("OR");
 
     return (
         <div className={"flex flex-col gap-sm mb-md"}>
             <Text className={"font-semibold"}>Filter by tag</Text>
             <Select
-                disabled={fmView.tags.activeTags.length < 2}
+                disabled={activeTags.length < 2}
                 size={"md"}
                 variant={"secondary"}
-                value={fmView.tags.filterMode}
-                onChange={mode => fmView.tags.setFilterMode(mode)}
+                value={filterMode}
+                onChange={mode => {
+                    const typedMode = mode as "AND" | "OR";
+                    setFilterMode(typedMode);
+                    if (activeTags.length > 0) {
+                        actions.filter.set("tags_rule", typedMode);
+                    }
+                }}
                 options={options}
                 displayResetAction={false}
             />

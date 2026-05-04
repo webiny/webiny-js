@@ -1,2 +1,2 @@
-export * from "./useFileManagerView.js";
+export { useFileManagerView } from "./FileManagerViewContext.js";
 export * from "./FileManagerViewContext.js";

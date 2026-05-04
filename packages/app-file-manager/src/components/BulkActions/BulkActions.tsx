@@ -5,7 +5,7 @@ import { i18n } from "@webiny/app/i18n/index.js";
 import { Buttons } from "@webiny/app-admin";
 
 import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 
 const t = i18n.ns("app-file-manager/components/bulk-actions");
 
@@ -15,15 +15,17 @@ export const getFilesLabel = (count = 0): string => {
 
 export const BulkActions = () => {
     const { browser } = useFileManagerViewConfig();
-    const view = useFileManagerView();
+    const { vm, actions } = useFileManagerPresenter();
+
+    const selectedCount = vm.list.selection.selectedCount;
 
     const headline = useMemo((): string => {
         return t`{label} selected`({
-            label: getFilesLabel(view.selected.length)
+            label: getFilesLabel(selectedCount)
         });
-    }, [view.selected]);
+    }, [selectedCount]);
 
-    if (view.hasOnSelectCallback || !view.selected.length) {
+    if (vm.isOverlay || selectedCount === 0) {
         return null;
     }
 
@@ -42,7 +44,7 @@ export const BulkActions = () => {
                         variant={"ghost"}
                         size={"sm"}
                         icon={<Close />}
-                        onClick={() => view.setSelected([])}
+                        onClick={() => actions.selection.deselectAll()}
                     />
                 </div>
             </div>

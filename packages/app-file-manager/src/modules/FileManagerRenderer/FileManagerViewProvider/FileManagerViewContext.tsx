@@ -88,6 +88,18 @@ export const FileManagerViewContext = React.createContext<FileManagerViewContext
     undefined
 );
 
+export function useFileManagerView<TFileItem extends FileItem = FileItem>() {
+    const context = React.useContext(
+        FileManagerViewContext as unknown as React.Context<
+            FileManagerViewContext<TFileItem> | undefined
+        >
+    );
+    if (!context) {
+        throw new Error("useFileManagerView() must be used within a FileManagerViewProvider");
+    }
+    return context;
+}
+
 const getCurrentFolderList = (
     folders?: FolderDto[] | null,
     currentFolderId?: string

@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { cn, Text } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 
 const t = i18n.ns("app-file-manager/presentation/drop-zone");
 
@@ -49,7 +49,7 @@ export const DropZone = observer(function DropZone({
     minFileSize,
     children
 }: DropZoneProps) {
-    const presenter = useFileListPresenter();
+    const presenter = useFileManagerPresenter();
     const { vm, actions } = presenter;
     const dragCounterRef = useRef(0);
 

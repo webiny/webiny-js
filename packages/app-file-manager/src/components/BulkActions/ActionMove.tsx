@@ -1,16 +1,19 @@
 import React, { useCallback, useMemo } from "react";
 import { ReactComponent as MoveIcon } from "@webiny/icons/exit_to_app.svg";
 import { observer } from "mobx-react-lite";
-import { useMoveToFolderDialog, useNavigateFolder } from "@webiny/app-aco";
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
+import { useMoveToFolderDialog } from "@webiny/app-aco";
+import { useFeature } from "@webiny/app";
 import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
+import { UpdateFileFeature } from "~/features/updateFile/feature.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 import { getFilesLabel } from "~/components/BulkActions/BulkActions.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import { type NodeDto, Tooltip } from "@webiny/admin-ui";
 
 export const ActionMove = observer(() => {
-    const { moveFileToFolder } = useFileManagerView();
-    const { currentFolderId } = useNavigateFolder();
+    const { useCase: updateFileUseCase } = useFeature(UpdateFileFeature);
+    const { vm } = useFileManagerPresenter();
+    const currentFolderId = vm.folders.currentFolderId;
 
     const { useWorker, useButtons, useDialog } = FileManagerViewConfig.Browser.BulkAction;
     const { ButtonDefault } = useButtons();
@@ -31,7 +34,10 @@ export const ActionMove = observer(() => {
                 execute: async () => {
                     await worker.processInSeries(async ({ item, report }) => {
                         try {
-                            await moveFileToFolder(item.id, folder.id);
+                            await updateFileUseCase.execute({
+                                id: item.id,
+                                data: { location: { folderId: folder.id } }
+                            });
 
                             report.success({
                                 title: `${item.name}`,
@@ -40,7 +46,7 @@ export const ActionMove = observer(() => {
                         } catch (e) {
                             report.error({
                                 title: `${item.name}`,
-                                message: e.message
+                                message: (e as Error).message
                             });
                         }
                     });

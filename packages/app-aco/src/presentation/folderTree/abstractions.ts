@@ -33,7 +33,11 @@ export interface IFolderTreeViewModel {
     tree: IFolderTreeNode[];
     currentFolderId: string | null;
     currentFolder: IFolderTreeNode | null;
+    isRootFolder: boolean;
+    currentFolderTitle: string;
+    childFolders: IFolderTreeNode[];
     loading: boolean;
+    loadingNodeIds: string[];
     operation: IFolderOperationState;
 }
 
@@ -47,6 +51,11 @@ export interface IFolderTreePresenter {
     createFolder(parentFolderId?: string): void;
     editFolder(folderId: string): void;
     deleteFolder(folderId: string): Promise<void>;
+    moveFolder(folderId: string, targetParentId: string | null): Promise<void>;
+    loadChildFolders(parentIds: string[]): Promise<void>;
+    canManageStructure(folderId: string): boolean;
+    getAncestorIds(folderId: string): string[];
+    submitOperation(): Promise<boolean>;
     cancelOperation(): void;
     onFolderChange(callback: (folderId: string | null) => void): () => void;
 }

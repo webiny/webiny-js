@@ -7,7 +7,7 @@ const formatFileSize = (size: number) => {
     return bytes.format(size, { unitSeparator: " " });
 };
 
-const formatDate = (date: string) => {
+const formatDate = (date: string | Date) => {
     return dayjs(date).format("DD MMM YYYY, HH:mm");
 };
 

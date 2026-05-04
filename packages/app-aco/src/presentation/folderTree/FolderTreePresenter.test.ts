@@ -7,6 +7,9 @@ import { ListFoldersUseCase } from "~/features/folders/listFolders/abstractions.
 import { CreateFolderUseCase } from "~/features/folders/createFolder/abstractions.js";
 import { UpdateFolderUseCase } from "~/features/folders/updateFolder/abstractions.js";
 import { DeleteFolderUseCase } from "~/features/folders/deleteFolder/abstractions.js";
+import { ListFoldersByParentIdsUseCase } from "~/features/folders/listFoldersByParentIds/abstractions.js";
+import { GetFolderAncestorsUseCase } from "~/features/folders/getFolderAncestors/abstractions.js";
+import { GetFolderLevelPermissionUseCase } from "~/features/folders/getFolderLevelPermission/abstractions.js";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import { ListCache } from "~/features/folders/cache/index.js";
 import { Folder } from "~/domain/folder/Folder.js";
@@ -163,6 +166,15 @@ function createTestPresenter(folders: Folder[] = []) {
     container.registerInstance(CreateFolderUseCase, createFolderUseCase);
     container.registerInstance(UpdateFolderUseCase, updateFolderUseCase);
     container.registerInstance(DeleteFolderUseCase, deleteFolderUseCase);
+    container.registerInstance(ListFoldersByParentIdsUseCase, {
+        execute: vi.fn().mockResolvedValue(undefined)
+    });
+    container.registerInstance(GetFolderAncestorsUseCase, {
+        execute: vi.fn().mockReturnValue([])
+    });
+    container.registerInstance(GetFolderLevelPermissionUseCase, {
+        execute: vi.fn().mockReturnValue(true)
+    });
     container.registerInstance(
         FormModelFactory,
         formModelFactory as unknown as FormModelFactory.Interface
@@ -489,7 +501,7 @@ describe("FolderTreePresenter", () => {
             expect(presenter.vm.operation.parentFolderId).toBeUndefined();
         });
 
-        it("should wire form submit to CreateFolderUseCase", async () => {
+        it("should wire submitOperation to CreateFolderUseCase", async () => {
             const { presenter, createFolderUseCase, listFolders } =
                 createTestPresenter(createFlatFolders());
 
@@ -499,22 +511,9 @@ describe("FolderTreePresenter", () => {
 
             presenter.createFolder("root-1");
 
-            const form = presenter.vm.operation.form!;
-
-            // Mock the original submit to return form data.
-            const originalSubmit = form.submit;
-            (form as any).submit = async () => {
-                // Simulate the overridden submit calling the original.
-                const data = await originalSubmit();
-                return data;
-            };
-
-            // The presenter overrides form.submit — call it.
-            await form.submit();
+            await presenter.submitOperation();
 
             expect(createFolderUseCase.execute).toHaveBeenCalledTimes(1);
-            // Verify it refreshes the folder list after creation.
-            // Initial load + refresh after create.
             expect(listFolders.execute).toHaveBeenCalledTimes(2);
         });
     });

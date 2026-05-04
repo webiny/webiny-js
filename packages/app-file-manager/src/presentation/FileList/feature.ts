@@ -1,11 +1,11 @@
 import { createFeature } from "@webiny/feature/admin";
-import { FileListPresenter as Abstraction } from "./abstractions.js";
-import { FileListPresenter } from "./FileListPresenter.js";
+import { FileManagerPresenter as Abstraction } from "./abstractions.js";
+import { FileManagerPresenter } from "./FileManagerPresenter.js";
 
-export const FileListPresenterFeature = createFeature({
-    name: "FileManager/FileListPresenter",
+export const FileManagerPresenterFeature = createFeature({
+    name: "FileManager/FileManagerPresenter",
     register(container) {
-        container.register(FileListPresenter).inSingletonScope();
+        container.register(FileManagerPresenter).inSingletonScope();
     },
     resolve(container) {
         return {

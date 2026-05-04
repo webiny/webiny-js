@@ -13,8 +13,10 @@ import { LocalStorage } from "@webiny/app/features/localStorage";
 import { ListFilesUseCase } from "../../features/listFiles/abstractions.js";
 import { FilesListCache } from "../../features/shared/abstractions.js";
 import { GetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
-import { FileListPresenter as Abstraction, type IFileListPresenter } from "./abstractions.js";
-import { FileListPresenter } from "./FileListPresenter.js";
+import { FileDetailsPresenter } from "../FileDetails/abstractions.js";
+import type { IFileDetailsPresenter } from "../FileDetails/abstractions.js";
+import { FileManagerPresenter as Abstraction, type IFileManagerPresenter } from "./abstractions.js";
+import { FileManagerPresenter } from "./FileManagerPresenter.js";
 import type { FmFile } from "../../features/shared/types.js";
 
 // ---------------------------------------------------------------------------
@@ -68,7 +70,11 @@ function createMockFolderTreePresenter(): FolderTreePresenter.Interface {
         currentFolderId: null as string | null,
         currentFolder: null,
         loading: false,
-        operation: { active: false, mode: null }
+        operation: { active: false, mode: null },
+        isRootFolder: true,
+        currentFolderTitle: "All Files",
+        childFolders: [],
+        loadingNodeIds: []
     });
 
     return {
@@ -79,6 +85,11 @@ function createMockFolderTreePresenter(): FolderTreePresenter.Interface {
         createFolder: vi.fn(),
         editFolder: vi.fn(),
         deleteFolder: vi.fn().mockResolvedValue(undefined),
+        moveFolder: vi.fn().mockResolvedValue(undefined),
+        loadChildFolders: vi.fn().mockResolvedValue(undefined),
+        canManageStructure: vi.fn().mockReturnValue(true),
+        getAncestorIds: vi.fn().mockReturnValue([]),
+        submitOperation: vi.fn().mockResolvedValue(true),
         cancelOperation: vi.fn(),
         onFolderChange: vi.fn().mockReturnValue(() => {})
     };
@@ -160,6 +171,20 @@ function createMockGetDescendantFoldersUseCase(): GetDescendantFoldersUseCase.In
     };
 }
 
+function createMockFileDetailsPresenter(): IFileDetailsPresenter {
+    return {
+        vm: {
+            file: null,
+            loading: false,
+            form: { layout: [], errors: [], isDirty: false, isValid: null },
+            previewUrl: null,
+            permissions: { canEdit: true, canDelete: true }
+        },
+        loadFile: vi.fn().mockResolvedValue(undefined),
+        saveFile: vi.fn().mockResolvedValue(undefined)
+    };
+}
+
 // ---------------------------------------------------------------------------
 // Container setup
 // ---------------------------------------------------------------------------
@@ -167,6 +192,7 @@ function createMockGetDescendantFoldersUseCase(): GetDescendantFoldersUseCase.In
 interface Mocks {
     listPresenter: ListPresenter.Interface<FmFile>;
     folderTreePresenter: FolderTreePresenter.Interface;
+    fileDetailsPresenter: IFileDetailsPresenter;
     permissions: FileManagerPermissions.Interface;
     settingsRepository: GetSettingsRepository.Interface;
     tagsRepository: ListTagsRepository.Interface;
@@ -181,6 +207,7 @@ function createMocks(): Mocks {
     return {
         listPresenter: createMockListPresenter(),
         folderTreePresenter: createMockFolderTreePresenter(),
+        fileDetailsPresenter: createMockFileDetailsPresenter(),
         permissions: createMockPermissions(),
         settingsRepository: createMockSettingsRepository(),
         tagsRepository: createMockTagsRepository(),
@@ -197,6 +224,7 @@ function createContainer(mocks: Mocks) {
 
     container.registerInstance(ListPresenter, mocks.listPresenter);
     container.registerInstance(FolderTreePresenter, mocks.folderTreePresenter);
+    container.registerInstance(FileDetailsPresenter, mocks.fileDetailsPresenter);
     container.registerInstance(FileManagerPermissions, mocks.permissions);
     container.registerInstance(GetSettingsRepository, mocks.settingsRepository);
     container.registerInstance(ListTagsRepository, mocks.tagsRepository);
@@ -207,7 +235,7 @@ function createContainer(mocks: Mocks) {
     container.registerInstance(GetDescendantFoldersUseCase, mocks.getDescendantFoldersUseCase);
 
     // Register the real FileListPresenter implementation.
-    container.register(FileListPresenter).inSingletonScope();
+    container.register(FileManagerPresenter).inSingletonScope();
 
     return container;
 }
@@ -218,7 +246,7 @@ function createContainer(mocks: Mocks) {
 
 describe("FileListPresenter", () => {
     let mocks: Mocks;
-    let presenter: IFileListPresenter;
+    let presenter: IFileManagerPresenter;
 
     beforeEach(() => {
         mocks = createMocks();
@@ -321,7 +349,7 @@ describe("FileListPresenter", () => {
         (seededMocks.localStorage.get as ReturnType<typeof vi.fn>).mockReturnValue("grid");
 
         const container = createContainer(seededMocks);
-        const seededPresenter = container.resolve(Abstraction);
+        const seededPresenter: IFileManagerPresenter = container.resolve(Abstraction);
 
         expect(seededPresenter.vm.viewMode).toBe("grid");
     });

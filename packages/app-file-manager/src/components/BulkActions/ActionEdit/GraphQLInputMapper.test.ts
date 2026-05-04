@@ -12,24 +12,28 @@ const fileMock: FileItem = {
     createdOn: new Date().toISOString(),
     createdBy: {
         id: "123",
-        displayName: "123"
+        displayName: "123",
+        type: "admin"
     },
     savedOn: new Date().toISOString(),
     savedBy: {
         id: "123",
-        displayName: "123"
+        displayName: "123",
+        type: "admin"
     },
     modifiedOn: new Date().toISOString(),
     modifiedBy: {
         id: "123",
-        displayName: "123"
+        displayName: "123",
+        type: "admin"
     },
     src: `https://demo.website.com/files/12345678/filenameA.png`,
     key: `12345678/filenameA.png`,
     name: "filenameA.png",
     size: 123456,
     type: "image/png",
-    tags: ["sketch", "file-a", "webiny"]
+    tags: ["sketch", "file-a", "webiny"],
+    metadata: {}
 };
 
 describe("GraphQLInputMapper", () => {

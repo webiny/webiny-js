@@ -1,15 +1,16 @@
 import React, { useCallback } from "react";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
-import { FileManagerViewConfig, useFile, useFileManagerView } from "~/index.js";
+import { FileManagerViewConfig, useFile } from "~/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 
 const { Browser } = FileManagerViewConfig;
 
 export const Settings = () => {
     const { file } = useFile();
-    const view = useFileManagerView();
+    const { actions } = useFileManagerPresenter();
 
     const showDetails = useCallback(() => {
-        view.showFileDetails(file.id);
+        actions.showFileDetails(file.id);
     }, [file.id]);
 
     return (

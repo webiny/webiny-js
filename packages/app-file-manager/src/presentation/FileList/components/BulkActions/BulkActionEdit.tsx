@@ -7,7 +7,7 @@ import omit from "lodash/omit.js";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
 import type { CmsModelField } from "@webiny/app-headless-cms-common/types/index.js";
 import { BulkAction, getFilesLabel } from "./useBulkActionWorker.js";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { UpdateFileFeature } from "~/features/updateFile/feature.js";
 import { useFileModel } from "~/hooks/useFileModel.js";
 import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
@@ -24,7 +24,7 @@ export const BulkActionEdit = observer(function BulkActionEdit() {
     const config = useFileManagerViewConfig();
     const { ButtonDefault } = useButtons();
 
-    const { vm } = useFileListPresenter();
+    const { vm } = useFileManagerPresenter();
     const { useCase: updateFileUseCase } = useFeature(UpdateFileFeature);
 
     const { useWorker, useDialog } = BulkAction;

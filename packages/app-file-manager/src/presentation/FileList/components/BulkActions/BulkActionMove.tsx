@@ -5,7 +5,7 @@ import { useMoveToFolderDialog } from "@webiny/app-aco";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { BulkAction, getFilesLabel } from "./useBulkActionWorker.js";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { UpdateFileFeature } from "~/features/updateFile/feature.js";
 import { ROOT_FOLDER } from "~/constants.js";
 
@@ -16,7 +16,7 @@ export const BulkActionMove = observer(function BulkActionMove() {
     const { showConfirmationDialog, showResultsDialog } = useDialog();
     const { showDialog: showMoveDialog } = useMoveToFolderDialog();
 
-    const { vm } = useFileListPresenter();
+    const { vm } = useFileManagerPresenter();
     const { useCase: updateFileUseCase } = useFeature(UpdateFileFeature);
 
     const currentFolderId = vm.folders.currentFolderId;

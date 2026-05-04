@@ -3,18 +3,20 @@ import { Heading, Icon, IconButton, Skeleton } from "@webiny/admin-ui";
 import { ReactComponent as HomeIcon } from "@webiny/icons/home.svg";
 import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 import { FolderProvider } from "@webiny/app-aco";
 import { OptionsMenu } from "@webiny/app-admin";
 import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
+import { toFolderDto } from "~/presentation/adapters/toFolderDto.js";
 
 export const Title = () => {
-    const { isRootFolder, listTitle, currentFolder } = useFileManagerView();
+    const { vm } = useFileManagerPresenter();
     const { browser } = useFileManagerViewConfig();
 
+    const { isRootFolder, currentFolderTitle, currentFolder } = vm.folders;
     const icon = isRootFolder ? <HomeIcon /> : <FolderIcon />;
 
-    if (!listTitle) {
+    if (!currentFolderTitle) {
         return (
             <div className={"flex pt-md px-md items-center"}>
                 <Skeleton size={"xl"} />
@@ -25,13 +27,13 @@ export const Title = () => {
     return (
         <div className={"flex pt-md px-lg items-center"}>
             <div className={"flex gap-sm items-center truncate"}>
-                <Icon icon={icon} label={listTitle} size={"md"} color={"neutral-strong"} />
+                <Icon icon={icon} label={currentFolderTitle} size={"md"} color={"neutral-strong"} />
                 <Heading level={4} as={"h1"} className={"truncate"}>
-                    {listTitle}
+                    {currentFolderTitle}
                 </Heading>
             </div>
             {currentFolder && !isRootFolder && (
-                <FolderProvider folder={currentFolder}>
+                <FolderProvider folder={toFolderDto(currentFolder)}>
                     <OptionsMenu
                         actions={browser.folder.actions}
                         data-testid={"folder.title.menu-action"}

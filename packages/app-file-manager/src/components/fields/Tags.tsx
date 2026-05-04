@@ -1,14 +1,15 @@
 import React, { useMemo } from "react";
 import { Label, MultiAutoComplete } from "@webiny/admin-ui";
 import { useBind } from "@webiny/form";
-import { useFileManagerApi, useFileManagerView } from "~/index.js";
+import { useFileManagerApi } from "~/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 import { THREAT_SCAN } from "~/modules/Enterprise/constants.js";
 import { useFileOrUndefined } from "./useFileOrUndefined.js";
 
 export const Tags = () => {
     const { file } = useFileOrUndefined();
     const { canEdit } = useFileManagerApi();
-    const { tags } = useFileManagerView();
+    const { vm } = useFileManagerPresenter();
 
     const bind = useBind({
         name: "tags"
@@ -25,7 +26,7 @@ export const Tags = () => {
             {...bind}
             values={values}
             onValuesChange={bind.onChange}
-            options={tags.allTags.map(tagItem => tagItem.tag)}
+            options={vm.tags.map(tagItem => tagItem.tag)}
             label={
                 <Label text={"Tags"} hint={"Type to add a new tag or select from suggestions."} />
             }

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef } from "react";
 import type { CallbackParams } from "@webiny/app-admin";
 import { useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 import type { FileItem } from "~/types.js";
 
 export interface BulkActionConfig {
@@ -50,17 +50,18 @@ export const BaseBulkAction = ({
 };
 
 const useWorker = () => {
-    const { selected, setSelected } = useFileManagerView();
+    const { vm, actions } = useFileManagerPresenter();
     const { current: worker } = useRef(new Worker<FileItem>());
+
+    const selected = vm.list.rows.filter(f => vm.list.selection.selectedIds.has(f.id));
 
     useEffect(() => {
         worker.items = selected;
     }, [selected.length]);
 
-    // Reset selected items in both useFileManagerView and Worker
     const resetItems = useCallback(() => {
         worker.items = [];
-        setSelected([]);
+        actions.selection.deselectAll();
     }, []);
 
     return {

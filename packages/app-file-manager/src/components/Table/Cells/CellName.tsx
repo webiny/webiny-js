@@ -1,12 +1,12 @@
 import React from "react";
 
 import { FolderIcon, FolderSharedIcon } from "@webiny/app-aco";
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
 import { cn, Text } from "@webiny/admin-ui";
 import { CellThumbnail } from "./CellThumbnail.js";
 import { FileProvider } from "~/contexts/FileProvider.js";
-import type { FileItem } from "~/types.js";
+import type { FmFile } from "~/features/shared/types.js";
 import type { FolderDto } from "@webiny/app-aco";
 
 interface DefaultProps {
@@ -39,7 +39,7 @@ export const FolderCellName = ({ folder, onClick }: FolderCellNameProps) => {
 };
 
 interface FileCellNameProps extends DefaultProps {
-    file: FileItem;
+    file: FmFile;
 }
 
 export const FileCellName = ({ file, onClick }: FileCellNameProps) => {
@@ -69,11 +69,11 @@ export const FileCellName = ({ file, onClick }: FileCellNameProps) => {
 export const CellName = () => {
     const { useTableRow, isFolderRow } = FileManagerViewConfig.Browser.Table.Column;
     const { row } = useTableRow();
-    const { showFileDetails, setFolderId } = useFileManagerView();
+    const { actions } = useFileManagerPresenter();
 
     if (isFolderRow(row)) {
-        return <FolderCellName folder={row.data} onClick={setFolderId} />;
+        return <FolderCellName folder={row.data} onClick={id => actions.folders.selectFolder(id)} />;
     }
 
-    return <FileCellName file={row.data} onClick={showFileDetails} />;
+    return <FileCellName file={row.data} onClick={id => actions.showFileDetails(id)} />;
 };

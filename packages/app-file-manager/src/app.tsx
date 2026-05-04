@@ -1,5 +1,6 @@
 import React from "react";
-import { RegisterFeature } from "@webiny/app-admin";
+import { AdminConfig, RegisterFeature } from "@webiny/app-admin";
+import { FolderTreeFieldRenderer } from "@webiny/app-aco/presentation/folderTree/FolderTreeFieldRenderer.js";
 import { SettingsModule } from "~/modules/Settings/index.js";
 import { FileManagerApiProviderModule } from "~/modules/FileManagerApiProvider/index.js";
 import { FileManagerRendererModule } from "~/modules/FileManagerRenderer/index.js";
@@ -16,8 +17,7 @@ import { FileUploaderFeature } from "~/features/fileUploader/index.js";
 import { ListTagsFeature } from "~/features/tags/index.js";
 import { GetSettingsFeature } from "~/features/settings/index.js";
 import { SharedCacheFeature } from "~/features/shared/index.js";
-import { FileListPresenterFeature } from "~/presentation/FileList/index.js";
-import { FileDetailsPresenterFeature } from "~/presentation/FileDetails/index.js";
+import { FileManagerPresenterFeature } from "~/presentation/FileList/index.js";
 import { FileManagerRoutes } from "~/modules/FileManagerRoutes.js";
 
 export const FileManager = () => {
@@ -36,8 +36,14 @@ export const FileManager = () => {
             <RegisterFeature feature={GetFileFeature} />
             <RegisterFeature feature={ResolveImageToolFeature} />
             {/* Presentation features. */}
-            <RegisterFeature feature={FileListPresenterFeature} />
-            <RegisterFeature feature={FileDetailsPresenterFeature} />
+            <RegisterFeature feature={FileManagerPresenterFeature} />
+            {/* Field renderers. */}
+            <AdminConfig>
+                <AdminConfig.Form.FieldRenderer
+                    name={"folderTree"}
+                    component={FolderTreeFieldRenderer}
+                />
+            </AdminConfig>
             {/* Legacy modules. */}
             <FileManagerRoutes />
             <SettingsModule />

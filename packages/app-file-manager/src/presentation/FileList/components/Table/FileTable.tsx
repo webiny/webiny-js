@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-ui";
 import { createRecordsData, Table as AcoTable } from "@webiny/app-aco";
 import type { FolderTableRow, RecordTableRow } from "@webiny/app-aco";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
 import type { FmFile } from "~/features/shared/types.js";
 import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
@@ -59,7 +59,7 @@ const toDataTableSorting = (
  * wiring sort and selection actions back to the presenter.
  */
 export const FileTable = observer(function FileTable() {
-    const presenter = useFileListPresenter();
+    const presenter = useFileManagerPresenter();
     const { browser } = useFileManagerViewConfig();
     const { vm, actions } = presenter;
 

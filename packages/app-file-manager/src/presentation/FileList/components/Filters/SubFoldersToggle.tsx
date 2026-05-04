@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import { Switch } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 
 const t = i18n.ns("app-file-manager/presentation/sub-folders-toggle");
 
@@ -12,7 +12,7 @@ const t = i18n.ns("app-file-manager/presentation/sub-folders-toggle");
  * to expand the folder scope via GetDescendantFoldersUseCase.
  */
 export const SubFoldersToggle = observer(function SubFoldersToggle() {
-    const { vm, actions } = useFileListPresenter();
+    const { vm, actions } = useFileManagerPresenter();
 
     const checked = vm.list.filters["includeSubFolders"] === true;
 

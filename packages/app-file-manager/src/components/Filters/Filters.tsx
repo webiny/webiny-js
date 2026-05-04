@@ -1,10 +1,11 @@
 import React from "react";
 import type { FiltersOnSubmit } from "@webiny/app-admin";
 import { Filters as BaseFilters } from "@webiny/app-admin";
-import { useFileManagerView, useFileManagerViewConfig } from "~/index.js";
+import { useFileManagerViewConfig } from "~/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 
 export const Filters = () => {
-    const { showingFilters, setFilters } = useFileManagerView();
+    const { vm, actions } = useFileManagerPresenter();
     const { browser } = useFileManagerViewConfig();
 
     const applyFilters: FiltersOnSubmit = data => {
@@ -16,8 +17,15 @@ export const Filters = () => {
             (data, converter) => converter(data),
             data
         );
-        setFilters(convertedFilters);
+
+        for (const [key, value] of Object.entries(convertedFilters)) {
+            if (value !== undefined) {
+                actions.filter.set(key, value);
+            }
+        }
     };
 
-    return <BaseFilters filters={browser.filters} show={showingFilters} onChange={applyFilters} />;
+    return (
+        <BaseFilters filters={browser.filters} show={vm.showingFilters} onChange={applyFilters} />
+    );
 };

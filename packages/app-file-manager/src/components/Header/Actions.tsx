@@ -1,11 +1,10 @@
 import React, { useCallback } from "react";
 import { Button, type ButtonProps, IconButton, Tooltip } from "@webiny/admin-ui";
-import { useCreateDialog } from "@webiny/app-aco";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as FileUploadIcon } from "@webiny/icons/file_upload.svg";
 import { ReactComponent as GridIcon } from "@webiny/icons/grid_on.svg";
 import { ReactComponent as TableIcon } from "@webiny/icons/format_list_bulleted.svg";
-import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
 import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext/index.js";
 import type { BrowseFilesHandler, HeaderProps } from "~/components/Header/Header.js";
 import { FiltersToggle } from "@webiny/app-admin";
@@ -13,8 +12,10 @@ import { FiltersToggle } from "@webiny/app-admin";
 type ActionsProps = Pick<HeaderProps, "browseFiles">;
 
 const FileAction = ({ browseFiles }: ActionsProps) => {
-    const view = useFileManagerView();
+    const { vm, actions } = useFileManagerPresenter();
     const fileManager = useFileManagerApi();
+
+    const selectedFiles = vm.list.rows.filter(f => vm.list.selection.selectedIds.has(f.id));
 
     const renderUploadFileAction = useCallback(
         ({ browseFiles }: BrowseFilesHandler) => {
@@ -33,12 +34,12 @@ const FileAction = ({ browseFiles }: ActionsProps) => {
         [fileManager.canCreate]
     );
 
-    if (view.hasOnSelectCallback && view.selected.length > 0) {
+    if (vm.isOverlay && selectedFiles.length > 0) {
         return (
             <Button
-                onClick={() => view.onChange(view.selected)}
+                onClick={() => actions.confirmSelection()}
                 size={"md"}
-                text={`Select ${view.multiple && `(${view.selected.length})`}`}
+                text={`Select ${vm.multiple && `(${selectedFiles.length})`}`}
             />
         );
     }
@@ -49,12 +50,12 @@ const FileAction = ({ browseFiles }: ActionsProps) => {
 };
 
 const FolderAction = () => {
-    const view = useFileManagerView();
-    const { showDialog: showCreateFolderDialog } = useCreateDialog();
+    const { vm, actions } = useFileManagerPresenter();
 
     const onCreateFolder = useCallback(() => {
-        showCreateFolderDialog({ currentParentId: view.folderId });
-    }, [view.folderId]);
+        const parentId = vm.folders.currentFolderId;
+        actions.folders.createFolder(parentId ?? undefined);
+    }, [vm.folders.currentFolderId]);
 
     return (
         <Button
@@ -69,18 +70,20 @@ const FolderAction = () => {
 };
 
 const LayoutSwitchAction = () => {
-    const view = useFileManagerView();
+    const { vm, actions } = useFileManagerPresenter();
+
+    const isTable = vm.viewMode === "table";
 
     return (
         <Tooltip
             side={"bottom"}
-            content={view.listTable ? "Switch to Grid" : "Switch to Table"}
+            content={isTable ? "Switch to Grid" : "Switch to Table"}
             trigger={
                 <IconButton
                     variant={"ghost"}
                     size={"md"}
-                    icon={view.listTable ? <GridIcon /> : <TableIcon />}
-                    onClick={() => view.setListTable(!view.listTable)}
+                    icon={isTable ? <GridIcon /> : <TableIcon />}
+                    onClick={() => actions.setViewMode(isTable ? "grid" : "table")}
                 />
             }
         />
@@ -88,20 +91,20 @@ const LayoutSwitchAction = () => {
 };
 
 const ToggleFiltersAction = () => {
-    const view = useFileManagerView();
+    const { vm, actions } = useFileManagerPresenter();
 
     const toggleFilters = () => {
-        if (view.showingFilters) {
-            view.hideFilters();
+        if (vm.showingFilters) {
+            actions.hideFilters();
         } else {
-            view.showFilters();
+            actions.showFilters();
         }
     };
 
     return (
         <FiltersToggle
             onFiltersToggle={toggleFilters}
-            showingFilters={view.showingFilters}
+            showingFilters={vm.showingFilters}
             data-testid="fm.list-entries.toggle-filters"
         />
     );

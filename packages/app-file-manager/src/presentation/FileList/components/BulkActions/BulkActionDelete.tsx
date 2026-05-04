@@ -4,7 +4,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
 import { BulkAction, getFilesLabel } from "./useBulkActionWorker.js";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { DeleteFileFeature } from "~/features/deleteFile/feature.js";
 
 export const BulkActionDelete = observer(function BulkActionDelete() {
@@ -13,7 +13,7 @@ export const BulkActionDelete = observer(function BulkActionDelete() {
     const worker = useWorker();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
-    const { vm } = useFileListPresenter();
+    const { vm } = useFileManagerPresenter();
     const { useCase: deleteFileUseCase } = useFeature(DeleteFileFeature);
 
     const filesLabel = useMemo(() => {

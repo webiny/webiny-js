@@ -6,11 +6,15 @@ import {
     type IFolderTreeViewModel,
     type IFolderOperationState
 } from "./abstractions.js";
+import { ROOT_FOLDER } from "~/constants.js";
 import { FoldersCache, FoldersContext } from "~/features/folders/abstractions.js";
 import { ListFoldersUseCase } from "~/features/folders/listFolders/abstractions.js";
+import { ListFoldersByParentIdsUseCase } from "~/features/folders/listFoldersByParentIds/abstractions.js";
 import { CreateFolderUseCase } from "~/features/folders/createFolder/abstractions.js";
 import { UpdateFolderUseCase } from "~/features/folders/updateFolder/abstractions.js";
 import { DeleteFolderUseCase } from "~/features/folders/deleteFolder/abstractions.js";
+import { GetFolderAncestorsUseCase } from "~/features/folders/getFolderAncestors/abstractions.js";
+import { GetFolderLevelPermissionUseCase } from "~/features/folders/getFolderLevelPermission/abstractions.js";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { Folder } from "~/domain/folder/Folder.js";
 
@@ -19,6 +23,7 @@ type FolderChangeCallback = (folderId: string | null) => void;
 class FolderTreePresenterImpl implements Abstraction.Interface {
     private currentFolderId: string | null = null;
     private loading = false;
+    private _loadingNodeIds: string[] = [];
     private operation: IFolderOperationState = { active: false, mode: null };
     private callbacks: Set<FolderChangeCallback> = new Set();
     private disposed = false;
@@ -27,9 +32,12 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
         private foldersContext: FoldersContext.Interface,
         private foldersCache: FoldersCache.Interface,
         private listFoldersUseCase: ListFoldersUseCase.Interface,
+        private listFoldersByParentIdsUseCase: ListFoldersByParentIdsUseCase.Interface,
         private createFolderUseCase: CreateFolderUseCase.Interface,
         private updateFolderUseCase: UpdateFolderUseCase.Interface,
         private deleteFolderUseCase: DeleteFolderUseCase.Interface,
+        private getFolderAncestorsUseCase: GetFolderAncestorsUseCase.Interface,
+        private getFolderLevelPermissionUseCase: GetFolderLevelPermissionUseCase.Interface,
         private formModelFactory: FormModelFactory.Interface
     ) {
         makeAutoObservable<FolderTreePresenterImpl, "callbacks">(
@@ -38,7 +46,6 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
             { autoBind: true }
         );
 
-        // Fire callbacks when currentFolderId changes.
         reaction(
             () => this.currentFolderId,
             folderId => {
@@ -48,16 +55,23 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
             }
         );
 
-        // Load folders on construction.
         this.loadFolders();
     }
 
     get vm(): IFolderTreeViewModel {
+        const tree = this.buildTree();
+        const currentFolder = this.findNode(this.currentFolderId, tree);
         return {
-            tree: this.buildTree(),
+            tree,
             currentFolderId: this.currentFolderId,
-            currentFolder: this.findNode(this.currentFolderId, this.buildTree()),
+            currentFolder,
+            isRootFolder: this.currentFolderId === null,
+            currentFolderTitle: currentFolder?.name ?? "All Files",
+            childFolders: currentFolder
+                ? currentFolder.children
+                : tree.filter(n => n.id !== ROOT_FOLDER),
             loading: this.loading,
+            loadingNodeIds: this._loadingNodeIds,
             operation: this.operation
         };
     }
@@ -73,21 +87,72 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
         };
     }
 
+    async loadChildFolders(parentIds: string[]): Promise<void> {
+        const fetchableIds = parentIds.filter(id => id !== ROOT_FOLDER && id !== "0");
+        if (fetchableIds.length === 0) {
+            return;
+        }
+
+        runInAction(() => {
+            this._loadingNodeIds = fetchableIds;
+        });
+
+        try {
+            await this.listFoldersByParentIdsUseCase.execute(fetchableIds);
+        } finally {
+            runInAction(() => {
+                this._loadingNodeIds = [];
+            });
+        }
+    }
+
+    async moveFolder(folderId: string, targetParentId: string | null): Promise<void> {
+        const folders = this.foldersCache.getItems();
+        const folder = folders.find(f => f.id === folderId);
+        if (!folder) {
+            return;
+        }
+
+        await this.updateFolderUseCase.execute({
+            id: folderId,
+            title: folder.title,
+            slug: folder.slug,
+            type: this.foldersContext.type,
+            parentId: targetParentId,
+            permissions: folder.permissions
+        });
+
+        await this.loadFolders();
+    }
+
+    canManageStructure(folderId: string): boolean {
+        return this.getFolderLevelPermissionUseCase.execute(folderId, "canManageStructure");
+    }
+
+    getAncestorIds(folderId: string): string[] {
+        return this.getFolderAncestorsUseCase.execute(folderId).map(f => f.id);
+    }
+
     createFolder(parentFolderId?: string): void {
         const form = this.formModelFactory.create({
             fields: fields => ({
-                title: fields.text().label("Name").required("Name is required"),
-                slug: fields.text().label("Slug").required("Slug is required")
+                title: fields.text().label("Title").required("Title is required"),
+                slug: fields.text().label("Slug").required("Slug is required"),
+                parentId: fields
+                    .text()
+                    .label("Parent folder")
+                    .renderer("folderTree" as any)
             }),
-            layout: layout => [layout.row("title"), layout.row("slug")]
+            layout: layout => [layout.row("title"), layout.row("slug"), layout.row("parentId")]
         });
 
-        // Auto-generate slug from title.
-        form.field("title").addAfterChange((_prev, next) => {
+        form.setData({ parentId: parentFolderId ?? null });
+
+        form.field("title").addAfterChange(value => {
             const currentSlug = form.field("slug").getValue<string>();
             if (!currentSlug) {
                 form.field("slug").setValue(
-                    slugify(String(next ?? ""), {
+                    slugify(String(value ?? ""), {
                         replacement: "-",
                         lower: true,
                         remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
@@ -96,32 +161,6 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
                 );
             }
         });
-
-        // Wire onSubmit to CreateFolderUseCase.
-        const originalSubmit = form.submit.bind(form);
-        form.submit = async <T = Record<string, unknown>>(): Promise<T | false> => {
-            const data = await originalSubmit<T>();
-            if (data === false) {
-                return false;
-            }
-
-            await this.createFolderUseCase.execute({
-                title: (data as Record<string, unknown>).title as string,
-                slug: (data as Record<string, unknown>).slug as string,
-                type: this.foldersContext.type,
-                parentId: parentFolderId ?? null,
-                permissions: []
-            });
-
-            // Refresh the folder list.
-            await this.loadFolders();
-
-            runInAction(() => {
-                this.operation = { active: false, mode: null };
-            });
-
-            return data;
-        };
 
         this.operation = {
             active: true,
@@ -148,39 +187,54 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
 
         form.setData({ title: folder.title, slug: folder.slug });
 
-        // Wire onSubmit to UpdateFolderUseCase.
-        const originalSubmit = form.submit.bind(form);
-        form.submit = async <T = Record<string, unknown>>(): Promise<T | false> => {
-            const data = await originalSubmit<T>();
-            if (data === false) {
-                return false;
-            }
-
-            await this.updateFolderUseCase.execute({
-                id: folderId,
-                title: (data as Record<string, unknown>).title as string,
-                slug: (data as Record<string, unknown>).slug as string,
-                type: this.foldersContext.type,
-                parentId: folder.parentId,
-                permissions: folder.permissions
-            });
-
-            // Refresh the folder list.
-            await this.loadFolders();
-
-            runInAction(() => {
-                this.operation = { active: false, mode: null };
-            });
-
-            return data;
-        };
-
         this.operation = {
             active: true,
             mode: "edit",
             folderId,
             form
         };
+    }
+
+    async submitOperation(): Promise<boolean> {
+        const { mode, form, parentFolderId, folderId } = this.operation;
+        if (!form || !mode) {
+            return false;
+        }
+
+        const data = await form.submit<{ title: string; slug: string; parentId?: string | null }>();
+        if (!data) {
+            return false;
+        }
+
+        if (mode === "create") {
+            await this.createFolderUseCase.execute({
+                title: data.title,
+                slug: data.slug,
+                type: this.foldersContext.type,
+                parentId: data.parentId ?? parentFolderId ?? null,
+                permissions: []
+            });
+        } else if (mode === "edit" && folderId) {
+            const folders = this.foldersCache.getItems();
+            const folder = folders.find(f => f.id === folderId);
+
+            await this.updateFolderUseCase.execute({
+                id: folderId,
+                title: data.title,
+                slug: data.slug,
+                type: this.foldersContext.type,
+                parentId: folder?.parentId ?? null,
+                permissions: folder?.permissions ?? []
+            });
+        }
+
+        await this.loadFolders();
+
+        runInAction(() => {
+            this.operation = { active: false, mode: null };
+        });
+
+        return true;
     }
 
     async deleteFolder(folderId: string): Promise<void> {
@@ -195,13 +249,10 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
         };
 
         await this.deleteFolderUseCase.execute(folderId);
-
-        // Refresh the folder list.
         await this.loadFolders();
 
         runInAction(() => {
             this.operation = { active: false, mode: null };
-            // Navigate to parent folder after deletion.
             this.currentFolderId = parentId;
         });
     }
@@ -232,7 +283,6 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
     private buildTreeFromFolders(folders: Folder[]): IFolderTreeNode[] {
         const nodeMap = new Map<string, IFolderTreeNode>();
 
-        // Create nodes.
         for (const folder of folders) {
             nodeMap.set(folder.id, {
                 id: folder.id,
@@ -243,7 +293,6 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
             });
         }
 
-        // Build tree.
         const roots: IFolderTreeNode[] = [];
         for (const folder of folders) {
             const node = nodeMap.get(folder.id)!;
@@ -282,9 +331,12 @@ export const FolderTreePresenter = Abstraction.createImplementation({
         FoldersContext,
         FoldersCache,
         ListFoldersUseCase,
+        ListFoldersByParentIdsUseCase,
         CreateFolderUseCase,
         UpdateFolderUseCase,
         DeleteFolderUseCase,
+        GetFolderAncestorsUseCase,
+        GetFolderLevelPermissionUseCase,
         FormModelFactory
     ]
 });

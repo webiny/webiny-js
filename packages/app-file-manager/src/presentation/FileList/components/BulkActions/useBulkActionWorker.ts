@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { CallbackParams } from "@webiny/app-admin";
 import { useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
-import { useFileListPresenter } from "../../FileListPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import type { FmFile } from "~/features/shared/types.js";
 import { getFilesLabel } from "./BulkActionBar.js";
 
 // Hook that bridges the new presenter-based selection with the Worker pattern.
 const useWorker = () => {
-    const { vm, actions } = useFileListPresenter();
+    const { vm, actions } = useFileManagerPresenter();
     const { current: worker } = useRef(new Worker<FmFile>());
 
     // Derive selected file objects from the presenter's selection IDs and rows.

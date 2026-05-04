@@ -5,7 +5,7 @@ import { OverlayLoader } from "@webiny/admin-ui";
 import { Tabs } from "@webiny/admin-ui";
 import { Grid } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
-import { useFileDetailsPresenter } from "../FileDetailsPresenterProvider.js";
+import { useFileManagerPresenter } from "../../FileList/FileManagerPresenterProvider.js";
 import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
 import { FileProvider } from "~/contexts/FileProvider.js";
 import { Content } from "~/components/FileDetails/components/Content.js";
@@ -14,8 +14,6 @@ import { Actions } from "~/components/FileDetails/components/Actions.js";
 import { Description } from "~/components/FileDetails/components/Description.js";
 import { Extensions } from "~/components/FileDetails/components/Extensions.js";
 import { useFileModel } from "~/hooks/useFileModel.js";
-import type { FileItem } from "~/types.js";
-import type { FmFile } from "~/features/shared/types.js";
 
 /**
  * Parse the fileDetails.width config string.
@@ -31,61 +29,20 @@ const parseWidth = (width: string) => {
 };
 
 /**
- * Adapt FmFile from the presenter vm to the legacy FileItem shape
- * expected by FileProvider and existing action components.
- */
-const toFileItem = (file: FmFile): FileItem => {
-    return {
-        id: file.id,
-        name: file.name ?? "",
-        key: file.key ?? "",
-        src: file.src ?? "",
-        size: file.size ?? 0,
-        type: file.type ?? "",
-        tags: file.tags ?? [],
-        createdOn:
-            typeof file.createdOn === "string" ? file.createdOn : file.createdOn.toISOString(),
-        createdBy: {
-            id: file.createdBy?.id ?? "",
-            displayName: file.createdBy?.displayName ?? ""
-        },
-        savedOn: typeof file.savedOn === "string" ? file.savedOn : file.savedOn.toISOString(),
-        savedBy: {
-            id: (file as any).savedBy?.id ?? "",
-            displayName: (file as any).savedBy?.displayName ?? ""
-        },
-        modifiedOn: (file as any).modifiedOn
-            ? typeof (file as any).modifiedOn === "string"
-                ? (file as any).modifiedOn
-                : (file as any).modifiedOn.toISOString()
-            : "",
-        modifiedBy: {
-            id: (file as any).modifiedBy?.id ?? "",
-            displayName: (file as any).modifiedBy?.displayName ?? ""
-        },
-        location: file.location ?? { folderId: "" },
-        metadata: file.metadata,
-        accessControl: file.accessControl,
-        extensions: (file as any).extensions
-    } as FileItem;
-};
-
-interface FileDetailsDrawerProps {
-    open: boolean;
-    onClose: () => void;
-}
-
-/**
  * Inner content of the file details drawer.
  * Renders the two-panel layout: left (actions + preview), right (form fields).
  */
 const FileDetailsContent = observer(function FileDetailsContent() {
-    const presenter = useFileDetailsPresenter();
-    const { fileDetails } = useFileManagerViewConfig();
+    const { vm } = useFileManagerPresenter();
+    const fileDetails = vm.fileDetails;
+    const { fileDetails: fileDetailsConfig } = useFileManagerViewConfig();
     const fileModel = useFileModel();
-    const { vm } = presenter;
 
-    const { leftFlex, rightFlex } = parseWidth(fileDetails.width);
+    if (!fileDetails) {
+        return null;
+    }
+
+    const { leftFlex, rightFlex } = parseWidth(fileDetailsConfig.width);
 
     const extensionFields = useMemo(() => {
         const fields = fileModel.fields.find(field => field.fieldId === "extensions");
@@ -95,18 +52,16 @@ const FileDetailsContent = observer(function FileDetailsContent() {
         return fields.settings.fields;
     }, [fileModel]);
 
-    // Basic fields from the FormView (driven by presenter vm.form).
     const basicFieldsElement = (
         <div className={"p-lg"}>
-            <FormView form={vm.form} />
+            <FormView form={fileDetails.vm.form} />
         </div>
     );
 
-    // ConfigAPI-registered fields.
     const configFieldsElement =
-        fileDetails.fields.length > 0 ? (
+        fileDetailsConfig.fields.length > 0 ? (
             <Grid>
-                {fileDetails.fields.map(field => (
+                {fileDetailsConfig.fields.map(field => (
                     <Grid.Column span={12} key={field.name}>
                         {field.element}
                     </Grid.Column>
@@ -114,7 +69,6 @@ const FileDetailsContent = observer(function FileDetailsContent() {
             </Grid>
         ) : null;
 
-    // Extension fields from the CMS model.
     const extensionFieldsElement =
         extensionFields.length > 0 ? <Extensions model={fileModel} /> : null;
 
@@ -127,7 +81,7 @@ const FileDetailsContent = observer(function FileDetailsContent() {
                 </div>
             </Content.Panel>
             <Content.Panel flex={rightFlex}>
-                {fileDetails.groupFields ? (
+                {fileDetailsConfig.groupFields ? (
                     <Tabs
                         size={"md"}
                         spacing={"lg"}
@@ -154,7 +108,7 @@ const FileDetailsContent = observer(function FileDetailsContent() {
                     />
                 ) : (
                     <div className={"p-lg"}>
-                        <FormView form={vm.form} />
+                        <FormView form={fileDetails.vm.form} />
                         {configFieldsElement && (
                             <div className={"mt-lg"}>{configFieldsElement}</div>
                         )}
@@ -169,57 +123,46 @@ const FileDetailsContent = observer(function FileDetailsContent() {
 });
 
 /**
- * File Details drawer component driven by the FileDetailsPresenter.
- * Uses observer() to reactively render from the presenter's vm.
+ * File Details drawer component driven by the FileManagerPresenter.
+ * Open when vm.fileDetails is non-null, closed otherwise.
  */
-export const FileDetailsDrawer = observer(function FileDetailsDrawer({
-    open,
-    onClose
-}: FileDetailsDrawerProps) {
-    const presenter = useFileDetailsPresenter();
-    const { fileDetails } = useFileManagerViewConfig();
-    const { vm } = presenter;
+export const FileDetailsDrawer = observer(function FileDetailsDrawer() {
+    const { vm, actions } = useFileManagerPresenter();
+    const fileDetails = vm.fileDetails;
+    const { fileDetails: fileDetailsConfig } = useFileManagerViewConfig();
 
-    const { drawerWidth } = parseWidth(fileDetails.width);
+    const { drawerWidth } = parseWidth(fileDetailsConfig.width);
 
-    // Adapt FmFile to FileItem for the FileProvider context.
-    const fileItem = useMemo(() => {
-        if (!vm.file) {
-            return null;
-        }
-        return toFileItem(vm.file);
-    }, [vm.file]);
-
-    if (!vm.file || !fileItem) {
+    if (!fileDetails || !fileDetails.vm.file) {
         return null;
     }
 
     return (
-        <FileProvider file={fileItem}>
+        <FileProvider file={fileDetails.vm.file}>
             <Drawer
-                title={vm.file.name ?? ""}
+                title={fileDetails.vm.file.name ?? ""}
                 description={<Description />}
                 width={drawerWidth}
-                open={open}
+                open={true}
                 modal={true}
                 bodyPadding={false}
                 headerSeparator={true}
                 footerSeparator={true}
-                onClose={onClose}
+                onClose={actions.hideFileDetails}
                 data-testid={"fm.file-details.drawer"}
                 actions={
                     <>
                         <Drawer.CancelButton text={"Cancel"} />
-                        {vm.permissions.canEdit && (
+                        {fileDetails.vm.permissions.canEdit && (
                             <Drawer.ConfirmButton
                                 text={"Update"}
-                                onClick={() => presenter.saveFile()}
+                                onClick={() => fileDetails.saveFile()}
                             />
                         )}
                     </>
                 }
             >
-                {vm.loading && <OverlayLoader />}
+                {fileDetails.vm.loading && <OverlayLoader />}
                 <FileDetailsContent />
             </Drawer>
         </FileProvider>
