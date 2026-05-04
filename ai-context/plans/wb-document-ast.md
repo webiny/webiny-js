@@ -20,11 +20,11 @@ The website builder stores page content in a flat structure: an `elements` map (
 
 ```ts
 const ast = DocumentAST.fromDocument(document);
-const json = ast.toJSON();              // AI-friendly AST for LLM prompt
+const json = ast.toJSON(); // AI-friendly AST for LLM prompt
 
 // After LLM responds and tool pipeline resolves tool envelopes:
-const ops = ast.applyPatch(actions, { components });  // Returns IDocumentOperation[]
-ops.forEach(op => op.apply(document));                 // Apply to document
+const ops = ast.applyPatch(actions, { components }); // Returns IDocumentOperation[]
+ops.forEach(op => op.apply(document)); // Apply to document
 // `components` is Record<string, ComponentManifest>, needed by ElementFactory for createElement actions
 // Can be omitted if patch only contains update/remove/move actions
 ```
@@ -38,9 +38,9 @@ interface DocumentASTOutput {
 }
 
 interface ASTNode {
-  id: string;           // Element ID
-  type: string;         // Human-readable: "richText", "image", "box", "grid", etc.
-  component: string;    // Original: "Webiny/Lexical", "Webiny/Image", etc.
+  id: string; // Element ID
+  type: string; // Human-readable: "richText", "image", "box", "grid", etc.
+  component: string; // Original: "Webiny/Lexical", "Webiny/Image", etc.
   inputs: Record<string, ASTInputValue>;
   children?: ASTNode[];
 }
@@ -66,18 +66,23 @@ type ASTPatchAction =
   | { action: "remove"; id: string }
   | { action: "moveBefore"; id: string; targetId: string }
   | { action: "moveAfter"; id: string; targetId: string }
-  | { action: "createElement"; parentId: string; slot: string; index?: number;
-      params: { component: string; inputs: Record<string, any> } };
+  | {
+      action: "createElement";
+      parentId: string;
+      slot: string;
+      index?: number;
+      params: { component: string; inputs: Record<string, any> };
+    };
 ```
 
 ### Action → Document Operation mapping
 
-| Patch Action | Document Operations |
-|---|---|
-| `update` | `SetGlobalInputBinding` per changed input |
-| `remove` | `RemoveElement` (recursively removes descendants) |
-| `moveBefore` | Remove element ref from parent slot, re-insert before targetId |
-| `moveAfter` | Remove element ref from parent slot, re-insert after targetId |
+| Patch Action    | Document Operations                                                                                               |
+| --------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `update`        | `SetGlobalInputBinding` per changed input                                                                         |
+| `remove`        | `RemoveElement` (recursively removes descendants)                                                                 |
+| `moveBefore`    | Remove element ref from parent slot, re-insert before targetId                                                    |
+| `moveAfter`     | Remove element ref from parent slot, re-insert after targetId                                                     |
 | `createElement` | `ElementFactory.createElementFromComponent()` → returns `AddElement`, `AddToParent`, `SetGlobalInputBinding` etc. |
 
 ### Update action — input value mapping back to bindings
@@ -90,11 +95,11 @@ The `update` action carries input values in AST format. The class maps them back
 
 ## Files to Create/Modify
 
-| File | Action |
-|------|--------|
-| `packages/app-website-builder/src/DocumentAST.ts` | Create — main class |
-| `packages/app-website-builder/src/DocumentAST.types.ts` | Create — type definitions |
-| `packages/app-website-builder/src/__tests__/DocumentAST.test.ts` | Create — tests |
+| File                                                             | Action                    |
+| ---------------------------------------------------------------- | ------------------------- |
+| `packages/app-website-builder/src/DocumentAST.ts`                | Create — main class       |
+| `packages/app-website-builder/src/DocumentAST.types.ts`          | Create — type definitions |
+| `packages/app-website-builder/src/__tests__/DocumentAST.test.ts` | Create — tests            |
 
 ## Key Implementation Details
 
@@ -110,6 +115,7 @@ The `update` action carries input values in AST format. The class maps them back
 **Simple children** (Box, GridColumn, Root): `bindings[id].inputs.children` has `type: "slot"`, `list: true`, `static: ["childId1", "childId2"]` → recurse in order.
 
 **Grid columns**: Grid manifest has `columns` as `ObjectInput({ list: true, fields: [SlotInput({ name: "children", list: false })] })`. In bindings:
+
 - `columns` → `{ type: "object", list: true }` (skip)
 - `columns/0/children` → `{ type: "slot", static: "gridColumnId" }` (single, not list)
 - `columns/1/children` → `{ type: "slot", static: "gridColumnId" }`
@@ -123,6 +129,7 @@ Skip `type: "slot"` (structural), `type: "object"` (metadata), and indexed paths
 ### Component Name → AST Type
 
 Static map with fallback:
+
 ```
 "Webiny/Root" → "root", "Webiny/Lexical" → "richText", "Webiny/Image" → "image",
 "Webiny/Box" → "box", "Webiny/Grid" → "grid", "Webiny/GridColumn" → "gridColumn"
@@ -143,16 +150,16 @@ Returns `IDocumentOperation[]`. For each action:
 
 ## Existing Code to Reuse
 
-| Utility | Package / Path | Usage |
-|---------|----------------|-------|
-| `Document`, `DocumentElement`, `DocumentBindings`, `InputValueBinding`, `ComponentManifest` | `@webiny/website-builder-sdk/types` | Core types |
-| `IDocumentOperation` | `@webiny/website-builder-sdk/documentOperations` | Return type of `applyPatch()` |
-| `DocumentOperations.*` | `@webiny/website-builder-sdk/documentOperations` | `SetGlobalInputBinding`, `RemoveElement`, etc. |
-| `ElementFactory` | `@webiny/website-builder-sdk` | `createElement` action handling |
-| `$moveElement` | `src/editorSdk/utils/$moveElement.ts` | Move element between parents/positions |
-| `$removeElementReferenceFromParent` | `src/editorSdk/utils/$removeElementReferenceFromParent.ts` | Remove element ref from parent slot |
-| `$addElementReferenceToParent` | `src/editorSdk/utils/$addElementReferenceToParent.ts` | Add element ref to parent slot |
-| `$deleteElement` | `src/editorSdk/utils/$deleteElement.ts` | Delete element and descendants |
+| Utility                                                                                     | Package / Path                                             | Usage                                          |
+| ------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------- |
+| `Document`, `DocumentElement`, `DocumentBindings`, `InputValueBinding`, `ComponentManifest` | `@webiny/website-builder-sdk/types`                        | Core types                                     |
+| `IDocumentOperation`                                                                        | `@webiny/website-builder-sdk/documentOperations`           | Return type of `applyPatch()`                  |
+| `DocumentOperations.*`                                                                      | `@webiny/website-builder-sdk/documentOperations`           | `SetGlobalInputBinding`, `RemoveElement`, etc. |
+| `ElementFactory`                                                                            | `@webiny/website-builder-sdk`                              | `createElement` action handling                |
+| `$moveElement`                                                                              | `src/editorSdk/utils/$moveElement.ts`                      | Move element between parents/positions         |
+| `$removeElementReferenceFromParent`                                                         | `src/editorSdk/utils/$removeElementReferenceFromParent.ts` | Remove element ref from parent slot            |
+| `$addElementReferenceToParent`                                                              | `src/editorSdk/utils/$addElementReferenceToParent.ts`      | Add element ref to parent slot                 |
+| `$deleteElement`                                                                            | `src/editorSdk/utils/$deleteElement.ts`                    | Delete element and descendants                 |
 
 ## Verification
 
