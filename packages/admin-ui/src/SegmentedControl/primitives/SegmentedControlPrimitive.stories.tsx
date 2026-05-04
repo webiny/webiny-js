@@ -117,3 +117,11 @@ export const PartiallyDisabled: Story = {
         value: "item1"
     }
 };
+
+export const FullWidth: Story = {
+    args: {
+        items,
+        value: "item1",
+        fullWidth: true
+    }
+};

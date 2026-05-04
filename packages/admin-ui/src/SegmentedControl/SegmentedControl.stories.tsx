@@ -101,6 +101,18 @@ export const WithFormComponent: Story = {
     }
 };
 
+export const FullWidth: Story = {
+    render: () => {
+        const [value, setValue] = useState("item1");
+
+        return (
+            <div className="w-[500px]">
+                <SegmentedControl items={items} value={value} onChange={setValue} fullWidth />
+            </div>
+        );
+    }
+};
+
 export const Disabled: Story = {
     render: () => {
         const [value, setValue] = useState("item1");
