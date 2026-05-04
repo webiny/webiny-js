@@ -357,14 +357,14 @@ cat node_modules/@webiny/api-core/features/security/roles/shared/abstractions.d.
 | `GraphQLSchemaPlugin`                           | `GraphQLSchemaFactory`                                                               |
 | `createGraphQLSchemaPlugin`                     | `GraphQLSchemaFactory`                                                               |
 | `createTaskDefinition`                          | `TaskDefinition`                                                                     |
-| `CmsModelFieldToGraphQLPlugin`                  | TODO                                                                                 |
+| `CmsModelFieldToGraphQLPlugin`                  | `CmsModelFieldToGraphQL` (from `webiny/api/cms/graphql.js`)                          |
 | `createSecurityRolePlugin`                      | `RoleFactory`                                                                        |
 | `createSecurityTeamPlugin`                      | `TeamFactory`                                                                        |
-| `StorageTransformPlugin`                        | TODO                                                                                 |
+| `StorageTransformPlugin`                        | `StorageTransform` (from `webiny/api/cms/storage.js`)                                |
 | `createApiGatewayRoute`                         | `Api.Route` (`webiny.config.tsx`) and `Route.Interface` (imported from `webiny/api`) |
-| `CmsModelFieldValidatorPlugin`                  | TODO                                                                                 |
-| `createCmsGraphQLSchemaSorterPlugin`            | TODO                                                                                 |
-| `createCmsEntryElasticsearchBodyModifierPlugin` | TODO                                                                                 |
+| `CmsModelFieldValidatorPlugin`                  | `CmsModelFieldValidator` (from `webiny/api/cms/validation.js`)                       |
+| `createCmsGraphQLSchemaSorterPlugin`            | `CmsGraphQLSchemaSorter` (from `webiny/api/cms/graphql.js`)                          |
+| `createCmsEntryElasticsearchBodyModifierPlugin` | `CmsEntryOpenSearchBodyModifier` (from `webiny/api/cms/opensearch.js`)               |
 
 ### Admin: React Plugins → AdminConfig API
 
@@ -407,6 +407,355 @@ v5: `context.myService = { ... }`. v6: create an abstraction and register it in 
 ### 6. Inline business logic in event handlers
 
 v5 habit: putting logic directly in the subscription callback. v6: handlers are thin orchestrators — extract logic into a Service or UseCase.
+
+## Pattern 7: CmsModelFieldToGraphQLPlugin → CmsModelFieldToGraphQL
+
+### v5
+
+```ts
+import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms";
+
+new CmsModelFieldToGraphQLPlugin({
+  fieldType: "myField",
+  isSearchable: true,
+  isSortable: false,
+  read: {
+    createTypeField({ field }) {
+      return `${field.fieldId}: String`;
+    },
+    createListFilters({ field }) {
+      return `${field.fieldId}: String`;
+    }
+  },
+  manage: {
+    createTypeField({ field }) {
+      return `${field.fieldId}: String`;
+    },
+    createInputField({ field }) {
+      return `${field.fieldId}: String`;
+    }
+  }
+});
+```
+
+### v6
+
+Import from `webiny/api/cms/graphql.js`. Implement `CmsModelFieldToGraphQL.Interface` — split read/manage into separate classes, export via `CmsModelFieldToGraphQL.createImplementation`, and register in a `createFeature` container.
+
+```ts
+import { createFeature } from "@webiny/feature/api";
+import { CmsModelFieldToGraphQL } from "webiny/api/cms/graphql.js";
+
+class ReadApi implements CmsModelFieldToGraphQL.ReadApi {
+  createTypeField({ field }: CmsModelFieldToGraphQL.TypeFieldParams): string {
+    return `${field.fieldId}: String`;
+  }
+  createListFilters({ field }: CmsModelFieldToGraphQL.ListFiltersParams): string {
+    return `${field.fieldId}: String`;
+  }
+}
+
+class ManageApi implements CmsModelFieldToGraphQL.ManageApi {
+  createTypeField({ field }: CmsModelFieldToGraphQL.TypeFieldParams): string {
+    return `${field.fieldId}: String`;
+  }
+  createInputField({ field }: CmsModelFieldToGraphQL.TypeFieldParams): string {
+    return `${field.fieldId}: String`;
+  }
+}
+
+class MyFieldToGraphQL implements CmsModelFieldToGraphQL.Interface {
+  public readonly fieldType = "myField";
+  public readonly isSearchable = true;
+  public readonly isSortable = false;
+  public readonly isFullTextSearchable = false;
+  public readonly read = new ReadApi();
+  public readonly manage = new ManageApi();
+  getReadApi() {
+    return this.read;
+  }
+  getManageApi() {
+    return this.manage;
+  }
+}
+
+export const MyFieldToGraphQLImplementation = CmsModelFieldToGraphQL.createImplementation({
+  implementation: MyFieldToGraphQL,
+  dependencies: []
+});
+
+export const MyGraphQLFeature = createFeature({
+  name: "MyApp/MyGraphQLFeature",
+  register: container => {
+    container.register(MyFieldToGraphQLImplementation);
+  }
+});
+```
+
+### Looking up a field handler by type
+
+Use `CmsModelFieldToGraphQLRegistry` (also from `webiny/api/cms/graphql.js`) to retrieve any registered field handler by its `fieldType` string. Inject it as a dependency:
+
+```ts
+import { CmsModelFieldToGraphQL } from "webiny/api/cms/graphql.js";
+import { CmsModelFieldToGraphQLRegistry } from "webiny/api/cms/graphql.js";
+
+class MyFieldToGraphQL implements CmsModelFieldToGraphQL.Interface {
+  constructor(private readonly registry: CmsModelFieldToGraphQLRegistry.Interface) {}
+
+  // Example: delegate to another field's read API
+  someMethod(fieldType: string) {
+    const handler = this.registry.get(fieldType);
+    // handler is CmsModelFieldToGraphQL.Interface | undefined
+  }
+
+  // ... rest of implementation
+}
+
+export const MyFieldToGraphQLImplementation = CmsModelFieldToGraphQL.createImplementation({
+  implementation: MyFieldToGraphQL,
+  dependencies: [CmsModelFieldToGraphQLRegistry]
+});
+```
+
+`registry.getAll()` returns every registered handler when you need to iterate.
+
+## Pattern 8: createCmsGraphQLSchemaSorterPlugin → CmsGraphQLSchemaSorter
+
+### v5
+
+```ts
+import { createCmsGraphQLSchemaSorterPlugin } from "@webiny/api-headless-cms";
+
+createCmsGraphQLSchemaSorterPlugin({
+  sorter({ model, sorters }) {
+    return [...sorters, `${model.singularApiName}CustomSort_ASC`];
+  }
+});
+```
+
+### v6
+
+```ts
+import { createFeature } from "@webiny/feature/api";
+import { CmsGraphQLSchemaSorter } from "webiny/api/cms/graphql.js";
+
+class MyCustomSorter implements CmsGraphQLSchemaSorter.Interface {
+  execute({ model, sorters }: CmsGraphQLSchemaSorter.Params): string[] {
+    return [...sorters, `${model.singularApiName}CustomSort_ASC`];
+  }
+}
+
+export const MyCustomSorterImplementation = CmsGraphQLSchemaSorter.createImplementation({
+  implementation: MyCustomSorter,
+  dependencies: []
+});
+
+export const MySorterFeature = createFeature({
+  name: "MyApp/MySorterFeature",
+  register: container => {
+    container.register(MyCustomSorterImplementation);
+  }
+});
+```
+
+## Pattern 9: StorageTransformPlugin → StorageTransform
+
+### v5
+
+```ts
+import { StorageTransformPlugin } from "@webiny/api-headless-cms";
+
+new StorageTransformPlugin({
+  fieldType: "myField",
+  async toStorage({ value }) {
+    return serialize(value);
+  },
+  async fromStorage({ value }) {
+    return deserialize(value);
+  }
+});
+```
+
+### v6
+
+Import from `webiny/api/cms/storage.js`. Implement `StorageTransform.Interface` with `toStorage` and `fromStorage` async methods. Register in a `createFeature` container.
+
+```ts
+import { createFeature } from "@webiny/feature/api";
+import { StorageTransform } from "webiny/api/cms/storage.js";
+
+class MyStorageTransform implements StorageTransform.Interface {
+  public readonly fieldType = "myField";
+
+  async toStorage({ value }: StorageTransform.ToStorageParams): Promise<unknown> {
+    return serialize(value);
+  }
+
+  async fromStorage({ value }: StorageTransform.FromStorageParams): Promise<unknown> {
+    return deserialize(value);
+  }
+}
+
+export const MyStorageTransformImpl = StorageTransform.createImplementation({
+  implementation: MyStorageTransform,
+  dependencies: []
+});
+
+export const MyStorageFeature = createFeature({
+  name: "MyApp/MyStorageFeature",
+  register: container => {
+    container.register(MyStorageTransformImpl);
+  }
+});
+```
+
+Use `fieldType: "*"` for a catch-all transform that applies to all field types without a specific handler.
+
+### Looking up a transform by type
+
+Inject `StorageTransformRegistry` (also from `webiny/api/cms/storage.js`) to retrieve any registered transform:
+
+```ts
+import { StorageTransform } from "webiny/api/cms/storage.js";
+import { StorageTransformRegistry } from "webiny/api/cms/storage.js";
+
+class MyStorageTransform implements StorageTransform.Interface {
+  constructor(private readonly registry: StorageTransformRegistry.Interface) {}
+
+  async toStorage({ value, field }: StorageTransform.ToStorageParams): Promise<unknown> {
+    const delegate = this.registry.get(field.type);
+    // delegate is StorageTransform.Interface | undefined
+  }
+}
+
+export const MyStorageTransformImpl = StorageTransform.createImplementation({
+  implementation: MyStorageTransform,
+  dependencies: [StorageTransformRegistry]
+});
+```
+
+`registry.getAll()` returns every registered transform when you need to iterate.
+
+## Pattern 10: CmsModelFieldValidatorPlugin → CmsModelFieldValidator
+
+### v5
+
+```ts
+import { CmsModelFieldValidatorPlugin } from "@webiny/api-headless-cms";
+
+new CmsModelFieldValidatorPlugin({
+  validator: {
+    name: "myValidator",
+    async validate({ value, validator }) {
+      if (!meetsCondition(value, validator.settings)) {
+        throw new Error("Validation failed.");
+      }
+    }
+  }
+});
+```
+
+### v6
+
+Import from `webiny/api/cms/validation.js`. Implement `CmsModelFieldValidator.Interface` with a `name` string and an async `validate` method that returns `boolean`. Register in a `createFeature` container.
+
+```ts
+import { createFeature } from "@webiny/feature/api";
+import { CmsModelFieldValidator } from "webiny/api/cms/validation.js";
+
+class MyValidatorImpl implements CmsModelFieldValidator.Interface {
+  public readonly name = "myValidator";
+
+  async validate({ value, validator }: CmsModelFieldValidator.Params): Promise<boolean> {
+    return meetsCondition(value, validator.settings);
+  }
+}
+
+export const MyValidator = CmsModelFieldValidator.createImplementation({
+  implementation: MyValidatorImpl,
+  dependencies: []
+});
+
+export const MyValidationFeature = createFeature({
+  name: "MyApp/MyValidationFeature",
+  register: container => {
+    container.register(MyValidator);
+  }
+});
+```
+
+### Looking up a validator by name
+
+Inject `CmsModelFieldValidatorRegistry` (also from `webiny/api/cms/validation.js`) to retrieve any registered validator:
+
+```ts
+import { CmsModelFieldValidator } from "webiny/api/cms/validation.js";
+import { CmsModelFieldValidatorRegistry } from "webiny/api/cms/validation.js";
+
+class MyValidatorImpl implements CmsModelFieldValidator.Interface {
+  constructor(private readonly registry: CmsModelFieldValidatorRegistry.Interface) {}
+
+  async validate({ value, validator }: CmsModelFieldValidator.Params): Promise<boolean> {
+    const delegate = this.registry.get(validator.name);
+    // delegate is CmsModelFieldValidator.Interface | undefined
+    return true;
+  }
+}
+
+export const MyValidator = CmsModelFieldValidator.createImplementation({
+  implementation: MyValidatorImpl,
+  dependencies: [CmsModelFieldValidatorRegistry]
+});
+```
+
+`registry.getAll()` returns every registered validator when you need to iterate.
+
+## Pattern 11: createCmsEntryElasticsearchBodyModifierPlugin → CmsEntryOpenSearchBodyModifier
+
+Note: this abstraction lives in the `api-headless-cms-ddb-es` package (the DynamoDB + OpenSearch storage driver), not `api-headless-cms`. Only register it when that storage driver is in use.
+
+### v5
+
+```ts
+import { createCmsEntryElasticsearchBodyModifierPlugin } from "@webiny/api-headless-cms-ddb-es";
+
+createCmsEntryElasticsearchBodyModifierPlugin({
+  modelId: "myModel", // optional — omit to apply to all models
+  modifyBody({ body, model, where }) {
+    body.query.bool.filter.push({ term: { tenant: where.tenant } });
+  }
+});
+```
+
+### v6
+
+Import from `webiny/api/cms/opensearch.js`. Implement `CmsEntryOpenSearchBodyModifier.Interface` with a synchronous `modifyBody` method. The optional `modelId` property scopes the modifier to a single model; omit it to apply to all models.
+
+```ts
+import { createFeature } from "@webiny/feature/api";
+import { CmsEntryOpenSearchBodyModifier } from "webiny/api/cms/opensearch.js";
+
+class MyBodyModifier implements CmsEntryOpenSearchBodyModifier.Interface {
+  public readonly modelId = "myModel"; // omit to apply to all models
+
+  modifyBody({ body, model, where }: CmsEntryOpenSearchBodyModifier.Params): void {
+    body.query.bool.filter.push({ term: { tenant: where.tenant } });
+  }
+}
+
+export const MyBodyModifierImpl = CmsEntryOpenSearchBodyModifier.createImplementation({
+  implementation: MyBodyModifier,
+  dependencies: []
+});
+
+export const MyOpenSearchFeature = createFeature({
+  name: "MyApp/MyOpenSearchFeature",
+  register: container => {
+    container.register(MyBodyModifierImpl);
+  }
+});
+```
 
 ## Related Skills
 
