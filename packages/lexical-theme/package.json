@@ -2,6 +2,10 @@
   "name": "@webiny/lexical-theme",
   "version": "0.0.0",
   "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  },
   "dependencies": {
     "lexical": "^0.44.0"
   },
