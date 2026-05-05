@@ -2,10 +2,7 @@ import { defineComponent, computed, h, type PropType } from "vue";
 import { contentSdk, type Component, type Document } from "@webiny/website-builder-sdk";
 import { DocumentStoreProvider } from "./DocumentStoreProvider.js";
 import { ConnectToEditor } from "./ConnectToEditor.js";
-import {
-    FragmentsProvider,
-    type DocumentFragmentConfig
-} from "./FragmentsProvider.js";
+import { FragmentsProvider, type DocumentFragmentConfig } from "./FragmentsProvider.js";
 import { ElementRenderer } from "./ElementRenderer.js";
 import { editorComponents } from "~/editorComponents/index.js";
 
