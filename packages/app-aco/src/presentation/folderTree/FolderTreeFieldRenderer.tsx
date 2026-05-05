@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { cn, FormComponentLabel } from "@webiny/admin-ui";
 import { createFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 import { FolderTree } from "~/components/FolderTree/index.js";
@@ -10,9 +10,7 @@ declare module "@webiny/app-admin/features/formModel/abstractions.js" {
     }
 }
 
-export const FolderTreeFieldRenderer = createFieldRenderer(({ field }) => {
-    const [focusedId, setFocusedId] = useState<string>((field.value as string) || ROOT_FOLDER);
-
+export const FolderTreeFieldRenderer = createFieldRenderer<"folderTree">(({ field }) => {
     return (
         <div>
             <FormComponentLabel text={field.label} />
@@ -25,9 +23,8 @@ export const FolderTreeFieldRenderer = createFieldRenderer(({ field }) => {
                 ])}
             >
                 <FolderTree
-                    focusedFolderId={focusedId}
+                    focusedFolderId={field.value ? String(field.value) : ROOT_FOLDER}
                     onFolderClick={folder => {
-                        setFocusedId(folder.id);
                         field.onChange(folder.id === ROOT_FOLDER ? null : folder.id);
                     }}
                 />

@@ -299,7 +299,7 @@ describe("FileListPresenter", () => {
         );
     });
 
-    it("should clear folderId filter when folder is set to null", () => {
+    it("should set folderId to root when folder is set to null", () => {
         presenter.init();
 
         // First set a folder.
@@ -312,7 +312,7 @@ describe("FileListPresenter", () => {
             (mocks.folderTreePresenter.vm as any).currentFolderId = null;
         });
 
-        expect(mocks.listPresenter.actions.filter.clear).toHaveBeenCalledWith("folderId");
+        expect(mocks.listPresenter.actions.filter.set).toHaveBeenCalledWith("folderId", "root");
     });
 
     // -----------------------------------------------------------------------

@@ -117,8 +117,16 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         loadMore: () => this.listPresenter.actions.loadMore(),
         refresh: () => this.listPresenter.actions.refresh(),
         upload: async (files: File[]) => {
+            const folderId = this.folderTreePresenter.vm.currentFolderId ?? "root";
             await this.fileUploader.uploadMany(
-                files.map(file => ({ file, data: { name: file.name, type: file.type } }))
+                files.map(file => ({
+                    file,
+                    data: {
+                        name: file.name,
+                        type: file.type,
+                        location: { folderId }
+                    }
+                }))
             );
         },
         setViewMode: (mode: "table" | "grid") => {
@@ -165,8 +173,10 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             this._fileDetails = null;
         },
         folders: {
-            selectFolder: (folderId: string | null) =>
-                this.folderTreePresenter.selectFolder(folderId),
+            selectFolder: (folderId: string | null) => {
+                this.listPresenter.actions.search.clear();
+                this.folderTreePresenter.selectFolder(folderId);
+            },
             createFolder: (parentFolderId?: string) =>
                 this.folderTreePresenter.createFolder(parentFolderId),
             editFolder: (folderId: string) => this.folderTreePresenter.editFolder(folderId),
@@ -175,6 +185,9 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
                 this.folderTreePresenter.moveFolder(folderId, targetParentId),
             loadChildFolders: (parentIds: string[]) =>
                 this.folderTreePresenter.loadChildFolders(parentIds),
+            canManageStructure: (folderId: string) =>
+                this.folderTreePresenter.canManageStructure(folderId),
+            getAncestorIds: (folderId: string) => this.folderTreePresenter.getAncestorIds(folderId),
             submitOperation: () => this.folderTreePresenter.submitOperation(),
             cancelOperation: () => {
                 this.folderTreePresenter.cancelOperation();
@@ -188,22 +201,21 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         const dataSource = new FileListDataSource(
             this.listFilesUseCase,
             this.filesListCache,
-            this.getDescendantFoldersUseCase
+            this.getDescendantFoldersUseCase,
+            this._overlayConfig?.scope
         );
 
         this.listPresenter.init({
             dataSource,
-            initialSort: { field: "createdOn", direction: "DESC" }
+            initialSort: { field: "createdOn", direction: "DESC" },
+            initialFilters: { folderId: "root" },
+            limit: 50
         });
 
         this._disposeReaction = reaction(
             () => this.folderTreePresenter.vm.currentFolderId,
             folderId => {
-                if (folderId) {
-                    this.listPresenter.actions.filter.set("folderId", folderId);
-                } else {
-                    this.listPresenter.actions.filter.clear("folderId");
-                }
+                this.listPresenter.actions.filter.set("folderId", folderId ?? "root");
             }
         );
     }

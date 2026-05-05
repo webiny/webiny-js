@@ -12,17 +12,23 @@ export interface IDataSourceQuery {
     limit?: number;
 }
 
+export interface IDataSourceMeta {
+    cursor: string | null;
+    hasMoreItems: boolean;
+    totalCount: number;
+}
+
 export interface IDataSourceResult<TRow> {
     rows: TRow[];
-    meta: {
-        cursor: string | null;
-        hasMoreItems: boolean;
-        totalCount: number;
-    };
+    meta: IDataSourceMeta;
 }
 
 export interface IDataSource<TRow> {
-    query(params: IDataSourceQuery): Promise<IDataSourceResult<TRow>>;
+    readonly rows: TRow[];
+    readonly meta: IDataSourceMeta;
+    readonly loading: boolean;
+    query(params: IDataSourceQuery): Promise<void>;
+    loadMore(params: IDataSourceQuery): Promise<void>;
 }
 
 // ---------------------------------------------------------------------------
@@ -34,6 +40,7 @@ export interface IListPresenterConfig<TRow> {
     initialSort?: { field: string; direction: "ASC" | "DESC" };
     initialFilters?: Record<string, unknown>;
     debounceMs?: number;
+    limit?: number;
 }
 
 // ---------------------------------------------------------------------------

@@ -42,6 +42,19 @@ export interface IFolderTreeViewModel {
 }
 
 // ---------------------------------------------------------------------------
+// IFolderTreeCallbacks — action callbacks for the tree component.
+// ---------------------------------------------------------------------------
+
+export interface IFolderTreeCallbacks {
+    selectFolder(folderId: string | null): void;
+    createFolder(parentFolderId?: string): void;
+    moveFolder(folderId: string, targetParentId: string | null): Promise<void>;
+    loadChildFolders(parentIds: string[]): Promise<void>;
+    canManageStructure(folderId: string): boolean;
+    getAncestorIds(folderId: string): string[];
+}
+
+// ---------------------------------------------------------------------------
 // IFolderTreePresenter
 // ---------------------------------------------------------------------------
 
@@ -67,4 +80,5 @@ export namespace FolderTreePresenter {
     export type ViewModel = IFolderTreeViewModel;
     export type Node = IFolderTreeNode;
     export type OperationState = IFolderOperationState;
+    export type Callbacks = IFolderTreeCallbacks;
 }

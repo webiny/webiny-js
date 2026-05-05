@@ -7,5 +7,10 @@ export type {
     IFolderTreePresenter,
     IFolderTreeViewModel,
     IFolderTreeNode,
-    IFolderOperationState
+    IFolderOperationState,
+    IFolderTreeCallbacks
 } from "./abstractions.js";
+
+// Components.
+export { UncontrolledFolderTree } from "./FolderTree.js";
+export type { PresenterFolderTreeProps, UncontrolledFolderTreeProps } from "./FolderTree.js";

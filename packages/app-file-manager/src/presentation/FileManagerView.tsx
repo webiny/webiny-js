@@ -5,7 +5,7 @@ import type { FilesRenderChildren } from "react-butterfiles";
 import Files from "react-butterfiles";
 import debounce from "lodash/debounce.js";
 import type { positionValues } from "react-custom-scrollbars";
-import { type DataTableSorting, Scrollbar } from "@webiny/admin-ui";
+import { type DataTableSorting, Heading, Scrollbar, Separator } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import {
     LeftPanel,
@@ -37,7 +37,7 @@ import {
     useFileManagerViewConfig
 } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
 import { outputFileSelectionError } from "~/modules/FileManagerRenderer/FileManagerView/outputFileSelectionError.js";
-import { LeftSidebar } from "~/modules/FileManagerRenderer/FileManagerView/LeftSidebar.js";
+import { FolderTree } from "@webiny/app-aco/presentation/folderTree/FolderTree.js";
 import { BottomInfoBar } from "~/components/BottomInfoBar/index.js";
 import { BulkActions } from "~/components/BulkActions/index.js";
 import { FileDropPlaceholder } from "~/components/FileDropPlaceholder/index.js";
@@ -314,40 +314,45 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                         />
                         <SplitView namespace={"fm/file/list"}>
                             <LeftPanel span={2}>
-                                <LeftSidebar
-                                    currentFolder={folderId}
-                                    onFolderClick={(id: string) =>
-                                        actions.folders.selectFolder(
-                                            id === ROOT_FOLDER ? null : id
-                                        )
-                                    }
-                                    onCreateFolder={() =>
-                                        actions.folders.createFolder(
-                                            vm.folders.currentFolderId ?? undefined
-                                        )
-                                    }
-                                >
-                                    {browser.filterByTags ? (
-                                        <TagsList
-                                            loading={false}
-                                            activeTags={
-                                                (vm.list.filters["tags"] as string[]) ?? []
-                                            }
-                                            tags={vm.tags.map(tag => ({
-                                                tag: tag.tag,
-                                                count: tag.count
-                                            }))}
-                                            onActivatedTagsChange={(tags: string[]) => {
-                                                if (tags.length > 0) {
-                                                    actions.filter.set("tags", tags);
-                                                } else {
-                                                    actions.filter.clear("tags");
-                                                    actions.filter.clear("tags_rule");
-                                                }
-                                            }}
+                                <div className={"flex flex-col h-main-content"}>
+                                    <div className={"py-sm px-md"}>
+                                        <Heading level={5}>{t`File Manager`}</Heading>
+                                    </div>
+                                    <Separator />
+                                    <div className={"flex-1 overflow-y-scroll"}>
+                                        <FolderTree
+                                            vm={vm.folders}
+                                            actions={actions.folders}
+                                            folderActions={browser.folder.actions}
+                                            dropConfirmation={browser.folder.dropConfirmation}
+                                            enableActions={true}
+                                            enableCreate={true}
                                         />
+                                    </div>
+                                    {browser.filterByTags ? (
+                                        <>
+                                            <Separator />
+                                            <TagsList
+                                                loading={false}
+                                                activeTags={
+                                                    (vm.list.filters["tags"] as string[]) ?? []
+                                                }
+                                                tags={vm.tags.map(tag => ({
+                                                    tag: tag.tag,
+                                                    count: tag.count
+                                                }))}
+                                                onActivatedTagsChange={(tags: string[]) => {
+                                                    if (tags.length > 0) {
+                                                        actions.filter.set("tags", tags);
+                                                    } else {
+                                                        actions.filter.clear("tags");
+                                                        actions.filter.clear("tags_rule");
+                                                    }
+                                                }}
+                                            />
+                                        </>
                                     ) : null}
-                                </LeftSidebar>
+                                </div>
                             </LeftPanel>
                             <RightPanel span={10}>
                                 <div

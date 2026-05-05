@@ -116,7 +116,11 @@ function createMockPresenter(
             currentFolderId: null,
             currentFolder: null,
             loading: false,
-            operation: { active: false, mode: null }, isRootFolder: true, currentFolderTitle: "All Files", childFolders: [], loadingNodeIds: []
+            operation: { active: false, mode: null },
+            isRootFolder: true,
+            currentFolderTitle: "All Files",
+            childFolders: [],
+            loadingNodeIds: []
         },
         permissions: {
             canRead: true,
@@ -132,7 +136,11 @@ function createMockPresenter(
         tags: [],
         viewMode: "table" as const,
         dragging: false,
-        showingFilters: false, isOverlay: false, accept: [], multiple: false, scope: undefined,
+        showingFilters: false,
+        isOverlay: false,
+        accept: [],
+        multiple: false,
+        scope: undefined,
         fileDetails: null,
         ...vmOverrides
     });
@@ -157,13 +165,21 @@ function createMockPresenter(
             selectFile: vi.fn(),
             confirmSelection: vi.fn(),
             showFileDetails: vi.fn(),
-            hideFileDetails: vi.fn(), setDragging: vi.fn(), showFilters: vi.fn(), hideFilters: vi.fn(),
+            hideFileDetails: vi.fn(),
+            setDragging: vi.fn(),
+            showFilters: vi.fn(),
+            hideFilters: vi.fn(),
             folders: {
                 selectFolder: vi.fn(),
                 createFolder: vi.fn(),
                 editFolder: vi.fn(),
                 deleteFolder: vi.fn().mockResolvedValue(undefined),
-                moveFolder: vi.fn().mockResolvedValue(undefined), loadChildFolders: vi.fn().mockResolvedValue(undefined), submitOperation: vi.fn().mockResolvedValue(true), cancelOperation: vi.fn()
+                moveFolder: vi.fn().mockResolvedValue(undefined),
+                loadChildFolders: vi.fn().mockResolvedValue(undefined),
+                canManageStructure: vi.fn().mockReturnValue(true),
+                getAncestorIds: vi.fn().mockReturnValue([]),
+                submitOperation: vi.fn().mockResolvedValue(true),
+                cancelOperation: vi.fn()
             }
         },
         init: vi.fn()

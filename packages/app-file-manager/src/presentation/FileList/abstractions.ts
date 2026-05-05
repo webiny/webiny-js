@@ -59,6 +59,8 @@ export interface IFolderActions {
     deleteFolder(folderId: string): Promise<void>;
     moveFolder(folderId: string, targetParentId: string | null): Promise<void>;
     loadChildFolders(parentIds: string[]): Promise<void>;
+    canManageStructure(folderId: string): boolean;
+    getAncestorIds(folderId: string): string[];
     submitOperation(): Promise<boolean>;
     cancelOperation(): void;
 }

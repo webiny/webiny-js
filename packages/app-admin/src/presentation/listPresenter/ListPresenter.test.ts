@@ -1,10 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { makeAutoObservable, runInAction } from "mobx";
 import { Container } from "@webiny/di";
 import { ListPresenterFeature } from "./feature.js";
 import {
     ListPresenter as Abstraction,
     type IDataSource,
     type IDataSourceQuery,
+    type IDataSourceMeta,
     type IDataSourceResult,
     type IListPresenter
 } from "./abstractions.js";
@@ -27,19 +29,96 @@ function createRows(count: number, startIndex = 0): TestRow[] {
     }));
 }
 
-type MockDataSource = IDataSource<TestRow> & { query: ReturnType<typeof vi.fn> };
+class MockDataSource implements IDataSource<TestRow> {
+    private _rows: TestRow[] = [];
+    private _meta: IDataSourceMeta = { cursor: null, hasMoreItems: false, totalCount: 0 };
+    private _loading = false;
 
-function createMockDataSource(
-    rows: TestRow[] = createRows(3),
-    meta: { cursor: string | null; hasMoreItems: boolean; totalCount: number } = {
-        cursor: null,
-        hasMoreItems: false,
-        totalCount: rows.length
+    query = vi.fn<(params: IDataSourceQuery) => Promise<void>>();
+    loadMore = vi.fn<(params: IDataSourceQuery) => Promise<void>>();
+
+    private defaultRows: TestRow[];
+    private defaultMeta: IDataSourceMeta;
+
+    constructor(
+        rows: TestRow[] = createRows(3),
+        meta: IDataSourceMeta = { cursor: null, hasMoreItems: false, totalCount: rows.length }
+    ) {
+        this.defaultRows = rows;
+        this.defaultMeta = meta;
+
+        makeAutoObservable(this, { query: false, loadMore: false });
+
+        this.query.mockImplementation(async () => {
+            runInAction(() => {
+                this._loading = true;
+                this._rows = [];
+            });
+            await Promise.resolve();
+            runInAction(() => {
+                this._rows = this.defaultRows;
+                this._meta = this.defaultMeta;
+                this._loading = false;
+            });
+        });
+
+        this.loadMore.mockImplementation(async () => {
+            runInAction(() => {
+                this._loading = true;
+            });
+            await Promise.resolve();
+            runInAction(() => {
+                this._rows = [...this._rows, ...this.defaultRows];
+                this._meta = this.defaultMeta;
+                this._loading = false;
+            });
+        });
     }
-): MockDataSource {
-    const query = vi.fn<(params: IDataSourceQuery) => Promise<IDataSourceResult<TestRow>>>();
-    query.mockResolvedValue({ rows, meta });
-    return { query };
+
+    get rows(): TestRow[] {
+        return this._rows;
+    }
+
+    get meta(): IDataSourceMeta {
+        return this._meta;
+    }
+
+    get loading(): boolean {
+        return this._loading;
+    }
+
+    mockNextQuery(rows: TestRow[], meta: IDataSourceMeta) {
+        this.query.mockImplementationOnce(async () => {
+            runInAction(() => {
+                this._loading = true;
+                this._rows = [];
+            });
+            await Promise.resolve();
+            runInAction(() => {
+                this._rows = rows;
+                this._meta = meta;
+                this._loading = false;
+            });
+        });
+    }
+
+    mockNextLoadMore(rows: TestRow[], meta: IDataSourceMeta) {
+        this.loadMore.mockImplementationOnce(async () => {
+            runInAction(() => {
+                this._loading = true;
+            });
+            await Promise.resolve();
+            runInAction(() => {
+                this._rows = [...this._rows, ...rows];
+                this._meta = meta;
+                this._loading = false;
+            });
+        });
+    }
+}
+
+function createMockDataSource(rows?: TestRow[], meta?: IDataSourceMeta): MockDataSource {
+    return new MockDataSource(rows, meta);
 }
 
 function createPresenter(): IListPresenter<TestRow> {
@@ -54,7 +133,6 @@ async function createInitializedPresenter(
     const dataSource = dsOverride ?? createMockDataSource();
     const presenter = createPresenter();
     presenter.init({ dataSource });
-    // Wait for the initial async query to settle.
     await vi.waitFor(() => {
         expect(presenter.vm.pagination.loading).toBe(false);
     });
@@ -489,10 +567,10 @@ describe("ListPresenter", () => {
             expect(presenter.vm.rows).toHaveLength(3);
             expect(presenter.vm.pagination.hasMore).toBe(true);
 
-            // Mock second page response.
-            dataSource.query.mockResolvedValueOnce({
-                rows: secondPage,
-                meta: { cursor: null, hasMoreItems: false, totalCount: 5 }
+            dataSource.mockNextLoadMore(secondPage, {
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: 5
             });
 
             await presenter.actions.loadMore();
@@ -501,7 +579,7 @@ describe("ListPresenter", () => {
             expect(presenter.vm.rows[3].id).toBe("file-3");
             expect(presenter.vm.pagination.hasMore).toBe(false);
             expect(presenter.vm.pagination.totalCount).toBe(5);
-            expect(dataSource.query).toHaveBeenLastCalledWith(
+            expect(dataSource.loadMore).toHaveBeenLastCalledWith(
                 expect.objectContaining({
                     cursor: "cursor-1"
                 })
@@ -510,62 +588,22 @@ describe("ListPresenter", () => {
 
         it("should not loadMore when hasMoreItems is false", async () => {
             const { presenter, dataSource } = await createInitializedPresenter();
-            const callCount = dataSource.query.mock.calls.length;
 
             expect(presenter.vm.pagination.hasMore).toBe(false);
 
             await presenter.actions.loadMore();
 
-            // No additional query.
-            expect(dataSource.query.mock.calls.length).toBe(callCount);
-        });
-
-        it("should not loadMore when already loading more", async () => {
-            const firstPage = createRows(3, 0);
-            const dataSource = createMockDataSource(firstPage, {
-                cursor: "cursor-1",
-                hasMoreItems: true,
-                totalCount: 6
-            });
-
-            const presenter = createPresenter();
-            presenter.init({ dataSource });
-
-            await vi.waitFor(() => {
-                expect(presenter.vm.pagination.loading).toBe(false);
-            });
-
-            // Make the second query hang.
-            let resolveSecond!: (value: IDataSourceResult<TestRow>) => void;
-            dataSource.query.mockReturnValueOnce(
-                new Promise(resolve => {
-                    resolveSecond = resolve;
-                })
-            );
-
-            const loadMorePromise = presenter.actions.loadMore();
-            expect(presenter.vm.pagination.loadingMore).toBe(true);
-
-            // Second call should be a no-op.
-            await presenter.actions.loadMore();
-
-            resolveSecond({
-                rows: createRows(3, 3),
-                meta: { cursor: null, hasMoreItems: false, totalCount: 6 }
-            });
-
-            await loadMorePromise;
-
-            expect(presenter.vm.rows).toHaveLength(6);
+            expect(dataSource.loadMore).not.toHaveBeenCalled();
         });
 
         it("should replace rows on refresh", async () => {
             const { presenter, dataSource } = await createInitializedPresenter();
 
             const freshRows = createRows(2, 10);
-            dataSource.query.mockResolvedValueOnce({
-                rows: freshRows,
-                meta: { cursor: null, hasMoreItems: false, totalCount: 2 }
+            dataSource.mockNextQuery(freshRows, {
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: 2
             });
 
             await presenter.actions.refresh();
@@ -573,40 +611,6 @@ describe("ListPresenter", () => {
             expect(presenter.vm.rows).toEqual(freshRows);
             expect(presenter.vm.pagination.totalCount).toBe(2);
             expect(presenter.vm.pagination.currentCount).toBe(2);
-        });
-
-        it("should set loadingMore flag during loadMore", async () => {
-            const firstPage = createRows(3, 0);
-            const dataSource = createMockDataSource(firstPage, {
-                cursor: "cursor-1",
-                hasMoreItems: true,
-                totalCount: 6
-            });
-
-            const presenter = createPresenter();
-            presenter.init({ dataSource });
-
-            await vi.waitFor(() => {
-                expect(presenter.vm.pagination.loading).toBe(false);
-            });
-
-            let resolveSecond!: (value: IDataSourceResult<TestRow>) => void;
-            dataSource.query.mockReturnValueOnce(
-                new Promise(resolve => {
-                    resolveSecond = resolve;
-                })
-            );
-
-            const promise = presenter.actions.loadMore();
-            expect(presenter.vm.pagination.loadingMore).toBe(true);
-
-            resolveSecond({
-                rows: createRows(3, 3),
-                meta: { cursor: null, hasMoreItems: false, totalCount: 6 }
-            });
-
-            await promise;
-            expect(presenter.vm.pagination.loadingMore).toBe(false);
         });
     });
 
@@ -756,15 +760,16 @@ describe("ListPresenter", () => {
             const dataSource = createMockDataSource(createRows(3));
             const { presenter } = await createInitializedPresenter(dataSource);
 
-            // Apply a filter that returns no results.
-            dataSource.query.mockResolvedValueOnce({
-                rows: [],
-                meta: { cursor: null, hasMoreItems: false, totalCount: 0 }
+            dataSource.mockNextQuery([], {
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: 0
             });
 
             presenter.actions.filter.set("type", "video");
 
             await vi.waitFor(() => {
+                expect(dataSource.query).toHaveBeenCalledTimes(2);
                 expect(presenter.vm.pagination.loading).toBe(false);
             });
 
@@ -776,9 +781,10 @@ describe("ListPresenter", () => {
             const dataSource = createMockDataSource(createRows(3));
             const { presenter } = await createInitializedPresenter(dataSource);
 
-            dataSource.query.mockResolvedValueOnce({
-                rows: [],
-                meta: { cursor: null, hasMoreItems: false, totalCount: 0 }
+            dataSource.mockNextQuery([], {
+                cursor: null,
+                hasMoreItems: false,
+                totalCount: 0
             });
 
             presenter.actions.search.set("nonexistent");
@@ -804,23 +810,16 @@ describe("ListPresenter", () => {
                 message: "Network error",
                 retryable: true
             });
-            expect(presenter.vm.rows).toEqual([]);
         });
 
         it("should clear error on successful query", async () => {
             const dataSource = createMockDataSource();
             const { presenter } = await createInitializedPresenter(dataSource);
 
-            // Trigger an error.
             dataSource.query.mockRejectedValueOnce(new Error("fail"));
             await presenter.actions.refresh();
             expect(presenter.vm.error).not.toBeNull();
 
-            // Successful refresh should clear the error.
-            dataSource.query.mockResolvedValueOnce({
-                rows: createRows(1),
-                meta: { cursor: null, hasMoreItems: false, totalCount: 1 }
-            });
             await presenter.actions.refresh();
             expect(presenter.vm.error).toBeNull();
         });
@@ -834,7 +833,7 @@ describe("ListPresenter", () => {
 
             const { presenter } = await createInitializedPresenter(dataSource);
 
-            dataSource.query.mockRejectedValueOnce(new Error("Load more failed"));
+            dataSource.loadMore.mockRejectedValueOnce(new Error("Load more failed"));
 
             await presenter.actions.loadMore();
 
@@ -843,7 +842,6 @@ describe("ListPresenter", () => {
                 message: "Load more failed",
                 retryable: true
             });
-            expect(presenter.vm.pagination.loadingMore).toBe(false);
         });
 
         it("should handle non-Error thrown values", async () => {
