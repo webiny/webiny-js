@@ -240,6 +240,7 @@ export const pullRequests = createWorkflow({
                         },
                         {
                             name: "Validate webiny package",
+                            if: "github.event.pull_request.user.login == 'adrians5j'",
                             run: "yarn webiny-scripts validate-webiny-package"
                         }
                     ],

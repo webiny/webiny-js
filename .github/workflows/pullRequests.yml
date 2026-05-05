@@ -159,6 +159,10 @@ jobs:
       - name: Check Package Node Modules
         run: yarn check-package-dependencies
         working-directory: ${{ github.base_ref }}
+      - name: Validate webiny package
+        if: github.event.pull_request.user.login == 'adrians5j'
+        run: yarn webiny-scripts validate-webiny-package
+        working-directory: ${{ github.base_ref }}
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
