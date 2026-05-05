@@ -11,7 +11,7 @@ export const ToggleEditorMode = observer(() => {
 
     useEffect(() => {
         editor.updateEditor(state => {
-            state.isReadOnly = hasState;
+            state.isReadOnly = state.isReadOnly || hasState;
         });
     }, [hasState]);
 

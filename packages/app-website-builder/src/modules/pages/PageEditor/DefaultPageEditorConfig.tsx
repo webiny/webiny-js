@@ -8,14 +8,12 @@ import { SettingsButton } from "./TopBar/SettingsButton.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
 import { InternalPageEditorConfig } from "./PageEditorConfig.js";
 import { TopBarOptionsMenu } from "~/BaseEditor/config/TopBar/Layout.js";
-import { PageEditorMode } from "./PageEditorMode.js";
 
 const { Ui } = InternalPageEditorConfig;
 
 export const DefaultPageEditorConfig = () => {
     return (
         <InternalPageEditorConfig>
-            <PageEditorMode />
             <Ui.TopBar.Element name={"buttonBack"} group={"left"} element={<BackButton />} />
             <Ui.TopBar.Element name={"title"} group={"left"} element={<Title />} />
             <Ui.TopBar.Action name={"revisionsMenu"} element={<RevisionsMenu />} />

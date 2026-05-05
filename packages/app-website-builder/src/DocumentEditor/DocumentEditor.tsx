@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import type { EditorDocument } from "@webiny/website-builder-sdk";
+import type {EditorDocument, EditorOptions} from "@webiny/website-builder-sdk";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { Editor as EditorComponent } from "~/BaseEditor/components/index.js";
@@ -8,6 +8,7 @@ import { observer } from "mobx-react-lite";
 import { StateInspector } from "./StateInspector.js";
 import { CompositionScope } from "@webiny/react-composition";
 import { DialogsProvider } from "@webiny/app-admin";
+import { WbPageStatus } from "~/constants.js";
 
 export const DocumentEditorContext = React.createContext<Editor<any> | undefined>(undefined);
 
@@ -23,14 +24,24 @@ interface DocumentEditorProps<TDocument> {
     document: TDocument;
     name: string;
     children?: React.ReactNode;
+    options?: EditorOptions;
 }
 
 function BaseDocumentEditor<TDocument extends EditorDocument>({
     document,
     name,
-    children
+    children,
+    options,
 }: DocumentEditorProps<TDocument>) {
-    const editor = useMemo(() => new Editor<TDocument>(document), [document]);
+    console.log({
+        options,
+    })
+    const editor = useMemo(() => new Editor<TDocument>(document, options), [document, options]);
+    
+    console.log({
+        isReadOnly: editor.getEditorState().toJson().isReadOnly,
+    });
+    
 
     return (
         <DndProvider backend={HTML5Backend}>

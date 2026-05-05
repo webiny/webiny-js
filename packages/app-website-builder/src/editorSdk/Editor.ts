@@ -1,14 +1,15 @@
 import type {
     ComponentManifest,
     EditorDocument,
+    EditorOptions,
     EditorViewportData,
     PreviewViewportData,
     SerializedComponentGroup
 } from "@webiny/website-builder-sdk";
-import type { CommandHandler } from "./CommandBus.js";
-import { CommandBus, type Command, CommandPriority } from "./CommandBus.js";
-import { type StateChangeListener, StateWithHistory } from "./StateWithHistory.js";
-import { type MutableState, State } from "./State.js";
+import type {CommandHandler} from "./CommandBus.js";
+import {type Command, CommandBus, CommandPriority} from "./CommandBus.js";
+import {type StateChangeListener, StateWithHistory} from "./StateWithHistory.js";
+import {type MutableState, State} from "./State.js";
 
 export type EditorState = {
     uiReservedSpace: { width: number; height: number };
@@ -33,14 +34,18 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
     private readonly documentState: StateWithHistory<TDocument>;
     private readonly editorState: State<EditorState>;
     private readonly commandBus: CommandBus;
-
-    constructor(initialState: TDocument) {
+    
+    constructor(initialState: TDocument, options?: EditorOptions) {
         this.commandBus = new CommandBus();
         this.documentState = new StateWithHistory(initialState);
+        
+        console.log({
+            constructingEditorWithReadOnly: options?.isReadOnly || false,
+        })
         this.editorState = new State<EditorState>(
             {
                 uiReservedSpace: { width: 0, height: 0 },
-                isReadOnly: false,
+                isReadOnly: options?.isReadOnly || false,
                 showOverlays: true,
                 selectedElement: null,
                 highlightedElement: null,
