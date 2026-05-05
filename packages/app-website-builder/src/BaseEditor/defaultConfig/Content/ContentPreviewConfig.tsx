@@ -10,7 +10,11 @@ export const ContentPreviewConfig = () => {
 
     return (
         <>
-            <Ui.TopBar.Element name={"breakpointSelector"} group={"center"} element={<BreakpointSelector />} />
+            <Ui.TopBar.Element
+                name={"breakpointSelector"}
+                group={"center"}
+                element={<BreakpointSelector />}
+            />
             <Ui.Content.Element name="addressBar" element={<AddressBar />} />
             <Ui.Content.Element name="iframe" element={<DocumentPreview />} />
             <Ui.Content.Element
