@@ -3,7 +3,7 @@ import {
     ScanExportsFoldersService,
     UiService
 } from "../../abstractions/index.js";
-import { computeInputsHash, readMetaFile } from "../GenerateWebinyPkgCommand/WebinyPkgMeta.js";
+import { computeInputsHash, INPUTS_HASH_FIELD } from "../GenerateWebinyPkgCommand/WebinyPkgMeta.js";
 
 export class ValidateWebinyPkg {
     constructor(
@@ -28,18 +28,19 @@ export class ValidateWebinyPkg {
         const srcStaticPath = wbyPkg.paths.packageFolder.join("src-static").toString();
 
         const currentHash = computeInputsHash({ exportFilesMap, iconsSourcePath, srcStaticPath });
-        const storedMeta = readMetaFile(wbyPkg.paths.packageFolder.toString());
+        // @ts-ignore
+        const storedHash = wbyPkg.packageJson[INPUTS_HASH_FIELD] as string | undefined;
 
         this.ui.newLine();
 
-        if (!storedMeta) {
+        if (!storedHash) {
             this.ui.error(
-                "No meta file found in the `webiny` package. Run `yarn webiny-scripts generate-webiny-package` and commit the changes."
+                "No inputs hash found in the `webiny` package.json. Run `yarn webiny-scripts generate-webiny-package` and commit the changes."
             );
             process.exit(1);
         }
 
-        if (currentHash !== storedMeta.inputsHash) {
+        if (currentHash !== storedHash) {
             this.ui.error(
                 "The `webiny` package is out of date. Run `yarn webiny-scripts generate-webiny-package` and commit the changes."
             );

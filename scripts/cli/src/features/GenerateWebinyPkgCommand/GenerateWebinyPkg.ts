@@ -7,7 +7,7 @@ import {
     ScanExportsFoldersService,
     UiService
 } from "../../abstractions/index.js";
-import { computeInputsHash, writeMetaFile } from "./WebinyPkgMeta.js";
+import { computeInputsHash, INPUTS_HASH_FIELD } from "./WebinyPkgMeta.js";
 
 const ambientDeclaration = (file: string) => !file.includes("/ambient/");
 
@@ -95,14 +95,17 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
             this.ui.debug(` Generated: %s`, exportKey);
         }
 
+        // @ts-ignore
+        wbyPkg.packageJson[INPUTS_HASH_FIELD] = computeInputsHash({
+            exportFilesMap,
+            iconsSourcePath,
+            srcStaticPath
+        });
+
         fs.writeFileSync(
             wbyPkg.paths.packageJsonFile.toString(),
             JSON.stringify(wbyPkg.packageJson, null, 2) + "\n"
         );
-
-        writeMetaFile(wbyPkg.paths.packageFolder.toString(), {
-            inputsHash: computeInputsHash({ exportFilesMap, iconsSourcePath, srcStaticPath })
-        });
 
         this.ui.newLine();
         this.ui.success(`%s package generated.`, "webiny");

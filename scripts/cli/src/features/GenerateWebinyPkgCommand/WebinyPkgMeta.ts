@@ -3,11 +3,7 @@ import fs from "fs";
 import path from "path";
 import type { ScanExportsFoldersService } from "../../abstractions/index.js";
 
-const META_FILE_NAME = ".webiny-pkg-meta.json";
-
-export interface WebinyPkgMeta {
-    inputsHash: string;
-}
+export const INPUTS_HASH_FIELD = "exportGenerationHash";
 
 export interface ComputeInputsHashParams {
     exportFilesMap: Map<string, ScanExportsFoldersService.ExportFile[]>;
@@ -67,17 +63,4 @@ function getAllFiles(dirPath: string, files: string[] = []): string[] {
         }
     }
     return files;
-}
-
-export function readMetaFile(webinyPkgFolderPath: string): WebinyPkgMeta | null {
-    const metaPath = path.join(webinyPkgFolderPath, META_FILE_NAME);
-    if (!fs.existsSync(metaPath)) {
-        return null;
-    }
-    return JSON.parse(fs.readFileSync(metaPath, "utf-8"));
-}
-
-export function writeMetaFile(webinyPkgFolderPath: string, meta: WebinyPkgMeta): void {
-    const metaPath = path.join(webinyPkgFolderPath, META_FILE_NAME);
-    fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2) + "\n");
 }

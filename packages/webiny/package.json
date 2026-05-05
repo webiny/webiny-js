@@ -136,5 +136,7 @@
     "./infra": "./infra.js",
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
-  }
+  },
+  "webinyPkgInputsHash": "c8653b56e8121c17ff9c420541ba9f4e48dd7b81dc11dc0132f642772cf945db",
+  "exportGenerationHash": "c8653b56e8121c17ff9c420541ba9f4e48dd7b81dc11dc0132f642772cf945db"
 }
