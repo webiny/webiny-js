@@ -56,7 +56,7 @@ class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandPa
                 },
                 {
                     name: "log-level",
-                    default: "info",
+                    default: "debug",
                     description: `Set log level for the upgrade process executed by npx. Possible values are "debug", "info", "warning", and "error".`,
                     type: "string"
                 },

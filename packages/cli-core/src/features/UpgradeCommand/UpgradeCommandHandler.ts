@@ -70,7 +70,7 @@ export class UpgradeCommandHandlerImpl implements UpgradeCommandHandlerAbstracti
             debug ? "--debug" : "",
             showLogs ? `--showLogs=${showLogs}` : "",
             showStackTrace ? `--showStackTrace=${showStackTrace}` : "",
-            logLevel ? `--logLevel=${logLevel}` : "",
+            logLevel ? `--logLevel=${logLevel}` : "--logLevel=debug",
             installVersion ? `--installVersion=${installVersion}` : "",
             force ? "--force" : "",
             "--json"
