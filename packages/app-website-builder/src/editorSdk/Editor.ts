@@ -39,9 +39,6 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
         this.commandBus = new CommandBus();
         this.documentState = new StateWithHistory(initialState);
 
-        console.log({
-            constructingEditorWithReadOnly: options?.isReadOnly || false
-        });
         this.editorState = new State<EditorState>(
             {
                 uiReservedSpace: { width: 0, height: 0 },

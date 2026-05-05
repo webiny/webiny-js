@@ -52,10 +52,6 @@ export const PageEditor = () => {
         return <OverlayLoader text={"Loading page..."} />;
     }
 
-    console.log({
-        ...page
-    });
-
     return (
         <DocumentEditor<EditorPage>
             key={page.id}

@@ -33,14 +33,7 @@ function BaseDocumentEditor<TDocument extends EditorDocument>({
     children,
     options
 }: DocumentEditorProps<TDocument>) {
-    console.log({
-        options
-    });
     const editor = useMemo(() => new Editor<TDocument>(document, options), [document, options]);
-
-    console.log({
-        isReadOnly: editor.getEditorState().toJson().isReadOnly
-    });
 
     return (
         <DndProvider backend={HTML5Backend}>
