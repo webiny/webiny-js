@@ -32,28 +32,16 @@ export const PageEditor = () => {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState<EditorPage | null>(null);
 
-    const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.Pages.Editor);
 
     const { getPage } = useGetPage();
-    const { createPageRevisionFrom } = useCreatePageRevisionFrom();
 
     useEffect(() => {
         setLoading(true);
         Promise.all([
             getSettings(),
             getPage({ id: route.params.id }).then(page => {
-                if (page.status === WbPageStatus.Draft) {
-                    setPage(getPageDataFromPage(page));
-                    return;
-                }
-
-                return createPageRevisionFrom({ id: page.id }).then(page => {
-                    goToRoute(Routes.Pages.Editor, {
-                        id: page.id,
-                        folderId: page.location.folderId
-                    });
-                });
+                setPage(getPageDataFromPage(page));
             })
         ]).then(() => {
             setLoading(false);
