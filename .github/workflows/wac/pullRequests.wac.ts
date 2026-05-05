@@ -237,6 +237,10 @@ export const pullRequests = createWorkflow({
                         {
                             name: "Check Package Node Modules",
                             run: "yarn check-package-dependencies"
+                        },
+                        {
+                            name: "Validate webiny package",
+                            run: "yarn webiny-scripts validate-webiny-package"
                         }
                     ],
                     { "working-directory": DIR_WEBINY_JS }

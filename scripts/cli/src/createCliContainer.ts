@@ -15,7 +15,11 @@ import {
     uiService
 } from "./services/index.js";
 
-import { generateWebinyPkgCommand, validateWebinyLinksCommand } from "./features/index.js";
+import {
+    generateWebinyPkgCommand,
+    validateWebinyLinksCommand,
+    validateWebinyPkgCommand
+} from "./features/index.js";
 
 import { CliParamsService } from "./abstractions/index.js";
 
@@ -40,6 +44,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     // Features (commands).
     container.register(generateWebinyPkgCommand).inSingletonScope();
     container.register(validateWebinyLinksCommand).inSingletonScope();
+    container.register(validateWebinyPkgCommand).inSingletonScope();
 
     container.resolve(CliParamsService).set(params);
 

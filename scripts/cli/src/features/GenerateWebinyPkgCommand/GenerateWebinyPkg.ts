@@ -7,6 +7,7 @@ import {
     ScanExportsFoldersService,
     UiService
 } from "../../abstractions/index.js";
+import { computeInputsHash, writeMetaFile } from "./WebinyPkgMeta.js";
 
 const ambientDeclaration = (file: string) => !file.includes("/ambient/");
 
@@ -39,15 +40,17 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
         }
 
         // Copy static files from src-static to src (if src-static exists).
-        const webinySrcStaticPath = wbyPkg.paths.packageFolder.join("src-static").toString();
-        if (fs.existsSync(webinySrcStaticPath)) {
-            this.copyDirectoryRecursive(webinySrcStaticPath, webinySrcPath);
-            // Generate exports for static files
-            this.generateExportsForStaticFiles(webinySrcStaticPath, wbyPkg);
+        const srcStaticPath = wbyPkg.paths.packageFolder.join("src-static").toString();
+        if (fs.existsSync(srcStaticPath)) {
+            this.copyDirectoryRecursive(srcStaticPath, webinySrcPath);
+            this.generateExportsForStaticFiles(srcStaticPath, wbyPkg);
         }
 
         // Copy icons from packages/icons/dist to packages/webiny/src/admin/icons
         const iconsPkg = fullPackagesList.find(pkg => pkg.packageJson.name === "@webiny/icons");
+        const iconsSourcePath = iconsPkg
+            ? iconsPkg.paths.packageFolder.join("dist").toString()
+            : null;
         if (iconsPkg) {
             this.copyIconsToWebinyPackage(iconsPkg, wbyPkg);
         }
@@ -96,6 +99,10 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
             wbyPkg.paths.packageJsonFile.toString(),
             JSON.stringify(wbyPkg.packageJson, null, 2) + "\n"
         );
+
+        writeMetaFile(wbyPkg.paths.packageFolder.toString(), {
+            inputsHash: computeInputsHash({ exportFilesMap, iconsSourcePath, srcStaticPath })
+        });
 
         this.ui.newLine();
         this.ui.success(`%s package generated.`, "webiny");
