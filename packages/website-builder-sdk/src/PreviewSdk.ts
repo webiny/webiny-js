@@ -6,6 +6,7 @@ import type {
     PublicPage
 } from "~/types.js";
 import { PreviewDocument } from "~/PreviewDocument.js";
+import { environment } from "./Environment.js";
 
 export class PreviewSdk implements IContentSdk {
     private liveSdk: IContentSdk;
@@ -17,7 +18,12 @@ export class PreviewSdk implements IContentSdk {
     }
 
     async getPage(path: string): Promise<PublicPage | null> {
-        const previewDocument = await PreviewDocument.createFromHeaders();
+        // On the client the wb.* params are in window.location.search; on the
+        // server they come via the framework headers provider (X-Preview-Params).
+        const previewDocument = environment.isClient()
+            ? PreviewDocument.createFromWindow()
+            : await PreviewDocument.createFromHeaders();
+
         if (!previewDocument.matches({ type: "page", path })) {
             return this.liveSdk.getPage(path);
         }
