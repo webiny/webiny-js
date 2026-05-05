@@ -34,10 +34,13 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
     private readonly documentState: StateWithHistory<TDocument>;
     private readonly editorState: State<EditorState>;
     private readonly commandBus: CommandBus;
+    private readonly options: EditorOptions;
 
     constructor(initialState: TDocument, options?: EditorOptions) {
         this.commandBus = new CommandBus();
         this.documentState = new StateWithHistory(initialState);
+
+        this.options = options || {};
 
         this.editorState = new State<EditorState>(
             {
@@ -95,6 +98,10 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
 
     updateEditor(cb: (state: MutableState<EditorState>) => void) {
         this.editorState.update(cb);
+    }
+
+    public getEditorOptions(): EditorOptions {
+        return this.options;
     }
 
     getEditorState() {

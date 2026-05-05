@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useRoute, useRouter } from "@webiny/app-admin";
+import { useRoute } from "@webiny/app-admin";
 import { DocumentEditor } from "~/DocumentEditor/DocumentEditor.js";
-import { useCreatePageRevisionFrom, useGetPage } from "~/features/pages/index.js";
+import { useGetPage } from "~/features/pages/index.js";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { useGetWebsiteBuilderSettings } from "~/features/index.js";
 import { DefaultPageEditorConfig } from "./PageEditor/DefaultPageEditorConfig.js";
 import { DefaultEditorConfig } from "~/BaseEditor/index.js";
 import { EDITOR_NAME } from "~/modules/pages/constants.js";
-import { WbPageStatus } from "~/constants.js";
 import type { EditorPage } from "@webiny/website-builder-sdk";
 import type { Page } from "~/domain/Page/index.js";
 import { Routes } from "~/routes.js";
@@ -53,14 +52,7 @@ export const PageEditor = () => {
     }
 
     return (
-        <DocumentEditor<EditorPage>
-            key={page.id}
-            document={page}
-            name={EDITOR_NAME}
-            options={{
-                isReadOnly: page.status !== WbPageStatus.Draft
-            }}
-        >
+        <DocumentEditor<EditorPage> key={page.id} document={page} name={EDITOR_NAME}>
             <DefaultEditorConfig />
             <DefaultPageEditorConfig />
         </DocumentEditor>

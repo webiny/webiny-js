@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import type { EditorDocument, EditorOptions } from "@webiny/website-builder-sdk";
+import type { EditorDocument } from "@webiny/website-builder-sdk";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { Editor as EditorComponent } from "~/BaseEditor/components/index.js";
@@ -24,16 +24,25 @@ interface DocumentEditorProps<TDocument> {
     document: TDocument;
     name: string;
     children?: React.ReactNode;
-    options?: EditorOptions;
 }
 
 function BaseDocumentEditor<TDocument extends EditorDocument>({
     document,
     name,
-    children,
-    options
+    children
 }: DocumentEditorProps<TDocument>) {
-    const editor = useMemo(() => new Editor<TDocument>(document, options), [document, options]);
+    const editor = useMemo(() => {
+        /**
+         * Currently we check document.status to set read only flag.
+         * What we can do is send options object through props and pass it on...
+         * ... but at that point this useMemo() will execute twice (because there are two dependencies in useMemo array)
+         * We can avoid that by not putting options object in the dependencies but that will cause problems if options change.
+         */
+        return new Editor<TDocument>(document, {
+            // @ts-expect-error - we know that status is on the document - just for testing atm
+            isReadOnly: document.status !== WbPageStatus.Draft
+        });
+    }, [document]);
 
     return (
         <DndProvider backend={HTML5Backend}>
