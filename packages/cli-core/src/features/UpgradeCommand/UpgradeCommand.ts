@@ -7,6 +7,7 @@ interface UpgradeCommandParams {
     disableSemver?: boolean;
     debug?: boolean;
     _: string[];
+    force?: boolean;
     target?: string;
     logLevel?: string;
     showLogs?: boolean;
@@ -42,6 +43,12 @@ class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandPa
             ],
             options: [
                 {
+                    name: "force",
+                    description: "Force an upgrade for a version, even if it was ran before.",
+                    type: "boolean",
+                    default: false
+                },
+                {
                     name: "skip-checks",
                     description: "Do not perform CLI version and Git tree checks.",
                     type: "boolean",
@@ -49,7 +56,7 @@ class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandPa
                 },
                 {
                     name: "log-level",
-                    default: "info",
+                    default: "debug",
                     description: `Set log level for the upgrade process executed by npx. Possible values are "debug", "info", "warning", and "error".`,
                     type: "string"
                 },
@@ -98,11 +105,12 @@ class UpgradeCommandImpl implements CliCommandFactory.Interface<UpgradeCommandPa
                  */
                 const version = this.getVersion(params);
                 return this.upgradeCommandHandler.handle({
+                    force: params.force || false,
                     logLevel: params.logLevel || "info",
                     showLogs: params.showLogs || false,
                     showStackTrace: params.showStackTrace || false,
                     skipChecks: params.skipChecks || false,
-                    debug: params.debug || false,
+                    debug: true,
                     packageManager: params.packageManager || undefined,
                     registry: params.registry || undefined,
                     installVersion: params.installVersion || undefined,
