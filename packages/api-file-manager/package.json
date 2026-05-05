@@ -36,7 +36,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/tasks": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "ai": "^6.0.174",
+    "ai": "^6.0.175",
     "cache-control-parser": "^2.2.0",
     "zod": "4.3.6"
   },
