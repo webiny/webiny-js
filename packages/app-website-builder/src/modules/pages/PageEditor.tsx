@@ -51,15 +51,20 @@ export const PageEditor = () => {
     if (loading || !page) {
         return <OverlayLoader text={"Loading page..."} />;
     }
-    
+
     console.log({
-        ...page,
-    })
+        ...page
+    });
 
     return (
-        <DocumentEditor<EditorPage> key={page.id} document={page} name={EDITOR_NAME} options={{
-            isReadOnly: page.status !== WbPageStatus.Draft
-        }}>
+        <DocumentEditor<EditorPage>
+            key={page.id}
+            document={page}
+            name={EDITOR_NAME}
+            options={{
+                isReadOnly: page.status !== WbPageStatus.Draft
+            }}
+        >
             <DefaultEditorConfig />
             <DefaultPageEditorConfig />
         </DocumentEditor>

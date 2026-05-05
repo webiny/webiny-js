@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import type {EditorDocument, EditorOptions} from "@webiny/website-builder-sdk";
+import type { EditorDocument, EditorOptions } from "@webiny/website-builder-sdk";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
 import { Editor as EditorComponent } from "~/BaseEditor/components/index.js";
@@ -31,17 +31,16 @@ function BaseDocumentEditor<TDocument extends EditorDocument>({
     document,
     name,
     children,
-    options,
+    options
 }: DocumentEditorProps<TDocument>) {
     console.log({
-        options,
-    })
-    const editor = useMemo(() => new Editor<TDocument>(document, options), [document, options]);
-    
-    console.log({
-        isReadOnly: editor.getEditorState().toJson().isReadOnly,
+        options
     });
-    
+    const editor = useMemo(() => new Editor<TDocument>(document, options), [document, options]);
+
+    console.log({
+        isReadOnly: editor.getEditorState().toJson().isReadOnly
+    });
 
     return (
         <DndProvider backend={HTML5Backend}>
