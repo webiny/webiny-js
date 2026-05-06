@@ -100,6 +100,17 @@ const DialogBase = (props: DialogProps) => {
             }
         };
 
+        const resolvedOverlay = (() => {
+            if (overlay) {
+                return overlay;
+            }
+            if (!loading) {
+                return undefined;
+            }
+            const text = typeof loading === "object" ? loading.text : undefined;
+            return <OverlayLoader text={text} />;
+        })();
+
         return {
             rootProps: {
                 defaultOpen,
@@ -118,17 +129,7 @@ const DialogBase = (props: DialogProps) => {
             bodyProps: { children, bodyPadding, scrollable, size },
             footerProps: { info, actions, size },
             closeButtonProps: { show: showCloseButton, size },
-            contentProps: {
-                ...rest,
-                size,
-                overlay:
-                    overlay ??
-                    (loading ? (
-                        <OverlayLoader
-                            text={typeof loading === "object" ? loading.text : undefined}
-                        />
-                    ) : undefined)
-            }
+            contentProps: { ...rest, size, overlay: resolvedOverlay }
         };
     }, [props]);
 
