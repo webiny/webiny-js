@@ -23,14 +23,21 @@ interface DocumentEditorProps<TDocument> {
     document: TDocument;
     name: string;
     children?: React.ReactNode;
+    // Required for now. When use case with possibly not read-only arises, put it to optional.
+    readOnly: boolean;
 }
 
 function BaseDocumentEditor<TDocument extends EditorDocument>({
     document,
     name,
-    children
+    children,
+    readOnly
 }: DocumentEditorProps<TDocument>) {
-    const editor = useMemo(() => new Editor<TDocument>(document), [document]);
+    const editor = useMemo(() => {
+        return new Editor<TDocument>(document, {
+            isReadOnly: readOnly
+        });
+    }, [document, readOnly]);
 
     return (
         <DndProvider backend={HTML5Backend}>
