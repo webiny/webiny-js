@@ -92,6 +92,7 @@ export const createManageSDL: CreateManageSDL = ({
             meta: ${singularName}Meta
             wbyAco_location: WbyAcoLocation
             live: CmsEntryLive
+            revisionDescription: String
             
             values: ${singularName}Values
         }
