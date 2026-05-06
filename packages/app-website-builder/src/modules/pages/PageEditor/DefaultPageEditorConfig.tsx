@@ -3,6 +3,7 @@ import { PageAutoSave } from "./PageAutoSave.js";
 import { BackButton } from "./TopBar/BackButton.js";
 import { Title } from "./TopBar/Title.js";
 import { PublishButton } from "./TopBar/PublishButton.js";
+import { NewRevisionButton } from "./TopBar/NewRevisionButton.js";
 import { RevisionsMenu } from "./TopBar/RevisionsMenu.js";
 import { SettingsButton } from "./TopBar/SettingsButton.js";
 import { HasPermission } from "~/presentation/security/HasPermission.js";
@@ -26,6 +27,11 @@ export const DefaultPageEditorConfig = () => {
                 }
             />
             <Ui.TopBar.Action name={"optionsMenu"} element={<TopBarOptionsMenu />} />
+            <HasPermission entity={"page"} action={"create"}>
+                <Ui.IsReadOnly>
+                    <Ui.TopBar.Action name={"buttonNewRevision"} element={<NewRevisionButton />} />
+                </Ui.IsReadOnly>
+            </HasPermission>
             <HasPermission entity={"page"} action={"publish"}>
                 <Ui.IsNotReadOnly>
                     <Ui.TopBar.Action name={"buttonPublish"} element={<PublishButton />} />
