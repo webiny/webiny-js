@@ -64,7 +64,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "18.3.1",
     "slugify": "^1.6.9",
-    "zod": "4.3.6"
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.13.5",
