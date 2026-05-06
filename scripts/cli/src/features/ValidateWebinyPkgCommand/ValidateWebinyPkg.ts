@@ -3,7 +3,11 @@ import {
     ScanExportsFoldersService,
     UiService
 } from "../../abstractions/index.js";
-import { computeInputsHash, INPUTS_HASH_FIELD } from "../GenerateWebinyPkgCommand/WebinyPkgMeta.js";
+import {
+    collectInputEntries,
+    computeInputsHash,
+    INPUTS_HASH_FIELD
+} from "../GenerateWebinyPkgCommand/WebinyPkgMeta.js";
 
 export class ValidateWebinyPkg {
     constructor(
@@ -25,7 +29,8 @@ export class ValidateWebinyPkg {
         const iconsSrcPath = iconsPkg ? iconsPkg.paths.packageFolder.join("src").toString() : null;
         const srcStaticPath = wbyPkg.paths.packageFolder.join("src-static").toString();
 
-        const currentHash = computeInputsHash({ exportFilesMap, iconsSrcPath, srcStaticPath });
+        const params = { exportFilesMap, iconsSrcPath, srcStaticPath };
+        const currentHash = computeInputsHash(params);
         // @ts-ignore
         const storedHash = wbyPkg.packageJson[INPUTS_HASH_FIELD] as string | undefined;
 
@@ -42,6 +47,17 @@ export class ValidateWebinyPkg {
             this.ui.error(
                 "The `webiny` package is out of date. Run `yarn webiny-scripts generate-webiny-package` and commit the changes."
             );
+            this.ui.newLine();
+            this.ui.info("Stored hash:   %s", storedHash);
+            this.ui.info("Computed hash: %s", currentHash);
+            this.ui.newLine();
+            this.ui.info(
+                "Files included in computed hash (%s):",
+                collectInputEntries(params).length.toString()
+            );
+            for (const { key } of collectInputEntries(params)) {
+                this.ui.info("  %s", key);
+            }
             process.exit(1);
         }
 

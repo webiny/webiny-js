@@ -11,10 +11,15 @@ export interface ComputeInputsHashParams {
     srcStaticPath: string | null;
 }
 
-export function computeInputsHash(params: ComputeInputsHashParams): string {
+export interface InputEntry {
+    key: string;
+    filePath: string;
+}
+
+export function collectInputEntries(params: ComputeInputsHashParams): InputEntry[] {
     const { exportFilesMap, iconsSrcPath, srcStaticPath } = params;
 
-    const entries: Array<{ key: string; filePath: string }> = [];
+    const entries: InputEntry[] = [];
 
     for (const [relativePath, exportFiles] of exportFilesMap) {
         for (const exportFile of exportFiles) {
@@ -38,14 +43,16 @@ export function computeInputsHash(params: ComputeInputsHashParams): string {
     }
 
     entries.sort((a, b) => a.key.localeCompare(b.key));
+    return entries;
+}
 
+export function computeInputsHash(params: ComputeInputsHashParams): string {
     const hasher = crypto.createHash("sha256");
-    for (const { key, filePath } of entries) {
+    for (const { key, filePath } of collectInputEntries(params)) {
         hasher.update(`${key}:`);
         hasher.update(fs.readFileSync(filePath));
         hasher.update("\n---\n");
     }
-
     return hasher.digest("hex");
 }
 
