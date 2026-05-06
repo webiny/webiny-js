@@ -5,6 +5,8 @@ import { useSelectFromState } from "./useSelectFromState.js";
 
 type Equals<T> = (a: T, b: T) => boolean;
 
+export type { EditorDocument };
+
 /**
  * Subscribe to part of the document state.
  * @param selector   Pick the slice of state you care about.

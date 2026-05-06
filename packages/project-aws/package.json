@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@pulumi/aws": "^7.28.0",
-    "@pulumi/pulumi": "^3.234.0",
+    "@pulumi/pulumi": "^3.235.0",
     "@pulumi/random": "^4.19.2",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-layers": "0.0.0",

@@ -56,7 +56,7 @@
     "lodash": "^4.18.1",
     "markdown-to-jsx": "^9.7.16",
     "matcher": "^6.0.0",
-    "mobx": "^6.15.0",
+    "mobx": "^6.15.1",
     "mobx-react-lite": "^4.1.1",
     "pluralize": "^8.0.0",
     "react": "18.3.1",

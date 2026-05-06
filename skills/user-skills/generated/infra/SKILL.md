@@ -2,7 +2,7 @@
 name: webiny-infra-catalog
 context: webiny-api
 description: >
-  Infrastructure — 33 abstractions.
+  Infrastructure — 30 abstractions.
   Infrastructure extensions.
 ---
 
@@ -47,13 +47,6 @@ Infrastructure extensions.
 **Name:** `AdminBeforeWatch`
 **Import:** `import { AdminBeforeWatch } from "webiny/infra/admin"`
 **Source:** `@webiny/project/abstractions/features/hooks/AdminBeforeWatch.ts`
-
----
-
-**Name:** `AdminPulumi`
-**Import:** `import { AdminPulumi } from "webiny/infra/admin"`
-**Source:** `@webiny/project/abstractions/features/pulumi/AdminPulumi.ts`
-**Description:** Implement this abstraction to add custom Pulumi code to Admin.
 
 ---
 
@@ -117,13 +110,6 @@ Infrastructure extensions.
 
 ---
 
-**Name:** `ApiPulumi`
-**Import:** `import { ApiPulumi } from "webiny/infra/api"`
-**Source:** `@webiny/project/abstractions/features/pulumi/ApiPulumi.ts`
-**Description:** Implement this abstraction to add custom Pulumi code to API.
-
----
-
 **Name:** `ApiStackOutputService`
 **Import:** `import { ApiStackOutputService } from "webiny/infra/api"`
 **Source:** `@webiny/project-aws/abstractions/services/ApiStackOutputService.ts`
@@ -175,13 +161,6 @@ Infrastructure extensions.
 **Name:** `CoreBeforeDeploy`
 **Import:** `import { CoreBeforeDeploy } from "webiny/infra/core"`
 **Source:** `@webiny/project/abstractions/features/hooks/CoreBeforeDeploy.ts`
-
----
-
-**Name:** `CorePulumi`
-**Import:** `import { CorePulumi } from "webiny/infra/core"`
-**Source:** `@webiny/project/abstractions/features/pulumi/CorePulumi.ts`
-**Description:** Implement this abstraction to add custom Pulumi code to Core.
 
 ---
 

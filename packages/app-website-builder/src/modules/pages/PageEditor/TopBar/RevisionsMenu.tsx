@@ -63,7 +63,6 @@ export const RevisionsMenu = () => {
                     key={revision.id}
                     className={"cursor-pointer"}
                     onClick={() => goToRevision(revision.id)}
-                    disabled={revision.locked}
                     icon={
                         <Item.Icon
                             label={revision.getLabel()}

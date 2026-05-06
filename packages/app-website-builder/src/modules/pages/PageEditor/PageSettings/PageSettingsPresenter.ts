@@ -67,8 +67,6 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
             return false;
         }
 
-        console.log("data", data);
-
         const doc = structuredClone(this.originalData);
 
         for (const group of this.groups) {
@@ -139,7 +137,7 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
                     return [];
                 }
 
-                const tabsBuilder = layout.tabs("settings-tabs").renderer("tabs-vertical");
+                const tabsBuilder = layout.tabs("settings-tabs").renderer("tabsVertical");
 
                 for (const { group, layoutFns } of collected) {
                     tabsBuilder.tab(group.name, tab => {
