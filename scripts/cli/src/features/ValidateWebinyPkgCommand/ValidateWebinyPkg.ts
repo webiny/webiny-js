@@ -48,6 +48,10 @@ export class ValidateWebinyPkg {
                 "The `webiny` package is out of date. Run `yarn webiny-scripts generate-webiny-package` and commit the changes."
             );
             this.ui.newLine();
+            this.ui.warning(
+                "Note: if things look fine locally, this may be caused by a recent merge of the base branch into your PR — new or modified export files from those commits are not yet reflected in the generated `webiny` package."
+            );
+            this.ui.newLine();
             this.ui.info("Stored hash:   %s", storedHash);
             this.ui.info("Computed hash: %s", currentHash);
             this.ui.newLine();
