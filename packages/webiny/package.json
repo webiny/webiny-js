@@ -137,5 +137,6 @@
     "./infra": "./infra.js",
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
-  }
+  },
+  "exportGenerationHash": "84c347c65d1d2f596971dec198c9a8560e2932c4a5e97d6e4ca14314c26e8a8d"
 }

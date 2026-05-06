@@ -8,15 +8,6 @@ export * from "./types.js";
 export { Result } from "./Result.js";
 export { HttpError, ApiError, NetworkError, ValidationError } from "./errors.js";
 
-// Export shared CMS types.
-export type {
-    CmsEntryValues,
-    CmsEntryStatus,
-    CmsIdentity,
-    IEntryState,
-    CmsEntryData
-} from "./methods/cms/cmsTypes.js";
-
 // Export types from methods.
 export type { CreateCmsEntryData, CreateEntryParams } from "./methods/cms/createEntry.js";
 
@@ -49,11 +40,6 @@ export type { EnableTenantParams } from "./methods/tenantManager/enableTenant.js
 
 // Export FileManager types.
 export type {
-    FmIdentity,
-    FmLocation,
-    FmFile,
-    FmTag,
-    FmListMeta,
     FmLocationInput,
     FmLocationWhereInput,
     FmFileListWhereInput,
@@ -90,18 +76,6 @@ export type {
 } from "./methods/fileManager/createMultiPartUpload.js";
 
 export type { CompleteMultiPartUploadParams } from "./methods/fileManager/completeMultiPartUpload.js";
-
-// Export Languages types.
-export type { Language } from "./methods/languages/listLanguages.js";
-
-// Export Tasks types.
-export type {
-    TaskStatus,
-    TaskDefinition,
-    TaskRun,
-    TaskLog,
-    TaskLogItem
-} from "./methods/tasks/taskTypes.js";
 
 // Export types from tasks methods.
 export type { ListLogsParams } from "./methods/tasks/listLogs.js";
