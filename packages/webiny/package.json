@@ -113,7 +113,7 @@
     "./admin/form": "./admin/form.js",
     "./admin/tenancy": "./admin/tenancy.js",
     "./admin/cms/entry/editor": "./admin/cms/entry/editor.js",
-    "./admin/cms/entry/list": "./admin/cms/∞entry/list.js",
+    "./admin/cms/entry/list": "./admin/cms/entry/list.js",
     "./admin/cms/field-renderers/common": "./admin/cms/field-renderers/common.js",
     "./admin/cms/field-renderers/dynamic-zone": "./admin/cms/field-renderers/dynamic-zone.js",
     "./admin/cms/field-renderers/object": "./admin/cms/field-renderers/object.js",
