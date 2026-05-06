@@ -22,12 +22,10 @@ export class ValidateWebinyPkg {
         const exportFilesMap = this.scanExportsFoldersService.execute(packagesWithoutWebiny);
 
         const iconsPkg = fullPackagesList.find(pkg => pkg.packageJson.name === "@webiny/icons");
-        const iconsSourcePath = iconsPkg
-            ? iconsPkg.paths.packageFolder.join("dist").toString()
-            : null;
+        const iconsSrcPath = iconsPkg ? iconsPkg.paths.packageFolder.join("src").toString() : null;
         const srcStaticPath = wbyPkg.paths.packageFolder.join("src-static").toString();
 
-        const currentHash = computeInputsHash({ exportFilesMap, iconsSourcePath, srcStaticPath });
+        const currentHash = computeInputsHash({ exportFilesMap, iconsSrcPath, srcStaticPath });
         // @ts-ignore
         const storedHash = wbyPkg.packageJson[INPUTS_HASH_FIELD] as string | undefined;
 

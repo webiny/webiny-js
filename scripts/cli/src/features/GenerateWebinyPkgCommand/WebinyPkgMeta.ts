@@ -7,12 +7,12 @@ export const INPUTS_HASH_FIELD = "exportGenerationHash";
 
 export interface ComputeInputsHashParams {
     exportFilesMap: Map<string, ScanExportsFoldersService.ExportFile[]>;
-    iconsSourcePath: string | null;
+    iconsSrcPath: string | null;
     srcStaticPath: string | null;
 }
 
 export function computeInputsHash(params: ComputeInputsHashParams): string {
-    const { exportFilesMap, iconsSourcePath, srcStaticPath } = params;
+    const { exportFilesMap, iconsSrcPath, srcStaticPath } = params;
 
     const entries: Array<{ key: string; filePath: string }> = [];
 
@@ -25,13 +25,9 @@ export function computeInputsHash(params: ComputeInputsHashParams): string {
         }
     }
 
-    if (iconsSourcePath && fs.existsSync(iconsSourcePath)) {
-        for (const filePath of getAllFiles(iconsSourcePath)) {
-            // Matches the filter applied in copyDirectoryRecursive for icons.
-            if (path.basename(filePath) === "package.json") {
-                continue;
-            }
-            entries.push({ key: `icons:${path.relative(iconsSourcePath, filePath)}`, filePath });
+    if (iconsSrcPath && fs.existsSync(iconsSrcPath)) {
+        for (const filePath of getAllFiles(iconsSrcPath)) {
+            entries.push({ key: `icons:${path.relative(iconsSrcPath, filePath)}`, filePath });
         }
     }
 

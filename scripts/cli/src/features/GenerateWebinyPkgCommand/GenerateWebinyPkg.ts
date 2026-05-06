@@ -95,10 +95,12 @@ export class GenerateWebinyPkg implements GenerateWebinyPkg {
             this.ui.debug(` Generated: %s`, exportKey);
         }
 
+        const iconsSrcPath = iconsPkg ? iconsPkg.paths.packageFolder.join("src").toString() : null;
+
         // @ts-ignore
         wbyPkg.packageJson[INPUTS_HASH_FIELD] = computeInputsHash({
             exportFilesMap,
-            iconsSourcePath,
+            iconsSrcPath,
             srcStaticPath
         });
 
