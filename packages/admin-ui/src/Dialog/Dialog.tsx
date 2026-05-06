@@ -1,5 +1,6 @@
 import * as React from "react";
 import { makeDecoratable, withStaticProps } from "~/utils.js";
+import { OverlayLoader } from "~/Loader/index.js";
 import { DialogContent } from "./components/DialogContent.js";
 import { DialogHeader } from "~/Dialog/components/DialogHeader.js";
 import { DialogBody } from "~/Dialog/components/DialogBody.js";
@@ -29,6 +30,8 @@ interface DialogProps
     children: React.ReactNode;
     actions?: React.ReactNode;
     info?: React.ReactNode;
+    loading?: boolean | { text?: string };
+    overlay?: React.ReactNode;
     onClose?: () => void;
     onOpen?: () => void;
 }
@@ -73,6 +76,10 @@ const DialogBase = (props: DialogProps) => {
             actions,
             info,
 
+            // Overlay props.
+            loading,
+            overlay,
+
             // Close button props.
             showCloseButton = true,
 
@@ -111,7 +118,17 @@ const DialogBase = (props: DialogProps) => {
             bodyProps: { children, bodyPadding, scrollable, size },
             footerProps: { info, actions, size },
             closeButtonProps: { show: showCloseButton, size },
-            contentProps: { ...rest, size }
+            contentProps: {
+                ...rest,
+                size,
+                overlay:
+                    overlay ??
+                    (loading ? (
+                        <OverlayLoader
+                            text={typeof loading === "object" ? loading.text : undefined}
+                        />
+                    ) : undefined)
+            }
         };
     }, [props]);
 

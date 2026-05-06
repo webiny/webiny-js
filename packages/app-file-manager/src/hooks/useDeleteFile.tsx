@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { OverlayLoader, Text } from "@webiny/admin-ui";
+import { Text } from "@webiny/admin-ui";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import type { FileItem } from "~/types.js";
 import { useFileManagerView } from "~/index.js";
@@ -18,7 +18,7 @@ export const useDeleteFile = ({ onDelete, file }: UseDeleteFileParams) => {
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Delete file`,
-        loading: <OverlayLoader text={"Deleting file..."} />,
+        loading: { text: "Deleting file..." },
         message: file && (
             <>
                 <Text>

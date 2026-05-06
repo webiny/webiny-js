@@ -74,8 +74,8 @@ export const DialogContainer = () => {
                     </>
                 )
             }
+            loading={isLoading ? loading : false}
         >
-            {isLoading ? loading : null}
             {message}
         </Dialog>
     );

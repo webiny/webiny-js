@@ -1,7 +1,6 @@
 import React from "react";
 import { useUi } from "@webiny/app/hooks/useUi.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { CircularProgress } from "@webiny/ui/Progress/index.js";
 
 const t = i18n.ns("app-admin/hooks/use-confirmation-dialog");
 
@@ -10,7 +9,7 @@ interface Params {
     message?: React.ReactNode;
     acceptLabel?: React.ReactNode;
     cancelLabel?: React.ReactNode;
-    loading?: React.ReactNode;
+    loading?: boolean | { text?: string };
     [key: string]: any;
 }
 
@@ -25,7 +24,7 @@ const useConfirmationDialog = ({
     message,
     acceptLabel = t`Confirm`,
     cancelLabel = t`Cancel`,
-    loading = <CircularProgress />,
+    loading = true,
     ...options
 }: Params = {}): UseConfirmationDialogResponse => {
     const ui = useUi();
@@ -36,6 +35,7 @@ const useConfirmationDialog = ({
                 return {
                     ...ui,
                     dialog: {
+                        loading: true,
                         message: message || t`Are you sure you want to continue?`,
                         options: {
                             ...options,
