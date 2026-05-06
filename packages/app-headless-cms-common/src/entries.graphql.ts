@@ -116,6 +116,7 @@ const createEntrySystemFields = (model: CmsModel) => {
         live {
             version
         }
+        revisionDescription
     `;
 };
 

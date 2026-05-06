@@ -211,6 +211,7 @@ export const ContentEntryProvider = ({
 
     useEffect(() => {
         if (!entryId) {
+            setRevisions([]);
             return;
         }
 
