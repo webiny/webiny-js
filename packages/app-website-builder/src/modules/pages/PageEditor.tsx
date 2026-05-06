@@ -10,6 +10,7 @@ import { EDITOR_NAME } from "~/modules/pages/constants.js";
 import type { EditorPage } from "@webiny/website-builder-sdk";
 import type { Page } from "~/domain/Page/index.js";
 import { Routes } from "~/routes.js";
+import { WbPageStatus } from "~/constants.js";
 
 const getPageDataFromPage = (page: Page): EditorPage => {
     return {
@@ -52,7 +53,12 @@ export const PageEditor = () => {
     }
 
     return (
-        <DocumentEditor<EditorPage> key={page.id} document={page} name={EDITOR_NAME}>
+        <DocumentEditor<EditorPage>
+            key={page.id}
+            document={page}
+            name={EDITOR_NAME}
+            readOnly={page.status !== WbPageStatus.Draft}
+        >
             <DefaultEditorConfig />
             <DefaultPageEditorConfig />
         </DocumentEditor>

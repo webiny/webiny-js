@@ -27,7 +27,9 @@ export const DefaultPageEditorConfig = () => {
             />
             <Ui.TopBar.Action name={"optionsMenu"} element={<TopBarOptionsMenu />} />
             <HasPermission entity={"page"} action={"publish"}>
-                <Ui.TopBar.Action name={"buttonPublish"} element={<PublishButton />} />
+                <Ui.IsNotReadOnly>
+                    <Ui.TopBar.Action name={"buttonPublish"} element={<PublishButton />} />
+                </Ui.IsNotReadOnly>
             </HasPermission>
             <HasPermission entity={"page"} action={"edit"}>
                 <Ui.TopBar.Element group={"left"} name={"autoSave"} element={<PageAutoSave />} />

@@ -13,6 +13,7 @@ export interface IWorkflowStateProps {
     client: ApolloClient<object>;
     children: React.ReactElement | React.ReactElement[];
     title: string;
+    disabled?: boolean;
 }
 
 export interface IWorkflowStateContext {
@@ -22,7 +23,7 @@ export interface IWorkflowStateContext {
 export const WorkflowStateContext = React.createContext<IWorkflowStateContext | null>(null);
 
 export const WorkflowStateProvider = (props: IWorkflowStateProps) => {
-    const { id, app, identity, client, children, title } = props;
+    const { client, children } = props;
     const presenter = useMemo(() => {
         const gateway = new WorkflowStateGateway({
             client
@@ -37,14 +38,15 @@ export const WorkflowStateProvider = (props: IWorkflowStateProps) => {
             gateway: workflowsGateway
         });
         return new WorkflowStatePresenter({
-            app,
-            targetRevisionId: id,
-            identity,
+            app: props.app,
+            targetRevisionId: props.id,
+            identity: props.identity,
             repository,
             workflowsRepository,
-            title
+            title: props.title,
+            disabled: props.disabled || false
         });
-    }, [app, id, identity.id, title]);
+    }, [props.id, props.identity, props.title, props.disabled, props.app]);
 
     return (
         <WorkflowStateContext.Provider value={{ presenter }}>

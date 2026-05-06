@@ -8,7 +8,6 @@ import { observer } from "mobx-react-lite";
 import { StateInspector } from "./StateInspector.js";
 import { CompositionScope } from "@webiny/react-composition";
 import { DialogsProvider } from "@webiny/app-admin";
-import { WbPageStatus } from "~/constants.js";
 
 export const DocumentEditorContext = React.createContext<Editor<any> | undefined>(undefined);
 
@@ -24,25 +23,21 @@ interface DocumentEditorProps<TDocument> {
     document: TDocument;
     name: string;
     children?: React.ReactNode;
+    // Required for now. When use case with possibly not read-only arises, put it to optional.
+    readOnly: boolean;
 }
 
 function BaseDocumentEditor<TDocument extends EditorDocument>({
     document,
     name,
-    children
+    children,
+    readOnly
 }: DocumentEditorProps<TDocument>) {
     const editor = useMemo(() => {
-        /**
-         * Currently we check document.status to set read only flag.
-         * What we can do is send options object through props and pass it on...
-         * ... but at that point this useMemo() will execute twice (because there are two dependencies in useMemo array)
-         * We can avoid that by not putting options object in the dependencies but that will cause problems if options change.
-         */
         return new Editor<TDocument>(document, {
-            // @ts-expect-error - we know that status is on the document - just for testing atm
-            isReadOnly: document.status !== WbPageStatus.Draft
+            isReadOnly: readOnly
         });
-    }, [document]);
+    }, [document, readOnly]);
 
     return (
         <DndProvider backend={HTML5Backend}>
