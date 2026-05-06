@@ -1,23 +1,35 @@
 import React from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { PageEditorConfig } from "@webiny/app-website-builder";
-import { useSelectFromDocument } from "@webiny/app-website-builder/BaseEditor/hooks/useSelectFromDocument.js";
+import {
+    type EditorDocument,
+    useSelectFromDocument
+} from "@webiny/app-website-builder/BaseEditor/hooks/useSelectFromDocument.js";
 import { useAuthentication } from "@webiny/app-admin";
 import { WorkflowStateProvider } from "@webiny/app-workflows/Components/WorkflowState/index.js";
 import { WB_PAGE_APP } from "~/constants.js";
 import { PageFormWorkflowState } from "~/Components/PageEditor/PageFormWorkflowState.js";
 import { ToggleEditorMode } from "~/Components/PageEditor/ToggleEditorMode.js";
-import { WbPageStatus } from "@webiny/app-website-builder/constants.js";
+import { WbPageStatus, type WbStatus } from "@webiny/app-website-builder/constants.js";
 
 const { Ui } = PageEditorConfig;
 
+interface PageEditorTopBarEditorDocument extends EditorDocument {
+    status: WbStatus;
+}
+
+interface ISelectedPage {
+    id: string;
+    title: string;
+    status: WbStatus;
+}
+
 export const PageEditorTopBar = Ui.TopBar.Layout.createDecorator(Original => {
     return function PageEditorTopBarWorkflowsState() {
-        const page = useSelectFromDocument(doc => {
+        const page = useSelectFromDocument<ISelectedPage, PageEditorTopBarEditorDocument>(doc => {
             return {
                 id: doc.id,
                 title: doc.properties.title || "unknown page",
-                // @ts-expect-error - status is not defined on EditorDocument, but we know it is there.
                 status: doc.status || "draft"
             };
         });
