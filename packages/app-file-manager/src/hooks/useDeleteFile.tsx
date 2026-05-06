@@ -18,7 +18,7 @@ export const useDeleteFile = ({ onDelete, file }: UseDeleteFileParams) => {
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Delete file`,
-        loading: { text: "Deleting file..." },
+        loading: "Deleting file...",
         message: file && (
             <>
                 <Text>

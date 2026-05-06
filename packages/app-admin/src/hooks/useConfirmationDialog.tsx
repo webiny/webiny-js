@@ -9,7 +9,7 @@ interface Params {
     message?: React.ReactNode;
     acceptLabel?: React.ReactNode;
     cancelLabel?: React.ReactNode;
-    loading?: boolean | { text?: string };
+    loading?: boolean | string;
     [key: string]: any;
 }
 
@@ -40,7 +40,7 @@ const useConfirmationDialog = ({
                         options: {
                             ...options,
                             title,
-                            loading,
+                            loading: typeof loading === "string" ? { text: loading } : loading,
                             actions: {
                                 accept: {
                                     label: acceptLabel,
