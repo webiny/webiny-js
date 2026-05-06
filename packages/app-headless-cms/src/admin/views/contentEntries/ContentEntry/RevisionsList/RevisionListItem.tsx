@@ -79,7 +79,7 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
             description={
                 <>
                     {revision.revisionDescription ? (
-                        <Text as={"div"} size={"md"}>
+                        <Text as={"div"} size={"md"} className={"mb-2"}>
                             {revision.revisionDescription}
                         </Text>
                     ) : null}
