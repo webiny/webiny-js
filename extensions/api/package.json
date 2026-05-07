@@ -32,8 +32,10 @@
     "@webiny/api-workflows": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/db-sqlite": "0.0.0",
+    "@webiny/handler": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
-    "@webiny/handler-node": "0.0.0"
+    "@webiny/handler-node": "0.0.0",
+    "@webiny/keycloak": "0.0.0"
   },
   "devDependencies": {
     "typescript": "6.0.3"
