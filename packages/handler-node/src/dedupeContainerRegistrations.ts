@@ -2,6 +2,22 @@ import { Container } from "@webiny/di";
 
 let patched = false;
 
+// Symbol-based abstraction tokens whose registered value is genuinely
+// per-request (e.g. the current Fastify Request, the per-request CMS
+// context). For these, we OVERWRITE the existing registration so
+// `resolve` always returns the current request's value. The names
+// here must match the strings passed to `createAbstraction(name)` in
+// the upstream packages.
+const PER_REQUEST_ABSTRACTIONS = new Set<string>([
+    // @webiny/handler — current Fastify request
+    "Request",
+    // @webiny/api-headless-cms — current CMS context (captures
+    // request-scoped state via closures)
+    "CmsContext",
+    // @webiny/handler — current Webiny plugins container instance
+    "PluginsContainer"
+]);
+
 /**
  * Makes `@webiny/di`'s Container#register* methods idempotent.
  *
@@ -47,7 +63,7 @@ export const dedupeContainerRegistrations = (): void => {
     // We reach into them via the public API to cheaply check membership.
     proto.register = function (this: Container, implementation: unknown) {
         const existing = (
-            this as unknown as { registrations: Map<string, Array<{ implementation: unknown }>> }
+            this as unknown as { registrations: Map<symbol, Array<{ implementation: unknown }>> }
         ).registrations;
         const token = getToken(implementation);
         if (token) {
@@ -62,6 +78,23 @@ export const dedupeContainerRegistrations = (): void => {
         return originalRegister.call(this, implementation);
     };
 
+    // Token-level dedupe (first write wins) for `registerInstance` and
+    // `registerFactory`. Webiny's per-request ContextPlugins re-call
+    // these with fresh objects every request (e.g.
+    // `registerInstance(ModelCache, createMemoryCache())`). In the
+    // serverless runtime this is harmless — every Lambda invocation
+    // gets a fresh Container, so only the first call ever runs anyway.
+    // In a long-lived host the calls accumulate, and worse: singletons
+    // that captured the first instance see one cache while singletons
+    // constructed later see another — manifesting as silent staleness
+    // (e.g., updateModel clears one ModelCache but listModels reads
+    // from a different one).
+    //
+    // Some abstractions are genuinely per-request — `Request` is the
+    // current Fastify request — so token-level dedupe would freeze the
+    // first request's value forever. Those go through the OVERWRITE
+    // path: replace the existing registration so `resolve` always
+    // returns the current request's value.
     proto.registerInstance = function (
         this: Container,
         abstraction: unknown,
@@ -70,10 +103,18 @@ export const dedupeContainerRegistrations = (): void => {
         const token = readAbstractionToken(abstraction);
         const existing = (
             this as unknown as {
-                instanceRegistrations: Map<string, Array<{ instance: unknown }>>;
+                instanceRegistrations: Map<symbol, Array<{ instance: unknown }>>;
             }
         ).instanceRegistrations;
-        if (token && existing.get(token)?.some(r => r.instance === instance)) {
+        if (!token) {
+            originalRegisterInstance.call(this, abstraction, instance);
+            return;
+        }
+        if (isPerRequest(token)) {
+            existing.set(token, [{ instance }]);
+            return;
+        }
+        if (existing.has(token)) {
             return;
         }
         originalRegisterInstance.call(this, abstraction, instance);
@@ -85,8 +126,16 @@ export const dedupeContainerRegistrations = (): void => {
         factory: unknown
     ): void {
         const token = readAbstractionToken(abstraction);
-        const existing = (this as unknown as { factories: Map<string, Array<unknown>> }).factories;
-        if (token && existing.get(token)?.includes(factory)) {
+        const existing = (this as unknown as { factories: Map<symbol, Array<unknown>> }).factories;
+        if (!token) {
+            originalRegisterFactory.call(this, abstraction, factory);
+            return;
+        }
+        if (isPerRequest(token)) {
+            existing.set(token, [factory]);
+            return;
+        }
+        if (existing.has(token)) {
             return;
         }
         originalRegisterFactory.call(this, abstraction, factory);
@@ -95,7 +144,7 @@ export const dedupeContainerRegistrations = (): void => {
     proto.registerDecorator = function (this: Container, decorator: unknown): void {
         const token = getToken(decorator);
         const existing = (
-            this as unknown as { decorators: Map<string, Array<{ decoratorClass: unknown }>> }
+            this as unknown as { decorators: Map<symbol, Array<{ decoratorClass: unknown }>> }
         ).decorators;
         if (token && existing.get(token)?.some(r => r.decoratorClass === decorator)) {
             return;
@@ -110,7 +159,7 @@ export const dedupeContainerRegistrations = (): void => {
 // internal Metadata class (it's not exported from @webiny/di).
 const ABSTRACTION_KEY = "wby:abstraction";
 
-const getToken = (impl: unknown): string | undefined => {
+const getToken = (impl: unknown): symbol | undefined => {
     if (typeof impl !== "function" && typeof impl !== "object") {
         return undefined;
     }
@@ -120,16 +169,21 @@ const getToken = (impl: unknown): string | undefined => {
         }
     ).Reflect;
     const abstraction = reflect?.getMetadata?.(ABSTRACTION_KEY, impl) as
-        | { token?: string }
+        | { token?: symbol }
         | undefined;
     return abstraction?.token;
 };
 
-const readAbstractionToken = (abstraction: unknown): string | undefined => {
+const readAbstractionToken = (abstraction: unknown): symbol | undefined => {
     if (!abstraction || typeof abstraction !== "object") {
         return undefined;
     }
-    return (abstraction as { token?: string }).token;
+    return (abstraction as { token?: symbol }).token;
+};
+
+const isPerRequest = (token: symbol): boolean => {
+    const name = token.description;
+    return name !== undefined && PER_REQUEST_ABSTRACTIONS.has(name);
 };
 
 class InertRegistrationBuilder {
