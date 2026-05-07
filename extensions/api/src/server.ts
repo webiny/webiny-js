@@ -1,4 +1,7 @@
+import { existsSync } from "node:fs";
+import fastifyStatic from "@fastify/static";
 import { createServer, RoutePlugin } from "@webiny/handler-node";
+import { createModifyFastifyPlugin } from "@webiny/handler";
 import { createDatabase, migrate } from "@webiny/db-sqlite";
 import { createApiCoreSqlite } from "@webiny/api-core-sqlite";
 import { createApiCore } from "@webiny/api-core";
@@ -33,6 +36,11 @@ const HOST = process.env.HOST ?? "0.0.0.0";
 const SQLITE_FILE = process.env.SQLITE_FILE ?? ":memory:";
 const FILES_DIR = process.env.FILES_DIR ?? "/data/files";
 const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL ?? "";
+// Where the prebuilt Admin SPA bundle lives — Dockerfile copies
+// extensions/admin/build/ into /app/admin. Unset (or pointing at a
+// missing path) disables the static plugin entirely; explicit API
+// routes keep working.
+const ADMIN_BUILD_DIR = process.env.ADMIN_BUILD_DIR ?? "/app/admin";
 
 // Wrapped in an IIFE because Rspack bundles `require()`-based dependencies
 // alongside our ESM source; mixing top-level await with bundled require()
@@ -199,6 +207,39 @@ const main = async () => {
                 onGet("/tenants", async (_, reply) => {
                     const tenants = await storageOperations.tenancyStorageOperations.listTenants();
                     return reply.send({ tenants });
+                });
+            }),
+
+            // Admin SPA — served from the same Fastify process so the
+            // container is fully self-contained (no nginx/CloudFront in
+            // POC). Registered last via ModifyFastifyPlugin so explicit
+            // API routes (/graphql, /health, /tenants) keep winning.
+            // setNotFoundHandler sends index.html for any unmatched HTML
+            // request so the admin's client-side router can take over
+            // for deep links like /cms/content-models.
+            createModifyFastifyPlugin(app => {
+                if (!existsSync(ADMIN_BUILD_DIR)) {
+                    app.log.warn(
+                        { adminBuildDir: ADMIN_BUILD_DIR },
+                        "ADMIN_BUILD_DIR does not exist — admin SPA will not be served"
+                    );
+                    return;
+                }
+                app.register(fastifyStatic, {
+                    root: ADMIN_BUILD_DIR,
+                    prefix: "/",
+                    wildcard: false
+                });
+                app.setNotFoundHandler((request, reply) => {
+                    const accepts = request.headers.accept ?? "";
+                    if (request.method === "GET" && accepts.includes("text/html")) {
+                        return reply.sendFile("index.html");
+                    }
+                    return reply.code(404).send({
+                        message: `Route ${request.method}:${request.url} not found`,
+                        error: "Not Found",
+                        statusCode: 404
+                    });
                 });
             })
         ],

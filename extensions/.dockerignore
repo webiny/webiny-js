@@ -1,0 +1,15 @@
+# Only the bundled outputs ship in the image. Everything else is
+# build-time only. Build context is `./extensions` (set in
+# docker-compose.yml) so paths here are relative to that.
+api/src/
+api/node_modules/
+api/package.json
+api/tsconfig.json
+api/webiny.config.ts
+admin/src/
+admin/node_modules/
+admin/package.json
+admin/tsconfig.json
+admin/webiny.config.ts
+theme/
+*.log

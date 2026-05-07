@@ -4,13 +4,16 @@
 # docs/container-refactor/07-developer-guide.md):
 #
 #   yarn install
+#   yarn build:admin          # builds extensions/admin/build/ (SPA)
 #   yarn build:server         # builds extensions/api/build/server.mjs
 #   docker compose up
+#
+#   open http://localhost:8080             # Webiny Admin UI (login via Keycloak)
 #
 #   # In another terminal:
 #   curl http://localhost:8080/health      # → {"status":"ok"}
 #   curl http://localhost:8080/tenants     # → root tenant
-#   open http://localhost:8180             # Keycloak admin (admin / admin)
+#   open http://localhost:8180             # Keycloak admin console (admin / admin)
 #   open http://localhost:8025             # Mailpit UI
 #
 # Tear down (preserves volumes):
@@ -21,8 +24,9 @@
 #
 # Services:
 #   api      :8080  Webiny API (Fastify long-lived process). /health probe,
-#                   /cms-manage and /cms-read GraphQL endpoints backed by
-#                   SQLite. JWT validation against Keycloak.
+#                   /graphql GraphQL endpoint backed by SQLite, JWT validation
+#                   against Keycloak. Also serves the prebuilt Admin SPA at /
+#                   via @fastify/static (with SPA fallback for deep links).
 #   keycloak :8180  OIDC Identity Provider. Realm "webiny" is seeded from
 #                   deploy/keycloak/webiny-realm.json with one dev user
 #                   (admin@webiny.local / webiny).
@@ -32,8 +36,8 @@
 services:
   api:
     build:
-      context: ./extensions/api
-      dockerfile: Dockerfile
+      context: ./extensions
+      dockerfile: api/Dockerfile
     image: webiny-poc-api:latest
     container_name: webiny-poc-api
     ports:

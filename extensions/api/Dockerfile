@@ -1,17 +1,26 @@
 # Webiny container API.
 #
 # Assumes the bundled server has already been produced via `createBuildServer`
-# (yarn build:server). The image installs only the externalized native deps
+# (yarn build:server) AND the bundled Admin SPA via `createBuildAdmin` (yarn
+# build:admin). The image installs only the externalized native deps
 # (better-sqlite3 and friends) — everything else is bundled into server.mjs.
 # A self-contained build (yarn install + bundle inside the image) is a
 # follow-on optimization.
+#
+# Build context: must be `./extensions` (the parent of api/ and admin/) so
+# the admin SPA bundle is reachable. docker-compose.yml sets this.
 
 FROM node:22-bookworm-slim
 
 WORKDIR /app
 
 # Copy the pre-built server bundle.
-COPY build/ ./build/
+COPY api/build/ ./build/
+
+# Copy the pre-built Admin SPA. server.ts looks at ADMIN_BUILD_DIR
+# (default /app/admin) and mounts @fastify/static if the directory
+# exists, so omitting this layer is acceptable for API-only images.
+COPY admin/build/ ./admin/
 
 # Externalized native deps — must match the externals list in
 # packages/build-tools/bundling/server/createRsbuildConfig.js. better-sqlite3
@@ -24,6 +33,7 @@ RUN npm install --omit=dev --no-save \
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=8080
+ENV ADMIN_BUILD_DIR=/app/admin
 
 EXPOSE 8080
 
