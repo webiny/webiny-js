@@ -10,7 +10,7 @@ export const createRsbuildConfig = async ({ cwd }) => {
     const mode = getMode();
 
     return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
-        source: { entry: { index: paths.fn.entryFile }, tsconfigPath: paths.fn.tsConfig },
+        source: { entry: { index: paths.fn.entryFile } },
         output: {
             module: true,
             target: "node",

@@ -17,8 +17,7 @@ export const createRsbuildConfig = ({ cwd }) => {
             entry: {
                 index: paths.admin.entryFile
             },
-            define: envVars,
-            tsconfigPath: paths.admin.tsConfig
+            define: envVars
         },
         resolve: {
             alias: {
