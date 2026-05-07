@@ -20,6 +20,8 @@ import { createWebsiteBuilder } from "@webiny/api-website-builder";
 import { createWebsiteBuilderWorkflows } from "@webiny/api-website-builder-workflows";
 import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
+import { createWebsockets } from "@webiny/api-websockets";
+import { MemoryConnectionRegistry, NoopTransport } from "@webiny/api-websockets-memory";
 import graphqlPlugins from "@webiny/handler-graphql";
 
 const PORT = Number.parseInt(process.env.PORT ?? "8080", 10);
@@ -133,9 +135,16 @@ const main = async () => {
             createHcmsTasks(),
             createBackgroundTasks(),
 
-            // Skipped in cluster 3 (deferred to stage 10 / runtime services):
-            //   - createWebsockets — internal DDB connection registry; needs
-            //     an in-memory adapter.
+            // WebSockets — uses the registry + transport injection added
+            // to api-websockets in stage 10 / cluster 10a. In-memory
+            // connection registry (single-process Map) + no-op transport
+            // (real WS server via @fastify/websocket is a follow-on slice).
+            createWebsockets({
+                registry: new MemoryConnectionRegistry(),
+                transport: new NoopTransport()
+            }),
+
+            // Still skipped (stage 10 / cluster 10b):
             //   - createScheduler / createHeadlessCmsScheduler /
             //     createWebsiteBuilderScheduler — api-scheduler reads from
             //     `context.db.driver.getClient() as DynamoDBDocument` for
