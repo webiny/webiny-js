@@ -59,6 +59,15 @@ interface BuildFunctionConfig {
 export function createBuildFunction(options: BuildFunctionConfig): BuildCommand;
 export function createWatchFunction(options: BuildFunctionConfig): BuildCommand;
 
+// Build commands - long-lived Node servers (containers).
+interface BuildServerConfig {
+    [key: string]: any;
+    cwd: string;
+    debug?: boolean;
+}
+
+export function createBuildServer(options?: BuildServerConfig): BuildCommand;
+
 // Build commands - packages.
 interface BuildPackageConfig {
     [key: string]: any;
