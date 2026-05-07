@@ -159,6 +159,33 @@ const main = async () => {
     }
 
     // -----------------------------------------------------------------------
+    // Bootstrap — File Manager `srcPrefix` so the Admin UI can build
+    // image URLs as `${srcPrefix}${file.key}`. The serverless install
+    // flow seeds this from CloudFront's domain; the container POC
+    // skips installation, so we have to seed it ourselves. Without it
+    // file URLs come out as bare keys (e.g. `<uuid>.png`) and the
+    // browser resolves them against the current page path.
+    // -----------------------------------------------------------------------
+    const FILE_MANAGER_SETTINGS_KEY = "FileManager/General";
+    const fmDefaultSrcPrefix = `${PUBLIC_BASE_URL || "http://localhost:8080"}/files/`;
+    const existingFmSettings = await storageOperations.keyValueStorageOperations.get(
+        FILE_MANAGER_SETTINGS_KEY,
+        "root"
+    );
+    if (!existingFmSettings) {
+        await storageOperations.keyValueStorageOperations.set(
+            FILE_MANAGER_SETTINGS_KEY,
+            {
+                uploadMinFileSize: 0,
+                uploadMaxFileSize: 10737418240,
+                srcPrefix: fmDefaultSrcPrefix
+            },
+            "root"
+        );
+        console.log(`Bootstrapped File Manager settings (srcPrefix=${fmDefaultSrcPrefix}).`);
+    }
+
+    // -----------------------------------------------------------------------
     // Server — api-core context (tenancy, security, adminUsers, KV) over the
     // SQLite storage layer, plus the GraphQL handler and a /tenants
     // diagnostic route that exercises the storage layer end-to-end. Keycloak
