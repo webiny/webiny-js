@@ -31,11 +31,15 @@ const buildPayload = (input: PreSignedPostPayloadInput, params: CreateFsGraphQLS
 
     return {
         // Mirrors the S3 PresignedPost shape: `data` is the JSON the client
-        // submits as the multipart form's body. For the FS path we just
-        // need the URL; no signed fields.
+        // submits as the multipart form's body. The browser appends each
+        // entry of `fields` to the form before the file part, so the
+        // upload route can read the same `key` we promised here. Without
+        // it the route would generate its own key and the file metadata
+        // saved by the Admin UI (which keys off the pre-signed value)
+        // would point at a non-existent path.
         data: {
             url: params.uploadUrl,
-            fields: {}
+            fields: { key }
         },
         file: {
             id: input.id ?? randomUUID(),
