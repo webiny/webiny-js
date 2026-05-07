@@ -1,23 +1,33 @@
-# Container deployment POC — full stack as of Stage 5.
+# Webiny container deployment — POC stack.
 #
-# Prerequisite: build the server bundle first.
+# Quickstart (also documented in detail in
+# docs/container-refactor/07-developer-guide.md):
 #
-#   yarn build:server     (alias defined in root package.json)
-#
-# Then:
-#
+#   yarn install
+#   yarn build:server         # builds extensions/api/build/server.mjs
 #   docker compose up
 #
+#   # In another terminal:
+#   curl http://localhost:8080/health      # → {"status":"ok"}
+#   curl http://localhost:8080/tenants     # → root tenant
+#   open http://localhost:8180             # Keycloak admin (admin / admin)
+#   open http://localhost:8025             # Mailpit UI
+#
+# Tear down (preserves volumes):
+#   docker compose down
+#
+# Tear down + wipe state (reset the SQLite DB and uploaded files):
+#   docker compose down -v
+#
 # Services:
-#   - api      :8080  Webiny API (Fastify long-lived process). /health probe,
-#                     /cms-manage GraphQL endpoint backed by SQLite. Validates
-#                     JWTs issued by the Keycloak service below.
-#   - keycloak :8180  OIDC Identity Provider. Realm "webiny" is seeded from
-#                     deploy/keycloak/webiny-realm.json with one dev user
-#                     (admin@webiny.local / webiny).
-#   - mailpit  :8025  SMTP catcher. Mailer transport in api can point at
-#                     mailpit:1025 to capture outgoing email; Mailpit's UI is
-#                     on :8025 for inspection.
+#   api      :8080  Webiny API (Fastify long-lived process). /health probe,
+#                   /cms-manage and /cms-read GraphQL endpoints backed by
+#                   SQLite. JWT validation against Keycloak.
+#   keycloak :8180  OIDC Identity Provider. Realm "webiny" is seeded from
+#                   deploy/keycloak/webiny-realm.json with one dev user
+#                   (admin@webiny.local / webiny).
+#   mailpit  :8025  SMTP catcher. Mailer transport in api points at
+#                   mailpit:1025; Mailpit's web UI is on :8025.
 
 services:
   api:
@@ -33,18 +43,22 @@ services:
       PORT: 8080
       # Where the SQLite database lives (mounted volume below).
       SQLITE_FILE: /data/webiny.db
-      # File-manager-fs upload directory and the public base URL the api
-      # exposes externally — used to construct file URLs in upload payloads.
+      # File-manager-fs upload directory and the public base URL the
+      # api exposes externally — used to construct file URLs in
+      # upload payloads.
       FILES_DIR: /data/files
       PUBLIC_BASE_URL: http://localhost:8080
-      # Issuer + JWKS used by the JWT/OIDC validator. The api waits for
-      # Keycloak to be reachable via the depends_on health condition.
+      # Issuer + JWKS used by the JWT/OIDC validator. The api waits
+      # for Keycloak to be reachable via the depends_on health
+      # condition below.
       OIDC_ISSUER: http://keycloak:8080/realms/webiny
       OIDC_JWKS_URL: http://keycloak:8080/realms/webiny/protocol/openid-connect/certs
       OIDC_AUDIENCE: webiny-api
       # SMTP relay (Mailpit captures everything for inspection).
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
+      # Quiet pino in dev. Set to "debug" or "trace" for more output.
+      LOG_LEVEL: info
     volumes:
       - webiny_data:/data
     depends_on:
@@ -53,6 +67,20 @@ services:
       mailpit:
         condition: service_started
     restart: unless-stopped
+    # The Dockerfile already declares a HEALTHCHECK (curl /health) —
+    # repeated here only to make the compose-level health visible.
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:8080/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 10s
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0
@@ -80,6 +108,7 @@ services:
       timeout: 5s
       retries: 30
       start_period: 30s
+    restart: unless-stopped
 
   mailpit:
     image: axllent/mailpit:v1.21
