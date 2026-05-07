@@ -18,11 +18,24 @@ import { SchedulerGraphQLFactory } from "~/graphql/index.js";
 import { SchedulerPermissionsFeature } from "~/features/permissions/feature.js";
 import { NamespaceHandlerExecutioner } from "~/features/NamespaceHandler/NamespaceHandlerExecutioner.js";
 
-export interface ICreateHeadlessCmsSchedulerContextParams {
-    getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
+export interface ICreateSchedulerContextParams {
+    /**
+     * @deprecated Pass `schedulerService` directly. This path reads the
+     * AWS scheduler manifest from DynamoDB and builds an
+     * `EventBridgeSchedulerService` — i.e., the legacy serverless flow.
+     * Container deployments supply `schedulerService` instead.
+     */
+    getClient?(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
+    /**
+     * Pre-built scheduler service. Container deployments supply a
+     * `NodeSchedulerService` from `@webiny/api-scheduler-cron`. When set,
+     * the manifest read + `EventBridgeSchedulerService` construction is
+     * skipped entirely.
+     */
+    schedulerService?: SchedulerService.Interface;
 }
 
-export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContextParams) => {
+export const createSchedulerContext = (params: ICreateSchedulerContextParams = {}) => {
     return new ContextPlugin<CmsContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
         const getModel = context.container.resolve(GetModelUseCase);
@@ -31,21 +44,35 @@ export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContex
             return;
         }
 
-        const manifest = await getManifest({
-            client: context.db.driver.getClient() as DynamoDBDocument
-        });
-
-        if (manifest.error) {
-            context.container.registerInstance(SchedulerService, new VoidSchedulerService());
+        // Container path — caller injected a SchedulerService; skip the
+        // manifest read entirely and use what was given.
+        if (params.schedulerService) {
+            context.container.registerInstance(SchedulerService, params.schedulerService);
         } else {
-            // TODO: in the future, extract AWS specific implementation into a separate package
-            context.container.registerInstance(
-                SchedulerService,
-                new EventBridgeSchedulerService(params.getClient, {
-                    lambdaArn: manifest.data.lambdaArn,
-                    roleArn: manifest.data.roleArn
-                })
-            );
+            // Legacy serverless path — read the AWS scheduler manifest from
+            // DDB and construct an EventBridgeSchedulerService (or a
+            // VoidSchedulerService if the manifest is missing).
+            if (!params.getClient) {
+                throw new Error(
+                    "createScheduler: either `schedulerService` or `getClient` must be provided."
+                );
+            }
+
+            const manifest = await getManifest({
+                client: context.db.driver.getClient() as DynamoDBDocument
+            });
+
+            if (manifest.error) {
+                context.container.registerInstance(SchedulerService, new VoidSchedulerService());
+            } else {
+                context.container.registerInstance(
+                    SchedulerService,
+                    new EventBridgeSchedulerService(params.getClient, {
+                        lambdaArn: manifest.data.lambdaArn,
+                        roleArn: manifest.data.roleArn
+                    })
+                );
+            }
         }
 
         SchedulerPermissionsFeature.register(context.container);

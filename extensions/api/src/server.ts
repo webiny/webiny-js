@@ -22,6 +22,10 @@ import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
 import { createWebsockets } from "@webiny/api-websockets";
 import { MemoryConnectionRegistry, NoopTransport } from "@webiny/api-websockets-memory";
+import { createScheduler } from "@webiny/api-scheduler";
+import { NodeSchedulerService } from "@webiny/api-scheduler-cron";
+import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
+import { createWebsiteBuilderScheduler } from "@webiny/api-website-builder-scheduler";
 import graphqlPlugins from "@webiny/handler-graphql";
 
 const PORT = Number.parseInt(process.env.PORT ?? "8080", 10);
@@ -144,11 +148,18 @@ const main = async () => {
                 transport: new NoopTransport()
             }),
 
-            // Still skipped (stage 10 / cluster 10b):
-            //   - createScheduler / createHeadlessCmsScheduler /
-            //     createWebsiteBuilderScheduler — api-scheduler reads from
-            //     `context.db.driver.getClient() as DynamoDBDocument` for
-            //     manifest storage; needs node-cron impl + storage swap.
+            // Scheduler — uses the schedulerService injection added to
+            // api-scheduler in stage 10 / cluster 10b. NodeSchedulerService
+            // arms setTimeout-backed timers in-process; firing currently
+            // logs (the runtime dispatch back into the scheduled-action
+            // event handler is a follow-on). With this in place the CMS
+            // and website-builder scheduler plugins (which only consume
+            // the SchedulerService abstraction) also boot clean.
+            createScheduler({
+                schedulerService: new NodeSchedulerService()
+            }),
+            createHeadlessCmsScheduler(),
+            createWebsiteBuilderScheduler(),
 
             new RoutePlugin(({ onGet }) => {
                 onGet("/tenants", async (_, reply) => {
