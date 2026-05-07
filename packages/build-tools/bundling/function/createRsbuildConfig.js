@@ -3,8 +3,7 @@ import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import { createImportValidatorPlugin } from "../importValidatorPlugin.js";
 
 export const createRsbuildConfig = async ({ cwd }) => {
-    // Lazy import: @rspack/core uses import.meta.dirname at module top level, which
-    // tsx's CJS transformer can't handle. Deferring keeps the module safe to require().
+    // Must be a dynamic import — see rslibCompile.js for the reason.
     const { default: rspack } = await import("@rspack/core");
     const paths = getPaths(cwd);
     const mode = getMode();

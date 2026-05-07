@@ -2,31 +2,9 @@ import path from "path";
 import fs from "fs";
 import { dirname } from "path";
 import glob from "fast-glob";
-import { createRslib } from "@rslib/core";
-import { pluginReact } from "@rsbuild/plugin-react";
 
 const COMPILE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx"];
 const SKIP_EXTENSIONS = [".d.ts"];
-
-const createRslibConfig = () => ({
-    lib: [
-        {
-            format: "esm",
-            bundle: false
-        }
-    ],
-    source: {
-        entry: ["./src/**/*.{ts,tsx,js,jsx}"],
-        alias: { "~": "./src" }
-    },
-    output: {
-        target: "web",
-        distPath: { root: "./dist" },
-        cleanDistPath: false,
-        sourceMap: { js: "source-map" }
-    },
-    plugins: [pluginReact()]
-});
 
 export const rslibCompile = async ({ cwd }) => {
     // Copy non-compilable files (assets, json, graphql, etc.) as-is.
@@ -44,10 +22,30 @@ export const rslibCompile = async ({ cwd }) => {
         }
     }
 
+    // Must be a dynamic import. @rslib/core statically loads rspack's native
+    // binding. Workers that also run createBuildAdmin load a different rspack
+    // version via rsbuild, so two native binaries end up in the same process
+    // and cause a SIGSEGV. Deferring the import keeps each rspack isolated to
+    // the workers that actually need it.
+    const { createRslib } = await import("@rslib/core");
+
     const rslib = await createRslib({
         cwd,
-        config: createRslibConfig()
+        config: {
+            lib: [{ format: "esm", bundle: false }],
+            source: {
+                entry: ["./src/**/*.{ts,tsx,js,jsx}"],
+                alias: { "~": "./src" }
+            },
+            output: {
+                target: "web",
+                distPath: { root: "./dist" },
+                cleanDistPath: false,
+                sourceMap: { js: "source-map" }
+            }
+        }
     });
 
-    await rslib.build();
+    const { close } = await rslib.build();
+    await close();
 };
