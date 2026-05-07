@@ -16,6 +16,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@webiny/di": "^0.2.3",
     "@webiny/handler": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "fastify": "5.8.5"

@@ -14789,6 +14789,7 @@ __metadata:
   resolution: "@webiny/handler-node@workspace:packages/handler-node"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^0.2.3"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     fastify: "npm:5.8.5"
