@@ -1,4 +1,4 @@
-import type { OnSortingChange } from "@webiny/ui/DataTable/index.js";
+import type { OnDataTableSortingChange } from "@webiny/admin-ui";
 import type { ColumnSorting } from "@webiny/app-utils";
 import { SortingMapper } from "@webiny/app-utils";
 import type { IListItemsUseCase, ISortItemsUseCase } from "~/UseCases/index.js";
@@ -16,7 +16,7 @@ export class SortItemsController implements ISortItemsController {
         this.sortItemsUseCaseFactory = sortItemsUseCaseFactory;
     }
 
-    public execute: OnSortingChange = async updaterOrValue => {
+    public execute: OnDataTableSortingChange = async updaterOrValue => {
         let newSorts: ColumnSorting[] = [];
 
         if (typeof updaterOrValue === "function") {
