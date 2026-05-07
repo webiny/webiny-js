@@ -72,7 +72,6 @@ export const useAuditLogsList = (): UseAuditLogs => {
     });
 
     useEffect(() => {
-        console.log("yeeey");
         if (!logs.data?.auditLogs.listAuditLogs.data) {
             return;
         }
