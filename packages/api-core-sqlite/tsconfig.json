@@ -1,12 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
-  "references": [
-    { "path": "../api" },
-    { "path": "../api-core" },
-    { "path": "../db-sqlite" },
-    { "path": "../error" }
-  ],
+  "references": [{ "path": "../api-core" }, { "path": "../db-sqlite" }, { "path": "../error" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
     "outDir": "./dist",
@@ -14,8 +9,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/db-sqlite/*": ["../db-sqlite/src/*"],
