@@ -36,9 +36,30 @@ import { EnsureFolderIsEmptyFeature } from "~/features/folder/EnsureFolderIsEmpt
 import { FOLDER_MODEL_ID, FolderModel } from "~/domain/folder/folder.model.js";
 import { FilterPrivateModel } from "~/filter/filter.model.js";
 
-interface CreateAcoContextParams {
+/**
+ * Factory that builds ACO storage operations given the request-scoped CMS
+ * context. Container deployments supply a SQLite-backed factory; the
+ * serverless path uses the DDB-backed default that's built internally from
+ * `documentClient`.
+ */
+export type AcoStorageOperationsFactory = (
+    context: AcoContext
+) => Promise<import("~/types.js").AcoStorageOperations>;
+
+export interface CreateAcoContextParams {
+    /**
+     * @deprecated Pass `storageOperationsFactory` instead. Kept for
+     * backwards compatibility — when set, an internal DDB-backed factory is
+     * built from it. Will be removed in a future major.
+     */
+    documentClient?: DynamoDBDocument;
+    /**
+     * Factory that builds the ACO storage operations from the request-scoped
+     * CMS context. New preferred input. If both this and `documentClient`
+     * are provided, this wins and `documentClient` is ignored.
+     */
+    storageOperationsFactory?: AcoStorageOperationsFactory;
     useFolderLevelPermissions?: boolean;
-    documentClient: DynamoDBDocument;
 }
 
 const setupAcoContext = async (
@@ -61,15 +82,21 @@ const setupAcoContext = async (
         return tenancy.getCurrentTenant();
     };
 
-    const storageOperations = await createAcoStorageOperations({
-        /**
-         * TODO: We need to figure out a way to pass "cms" from outside (e.g. apps/api/graphql)
-         */
-        cms: context.cms,
-        container: context.container,
-        documentClient: setupAcoContextParams.documentClient,
-        security
-    });
+    const storageOperations = setupAcoContextParams.storageOperationsFactory
+        ? await setupAcoContextParams.storageOperationsFactory(context)
+        : await (async () => {
+              if (!setupAcoContextParams.documentClient) {
+                  throw new Error(
+                      "createAcoContext: either `storageOperationsFactory` or `documentClient` must be provided."
+                  );
+              }
+              return createAcoStorageOperations({
+                  cms: context.cms,
+                  container: context.container,
+                  documentClient: setupAcoContextParams.documentClient,
+                  security
+              });
+          })();
 
     const flpCrudMethods = createFlpCrudMethods({
         getTenant,
