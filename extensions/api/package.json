@@ -6,6 +6,7 @@
   "dependencies": {
     "@webiny/api-core": "0.0.0",
     "@webiny/api-core-sqlite": "0.0.0",
+    "@webiny/api-file-manager-fs": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-headless-cms-sqlite": "0.0.0",
     "@webiny/build-tools": "0.0.0",
