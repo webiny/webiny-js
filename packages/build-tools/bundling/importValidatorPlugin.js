@@ -35,6 +35,8 @@ const whitelist = [
     "@webiny/api-record-locking",
     "@webiny/api-website-builder",
     "@webiny/api-website-builder-workflows",
+    "@webiny/api-websockets",
+    "@webiny/api-websockets-memory",
     "@webiny/api-workflows",
     "@webiny/db-sqlite"
 ];

@@ -23,6 +23,8 @@
     "@webiny/api-record-locking": "0.0.0",
     "@webiny/api-website-builder": "0.0.0",
     "@webiny/api-website-builder-workflows": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
+    "@webiny/api-websockets-memory": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/db-sqlite": "0.0.0",
