@@ -74,12 +74,12 @@ export const createFileRoutesPlugins = (params: CreateFileRoutesPluginsParams) =
                 return reply.code(400).send({ error: "No file part provided." });
             }
 
-            return reply.send({
-                key: writtenKey,
-                name: written.name,
-                type: written.type,
-                size: written.size
-            });
+            // 204 No Content matches S3's pre-signed POST response.
+            // app-file-manager-s3's SimpleUploadStrategy hard-codes a
+            // `xhr.status === 204` success check (it already has the
+            // file metadata from the GraphQL pre-sign step), so any
+            // 200-with-body would be treated as failure by the Admin UI.
+            return reply.code(204).send();
         });
     });
     uploadRoute.name = "fileManagerFs.upload";
