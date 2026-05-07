@@ -74,8 +74,6 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
             return false;
         }
 
-        console.log("form data", data);
-
         runInAction(() => {
             this.saving = true;
             this.error = null;
@@ -95,6 +93,14 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
                 this.saving = false;
             });
         }
+    }
+
+    importData(data: Record<string, unknown>): void {
+        if (!this.form) {
+            return;
+        }
+        const current = this.form.getData();
+        this.form.setData({ ...current, ...data } as IAiPowerUpsSettings);
     }
 
     private collectGroups(): CollectedGroup[] {

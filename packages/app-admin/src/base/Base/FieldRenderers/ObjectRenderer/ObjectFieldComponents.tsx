@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { Accordion, Button, IconButton } from "@webiny/admin-ui";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
@@ -12,11 +12,6 @@ import type {
 } from "~/features/formModel/index.js";
 import { LayoutNodeRenderer } from "~/features/formModel/FormView.js";
 import { resolveItemTitle } from "./resolveItemTitle.js";
-
-export const isObjectFieldVM = (field: IFieldVM): field is IObjectFieldVM => {
-    return field.type === "object";
-};
-
 /**
  * Walks a resolved layout sub-tree. Used by dynamic-zone renderers to render
  * a templated object's children via per-template layouts (Phase 8c).
@@ -42,6 +37,17 @@ export interface ListItemRendererProps {
 
 export const ListItemRenderer = observer(
     ({ item, index, total, label, itemTitle, disabled }: ListItemRendererProps) => {
+        const [open, setOpen] = useState(false);
+        const hasFocusRequest = item.fields.some(f => f.focusRequested);
+
+        useEffect(() => {
+            if (hasFocusRequest) {
+                setOpen(true);
+                const focused = item.fields.find(f => f.focusRequested);
+                focused?.clearFocusRequest();
+            }
+        }, [hasFocusRequest]);
+
         const actions = (
             <>
                 <IconButton
@@ -83,7 +89,8 @@ export const ListItemRenderer = observer(
                 <Accordion.Item
                     title={resolveItemTitle(item, index, label, itemTitle)}
                     actions={disabled ? null : actions}
-                    defaultOpen={false}
+                    open={open}
+                    onOpenChange={setOpen}
                 >
                     <NestedLayout layout={item.layout} />
                 </Accordion.Item>

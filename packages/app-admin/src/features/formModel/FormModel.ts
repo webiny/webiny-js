@@ -141,6 +141,19 @@ export class FormModel implements IFormModel {
             let current: IField | undefined = this._fields.get(parts[0]);
             for (let i = 1; i < parts.length && current; i++) {
                 if (isObjectField(current)) {
+                    if (current.isList) {
+                        const index = parseInt(parts[i], 10);
+                        if (!isNaN(index)) {
+                            const item = current.items[index];
+                            if (item && i + 1 < parts.length) {
+                                current = item.children.get(parts[i + 1]);
+                                i++;
+                            } else {
+                                current = undefined;
+                            }
+                            continue;
+                        }
+                    }
                     current = current.getChild(parts[i]);
                 } else {
                     current = undefined;
@@ -290,28 +303,37 @@ export class FormModel implements IFormModel {
         const ruleErrorPaths = new Set(this._formRuleErrors.filter(e => e.path).map(e => e.path));
         const errors: IFormError[] = [];
 
-        const collectErrors = (fields: Map<string, IField>, pathPrefix: string) => {
+        const collectErrors = (
+            fields: Map<string, IField>,
+            pathPrefix: string,
+            trail: string[]
+        ) => {
             for (const [, field] of fields) {
                 const path = pathPrefix ? `${pathPrefix}.${field.name}` : field.name;
+                const segment = field.config.label || field.name;
                 if (isObjectField(field)) {
                     if (field.config.isList) {
                         for (const [index, item] of field.items.entries()) {
-                            collectErrors(item.children, `${path}.${index}`);
+                            collectErrors(item.children, `${path}.${index}`, [
+                                ...trail,
+                                `${segment} [${index + 1}]`
+                            ]);
                         }
                     } else {
-                        collectErrors(field.children, path);
+                        collectErrors(field.children, path, [...trail, segment]);
                     }
                 } else if (field.vm.validation.isValid === false && !ruleErrorPaths.has(path)) {
                     errors.push({
                         path,
                         label: field.config.label,
+                        breadcrumb: [...trail, segment],
                         message: field.vm.validation.message || "Invalid value."
                     });
                 }
             }
         };
 
-        collectErrors(this._fields, "");
+        collectErrors(this._fields, "", []);
         return [...errors, ...this._formRuleErrors];
     }
 
@@ -373,7 +395,9 @@ export class FormModel implements IFormModel {
             errors: this.errors,
             isDirty: this.isDirty,
             isValid: this._isValid,
-            focusField: (path: string) => this.focusField(path)
+            focusField: (path: string) => this.focusField(path),
+            getData: () => this.getData() as Record<string, unknown>,
+            setData: (data: Record<string, unknown>) => this.setData(data)
         };
     }
 

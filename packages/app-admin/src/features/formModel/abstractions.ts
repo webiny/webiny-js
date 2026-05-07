@@ -619,6 +619,7 @@ export interface ILayoutModifier {
 export interface IFormError {
     path: string;
     label?: string;
+    breadcrumb?: string[];
     message: string;
 }
 
@@ -628,6 +629,8 @@ export interface IFormVM {
     isDirty: boolean;
     isValid: boolean | null;
     focusField(path: string): void;
+    getData(): Record<string, unknown>;
+    setData(data: Record<string, unknown>): void;
 }
 
 /**

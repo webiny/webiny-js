@@ -47,11 +47,13 @@ export const AiPowerUpsSettingsDialog = observer(() => {
             {vm.error ? (
                 <div className="text-destructive-default text-sm mb-4">{vm.error}</div>
             ) : null}
-            {vm.form ? <div className={"mb-md"}>
-                <FormErrors form={vm.form} />
-            </div> : null}
+            {vm.form ? (
+                <div className={"mb-md"}>
+                    <FormErrors form={vm.form} />
+                </div>
+            ) : null}
             <div className="flex flex-col gap-4">
-                {vm.form ? <FormView form={vm.form} /> : null}
+                {vm.form ? <FormView name="AI Power-Ups" form={vm.form} /> : null}
             </div>
         </Dialog>
     );

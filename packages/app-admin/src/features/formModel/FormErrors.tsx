@@ -24,13 +24,14 @@ export const FormErrors = observer(({ form }: FormErrorsProps) => {
                                 className="underline cursor-pointer"
                                 onClick={() => form.focusField(error.path)}
                             >
-                                {error.label ?? error.path}
+                                {error.breadcrumb
+                                    ? error.breadcrumb.join(" › ")
+                                    : error.label ?? error.path}
                             </button>
                         ) : (
                             error.label
                         )}
-                        {(error.label || error.path) && ": "}
-                        {error.message}
+                        : {error.message}
                     </li>
                 ))}
             </ul>

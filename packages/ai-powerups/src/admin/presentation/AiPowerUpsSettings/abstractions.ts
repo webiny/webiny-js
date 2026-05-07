@@ -12,6 +12,7 @@ export interface IAiPowerUpsSettingsPresenter {
     readonly vm: IAiPowerUpsSettingsVm;
     init(): Promise<void>;
     save(): Promise<boolean>;
+    importData(data: Record<string, unknown>): void;
 }
 
 export const AiPowerUpsSettingsPresenter = createAbstraction<IAiPowerUpsSettingsPresenter>(

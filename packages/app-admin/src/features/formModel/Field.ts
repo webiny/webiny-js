@@ -329,9 +329,7 @@ export class Field implements IField {
             addItem: (value?: unknown) => this._addItem(value),
             removeItem: (index: number) => this._removeItem(index),
             focusRequested: this._focusRequested,
-            clearFocusRequest: () => {
-                this._focusRequested = false;
-            }
+            clearFocusRequest: () => this.clearFocusRequest()
         };
     }
 
