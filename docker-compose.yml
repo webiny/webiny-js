@@ -33,6 +33,10 @@ services:
       PORT: 8080
       # Where the SQLite database lives (mounted volume below).
       SQLITE_FILE: /data/webiny.db
+      # File-manager-fs upload directory and the public base URL the api
+      # exposes externally — used to construct file URLs in upload payloads.
+      FILES_DIR: /data/files
+      PUBLIC_BASE_URL: http://localhost:8080
       # Issuer + JWKS used by the JWT/OIDC validator. The api waits for
       # Keycloak to be reachable via the depends_on health condition.
       OIDC_ISSUER: http://keycloak:8080/realms/webiny

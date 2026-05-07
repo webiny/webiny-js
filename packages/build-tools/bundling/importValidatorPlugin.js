@@ -20,6 +20,7 @@ const whitelist = [
     "@webiny/api-core-sqlite",
     "@webiny/api-headless-cms",
     "@webiny/api-headless-cms-sqlite",
+    "@webiny/api-file-manager-fs",
     "@webiny/db-sqlite"
 ];
 

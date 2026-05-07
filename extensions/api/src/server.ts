@@ -4,11 +4,14 @@ import { createApiCoreSqlite } from "@webiny/api-core-sqlite";
 import { createApiCore } from "@webiny/api-core";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { registerSqliteCmsStorageOperations } from "@webiny/api-headless-cms-sqlite";
+import { createFileManagerFs } from "@webiny/api-file-manager-fs";
 import graphqlPlugins from "@webiny/handler-graphql";
 
 const PORT = Number.parseInt(process.env.PORT ?? "8080", 10);
 const HOST = process.env.HOST ?? "0.0.0.0";
 const SQLITE_FILE = process.env.SQLITE_FILE ?? ":memory:";
+const FILES_DIR = process.env.FILES_DIR ?? "/data/files";
+const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL ?? "";
 
 // Wrapped in an IIFE because Rspack bundles `require()`-based dependencies
 // alongside our ESM source; mixing top-level await with bundled require()
@@ -65,6 +68,14 @@ const main = async () => {
             registerSqliteCmsStorageOperations({ db: database }),
             createHeadlessCmsContext(),
             createHeadlessCmsGraphQL(),
+
+            // File Manager — local-filesystem driver. Bytes are written to
+            // FILES_DIR (mounted volume in docker-compose). Multi-part /
+            // thumbnails / threat detection are out of scope for stage 7.
+            createFileManagerFs({
+                uploadDir: FILES_DIR,
+                baseUrl: PUBLIC_BASE_URL
+            }),
 
             new RoutePlugin(({ onGet }) => {
                 onGet("/tenants", async (_, reply) => {
