@@ -14,7 +14,7 @@ interface ShowDialogParams {
     message?: ReactNode;
     acceptLabel?: ReactNode;
     cancelLabel?: ReactNode;
-    loadingLabel?: ReactNode;
+    loadingLabel?: string;
     focusedFolderId: string;
     onAccept: (data: GenericFormData) => void;
     onClose?: () => void;

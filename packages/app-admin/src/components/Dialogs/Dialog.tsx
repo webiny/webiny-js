@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import React, { useEffect, useState } from "react";
-import { Dialog as AdminDialog, OverlayLoader } from "@webiny/admin-ui";
+import { Dialog as AdminDialog } from "@webiny/admin-ui";
 import type { FormOnSubmit, GenericFormData } from "@webiny/form";
 import { Form } from "@webiny/form";
 
@@ -13,8 +13,8 @@ export interface DialogProps {
     icon: ReactNode;
     acceptLabel?: ReactNode;
     cancelLabel?: ReactNode;
-    loadingLabel?: ReactNode;
-    dataLoadingLabel?: ReactNode;
+    loadingLabel?: string;
+    dataLoadingLabel?: string;
     onSubmit: (data: GenericFormData) => void;
     closeDialog: () => void;
     loading: boolean;
@@ -69,6 +69,13 @@ export const Dialog = ({
                     icon={<AdminDialog.Icon icon={props.icon} label={""} />}
                     dismissible={props.dismissible}
                     info={props.info}
+                    loading={
+                        loading
+                            ? { text: loadingLabel }
+                            : dataIsLoading
+                              ? { text: dataLoadingLabel }
+                              : false
+                    }
                     actions={
                         <>
                             {cancelLabel ? (
@@ -83,13 +90,7 @@ export const Dialog = ({
                         </>
                     }
                 >
-                    {open ? (
-                        <>
-                            {loading && <OverlayLoader text={loadingLabel} />}
-                            {dataIsLoading && <OverlayLoader text={dataLoadingLabel} />}
-                            {content}
-                        </>
-                    ) : null}
+                    {open ? content : null}
                 </AdminDialog>
             )}
         </Form>
