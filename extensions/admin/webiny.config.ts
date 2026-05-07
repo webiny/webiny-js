@@ -9,6 +9,7 @@ import { createBuildAdmin } from "@webiny/build-tools";
 // app-admin keys off REACT_APP_IDP_TYPE; "keycloak" hides the Cognito-
 // specific admin-account installer step.
 const defaults: Record<string, string> = {
+    REACT_APP_API_URL: "http://localhost:8080",
     REACT_APP_GRAPHQL_API_URL: "http://localhost:8080/graphql",
     REACT_APP_WEBSOCKET_URL: "ws://localhost:8080/ws",
     REACT_APP_KEYCLOAK_ISSUER: "http://localhost:8180/realms/webiny",
