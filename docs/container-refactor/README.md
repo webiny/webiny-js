@@ -16,11 +16,11 @@ This folder is the durable record of why we chose what we chose, and how the ref
 | 4 | [`04-test-strategy.md`](./04-test-strategy.md) | Vitest preset reuse, the new `sqlite` test variant, expected behavioral divergences between DDB and SQLite, end-to-end smoke approach. |
 | 5 | [`05-risks-and-mitigations.md`](./05-risks-and-mitigations.md) | Risks identified during planning (hidden coupling, breaking-change surfaces, perf concerns, etc.) and how each is mitigated. |
 | 6 | [`06-out-of-scope.md`](./06-out-of-scope.md) | What is intentionally deferred to a future phase and why (api-sync-system, AWS IoT watch mode, CloudFront/S3 admin UI hosting, SES). |
-| 7 | `07-developer-guide.md` *(written last)* | Getting-started guide for running Webiny locally with `docker compose up`. Added in the final stage of execution, once the stack is real. |
+| 7 | [`07-developer-guide.md`](./07-developer-guide.md) | Getting-started guide for running Webiny locally with `docker compose up`. Prerequisites, smoke checks, where things live, troubleshooting, and the honest list of current limitations. |
 
 ## Status
 
-Stage 1 (this docs folder) is being written first, before any code refactor begins. The architecture is locked in writing here so the design is reviewable on its own before we ship abstraction packages.
+The container POC is functional through stage 11 (DX polish). Stages 1–10 shipped the architecture, all the SQLite-backed storage operations packages, the local-FS file driver, the in-memory websockets adapter, and the in-process scheduler. The container API now boots without a single AWS SDK call on the request path. Read `07-developer-guide.md` for the practical "how do I run this" walkthrough and the canonical list of current limitations / follow-on work.
 
 ## Branches
 
