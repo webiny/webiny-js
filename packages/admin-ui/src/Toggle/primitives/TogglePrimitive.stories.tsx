@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import { ReactComponent as BoldIcon } from "@webiny/icons/format_bold.svg";
 import { TogglePrimitive } from "./TogglePrimitive.js";
 
 const meta: Meta<typeof TogglePrimitive> = {
@@ -28,6 +29,42 @@ export const Default: Story = {
 export const Checked: Story = {
     args: {
         label: "Toggle",
+        checked: true
+    }
+};
+
+export const WithIcon: Story = {
+    args: {
+        label: "Bold",
+        icon: <BoldIcon />
+    }
+};
+
+export const WithIconChecked: Story = {
+    args: {
+        label: "Bold",
+        icon: <BoldIcon />,
+        checked: true
+    }
+};
+
+export const WithIconTrailing: Story = {
+    args: {
+        label: "Bold",
+        icon: <BoldIcon />,
+        iconPosition: "end"
+    }
+};
+
+export const IconOnly: Story = {
+    args: {
+        icon: <BoldIcon />
+    }
+};
+
+export const IconOnlyChecked: Story = {
+    args: {
+        icon: <BoldIcon />,
         checked: true
     }
 };

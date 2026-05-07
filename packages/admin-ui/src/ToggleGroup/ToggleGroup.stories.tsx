@@ -1,12 +1,30 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import { ReactComponent as BoldIcon } from "@webiny/icons/format_bold.svg";
+import { ReactComponent as ItalicIcon } from "@webiny/icons/format_italic.svg";
+import { ReactComponent as UnderlineIcon } from "@webiny/icons/format_underlined.svg";
+import { ReactComponent as AlignLeftIcon } from "@webiny/icons/format_align_left.svg";
+import { ReactComponent as AlignCenterIcon } from "@webiny/icons/format_align_center.svg";
+import { ReactComponent as AlignRightIcon } from "@webiny/icons/format_align_right.svg";
 import { Tooltip } from "~/Tooltip/index.js";
 import { ToggleGroup } from "~/ToggleGroup/index.js";
 
-const items = [
+const textItems = [
     { value: "bold", label: "Bold" },
     { value: "italic", label: "Italic" },
     { value: "underline", label: "Underline" }
+];
+
+const iconItems = [
+    { value: "left", icon: <AlignLeftIcon /> },
+    { value: "center", icon: <AlignCenterIcon /> },
+    { value: "right", icon: <AlignRightIcon /> }
+];
+
+const iconTextItems = [
+    { value: "bold", label: "Bold", icon: <BoldIcon /> },
+    { value: "italic", label: "Italic", icon: <ItalicIcon /> },
+    { value: "underline", label: "Underline", icon: <UnderlineIcon /> }
 ];
 
 const meta: Meta<typeof ToggleGroup> = {
@@ -39,20 +57,32 @@ export default meta;
 type Story = StoryObj<typeof ToggleGroup>;
 
 export const Default: Story = {
-    args: { items, label: "Text formatting", bordered: true }
+    args: { items: textItems, label: "Text formatting", bordered: true }
+};
+
+export const IconOnly: Story = {
+    args: { items: iconItems, label: "Alignment", bordered: true }
+};
+
+export const IconOnlyGhost: Story = {
+    args: { items: iconItems, label: "Alignment", variant: "ghost", bordered: true }
+};
+
+export const WithIconAndText: Story = {
+    args: { items: iconTextItems, label: "Text formatting", bordered: true }
 };
 
 export const Outline: Story = {
-    args: { items, label: "Text formatting", variant: "outline", bordered: true }
+    args: { items: textItems, label: "Text formatting", variant: "outline", bordered: true }
 };
 
 export const Ghost: Story = {
-    args: { items, label: "Text formatting", variant: "ghost", bordered: true }
+    args: { items: textItems, label: "Text formatting", variant: "ghost", bordered: true }
 };
 
 export const WithDescription: Story = {
     args: {
-        items,
+        items: iconTextItems,
         label: "Text formatting",
         description: "Choose one or more formatting options.",
         bordered: true
@@ -61,8 +91,8 @@ export const WithDescription: Story = {
 
 export const WithNotes: Story = {
     args: {
-        items,
-        label: "Text formatting",
+        items: iconItems,
+        label: "Alignment",
         note: "Note: Formatting applies to selected text only.",
         bordered: true
     }
@@ -70,7 +100,7 @@ export const WithNotes: Story = {
 
 export const WithErrors: Story = {
     args: {
-        items,
+        items: textItems,
         label: "Text formatting",
         bordered: true,
         validation: { isValid: false, message: "Please select a formatting option." }
@@ -89,11 +119,11 @@ export const Multiple: Story = {
             />
         );
     },
-    args: { items, label: "Text formatting", bordered: true }
+    args: { items: iconTextItems, label: "Text formatting", bordered: true }
 };
 
 export const Disabled: Story = {
-    args: { items, label: "Text formatting", bordered: true, disabled: true }
+    args: { items: iconItems, label: "Alignment", bordered: true, disabled: true }
 };
 
 export const Documentation: Story = {
@@ -109,11 +139,11 @@ export const Documentation: Story = {
         );
     },
     args: {
-        items,
-        label: "Text formatting",
+        items: iconItems,
+        label: "Alignment",
         bordered: true,
-        description: "Choose a formatting option to apply to the selected text.",
-        note: "Note: Formatting applies to selected text only."
+        description: "Choose a text alignment option.",
+        note: "Note: Alignment applies to the selected paragraph."
     },
     argTypes: {
         label: { description: "Label above the group", control: "text" },
@@ -129,7 +159,7 @@ export const Documentation: Story = {
         size: {
             description: "Size of items",
             control: "select",
-            options: ["sm", "md", "lg", "xl"]
+            options: ["sm", "md"]
         },
         onChange: { description: "Called with the new value when selection changes" }
     }

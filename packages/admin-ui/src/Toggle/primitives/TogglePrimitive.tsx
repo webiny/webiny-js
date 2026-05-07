@@ -11,30 +11,30 @@ import type { ToggleItemDto, ToggleItemFormatted } from "../domains/index.js";
 
 const toggleVariants = cva(
     [
-        "border-sm border-transparent inline-flex items-center justify-center gap-xs whitespace-nowrap font-sans cursor-pointer transition-colors",
-        "focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed",
+        "border-sm inline-flex items-center justify-center gap-xs whitespace-nowrap font-sans cursor-pointer transition-colors",
+        "focus-visible:outline-none focus-visible:border-accent-default focus-visible:ring-lg focus-visible:ring-primary-dimmed",
         "disabled:pointer-events-none disabled:opacity-50"
     ],
     {
         variants: {
             variant: {
                 primary: [
-                    "bg-neutral-dimmed text-neutral-strong",
+                    "border-transparent bg-neutral-dimmed text-neutral-strong fill-neutral-strong",
                     "hover:bg-neutral-muted",
-                    "data-[state=on]:bg-neutral-xstrong data-[state=on]:text-neutral-light"
+                    "data-[state=on]:bg-neutral-xstrong data-[state=on]:text-neutral-light data-[state=on]:fill-neutral-light"
                 ],
                 outline: [
-                    "bg-neutral-base border-neutral-muted text-neutral-strong",
+                    "border-neutral-dimmed-darker bg-neutral-base text-neutral-strong fill-neutral-strong",
                     "hover:bg-neutral-light",
                     "data-[state=on]:bg-neutral-dimmed"
                 ],
                 ghost: [
-                    "bg-transparent text-neutral-strong",
+                    "border-transparent bg-transparent text-neutral-strong fill-neutral-strong",
                     "hover:bg-neutral-dimmed",
                     "data-[state=on]:bg-neutral-muted"
                 ],
                 "ghost-negative": [
-                    "bg-transparent text-neutral-light",
+                    "border-transparent bg-transparent text-neutral-light fill-neutral-light",
                     "hover:bg-neutral-base/20",
                     "data-[state=on]:bg-neutral-base/30"
                 ]

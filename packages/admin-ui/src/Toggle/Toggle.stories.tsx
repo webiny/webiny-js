@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import { ReactComponent as BoldIcon } from "@webiny/icons/format_bold.svg";
 import { Tooltip } from "~/Tooltip/index.js";
 import { Toggle } from "~/Toggle/index.js";
 
@@ -40,6 +41,34 @@ export const Default: Story = {
 export const Checked: Story = {
     args: {
         label: "Toggle",
+        checked: true
+    }
+};
+
+export const WithIcon: Story = {
+    args: {
+        label: "Bold",
+        icon: <BoldIcon />
+    }
+};
+
+export const WithIconChecked: Story = {
+    args: {
+        label: "Bold",
+        icon: <BoldIcon />,
+        checked: true
+    }
+};
+
+export const IconOnly: Story = {
+    args: {
+        icon: <BoldIcon />
+    }
+};
+
+export const IconOnlyChecked: Story = {
+    args: {
+        icon: <BoldIcon />,
         checked: true
     }
 };

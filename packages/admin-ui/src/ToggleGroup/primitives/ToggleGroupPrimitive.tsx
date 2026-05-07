@@ -11,30 +11,30 @@ import type { ToggleGroupItemFormatted, ToggleGroupItemParams } from "../domains
 
 const toggleGroupItemVariants = cva(
     [
-        "border-sm border-transparent inline-flex items-center justify-center gap-xs whitespace-nowrap font-sans cursor-pointer transition-colors rounded-sm",
-        "focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed",
+        "border-sm inline-flex items-center justify-center gap-xs whitespace-nowrap font-sans cursor-pointer transition-colors rounded-sm",
+        "focus-visible:outline-none focus-visible:border-accent-default focus-visible:ring-lg focus-visible:ring-primary-dimmed",
         "disabled:pointer-events-none disabled:opacity-50"
     ],
     {
         variants: {
             variant: {
                 primary: [
-                    "bg-neutral-dimmed text-neutral-strong",
+                    "border-transparent bg-neutral-dimmed text-neutral-strong fill-neutral-strong",
                     "hover:bg-neutral-muted",
-                    "data-[state=on]:bg-neutral-xstrong data-[state=on]:text-neutral-light"
+                    "data-[state=on]:bg-neutral-xstrong data-[state=on]:text-neutral-light data-[state=on]:fill-neutral-light"
                 ],
                 outline: [
-                    "bg-neutral-base border-neutral-muted text-neutral-strong",
+                    "border-neutral-dimmed-darker bg-neutral-base text-neutral-strong fill-neutral-strong",
                     "hover:bg-neutral-light",
                     "data-[state=on]:bg-neutral-dimmed"
                 ],
                 ghost: [
-                    "bg-transparent text-neutral-strong",
+                    "border-transparent bg-transparent text-neutral-strong fill-neutral-strong",
                     "hover:bg-neutral-dimmed",
                     "data-[state=on]:bg-neutral-muted"
                 ],
                 "ghost-negative": [
-                    "bg-transparent text-neutral-light",
+                    "border-transparent bg-transparent text-neutral-light fill-neutral-light",
                     "hover:bg-neutral-base/20",
                     "data-[state=on]:bg-neutral-base/30"
                 ]
@@ -42,22 +42,30 @@ const toggleGroupItemVariants = cva(
             size: {
                 sm: [
                     "text-sm [&>svg]:size-md",
-                    "p-[calc(var(--padding-xs)-(var(--border-width-sm)))]"
+                    "py-[calc(var(--padding-xs)-(var(--border-width-sm)))] px-[calc(var(--padding-sm)-(var(--border-width-sm)))]"
                 ],
                 md: [
                     "text-md [&>svg]:size-md",
-                    "p-[calc(var(--padding-sm)-(var(--border-width-sm)))]"
-                ],
-                lg: [
-                    "text-md [&>svg]:size-md-plus",
-                    "p-[calc(var(--padding-sm-plus)-(var(--border-width-sm)))]"
-                ],
-                xl: [
-                    "text-lg font-semibold [&>svg]:size-lg",
-                    "p-[calc(var(--padding-md)-(var(--border-width-sm)))]"
+                    "py-[calc(var(--padding-xs-plus)-(var(--border-width-sm)))] px-[calc(var(--padding-sm-extra)-(var(--border-width-sm)))]"
                 ]
+            },
+            contentLayout: {
+                text: "",
+                icon: ""
             }
         },
+        compoundVariants: [
+            {
+                size: "sm",
+                contentLayout: "icon",
+                className: "p-[calc(var(--padding-xs)-(var(--border-width-sm)))]"
+            },
+            {
+                size: "md",
+                contentLayout: "icon",
+                className: "p-[calc(var(--padding-sm)-(var(--border-width-sm)))]"
+            }
+        ],
         defaultVariants: {
             variant: "primary",
             size: "md"
@@ -72,7 +80,7 @@ const toggleGroupItemVariants = cva(
 const toggleGroupVariants = cva("inline-flex items-center", {
     variants: {
         bordered: {
-            true: "rounded-md border-sm border-neutral-muted p-xs",
+            true: "rounded-md border-sm border-neutral-dimmed-darker p-[calc(var(--padding-xs)-(var(--border-width-sm)))]",
             false: ""
         },
         variant: {
@@ -139,7 +147,6 @@ const ToggleGroupRenderer = ({
     disabled,
     className
 }: ToggleGroupRendererProps) => {
-    const itemClass = cn(toggleGroupItemVariants({ variant, size }));
     const containerClass = cn(toggleGroupVariants({ bordered, variant }), className);
 
     const radixProps = useMemo(() => {
@@ -159,18 +166,21 @@ const ToggleGroupRenderer = ({
 
     return (
         <ToggleGroupPrimitives.Root {...radixProps} disabled={disabled} className={containerClass}>
-            {items.map(item => (
-                <ToggleGroupPrimitives.Item
-                    key={item.id}
-                    value={item.value}
-                    disabled={item.disabled}
-                    className={itemClass}
-                >
-                    {item.iconPosition !== "end" && item.icon}
-                    {item.label}
-                    {item.iconPosition === "end" && item.icon}
-                </ToggleGroupPrimitives.Item>
-            ))}
+            {items.map(item => {
+                const contentLayout = !item.label && item.icon ? "icon" : "text";
+                return (
+                    <ToggleGroupPrimitives.Item
+                        key={item.id}
+                        value={item.value}
+                        disabled={item.disabled}
+                        className={cn(toggleGroupItemVariants({ variant, size, contentLayout }))}
+                    >
+                        {item.iconPosition !== "end" && item.icon}
+                        {item.label}
+                        {item.iconPosition === "end" && item.icon}
+                    </ToggleGroupPrimitives.Item>
+                );
+            })}
         </ToggleGroupPrimitives.Root>
     );
 };
