@@ -8,6 +8,8 @@ import { createFileManagerFs } from "@webiny/api-file-manager-fs";
 import { createAco } from "@webiny/api-aco";
 import { createAcoStorageOperationsSqlite } from "@webiny/api-aco-sqlite";
 import { createRecordLocking } from "@webiny/api-record-locking";
+import { createAuditLogs } from "@webiny/api-audit-logs";
+import { createSqliteAuditLogStorage } from "@webiny/api-audit-logs-sqlite";
 import graphqlPlugins from "@webiny/handler-graphql";
 
 const PORT = Number.parseInt(process.env.PORT ?? "8080", 10);
@@ -91,6 +93,16 @@ const main = async () => {
             // with whatever storage backend the CMS uses (SQLite here).
             // Zero changes needed.
             createRecordLocking(),
+
+            // Audit Logs — uses the new `storage` injection added to
+            // api-audit-logs in stage 9 / cluster 2. SQLite IStorage backs
+            // store + fetch fully; list filters fall back to scan-and-filter
+            // (DDB uses 10 GSIs; we don't have GSI2-10 in the single-table
+            // schema). Acceptable for POC volumes.
+            createAuditLogs({
+                deleteLogsAfterDays: undefined,
+                storage: createSqliteAuditLogStorage(database)
+            }),
 
             new RoutePlugin(({ onGet }) => {
                 onGet("/tenants", async (_, reply) => {
