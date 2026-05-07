@@ -14795,10 +14795,20 @@ __metadata:
   resolution: "@webiny/keycloak@workspace:packages/keycloak"
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.10"
+    "@types/react": "npm:18.3.27"
+    "@types/react-dom": "npm:18.3.7"
+    "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.3"
+    keycloak-js: "npm:^26.0.7"
+    mobx: "npm:^6.15.1"
+    mobx-react-lite: "npm:^4.1.1"
+    react: "npm:18.3.1"
+    react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"
   languageName: unknown
@@ -23416,6 +23426,13 @@ __metadata:
   version: 4.0.0
   resolution: "jwt-decode@npm:4.0.0"
   checksum: 10/87b569e4a9a0067fb0d592bcf3b2ac3e638e49beee28620eeb07bef1b4470f4077dea68c15d191dd68e076846c3af8394be3bcaecffedc6e97433b221fdbbcf3
+  languageName: node
+  linkType: hard
+
+"keycloak-js@npm:^26.0.7":
+  version: 26.2.4
+  resolution: "keycloak-js@npm:26.2.4"
+  checksum: 10/d12e595486160267b18d845e6587303298d38488161a9aaa4679a530315404078bdedf74d3e01f7472585f80983ce65b4b49fc323ceade2329e36c1507dc606c
   languageName: node
   linkType: hard
 
