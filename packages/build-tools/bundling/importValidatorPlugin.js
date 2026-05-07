@@ -42,7 +42,9 @@ const whitelist = [
     "@webiny/api-websockets",
     "@webiny/api-websockets-memory",
     "@webiny/api-workflows",
-    "@webiny/db-sqlite"
+    "@webiny/db-sqlite",
+    "@webiny/handler",
+    "@webiny/keycloak"
 ];
 
 export const createImportValidatorPlugin = () => {
