@@ -1,0 +1,8 @@
+# Only the bundled output ships in the image. Everything else is build-time only.
+src/
+node_modules/
+.babelrc.js
+package.json
+tsconfig.json
+webiny.config.ts
+*.log

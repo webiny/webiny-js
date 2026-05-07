@@ -1,0 +1,15 @@
+{
+  "name": "@webiny-poc/api-server",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/handler-node": "0.0.0",
+    "@webiny/plugins": "0.0.0"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
+}
