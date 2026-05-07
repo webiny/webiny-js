@@ -12,28 +12,31 @@ import type {
     CmsErrorResponse,
     CmsModel
 } from "~/types.js";
-import type {
-    CmsEntriesListRevisionsQueryResponse,
-    CmsEntriesListRevisionsQueryVariables,
-    CmsEntryBulkActionMutationResponse,
-    CmsEntryBulkActionMutationVariables,
-    CmsEntryCreateFromMutationResponse,
-    CmsEntryCreateFromMutationVariables,
-    CmsEntryCreateMutationResponse,
-    CmsEntryCreateMutationVariables,
-    CmsEntryDeleteMutationResponse,
-    CmsEntryDeleteMutationVariables,
-    CmsEntryGetQueryResponse,
-    CmsEntryGetQueryVariables,
-    CmsEntryGetSingletonQueryResponse,
-    CmsEntryPublishMutationResponse,
-    CmsEntryPublishMutationVariables,
-    CmsEntryUnpublishMutationResponse,
-    CmsEntryUnpublishMutationVariables,
-    CmsEntryUpdateMutationResponse,
-    CmsEntryUpdateMutationVariables,
-    CmsEntryUpdateSingletonMutationResponse,
-    CmsEntryUpdateSingletonMutationVariables
+import {
+    type CmsEntriesListRevisionsQueryResponse,
+    type CmsEntriesListRevisionsQueryVariables,
+    type CmsEntryBulkActionMutationResponse,
+    type CmsEntryBulkActionMutationVariables,
+    type CmsEntryCreateFromMutationResponse,
+    type CmsEntryCreateFromMutationVariables,
+    type CmsEntryCreateMutationResponse,
+    type CmsEntryCreateMutationVariables,
+    type CmsEntryDeleteMutationResponse,
+    type CmsEntryDeleteMutationVariables,
+    type CmsEntryGetQueryResponse,
+    type CmsEntryGetQueryVariables,
+    type CmsEntryGetSingletonQueryResponse,
+    type CmsEntryPublishMutationResponse,
+    type CmsEntryPublishMutationVariables,
+    type CmsEntryUnpublishMutationResponse,
+    type CmsEntryUnpublishMutationVariables,
+    type CmsEntryUpdateMutationResponse,
+    type CmsEntryUpdateMutationVariables,
+    type CmsEntryUpdateRevisionDescriptionMutationResponse,
+    type CmsEntryUpdateRevisionDescriptionMutationVariables,
+    type CmsEntryUpdateSingletonMutationResponse,
+    type CmsEntryUpdateSingletonMutationVariables,
+    createUpdateRevisionDescriptionMutation
 } from "@webiny/app-headless-cms-common";
 import {
     createBulkActionMutation,
@@ -82,6 +85,7 @@ export type ListEntryRevisionsResponse = ListEntryRevisionsOperationSuccess | Op
 export type CreateEntryResponse = OperationSuccess | OperationError;
 export type CreateEntryRevisionFromResponse = OperationSuccess | OperationError;
 export type UpdateEntryRevisionResponse = OperationSuccess | OperationError;
+export type UpdateRevisionDescriptionResponse = OperationSuccess | OperationError;
 export type DeleteEntryResponse = boolean | OperationError;
 export type PublishEntryRevisionResponse = OperationSuccess | OperationError;
 export type UnpublishEntryRevisionResponse = OperationSuccess | OperationError;
@@ -110,6 +114,12 @@ export interface UpdateEntryRevisionParams {
     options?: {
         skipValidators?: string[];
     };
+}
+
+export interface UpdateRevisionDescriptionParams {
+    model: CmsModel;
+    id: string;
+    revisionDescription: string;
 }
 
 export interface UpdateSingletonEntryParams {
@@ -205,6 +215,9 @@ export interface CmsContext {
     updateEntryRevision: (
         params: UpdateEntryRevisionParams
     ) => Promise<UpdateEntryRevisionResponse>;
+    updateRevisionDescription: (
+        params: UpdateRevisionDescriptionParams
+    ) => Promise<UpdateRevisionDescriptionResponse>;
     publishEntryRevision: (
         params: PublishEntryRevisionParams
     ) => Promise<PublishEntryRevisionResponse>;
@@ -486,6 +499,41 @@ export const CmsProvider = (props: CmsProviderProps) => {
                 return {
                     error: {
                         message: "Missing response data on updateSingletonEntry mutation.",
+                        code: "MISSING_RESPONSE_DATA",
+                        data: {}
+                    }
+                };
+            }
+
+            const { data, error } = response.data.content;
+
+            if (error) {
+                return { error };
+            }
+
+            return {
+                entry: data as CmsContentEntry
+            };
+        },
+        updateRevisionDescription: async ({ model, id, revisionDescription }) => {
+            const mutation = createUpdateRevisionDescriptionMutation(model);
+            const response = await catchErrorOnExecute(() => {
+                return value.apolloClient.mutate<
+                    CmsEntryUpdateRevisionDescriptionMutationResponse,
+                    CmsEntryUpdateRevisionDescriptionMutationVariables
+                >({
+                    mutation,
+                    variables: {
+                        revision: id,
+                        revisionDescription
+                    }
+                });
+            });
+
+            if (!response.data) {
+                return {
+                    error: {
+                        message: "Missing response data on updateRevisionDescription mutation.",
                         code: "MISSING_RESPONSE_DATA",
                         data: {}
                     }

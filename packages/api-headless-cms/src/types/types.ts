@@ -459,7 +459,7 @@ export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
     /**
      * A revision description.
      */
-    revisionDescription: string;
+    revisionDescription: string | undefined;
 }
 
 export interface CmsStorageEntry<T extends CmsEntryValues = CmsEntryValues> extends CmsEntry<T> {
