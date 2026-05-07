@@ -33,6 +33,7 @@ export class FormModel implements IFormModel {
     private _layout: LayoutNode[] = [];
     private _baseline = new Map<string, unknown>();
     private _submitted = false;
+    private _submitCount = 0;
     private _validateOnChange = false;
     private _isValid: boolean | null = null;
     private _formRuleErrors: IFormError[] = [];
@@ -262,6 +263,7 @@ export class FormModel implements IFormModel {
         this._snapshotBaseline();
         this._resetAllValidation();
         this._submitted = false;
+        this._submitCount = 0;
         this._isValid = null;
         this._formRuleErrors = [];
     }
@@ -273,6 +275,7 @@ export class FormModel implements IFormModel {
         }
         this._resetAllValidation();
         this._submitted = false;
+        this._submitCount = 0;
         this._isValid = null;
         this._formRuleErrors = [];
     }
@@ -294,6 +297,10 @@ export class FormModel implements IFormModel {
 
     get submitted(): boolean {
         return this._submitted;
+    }
+
+    get submitCount(): number {
+        return this._submitCount;
     }
 
     get errors(): IFormError[] {
@@ -377,6 +384,7 @@ export class FormModel implements IFormModel {
             this._formRuleErrors = ruleErrors;
             this._isValid = isValid;
             this._submitted = true;
+            this._submitCount++;
         });
         return isValid;
     }
@@ -395,6 +403,7 @@ export class FormModel implements IFormModel {
             errors: this.errors,
             isDirty: this.isDirty,
             isValid: this._isValid,
+            submitCount: this._submitCount,
             focusField: (path: string) => this.focusField(path),
             getData: () => this.getData() as Record<string, unknown>,
             setData: (data: Record<string, unknown>) => this.setData(data)

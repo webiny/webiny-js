@@ -1,25 +1,33 @@
 import React from "react";
-import { AdminConfig, RegisterFeature } from "@webiny/app-admin";
-import {
-    AiPowerUpsSettingsFeature,
-    AiPowerUpsSettingsConfig,
-    useAiPowerUpsSettingsDialog
-} from "./presentation/AiPowerUpsSettings/index.js";
+import { AdminConfig, AdminLayout, useRouter, RegisterFeature } from "@webiny/app-admin";
+import { AiPowerUpsSettingsFeature } from "./presentation/AiPowerUpsSettings/index.js";
+import { AiPowerUpsSettingsPage } from "./presentation/AiPowerUpsSettings/AiPowerUpsSettingsPage.js";
 import { WbContentGeneration } from "~/admin/presentation/WbContentGeneration/Extension.js";
 import { AiPowerUpsHeadlessFeatures } from "~/admin/features/feature.js";
+import { Routes } from "./routes.js";
 
-const { Menu } = AdminConfig;
+const { Menu, Route } = AdminConfig;
 
-const AiPowerUpsMenuItem = () => {
-    const openSettings = useAiPowerUpsSettingsDialog();
+const AiPowerUpsSettings = () => {
+    const { getLink } = useRouter();
 
-    return <Menu.Item text="AI Power-Ups" onClick={openSettings} />;
-};
-
-const AiPowerUpsMenu = () => {
     return (
         <AdminConfig>
-            <Menu parent={"settings.system"} name="aiPowerUps" element={<AiPowerUpsMenuItem />} />
+            <Route
+                route={Routes.Settings}
+                element={
+                    <AdminLayout title={"AI Power-Ups"}>
+                        <AiPowerUpsSettingsPage />
+                    </AdminLayout>
+                }
+            />
+            <Menu
+                parent={"settings.system"}
+                name={"aiPowerUps"}
+                element={
+                    <Menu.Link text={"AI Power-Ups"} to={getLink(Routes.Settings)} pinnable={true} />
+                }
+            />
         </AdminConfig>
     );
 };
@@ -29,8 +37,7 @@ export const Extension = () => {
         <>
             <RegisterFeature feature={AiPowerUpsHeadlessFeatures} />
             <RegisterFeature feature={AiPowerUpsSettingsFeature} />
-            <AiPowerUpsSettingsConfig />
-            <AiPowerUpsMenu />
+            <AiPowerUpsSettings />
             {/* Website Builder Extension */}
             <WbContentGeneration />
         </>

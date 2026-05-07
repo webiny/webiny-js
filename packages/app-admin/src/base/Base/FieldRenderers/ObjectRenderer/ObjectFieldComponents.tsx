@@ -43,8 +43,6 @@ export const ListItemRenderer = observer(
         useEffect(() => {
             if (hasFocusRequest) {
                 setOpen(true);
-                const focused = item.fields.find(f => f.focusRequested);
-                focused?.clearFocusRequest();
             }
         }, [hasFocusRequest]);
 

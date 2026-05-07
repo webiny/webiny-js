@@ -628,6 +628,7 @@ export interface IFormVM {
     errors: IFormError[];
     isDirty: boolean;
     isValid: boolean | null;
+    submitCount: number;
     focusField(path: string): void;
     getData(): Record<string, unknown>;
     setData(data: Record<string, unknown>): void;
@@ -677,6 +678,7 @@ export interface IFormModel<T = Record<string, any>> {
     readonly isDirty: boolean;
     readonly isValid: boolean | null;
     readonly submitted: boolean;
+    readonly submitCount: number;
     readonly errors: IFormError[];
     readonly vm: IFormVM;
     getFieldBuilders(predicate?: (builder: IFieldBuilder) => boolean): IFieldBuilder[];
