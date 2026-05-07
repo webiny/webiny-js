@@ -1,34 +1,7 @@
 import React from "react";
-import styled from "@emotion/styled";
 import { Cell, Grid } from "@webiny/ui/Grid/index.js";
 import { ButtonFilters } from "~/views/Logs/Header/ButtonFilters/index.js";
 import { Text } from "~/components/Text.js";
-
-const Container = styled("div")`
-    padding: 8px 20px 8px 20px;
-    width: 100%;
-    box-sizing: border-box;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 3;
-    background: var(--mdc-theme-surface);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-`;
-
-const WrapperActions = styled("div")`
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    height: 100%;
-`;
-
-const TitleWrapper = styled("div")`
-    display: flex;
-    align-items: center;
-    height: 100%;
-`;
 
 type HeaderProps = {
     title: string;
@@ -39,23 +12,23 @@ type HeaderProps = {
 
 export const Header = ({ title, showingFilters, hideFilters, showFilters }: HeaderProps) => {
     return (
-        <Container>
+        <div className="box-border w-full border-b border-neutral-dimmed px-5 py-2">
             <Grid align={"right"} style={{ padding: 0 }}>
                 <Cell span={4}>
-                    <TitleWrapper>
+                    <div className="flex h-full items-center">
                         <Text use={"headline5"}>{title}</Text>
-                    </TitleWrapper>
+                    </div>
                 </Cell>
                 <Cell span={8}>
-                    <WrapperActions>
+                    <div className="flex h-full w-full items-center justify-end">
                         <ButtonFilters
                             showingFilters={showingFilters}
                             hideFilters={hideFilters}
                             showFilters={showFilters}
                         />
-                    </WrapperActions>
+                    </div>
                 </Cell>
             </Grid>
-        </Container>
+        </div>
     );
 };
