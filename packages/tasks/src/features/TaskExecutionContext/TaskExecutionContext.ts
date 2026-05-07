@@ -1,7 +1,7 @@
 import { TaskExecutionContext as Abstraction } from "./abstractions.js";
 import type { ITaskManagerStore } from "~/runner/abstractions/TaskManagerStore.js";
 import type { ITaskRunner } from "~/runner/abstractions/TaskRunner.js";
-import type { ITimer } from "@webiny/handler-aws";
+import type { ITimer } from "@webiny/handler/timer/index.js";
 import type { ITaskResponse } from "~/response/abstractions/index.js";
 
 class TaskExecutionContextImpl implements Abstraction.Interface {

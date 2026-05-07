@@ -5,7 +5,7 @@ import { Response, ResponseErrorResult } from "~/response/index.js";
 import { TaskControl } from "./TaskControl.js";
 import type { IResponseResult } from "~/response/abstractions/index.js";
 import { getErrorProperties } from "~/utils/getErrorProperties.js";
-import type { ITimer } from "@webiny/handler-aws/utils/index.js";
+import type { ITimer } from "@webiny/handler/timer/index.js";
 
 const transformMinutesIntoMilliseconds = (minutes: number) => {
     return minutes * 60000;
