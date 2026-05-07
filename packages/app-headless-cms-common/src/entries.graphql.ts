@@ -116,6 +116,7 @@ const createEntrySystemFields = (model: CmsModel) => {
         live {
             version
         }
+        revisionDescription
     `;
 };
 
@@ -497,6 +498,33 @@ export const createUpdateSingletonMutation = (model: CmsEditorContentModel) => {
         }
         }
     `;
+};
+
+export interface CmsEntryUpdateRevisionDescriptionMutationResponse {
+    content: {
+        data?: CmsContentEntry;
+        error?: CmsErrorResponse;
+    };
+}
+
+export interface CmsEntryUpdateRevisionDescriptionMutationVariables {
+    revision: string;
+    revisionDescription: string;
+}
+
+export const createUpdateRevisionDescriptionMutation = (model: CmsEditorContentModel) => {
+    return gql`
+        mutation CmsUpdate${model.singularApiName}RevisionDescription($revision: ID!, $revisionDescription: String!) {
+            content: update${model.singularApiName}RevisionDescription(revision: $revision, revisionDescription: $revisionDescription) {
+                data {
+                    ${createEntrySystemFields(model)}
+                    values {
+                        ${createFieldsList({ model, fields: model.fields })}
+                    }
+                }
+                error ${ERROR_FIELD}
+            }
+        }`;
 };
 
 /**
