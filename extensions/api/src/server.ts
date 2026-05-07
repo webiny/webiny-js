@@ -72,6 +72,40 @@ const main = async () => {
     }
 
     // -----------------------------------------------------------------------
+    // Bootstrap — Webiny admin-user record matching the seeded Keycloak
+    // user (`admin@webiny.local`). The container's KeycloakIdpConfig
+    // returns the email as the Webiny identity id, so this row is what
+    // authorize-by-id queries match against. Without it the api validates
+    // the Keycloak token but every authorized GraphQL operation fails to
+    // find a matching user record.
+    //
+    // POC limitation: only the seeded admin works this way. A
+    // production-grade flow would JIT-provision new external users on
+    // first login (the IdentityData `external: true` flag is the hook).
+    // -----------------------------------------------------------------------
+    const ADMIN_EMAIL = "admin@webiny.local";
+    const existingAdmin = await storageOperations.usersStorageOperations.getUser({
+        where: { id: ADMIN_EMAIL, tenant: "root" }
+    });
+    if (!existingAdmin) {
+        const now = new Date().toISOString();
+        await storageOperations.usersStorageOperations.createUser({
+            user: {
+                id: ADMIN_EMAIL,
+                tenant: "root",
+                displayName: "Webiny Admin",
+                email: ADMIN_EMAIL,
+                firstName: "Webiny",
+                lastName: "Admin",
+                createdOn: now,
+                createdBy: null,
+                external: true
+            }
+        });
+        console.log(`Bootstrapped admin user ${ADMIN_EMAIL}.`);
+    }
+
+    // -----------------------------------------------------------------------
     // Server — api-core context (tenancy, security, adminUsers, KV) over the
     // SQLite storage layer, plus the GraphQL handler and a /tenants
     // diagnostic route that exercises the storage layer end-to-end. Keycloak

@@ -10,9 +10,16 @@ type JwtPayload = KeycloakIdpConfig.JwtPayload;
 /**
  * Default claim → Webiny identity mapper. Reads standard OIDC claims
  * (`sub`, `email`, `preferred_username`, `name`, `given_name`,
- * `family_name`) plus Keycloak's realm roles. Customers can swap this for
- * their own implementation by registering a different `KeycloakIdpConfig`
- * before this plugin runs.
+ * `family_name`).
+ *
+ * Identity id strategy: **email** rather than `sub`. The container's
+ * boot-time bootstrap (`server.ts`) seeds a single Webiny admin-user
+ * keyed by email; using email here keeps the per-request identity in
+ * lockstep with the bootstrapped row without needing to query Keycloak's
+ * Admin API for the `sub`. POC simplification — production-grade JIT
+ * provisioning would key on `sub` and create the user record on first
+ * login. Customers wanting that behavior register a different
+ * `KeycloakIdpConfig` before this plugin runs.
  */
 class DefaultKeycloakIdpConfig implements IKeycloakIdpConfig {
     public getIdentity(token: JwtPayload): KeycloakIdentity {
@@ -24,7 +31,9 @@ class DefaultKeycloakIdpConfig implements IKeycloakIdpConfig {
         const familyName = (token["family_name"] as string | undefined) ?? "";
 
         return {
-            id: sub,
+            // Email-as-id keeps the per-request identity matched to the
+            // Webiny admin-user row bootstrapped at container start.
+            id: email || sub,
             displayName: name || preferredUsername || email || sub,
             profile: {
                 email,
@@ -42,9 +51,8 @@ class DefaultKeycloakIdpConfig implements IKeycloakIdpConfig {
  *
  * After this is wired, requests with `Authorization: Bearer <jwt>` get
  * past the JWT validator if the token was issued by the configured
- * Keycloak realm. Mapping the resulting identity into authorized GraphQL
- * operations is the next slice (Phase 2 — bootstrap a Webiny admin-user
- * row matching the Keycloak `sub`).
+ * Keycloak realm. The matching Webiny admin-user row is bootstrapped at
+ * container start in `server.ts` (Phase 2).
  */
 export const createKeycloakAuth = () => {
     return createRegisterExtensionPlugin(context => {
