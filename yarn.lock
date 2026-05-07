@@ -30096,8 +30096,8 @@ __metadata:
   linkType: hard
 
 "terser@npm:^5.10.0, terser@npm:^5.31.1":
-  version: 5.46.2
-  resolution: "terser@npm:5.46.2"
+  version: 5.47.0
+  resolution: "terser@npm:5.47.0"
   dependencies:
     "@jridgewell/source-map": "npm:^0.3.3"
     acorn: "npm:^8.15.0"
@@ -30105,7 +30105,7 @@ __metadata:
     source-map-support: "npm:~0.5.20"
   bin:
     terser: bin/terser
-  checksum: 10/d5e41ca25da372ba68534b193acffa5ffa19b43882a60fa262da31b0d76ef15fbaeaf0b244d5e91f1985503682678285bda980881b5084b962ae457dafb5590d
+  checksum: 10/0576719f5c1e68182b146f2aafac04e8cb2a3494a1c5049723c04f8be824275ba079fab28a758000320b02d10b59eef934240d729d69df030cc7b46aba372745
   languageName: node
   linkType: hard
 
