@@ -1,24 +1,4 @@
-import type { ITimer } from "./abstractions/ITimer.js";
-
-export interface ITimerCb {
-    (): number;
-}
-
-export class Timer implements ITimer {
-    private readonly cb: ITimerCb;
-
-    public constructor(cb: ITimerCb) {
-        this.cb = cb;
-    }
-    public getRemainingMilliseconds(): number {
-        return this.cb();
-    }
-
-    public getRemainingSeconds(): number {
-        const result = this.cb();
-        if (result > 0) {
-            return Math.floor(result / 1000);
-        }
-        return 0;
-    }
-}
+/**
+ * Re-export for back-compat. The canonical home of `Timer` is `@webiny/handler/timer`.
+ */
+export { Timer, type ITimerCb } from "@webiny/handler/timer/index.js";
