@@ -15,7 +15,7 @@ export const MenuItem = (props: MenuItemProps) => {
             onClick={props.onClick}
             disabled={Boolean(props.disabled)}
             data-testid={props["data-testid"]}
-            icon={<Icon icon={props.icon} />}
+            icon={<Icon icon={props.icon} label={props.label} />}
             text={props.label}
         />
     );

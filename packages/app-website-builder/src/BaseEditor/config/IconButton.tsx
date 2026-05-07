@@ -1,5 +1,5 @@
 import React from "react";
-import { IconButton, Tooltip } from "@webiny/admin-ui";
+import { IconButton as AdminUiIconButton, Tooltip } from "@webiny/admin-ui";
 
 export interface IconButtonProps {
     icon: React.JSX.Element;
@@ -13,7 +13,7 @@ export const IconButton = ({ label, icon, disabled = false, onClick }: IconButto
         <Tooltip
             side={"bottom"}
             content={label}
-            trigger={<IconButton icon={icon} onClick={onClick} disabled={disabled} />}
+            trigger={<AdminUiIconButton icon={icon} onClick={onClick} disabled={disabled} />}
         />
     );
 };
