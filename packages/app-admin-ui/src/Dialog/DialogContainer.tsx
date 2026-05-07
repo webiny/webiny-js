@@ -55,6 +55,7 @@ export const DialogContainer = () => {
             style={style}
             showCloseButton={showCloseButton}
             title={title}
+            loading={isLoading ? loading : false}
             actions={
                 !actions.cancel && !actions.accept ? null : (
                     <>
@@ -75,7 +76,6 @@ export const DialogContainer = () => {
                 )
             }
         >
-            {isLoading ? loading : null}
             {message}
         </Dialog>
     );
