@@ -33,6 +33,7 @@ import { createWebsiteBuilderScheduler } from "@webiny/api-website-builder-sched
 import graphqlPlugins from "@webiny/handler-graphql";
 import { authenticateUsingHttpHeader } from "@webiny/api-core/legacy/security/plugins/authenticateUsingHttpHeader.js";
 import { createKeycloakAuth } from "./keycloakAuth.js";
+import { createInMemoryDb } from "./inMemoryDb.js";
 
 const PORT = Number.parseInt(process.env.PORT ?? "8080", 10);
 const HOST = process.env.HOST ?? "0.0.0.0";
@@ -167,6 +168,12 @@ const main = async () => {
     const server = createServer({
         plugins: [
             createApiCore({ storageOperations }),
+            // Process-local in-memory `context.db` — backs the legacy
+            // `@webiny/db` store API used by api-headless-cms-tasks
+            // (deleteModel CRUD) and others. Without it, isBeingDeleted
+            // and similar resolvers crash and mark every model as
+            // "being deleted" via their fall-back paths.
+            createInMemoryDb(),
             createKeycloakAuth(),
             // Reads the `Authorization: Bearer <jwt>` header on every
             // request and runs context.security.authenticate(token).
