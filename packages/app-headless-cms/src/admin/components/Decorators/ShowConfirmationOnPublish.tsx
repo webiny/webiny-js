@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import { useBind } from "@webiny/form";
-import { Textarea } from "@webiny/admin-ui";
+import { Textarea, Text } from "@webiny/admin-ui";
 import { CircularProgress } from "@webiny/ui/Progress/index.js";
 import styled from "@emotion/styled";
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
@@ -27,12 +27,11 @@ const EntryMessage = ({ id, entryType, getEntry }: EntryMessageProps) => {
         name: "entry"
     });
 
-    const revisionDescriptionValue = useMemo(() => {
-        return entryBind.value?.revisionDescription || "";
-    }, [entryBind.value]);
+    const [description, setDescription] = useState("");
 
     const onRevisionDescriptionChange = useCallback(
         (value: string) => {
+            setDescription(value);
             entryBind.onChange({
                 ...entryBind.value,
                 revisionDescription: value
@@ -58,7 +57,10 @@ const EntryMessage = ({ id, entryType, getEntry }: EntryMessageProps) => {
                 <Title>{entryBind.value.meta.title}</Title>.<br />
                 Are you sure you want to continue?
             </p>
-            <Textarea onChange={onRevisionDescriptionChange} value={revisionDescriptionValue} />
+            <Text as={"div"} size={"sm"} className={"mt-2"}>
+                Write a revision description (optional):
+            </Text>
+            <Textarea onChange={onRevisionDescriptionChange} value={description} />
         </>
     );
 };
