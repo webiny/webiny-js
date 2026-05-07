@@ -47,6 +47,7 @@ export default /* GraphQL */ `
         meta: PageModelApiNameMeta
         wbyAco_location: WbyAcoLocation
         live: CmsEntryLive
+        revisionDescription: String
 
         values: PageModelApiNameValues
     }
@@ -796,6 +797,11 @@ export default /* GraphQL */ `
             revision: ID!
             data: PageModelApiNameInput!
             options: UpdateCmsEntryOptionsInput
+        ): PageModelApiNameResponse
+
+        updatePageModelApiNameRevisionDescription(
+            revision: ID!
+            revisionDescription: String
         ): PageModelApiNameResponse
 
         validatePageModelApiName(
