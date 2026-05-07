@@ -41,7 +41,7 @@ export const LogsView = () => {
     });
 
     const loadMoreOnScroll = debounce(({ scrollFrame }) => {
-        if (scrollFrame.top > 0.8) {
+        if (scrollFrame.top > 0.8 && !list.isListLoadingMore && list.meta.hasMoreItems) {
             list.listMoreRecords();
         }
     }, 200);
@@ -73,7 +73,7 @@ export const LogsView = () => {
                                 <Table
                                     ref={tableRef}
                                     records={list.records}
-                                    loading={list.isListLoading}
+                                    loading={list.isListLoading && !list.isListLoadingMore}
                                     handleRecordSelect={handleAuditLogSelect}
                                     sorting={list.sorting}
                                     onSortingChange={list.setSorting}
