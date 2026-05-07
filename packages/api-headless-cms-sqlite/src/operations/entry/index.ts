@@ -79,6 +79,175 @@ const notImplemented = (method: string): never => {
     );
 };
 
+// Suffix → predicate that compares an entry's actual value against the
+// filter input. Covers the operators the where DSL exposes that we
+// need for the POC. Anything not listed here falls through to "no
+// filter applied" (return true) so the list still returns results
+// even for unsupported operators — the alternative would be silent
+// over-filtering, which is harder to debug.
+const SUFFIX_OPERATORS: Record<string, (actual: unknown, expected: unknown) => boolean> = {
+    "": (a, e) => a === e,
+    not: (a, e) => a !== e,
+    in: (a, e) => Array.isArray(e) && e.includes(a as never),
+    not_in: (a, e) => Array.isArray(e) && !e.includes(a as never),
+    contains: (a, e) =>
+        typeof a === "string" && typeof e === "string" && a.toLowerCase().includes(e.toLowerCase()),
+    not_contains: (a, e) =>
+        !(
+            typeof a === "string" &&
+            typeof e === "string" &&
+            a.toLowerCase().includes(e.toLowerCase())
+        ),
+    gt: (a, e) => typeof a === "number" && typeof e === "number" && a > e,
+    gte: (a, e) => typeof a === "number" && typeof e === "number" && a >= e,
+    lt: (a, e) => typeof a === "number" && typeof e === "number" && a < e,
+    lte: (a, e) => typeof a === "number" && typeof e === "number" && a <= e
+};
+
+const splitSuffix = (key: string): { field: string; suffix: string } => {
+    // Operators are encoded as `<field>_<suffix>` with the longest
+    // suffix winning so e.g. `type_not_in` parses to `{field: "type",
+    // suffix: "not_in"}` rather than `{field: "type_not", suffix: "in"}`.
+    const ordered = Object.keys(SUFFIX_OPERATORS)
+        .filter(s => s.length > 0)
+        .sort((a, b) => b.length - a.length);
+    for (const suffix of ordered) {
+        if (key.endsWith(`_${suffix}`)) {
+            return { field: key.slice(0, -1 * (suffix.length + 1)), suffix };
+        }
+    }
+    return { field: key, suffix: "" };
+};
+
+const matchesValueFilter = (
+    actual: Record<string, unknown> | undefined,
+    where: Record<string, unknown>
+): boolean => {
+    for (const [key, expected] of Object.entries(where)) {
+        const { field, suffix } = splitSuffix(key);
+        const op = SUFFIX_OPERATORS[suffix];
+        if (!op) {
+            continue;
+        }
+        if (!op(actual?.[field], expected)) {
+            return false;
+        }
+    }
+    return true;
+};
+
+interface AcoLocationFilter {
+    folderId?: string;
+    folderId_not?: string;
+    folderId_in?: string[];
+    folderId_not_in?: string[];
+}
+
+const matchesLocationFilter = (
+    entry: CmsEntry,
+    location: AcoLocationFilter | undefined
+): boolean => {
+    if (!location) {
+        return true;
+    }
+    const folderId =
+        (entry as { wbyAco_location?: { folderId?: string } }).wbyAco_location?.folderId ??
+        (entry.values as Record<string, unknown>)?.["wbyAco_location"] ??
+        (entry as { location?: { folderId?: string } }).location?.folderId;
+    if (location.folderId !== undefined && folderId !== location.folderId) {
+        return false;
+    }
+    if (location.folderId_not !== undefined && folderId === location.folderId_not) {
+        return false;
+    }
+    if (location.folderId_in && !location.folderId_in.includes(folderId as string)) {
+        return false;
+    }
+    if (location.folderId_not_in && location.folderId_not_in.includes(folderId as string)) {
+        return false;
+    }
+    return true;
+};
+
+const matchesWhere = (entry: CmsEntry, where: unknown): boolean => {
+    if (!where || typeof where !== "object") {
+        return true;
+    }
+    const w = where as Record<string, unknown>;
+
+    if (Array.isArray(w["AND"])) {
+        if (!(w["AND"] as unknown[]).every(child => matchesWhere(entry, child))) {
+            return false;
+        }
+    }
+    if (Array.isArray(w["OR"])) {
+        if (!(w["OR"] as unknown[]).some(child => matchesWhere(entry, child))) {
+            return false;
+        }
+    }
+
+    // Top-level `values` filter — user-defined model fields.
+    if (w["values"] && typeof w["values"] === "object") {
+        if (!matchesValueFilter(entry.values, w["values"] as Record<string, unknown>)) {
+            return false;
+        }
+    }
+
+    // ACO folder location.
+    if (
+        !matchesLocationFilter(
+            entry,
+            (w["wbyAco_location"] ?? w["location"]) as AcoLocationFilter | undefined
+        )
+    ) {
+        return false;
+    }
+
+    // Bin (deleted) flag.
+    const wbyDeleted = (entry as { wbyDeleted?: boolean }).wbyDeleted ?? false;
+    if (w["wbyDeleted"] !== undefined && w["wbyDeleted"] !== wbyDeleted) {
+        return false;
+    }
+    if (w["wbyDeleted_not"] !== undefined && w["wbyDeleted_not"] === wbyDeleted) {
+        return false;
+    }
+
+    // Entry-level scalar filters (id, entryId, status, etc.).
+    for (const [key, expected] of Object.entries(w)) {
+        if (
+            key === "AND" ||
+            key === "OR" ||
+            key === "values" ||
+            key === "wbyAco_location" ||
+            key === "location" ||
+            key === "wbyDeleted" ||
+            key === "wbyDeleted_not"
+        ) {
+            continue;
+        }
+
+        // Stage 6 SQLite stores a single revision per entry — every
+        // stored row is implicitly the latest (draft-only model). Skip
+        // these filters so the upstream guards from listLatestEntries
+        // / listPublishedEntries don't drop everything.
+        if (key === "latest" || key === "published") {
+            continue;
+        }
+
+        const { field, suffix } = splitSuffix(key);
+        const op = SUFFIX_OPERATORS[suffix];
+        if (!op) {
+            continue;
+        }
+        const actual = (entry as unknown as Record<string, unknown>)[field];
+        if (!op(actual, expected)) {
+            return false;
+        }
+    }
+
+    return true;
+};
+
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
@@ -144,13 +313,14 @@ export const createEntriesStorageOperations = (
             p: CmsEntryStorageOperationsListParams
         ): Promise<CmsEntryStorageOperationsListResponse<CmsEntry<T>>> {
             const all = await listByPk<CmsEntry>(db, partitionKey(model));
+            const filtered = all.filter(entry => matchesWhere(entry, p.where));
             const limit = p.limit ?? 50;
-            const items = all.slice(0, limit);
+            const items = filtered.slice(0, limit);
             return {
-                hasMoreItems: all.length > limit,
+                hasMoreItems: filtered.length > limit,
                 items: items as unknown as CmsEntry<T>[],
                 cursor: null,
-                totalCount: all.length
+                totalCount: filtered.length
             };
         },
 
