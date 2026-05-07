@@ -186,6 +186,16 @@ Adapter (option c) is rejected as hacky and brittle — fake document clients ar
 
 **Consequences.** Each leaky package gets a refactor PR (stage 8) that introduces the new factory and reroutes the old one through it. No behavior change for existing serverless customers. The deprecation path gives a clean removal opportunity in a future major.
 
+**Stage 8 update — scope narrowed.** On closer inspection during stage 8, only `api-aco` had a true public-API DDB leak. The others looked similar from a distance but turned out to be different shapes:
+
+- **`api-audit-logs`** — `documentClient` is already optional on `createAuditLogs(...)`, so container callers can simply omit it. No new factory variant needed; the existing optional parameter covers the container case.
+- **`api-websockets`** — `createWebsockets()` takes nothing. The DDB usage is internal (the connection registry), not in the public API. Internal swap is in stage 9 / 10 territory.
+- **`api-scheduler`** — `createScheduler({ getClient })` already injects the cloud client through a factory. Container deployments register a `node-cron` based scheduler implementation in stage 10's runtime-services slice; no public API change here either.
+
+So stage 8 ships exactly one refactor: a `storageOperationsFactory` option added to `api-aco`'s `createAco` / `createAcoContext`. `documentClient` becomes optional + `@deprecated`; existing callers see no behavior change because the internal flow falls back to the documentClient path when no factory is supplied. Container callers (stage 9+) supply a SQLite-backed factory.
+
+The shape ended up being a *factory* rather than pre-built storage ops because ACO storage ops need request-scoped CMS context (`context.cms`, `context.security`, `context.container`) that's only available at request time — not at boot.
+
 ---
 
 ## ADR-10 — Out of scope for this POC
