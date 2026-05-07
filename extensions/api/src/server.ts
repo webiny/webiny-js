@@ -93,6 +93,35 @@ const main = async () => {
     // production-grade flow would JIT-provision new external users on
     // first login (the IdentityData `external: true` flag is the hook).
     // -----------------------------------------------------------------------
+    // Bootstrap the `full-access` role on the root tenant. The serverless
+    // path creates this via RolesInstaller during the install GraphQL
+    // flow. The container POC skips the install flow entirely (admin is
+    // pre-provisioned), so we have to seed the role ourselves — without
+    // it, the GroupsTeamsAuthorizer returns null permissions and the
+    // Admin UI's LogInUseCase throws "You have no permissions on this
+    // tenant!".
+    const FULL_ACCESS_ROLE_ID = "full-access";
+    const existingFullAccess = await storageOperations.securityStorageOperations.getRole({
+        where: { tenant: "root", id: FULL_ACCESS_ROLE_ID }
+    });
+    if (!existingFullAccess) {
+        const now = new Date().toISOString();
+        await storageOperations.securityStorageOperations.createRole({
+            role: {
+                id: FULL_ACCESS_ROLE_ID,
+                tenant: "root",
+                name: "Full Access",
+                slug: "full-access",
+                description: "Grants full access to all apps.",
+                system: true,
+                permissions: [{ name: "*" }],
+                createdOn: now,
+                createdBy: null
+            }
+        });
+        console.log("Bootstrapped full-access role on root tenant.");
+    }
+
     const ADMIN_EMAIL = "admin@webiny.local";
     const existingAdmin = await storageOperations.usersStorageOperations.getUser({
         where: { id: ADMIN_EMAIL, tenant: "root" }
@@ -107,12 +136,24 @@ const main = async () => {
                 email: ADMIN_EMAIL,
                 firstName: "Webiny",
                 lastName: "Admin",
+                roles: [FULL_ACCESS_ROLE_ID],
                 createdOn: now,
                 createdBy: null,
                 external: true
             }
         });
         console.log(`Bootstrapped admin user ${ADMIN_EMAIL}.`);
+    } else if (!(existingAdmin.roles ?? []).includes(FULL_ACCESS_ROLE_ID)) {
+        // Pre-existing admin user from an older container build (before the
+        // role bootstrap landed) — patch the role list in place so the
+        // rest of the auth flow works without a volume wipe.
+        await storageOperations.usersStorageOperations.updateUser({
+            user: {
+                ...existingAdmin,
+                roles: [...(existingAdmin.roles ?? []), FULL_ACCESS_ROLE_ID]
+            }
+        });
+        console.log(`Patched admin user ${ADMIN_EMAIL} with full-access role.`);
     }
 
     // -----------------------------------------------------------------------

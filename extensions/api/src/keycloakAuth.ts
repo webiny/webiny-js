@@ -35,6 +35,14 @@ class DefaultKeycloakIdpConfig implements IKeycloakIdpConfig {
             // Webiny admin-user row bootstrapped at container start.
             id: email || sub,
             displayName: name || preferredUsername || email || sub,
+            // Claim the `full-access` role so ExternalIdpUserSyncHandler
+            // (which runs after every login and rewrites user.roles) keeps
+            // the bootstrapped role attached. The handler resolves slugs
+            // → role ids via ListRolesUseCase, so this needs to match the
+            // role slug seeded in server.ts. POC simplification — a
+            // production-grade flow would map Keycloak realm roles into
+            // Webiny role slugs here.
+            roles: ["full-access"],
             profile: {
                 email,
                 firstName: givenName,
