@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-aco/tsconfig.build.json" },
+    { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../db-sqlite/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-aco/*": ["../api-aco/src/*"],
+      "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/db-sqlite/*": ["../db-sqlite/src/*"],
+      "@webiny/db-sqlite": ["../db-sqlite/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"]
+    }
+  }
+}

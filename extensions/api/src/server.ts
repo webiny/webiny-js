@@ -5,6 +5,9 @@ import { createApiCore } from "@webiny/api-core";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { registerSqliteCmsStorageOperations } from "@webiny/api-headless-cms-sqlite";
 import { createFileManagerFs } from "@webiny/api-file-manager-fs";
+import { createAco } from "@webiny/api-aco";
+import { createAcoStorageOperationsSqlite } from "@webiny/api-aco-sqlite";
+import { createRecordLocking } from "@webiny/api-record-locking";
 import graphqlPlugins from "@webiny/handler-graphql";
 
 const PORT = Number.parseInt(process.env.PORT ?? "8080", 10);
@@ -76,6 +79,18 @@ const main = async () => {
                 uploadDir: FILES_DIR,
                 baseUrl: PUBLIC_BASE_URL
             }),
+
+            // ACO — uses the storageOperationsFactory hook added in stage 8;
+            // the factory returns SQLite-backed FLP ops + CMS-delegating
+            // filter ops.
+            createAco({
+                storageOperationsFactory: createAcoStorageOperationsSqlite(database)
+            }),
+
+            // Record Locking — built on top of the Headless CMS, so it works
+            // with whatever storage backend the CMS uses (SQLite here).
+            // Zero changes needed.
+            createRecordLocking(),
 
             new RoutePlugin(({ onGet }) => {
                 onGet("/tenants", async (_, reply) => {
