@@ -5,11 +5,21 @@ import { createApiCore } from "@webiny/api-core";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { registerSqliteCmsStorageOperations } from "@webiny/api-headless-cms-sqlite";
 import { createFileManagerFs } from "@webiny/api-file-manager-fs";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createAco } from "@webiny/api-aco";
 import { createAcoStorageOperationsSqlite } from "@webiny/api-aco-sqlite";
+import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
 import { createRecordLocking } from "@webiny/api-record-locking";
 import { createAuditLogs } from "@webiny/api-audit-logs";
 import { createSqliteAuditLogStorage } from "@webiny/api-audit-logs-sqlite";
+import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
+import { createWorkflows } from "@webiny/api-workflows";
+import { createHeadlessCmsWorkflows } from "@webiny/api-headless-cms-workflows";
+import { createWebsiteBuilder } from "@webiny/api-website-builder";
+import { createWebsiteBuilderWorkflows } from "@webiny/api-website-builder-workflows";
+import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
+import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
 import graphqlPlugins from "@webiny/handler-graphql";
 
 const PORT = Number.parseInt(process.env.PORT ?? "8080", 10);
@@ -103,6 +113,33 @@ const main = async () => {
                 deleteLogsAfterDays: undefined,
                 storage: createSqliteAuditLogStorage(database)
             }),
+
+            // ----- Cluster 3: plugins with no DDB coupling, just wired in -----
+            // The File Manager core, ACO bridges, mailer, workflows, website
+            // builder, and HCMS task plugins all delegate to the CMS / KV
+            // store / etc. — so they work as-is against the SQLite-backed
+            // storage layer. Confirmed by `grep documentClient` returning
+            // zero hits in each package's source.
+            createFileManagerContext(),
+            createFileManagerGraphQL(),
+            createFileManagerAco(),
+            createAcoHcmsContext(),
+            createMailerContext(),
+            createMailerGraphQL(),
+            createWorkflows(),
+            createHeadlessCmsWorkflows(),
+            createWebsiteBuilder(),
+            createWebsiteBuilderWorkflows(),
+            createHcmsTasks(),
+            createBackgroundTasks(),
+
+            // Skipped in cluster 3 (deferred to stage 10 / runtime services):
+            //   - createWebsockets — internal DDB connection registry; needs
+            //     an in-memory adapter.
+            //   - createScheduler / createHeadlessCmsScheduler /
+            //     createWebsiteBuilderScheduler — api-scheduler reads from
+            //     `context.db.driver.getClient() as DynamoDBDocument` for
+            //     manifest storage; needs node-cron impl + storage swap.
 
             new RoutePlugin(({ onGet }) => {
                 onGet("/tenants", async (_, reply) => {

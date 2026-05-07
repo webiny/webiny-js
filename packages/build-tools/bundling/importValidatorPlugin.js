@@ -25,7 +25,17 @@ const whitelist = [
     "@webiny/api-aco-sqlite",
     "@webiny/api-audit-logs",
     "@webiny/api-audit-logs-sqlite",
+    "@webiny/api-background-tasks-ddb",
+    "@webiny/api-file-manager",
+    "@webiny/api-file-manager-aco",
+    "@webiny/api-headless-cms-aco",
+    "@webiny/api-headless-cms-tasks",
+    "@webiny/api-headless-cms-workflows",
+    "@webiny/api-mailer",
     "@webiny/api-record-locking",
+    "@webiny/api-website-builder",
+    "@webiny/api-website-builder-workflows",
+    "@webiny/api-workflows",
     "@webiny/db-sqlite"
 ];
 
