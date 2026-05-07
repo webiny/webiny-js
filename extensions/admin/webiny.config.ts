@@ -10,6 +10,7 @@ import { createBuildAdmin } from "@webiny/build-tools";
 // specific admin-account installer step.
 const defaults: Record<string, string> = {
     REACT_APP_GRAPHQL_API_URL: "http://localhost:8080/graphql",
+    REACT_APP_WEBSOCKET_URL: "ws://localhost:8080/ws",
     REACT_APP_KEYCLOAK_ISSUER: "http://localhost:8180/realms/webiny",
     REACT_APP_KEYCLOAK_CLIENT_ID: "webiny-api",
     REACT_APP_IDP_TYPE: "keycloak"

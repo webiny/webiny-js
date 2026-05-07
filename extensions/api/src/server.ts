@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import fastifyStatic from "@fastify/static";
+import fastifyWebsocket from "@fastify/websocket";
 import { createServer, RoutePlugin } from "@webiny/handler-node";
 import { createModifyFastifyPlugin } from "@webiny/handler";
 import { createDatabase, migrate } from "@webiny/db-sqlite";
@@ -256,6 +257,25 @@ const main = async () => {
                 onGet("/tenants", async (_, reply) => {
                     const tenants = await storageOperations.tenancyStorageOperations.listTenants();
                     return reply.send({ tenants });
+                });
+            }),
+
+            // Stub WebSocket endpoint — accepts connections so the Admin
+            // UI's WebsocketsContextProvider doesn't error out trying to
+            // resolve a URL. The api-websockets plugin uses NoopTransport
+            // (no real send/broadcast yet), so the connection is just a
+            // shell — sufficient to silence the FM's "no valid URL" log.
+            // A real transport that bridges this socket back into the
+            // websockets registry is a follow-on (cluster 10a).
+            createModifyFastifyPlugin(app => {
+                app.register(fastifyWebsocket);
+                app.register(async fastify => {
+                    fastify.get("/ws", { websocket: true }, (socket /*, request */) => {
+                        socket.on("error", () => {
+                            // Swallow — the browser drops the socket on
+                            // unload and we don't want noisy logs.
+                        });
+                    });
                 });
             }),
 
