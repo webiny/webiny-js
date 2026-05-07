@@ -122,6 +122,46 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  buildProject:
+    needs:
+      - constants
+      - build
+    name: Build project (core, api, admin)
+    if: '!startsWith(github.head_ref, ''release/'')'
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - uses: actions/checkout@v5
+        with:
+          path: ${{ github.base_ref }}
+      - uses: actions/cache@v5
+        with:
+          path: ${{ github.base_ref }}/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v5
+        with:
+          path: ${{ github.base_ref }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
+      - name: Build packages
+        run: yarn build
+        working-directory: ${{ github.base_ref }}
+      - name: Build core
+        run: yarn webiny build core
+        working-directory: ${{ github.base_ref }}
+      - name: Build api
+        run: yarn webiny build api --no-deployment-checks
+        working-directory: ${{ github.base_ref }}
+      - name: Build admin
+        run: yarn webiny build admin --no-deployment-checks
+        working-directory: ${{ github.base_ref }}
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
   staticCodeAnalysis:
     needs:
       - constants

@@ -220,6 +220,32 @@ export const pullRequests = createWorkflow({
                 ...runBuildCacheSteps
             ]
         }),
+        buildProject: createJob({
+            needs: ["constants", "build"],
+            name: "Build project (core, api, admin)",
+            if: NOT_RELEASE_PR,
+            checkout: { path: DIR_WEBINY_JS },
+            steps: [
+                ...yarnCacheSteps,
+                ...runBuildCacheSteps,
+                ...installBuildSteps,
+                {
+                    name: "Build core",
+                    run: "yarn webiny build core",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "Build api",
+                    run: "yarn webiny build api --no-deployment-checks",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "Build admin",
+                    run: "yarn webiny build admin --no-deployment-checks",
+                    "working-directory": DIR_WEBINY_JS
+                }
+            ]
+        }),
         staticCodeAnalysis: createJob({
             needs: ["constants"],
             name: "Static code analysis",
