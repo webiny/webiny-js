@@ -376,34 +376,6 @@ export const pullRequests = createWorkflow({
                 }
             ]
         }),
-        aiFixWebinyPkg: createJob({
-            name: "AI Fix Webiny Package",
-            needs: ["constants", "staticCodeAnalysis"],
-            if: "failure() && needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true'",
-            permissions: { contents: "write" },
-            checkout: { path: DIR_WEBINY_JS },
-            steps: [
-                ...yarnCacheSteps,
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable",
-                    "working-directory": DIR_WEBINY_JS
-                },
-                {
-                    name: "Regenerate webiny package",
-                    run: "yarn webiny-scripts generate-webiny-package",
-                    "working-directory": DIR_WEBINY_JS
-                },
-                {
-                    name: "Commit",
-                    uses: "stefanzweifel/git-auto-commit-action@v5",
-                    with: {
-                        commit_message: "chore: regenerate webiny package [skip ci]",
-                        repository: DIR_WEBINY_JS
-                    }
-                }
-            ]
-        }),
         ...createVitestTestsJobs(),
         ...createVitestTestsJobs(ddbStorageOps),
         ...createVitestTestsJobs(ddbOsStorageOps)
