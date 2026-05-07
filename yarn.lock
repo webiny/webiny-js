@@ -12357,6 +12357,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@webiny-poc/admin-app@workspace:extensions/admin":
+  version: 0.0.0-use.local
+  resolution: "@webiny-poc/admin-app@workspace:extensions/admin"
+  dependencies:
+    "@webiny/app": "npm:0.0.0"
+    "@webiny/app-serverless-cms": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/keycloak": "npm:0.0.0"
+    core-js: "npm:3.49.0"
+    cross-fetch: "npm:^4.1.0"
+    react: "npm:18.3.1"
+    react-dom: "npm:18.3.1"
+    regenerator-runtime: "npm:^0.14.1"
+    typescript: "npm:6.0.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny-poc/api-server@workspace:extensions/api":
   version: 0.0.0-use.local
   resolution: "@webiny-poc/api-server@workspace:extensions/api"
