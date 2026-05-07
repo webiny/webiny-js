@@ -1,17 +1,8 @@
-export type {
-    IFieldRendererRegistry,
-    IFieldBuilderRegistry,
-    IFieldVM,
-    IObjectFieldVM,
-    IObjectFieldItemVM
-} from "@webiny/app-admin/features/formModel/abstractions.js";
+export type { IFieldRendererRegistry, IFieldBuilderRegistry, IFieldVM, IObjectFieldVM, IObjectFieldItemVM } from "@webiny/app-admin/features/formModel/abstractions.js";
 export { FieldType } from "@webiny/app-admin/features/formModel/abstractions.js";
 export { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 export { FieldBuilder } from "@webiny/app-admin/features/formModel/FieldBuilder.js";
-export {
-    createFieldRenderer,
-    createObjectFieldRenderer
-} from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
+export { createFieldRenderer, createObjectFieldRenderer } from "@webiny/app-admin/features/formModel/createFieldRenderer.js";
 export { Bind } from "@webiny/form";
 export { Form } from "@webiny/form";
 export { UnsetOnUnmount } from "@webiny/form";
