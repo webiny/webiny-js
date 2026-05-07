@@ -80,6 +80,7 @@
         "sass",
         "bufferutil",
         "utf-8-validate",
+        "chokidar",
         "css-loader",
         "url-loader"
       ]
