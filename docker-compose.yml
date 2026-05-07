@@ -1,8 +1,4 @@
-# Container deployment POC — Stage 3 of the container refactor.
-#
-# Boots a hello-world Webiny API in a single container. Future stages will
-# add `keycloak` and `mailpit` services and expand the API to talk to SQLite
-# + the local-FS file driver.
+# Container deployment POC — full stack as of Stage 5.
 #
 # Prerequisite: build the server bundle first.
 #
@@ -10,9 +6,18 @@
 #
 # Then:
 #
-#   docker compose up api
+#   docker compose up
 #
-# The API listens on :8080 with /health and /hello routes.
+# Services:
+#   - api      :8080  Webiny API (Fastify long-lived process). /health probe,
+#                     /cms-manage GraphQL endpoint backed by SQLite. Validates
+#                     JWTs issued by the Keycloak service below.
+#   - keycloak :8180  OIDC Identity Provider. Realm "webiny" is seeded from
+#                     deploy/keycloak/webiny-realm.json with one dev user
+#                     (admin@webiny.local / webiny).
+#   - mailpit  :8025  SMTP catcher. Mailer transport in api can point at
+#                     mailpit:1025 to capture outgoing email; Mailpit's UI is
+#                     on :8025 for inspection.
 
 services:
   api:
@@ -26,4 +31,59 @@ services:
     environment:
       HOST: 0.0.0.0
       PORT: 8080
+      # Where the SQLite database lives (mounted volume below).
+      SQLITE_FILE: /data/webiny.db
+      # Issuer + JWKS used by the JWT/OIDC validator. The api waits for
+      # Keycloak to be reachable via the depends_on health condition.
+      OIDC_ISSUER: http://keycloak:8080/realms/webiny
+      OIDC_JWKS_URL: http://keycloak:8080/realms/webiny/protocol/openid-connect/certs
+      OIDC_AUDIENCE: webiny-api
+      # SMTP relay (Mailpit captures everything for inspection).
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+    volumes:
+      - webiny_data:/data
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
     restart: unless-stopped
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: webiny-poc-keycloak
+    command:
+      - start-dev
+      - --import-realm
+      - --hostname-strict=false
+      - --http-enabled=true
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+    ports:
+      - "8180:8080"
+    volumes:
+      - ./deploy/keycloak:/opt/keycloak/data/import:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "exec 3<>/dev/tcp/127.0.0.1/9000 && echo -e 'GET /health/ready HTTP/1.0\\r\\n\\r\\n' >&3 && grep -q '\"status\": \"UP\"' <&3"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  mailpit:
+    image: axllent/mailpit:v1.21
+    container_name: webiny-poc-mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    restart: unless-stopped
+
+volumes:
+  webiny_data:

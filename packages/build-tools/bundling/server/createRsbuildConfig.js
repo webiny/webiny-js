@@ -42,8 +42,10 @@ export const createRsbuildConfig = ({ cwd }) => {
             rspack: {
                 // Native deps that can't be bundled — must be present in the
                 // runtime image's node_modules. Add to this list as new native
-                // deps appear.
-                externals: [/^sharp$/],
+                // deps appear. better-sqlite3 uses CJS-style __filename to
+                // locate its native bindings, which breaks when bundled into
+                // an ESM output; sharp has the same constraint.
+                externals: [/^sharp$/, /^better-sqlite3$/, /^bindings$/],
                 resolve: {
                     fallback: {
                         bufferutil: false

@@ -1,16 +1,25 @@
-# Webiny container API — Stage 3 of the container refactor POC.
+# Webiny container API.
 #
-# This Dockerfile assumes the bundled server has already been produced via
-# `createBuildServer` (e.g., `yarn build:server`). The image is intentionally
-# minimal — a Node runtime plus the bundled entry. A self-contained build
-# (yarn install + bundle inside the image) is a follow-on optimization.
+# Assumes the bundled server has already been produced via `createBuildServer`
+# (yarn build:server). The image installs only the externalized native deps
+# (better-sqlite3 and friends) — everything else is bundled into server.mjs.
+# A self-contained build (yarn install + bundle inside the image) is a
+# follow-on optimization.
 
-FROM node:22-alpine
+FROM node:22-bookworm-slim
 
 WORKDIR /app
 
-# Copy the pre-built server bundle (and any code-split chunks rsbuild emitted).
+# Copy the pre-built server bundle.
 COPY build/ ./build/
+
+# Externalized native deps — must match the externals list in
+# packages/build-tools/bundling/server/createRsbuildConfig.js. better-sqlite3
+# ships prebuilt binaries for linux x86_64 / arm64, so this is a fast,
+# toolchain-free install.
+RUN npm install --omit=dev --no-save \
+        better-sqlite3@^11.5.0 \
+    && rm -rf /root/.npm
 
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
@@ -18,9 +27,7 @@ ENV PORT=8080
 
 EXPOSE 8080
 
-# Container orchestrators (docker-compose, Kubernetes) probe /health via
-# the HEALTHCHECK directive. wget ships with the Alpine base image.
 HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget -qO- http://127.0.0.1:8080/health || exit 1
+    CMD node -e "fetch('http://127.0.0.1:8080/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
 
 CMD ["node", "build/server.mjs"]
