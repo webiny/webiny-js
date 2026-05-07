@@ -289,15 +289,29 @@ export class FormModel implements IFormModel {
         }
         const ruleErrorPaths = new Set(this._formRuleErrors.filter(e => e.path).map(e => e.path));
         const errors: IFormError[] = [];
-        for (const [, field] of this._fields) {
-            if (field.vm.validation.isValid === false && !ruleErrorPaths.has(field.name)) {
-                errors.push({
-                    path: field.name,
-                    label: field.config.label,
-                    message: field.vm.validation.message || "Invalid value."
-                });
+
+        const collectErrors = (fields: Map<string, IField>, pathPrefix: string) => {
+            for (const [, field] of fields) {
+                const path = pathPrefix ? `${pathPrefix}.${field.name}` : field.name;
+                if (isObjectField(field)) {
+                    if (field.config.isList) {
+                        for (const [index, item] of field.items.entries()) {
+                            collectErrors(item.children, `${path}.${index}`);
+                        }
+                    } else {
+                        collectErrors(field.children, path);
+                    }
+                } else if (field.vm.validation.isValid === false && !ruleErrorPaths.has(path)) {
+                    errors.push({
+                        path,
+                        label: field.config.label,
+                        message: field.vm.validation.message || "Invalid value."
+                    });
+                }
             }
-        }
+        };
+
+        collectErrors(this._fields, "");
         return [...errors, ...this._formRuleErrors];
     }
 
@@ -358,7 +372,8 @@ export class FormModel implements IFormModel {
             layout: this._layoutResolver.resolve(this._layout),
             errors: this.errors,
             isDirty: this.isDirty,
-            isValid: this._isValid
+            isValid: this._isValid,
+            focusField: (path: string) => this.focusField(path)
         };
     }
 

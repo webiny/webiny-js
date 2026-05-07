@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { useDialog, FormView } from "@webiny/app-admin";
+import { useDialog, FormView, FormErrors } from "@webiny/app-admin";
 import { Dialog, OverlayLoader, useToast } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
 import { AiPowerUpsSettingsFeature } from "./feature.js";
@@ -47,15 +47,9 @@ export const AiPowerUpsSettingsDialog = observer(() => {
             {vm.error ? (
                 <div className="text-destructive-default text-sm mb-4">{vm.error}</div>
             ) : null}
-            {vm.form && vm.form.errors.length > 0 ? (
-                <div className="flex flex-col gap-1 mb-4">
-                    {vm.form.errors.map((err, i) => (
-                        <div key={i} className="text-destructive-default text-sm">
-                            {err.label ? `${err.label}: ${err.message}` : err.message}
-                        </div>
-                    ))}
-                </div>
-            ) : null}
+            {vm.form ? <div className={"mb-md"}>
+                <FormErrors form={vm.form} />
+            </div> : null}
             <div className="flex flex-col gap-4">
                 {vm.form ? <FormView form={vm.form} /> : null}
             </div>

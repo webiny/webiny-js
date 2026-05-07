@@ -117,6 +117,8 @@ export {
     LayoutNodeRenderer,
     useFormViewRenderers
 } from "./features/formModel/FormView.js";
+export { FormErrors } from "./features/formModel/FormErrors.js";
+
 export { useFieldRenderers } from "./features/formModel/useFieldRenderers.js";
 export { useLayoutRenderers } from "./features/formModel/useLayoutRenderers.js";
 export type {

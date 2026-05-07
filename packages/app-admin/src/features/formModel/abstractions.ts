@@ -627,6 +627,7 @@ export interface IFormVM {
     errors: IFormError[];
     isDirty: boolean;
     isValid: boolean | null;
+    focusField(path: string): void;
 }
 
 /**
