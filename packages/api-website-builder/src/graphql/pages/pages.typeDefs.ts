@@ -242,6 +242,7 @@ export const pagesTypeDefs = /* GraphQL */ `
     extend type WbMutation {
         createPage(data: WbPageCreateInput!): WbPageResponse
         updatePage(id: ID!, data: WbPageUpdateInput!): WbPageResponse
+        updatePageRevisionDescription(id: ID!, revisionDescription: String): WbPageResponse
         publishPage(id: ID!): WbPageResponse
         unpublishPage(id: ID!): WbPageResponse
         duplicatePage(id: ID!): WbPageResponse

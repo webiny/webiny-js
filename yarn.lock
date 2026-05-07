@@ -7566,9 +7566,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^3.142.0, @pulumi/pulumi@npm:^3.235.0":
-  version: 3.235.0
-  resolution: "@pulumi/pulumi@npm:3.235.0"
+"@pulumi/pulumi@npm:^3.142.0, @pulumi/pulumi@npm:^3.236.0":
+  version: 3.236.0
+  resolution: "@pulumi/pulumi@npm:3.236.0"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -7605,7 +7605,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10/f6b13af7a4f681a1e1c3d86339ac13bfd49edc0815f68803d704cce4ba3e07c247d0d89912fa29ec52b409caa092fe2463b3962dcc52a6d1396780dc74ed7682
+  checksum: 10/5117768c4831f3a4badb9c1b3336e94defea8518964da48404173d91e3af311a971878872bef3698a3f80eb2f628d5befeb6ba5555377e74c562f01e7b65c122
   languageName: node
   linkType: hard
 
@@ -12374,7 +12374,7 @@ __metadata:
     file-loader: "npm:6.2.0"
     lodash: "npm:^4.18.1"
     minimatch: "npm:^10.2.5"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     monaco-editor: "npm:0.53.0"
     oxfmt: "npm:^0.48.0"
     postcss-loader: "npm:^8.2.1"
@@ -12423,7 +12423,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     ai: "npm:^6.0.175"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -13269,7 +13269,7 @@ __metadata:
     graphql: "npm:^16.14.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -13356,7 +13356,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     markdown-to-jsx: "npm:^9.7.16"
     minimatch: "npm:^10.2.5"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     monaco-editor: "npm:0.53.0"
     react: "npm:18.3.1"
@@ -13457,7 +13457,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     mime: "npm:^4.1.0"
     minimatch: "npm:^10.2.5"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-butterfiles: "npm:^1.3.3"
@@ -13622,7 +13622,7 @@ __metadata:
     graphql: "npm:^16.14.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-butterfiles: "npm:^1.3.3"
@@ -13712,7 +13712,7 @@ __metadata:
     apollo-client: "npm:^2.6.10"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -13826,7 +13826,7 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     graphql: "npm:^16.14.0"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -13843,7 +13843,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     typescript: "npm:6.0.3"
   languageName: unknown
   linkType: soft
@@ -13881,7 +13881,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -13942,7 +13942,7 @@ __metadata:
     lodash: "npm:^4.18.1"
     markdown-to-jsx: "npm:^9.7.16"
     matcher: "npm:^6.0.0"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     pluralize: "npm:^8.0.0"
     react: "npm:18.3.1"
@@ -13990,7 +13990,7 @@ __metadata:
     apollo-client: "npm:^2.6.10"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -14032,7 +14032,7 @@ __metadata:
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.18.1"
     minimatch: "npm:^10.2.5"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     nanoid: "npm:^5.1.11"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -14062,7 +14062,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.3"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -14245,7 +14245,7 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     jsonwebtoken: "npm:^9.0.3"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     vitest: "npm:^4.1.5"
@@ -14357,7 +14357,7 @@ __metadata:
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     lodash: "npm:^4.18.1"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     rimraf: "npm:^6.1.3"
     slugify: "npm:^1.6.9"
@@ -14521,7 +14521,7 @@ __metadata:
     "@webiny/project-aws": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     rimraf: "npm:^6.1.3"
@@ -14661,7 +14661,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.3"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -14736,7 +14736,7 @@ __metadata:
   resolution: "@webiny/project-aws@workspace:packages/project-aws"
   dependencies:
     "@pulumi/aws": "npm:^7.28.0"
-    "@pulumi/pulumi": "npm:^3.235.0"
+    "@pulumi/pulumi": "npm:^3.236.0"
     "@pulumi/random": "npm:^4.19.2"
     "@types/lodash": "npm:^4.17.24"
     "@types/ncp": "npm:^2.0.8"
@@ -14849,7 +14849,7 @@ __metadata:
   resolution: "@webiny/pulumi-sdk@workspace:packages/pulumi-sdk"
   dependencies:
     "@pulumi/aws": "npm:^7.28.0"
-    "@pulumi/pulumi": "npm:^3.235.0"
+    "@pulumi/pulumi": "npm:^3.236.0"
     "@types/lodash": "npm:^4.17.24"
     "@webiny/build-tools": "npm:0.0.0"
     decompress: "npm:^4.2.1"
@@ -14870,7 +14870,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi@workspace:packages/pulumi"
   dependencies:
-    "@pulumi/pulumi": "npm:^3.235.0"
+    "@pulumi/pulumi": "npm:^3.236.0"
     "@types/lodash": "npm:^4.17.24"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
@@ -15021,7 +15021,7 @@ __metadata:
     "@webiny/project": "npm:0.0.0"
     "@webiny/project-aws": "npm:0.0.0"
     graphql-tag: "npm:^2.12.6"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -15157,7 +15157,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/website-builder-sdk": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
@@ -15181,7 +15181,7 @@ __metadata:
     is-hotkey: "npm:^0.2.0"
     lodash: "npm:^4.18.1"
     matcher: "npm:^6.0.0"
-    mobx: "npm:^6.15.2"
+    mobx: "npm:^6.15.3"
     nanoid: "npm:^5.1.11"
     nanoid-dictionary: "npm:^5.0.0"
     pino: "npm:^10.3.1"
@@ -24497,10 +24497,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx@npm:^6.15.2":
-  version: 6.15.2
-  resolution: "mobx@npm:6.15.2"
-  checksum: 10/a4ec93d1195744f4c7e0f5618b153a01c63c10ec3c7d63d16c32e51e84e87ae40d8deef2be59d663ba1a4a8603de34692a0017b87c2a64cc67528511443547b2
+"mobx@npm:^6.15.3":
+  version: 6.15.3
+  resolution: "mobx@npm:6.15.3"
+  checksum: 10/4f694b6c46ddcbff1b3e55c9b96699f7788a4cee2208571238ba498ab9fd538a4c36e39f3d922741f2eda2869db87afb53d3de5c01c7e867ae0b2c307e1e6864
   languageName: node
   linkType: hard
 

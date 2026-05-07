@@ -29,6 +29,7 @@ import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
 import { GetPageLanguagePathsUseCase } from "~/features/pages/GetPageLanguagePaths/index.js";
+import { UpdatePageRevisionDescriptionUseCase } from "~/features/pages/UpdatePageRevisionDescription/index.js";
 
 export const createPagesSchema = () => {
     const pageGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
@@ -183,6 +184,24 @@ export const createPagesSchema = () => {
                         ensureAuthentication(context);
                         const updatePage = context.container.resolve(UpdatePageUseCase);
                         const result = await updatePage.execute(id, data);
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return result.value;
+                    });
+                },
+                updatePageRevisionDescription: async (_, { id, revisionDescription }, context) => {
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const updatePageRevisionDescription = context.container.resolve(
+                            UpdatePageRevisionDescriptionUseCase
+                        );
+                        const result = await updatePageRevisionDescription.execute(
+                            id,
+                            revisionDescription
+                        );
 
                         if (result.isFail()) {
                             throw new Error(result.error.message);
