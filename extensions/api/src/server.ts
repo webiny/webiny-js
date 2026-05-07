@@ -2,6 +2,8 @@ import { createServer, RoutePlugin } from "@webiny/handler-node";
 import { createDatabase, migrate } from "@webiny/db-sqlite";
 import { createApiCoreSqlite } from "@webiny/api-core-sqlite";
 import { createApiCore } from "@webiny/api-core";
+import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
+import { registerSqliteCmsStorageOperations } from "@webiny/api-headless-cms-sqlite";
 import graphqlPlugins from "@webiny/handler-graphql";
 
 const PORT = Number.parseInt(process.env.PORT ?? "8080", 10);
@@ -56,6 +58,13 @@ const main = async () => {
         plugins: [
             createApiCore({ storageOperations }),
             graphqlPlugins(),
+
+            // Headless CMS — SQLite-backed. Stage 6 ships full Group + Model
+            // CRUD plus basic Entry CRUD; revision lifecycle / publish /
+            // moveToBin are deferred to stage 6b.
+            registerSqliteCmsStorageOperations({ db: database }),
+            createHeadlessCmsContext(),
+            createHeadlessCmsGraphQL(),
 
             new RoutePlugin(({ onGet }) => {
                 onGet("/tenants", async (_, reply) => {

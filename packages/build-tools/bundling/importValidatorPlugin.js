@@ -18,6 +18,8 @@ const whitelist = [
     "@webiny/handler-graphql",
     "@webiny/api-core",
     "@webiny/api-core-sqlite",
+    "@webiny/api-headless-cms",
+    "@webiny/api-headless-cms-sqlite",
     "@webiny/db-sqlite"
 ];
 
