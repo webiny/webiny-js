@@ -52,12 +52,14 @@ services:
       # upload payloads.
       FILES_DIR: /data/files
       PUBLIC_BASE_URL: http://localhost:8080
-      # Issuer + JWKS used by the JWT/OIDC validator. The api waits
-      # for Keycloak to be reachable via the depends_on health
-      # condition below.
-      OIDC_ISSUER: http://keycloak:8080/realms/webiny
-      OIDC_JWKS_URL: http://keycloak:8080/realms/webiny/protocol/openid-connect/certs
-      OIDC_AUDIENCE: webiny-api
+      # Issuer + JWKS used by the Keycloak JWT/OIDC validator. The
+      # browser hits Keycloak at http://localhost:8180 (host port-forward),
+      # so tokens carry that hostname in the `iss` claim. The api needs
+      # to reach Keycloak via Docker DNS, so JWKS_URL points at the
+      # in-network address. KEYCLOAK_CLIENT_ID is used as the audience.
+      KEYCLOAK_ISSUER: http://localhost:8180/realms/webiny
+      KEYCLOAK_JWKS_URL: http://keycloak:8080/realms/webiny/protocol/openid-connect/certs
+      KEYCLOAK_CLIENT_ID: webiny-api
       # SMTP relay (Mailpit captures everything for inspection).
       SMTP_HOST: mailpit
       SMTP_PORT: 1025

@@ -73,8 +73,11 @@ class OidcJwtIdentityProviderImpl implements JwtIdentityProvider.Interface {
 
         // Otherwise, continue with OIDC best practices, using JWKs.
 
-        // Fetch JWKs from cache
-        const jwks = await this.jwksCache.getKeys(provider.issuer);
+        // Fetch JWKs from cache. provider.jwksUrl, when set, lets the
+        // cache skip discovery and hit the JWKS endpoint directly — needed
+        // for split-host setups where the iss claim and the in-network
+        // JWKS URL point at different hostnames.
+        const jwks = await this.jwksCache.getKeys(provider.issuer, provider.jwksUrl);
 
         // Find matching JWK using header.kid
         const jwk = jwks.find(key => key.kid === header.kid);

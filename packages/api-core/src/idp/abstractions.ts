@@ -53,6 +53,15 @@ export namespace JwtIdentityProvider {
 export interface IOidcIdentityProvider {
     issuer: string;
     clientId: string;
+    /**
+     * Optional explicit JWKS URL. When set, the cache fetches keys from
+     * this URL directly and skips the `.well-known/openid-configuration`
+     * discovery step. Container deployments use this to decouple the
+     * issuer claim (which the browser sees, e.g. `http://localhost:8180/...`)
+     * from the URL the API uses to fetch keys (the in-network
+     * `http://keycloak:8080/...`).
+     */
+    jwksUrl?: string;
     isApplicable(token: IJwtPayload): boolean;
     getIdentity(jwt: IJwtPayload): Promise<IProviderIdentityData>;
     verifyToken?(token: string): Promise<IJwtPayload | undefined>;
@@ -70,7 +79,7 @@ export namespace OidcIdentityProvider {
 }
 
 interface IJwkCache {
-    getKeys(issuer: string): Promise<IJwk[]>;
+    getKeys(issuer: string, jwksUrl?: string): Promise<IJwk[]>;
 }
 
 /** Cache for JSON Web Keys used in JWT verification. */

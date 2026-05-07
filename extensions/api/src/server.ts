@@ -30,6 +30,8 @@ import { NodeSchedulerService } from "@webiny/api-scheduler-cron";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
 import { createWebsiteBuilderScheduler } from "@webiny/api-website-builder-scheduler";
 import graphqlPlugins from "@webiny/handler-graphql";
+import { authenticateUsingHttpHeader } from "@webiny/api-core/legacy/security/plugins/authenticateUsingHttpHeader.js";
+import { createKeycloakAuth } from "./keycloakAuth.js";
 
 const PORT = Number.parseInt(process.env.PORT ?? "8080", 10);
 const HOST = process.env.HOST ?? "0.0.0.0";
@@ -123,6 +125,12 @@ const main = async () => {
     const server = createServer({
         plugins: [
             createApiCore({ storageOperations }),
+            createKeycloakAuth(),
+            // Reads the `Authorization: Bearer <jwt>` header on every
+            // request and runs context.security.authenticate(token).
+            // Without this the JwtAuthenticator never fires and every
+            // request stays anonymous.
+            authenticateUsingHttpHeader(),
             graphqlPlugins(),
 
             // Headless CMS — SQLite-backed. Stage 6 ships full Group + Model
