@@ -10,7 +10,15 @@ const whitelist = [
     "@webiny/auth0",
     "@webiny/okta",
     "@webiny/plugins",
-    "@webiny/handler-node"
+    // Container-runtime adapters and storage. Extensions building the
+    // container-mode API entry need these directly; they have no equivalent
+    // through the `webiny` umbrella package today (Stage 5 of the container
+    // refactor). A future iteration may surface these through `webiny/*`.
+    "@webiny/handler-node",
+    "@webiny/handler-graphql",
+    "@webiny/api-core",
+    "@webiny/api-core-sqlite",
+    "@webiny/db-sqlite"
 ];
 
 export const createImportValidatorPlugin = () => {

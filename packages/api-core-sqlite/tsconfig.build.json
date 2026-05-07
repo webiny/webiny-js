@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../db-sqlite/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/db-sqlite/*": ["../db-sqlite/src/*"],
+      "@webiny/db-sqlite": ["../db-sqlite/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"]
+    }
+  }
+}

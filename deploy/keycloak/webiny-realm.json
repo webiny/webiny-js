@@ -1,0 +1,46 @@
+{
+  "realm": "webiny",
+  "enabled": true,
+  "displayName": "Webiny Container POC",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 3600,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "clients": [
+    {
+      "clientId": "webiny-api",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "redirectUris": ["http://localhost:8080/*", "http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:8080", "http://localhost:3000"],
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:8080/*##http://localhost:3000/*"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "admin@webiny.local",
+      "email": "admin@webiny.local",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "Webiny",
+      "lastName": "Admin",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "webiny",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["default-roles-webiny"]
+    }
+  ]
+}
