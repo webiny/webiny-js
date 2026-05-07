@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../api-aco/tsconfig.build.json" },
+    { "path": "../api-audit-logs/tsconfig.build.json" },
     { "path": "../db-sqlite/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" }
   ],
@@ -13,8 +13,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api-aco/*": ["../api-aco/src/*"],
-      "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../api-audit-logs/src"],
       "@webiny/db-sqlite/*": ["../db-sqlite/src/*"],
       "@webiny/db-sqlite": ["../db-sqlite/src"],
       "@webiny/error/*": ["../error/src/*"],

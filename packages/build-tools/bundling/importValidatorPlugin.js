@@ -23,6 +23,8 @@ const whitelist = [
     "@webiny/api-file-manager-fs",
     "@webiny/api-aco",
     "@webiny/api-aco-sqlite",
+    "@webiny/api-audit-logs",
+    "@webiny/api-audit-logs-sqlite",
     "@webiny/api-record-locking",
     "@webiny/db-sqlite"
 ];
