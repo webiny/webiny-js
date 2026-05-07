@@ -79,39 +79,55 @@ const notImplemented = (method: string): never => {
     );
 };
 
-// Suffix → predicate that compares an entry's actual value against the
-// filter input. Covers the operators the where DSL exposes that we
-// need for the POC. Anything not listed here falls through to "no
-// filter applied" (return true) so the list still returns results
-// even for unsupported operators — the alternative would be silent
-// over-filtering, which is harder to debug.
+// Predicate per operator. `match` works on either a scalar field
+// (string/number/boolean) or an array field — for arrays, "any
+// element matches" semantics apply. The where DSL doesn't distinguish
+// at the schema level, so this is the right behavior for tag-style
+// fields where the entry stores an array but the filter passes a
+// single value (e.g. `tags_not_startsWith: "scope:"`).
+const includesScalar = (actual: unknown, predicate: (v: unknown) => boolean): boolean => {
+    if (Array.isArray(actual)) {
+        return actual.some(predicate);
+    }
+    return predicate(actual);
+};
+
 const SUFFIX_OPERATORS: Record<string, (actual: unknown, expected: unknown) => boolean> = {
-    "": (a, e) => a === e,
-    not: (a, e) => a !== e,
-    in: (a, e) => Array.isArray(e) && e.includes(a as never),
-    not_in: (a, e) => Array.isArray(e) && !e.includes(a as never),
+    "": (a, e) => includesScalar(a, v => v === e),
+    not: (a, e) => !includesScalar(a, v => v === e),
+    in: (a, e) => Array.isArray(e) && includesScalar(a, v => (e as unknown[]).includes(v as never)),
+    not_in: (a, e) =>
+        Array.isArray(e) && !includesScalar(a, v => (e as unknown[]).includes(v as never)),
     contains: (a, e) =>
-        typeof a === "string" && typeof e === "string" && a.toLowerCase().includes(e.toLowerCase()),
+        typeof e === "string" &&
+        includesScalar(a, v => typeof v === "string" && v.toLowerCase().includes(e.toLowerCase())),
     not_contains: (a, e) =>
-        !(
-            typeof a === "string" &&
-            typeof e === "string" &&
-            a.toLowerCase().includes(e.toLowerCase())
-        ),
+        typeof e === "string" &&
+        !includesScalar(a, v => typeof v === "string" && v.toLowerCase().includes(e.toLowerCase())),
+    startsWith: (a, e) =>
+        typeof e === "string" && includesScalar(a, v => typeof v === "string" && v.startsWith(e)),
+    not_startsWith: (a, e) =>
+        typeof e === "string" && !includesScalar(a, v => typeof v === "string" && v.startsWith(e)),
+    endsWith: (a, e) =>
+        typeof e === "string" && includesScalar(a, v => typeof v === "string" && v.endsWith(e)),
+    not_endsWith: (a, e) =>
+        typeof e === "string" && !includesScalar(a, v => typeof v === "string" && v.endsWith(e)),
     gt: (a, e) => typeof a === "number" && typeof e === "number" && a > e,
     gte: (a, e) => typeof a === "number" && typeof e === "number" && a >= e,
     lt: (a, e) => typeof a === "number" && typeof e === "number" && a < e,
     lte: (a, e) => typeof a === "number" && typeof e === "number" && a <= e
 };
 
+// Operator suffixes are encoded as `<field>_<suffix>`. Longest-suffix-
+// wins so e.g. `tags_not_startsWith` parses to {field: "tags",
+// suffix: "not_startsWith"} rather than {field: "tags_not_starts",
+// suffix: "With"} or {field: "tags", suffix: "starts"}.
+const ORDERED_SUFFIXES = Object.keys(SUFFIX_OPERATORS)
+    .filter(s => s.length > 0)
+    .sort((a, b) => b.length - a.length);
+
 const splitSuffix = (key: string): { field: string; suffix: string } => {
-    // Operators are encoded as `<field>_<suffix>` with the longest
-    // suffix winning so e.g. `type_not_in` parses to `{field: "type",
-    // suffix: "not_in"}` rather than `{field: "type_not", suffix: "in"}`.
-    const ordered = Object.keys(SUFFIX_OPERATORS)
-        .filter(s => s.length > 0)
-        .sort((a, b) => b.length - a.length);
-    for (const suffix of ordered) {
+    for (const suffix of ORDERED_SUFFIXES) {
         if (key.endsWith(`_${suffix}`)) {
             return { field: key.slice(0, -1 * (suffix.length + 1)), suffix };
         }
