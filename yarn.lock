@@ -14400,11 +14400,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/build-tools@workspace:packages/build-tools"
   dependencies:
-    "@babel/core": "npm:^7.29.0"
-    "@babel/preset-env": "npm:^7.29.5"
-    "@babel/preset-react": "npm:^7.28.5"
-    "@babel/preset-typescript": "npm:^7.28.5"
-    "@babel/runtime": "npm:^7.29.2"
     "@rsbuild/core": "npm:^2.0.3"
     "@rsbuild/plugin-react": "npm:^2.0.0"
     "@rsbuild/plugin-sass": "npm:^1.5.2"

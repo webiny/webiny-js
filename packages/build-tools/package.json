@@ -17,11 +17,6 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@babel/core": "^7.29.0",
-    "@babel/preset-env": "^7.29.5",
-    "@babel/preset-react": "^7.28.5",
-    "@babel/preset-typescript": "^7.28.5",
-    "@babel/runtime": "^7.29.2",
     "@rsbuild/core": "^2.0.3",
     "@rsbuild/plugin-react": "^2.0.0",
     "@rsbuild/plugin-sass": "^1.5.2",
@@ -65,10 +60,7 @@
         "!!raw-loader!"
       ],
       "dependencies": [
-        "@babel/preset-react",
         "@svgr/webpack",
-        "@babel/preset-env",
-        "@babel/preset-typescript",
         "@swc/plugin-emotion",
         "@types/webpack-env",
         "postcss-loader",
