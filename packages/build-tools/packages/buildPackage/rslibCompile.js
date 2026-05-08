@@ -3,7 +3,7 @@ import fs from "fs";
 import { dirname } from "path";
 import glob from "fast-glob";
 
-const COMPILE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx", ".svg"];
+const COMPILE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx"];
 const SKIP_EXTENSIONS = [".d.ts"];
 
 export const rslibCompile = async ({ cwd }) => {
@@ -46,9 +46,13 @@ export const rslibCompile = async ({ cwd }) => {
                 target: "web",
                 distPath: { root: "./dist" },
                 cleanDistPath: false,
-                sourceMap: { js: "source-map" }
+                sourceMap: { js: "source-map" },
+                // mixedImport emits each SVG as a static asset for the default URL
+                // export. Without a hash, two files named the same (e.g. fullscreen.svg
+                // in different dirs) collide at static/svg/fullscreen.svg.
+                filename: { svg: "[name].[contenthash:8][ext]" }
             },
-            plugins: [pluginSvgr({ svgrOptions: { exportType: "named" } })]
+            plugins: [pluginSvgr({ mixedImport: true, svgrOptions: { exportType: "named" } })]
         }
     });
 
