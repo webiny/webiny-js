@@ -18,8 +18,8 @@ interface ShowDialogParams {
     info?: ReactNode;
     acceptLabel?: ReactNode;
     cancelLabel?: ReactNode;
-    loadingLabel?: ReactNode;
-    dataLoadingLabel?: ReactNode;
+    loadingLabel?: string;
+    dataLoadingLabel?: string;
     onAccept?: (data: GenericFormData) => void;
     onClose?: () => void;
     formData?: DialogProps["formData"];

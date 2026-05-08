@@ -7,13 +7,13 @@ export const DEV_TOOLS_PERMISSIONS_SCHEMA = createPermissionSchema({
         {
             id: "graphql-playground",
             title: "GraphQL Playground",
-            permission: "graphql-playground.*",
+            permission: "dev-tools.graphql-playground.*",
             scopes: ["full"]
         },
         {
             id: "sdk-playground",
             title: "SDK Playground",
-            permission: "sdk-playground.*",
+            permission: "dev-tools.sdk-playground.*",
             scopes: ["full"]
         }
     ]

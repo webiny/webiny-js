@@ -67,8 +67,6 @@ class PageSettingsPresenterImpl implements PresenterAbstraction.Interface {
             return false;
         }
 
-        console.log("data", data);
-
         const doc = structuredClone(this.originalData);
 
         for (const group of this.groups) {

@@ -31,13 +31,13 @@
     "@webiny/project-aws": "0.0.0",
     "@webiny/tasks": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "ai": "^6.0.174",
+    "ai": "^6.0.175",
     "lodash": "^4.18.1",
-    "mobx": "^6.15.0",
+    "mobx": "^6.15.2",
     "mobx-react-lite": "^4.1.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "zod": "4.3.6"
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

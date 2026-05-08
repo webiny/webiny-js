@@ -21,7 +21,7 @@ export interface TemplateGalleryListProps {
 }
 
 const GalleryList = makeDecoratable("TemplateGalleryList", (props: TemplateGalleryListProps) => {
-    return <div className={"gap-md flex flex-wrap"}>{props.children}</div>;
+    return <div className={"gap-md flex flex-wrap mb-xs"}>{props.children}</div>;
 });
 
 export interface TemplateGalleryProps {

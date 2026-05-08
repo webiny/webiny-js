@@ -1,39 +1,33 @@
-import React from "react";
-import get from "lodash/get.js";
+import React, { useCallback } from "react";
 import { useRoute, useRouter } from "@webiny/app-admin";
 import { Button, DropdownMenu, Text } from "@webiny/admin-ui";
 import { ReactComponent as DownButton } from "@webiny/icons/keyboard_arrow_down.svg";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry.js";
 import { statuses as statusLabels } from "~/admin/constants.js";
-import type { CmsContentEntryRevision } from "~/types.js";
 import { Routes } from "~/routes.js";
-
-interface CmsEntryRevision extends Pick<CmsContentEntryRevision, "id"> {
-    meta: Pick<CmsContentEntryRevision["meta"], "version" | "status">;
-}
-
-const defaultRevisions: CmsEntryRevision[] = [
-    {
-        id: "new",
-        meta: {
-            version: 1,
-            status: "draft"
-        }
-    }
-];
+import { useFullScreenContentEntry } from "~/admin/views/contentEntries/ContentEntry/FullScreenContentEntry/useFullScreenContentEntry.js";
 
 export const RevisionSelector = () => {
     const { goToRoute } = useRouter();
     const { route } = useRoute(Routes.ContentEntries.List);
 
     const { entry, revisions, loading } = useContentEntry();
+    const { openRevisionList } = useFullScreenContentEntry();
+
+    const showRevisionsDrawer = useCallback(() => {
+        openRevisionList(true);
+    }, []);
 
     const currentRevision = {
-        version: get(entry, "meta.version", 1) as number,
-        status: get(entry, "meta.status", "draft") as CmsContentEntryRevision["meta"]["status"]
+        version: entry.meta?.version || 1,
+        status: entry.meta?.status || "draft"
     };
 
-    const allRevisions = revisions.length ? revisions : defaultRevisions;
+    if (!revisions.length) {
+        return null;
+    }
+
+    const firstFiveRevisions = revisions.slice(0, 5);
 
     return (
         <DropdownMenu
@@ -51,7 +45,7 @@ export const RevisionSelector = () => {
                 />
             }
         >
-            {allRevisions.map(revision => (
+            {firstFiveRevisions.slice(0, 5).map(revision => (
                 <DropdownMenu.Item
                     key={revision.id}
                     onClick={() => {
@@ -62,12 +56,27 @@ export const RevisionSelector = () => {
                     }}
                     text={
                         <>
-                            <Text as={"div"}>v{revision.meta.version}</Text>
-                            <Text size={"sm"}>({statusLabels[revision.meta.status]})</Text>
+                            <Text size={"sm"}>
+                                v{revision.meta.version} ({statusLabels[revision.meta.status]})
+                            </Text>
                         </>
                     }
                 />
             ))}
+            {revisions.length > 5 ? (
+                <>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item
+                        key={"revisions-all"}
+                        onClick={showRevisionsDrawer}
+                        text={
+                            <>
+                                <Text size={"sm"}>Show All Revisions</Text>
+                            </>
+                        }
+                    />
+                </>
+            ) : null}
         </DropdownMenu>
     );
 };

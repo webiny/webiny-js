@@ -26,7 +26,7 @@ const SdkPlaygroundExtension = () => {
                         />
                     }
                 />
-                <HasPermission any={["dev-tools.*", "sdk-playground.*"]}>
+                <HasPermission any={["dev-tools.*", "dev-tools.sdk-playground.*"]}>
                     <Menu
                         name={"dev-tools.sdk"}
                         parent={"dev-tools"}

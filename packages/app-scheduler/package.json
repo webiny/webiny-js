@@ -31,11 +31,11 @@
     "apollo-client": "^2.6.10",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.18.1",
-    "mobx": "^6.15.0",
+    "mobx": "^6.15.2",
     "mobx-react-lite": "^4.1.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "zod": "4.3.6"
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.13.5",
