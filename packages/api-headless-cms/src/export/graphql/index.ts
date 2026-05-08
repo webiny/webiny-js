@@ -4,6 +4,15 @@ import { ContextPlugin } from "@webiny/handler";
 import type { CmsContext } from "~/types/index.js";
 
 const plugin = createCmsGraphQLSchemaPlugin({
+    // The schema below references `CmsContentModelFieldInput`, which the
+    // contentModels schema only defines for the `manage` endpoint. Once
+    // this plugin is registered (via the manage-gated `createExportGraphQL`
+    // ContextPlugin) it would otherwise stay in the shared
+    // PluginsContainer for the lifetime of a long-lived host and leak
+    // into read/preview schema builds, causing "Unknown type
+    // CmsContentModelFieldInput" — invisible in serverless because every
+    // Lambda invocation has a fresh PluginsContainer.
+    isApplicable: context => Boolean(context.cms.MANAGE),
     typeDefs: /* GraphQL */ `
         type CmsExportStructureResponse {
             data: String

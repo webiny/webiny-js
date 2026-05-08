@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@fastify/static": "^8.2.0",
+    "@fastify/websocket": "^11.2.0",
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-aco-sqlite": "0.0.0",
     "@webiny/api-audit-logs": "0.0.0",
@@ -31,6 +33,7 @@
     "@webiny/api-websockets-memory": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
     "@webiny/build-tools": "0.0.0",
+    "@webiny/db": "0.0.0",
     "@webiny/db-sqlite": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",

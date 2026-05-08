@@ -4,13 +4,16 @@
 # docs/container-refactor/07-developer-guide.md):
 #
 #   yarn install
+#   yarn build:admin          # builds extensions/admin/build/ (SPA)
 #   yarn build:server         # builds extensions/api/build/server.mjs
 #   docker compose up
+#
+#   open http://localhost:8080             # Webiny Admin UI (login via Keycloak)
 #
 #   # In another terminal:
 #   curl http://localhost:8080/health      # → {"status":"ok"}
 #   curl http://localhost:8080/tenants     # → root tenant
-#   open http://localhost:8180             # Keycloak admin (admin / admin)
+#   open http://localhost:8180             # Keycloak admin console (admin / admin)
 #   open http://localhost:8025             # Mailpit UI
 #
 # Tear down (preserves volumes):
@@ -21,8 +24,9 @@
 #
 # Services:
 #   api      :8080  Webiny API (Fastify long-lived process). /health probe,
-#                   /cms-manage and /cms-read GraphQL endpoints backed by
-#                   SQLite. JWT validation against Keycloak.
+#                   /graphql GraphQL endpoint backed by SQLite, JWT validation
+#                   against Keycloak. Also serves the prebuilt Admin SPA at /
+#                   via @fastify/static (with SPA fallback for deep links).
 #   keycloak :8180  OIDC Identity Provider. Realm "webiny" is seeded from
 #                   deploy/keycloak/webiny-realm.json with one dev user
 #                   (admin@webiny.local / webiny).
@@ -32,8 +36,8 @@
 services:
   api:
     build:
-      context: ./extensions/api
-      dockerfile: Dockerfile
+      context: ./extensions
+      dockerfile: api/Dockerfile
     image: webiny-poc-api:latest
     container_name: webiny-poc-api
     ports:
@@ -48,12 +52,14 @@ services:
       # upload payloads.
       FILES_DIR: /data/files
       PUBLIC_BASE_URL: http://localhost:8080
-      # Issuer + JWKS used by the JWT/OIDC validator. The api waits
-      # for Keycloak to be reachable via the depends_on health
-      # condition below.
-      OIDC_ISSUER: http://keycloak:8080/realms/webiny
-      OIDC_JWKS_URL: http://keycloak:8080/realms/webiny/protocol/openid-connect/certs
-      OIDC_AUDIENCE: webiny-api
+      # Issuer + JWKS used by the Keycloak JWT/OIDC validator. The
+      # browser hits Keycloak at http://localhost:8180 (host port-forward),
+      # so tokens carry that hostname in the `iss` claim. The api needs
+      # to reach Keycloak via Docker DNS, so JWKS_URL points at the
+      # in-network address. KEYCLOAK_CLIENT_ID is used as the audience.
+      KEYCLOAK_ISSUER: http://localhost:8180/realms/webiny
+      KEYCLOAK_JWKS_URL: http://keycloak:8080/realms/webiny/protocol/openid-connect/certs
+      KEYCLOAK_CLIENT_ID: webiny-api
       # SMTP relay (Mailpit captures everything for inspection).
       SMTP_HOST: mailpit
       SMTP_PORT: 1025

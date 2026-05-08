@@ -337,7 +337,12 @@ export const createContentEntriesSchema = ({
         return `${field}: ${fieldType}`;
     }).join("\n");
 
+    const cmsType = context.cms.type;
     const plugin = createCmsGraphQLSchemaPlugin({
+        // Manage-only schema; pinned to its endpoint type so it can't
+        // bleed into a read/preview build via the long-lived
+        // PluginsContainer in container deployments.
+        isApplicable: ctx => ctx.cms.type === cmsType,
         // Had to remove /* GraphQL */ because it causes issues with oxfmt formatting.
         typeDefs: `
             type CmsModelMeta {

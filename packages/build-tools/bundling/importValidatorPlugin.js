@@ -42,9 +42,15 @@ const whitelist = [
     "@webiny/api-websockets",
     "@webiny/api-websockets-memory",
     "@webiny/api-workflows",
+    "@webiny/db",
     "@webiny/db-sqlite",
     "@webiny/handler",
-    "@webiny/keycloak"
+    "@webiny/keycloak",
+    // Container-mode admin app entry imports the React app directly
+    // (no `webiny` umbrella for the admin runtime today). Same pattern
+    // as the API-side container packages above.
+    "@webiny/app",
+    "@webiny/app-serverless-cms"
 ];
 
 export const createImportValidatorPlugin = () => {

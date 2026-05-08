@@ -2,6 +2,8 @@ import { createHandler as createBaseHandler } from "@webiny/handler";
 import { PluginsContainer } from "@webiny/plugins";
 import type { CreateServerParams, NodeServer } from "./types.js";
 import { createHealthRoutePlugin } from "./plugins/HealthRoutePlugin.js";
+import { dedupeContainerRegistrations } from "./dedupeContainerRegistrations.js";
+import { installPerRequestContextScope } from "./perRequestContext.js";
 
 const DEFAULT_HOST = "0.0.0.0";
 const DEFAULT_PORT = 8080;
@@ -10,6 +12,14 @@ const DEFAULT_HEALTH_PATH = "/health" as const;
 const SHUTDOWN_SIGNALS: NodeJS.Signals[] = ["SIGTERM", "SIGINT"];
 
 export const createServer = (params: CreateServerParams): NodeServer => {
+    // Make the @webiny/di Container's register methods idempotent.
+    // Webiny's per-request `createHandlerOnRequest` / `ContextPlugin`
+    // hooks would otherwise accumulate duplicate registrations on the
+    // long-lived container's shared Container, slowing every `resolve`
+    // call linearly with uptime. See dedupeContainerRegistrations.ts
+    // for the full rationale.
+    dedupeContainerRegistrations();
+
     const host = params.host ?? DEFAULT_HOST;
     const port = params.port ?? DEFAULT_PORT;
     const gracefulShutdown = params.gracefulShutdown ?? true;
@@ -30,6 +40,12 @@ export const createServer = (params: CreateServerParams): NodeServer => {
         },
         debug: params.debug
     });
+
+    // Scope `context.request` / `context.reply` per request via
+    // AsyncLocalStorage so concurrent requests don't clobber each
+    // other on the shared `app.webiny` context. See
+    // perRequestContext.ts for the rationale.
+    installPerRequestContextScope(app);
 
     let boundAddress: string | undefined;
     let closing: Promise<void> | undefined;

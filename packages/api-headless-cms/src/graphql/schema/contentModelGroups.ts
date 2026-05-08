@@ -135,7 +135,13 @@ export const createGroupsSchema = ({ context }: Params): ICmsGraphQLSchemaPlugin
         };
     }
 
+    const cmsType = context.cms.type;
     const plugin = createCmsGraphQLSchemaPlugin({
+        // Tag with the endpoint that produced this variant so the
+        // long-lived PluginsContainer can't merge a manage variant
+        // into a read schema build (or vice versa) — that mixing
+        // produces conflicting query signatures and dangling type refs.
+        isApplicable: ctx => ctx.cms.type === cmsType,
         typeDefs: /* GraphQL */ `
             type CmsContentModelGroup {
                 id: ID!

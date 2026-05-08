@@ -36,25 +36,50 @@ export const createFileRoutesPlugins = (params: CreateFileRoutesPluginsParams) =
 
     const uploadRoute = new RoutePlugin(({ onPost }) => {
         onPost(`${routesPrefix}/upload` as `/${string}`, async (request, reply) => {
-            const part = await request.file();
-            if (!part) {
+            // Mirrors S3's pre-signed POST: getPreSignedPostPayload
+            // chooses the storage key and returns it as a `key` form
+            // field; the browser appends every form field before the file
+            // part. Stream the parts in order, capture the `key` field
+            // first, then write the file under that key. Falling back to
+            // a fresh UUID keeps direct (non-pre-signed) uploads working.
+            let presignedKey: string | undefined;
+            let writtenKey: string | undefined;
+            let written: { name: string; type: string; size: number } | undefined;
+
+            for await (const part of request.parts()) {
+                if (part.type === "field" && part.fieldname === "key") {
+                    const v = part.value;
+                    presignedKey = typeof v === "string" ? v : undefined;
+                    continue;
+                }
+                if (part.type === "file") {
+                    const ext = part.filename.includes(".")
+                        ? part.filename.slice(part.filename.lastIndexOf("."))
+                        : "";
+                    const key = presignedKey ?? `${randomUUID()}${ext}`;
+                    await storage.write(key, part.file);
+                    const stats = await storage.stat(key);
+                    writtenKey = key;
+                    written = {
+                        name: part.filename,
+                        type: part.mimetype,
+                        size: stats?.size ?? 0
+                    };
+                    // Webiny's Admin UI uploads one file per request.
+                    break;
+                }
+            }
+
+            if (!writtenKey || !written) {
                 return reply.code(400).send({ error: "No file part provided." });
             }
 
-            const ext = part.filename.includes(".")
-                ? part.filename.slice(part.filename.lastIndexOf("."))
-                : "";
-            const key = `${randomUUID()}${ext}`;
-
-            await storage.write(key, part.file);
-
-            const stats = await storage.stat(key);
-            return reply.send({
-                key,
-                name: part.filename,
-                type: part.mimetype,
-                size: stats?.size ?? 0
-            });
+            // 204 No Content matches S3's pre-signed POST response.
+            // app-file-manager-s3's SimpleUploadStrategy hard-codes a
+            // `xhr.status === 204` success check (it already has the
+            // file metadata from the GraphQL pre-sign step), so any
+            // 200-with-body would be treated as failure by the Admin UI.
+            return reply.code(204).send();
         });
     });
     uploadRoute.name = "fileManagerFs.upload";

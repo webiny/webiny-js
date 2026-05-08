@@ -13,6 +13,11 @@ import { KeycloakIdpConfig } from "./abstractions.js";
 class KeycloakIdentityProviderImpl implements OidcIdentityProvider.Interface {
     public issuer = String(process.env.KEYCLOAK_ISSUER);
     public clientId = String(process.env.KEYCLOAK_CLIENT_ID);
+    // Optional in-network override. When the API can't reach the issuer
+    // URL directly (e.g., the browser sees `http://localhost:8180/...`
+    // but the API container needs `http://keycloak:8080/...`), set this
+    // to the in-network JWKS endpoint to skip discovery.
+    public jwksUrl = process.env.KEYCLOAK_JWKS_URL || undefined;
 
     constructor(private config: KeycloakIdpConfig.Interface) {}
 

@@ -6,41 +6,60 @@ import { Identity } from "~/features/security/IdentityContext/index.js";
 
 const authorizationEnabledStorage = new AsyncLocalStorage<boolean>();
 
+// Per-request permission cache. Lambda runs one request per process,
+// so the legacy instance-field cache was safe; in a long-lived host
+// the singleton `AuthorizationContext` is shared across concurrent
+// requests, and one request's loaded permissions would leak into
+// another. The host opens a request scope at the top of every HTTP
+// request via `enterAuthorizationRequestScope`; outside any scope
+// the instance-field fallback is used (preserving Lambda / test
+// behavior).
+interface PermissionsScope {
+    permissions?: SecurityPermission[];
+    permissionsLoader?: Promise<SecurityPermission[]>;
+}
+
+const requestPermissionsStorage = new AsyncLocalStorage<PermissionsScope>();
+
 export class AuthorizationContext implements Abstraction.Interface {
-    private permissions?: SecurityPermission[];
-    private permissionsLoader?: Promise<SecurityPermission[]>;
+    private fallbackScope: PermissionsScope = {};
 
     constructor(
         private getAuthorizers: () => Authorizer.Interface[],
         private getTransformers: () => PermissionTransformer.Interface[]
     ) {}
 
+    private getScope(): PermissionsScope {
+        return requestPermissionsStorage.getStore() ?? this.fallbackScope;
+    }
+
     async loadPermissions(identity: Identity): Promise<SecurityPermission[]> {
-        if (this.permissions) {
-            return this.permissions;
+        const cache = this.getScope();
+        if (cache.permissions) {
+            return cache.permissions;
         }
 
-        if (this.permissionsLoader) {
-            return this.permissionsLoader;
+        if (cache.permissionsLoader) {
+            return cache.permissionsLoader;
         }
 
-        this.permissionsLoader = new Promise<SecurityPermission[]>(async resolve => {
+        cache.permissionsLoader = new Promise<SecurityPermission[]>(async resolve => {
             // Execute authorizers in sequence until one returns permissions
             const authorizers = this.getAuthorizers();
             for (const authorizer of authorizers) {
                 const permissions = await authorizer.authorize(identity);
                 if (Array.isArray(permissions)) {
-                    this.permissions = this.transformPermissions(permissions);
-                    return resolve(this.permissions);
+                    cache.permissions = this.transformPermissions(permissions);
+                    return resolve(cache.permissions);
                 }
             }
 
             // No authorizer returned permissions
-            this.permissions = [];
-            resolve(this.permissions);
+            cache.permissions = [];
+            resolve(cache.permissions);
         });
 
-        return this.permissionsLoader;
+        return cache.permissionsLoader;
     }
 
     isAuthorizationEnabled(): boolean {
@@ -53,8 +72,9 @@ export class AuthorizationContext implements Abstraction.Interface {
     }
 
     clearPermissionsCache(): void {
-        this.permissions = undefined;
-        this.permissionsLoader = undefined;
+        const cache = this.getScope();
+        cache.permissions = undefined;
+        cache.permissionsLoader = undefined;
     }
 
     private transformPermissions(permissions: SecurityPermission[]) {
@@ -86,3 +106,14 @@ export class AuthorizationContext implements Abstraction.Interface {
         });
     }
 }
+
+/**
+ * Open a per-request permissions scope so concurrent requests
+ * sharing the singleton `AuthorizationContext` don't share each
+ * other's cached permissions. Long-lived hosts call this once at the
+ * top of every HTTP request. Outside any scope, the singleton's
+ * instance field is used (Lambda / test behavior).
+ */
+export const enterAuthorizationRequestScope = (): void => {
+    requestPermissionsStorage.enterWith({});
+};

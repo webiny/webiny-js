@@ -21,6 +21,7 @@ lib/
 api/**/build/
 .run/
 apps/**/build/
+extensions/**/build/
 .files/
 .changelog
 .verdaccio

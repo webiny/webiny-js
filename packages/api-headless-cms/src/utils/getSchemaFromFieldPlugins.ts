@@ -22,7 +22,18 @@ interface CreatePluginCallable {
 }
 
 const defaultCreatePlugin: CreatePluginCallable = ({ schema, type, fieldType }) => {
-    const plugin = createCmsGraphQLSchemaPlugin(schema);
+    const plugin = createCmsGraphQLSchemaPlugin({
+        ...schema,
+        // Pin the field-type plugin to its endpoint so it's filtered
+        // out at schema build time on other endpoints. Without this,
+        // long-lived hosts (where the PluginsContainer survives across
+        // requests) would merge manage / read / preview field SDL into
+        // one schema — the field types use different inputs/outputs
+        // per endpoint and the merged schema would have conflicting
+        // definitions or dangling references. See the wider isolation
+        // story in handler-node/src/perRequestContext.ts.
+        isApplicable: ctx => ctx.cms.type === type
+    });
     plugin.name = `headless-cms.graphql.schema.${type}.field.${fieldType}`;
     return plugin;
 };
