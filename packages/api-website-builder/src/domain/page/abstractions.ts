@@ -36,6 +36,7 @@ export interface WbPage extends CmsEntryWbPage {
     system?: ICmsEntrySystem;
     deleted: boolean;
     live: ICmsEntryLive | null;
+    revisionDescription: string | undefined;
 }
 
 /**

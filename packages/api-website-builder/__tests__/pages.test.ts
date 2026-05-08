@@ -2,9 +2,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "./utils/useHandler.js";
 import { pageMocks } from "./mocks/page.mock.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { until } from "@webiny/project-utils/testing/helpers/until";
+import { until } from "@webiny/project-utils/testing/helpers/until.js";
 import { CreatePageUseCase } from "~/features/pages/CreatePage/index.js";
 import { UpdatePageUseCase } from "~/features/pages/UpdatePage/index.js";
+import { UpdatePageRevisionDescriptionUseCase } from "~/features/pages/UpdatePageRevisionDescription/index.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
 import { ListPagesUseCase } from "~/features/pages/ListPages/index.js";
@@ -451,5 +452,33 @@ describe("Pages Use Cases (Authorized)", () => {
         const getDeletedPageById = context.container.resolve(GetDeletedPageByIdUseCase);
         const resultGetDeletedAfterDelete = await getDeletedPageById.execute(page.id);
         expect(resultGetDeletedAfterDelete.isFail()).toBeTrue();
+    });
+
+    it("should update page revision description", async () => {
+        const createPage = context.container.resolve(CreatePageUseCase);
+        const createResult = await createPage.execute(pageMocks.pageA);
+
+        if (createResult.isFail()) {
+            throw createResult.error;
+        }
+
+        const page = createResult.value;
+
+        const updateRevisionDescription = context.container.resolve(
+            UpdatePageRevisionDescriptionUseCase
+        );
+        const newDescription = "Updated revision description";
+        const updateResult = await updateRevisionDescription.execute(page.id, newDescription);
+
+        if (updateResult.isFail()) {
+            throw updateResult.error;
+        }
+
+        const updatedPage = updateResult.value;
+
+        expect(updatedPage).toMatchObject({
+            id: page.id,
+            revisionDescription: newDescription
+        });
     });
 });
