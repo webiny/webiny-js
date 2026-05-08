@@ -35,42 +35,25 @@ export const useAuditLogsList = (): UseAuditLogs => {
         limit: 25
     });
 
-    const setWhere = useCallback(
-        (where: Partial<IListAuditLogsVariablesWhere>) => {
-            setVariables(prev => ({
-                ...prev,
-                where
-            }));
-        },
-        [variables]
-    );
-    const setSort = useCallback(
-        (sort: "ASC" | "DESC") => {
-            setVariables(prev => ({
-                ...prev,
-                sort
-            }));
-        },
-        [variables]
-    );
-    const setAfter = useCallback(
-        (after?: string) => {
-            setVariables(prev => ({
-                ...prev,
-                after
-            }));
-        },
-        [variables]
-    );
-    const setLimit = useCallback(
-        (limit: number) => {
-            setVariables(prev => ({
-                ...prev,
-                limit
-            }));
-        },
-        [variables]
-    );
+    const [accumulatedRecords, setAccumulatedRecords] = useState<IAuditLog[]>([]);
+
+    const setWhere = useCallback((where: Partial<IListAuditLogsVariablesWhere>) => {
+        setVariables(prev => ({ ...prev, where, after: undefined }));
+        setAccumulatedRecords([]);
+    }, []);
+
+    const setSort = useCallback((sort: "ASC" | "DESC") => {
+        setVariables(prev => ({ ...prev, sort, after: undefined }));
+        setAccumulatedRecords([]);
+    }, []);
+
+    const setAfter = useCallback((after?: string) => {
+        setVariables(prev => ({ ...prev, after }));
+    }, []);
+
+    const setLimit = useCallback((limit: number) => {
+        setVariables(prev => ({ ...prev, limit }));
+    }, []);
 
     const [showingFilters, setShowingFilters] = useState(false);
     const [acoSorting, setAcoSorting] = useState<Sorting>([]);
@@ -88,21 +71,23 @@ export const useAuditLogsList = (): UseAuditLogs => {
         fetchPolicy: "network-only"
     });
 
-    const records = useMemo((): IAuditLog[] => {
+    useEffect(() => {
         if (!logs.data?.auditLogs.listAuditLogs.data) {
-            return [];
+            return;
         }
         const items = listAuditLogsSchema.safeParse(logs.data.auditLogs.listAuditLogs.data);
         if (!items.success) {
             console.error(items.error);
-            return [];
+            return;
         }
-        return items.data.map(auditLog => {
-            return transformRawAuditLog({
-                auditLog
-            });
-        });
+        const newRecords = items.data.map(auditLog => transformRawAuditLog({ auditLog }));
+        if (variables.after) {
+            setAccumulatedRecords(prev => [...prev, ...newRecords]);
+        } else {
+            setAccumulatedRecords(newRecords);
+        }
     }, [logs.data?.auditLogs]);
+
     const meta = useMemo(() => {
         if (!logs.data?.auditLogs.listAuditLogs.meta) {
             return {
@@ -124,7 +109,7 @@ export const useAuditLogsList = (): UseAuditLogs => {
 
     return {
         isListLoading: logs.loading,
-        records,
+        records: accumulatedRecords,
         meta,
         listMoreRecords: () => {
             setAfter(meta.cursor || undefined);
