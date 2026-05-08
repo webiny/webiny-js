@@ -1,13 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { i18n } from "@webiny/app/i18n/index.js";
-import {
-    DataList,
-    DataListModalOverlayAction,
-    ListItem,
-    ListItemText,
-    ListItemTextPrimary,
-    ScrollList
-} from "@webiny/ui/List/index.js";
+import { DataList, DataListModal, List } from "@webiny/admin-ui";
 import type { IWorkflowApplication } from "~/types.js";
 import { SearchUI } from "@webiny/app-admin";
 
@@ -47,20 +40,19 @@ export const WorkflowsDataList = ({ apps, activeId, onSelectApp }: WorkflowsData
                     inputPlaceholder={t`Search workflows...`}
                 />
             }
-            modalOverlayAction={
-                <DataListModalOverlayAction data-testid={"default-data-list.filter"} />
-            }
+            modalOverlayAction={<DataListModal.Trigger data-testid={"default-data-list.filter"} />}
         >
             {({ data }: { data: IWorkflowApplication[] }) => (
-                <ScrollList data-testid="default-data-list">
+                <List data-testid="default-data-list">
                     {data.map(item => (
-                        <ListItem key={item.id} selected={item.id === activeId}>
-                            <ListItemText onClick={() => onSelectApp(item.id)}>
-                                <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
-                            </ListItemText>
-                        </ListItem>
+                        <List.Item
+                            key={item.id}
+                            selected={item.id === activeId}
+                            title={item.name}
+                            onClick={() => onSelectApp(item.id)}
+                        />
                     ))}
-                </ScrollList>
+                </List>
             )}
         </DataList>
     );

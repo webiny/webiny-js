@@ -2,8 +2,8 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../lexical-editor/tsconfig.build.json" },
-    { "path": "../ui/tsconfig.build.json" }
+    { "path": "../admin-ui/tsconfig.build.json" },
+    { "path": "../lexical-editor/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -12,10 +12,10 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/admin-ui/*": ["../admin-ui/src/*"],
+      "@webiny/admin-ui": ["../admin-ui/src"],
       "@webiny/lexical-editor/*": ["../lexical-editor/src/*"],
-      "@webiny/lexical-editor": ["../lexical-editor/src"],
-      "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"]
+      "@webiny/lexical-editor": ["../lexical-editor/src"]
     }
   }
 }

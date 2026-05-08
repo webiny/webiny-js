@@ -11,7 +11,7 @@ export const CellActionType = () => {
     return (
         <RowType>
             <RowIcon>{row.data.actionType === "publish" ? <Publish /> : <Unpublish />}</RowIcon>
-            <RowText use={"subtitle2"}>{row.data.actionType}</RowText>
+            <RowText size={"sm"}>{row.data.actionType}</RowText>
         </RowType>
     );
 };

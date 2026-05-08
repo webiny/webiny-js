@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useConfirmationDialog, useSnackbar } from "@webiny/app-admin";
 import { useTrashBin } from "./useTrashBin.js";
-import { SnackbarAction } from "@webiny/ui/Snackbar/index.js";
+import { Button } from "@webiny/admin-ui";
 import type { TrashBinItemDTO } from "~/Domain/index.js";
 
 interface UseRestoreItemParams {
@@ -32,10 +32,9 @@ export const useRestoreTrashBinItem = ({ item }: UseRestoreItemParams) => {
 
                     showSnackbar(`${item.title} was restored successfully!`, {
                         action: restoredItem && (
-                            <SnackbarAction
-                                label="Show location"
-                                onClick={() => onItemAfterRestore(restoredItem)}
-                            />
+                            <Button onClick={() => onItemAfterRestore(restoredItem)}>
+                                Show location
+                            </Button>
                         )
                     });
                 } catch (ex) {
