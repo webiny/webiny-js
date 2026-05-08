@@ -191,6 +191,12 @@ defaults are set in `extensions/admin/webiny.config.ts`.
 yarn build -p @webiny/api-headless-cms-sqlite     # for example
 ```
 
+> **Heads-up:** `yarn build:server` does NOT rebuild dependent packages —
+> it bundles whatever's in their `dist/`. After editing source in a
+> workspace package, the order is `yarn build -p <package>` →
+> `yarn build:server` → `docker compose up -d --build api`. Skipping
+> the package build silently ships a stale bundle.
+
 After adding a brand-new package, the workspace symlinks may point at the
 package source instead of `dist/`; re-run `linkWorkspaces` to fix:
 
