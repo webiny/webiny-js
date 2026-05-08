@@ -152,6 +152,8 @@ export const pullRequests = createWorkflow({
                 "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}",
                 "is-fork-pr": "${{ steps.is-fork-pr.outputs.is-fork-pr }}",
                 "changed-packages": "${{ steps.detect-changed-packages.outputs.changed-packages }}",
+                "container-files-changed":
+                    "${{ steps.container-files-changed.outputs.container-files-changed }}",
                 "latest-webiny-version":
                     "${{ steps.latest-webiny-version.outputs.latest-webiny-version }}"
             },
@@ -185,7 +187,27 @@ export const pullRequests = createWorkflow({
                     id: "detect-changed-files",
                     uses: "dorny/paths-filter@v4",
                     with: {
-                        filters: "changed:\n  - 'packages/**/*'\n",
+                        filters: [
+                            "changed:",
+                            "  - 'packages/**/*'",
+                            "container:",
+                            "  - 'extensions/api/**'",
+                            "  - 'extensions/admin/**'",
+                            "  - 'packages/handler-node/**'",
+                            "  - 'packages/db-sqlite/**'",
+                            "  - 'packages/api-core-sqlite/**'",
+                            "  - 'packages/api-headless-cms-sqlite/**'",
+                            "  - 'packages/api-aco-sqlite/**'",
+                            "  - 'packages/api-audit-logs-sqlite/**'",
+                            "  - 'packages/api-file-manager-fs/**'",
+                            "  - 'packages/api-websockets-memory/**'",
+                            "  - 'packages/api-scheduler-cron/**'",
+                            "  - 'packages/keycloak/**'",
+                            "  - 'docker-compose.yml'",
+                            "  - 'deploy/keycloak/**'",
+                            "  - 'scripts/containerStressTest.mjs'",
+                            ""
+                        ].join("\n"),
                         "list-files": "json"
                     }
                 },
@@ -196,6 +218,14 @@ export const pullRequests = createWorkflow({
                         "listChangedPackages",
                         "${{ steps.detect-changed-files.outputs.changed_files }}",
                         { outputAs: "changed-packages" }
+                    )
+                },
+                {
+                    name: "Surface container-files-changed",
+                    id: "container-files-changed",
+                    run: addToOutputs(
+                        "container-files-changed",
+                        "${{ steps.detect-changed-files.outputs.container }}"
                     )
                 },
                 {
@@ -375,6 +405,75 @@ export const pullRequests = createWorkflow({
                         commit_message: "chore: regenerate webiny package [skip ci]",
                         repository: DIR_WEBINY_JS
                     }
+                }
+            ]
+        }),
+        // Stage 12 — container concurrency stress test.
+        //
+        // Boots `docker compose up` (api + keycloak + mailpit) and runs
+        // `yarn container:stress` (1000 mixed concurrent requests across
+        // /cms/manage, /cms/read, /graphql, file-manager, ACO). Catches
+        // regressions in the per-request isolation described in
+        // `docs/container-refactor/08-concurrency-isolation.md`.
+        //
+        // Only runs on PRs that touch container-mode code paths — see the
+        // `container-files-changed` output on the constants job above.
+        containerStressTest: createJob({
+            needs: ["constants", "build"],
+            name: "Container concurrency stress test",
+            if: NOT_RELEASE_PR + " && needs.constants.outputs.container-files-changed == 'true'",
+            checkout: { path: DIR_WEBINY_JS },
+            steps: [
+                ...yarnCacheSteps,
+                ...runBuildCacheSteps,
+                ...installBuildSteps,
+                {
+                    name: "Build Admin SPA",
+                    run: "yarn build:admin",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "Build server bundle",
+                    run: "yarn build:server",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "Boot docker-compose stack",
+                    run: "docker compose up -d --build",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "Wait for api /health (max 90s)",
+                    run: [
+                        "for i in $(seq 1 90); do",
+                        "  if curl -sf http://localhost:8080/health > /dev/null; then",
+                        "    echo 'api is up'",
+                        "    exit 0",
+                        "  fi",
+                        "  sleep 1",
+                        "done",
+                        "echo 'api never became healthy'",
+                        "docker compose logs --tail=200",
+                        "exit 1"
+                    ].join("\n"),
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "Run concurrent stress test",
+                    run: "yarn container:stress",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "Dump api logs on failure",
+                    if: "failure()",
+                    run: "docker compose logs --tail=500 api",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "Tear down docker-compose stack",
+                    if: "always()",
+                    run: "docker compose down -v",
+                    "working-directory": DIR_WEBINY_JS
                 }
             ]
         }),
