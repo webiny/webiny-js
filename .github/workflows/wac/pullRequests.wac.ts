@@ -370,7 +370,7 @@ export const pullRequests = createWorkflow({
                     name: "Commit fixes",
                     uses: "stefanzweifel/git-auto-commit-action@v5",
                     with: {
-                        commit_message: "chore: ai fix static analysis [skip ci]",
+                        commit_message: "chore: ai fix static analysis",
                         repository: DIR_WEBINY_JS
                     }
                 }
