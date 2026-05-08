@@ -13392,6 +13392,7 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
+    "@webiny/ui": "npm:0.0.0"
     date-fns: "npm:^4.1.0"
     execa: "npm:^5.1.1"
     graphql-tag: "npm:^2.12.6"
