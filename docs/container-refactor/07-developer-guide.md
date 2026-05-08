@@ -206,9 +206,14 @@ knows what to expect:
   container topology splits into api + ws + worker replicas, swap the
   in-memory registry for a Redis or NATS-backed one (the contract is the
   same `IWebsocketsConnectionRegistry`).
-- **Scheduler in-process dispatch** — `NodeSchedulerService` arms timers
-  correctly; when they fire, the default callback logs to stdout. Wiring
-  the fired event back into the scheduled-action handler is a follow-on.
+- **Scheduler durability** — `NodeSchedulerService` arms in-process
+  `setTimeout` timers; on fire, the dispatch synthesizes a POST to a
+  private `/webiny-scheduler-internal` route via `app.inject()` so the
+  full Webiny preHandler chain (tenancy + per-request ALS) runs before
+  `ExecuteScheduledActionUseCase` resolves the action and runs it.
+  Schedules live in process memory only; if the container restarts,
+  pending schedules are lost. Persisting them in SQLite + re-arming on
+  boot is the durability follow-on.
 - **Audit-logs list at scale** — `SqliteAuditLogStorage.list` does
   scan-and-filter for the per-app/entity/action/createdBy/date filters.
   Acceptable for POC volumes; production scale would need additional GSI
