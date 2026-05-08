@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Typography } from "@webiny/ui/Typography/index.js";
+import { Text } from "@webiny/admin-ui";
 
 export const RowType = styled("div")`
     display: flex;
@@ -11,7 +11,7 @@ export const RowIcon = styled("div")`
     height: 24px;
 `;
 
-export const RowText = styled(Typography)`
+export const RowText = styled(Text)`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

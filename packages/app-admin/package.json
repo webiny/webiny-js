@@ -38,7 +38,6 @@
     "@webiny/react-properties": "0.0.0",
     "@webiny/sdk": "0.0.0",
     "@webiny/telemetry": "0.0.0",
-    "@webiny/ui": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "@webiny/wcp": "0.0.0",

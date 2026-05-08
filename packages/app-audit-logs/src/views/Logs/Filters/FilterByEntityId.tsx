@@ -1,6 +1,6 @@
 import React from "react";
 import { useBind, useForm } from "@webiny/form";
-import { Input } from "@webiny/ui/Input/index.js";
+import { Input } from "@webiny/admin-ui";
 import type { IFilterFormData } from "~/views/Logs/Filters/types.js";
 
 export const FilterByEntityId = () => {
@@ -20,5 +20,5 @@ export const FilterByEntityId = () => {
         }
     });
 
-    return <Input {...bind} size={"medium"} placeholder={"Filter by EntityId"} />;
+    return <Input {...bind} size={"md"} placeholder={"Filter by EntityId"} />;
 };

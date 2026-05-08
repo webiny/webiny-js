@@ -1,21 +1,32 @@
-import React from "react";
-import type { AutoCompleteProps } from "@webiny/ui/AutoComplete/index.js";
-import { AutoComplete } from "@webiny/ui/AutoComplete/index.js";
+import React, { useMemo, useCallback } from "react";
+import { AutoComplete } from "@webiny/admin-ui";
 import { LIST_ROLES } from "./graphql.js";
 import { useQuery } from "@apollo/react-hooks";
 
-type RoleAutocompleteProps = Partial<AutoCompleteProps>;
-export const RoleAutocomplete = (props: RoleAutocompleteProps) => {
-    const { data, loading } = useQuery(LIST_ROLES);
+type RoleAutocompleteProps = Omit<
+    React.ComponentProps<typeof AutoComplete>,
+    "options" | "onValueChange"
+> & {
+    onChange?: (value: string) => void;
+};
 
-    const options = loading || !data ? [] : data.security.roles.data;
+export const RoleAutocomplete = ({ onChange, value, ...props }: RoleAutocompleteProps) => {
+    const { data, loading } = useQuery(LIST_ROLES);
+    const rawOptions = loading || !data ? [] : data.security.roles.data;
+
+    const options = useMemo(
+        () => rawOptions.map((role: any) => ({ label: role.name, value: role.id })),
+        [rawOptions]
+    );
+
+    const onValueChange = useCallback((id: string) => onChange?.(id), [onChange]);
 
     return (
         <AutoComplete
             {...props}
             options={options}
-            valueProp={"id"}
-            value={loading ? undefined : props.value}
+            value={loading ? undefined : (value as string | undefined)}
+            onValueChange={onValueChange}
         />
     );
 };

@@ -13339,7 +13339,6 @@ __metadata:
     "@webiny/react-properties": "npm:0.0.0"
     "@webiny/sdk": "npm:0.0.0"
     "@webiny/telemetry": "npm:0.0.0"
-    "@webiny/ui": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
@@ -13708,7 +13707,6 @@ __metadata:
     "@webiny/icons": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
-    "@webiny/ui": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     apollo-client: "npm:^2.6.10"
@@ -13756,7 +13754,6 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
-    "@webiny/ui": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.18.1"
@@ -14241,7 +14238,6 @@ __metadata:
     "@webiny/project": "npm:*"
     "@webiny/project-aws": "npm:*"
     "@webiny/project-utils": "npm:*"
-    "@webiny/ui": "npm:*"
     "@webiny/validation": "npm:*"
     "@webiny/wcp": "npm:*"
     aws-amplify: "npm:^6.17.0"
@@ -15066,7 +15062,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/ui@npm:*, @webiny/ui@npm:0.0.0, @webiny/ui@workspace:packages/ui":
+"@webiny/ui@npm:0.0.0, @webiny/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@webiny/ui@workspace:packages/ui"
   dependencies:
