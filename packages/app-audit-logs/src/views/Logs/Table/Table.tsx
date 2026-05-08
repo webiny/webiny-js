@@ -2,10 +2,12 @@ import React, { forwardRef, useMemo } from "react";
 import { addMinutes, format } from "date-fns";
 
 import { ReactComponent as PreviewIcon } from "@webiny/icons/info.svg";
-import type { Columns, OnSortingChange, Sorting } from "@webiny/ui/DataTable/index.js";
-import { DataTable } from "@webiny/ui/DataTable/index.js";
-import { IconButton } from "@webiny/ui/Button/index.js";
-import { Tooltip } from "@webiny/ui/Tooltip/index.js";
+import type {
+    DataTableColumns,
+    DataTableSorting,
+    OnDataTableSortingChange
+} from "@webiny/admin-ui";
+import { DataTable, IconButton, Tooltip } from "@webiny/admin-ui";
 
 import { Text } from "~/components/Text.js";
 import {
@@ -35,8 +37,8 @@ export interface TableProps {
     records: IAuditLog[];
     loading?: boolean;
     handleRecordSelect: (auditLog: IAuditLog) => void;
-    sorting: Sorting;
-    onSortingChange: OnSortingChange;
+    sorting: DataTableSorting;
+    onSortingChange: OnDataTableSortingChange;
     hasAccessToUsers: boolean;
 }
 
@@ -51,41 +53,46 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const { records, loading, handleRecordSelect, sorting, onSortingChange, hasAccessToUsers } =
         props;
 
-    const columns: Columns<EntryWithPreview> = {
+    const columns: DataTableColumns<EntryWithPreview> = {
         createdOn: {
             header: "Timestamp",
-            cell: ({ createdOn }) => {
-                const date = new Date(createdOn);
+            cell: (row: EntryWithPreview) => {
+                const date = new Date(row.createdOn);
 
                 return (
                     <Tooltip
-                        placement="right"
+                        side="right"
                         content={`UTC: ${format(
                             addMinutes(date, date.getTimezoneOffset()),
                             "yyyy-MM-dd HH:mm:ss"
                         )}`}
-                    >
-                        <Text use={"subtitle1"}>{format(date, "yyyy-MM-dd HH:mm:ss")}</Text>
-                        <TimezoneText use={"body2"}>{format(date, "(O)")}</TimezoneText>
-                    </Tooltip>
+                        trigger={
+                            <>
+                                <Text use={"subtitle1"}>{format(date, "yyyy-MM-dd HH:mm:ss")}</Text>
+                                <TimezoneText use={"body2"}>{format(date, "(O)")}</TimezoneText>
+                            </>
+                        }
+                    />
                 );
             },
             enableSorting: true
         },
         app: {
             header: "App/Entity",
-            cell: ({ app, entity, entityId }) => (
+            cell: (row: EntryWithPreview) => (
                 <>
-                    <Text use={"subtitle1"}>{app}</Text>
-                    {entity && <TextGray use={"body2"}>{` [Entity: ${entity.label}]`}</TextGray>}
+                    <Text use={"subtitle1"}>{row.app}</Text>
+                    {row.entity && (
+                        <TextGray use={"body2"}>{` [Entity: ${row.entity.label}]`}</TextGray>
+                    )}
                     <br />
                     <TextGray use={"body2"}>{`ID: `}</TextGray>
-                    {entity.link ? (
-                        <a href={entity.link} target={"blank"}>
-                            <Text use={"body2"}>{entityId}</Text>
+                    {row.entity.link ? (
+                        <a href={row.entity.link} target={"blank"}>
+                            <Text use={"body2"}>{row.entityId}</Text>
                         </a>
                     ) : (
-                        <Text use={"body2"}>{entityId}</Text>
+                        <Text use={"body2"}>{row.entityId}</Text>
                     )}
                 </>
             ),
@@ -93,28 +100,28 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         },
         action: {
             header: "Action",
-            cell: ({ action }) => {
-                return <Action label={action.label} value={action.value} />;
-            }
+            cell: (row: EntryWithPreview) => (
+                <Action label={row.action.label} value={row.action.value} />
+            )
         },
         message: {
             header: "Message",
-            cell: ({ message }) => <Text use={"subtitle1"}>{message}</Text>,
+            cell: (row: EntryWithPreview) => <Text use={"subtitle1"}>{row.message}</Text>,
             className: wideColumn
         },
         ...(hasAccessToUsers && {
             createdBy: {
                 header: "Initiator",
-                cell: ({ createdBy }) => (
-                    <a href={`/admin-users?id=${createdBy.id}`} target={"blank"}>
-                        <Text use={"subtitle1"}>{createdBy.displayName || "-"}</Text>
+                cell: (row: EntryWithPreview) => (
+                    <a href={`/admin-users?id=${row.createdBy.id}`} target={"blank"}>
+                        <Text use={"subtitle1"}>{row.createdBy.displayName || "-"}</Text>
                     </a>
                 )
             }
         }),
         preview: {
             header: "",
-            cell: auditLog => (
+            cell: (auditLog: EntryWithPreview) => (
                 <IconButton onClick={() => handleRecordSelect(auditLog)} icon={<PreviewIcon />} />
             ),
             className: previewColumn
@@ -139,8 +146,8 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             <DataTable
                 columns={columns}
                 data={records}
-                loadingInitial={loading}
-                stickyRows={1}
+                loading={loading}
+                stickyHeader={true}
                 sorting={tableSorting}
                 onSortingChange={onSortingChange}
             />

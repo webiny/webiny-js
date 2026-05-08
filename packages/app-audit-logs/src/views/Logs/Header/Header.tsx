@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Cell, Grid } from "@webiny/ui/Grid/index.js";
+import { Grid } from "@webiny/admin-ui";
 import { ButtonFilters } from "~/views/Logs/Header/ButtonFilters/index.js";
 import { Text } from "~/components/Text.js";
 
@@ -40,13 +40,13 @@ type HeaderProps = {
 export const Header = ({ title, showingFilters, hideFilters, showFilters }: HeaderProps) => {
     return (
         <Container>
-            <Grid align={"right"} style={{ padding: 0 }}>
-                <Cell span={4}>
+            <Grid style={{ padding: 0 }}>
+                <Grid.Column span={4}>
                     <TitleWrapper>
                         <Text use={"headline5"}>{title}</Text>
                     </TitleWrapper>
-                </Cell>
-                <Cell span={8}>
+                </Grid.Column>
+                <Grid.Column span={8}>
                     <WrapperActions>
                         <ButtonFilters
                             showingFilters={showingFilters}
@@ -54,7 +54,7 @@ export const Header = ({ title, showingFilters, hideFilters, showFilters }: Head
                             showFilters={showFilters}
                         />
                     </WrapperActions>
-                </Cell>
+                </Grid.Column>
             </Grid>
         </Container>
     );

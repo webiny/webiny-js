@@ -7,7 +7,7 @@ import {
     LIST_AUDIT_LOGS
 } from "~/hooks/graphql.js";
 import type { IAuditLog, IAuditLogsMeta } from "~/types.js";
-import type { OnSortingChange, Sorting } from "@webiny/ui/DataTable/index.js";
+import type { OnDataTableSortingChange, DataTableSorting } from "@webiny/admin-ui";
 import { transformRawAuditLog } from "~/utils/transformRawAuditLog.js";
 import { listAuditLogsSchema } from "~/hooks/schema.js";
 
@@ -20,8 +20,8 @@ export interface UseAuditLogs {
     setWhere: (where: Partial<IListAuditLogsVariablesWhere>) => void;
     setLimit: (limit: number) => void;
     after?: string;
-    sorting: Sorting;
-    setSorting: OnSortingChange;
+    sorting: DataTableSorting;
+    setSorting: OnDataTableSortingChange;
     showingFilters: boolean;
     showFilters: () => void;
     hideFilters: () => void;
@@ -73,7 +73,7 @@ export const useAuditLogsList = (): UseAuditLogs => {
     );
 
     const [showingFilters, setShowingFilters] = useState(false);
-    const [acoSorting, setAcoSorting] = useState<Sorting>([]);
+    const [acoSorting, setAcoSorting] = useState<DataTableSorting>([]);
 
     useEffect(() => {
         const sort = acoSorting[0];
@@ -113,7 +113,7 @@ export const useAuditLogsList = (): UseAuditLogs => {
         return logs.data.auditLogs.listAuditLogs.meta;
     }, [logs.data?.auditLogs]);
 
-    const sorting = useMemo((): Sorting => {
+    const sorting = useMemo((): DataTableSorting => {
         return [
             {
                 id: "createdOn",

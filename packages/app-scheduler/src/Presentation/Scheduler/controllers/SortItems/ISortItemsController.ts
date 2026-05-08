@@ -1,5 +1,5 @@
-import type { OnSortingChange } from "@webiny/ui/DataTable/index.js";
+import type { OnDataTableSortingChange } from "@webiny/admin-ui";
 
 export interface ISortItemsController {
-    execute: OnSortingChange;
+    execute: OnDataTableSortingChange;
 }

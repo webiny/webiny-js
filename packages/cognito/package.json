@@ -24,7 +24,6 @@
     "@webiny/icons": "*",
     "@webiny/project": "*",
     "@webiny/project-aws": "*",
-    "@webiny/ui": "*",
     "@webiny/validation": "*",
     "aws-amplify": "^6.17.0",
     "graphql": "^16.14.0",
