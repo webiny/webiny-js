@@ -30,7 +30,10 @@ import {
     mountFastifyWebsockets
 } from "@webiny/api-websockets-memory";
 import { createScheduler } from "@webiny/api-scheduler";
+import { ExecuteScheduledActionUseCase } from "@webiny/api-scheduler/features/ExecuteScheduledAction/index.js";
 import { NodeSchedulerService } from "@webiny/api-scheduler-cron";
+import type { NodeScheduledFireEvent } from "@webiny/api-scheduler-cron";
+import type { NodeServer } from "@webiny/handler-node";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
 import { createWebsiteBuilderScheduler } from "@webiny/api-website-builder-scheduler";
 import graphqlPlugins from "@webiny/handler-graphql";
@@ -67,6 +70,38 @@ const main = async () => {
     // (mountFastifyWebsockets) share the same instances.
     const wsRegistry = new MemoryConnectionRegistry();
     const wsTransport = new FastifyWebsocketsTransport();
+
+    // Scheduler dispatch — late-bound because the Fastify instance
+    // doesn't exist yet when NodeSchedulerService is constructed. The
+    // onFire callback synthesizes a POST to /webiny-scheduler-internal
+    // via app.inject() so the dispatch runs through Webiny's full
+    // preHandler chain (tenancy, per-request ALS) before
+    // ExecuteScheduledActionUseCase resolves and runs. Mirrors the
+    // WebSocket dispatch pattern.
+    let appRef: NodeServer["app"] | undefined;
+    const dispatchScheduledAction = async (event: NodeScheduledFireEvent): Promise<void> => {
+        if (!appRef) {
+            // Pre-server fire shouldn't happen in practice — schedules
+            // are armed via the SchedulerService context plugin which
+            // only runs once the server is wiring up. Log instead of
+            // dropping silently.
+            console.warn(
+                `Scheduler fired before Fastify ready: id=${event.id} namespace=${event.namespace}`
+            );
+            return;
+        }
+        try {
+            await appRef.inject({
+                method: "POST",
+                url: "/webiny-scheduler-internal",
+                headers: { "x-tenant": "root", "content-type": "application/json" },
+                payload: { namespace: event.namespace, id: event.id }
+            });
+        } catch (err) {
+            console.error(`Scheduler dispatch failed for id=${event.id}:`, (err as Error).message);
+        }
+    };
+    const schedulerService = new NodeSchedulerService({ onFire: dispatchScheduledAction });
 
     // -----------------------------------------------------------------------
     // Bootstrap — make sure the root tenant exists on first boot. The
@@ -283,16 +318,12 @@ const main = async () => {
                 transport: wsTransport
             }),
 
-            // Scheduler — uses the schedulerService injection added to
-            // api-scheduler in stage 10 / cluster 10b. NodeSchedulerService
-            // arms setTimeout-backed timers in-process; firing currently
-            // logs (the runtime dispatch back into the scheduled-action
-            // event handler is a follow-on). With this in place the CMS
-            // and website-builder scheduler plugins (which only consume
-            // the SchedulerService abstraction) also boot clean.
-            createScheduler({
-                schedulerService: new NodeSchedulerService()
-            }),
+            // Scheduler — NodeSchedulerService arms setTimeout-backed
+            // timers in-process; on fire, dispatchScheduledAction
+            // synthesizes a POST to /webiny-scheduler-internal so the
+            // standard preHandler chain runs before
+            // ExecuteScheduledActionUseCase loads + runs the action.
+            createScheduler({ schedulerService }),
             createHeadlessCmsScheduler(),
             createWebsiteBuilderScheduler(),
 
@@ -300,6 +331,25 @@ const main = async () => {
                 onGet("/tenants", async (_, reply) => {
                     const tenants = await storageOperations.tenancyStorageOperations.listTenants();
                     return reply.send({ tenants });
+                });
+            }),
+
+            // Internal scheduler dispatch route — fired via app.inject()
+            // from dispatchScheduledAction (the NodeSchedulerService
+            // onFire callback). Goes through the full preHandler chain
+            // so tenancy + per-request ALS are populated before
+            // ExecuteScheduledActionUseCase runs.
+            new RoutePlugin(({ onPost, context }) => {
+                onPost("/webiny-scheduler-internal", async (request, reply) => {
+                    const body = request.body as { namespace: string; id: string };
+                    const usecase = context.container.resolve(ExecuteScheduledActionUseCase);
+                    const result = await usecase.execute(body);
+                    if (result.isFail()) {
+                        const err = result.error;
+                        console.error(`Scheduled action ${body.id} failed:`, err.code, err.message);
+                        return reply.send({ ok: false, code: err.code, message: err.message });
+                    }
+                    return reply.send({ ok: true });
                 });
             }),
 
@@ -355,6 +405,11 @@ const main = async () => {
         port: PORT,
         options: { logger: { level: process.env.LOG_LEVEL ?? "info" } }
     });
+
+    // Late-bind the scheduler dispatch target now that Fastify exists.
+    // dispatchScheduledAction (built up-front, captured in
+    // schedulerService.onFire) reads this through the closure.
+    appRef = server.app;
 
     const url = await server.listen();
     console.log(`Webiny container API listening on ${url}`);
