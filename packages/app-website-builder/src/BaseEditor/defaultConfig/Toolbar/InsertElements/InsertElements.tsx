@@ -1,10 +1,11 @@
 import React from "react";
-import { Icon, Card } from "@webiny/admin-ui";
+import { Icon, Text } from "@webiny/admin-ui";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 import type { ComponentGroupItem, ComponentManifest } from "@webiny/website-builder-sdk";
 import { InlineSvg } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/InlineSvg.js";
 import { Draggable } from "~/BaseEditor/components/Draggable.js";
 import { useComponentGroups } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/useComponentGroups.js";
+import { ReactComponent as DashboardIcon } from "@webiny/icons/dashboard_customize.svg";
 
 const GroupComponent = ({ item }: { item: ComponentGroupItem }) => {
     const components = useSelectFromEditor<Record<string, ComponentManifest>>(state => {
@@ -18,7 +19,7 @@ const GroupComponent = ({ item }: { item: ComponentGroupItem }) => {
     }
 
     return (
-        <div className="flex flex-row items-center p-sm bg-neutral-light rounded-sm gap-sm cursor-grab fill-neutral-strong">
+        <div className="flex flex-row items-center p-sm bg-neutral-light rounded-lg gap-sm cursor-grab fill-neutral-strong">
             <Icon label="Icon" icon={<InlineSvg src={component.image!} />} size={"md"} />
             <div className="text-sm font-medium text-neutral-primary text-center">
                 {component.label ?? component.name}
@@ -31,21 +32,25 @@ export const InsertElements = () => {
     const groups = useComponentGroups();
 
     return (
-        <>
+        <div className={"p-sm"}>
             {groups.map(group => {
                 if (!group.items.length) {
                     return null;
                 }
 
                 return (
-                    <Card
-                        key={group.name}
-                        title={group.label}
-                        description={group.description}
-                        // borderRadius={"none"}
-                        // padding={""}
-                    >
-                        <div className="flex flex-col gap-sm p-sm justify-start">
+                    <div className={"p-sm flex flex-col gap-y-sm"}>
+                        <div className={"flex gap-x-sm"}>
+                            <Icon color={"accent"} icon={<DashboardIcon />} label={group.label} />
+                            <Text size={"md"} className={"font-semibold"} key={group.name}>
+                                {group.label}
+                            </Text>
+                        </div>
+
+                        <div
+                            className={"py-sm px-xl flex flex-col gap-y-xs"}
+                            data-role={"group-items"}
+                        >
                             {group.items.map(item => {
                                 return (
                                     <Draggable
@@ -64,9 +69,39 @@ export const InsertElements = () => {
                                 );
                             })}
                         </div>
-                    </Card>
+                    </div>
                 );
+
+                // return (
+                //     <Card
+                //         key={group.name}
+                //         title={group.label}
+                //         description={group.description}
+                //         // borderRadius={"none"}
+                //         // padding={""}
+                //     >
+                //         <div className="flex flex-col gap-sm p-sm justify-start">
+                //             {group.items.map(item => {
+                //                 return (
+                //                     <Draggable
+                //                         key={item.name}
+                //                         type="ELEMENT"
+                //                         item={{ componentName: item.name }}
+                //                     >
+                //                         {({ dragRef }) =>
+                //                             dragRef(
+                //                                 <div>
+                //                                     <GroupComponent item={item} />
+                //                                 </div>
+                //                             )
+                //                         }
+                //                     </Draggable>
+                //                 );
+                //             })}
+                //         </div>
+                //     </Card>
+                // );
             })}
-        </>
+        </div>
     );
 };
