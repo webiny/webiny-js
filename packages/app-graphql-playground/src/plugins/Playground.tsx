@@ -6,7 +6,7 @@ import { Global } from "@emotion/react";
 import { plugins } from "@webiny/plugins";
 import { useIdentity } from "@webiny/app-admin";
 import type { Identity } from "@webiny/app-admin/domain/Identity.js";
-import { CircularProgress } from "@webiny/ui/Progress/index.js";
+import { OverlayLoader } from "@webiny/admin-ui";
 import { playgroundDialog, PlaygroundContainer } from "./Playground.styles.js";
 import { settings } from "./settings.js";
 import { config as appConfig } from "@webiny/app/config.js";
@@ -117,7 +117,7 @@ const Playground = ({ createApolloClient }: PlaygroundProps) => {
     return (
         <Fragment>
             {loading ? (
-                <CircularProgress label={"Loading playground..."} />
+                <OverlayLoader text={"Loading playground..."} />
             ) : (
                 <PlaygroundContainer id={"graphql-playground"} />
             )}
