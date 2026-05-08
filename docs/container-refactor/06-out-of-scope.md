@@ -6,15 +6,15 @@ The point of an explicit out-of-scope list is to short-circuit "but what about�
 
 ---
 
-## OOS-1 — `api-sync-system` + DynamoDB Streams CDC
+## OOS-1 — `api-sync-system` + DDB-streams-driven OpenSearch CDC (**permanently** out of scope)
 
-**What it is.** A Webiny feature that synchronizes data between environments (e.g., dev → staging → prod) by tailing DynamoDB Streams and invoking a destination Lambda that writes the changes into the target environment. Several adjacent packages also rely on stream-based CDC: `api-dynamodb-to-elasticsearch` (DDB → OpenSearch index updates) is the most prominent.
+**What it is.** A pipeline that propagates DynamoDB writes to OpenSearch by tailing DDB Streams and invoking a destination Lambda. The package family: `api-sync-system`, `api-dynamodb-to-elasticsearch`, `api-elasticsearch`, `api-elasticsearch-tasks`.
 
-**Why deferred.** Streams don't exist outside DynamoDB. Replacing them in container mode means designing a brand-new sync architecture (write-side outbox pattern? application-level CDC? trigger-based replication?) — that's its own multi-week design effort. Doing it inside the POC would balloon scope.
+**Why permanently out of scope.** This is a DDB-streams-to-OpenSearch pipeline — both halves of the chain are AWS-specific, and the container path uses **neither**. SQLite FTS5 indexes are written synchronously alongside the row in the same transaction, and the PostgreSQL phase will use the same write-side approach with native PG search (FTS / `tsvector` / `pg_trgm`). There is no streams-shaped problem to solve in the container path; the entire CDC layer is gone. This is **not deferred** — there is no plan to add a SQLite/Postgres analogue of these packages.
 
-**Container POC behavior.** `api-sync-system` is wired with a no-op stub in container mode. Calling sync APIs in a container deployment returns "not supported in this runtime." Indexing for search is *not* affected because container mode uses SQLite FTS5 in-process — search updates happen in the same transaction as the row write, so no CDC pipeline is needed.
+**Container POC behavior.** None of the four packages above are wired into the container's plugin set. Code paths that *would* call them simply don't run in this runtime. Search updates flow through the in-process FTS5 shadow table maintained by the SQLite storage-ops packages.
 
-**Future work.** When container deployments hit the customer use case for cross-environment sync, design a separate `api-sync-system-pull` (or similar) that polls or uses an outbox table.
+**Future work.** None planned for the container path. The serverless code path is unchanged; existing AWS deployments keep using these packages as-is.
 
 ---
 

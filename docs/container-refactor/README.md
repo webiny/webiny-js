@@ -18,6 +18,7 @@ This folder is the durable record of why we chose what we chose, and how the ref
 | 6 | [`06-out-of-scope.md`](./06-out-of-scope.md) | What is intentionally deferred to a future phase and why (api-sync-system, AWS IoT watch mode, CloudFront/S3 admin UI hosting, SES). |
 | 7 | [`07-developer-guide.md`](./07-developer-guide.md) | Getting-started guide for running Webiny locally with `docker compose up`. Prerequisites, smoke checks, where things live, troubleshooting, and the honest list of current limitations. |
 | 8 | [`08-concurrency-isolation.md`](./08-concurrency-isolation.md) | The architectural model for handling Webiny's Lambda-shaped "one process per request" assumptions inside a long-lived container. Per-request AsyncLocalStorage scoping, DI registration dedupe, stateful-singleton scoping, per-endpoint plugin pinning, and the stress test that gates regressions. |
+| 9 | [`09-storage-ops-status.md`](./09-storage-ops-status.md) | Living checklist of remaining work in the SQLite storage-operations packages (entry/model/group, ACO, audit-logs, file-manager). Updated as items land. |
 
 ## Status
 
