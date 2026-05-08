@@ -360,6 +360,25 @@ const pickPointerType = (where: unknown): "L" | "P" => {
 
 const skPrefix = (type: "L" | "P") => `${type}#`;
 
+// Translate a free-text search string into an FTS5 MATCH expression.
+// We tokenize the same way the indexer does (`unicode61` treats
+// anything outside the alphanumeric range as a separator — including
+// hyphens, which double as the NOT operator in FTS5 syntax). Each
+// token becomes a prefix match (`tok*`), AND-joined. Punctuation and
+// FTS keywords are stripped at the tokenization boundary, so user
+// input can't corrupt the query. Returns null when sanitization
+// leaves nothing queryable — caller treats that as "no matches".
+const buildFtsQuery = (raw: string): string | null => {
+    const tokens = raw
+        .toLowerCase()
+        .split(/[^a-z0-9_]+/i)
+        .filter(t => t.length > 0);
+    if (tokens.length === 0) {
+        return null;
+    }
+    return tokens.map(t => `${t}*`).join(" ");
+};
+
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
@@ -528,14 +547,50 @@ export const createEntriesStorageOperations = (
             model: CmsModel,
             p: CmsEntryStorageOperationsListParams
         ): Promise<CmsEntryStorageOperationsListResponse<CmsEntry<T>>> {
-            // listByPk returns only row.data; we filter on sk prefix
-            // here, so query the partition directly with sk in scope.
             const type = pickPointerType(p.where);
             const prefix = skPrefix(type);
-            const rows = db.sqlite
-                .prepare("SELECT data FROM items WHERE pk = ? AND sk LIKE ? ORDER BY sk ASC")
-                .all(partitionKey(model), `${prefix}%`) as { data: string }[];
-            const candidates = rows.map(r => JSON.parse(r.data as unknown as string) as CmsEntry);
+            const pk = partitionKey(model);
+
+            let candidates: CmsEntry[];
+            const search = (p.search ?? "").trim();
+            if (search.length > 0) {
+                // FTS5 path. Indexes live on L# rows only (one per
+                // entry — see syncFts), so a hit identifies the
+                // entryId. For the read endpoint (P# pointers) we
+                // translate L#<entryId> → P#<entryId> before loading
+                // the actual rows.
+                const ftsQuery = buildFtsQuery(search);
+                if (!ftsQuery) {
+                    candidates = [];
+                } else {
+                    const ftsHits = db.sqlite
+                        .prepare("SELECT sk FROM items_fts WHERE pk = ? AND items_fts MATCH ?")
+                        .all(pk, ftsQuery) as { sk: string }[];
+                    const entryIds = ftsHits.map(r => r.sk.replace(/^L#/, ""));
+                    if (entryIds.length === 0) {
+                        candidates = [];
+                    } else {
+                        const targetSks = entryIds.map(id =>
+                            type === "P" ? publishedSk(id) : latestSk(id)
+                        );
+                        const placeholders = targetSks.map(() => "?").join(",");
+                        const rows = db.sqlite
+                            .prepare(
+                                `SELECT data FROM items WHERE pk = ? AND sk IN (${placeholders}) ORDER BY sk ASC`
+                            )
+                            .all(pk, ...targetSks) as { data: string }[];
+                        candidates = rows.map(
+                            r => JSON.parse(r.data as unknown as string) as CmsEntry
+                        );
+                    }
+                }
+            } else {
+                // No search — full prefix scan.
+                const rows = db.sqlite
+                    .prepare("SELECT data FROM items WHERE pk = ? AND sk LIKE ? ORDER BY sk ASC")
+                    .all(pk, `${prefix}%`) as { data: string }[];
+                candidates = rows.map(r => JSON.parse(r.data as unknown as string) as CmsEntry);
+            }
 
             const filtered = candidates.filter(entry => matchesWhere(entry, p.where));
             const limit = p.limit ?? 50;
