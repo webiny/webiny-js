@@ -197,9 +197,15 @@ knows what to expect:
   `P#<entryId>` pointers). Still deferred: `move` (folder move propagation
   to all revisions), `moveToBin` / `restoreFromBin`, `deleteMultipleEntries`,
   and `getUniqueFieldValues`.
-- **WebSocket real transport** — `api-websockets-memory` ships an in-memory
-  registry + a no-op transport. Connection bookkeeping works; bytes don't
-  go anywhere. Wiring `@fastify/websocket` is a follow-on.
+- **WebSocket transport at scale** — `api-websockets-memory` now ships a
+  Fastify-backed transport (`FastifyWebsocketsTransport` + the
+  `mountFastifyWebsockets` helper). A real `/ws` endpoint accepts
+  upgrades, $connect / $default / $disconnect events dispatch through the
+  full Webiny preHandler chain, and server-initiated `sendToConnections`
+  delivers bytes to live sockets. Single-process only — when the
+  container topology splits into api + ws + worker replicas, swap the
+  in-memory registry for a Redis or NATS-backed one (the contract is the
+  same `IWebsocketsConnectionRegistry`).
 - **Scheduler in-process dispatch** — `NodeSchedulerService` arms timers
   correctly; when they fire, the default callback logs to stdout. Wiring
   the fired event back into the scheduled-action handler is a follow-on.

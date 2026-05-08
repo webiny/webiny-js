@@ -12431,7 +12431,6 @@ __metadata:
   resolution: "@webiny-poc/api-server@workspace:extensions/api"
   dependencies:
     "@fastify/static": "npm:^8.2.0"
-    "@fastify/websocket": "npm:^11.2.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-aco-sqlite": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
@@ -13489,9 +13488,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-websockets-memory@workspace:packages/api-websockets-memory"
   dependencies:
+    "@fastify/websocket": "npm:^11.2.0"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    fastify: "npm:5.8.5"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"
   languageName: unknown

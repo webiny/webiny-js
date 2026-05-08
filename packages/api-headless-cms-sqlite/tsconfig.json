@@ -6,7 +6,8 @@
     { "path": "../db-sqlite" },
     { "path": "../error" },
     { "path": "../feature" },
-    { "path": "../handler" }
+    { "path": "../handler" },
+    { "path": "../utils" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -26,7 +27,9 @@
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
     }
   }
 }
