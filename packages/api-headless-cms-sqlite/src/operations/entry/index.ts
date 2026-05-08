@@ -13,7 +13,7 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import type { Database } from "@webiny/db-sqlite";
 import { batchGet, listByPk } from "../../utils/scan.js";
-import { deleteRow, upsertRow } from "../../utils/row.js";
+import { deleteRow, getRow, upsertRow } from "../../utils/row.js";
 
 /**
  * Stage-6 SQLite entry storage ops.
@@ -385,20 +385,41 @@ export const createEntriesStorageOperations = (
                 .run(partitionKey(model), sortKey(entry.id));
         },
 
-        // --- Deferred to stage 6b ---
         async getPublishedByIds() {
+            // Stage 6 stores a single draft revision per entry — there
+            // are no published revisions yet. Return empty until the
+            // publish lifecycle lands (stage 6b).
             return [];
         },
-        async getRevisions() {
-            return [];
+        async getRevisions<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            p: { id: string }
+        ) {
+            // Single-revision storage: only the entry itself qualifies
+            // as "the revisions of this entry id".
+            const all = await listByPk<CmsEntry>(db, partitionKey(model));
+            const baseEntryId = p.id.includes("#") ? p.id.split("#")[0] : p.id;
+            return all.filter(e => e.entryId === baseEntryId) as unknown as CmsEntry<T>[];
         },
-        async getRevisionById() {
-            return null;
+        async getRevisionById<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            p: { id: string }
+        ) {
+            // sk == entry.id == `${entryId}#${revision}`. The use cases
+            // call this with the full revision id to load the row that
+            // backs an update / publish.
+            const row = await getRow<CmsEntry>(db, {
+                pk: partitionKey(model),
+                sk: sortKey(p.id)
+            });
+            return row as unknown as CmsEntry<T> | null;
         },
         async getPublishedRevisionByEntryId() {
+            // No publish lifecycle yet — drafts only.
             return null;
         },
         async getPreviousRevision() {
+            // Single-revision storage; no "previous" exists.
             return null;
         },
         async createRevisionFrom() {
