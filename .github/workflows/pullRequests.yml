@@ -44,6 +44,7 @@ jobs:
       run-cache-key: ${{ steps.run-cache-key.outputs.run-cache-key }}
       is-fork-pr: ${{ steps.is-fork-pr.outputs.is-fork-pr }}
       changed-packages: ${{ steps.detect-changed-packages.outputs.changed-packages }}
+      container-files-changed: ${{ steps.container-files-changed.outputs.container-files-changed }}
       latest-webiny-version: ${{ steps.latest-webiny-version.outputs.latest-webiny-version }}
     steps:
       - uses: actions/setup-node@v5
@@ -73,6 +74,22 @@ jobs:
           filters: |
             changed:
               - 'packages/**/*'
+            container:
+              - 'extensions/api/**'
+              - 'extensions/admin/**'
+              - 'packages/handler-node/**'
+              - 'packages/db-sqlite/**'
+              - 'packages/api-core-sqlite/**'
+              - 'packages/api-headless-cms-sqlite/**'
+              - 'packages/api-aco-sqlite/**'
+              - 'packages/api-audit-logs-sqlite/**'
+              - 'packages/api-file-manager-fs/**'
+              - 'packages/api-websockets-memory/**'
+              - 'packages/api-scheduler-cron/**'
+              - 'packages/keycloak/**'
+              - 'docker-compose.yml'
+              - 'deploy/keycloak/**'
+              - 'scripts/containerStressTest.mjs'
           list-files: json
       - name: Detect changed packages
         id: detect-changed-packages
@@ -81,6 +98,11 @@ jobs:
           .github/workflows/wac/utils/runNodeScripts/listChangedPackages.js '${{
           steps.detect-changed-files.outputs.changed_files }}')" >>
           "$GITHUB_OUTPUT"
+      - name: Surface container-files-changed
+        id: container-files-changed
+        run: >-
+          echo "container-files-changed=${{
+          steps.detect-changed-files.outputs.container }}" >> "$GITHUB_OUTPUT"
       - name: Get latest Webiny version on NPM
         id: latest-webiny-version
         run: >-
@@ -312,6 +334,72 @@ jobs:
         with:
           commit_message: 'chore: regenerate webiny package [skip ci]'
           repository: ${{ github.base_ref }}
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max_old_space_size=4096'
+      YARN_ENABLE_IMMUTABLE_INSTALLS: false
+  containerStressTest:
+    needs:
+      - constants
+      - build
+    name: Container concurrency stress test
+    if: >-
+      !startsWith(github.head_ref, 'release/') &&
+      needs.constants.outputs.container-files-changed == 'true'
+    steps:
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - uses: actions/checkout@v5
+        with:
+          path: ${{ github.base_ref }}
+      - uses: actions/cache@v5
+        with:
+          path: ${{ github.base_ref }}/.yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - uses: actions/cache@v5
+        with:
+          path: ${{ github.base_ref }}/.webiny/cached-packages
+          key: ${{ needs.constants.outputs.run-cache-key }}
+      - name: Install dependencies
+        run: yarn --immutable
+        working-directory: ${{ github.base_ref }}
+      - name: Build packages
+        run: yarn build
+        working-directory: ${{ github.base_ref }}
+      - name: Build Admin SPA
+        run: yarn build:admin
+        working-directory: ${{ github.base_ref }}
+      - name: Build server bundle
+        run: yarn build:server
+        working-directory: ${{ github.base_ref }}
+      - name: Boot docker-compose stack
+        run: docker compose up -d --build
+        working-directory: ${{ github.base_ref }}
+      - name: Wait for api /health (max 90s)
+        run: |-
+          for i in $(seq 1 90); do
+            if curl -sf http://localhost:8080/health > /dev/null; then
+              echo 'api is up'
+              exit 0
+            fi
+            sleep 1
+          done
+          echo 'api never became healthy'
+          docker compose logs --tail=200
+          exit 1
+        working-directory: ${{ github.base_ref }}
+      - name: Run concurrent stress test
+        run: yarn container:stress
+        working-directory: ${{ github.base_ref }}
+      - name: Dump api logs on failure
+        if: failure()
+        run: docker compose logs --tail=500 api
+        working-directory: ${{ github.base_ref }}
+      - name: Tear down docker-compose stack
+        if: always()
+        run: docker compose down -v
+        working-directory: ${{ github.base_ref }}
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'

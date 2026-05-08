@@ -17,10 +17,11 @@ This folder is the durable record of why we chose what we chose, and how the ref
 | 5 | [`05-risks-and-mitigations.md`](./05-risks-and-mitigations.md) | Risks identified during planning (hidden coupling, breaking-change surfaces, perf concerns, etc.) and how each is mitigated. |
 | 6 | [`06-out-of-scope.md`](./06-out-of-scope.md) | What is intentionally deferred to a future phase and why (api-sync-system, AWS IoT watch mode, CloudFront/S3 admin UI hosting, SES). |
 | 7 | [`07-developer-guide.md`](./07-developer-guide.md) | Getting-started guide for running Webiny locally with `docker compose up`. Prerequisites, smoke checks, where things live, troubleshooting, and the honest list of current limitations. |
+| 8 | [`08-concurrency-isolation.md`](./08-concurrency-isolation.md) | The architectural model for handling Webiny's Lambda-shaped "one process per request" assumptions inside a long-lived container. Per-request AsyncLocalStorage scoping, DI registration dedupe, stateful-singleton scoping, per-endpoint plugin pinning, and the stress test that gates regressions. |
 
 ## Status
 
-The container POC is functional through stage 11 (DX polish). Stages 1–10 shipped the architecture, all the SQLite-backed storage operations packages, the local-FS file driver, the in-memory websockets adapter, and the in-process scheduler. The container API now boots without a single AWS SDK call on the request path. Read `07-developer-guide.md` for the practical "how do I run this" walkthrough and the canonical list of current limitations / follow-on work.
+The container POC is functional through stage 12 (CI integration). Stages 1–11 shipped the architecture, all the SQLite-backed storage operations packages, the local-FS file driver, the in-memory websockets adapter, the in-process scheduler, the container-mode Admin SPA hosted from the same API container, full Keycloak-backed JWT auth, and the per-request concurrency isolation described in `08-concurrency-isolation.md`. Stage 12 wires `yarn container:stress` (1000 concurrent mixed requests) into CI as the durability gate. The container API boots without a single AWS SDK call on the request path. Read `07-developer-guide.md` for the practical "how do I run this" walkthrough and the canonical list of current limitations / follow-on work.
 
 ## Branches
 
