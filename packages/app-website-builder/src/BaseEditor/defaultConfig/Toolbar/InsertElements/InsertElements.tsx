@@ -39,10 +39,10 @@ export const InsertElements = () => {
                 }
 
                 return (
-                    <div className={"p-sm flex flex-col gap-y-sm"}>
+                    <div key={group.name} className={"p-sm flex flex-col gap-y-sm"}>
                         <div className={"flex gap-x-sm"}>
                             <Icon color={"accent"} icon={<DashboardIcon />} label={group.label} />
-                            <Text size={"md"} className={"font-semibold"} key={group.name}>
+                            <Text size={"md"} className={"font-semibold"}>
                                 {group.label}
                             </Text>
                         </div>
