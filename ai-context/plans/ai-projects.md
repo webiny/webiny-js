@@ -81,7 +81,7 @@ No file content loading — only the project's `instructions` field is used in p
 
 ---
 
-## [ ] Phase 4: File Content Loading + Prompt Assembly
+## [x] Phase 4: File Content Loading + Prompt Assembly
 
 **User stories**: Project files are sent to the LLM; per-file toggle in dialog.
 

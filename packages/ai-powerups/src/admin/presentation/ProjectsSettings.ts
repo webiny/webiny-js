@@ -82,7 +82,9 @@ class ProjectsSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                         .description(
                             "Reference files from the DAM to include as context for the LLM."
                         )
-                        .note("Only JSON and text files will be sent to the LLM.")
+                        .note(
+                            "Only files containing text will be sent to the LLM (.mdx, .md, .html, .json, .csv, .txt, etc.)"
+                        )
                 }))
                 .list()
         }));

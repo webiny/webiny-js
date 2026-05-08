@@ -62,6 +62,7 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
         const data = await this._form.submit<{
             prompt: string;
             project?: string;
+            includedFiles?: string[];
             readerPersona?: string;
             writerPersona?: string;
         }>();
@@ -80,11 +81,14 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
                 outputSchema: pick(z.toJSONSchema(tool.outputSchema), ["properties", "type"])
             }));
 
+            const excludedFileIds = this.computeExcludedFileIds(data.project, data.includedFiles);
+
             await this.generatePageContent.execute({
                 prompt: data.prompt,
                 components: toJS(this._components),
                 tools,
                 projectId: data.project || null,
+                excludedFileIds,
                 readerPersonaId: data.readerPersona || null,
                 writerPersonaId: data.writerPersona || null
             });
@@ -146,6 +150,26 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
                         if (project?.defaultWriterPersonaId) {
                             form.field("writerPersona").setValue(project.defaultWriterPersonaId);
                         }
+
+                        const fileIds = (project?.files ?? []).map(f => f.id);
+                        form.field("includedFiles").setValue(fileIds);
+                    }),
+                includedFiles: fields
+                    .text()
+                    .label("Files included")
+                    .description("Uncheck files to exclude them from this generation only.")
+                    .options(() => this.getProjectFileOptions())
+                    .renderer("checkboxes")
+                    .list()
+                    .hiddenWhen(form => {
+                        const projectId = form.field("project").as("text").getValue();
+                        if (!projectId) {
+                            return true;
+                        }
+                        const project = this._settings?.projects?.presets?.find(
+                            p => p.id === projectId
+                        );
+                        return !project?.files || project.files.length === 0;
                     }),
                 readerPersona: fields
                     .text()
@@ -166,11 +190,49 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
             }),
             layout: layout => [
                 layout.row("project"),
+                layout.row("includedFiles"),
                 layout.row("readerPersona"),
                 layout.row("writerPersona"),
                 layout.row("prompt")
             ]
         });
+    }
+
+    private getSelectedProject() {
+        if (!this._form || !this._settings) {
+            return undefined;
+        }
+        const projectId = this._form.field("project").getValue<string>();
+        if (!projectId) {
+            return undefined;
+        }
+        return this._settings.projects?.presets?.find(p => p.id === projectId);
+    }
+
+    private getProjectFileOptions() {
+        const project = this.getSelectedProject();
+        const files = project?.files;
+        if (!files || files.length === 0) {
+            return [];
+        }
+        return files.map(f => ({
+            label: f.name,
+            value: f.id
+        }));
+    }
+
+    private computeExcludedFileIds(projectId?: string, includedFiles?: string[]): string[] | null {
+        if (!projectId) {
+            return null;
+        }
+        const project = this._settings?.projects?.presets?.find(p => p.id === projectId);
+        const allFileIds = (project?.files ?? []).map(f => f.id);
+        if (allFileIds.length === 0) {
+            return null;
+        }
+        const included = new Set(includedFiles ?? []);
+        const excluded = allFileIds.filter(id => !included.has(id));
+        return excluded.length > 0 ? excluded : null;
     }
 
     private getProjectOptions() {

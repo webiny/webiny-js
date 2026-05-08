@@ -11,6 +11,7 @@ export interface IWbGeneratePageContentTaskInput {
     components: unknown;
     tools: unknown;
     projectId?: string | null;
+    excludedFileIds?: string[] | null;
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
 }
@@ -44,6 +45,7 @@ class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGener
             components: input.components,
             tools: input.tools,
             projectId: input.projectId,
+            excludedFileIds: input.excludedFileIds,
             readerPersonaId: input.readerPersonaId,
             writerPersonaId: input.writerPersonaId
         });

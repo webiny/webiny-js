@@ -11,6 +11,7 @@ import type {
     AfterChangeCallback,
     AfterSetValueCallback,
     ComputedFieldCallback,
+    HiddenWhenCallback,
     OnBlurCallback,
     CloneValueCallback
 } from "./abstractions.js";
@@ -84,6 +85,14 @@ export class FieldBuilder<TType extends string = string> implements IFieldBuilde
 
     hidden(): this {
         this._config.hidden = true;
+        return this;
+    }
+
+    hiddenWhen(fn: HiddenWhenCallback): this {
+        if (!this._config.hiddenWhenCallbacks) {
+            this._config.hiddenWhenCallbacks = [];
+        }
+        this._config.hiddenWhenCallbacks.push(fn);
         return this;
     }
 

@@ -3,10 +3,12 @@ import { Result } from "@webiny/feature/api";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
+import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { WbGeneratePageContentUseCase } from "./abstractions.js";
 import type { WbGeneratePageContentParams } from "./abstractions.js";
 import { buildSystemPrompt } from "./buildPrompt.js";
+import { loadProjectFiles } from "./loadProjectFiles.js";
 
 function stripCodeFence(text: string): string {
     return text
@@ -20,7 +22,8 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
         private getSettings: GetSettingsUseCase.Interface,
         private ai: Ai.Interface,
         private aiSdkTools: AiSdkTools.Interface,
-        private encryption: Encryption.Interface
+        private encryption: Encryption.Interface,
+        private keyValueStore: GlobalKeyValueStore.Interface
     ) {}
 
     async execute(params: WbGeneratePageContentParams): Promise<Result<string, Error>> {
@@ -48,6 +51,10 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
             ? settings.projects?.presets?.find(p => p.id === params.projectId)
             : undefined;
 
+        const projectFiles = project?.files
+            ? await loadProjectFiles(project.files, params.excludedFileIds, this.keyValueStore)
+            : [];
+
         const readerPersona = params.readerPersonaId
             ? settings.readerPersonas?.presets?.find(p => p.id === params.readerPersonaId)
             : undefined;
@@ -59,7 +66,9 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
         const system = buildSystemPrompt(params.components, params.tools, {
             readerPersona,
             writerPersona,
-            project
+            project: project
+                ? { name: project.name, instructions: project.instructions, files: projectFiles }
+                : undefined
         });
 
         console.log({
@@ -104,5 +113,5 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
 export const WbGeneratePageContentUseCaseImplementation =
     WbGeneratePageContentUseCase.createImplementation({
         implementation: WbGeneratePageContentUseCaseImpl,
-        dependencies: [GetSettingsUseCase, Ai, AiSdkTools, Encryption]
+        dependencies: [GetSettingsUseCase, Ai, AiSdkTools, Encryption, GlobalKeyValueStore]
     });

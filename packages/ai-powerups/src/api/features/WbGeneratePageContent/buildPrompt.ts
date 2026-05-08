@@ -4,9 +4,15 @@ interface PersonaInfo {
     style?: string;
 }
 
+interface ProjectFileContent {
+    name: string;
+    content: string;
+}
+
 interface ProjectInfo {
     name: string;
     instructions?: string;
+    files?: ProjectFileContent[];
 }
 
 interface BuildPromptOptions {
@@ -40,12 +46,32 @@ function buildPersonaSections(options?: BuildPromptOptions): string {
 }
 
 function buildProjectSection(options?: BuildPromptOptions): string {
-    if (!options?.project?.instructions) {
+    const project = options?.project;
+    if (!project) {
         return "";
     }
 
-    const p = options.project;
-    return `\n\n## Project: ${p.name}\n\n${p.instructions}`;
+    const hasInstructions = !!project.instructions;
+    const hasFiles = project.files && project.files.length > 0;
+
+    if (!hasInstructions && !hasFiles) {
+        return "";
+    }
+
+    const parts: string[] = [`\n\n## Project: ${project.name}`];
+
+    if (hasInstructions) {
+        parts.push(project.instructions!);
+    }
+
+    if (hasFiles) {
+        parts.push("### Reference files");
+        for (const file of project.files!) {
+            parts.push(`--- ${file.name} ---\n${file.content}`);
+        }
+    }
+
+    return parts.join("\n\n");
 }
 
 export function buildSystemPrompt(

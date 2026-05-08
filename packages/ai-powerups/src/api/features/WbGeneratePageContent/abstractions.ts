@@ -5,6 +5,7 @@ export interface WbGeneratePageContentParams {
     components: unknown;
     tools: unknown;
     projectId?: string | null;
+    excludedFileIds?: string[] | null;
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
 }
