@@ -75,7 +75,7 @@ const BaseMultiFilePickerPrimitive = ({
             )}
             style={containerStyle}
         >
-            {type === "area" && (label || description) && (
+            {(label || description) && (
                 <div className={"w-full flex justify-between"}>
                     <div className={"w-full"}>
                         {label && (
@@ -99,13 +99,15 @@ const BaseMultiFilePickerPrimitive = ({
                             />
                         )}
                     </div>
-                    <Button
-                        text={buttonPlaceholder ?? "Select a file"}
-                        variant={"ghost"}
-                        onClick={onSelectItem}
-                        size={"sm"}
-                        disabled={disabled}
-                    />
+                    {vm.hasFiles ? (
+                        <Button
+                            text={buttonPlaceholder ?? "Select a file"}
+                            variant={"ghost"}
+                            onClick={onSelectItem}
+                            size={"sm"}
+                            disabled={disabled}
+                        />
+                    ) : null}
                 </div>
             )}
             {vm.hasFiles ? (

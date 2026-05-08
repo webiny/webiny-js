@@ -26,9 +26,7 @@ class ProjectsSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                         .text()
                         .label("Name")
                         .required("Name is required")
-                        .description(
-                            "This name will be used to identify the project in the UI."
-                        ),
+                        .description("This name will be used to identify the project in the UI."),
                     description: f
                         .text()
                         .label("Description")
@@ -55,12 +53,10 @@ class ProjectsSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                             if (!presets || presets.length === 0) {
                                 return [];
                             }
-                            return presets.map(
-                                (preset: { id: string; name: string }) => ({
-                                    label: preset.name,
-                                    value: preset.id
-                                })
-                            );
+                            return presets.map((preset: { id: string; name: string }) => ({
+                                label: preset.name,
+                                value: preset.id
+                            }));
                         }),
                     defaultWriterPersonaId: f
                         .text()
@@ -74,13 +70,19 @@ class ProjectsSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
                             if (!presets || presets.length === 0) {
                                 return [];
                             }
-                            return presets.map(
-                                (preset: { id: string; name: string }) => ({
-                                    label: preset.name,
-                                    value: preset.id
-                                })
-                            );
-                        })
+                            return presets.map((preset: { id: string; name: string }) => ({
+                                label: preset.name,
+                                value: preset.id
+                            }));
+                        }),
+                    files: f
+                        .file()
+                        .label("Files")
+                        .list()
+                        .description(
+                            "Reference files from the DAM to include as context for the LLM."
+                        )
+                        .note("Only JSON and text files will be sent to the LLM.")
                 }))
                 .list()
         }));

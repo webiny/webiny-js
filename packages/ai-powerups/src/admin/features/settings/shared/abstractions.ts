@@ -42,6 +42,15 @@ export interface IAiPowerUpsSettings {
             instructions?: string;
             defaultReaderPersonaId?: string;
             defaultWriterPersonaId?: string;
+            files?: {
+                id: string;
+                name: string;
+                size: number;
+                mimeType: string;
+                src: string;
+                width?: number;
+                height?: number;
+            }[];
         }[];
     };
 }

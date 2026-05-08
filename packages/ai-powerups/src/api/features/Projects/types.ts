@@ -1,5 +1,15 @@
 import type { IAiPowerUpsSettings } from "~/api/types.js";
 
+export interface ProjectFileItem {
+    id: string;
+    name: string;
+    size: number;
+    mimeType: string;
+    src: string;
+    width?: number;
+    height?: number;
+}
+
 export interface ProjectPreset {
     id: string;
     name: string;
@@ -7,6 +17,7 @@ export interface ProjectPreset {
     instructions?: string;
     defaultReaderPersonaId?: string;
     defaultWriterPersonaId?: string;
+    files?: ProjectFileItem[];
 }
 
 declare module "~/api/types.js" {
@@ -19,6 +30,16 @@ declare module "~/api/types.js" {
 
 export type ProjectsSettings = IAiPowerUpsSettings["projects"];
 
+export interface PersistedProjectFileItem {
+    id: string;
+    name: string;
+    size: number;
+    mimeType: string;
+    src: string;
+    width?: number;
+    height?: number;
+}
+
 export interface PersistedProjectPreset {
     id: string;
     name: string;
@@ -26,6 +47,7 @@ export interface PersistedProjectPreset {
     instructions?: string;
     defaultReaderPersonaId?: string;
     defaultWriterPersonaId?: string;
+    files?: PersistedProjectFileItem[];
 }
 
 export interface PersistedProjects {
