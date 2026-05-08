@@ -480,5 +480,18 @@ describe("Pages Use Cases (Authorized)", () => {
             id: page.id,
             revisionDescription: newDescription
         });
+
+        const revisions = await context.container
+            .resolve(GetPageRevisionsUseCase)
+            .execute(page.entryId);
+
+        if (revisions.isFail()) {
+            throw revisions.error;
+        }
+
+        const revision = revisions.value.find((rev: any) => rev.version === page.version);
+
+        expect(revision).toBeDefined();
+        expect(revision?.revisionDescription).toBe(newDescription);
     });
 });

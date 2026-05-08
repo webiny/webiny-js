@@ -10,7 +10,7 @@ import { resolve } from "~/utils/resolve.js";
 import { WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS } from "~/constants.js";
 import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { PageModel, type WbPageRevision } from "~/domain/page/abstractions.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
@@ -87,7 +87,7 @@ export const createPagesSchema = () => {
                         }
 
                         const revisions = result.value;
-                        return revisions.map(page => {
+                        return revisions.map<WbPageRevision>(page => {
                             return {
                                 id: page.id,
                                 entryId: page.entryId,
@@ -95,7 +95,8 @@ export const createPagesSchema = () => {
                                 title: page.properties.title,
                                 status: page.status,
                                 locked: page.locked,
-                                savedOn: page.savedOn
+                                savedOn: page.savedOn,
+                                revisionDescription: page.revisionDescription
                             };
                         });
                     });

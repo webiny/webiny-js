@@ -39,6 +39,17 @@ export interface WbPage extends CmsEntryWbPage {
     revisionDescription: string | undefined;
 }
 
+export interface WbPageRevision {
+    id: string;
+    entryId: string;
+    version: number;
+    title: string;
+    status: string;
+    locked: boolean;
+    savedOn: string;
+    revisionDescription: string | undefined;
+}
+
 /**
  * PageModel abstraction - represents the Website Builder page CMS model.
  * This will be registered via container.registerInstance in the composite feature.

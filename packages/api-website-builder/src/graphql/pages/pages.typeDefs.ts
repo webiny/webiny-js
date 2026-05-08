@@ -210,6 +210,7 @@ export const pagesTypeDefs = /* GraphQL */ `
         status: String!
         locked: Boolean!
         savedOn: DateTime!
+        revisionDescription: String
     }
 
     type WbPageRevisionsResponse {
