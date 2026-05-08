@@ -20,7 +20,7 @@ export interface PageData {
     modifiedOn?: string | null;
     system?: WbSystem | null;
     live?: WbLive | null;
-    revisionDescription: string | undefined;
+    revisionDescription?: string;
 }
 
 export class Page {
@@ -42,7 +42,7 @@ export class Page {
     public modifiedOn: string;
     public system: WbSystem | null;
     public live: WbLive | null = null;
-    public revisionDescription: string | undefined;
+    public revisionDescription?: string | undefined;
 
     protected constructor(data: PageData) {
         this.id = data.id ?? "";
