@@ -219,7 +219,16 @@ export const createModelsSchema = ({
         `;
     }
 
+    // Plugin's typeDefs vary by `context.cms.MANAGE` (the manage block
+    // declares the createContentModel mutations + their inputs). The
+    // read/preview variant of this same plugin doesn't have those, so
+    // mixing both into a long-lived PluginsContainer would let the
+    // wrong variant get merged into a manage schema build and drop
+    // the mutations. Tag with the endpoint that produced this variant
+    // so schema generation only picks the matching one.
+    const cmsType = context.cms.type;
     const plugin = createCmsGraphQLSchemaPlugin({
+        isApplicable: ctx => ctx.cms.type === cmsType,
         typeDefs: /* GraphQL */ `
             type CmsFieldValidation {
                 name: String!

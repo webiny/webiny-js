@@ -45,6 +45,22 @@ export const generateSchemaPlugins = async (
         type
     });
 
+    // Each per-model schema plugin is gated by the endpoint type that
+    // produced it. Webiny was designed for serverless (fresh
+    // PluginsContainer per Lambda invocation), so it relied on plugins
+    // not surviving across endpoint types. In a long-lived host they
+    // do — both manage and read variants accumulate, and listing them
+    // all into the same schema mixes the manage `getTest(...)` signature
+    // with the read `getTest(where: TestGetWhereInput!)` one. The merged
+    // signature has revision/entryId/status PLUS the required where,
+    // and the Admin UI's manage queries fail because they don't pass
+    // it. Filtering at build time via isApplicable keeps each endpoint's
+    // schema purely its own.
+    const isApplicableFor =
+        (endpointType: ApiEndpoint) =>
+        (ctx: CmsContext): boolean =>
+            ctx.cms.type === endpointType;
+
     models.forEach(model => {
         if (model.tags?.includes(CMS_MODEL_SINGLETON_TAG)) {
             /**
@@ -52,6 +68,7 @@ export const generateSchemaPlugins = async (
              */
             const singularType: ApiEndpoint = type === "manage" ? "manage" : "read";
             const plugin = createCmsGraphQLSchemaPlugin({
+                isApplicable: isApplicableFor(singularType),
                 typeDefs: createSingularSDL({
                     models,
                     model,
@@ -73,6 +90,7 @@ export const generateSchemaPlugins = async (
             case "manage":
                 {
                     const plugin = createCmsGraphQLSchemaPlugin({
+                        isApplicable: isApplicableFor("manage"),
                         typeDefs: createManageSDL({
                             models,
                             model,
@@ -94,6 +112,7 @@ export const generateSchemaPlugins = async (
             case "read":
                 {
                     const plugin = createCmsGraphQLSchemaPlugin({
+                        isApplicable: isApplicableFor(type),
                         typeDefs: createReadSDL({
                             models,
                             model,
