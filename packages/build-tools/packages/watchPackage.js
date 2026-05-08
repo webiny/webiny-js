@@ -2,7 +2,10 @@ export default async options => {
     const { cwd } = options;
 
     // Must be a dynamic import — see rslibCompile.js for the reason.
-    const { createRslib } = await import("@rslib/core");
+    const [{ createRslib }, { pluginSvgr }] = await Promise.all([
+        import("@rslib/core"),
+        import("@rsbuild/plugin-svgr")
+    ]);
 
     const rslib = await createRslib({
         cwd,
@@ -17,7 +20,8 @@ export default async options => {
                 distPath: { root: "./dist" },
                 cleanDistPath: false,
                 sourceMap: { js: "source-map" }
-            }
+            },
+            plugins: [pluginSvgr({ mixedImport: true, svgrOptions: { exportType: "named" } })]
         }
     });
 

@@ -3,7 +3,7 @@ import fs from "fs";
 import { dirname } from "path";
 import glob from "fast-glob";
 
-const COMPILE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx"];
+const COMPILE_EXTENSIONS = [".js", ".jsx", ".ts", ".tsx", ".svg"];
 const SKIP_EXTENSIONS = [".d.ts"];
 
 export const rslibCompile = async ({ cwd }) => {
@@ -27,14 +27,19 @@ export const rslibCompile = async ({ cwd }) => {
     // version via rsbuild, so two native binaries end up in the same process
     // and cause a SIGSEGV. Deferring the import keeps each rspack isolated to
     // the workers that actually need it.
-    const { createRslib } = await import("@rslib/core");
+    const [{ createRslib }, { pluginSvgr }] = await Promise.all([
+        import("@rslib/core"),
+        import("@rsbuild/plugin-svgr")
+    ]);
 
     const rslib = await createRslib({
         cwd,
         config: {
             lib: [{ format: "esm", bundle: false }],
             source: {
-                entry: ["./src/**/*.{ts,tsx,js,jsx}"],
+                // SVGs included so rslib runs them through pluginSvgr and emits
+                // a .js React-component module alongside the copied .svg asset.
+                entry: ["./src/**/*.{ts,tsx,js,jsx,svg}"],
                 alias: { "~": "./src" }
             },
             output: {
@@ -42,7 +47,8 @@ export const rslibCompile = async ({ cwd }) => {
                 distPath: { root: "./dist" },
                 cleanDistPath: false,
                 sourceMap: { js: "source-map" }
-            }
+            },
+            plugins: [pluginSvgr({ svgrOptions: { exportType: "named" } })]
         }
     });
 
