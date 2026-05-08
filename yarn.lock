@@ -14789,6 +14789,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/handler-node@workspace:packages/handler-node"
   dependencies:
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^0.2.3"
     "@webiny/handler": "npm:0.0.0"

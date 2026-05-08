@@ -10,10 +10,23 @@ import type { SecurityPermission } from "~/types/security.js";
 import type { AaclPermission } from "../../wcp/WcpContext/types.js";
 import { WcpContext } from "../../wcp/WcpContext/index.js";
 
+// `withIdentity` overrides the identity via ALS for the duration of a
+// callback; that pre-existing storage covers single-callback overrides.
 const identityStorage = new AsyncLocalStorage<Identity | undefined>();
 
+// Per-request identity store. `setIdentity` writes to whichever
+// store is active (request-scoped if `requestIdentityStorage.run` /
+// `enterWith` was called by the host, otherwise the instance-level
+// `fallbackIdentity` slot). This keeps `IdentityContext` safe to
+// share as a DI singleton in long-lived hosts where concurrent
+// requests would otherwise overwrite each other's identity. Lambda
+// deployments, which run one request per process, see the original
+// behavior because no `requestIdentityStorage` scope is active and
+// reads/writes go through the fallback slot.
+const requestIdentityStorage = new AsyncLocalStorage<{ identity: Identity }>();
+
 class IdentityContextImpl implements Abstraction.Interface {
-    private identity: Identity = new AnonymousIdentity();
+    private fallbackIdentity: Identity = new AnonymousIdentity();
 
     constructor(
         private authorizationContext: AuthorizationContext.Interface,
@@ -30,12 +43,21 @@ class IdentityContextImpl implements Abstraction.Interface {
         if (override !== undefined) {
             return override;
         }
-        return this.identity;
+        const requestStore = requestIdentityStorage.getStore();
+        if (requestStore) {
+            return requestStore.identity;
+        }
+        return this.fallbackIdentity;
     }
 
     setIdentity(identity: Identity | undefined): void {
-        // If undefined, set to anonymous identity
-        this.identity = identity ?? new AnonymousIdentity();
+        const next = identity ?? new AnonymousIdentity();
+        const requestStore = requestIdentityStorage.getStore();
+        if (requestStore) {
+            requestStore.identity = next;
+        } else {
+            this.fallbackIdentity = next;
+        }
 
         // Clear permissions cache when identity changes
         this.authorizationContext.clearPermissionsCache();
@@ -142,3 +164,16 @@ export const IdentityContext = createImplementation({
     implementation: IdentityContextImpl,
     dependencies: [AuthorizationContext, WcpContext]
 });
+
+/**
+ * Open a per-request identity scope. Long-lived hosts (the
+ * container deployment via `@webiny/handler-node`) call this once at
+ * the top of every HTTP request so that `setIdentity` writes don't
+ * leak across concurrent requests sharing the singleton
+ * `IdentityContext`. Outside any scope, the singleton's instance
+ * field is used — preserving the legacy single-request-per-process
+ * behavior (Lambda, tests).
+ */
+export const enterIdentityRequestScope = (): void => {
+    requestIdentityStorage.enterWith({ identity: new AnonymousIdentity() });
+};

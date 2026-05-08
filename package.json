@@ -113,6 +113,7 @@
     "build:full": "yarn build --build-overrides='{\"tsConfig\":{\"compilerOptions\":{\"skipLibCheck\":false}}}'",
     "build:admin": "yarn node --experimental-strip-types -e 'import path from \"path\"; const cwd = path.resolve(\"extensions/admin\"); const config = (await import(`${cwd}/webiny.config.ts`)).default; await config.commands.build({ cwd });'",
     "build:server": "yarn node --experimental-strip-types -e 'import { createBuildServer } from \"@webiny/build-tools\"; import path from \"path\"; await createBuildServer()({ cwd: path.resolve(\"extensions/api\") });'",
+    "container:stress": "node scripts/containerStressTest.mjs",
     "check-package-dependencies": "node scripts/checkPackageNodeModules.js",
     "check-ts-configs": "node scripts/checkTsConfigs.js",
     "ci-workflows:build": "yarn ghawac build",
