@@ -19,6 +19,7 @@ This folder is the durable record of why we chose what we chose, and how the ref
 | 7 | [`07-developer-guide.md`](./07-developer-guide.md) | Getting-started guide for running Webiny locally with `docker compose up`. Prerequisites, smoke checks, where things live, troubleshooting, and the honest list of current limitations. |
 | 8 | [`08-concurrency-isolation.md`](./08-concurrency-isolation.md) | The architectural model for handling Webiny's Lambda-shaped "one process per request" assumptions inside a long-lived container. Per-request AsyncLocalStorage scoping, DI registration dedupe, stateful-singleton scoping, per-endpoint plugin pinning, and the stress test that gates regressions. |
 | 9 | [`09-storage-ops-status.md`](./09-storage-ops-status.md) | Living checklist of remaining work in the SQLite storage-operations packages (entry/model/group, ACO, audit-logs, file-manager). Updated as items land. |
+| 10 | [`10-production-readiness.md`](./10-production-readiness.md) | Living checklist of the remaining distance between today's POC and production-grade. Two parts: feature parity with DDB on a single replica (~1–2 weeks of work) and production-grade for real customers (~2–3 months, much of it explicit POC deferral). |
 
 ## Status
 
