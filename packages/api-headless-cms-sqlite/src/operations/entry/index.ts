@@ -5,21 +5,31 @@ import type {
     CmsEntryStorageOperations,
     CmsEntryStorageOperationsCreateParams,
     CmsEntryStorageOperationsCreateRevisionFromParams,
+    CmsEntryStorageOperationsDeleteEntriesParams,
     CmsEntryStorageOperationsGetByIdsParams,
     CmsEntryStorageOperationsGetParams,
     CmsEntryStorageOperationsGetPreviousRevisionParams,
     CmsEntryStorageOperationsGetPublishedRevisionParams,
     CmsEntryStorageOperationsGetRevisionParams,
     CmsEntryStorageOperationsGetRevisionsParams,
+    CmsEntryStorageOperationsGetUniqueFieldValuesParams,
     CmsEntryStorageOperationsListParams,
     CmsEntryStorageOperationsListResponse,
+    CmsEntryStorageOperationsMoveToBinParams,
     CmsEntryStorageOperationsPublishParams,
+    CmsEntryStorageOperationsRestoreFromBinParams,
     CmsEntryStorageOperationsUnpublishParams,
     CmsEntryStorageOperationsUpdateParams,
+    CmsEntryUniqueValue,
     CmsEntryValues,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
+import {
+    isDeletedEntryMetaField,
+    isRestoredEntryMetaField,
+    pickEntryMetaFields
+} from "@webiny/api-headless-cms/constants.js";
 import type { Database } from "@webiny/db-sqlite";
 import { batchGet, listByPk } from "../../utils/scan.js";
 import { deleteRow, getRow, upsertRow } from "../../utils/row.js";
@@ -46,11 +56,19 @@ import { deleteRow, getRow, upsertRow } from "../../utils/row.js";
  * pointer rows. POC dev volumes need a `docker compose down -v` to
  * reset; production-style migrations are out of scope for the POC.
  *
- * Still deferred:
- *   - moveToBin / restoreFromBin / deleteMultipleEntries
- *   - getUniqueFieldValues
- *   - move (folder move) — partial; only updates pointers, not all revisions
- *   - filter DSL beyond the simple operators below
+ * Filter DSL — supported operators are listed in SUFFIX_OPERATORS
+ * below. Currently:
+ *   eq (no suffix), not, in, not_in, contains, not_contains,
+ *   startsWith, not_startsWith, endsWith, not_endsWith,
+ *   gt, gte, lt, lte, between, not_between.
+ *
+ * DDB-ES additionally supports `fuzzy` (text similarity) and
+ * `and_in` (every compare value present in the array). Neither is
+ * currently used by the container POC's call sites; either can be
+ * added here when a real consumer needs it. Unrecognized operator
+ * suffixes fall through to the eq path with the whole key as the
+ * field name, which produces an empty match — fail-closed rather
+ * than fail-open. Tracked in `docs/container-refactor/09-storage-ops-status.md`.
  */
 export interface CreateEntriesStorageOperationsParams {
     db: Database;
@@ -107,12 +125,31 @@ const deleteFts = (db: Database, entryId: string, model: CmsModel) => {
         .run(partitionKey(model), latestSk(entryId));
 };
 
-const notImplemented = (method: string): never => {
-    throw new WebinyError(
-        `CmsEntryStorageOperations.${method}() is not yet implemented in the SQLite backend.`,
-        "NOT_IMPLEMENTED",
-        { method }
-    );
+/**
+ * Returns every row that belongs to a single entry in the model
+ * partition: every R# revision row, plus the L pointer and the P
+ * pointer when present. Used by the multi-row mutating operations
+ * (move, moveToBin, restoreFromBin, delete*) that need to keep all
+ * three row kinds consistent.
+ */
+const listEntryRows = (
+    db: Database,
+    model: CmsModel,
+    entryId: string
+): { sk: string; data: CmsEntry }[] => {
+    const rows = db.sqlite
+        .prepare(
+            "SELECT sk, data FROM items WHERE pk = ? " +
+                "AND (sk LIKE ? OR sk = ? OR sk = ?) ORDER BY sk ASC"
+        )
+        .all(partitionKey(model), `R#${entryId}#%`, latestSk(entryId), publishedSk(entryId)) as {
+        sk: string;
+        data: string;
+    }[];
+    return rows.map(r => ({
+        sk: r.sk,
+        data: JSON.parse(r.data as unknown as string) as CmsEntry
+    }));
 };
 
 // Predicate per operator. `match` works on either a scalar field
@@ -126,6 +163,21 @@ const includesScalar = (actual: unknown, predicate: (v: unknown) => boolean): bo
         return actual.some(predicate);
     }
     return predicate(actual);
+};
+
+// `between` accepts either a [from, to] array (DDB convention) or a
+// single scalar (which collapses to `value >= scalar && value <=
+// scalar`, i.e. equality). Comparisons use JS's relational operators
+// so strings (ISO timestamps) and numbers both work.
+const matchesBetween = (actual: unknown, expected: unknown): boolean => {
+    if (Array.isArray(expected)) {
+        if (expected.length !== 2) {
+            return false;
+        }
+        const [from, to] = expected as [unknown, unknown];
+        return (actual as never) >= (from as never) && (actual as never) <= (to as never);
+    }
+    return (actual as never) >= (expected as never) && (actual as never) <= (expected as never);
 };
 
 const SUFFIX_OPERATORS: Record<string, (actual: unknown, expected: unknown) => boolean> = {
@@ -151,7 +203,9 @@ const SUFFIX_OPERATORS: Record<string, (actual: unknown, expected: unknown) => b
     gt: (a, e) => typeof a === "number" && typeof e === "number" && a > e,
     gte: (a, e) => typeof a === "number" && typeof e === "number" && a >= e,
     lt: (a, e) => typeof a === "number" && typeof e === "number" && a < e,
-    lte: (a, e) => typeof a === "number" && typeof e === "number" && a <= e
+    lte: (a, e) => typeof a === "number" && typeof e === "number" && a <= e,
+    between: matchesBetween,
+    not_between: (a, e) => !matchesBetween(a, e)
 };
 
 const ORDERED_SUFFIXES = Object.keys(SUFFIX_OPERATORS)
@@ -714,20 +768,154 @@ export const createEntriesStorageOperations = (
             return p.entry;
         },
 
-        async move() {
-            return notImplemented("move");
+        async move(model, id, folderId) {
+            // Mirror DDB: walk every row for the entry (R# revisions + L + P)
+            // and rewrite `location.folderId` on each. Touching only the L
+            // pointer would leave older revisions stranded in the prior folder.
+            const { entryId } = splitEntryId(id);
+            const rows = listEntryRows(db, model, entryId);
+            if (rows.length === 0) {
+                return;
+            }
+            for (const { sk, data } of rows) {
+                const updated = {
+                    ...data,
+                    location: { ...(data.location ?? {}), folderId }
+                };
+                await writeRow(model, sk, updated as CmsEntry);
+            }
         },
-        async moveToBin() {
-            return notImplemented("moveToBin");
+
+        async moveToBin<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            p: CmsEntryStorageOperationsMoveToBinParams<T>
+        ) {
+            const incoming = p.storageEntry as unknown as CmsEntry;
+            const { entryId } = splitEntryId(incoming.id);
+            const rows = listEntryRows(db, model, entryId);
+            if (rows.length === 0) {
+                return;
+            }
+            // Pick only the deleted-* meta fields off the incoming entry — those
+            // are what changes in moveToBin. We then merge them onto every
+            // existing row alongside the bin-state fields. The values, location,
+            // status, etc. on each row stay as they were.
+            const deletedMeta = pickEntryMetaFields(
+                incoming as unknown as Record<string, unknown>,
+                isDeletedEntryMetaField
+            );
+            for (const { sk, data } of rows) {
+                const updated = {
+                    ...data,
+                    ...deletedMeta,
+                    wbyDeleted: incoming.wbyDeleted,
+                    location: incoming.location,
+                    binOriginalFolderId: (incoming as { binOriginalFolderId?: string })
+                        .binOriginalFolderId
+                };
+                await writeRow(model, sk, updated as CmsEntry);
+            }
         },
-        async restoreFromBin() {
-            return notImplemented("restoreFromBin");
+
+        async restoreFromBin<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            p: CmsEntryStorageOperationsRestoreFromBinParams<T>
+        ) {
+            const incoming = p.storageEntry as unknown as CmsEntry;
+            const { entryId } = splitEntryId(incoming.id);
+            const rows = listEntryRows(db, model, entryId);
+            if (rows.length === 0) {
+                return p.entry;
+            }
+            // Same shape as moveToBin but with the restored-* meta fields.
+            const restoredMeta = pickEntryMetaFields(
+                incoming as unknown as Record<string, unknown>,
+                isRestoredEntryMetaField
+            );
+            for (const { sk, data } of rows) {
+                const updated = {
+                    ...data,
+                    ...restoredMeta,
+                    wbyDeleted: incoming.wbyDeleted,
+                    location: incoming.location,
+                    binOriginalFolderId: (incoming as { binOriginalFolderId?: string })
+                        .binOriginalFolderId
+                };
+                await writeRow(model, sk, updated as CmsEntry);
+            }
+            return p.entry;
         },
-        async deleteMultipleEntries() {
-            return notImplemented("deleteMultipleEntries");
+
+        async deleteMultipleEntries(
+            model: CmsModel,
+            p: CmsEntryStorageOperationsDeleteEntriesParams
+        ) {
+            // Each id may be either an entryId or a revision id; strip to
+            // the bare entryId for the partition wipe. Wraps the per-entry
+            // deletes in a single sqlite transaction so a partial failure
+            // doesn't leave stranded R#/L/P rows.
+            const ids = p.entries ?? [];
+            if (ids.length === 0) {
+                return;
+            }
+            const pk = partitionKey(model);
+            const tx = db.sqlite.transaction((entryIds: string[]) => {
+                const wipeRevs = db.sqlite.prepare("DELETE FROM items WHERE pk = ? AND sk LIKE ?");
+                const wipePointer = db.sqlite.prepare("DELETE FROM items WHERE pk = ? AND sk = ?");
+                const wipeFts = db.sqlite.prepare("DELETE FROM items_fts WHERE pk = ? AND sk = ?");
+                for (const rawId of entryIds) {
+                    const { entryId } = splitEntryId(rawId);
+                    wipeRevs.run(pk, `R#${entryId}#%`);
+                    wipePointer.run(pk, latestSk(entryId));
+                    wipePointer.run(pk, publishedSk(entryId));
+                    wipeFts.run(pk, latestSk(entryId));
+                }
+            });
+            tx(ids);
         },
-        async getUniqueFieldValues() {
-            return [];
+
+        async getUniqueFieldValues(
+            model: CmsModel,
+            p: CmsEntryStorageOperationsGetUniqueFieldValuesParams
+        ): Promise<CmsEntryUniqueValue[]> {
+            const field = (model.fields ?? []).find(f => f.fieldId === p.fieldId);
+            if (!field) {
+                throw new WebinyError(
+                    `Could not find field with given "fieldId" value.`,
+                    "FIELD_NOT_FOUND",
+                    { fieldId: p.fieldId }
+                );
+            }
+            // Mirror DDB: list matching entries (latest pointer rows by
+            // default), then count distinct values across them. Field can
+            // be a scalar or an array of scalars.
+            const type = pickPointerType(p.where);
+            const prefix = skPrefix(type);
+            const rows = db.sqlite
+                .prepare("SELECT data FROM items WHERE pk = ? AND sk LIKE ? ORDER BY sk ASC")
+                .all(partitionKey(model), `${prefix}%`) as { data: string }[];
+            const candidates = rows
+                .map(r => JSON.parse(r.data as unknown as string) as CmsEntry)
+                .filter(entry => matchesWhere(entry, p.where));
+
+            const counts: Record<string, number> = {};
+            for (const entry of candidates) {
+                const raw = entry.values?.[p.fieldId];
+                if (raw === undefined || raw === null) {
+                    continue;
+                }
+                const values = Array.isArray(raw) ? raw : [raw];
+                for (const v of values) {
+                    if (typeof v !== "string" || v.length === 0) {
+                        continue;
+                    }
+                    counts[v] = (counts[v] ?? 0) + 1;
+                }
+            }
+            return Object.entries(counts)
+                .map(([value, count]) => ({ value, count }))
+                .sort((a, b) => (a.value > b.value ? 1 : a.value < b.value ? -1 : 0))
+                .sort((a, b) => b.count - a.count);
         }
     };
 };
