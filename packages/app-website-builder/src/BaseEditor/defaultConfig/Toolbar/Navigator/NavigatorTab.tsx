@@ -1,5 +1,4 @@
 import React from "react";
-import { ScrollArea } from "@webiny/admin-ui";
 import { useToolbarTabs } from "~/BaseEditor/config/Toolbar/ToolbarTabsContext.js";
 import { Navigator } from "./Navigator.js";
 
@@ -8,9 +7,5 @@ export const NavigatorTab = () => {
     if (activeTab !== "navigator") {
         return null;
     }
-    return (
-        <ScrollArea className={"h-full"}>
-            <Navigator />
-        </ScrollArea>
-    );
+    return <Navigator />;
 };

@@ -1,7 +1,7 @@
 import React from "react";
-import { ReactComponent as TouchIcon } from "@webiny/icons/touch_app.svg";
+import { Text } from "@webiny/admin-ui";
 import { EditorConfig } from "~/BaseEditor/config/index.js";
-import { InfoMessage } from "./Sidebar/InfoMessage.js";
+import { LayoutIllustration } from "./Toolbar/Navigator/LayoutIllustration.js";
 import { StyleSettingsGroup } from "./Sidebar/StyleSettings/StyleSettingsGroup.js";
 import { StyleProperties } from "./Sidebar/StyleSettings/StyleProperties.js";
 import { ElementSettingsGroup } from "./Sidebar/ElementSettings/ElementSettingsGroup.js";
@@ -17,10 +17,12 @@ const { Ui } = EditorConfig;
 const ClickToActivate = () => {
     return (
         <Ui.NoActiveElement>
-            <InfoMessage
-                icon={<TouchIcon />}
-                message={"Select an element on the canvas to activate this panel."}
-            />
+            <div className={"flex flex-col items-center gap-md px-md text-center mt-[200px]"}>
+                <LayoutIllustration />
+                <Text size={"sm"} className={"text-neutral-strong"}>
+                    {"Select an element in the canvas to edit properties."}
+                </Text>
+            </div>
         </Ui.NoActiveElement>
     );
 };

@@ -22,7 +22,7 @@ export const Layout = () => {
     const [activeTab, setActiveTab] = useState("insert");
 
     return (
-        <ToolbarTabsContext.Provider value={{ activeTab }}>
+        <ToolbarTabsContext.Provider value={{ activeTab, setActiveTab }}>
             <div
                 data-role={"editor-toolbar"}
                 className={

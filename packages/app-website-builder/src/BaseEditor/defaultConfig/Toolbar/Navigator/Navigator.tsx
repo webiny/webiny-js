@@ -1,7 +1,15 @@
 import React, { useMemo, useCallback } from "react";
 import get from "lodash/get.js";
 import { observer } from "mobx-react-lite";
-import { type NodeDto, Tree, type TreeProps, Tooltip } from "@webiny/admin-ui";
+import {
+    type NodeDto,
+    Tree,
+    type TreeProps,
+    Tooltip,
+    Text,
+    Button,
+    ScrollArea
+} from "@webiny/admin-ui";
 import { ReactComponent as VisibilityNone } from "@webiny/icons/visibility_off.svg";
 import type { Document } from "@webiny/website-builder-sdk";
 import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
@@ -10,8 +18,9 @@ import type { EditorState } from "~/editorSdk/Editor.js";
 import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import { Commands } from "~/BaseEditor/index.js";
 import { InlineSvg } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/InlineSvg.js";
-import { InfoMessage } from "~/BaseEditor/defaultConfig/Sidebar/InfoMessage.js";
 import { useStyles } from "~/BaseEditor/hooks/useStyles.js";
+import { useToolbarTabs } from "~/BaseEditor/config/Toolbar/ToolbarTabsContext.js";
+import { LayoutIllustration } from "./LayoutIllustration.js";
 
 // Node type for the Tree component.
 type ElementNode = NodeDto<{
@@ -137,6 +146,25 @@ function getElementNodeData({
     }, {});
 }
 
+const NavigatorEmptyState = () => {
+    const { setActiveTab } = useToolbarTabs();
+
+    return (
+        <div className={"flex flex-col items-center gap-md px-md text-center mt-[200px]"}>
+            <LayoutIllustration />
+            <Text size={"sm"} className={"text-neutral-strong"}>
+                {"You do not have any items in your layout. Add your first item in Insert panel."}
+            </Text>
+            <Button
+                variant={"secondary"}
+                text={"Add item"}
+                size={"sm"}
+                onClick={() => setActiveTab("insert")}
+            />
+        </div>
+    );
+};
+
 export const Navigator = observer(() => {
     const editor = useDocumentEditor();
     const [activeElement] = useActiveElement();
@@ -207,48 +235,50 @@ export const Navigator = observer(() => {
     };
 
     if (Object.keys(elementNodes).length <= 1) {
-        return <InfoMessage message={"No elements to display."} />;
+        return <NavigatorEmptyState />;
     }
 
     return (
-        <Tree
-            key={treeKey}
-            autoExpandOnDragOver={false}
-            insertDroppableFirst={false}
-            nodes={nodes}
-            rootId={"root"}
-            renderer={renderer}
-            sort={false}
-            defaultOpenNodeIds={activeAncestors}
-            dropTargetOffset={5}
-            placeholderRender={(node, { depth }) => {
-                return <Placeholder depth={depth} node={node} />;
-            }}
-            onDrop={(newTree, { dragSource }) => {
-                if (!dragSource || !dragSource.data) {
-                    return;
-                }
+        <ScrollArea className={"h-full"}>
+            <Tree
+                key={treeKey}
+                autoExpandOnDragOver={false}
+                insertDroppableFirst={false}
+                nodes={nodes}
+                rootId={"root"}
+                renderer={renderer}
+                sort={false}
+                defaultOpenNodeIds={activeAncestors}
+                dropTargetOffset={5}
+                placeholderRender={(node, { depth }) => {
+                    return <Placeholder depth={depth} node={node} />;
+                }}
+                onDrop={(newTree, { dragSource }) => {
+                    if (!dragSource || !dragSource.data) {
+                        return;
+                    }
 
-                const parent = dragSource.data.parent;
+                    const parent = dragSource.data.parent;
 
-                const sameLevelNodes = newTree.filter(n => n.parentId === dragSource.parentId);
-                const newIndex = sameLevelNodes.findIndex(n => n.id === dragSource.id);
-                editor.executeCommand(Commands.MoveElement, {
-                    elementId: dragSource.id,
-                    parentId: parent.id,
-                    slot: parent.slot,
-                    index: newIndex
-                });
-            }}
-            canDrag={node => node.data?.draggable ?? true}
-            canDrop={(_, { dragSource, dropTargetId }) => {
-                // Only allow dropping within the same parent (for now).
-                if (dragSource?.parentId === dropTargetId) {
-                    return true;
-                }
-                return false;
-            }}
-        />
+                    const sameLevelNodes = newTree.filter(n => n.parentId === dragSource.parentId);
+                    const newIndex = sameLevelNodes.findIndex(n => n.id === dragSource.id);
+                    editor.executeCommand(Commands.MoveElement, {
+                        elementId: dragSource.id,
+                        parentId: parent.id,
+                        slot: parent.slot,
+                        index: newIndex
+                    });
+                }}
+                canDrag={node => node.data?.draggable ?? true}
+                canDrop={(_, { dragSource, dropTargetId }) => {
+                    // Only allow dropping within the same parent (for now).
+                    if (dragSource?.parentId === dropTargetId) {
+                        return true;
+                    }
+                    return false;
+                }}
+            />
+        </ScrollArea>
     );
 });
 
