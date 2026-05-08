@@ -30,8 +30,8 @@ const toggleGroupItemVariants = cva(
                 ],
                 ghost: [
                     "border-transparent bg-transparent text-neutral-strong fill-neutral-strong",
-                    "hover:bg-neutral-dimmed",
-                    "data-[state=on]:bg-neutral-muted"
+                    "hover:bg-neutral-dark/5",
+                    "data-[state=on]:bg-neutral-dark/5 data-[state=on]:fill-neutral-xstrong"
                 ],
                 "ghost-negative": [
                     "border-transparent bg-transparent text-neutral-light fill-neutral-light",

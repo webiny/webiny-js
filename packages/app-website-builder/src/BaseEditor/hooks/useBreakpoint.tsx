@@ -8,6 +8,7 @@ export const useBreakpoint = () => {
     const { theme } = useWebsiteBuilderTheme();
     const breakpoints = theme?.breakpoints ?? [];
 
+    console.log("breakpoints, breakpoints", breakpoints);
     const editor = useDocumentEditor();
     const activeBreakpoint = useSelectFromEditor<string>(state => {
         return state.breakpoint ?? breakpoints[0]?.name ?? "desktop";
