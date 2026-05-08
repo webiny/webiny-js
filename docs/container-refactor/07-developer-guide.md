@@ -190,9 +190,13 @@ knows what to expect:
   claims into a Webiny `Identity` isn't registered yet. Expect auth flows
   to mostly work for unauthenticated paths; authenticated GraphQL calls
   may fail until this lands.
-- **CMS revision lifecycle** — `api-headless-cms-sqlite` ships basic Entry
-  CRUD; revision-aware methods (`publish`, `unpublish`, `getRevisions`,
-  `createRevisionFrom`, etc.) throw `NOT_IMPLEMENTED`. Stage 6b.
+- **CMS Entry edge cases** — full revision lifecycle (`publish`, `unpublish`,
+  `createRevisionFrom`, `getRevisions`, `getPreviousRevision`,
+  `getPublishedByIds`) is implemented in `api-headless-cms-sqlite` via the
+  three-row pattern (`R#<entryId>#<rev>` revisions + `L#<entryId>` /
+  `P#<entryId>` pointers). Still deferred: `move` (folder move propagation
+  to all revisions), `moveToBin` / `restoreFromBin`, `deleteMultipleEntries`,
+  and `getUniqueFieldValues`.
 - **WebSocket real transport** — `api-websockets-memory` ships an in-memory
   registry + a no-op transport. Connection bookkeeping works; bytes don't
   go anywhere. Wiring `@fastify/websocket` is a follow-on.

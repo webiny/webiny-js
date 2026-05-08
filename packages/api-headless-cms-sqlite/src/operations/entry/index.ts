@@ -1,55 +1,83 @@
 import WebinyError from "@webiny/error";
+import { parseIdentifier, zeroPad } from "@webiny/utils";
 import type {
     CmsEntry,
     CmsEntryStorageOperations,
     CmsEntryStorageOperationsCreateParams,
+    CmsEntryStorageOperationsCreateRevisionFromParams,
     CmsEntryStorageOperationsGetByIdsParams,
     CmsEntryStorageOperationsGetParams,
+    CmsEntryStorageOperationsGetPreviousRevisionParams,
+    CmsEntryStorageOperationsGetPublishedRevisionParams,
+    CmsEntryStorageOperationsGetRevisionParams,
+    CmsEntryStorageOperationsGetRevisionsParams,
     CmsEntryStorageOperationsListParams,
     CmsEntryStorageOperationsListResponse,
+    CmsEntryStorageOperationsPublishParams,
+    CmsEntryStorageOperationsUnpublishParams,
     CmsEntryStorageOperationsUpdateParams,
     CmsEntryValues,
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
+import { CONTENT_ENTRY_STATUS } from "@webiny/api-headless-cms/types/index.js";
 import type { Database } from "@webiny/db-sqlite";
 import { batchGet, listByPk } from "../../utils/scan.js";
 import { deleteRow, getRow, upsertRow } from "../../utils/row.js";
 
 /**
- * Stage-6 SQLite entry storage ops.
+ * SQLite entry storage ops with revision lifecycle support.
  *
- * Scope:
- *   - basic CRUD (create, get, getByIds, list, update, delete) — single revision
- *     per entry, draft-only model. Adequate to demonstrate end-to-end CMS
- *     reads/writes from a container.
- *   - FTS5 indexing for searchable fields (sync write to items_fts on
- *     create / update / delete).
+ * Mirrors DDB's three-row layout per entry:
+ *   - sk = `R#<entryId>#<rev>`   one row per revision (the source of truth)
+ *   - sk = `L#<entryId>`         "latest" pointer — full copy of the
+ *                                 current latest revision's data
+ *   - sk = `P#<entryId>`         "published" pointer — full copy of the
+ *                                 current published revision's data
  *
- * Deferred to a follow-up within this slice (stage 6b):
- *   - revision lifecycle: createRevisionFrom, getRevisions, getRevisionById,
- *     getPreviousRevision, getPublishedRevisionByEntryId,
- *     getLatestRevisionByEntryId.
- *   - publish / unpublish.
- *   - moveToBin / restoreFromBin / deleteMultipleEntries.
- *   - getUniqueFieldValues.
- *   - move (folder move).
- *   - filter DSL beyond simple equality.
+ * All three rows live under the same model-scoped partition key, so a
+ * single `listByPk` returns the whole partition; the `list` method then
+ * filters by sk prefix (`L#` or `P#`) to pick the right "view" for the
+ * `latest` / `published` where flags. FTS is keyed to the L row only —
+ * search results show the latest of each entry, which matches the
+ * Admin UI's expectations.
  *
- * The deferred methods throw a `NOT_IMPLEMENTED` error rather than failing
- * silently — callers will get a clear signal at the API boundary.
+ * NOTE: this is a backwards-incompatible change to entry storage —
+ * previously the sk was the bare `entry.id` (`<entryId>#<rev>`), no
+ * pointer rows. POC dev volumes need a `docker compose down -v` to
+ * reset; production-style migrations are out of scope for the POC.
+ *
+ * Still deferred:
+ *   - moveToBin / restoreFromBin / deleteMultipleEntries
+ *   - getUniqueFieldValues
+ *   - move (folder move) — partial; only updates pointers, not all revisions
+ *   - filter DSL beyond the simple operators below
  */
 export interface CreateEntriesStorageOperationsParams {
     db: Database;
 }
 
-// Partition key includes tenant + modelId. Locale-aware partitioning matches
-// the DDB layout but `CmsModel` doesn't carry locale at the type level — the
-// CMS context's locale is the runtime source. For the basic entry CRUD we
-// scope by model alone; revision-aware variants (stage 6b) will thread locale
-// through.
 const partitionKey = (model: CmsModel) => `T#${model.tenant}#CMS#CME#${model.modelId}`;
 
-const sortKey = (entryId: string) => entryId;
+const splitEntryId = (id: string): { entryId: string; version: number | null } => {
+    const { id: entryId, version } = parseIdentifier(id);
+    return { entryId, version };
+};
+
+const revisionSk = (entryId: string, version: number) => `R#${entryId}#${zeroPad(version)}`;
+const latestSk = (entryId: string) => `L#${entryId}`;
+const publishedSk = (entryId: string) => `P#${entryId}`;
+
+const skForEntry = (entry: CmsEntry): string => {
+    const { entryId, version } = splitEntryId(entry.id);
+    if (version === null) {
+        throw new WebinyError(
+            `Could not derive revision sort key from entry id: ${entry.id}`,
+            "MALFORMED_ENTRY_ID",
+            { id: entry.id }
+        );
+    }
+    return revisionSk(entryId, version);
+};
 
 const ftsContent = (entry: CmsEntry, model: CmsModel): string => {
     const searchable = (model.fields ?? [])
@@ -59,9 +87,11 @@ const ftsContent = (entry: CmsEntry, model: CmsModel): string => {
     return searchable.map(v => (typeof v === "string" ? v : JSON.stringify(v))).join(" ");
 };
 
-const syncFts = (db: Database, entry: CmsEntry, model: CmsModel) => {
+// FTS is keyed to the L pointer row so search results return one row
+// per entry (the latest revision), not one per revision.
+const syncFts = (db: Database, entryId: string, entry: CmsEntry, model: CmsModel) => {
     const pk = partitionKey(model);
-    const sk = sortKey(entry.id);
+    const sk = latestSk(entryId);
     const content = ftsContent(entry, model);
     db.sqlite.prepare("DELETE FROM items_fts WHERE pk = ? AND sk = ?").run(pk, sk);
     if (content) {
@@ -71,9 +101,15 @@ const syncFts = (db: Database, entry: CmsEntry, model: CmsModel) => {
     }
 };
 
+const deleteFts = (db: Database, entryId: string, model: CmsModel) => {
+    db.sqlite
+        .prepare("DELETE FROM items_fts WHERE pk = ? AND sk = ?")
+        .run(partitionKey(model), latestSk(entryId));
+};
+
 const notImplemented = (method: string): never => {
     throw new WebinyError(
-        `CmsEntryStorageOperations.${method}() is not yet implemented in the SQLite backend (stage 6b).`,
+        `CmsEntryStorageOperations.${method}() is not yet implemented in the SQLite backend.`,
         "NOT_IMPLEMENTED",
         { method }
     );
@@ -118,10 +154,6 @@ const SUFFIX_OPERATORS: Record<string, (actual: unknown, expected: unknown) => b
     lte: (a, e) => typeof a === "number" && typeof e === "number" && a <= e
 };
 
-// Operator suffixes are encoded as `<field>_<suffix>`. Longest-suffix-
-// wins so e.g. `tags_not_startsWith` parses to {field: "tags",
-// suffix: "not_startsWith"} rather than {field: "tags_not_starts",
-// suffix: "With"} or {field: "tags", suffix: "starts"}.
 const ORDERED_SUFFIXES = Object.keys(SUFFIX_OPERATORS)
     .filter(s => s.length > 0)
     .sort((a, b) => b.length - a.length);
@@ -202,14 +234,12 @@ const matchesWhere = (entry: CmsEntry, where: unknown): boolean => {
         }
     }
 
-    // Top-level `values` filter — user-defined model fields.
     if (w["values"] && typeof w["values"] === "object") {
         if (!matchesValueFilter(entry.values, w["values"] as Record<string, unknown>)) {
             return false;
         }
     }
 
-    // ACO folder location.
     if (
         !matchesLocationFilter(
             entry,
@@ -219,7 +249,6 @@ const matchesWhere = (entry: CmsEntry, where: unknown): boolean => {
         return false;
     }
 
-    // Bin (deleted) flag.
     const wbyDeleted = (entry as { wbyDeleted?: boolean }).wbyDeleted ?? false;
     if (w["wbyDeleted"] !== undefined && w["wbyDeleted"] !== wbyDeleted) {
         return false;
@@ -228,7 +257,6 @@ const matchesWhere = (entry: CmsEntry, where: unknown): boolean => {
         return false;
     }
 
-    // Entry-level scalar filters (id, entryId, status, etc.).
     for (const [key, expected] of Object.entries(w)) {
         if (
             key === "AND" ||
@@ -237,16 +265,14 @@ const matchesWhere = (entry: CmsEntry, where: unknown): boolean => {
             key === "wbyAco_location" ||
             key === "location" ||
             key === "wbyDeleted" ||
-            key === "wbyDeleted_not"
+            key === "wbyDeleted_not" ||
+            // `latest` / `published` are handled at the row-prefix
+            // level by `pickPointerType` below — they pick which
+            // pointer rows the partition scan returns, not a
+            // per-entry predicate.
+            key === "latest" ||
+            key === "published"
         ) {
-            continue;
-        }
-
-        // Stage 6 SQLite stores a single revision per entry — every
-        // stored row is implicitly the latest (draft-only model). Skip
-        // these filters so the upstream guards from listLatestEntries
-        // / listPublishedEntries don't drop everything.
-        if (key === "latest" || key === "published") {
             continue;
         }
 
@@ -264,16 +290,65 @@ const matchesWhere = (entry: CmsEntry, where: unknown): boolean => {
     return true;
 };
 
+// Picks which pointer-row prefix a list query should scan, based on
+// the where flags. Default is L (latest) — matches Webiny's typical
+// listLatestEntries call shape; explicit `published: true` switches
+// to P; `latest: false, published: false` falls back to L.
+const pickPointerType = (where: unknown): "L" | "P" => {
+    if (!where || typeof where !== "object") {
+        return "L";
+    }
+    if ((where as { published?: boolean }).published === true) {
+        return "P";
+    }
+    return "L";
+};
+
+const skPrefix = (type: "L" | "P") => `${type}#`;
+
 export const createEntriesStorageOperations = (
     params: CreateEntriesStorageOperationsParams
 ): CmsEntryStorageOperations => {
     const { db } = params;
 
-    const writeEntry = async (model: CmsModel, entry: CmsEntry): Promise<void> => {
-        await upsertRow(db, { pk: partitionKey(model), sk: sortKey(entry.id) }, entry, {
+    const writeRow = async (model: CmsModel, sk: string, entry: CmsEntry): Promise<void> => {
+        await upsertRow(db, { pk: partitionKey(model), sk }, entry, {
             gsiTenantPk: model.tenant
         });
-        syncFts(db, entry, model);
+    };
+
+    // Writes both the revision row and the L pointer for a freshly-
+    // created entry; if the entry is being created already-published
+    // (rare but supported by the contract), also writes the P pointer.
+    const writeNewEntry = async (model: CmsModel, entry: CmsEntry): Promise<void> => {
+        const { entryId, version } = splitEntryId(entry.id);
+        if (version === null) {
+            throw new WebinyError(
+                `Could not derive revision from entry id: ${entry.id}`,
+                "MALFORMED_ENTRY_ID",
+                { id: entry.id }
+            );
+        }
+        await writeRow(model, revisionSk(entryId, version), entry);
+        await writeRow(model, latestSk(entryId), entry);
+        if (entry.status === CONTENT_ENTRY_STATUS.PUBLISHED) {
+            await writeRow(model, publishedSk(entryId), entry);
+        }
+        syncFts(db, entryId, entry, model);
+    };
+
+    const getLatestRevisionRow = async (
+        model: CmsModel,
+        entryId: string
+    ): Promise<CmsEntry | null> => {
+        return getRow<CmsEntry>(db, { pk: partitionKey(model), sk: latestSk(entryId) });
+    };
+
+    const getPublishedRevisionRow = async (
+        model: CmsModel,
+        entryId: string
+    ): Promise<CmsEntry | null> => {
+        return getRow<CmsEntry>(db, { pk: partitionKey(model), sk: publishedSk(entryId) });
     };
 
     return {
@@ -283,7 +358,7 @@ export const createEntriesStorageOperations = (
         ) {
             const entry = p.entry as unknown as CmsEntry;
             try {
-                await writeEntry(model, entry);
+                await writeNewEntry(model, entry);
                 return p.entry;
             } catch (ex) {
                 throw new WebinyError(
@@ -294,13 +369,71 @@ export const createEntriesStorageOperations = (
             }
         },
 
+        async createRevisionFrom<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            p: CmsEntryStorageOperationsCreateRevisionFromParams<T>
+        ) {
+            const entry = p.entry as unknown as CmsEntry;
+            const { entryId, version } = splitEntryId(entry.id);
+            if (version === null) {
+                throw new WebinyError(
+                    `Could not derive revision from entry id: ${entry.id}`,
+                    "MALFORMED_ENTRY_ID",
+                    { id: entry.id }
+                );
+            }
+            try {
+                // 1. Write the new revision row.
+                await writeRow(model, revisionSk(entryId, version), entry);
+                // 2. Move the L pointer to the new revision.
+                await writeRow(model, latestSk(entryId), entry);
+                // 3. If the new revision is being created already-
+                //    published, swap the P pointer and unpublish the
+                //    previously-published revision (if any).
+                if (entry.status === CONTENT_ENTRY_STATUS.PUBLISHED) {
+                    const previouslyPublished = await getPublishedRevisionRow(model, entryId);
+                    await writeRow(model, publishedSk(entryId), entry);
+                    if (previouslyPublished && previouslyPublished.id !== entry.id) {
+                        const prevSk = skForEntry(previouslyPublished);
+                        const updated = {
+                            ...previouslyPublished,
+                            status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                        };
+                        await writeRow(model, prevSk, updated);
+                    }
+                }
+                syncFts(db, entryId, entry, model);
+                return p.entry;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex instanceof Error ? ex.message : "Could not create revision.",
+                    "CREATE_REVISION_ERROR",
+                    { id: entry.id }
+                );
+            }
+        },
+
         async update<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
             p: CmsEntryStorageOperationsUpdateParams<T>
         ) {
             const entry = p.entry as unknown as CmsEntry;
+            const { entryId } = splitEntryId(entry.id);
             try {
-                await writeEntry(model, entry);
+                // 1. Always update the revision row.
+                await writeRow(model, skForEntry(entry), entry);
+                // 2. If the published flag is set, also rewrite the P
+                //    pointer with the latest data.
+                if (entry.status === CONTENT_ENTRY_STATUS.PUBLISHED) {
+                    await writeRow(model, publishedSk(entryId), entry);
+                }
+                // 3. If we're updating the latest revision, refresh the
+                //    L pointer.
+                const currentLatest = await getLatestRevisionRow(model, entryId);
+                if (currentLatest && currentLatest.id === entry.id) {
+                    await writeRow(model, latestSk(entryId), entry);
+                    syncFts(db, entryId, entry, model);
+                }
                 return p.entry;
             } catch (ex) {
                 throw new WebinyError(
@@ -315,21 +448,42 @@ export const createEntriesStorageOperations = (
             model: CmsModel,
             p: CmsEntryStorageOperationsGetParams
         ) {
-            const all = await listByPk<CmsEntry>(db, partitionKey(model));
-            // The where DSL is rich; stage 6 only supports `id` equality.
             const idCandidate = (p.where as { id?: string }).id;
-            const result = idCandidate
-                ? (all.find(e => e.id === idCandidate) ?? null)
-                : (all[0] ?? null);
-            return result as unknown as CmsEntry<T> | null;
+            if (idCandidate) {
+                const { entryId } = splitEntryId(idCandidate);
+                const latest = await getLatestRevisionRow(model, entryId);
+                if (latest && latest.id === idCandidate) {
+                    return latest as unknown as CmsEntry<T>;
+                }
+                // Fall through to revision row lookup when the id
+                // refers to a non-latest revision.
+                const rev = await getRow<CmsEntry>(db, {
+                    pk: partitionKey(model),
+                    sk: skForEntry({ id: idCandidate } as CmsEntry)
+                });
+                return rev as unknown as CmsEntry<T> | null;
+            }
+            // No id filter: return the first L row in the partition
+            // (matches the previous "first row wins" behavior, which
+            // the upstream callers don't rely on heavily).
+            const partition = await listByPk<CmsEntry>(db, partitionKey(model));
+            return (partition[0] ?? null) as unknown as CmsEntry<T> | null;
         },
 
         async list<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
             p: CmsEntryStorageOperationsListParams
         ): Promise<CmsEntryStorageOperationsListResponse<CmsEntry<T>>> {
-            const all = await listByPk<CmsEntry>(db, partitionKey(model));
-            const filtered = all.filter(entry => matchesWhere(entry, p.where));
+            // listByPk returns only row.data; we filter on sk prefix
+            // here, so query the partition directly with sk in scope.
+            const type = pickPointerType(p.where);
+            const prefix = skPrefix(type);
+            const rows = db.sqlite
+                .prepare("SELECT data FROM items WHERE pk = ? AND sk LIKE ? ORDER BY sk ASC")
+                .all(partitionKey(model), `${prefix}%`) as { data: string }[];
+            const candidates = rows.map(r => JSON.parse(r.data as unknown as string) as CmsEntry);
+
+            const filtered = candidates.filter(entry => matchesWhere(entry, p.where));
             const limit = p.limit ?? 50;
             const items = filtered.slice(0, limit);
             return {
@@ -345,7 +499,8 @@ export const createEntriesStorageOperations = (
             p: CmsEntryStorageOperationsGetByIdsParams
         ) {
             const pk = partitionKey(model);
-            const keys = (p.ids ?? []).map(id => ({ pk, sk: sortKey(id) }));
+            // ids here are revision ids (`<entryId>#<rev>`).
+            const keys = (p.ids ?? []).map(id => ({ pk, sk: skForEntry({ id } as CmsEntry) }));
             const rows = await batchGet<CmsEntry>(db, keys);
             return rows as unknown as CmsEntry<T>[];
         },
@@ -355,7 +510,24 @@ export const createEntriesStorageOperations = (
             p: { ids: readonly string[] }
         ) {
             const pk = partitionKey(model);
-            const keys = (p.ids ?? []).map(id => ({ pk, sk: sortKey(id) }));
+            // ids may be entryIds OR revision ids — strip to entryId for the L lookup.
+            const keys = (p.ids ?? []).map(id => {
+                const { entryId } = splitEntryId(id);
+                return { pk, sk: latestSk(entryId) };
+            });
+            const rows = await batchGet<CmsEntry>(db, keys);
+            return rows as unknown as CmsEntry<T>[];
+        },
+
+        async getPublishedByIds<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            p: { ids: readonly string[] }
+        ) {
+            const pk = partitionKey(model);
+            const keys = (p.ids ?? []).map(id => {
+                const { entryId } = splitEntryId(id);
+                return { pk, sk: publishedSk(entryId) };
+            });
             const rows = await batchGet<CmsEntry>(db, keys);
             return rows as unknown as CmsEntry<T>[];
         },
@@ -364,67 +536,184 @@ export const createEntriesStorageOperations = (
             model: CmsModel,
             p: { id: string }
         ) {
-            const all = await listByPk<CmsEntry>(db, partitionKey(model));
-            const found = all.find(e => e.id === p.id || e.entryId === p.id) ?? null;
-            return found as unknown as CmsEntry<T> | null;
+            const { entryId } = splitEntryId(p.id);
+            const row = await getLatestRevisionRow(model, entryId);
+            return row as unknown as CmsEntry<T> | null;
+        },
+
+        async getPublishedRevisionByEntryId<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            p: CmsEntryStorageOperationsGetPublishedRevisionParams
+        ) {
+            const { entryId } = splitEntryId(p.id);
+            const row = await getPublishedRevisionRow(model, entryId);
+            return row as unknown as CmsEntry<T> | null;
+        },
+
+        async getRevisions<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            p: CmsEntryStorageOperationsGetRevisionsParams
+        ) {
+            const { entryId } = splitEntryId(p.id);
+            const rows = db.sqlite
+                .prepare("SELECT data FROM items WHERE pk = ? AND sk LIKE ? ORDER BY sk ASC")
+                .all(partitionKey(model), `R#${entryId}#%`) as { data: string }[];
+            return rows.map(r =>
+                JSON.parse(r.data as unknown as string)
+            ) as unknown as CmsEntry<T>[];
+        },
+
+        async getRevisionById<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            p: CmsEntryStorageOperationsGetRevisionParams
+        ) {
+            const row = await getRow<CmsEntry>(db, {
+                pk: partitionKey(model),
+                sk: skForEntry({ id: p.id } as CmsEntry)
+            });
+            return row as unknown as CmsEntry<T> | null;
+        },
+
+        async getPreviousRevision<T extends CmsEntryValues = CmsEntryValues>(
+            model: CmsModel,
+            p: CmsEntryStorageOperationsGetPreviousRevisionParams
+        ) {
+            // Highest revision strictly below `p.version`.
+            const targetSk = revisionSk(p.entryId, p.version);
+            const rows = db.sqlite
+                .prepare(
+                    "SELECT data FROM items WHERE pk = ? AND sk LIKE ? AND sk < ? ORDER BY sk DESC LIMIT 1"
+                )
+                .all(partitionKey(model), `R#${p.entryId}#%`, targetSk) as { data: string }[];
+            if (rows.length === 0) {
+                return null;
+            }
+            return JSON.parse(rows[0]!.data as unknown as string) as unknown as CmsEntry<T>;
         },
 
         async delete(model, p) {
             const { entry } = p;
-            await deleteRow(db, { pk: partitionKey(model), sk: sortKey(entry.id) });
+            const { entryId } = splitEntryId(entry.id);
+            const pk = partitionKey(model);
+            // Wipe every row belonging to this entry — all R# rows,
+            // plus the L and P pointers.
             db.sqlite
-                .prepare("DELETE FROM items_fts WHERE pk = ? AND sk = ?")
-                .run(partitionKey(model), sortKey(entry.id));
+                .prepare("DELETE FROM items WHERE pk = ? AND sk LIKE ?")
+                .run(pk, `R#${entryId}#%`);
+            await deleteRow(db, { pk, sk: latestSk(entryId) });
+            await deleteRow(db, { pk, sk: publishedSk(entryId) });
+            deleteFts(db, entryId, model);
         },
 
         async deleteRevision(model, p) {
             const { entry } = p;
-            await deleteRow(db, { pk: partitionKey(model), sk: sortKey(entry.id) });
-            db.sqlite
-                .prepare("DELETE FROM items_fts WHERE pk = ? AND sk = ?")
-                .run(partitionKey(model), sortKey(entry.id));
+            const { entryId } = splitEntryId(entry.id);
+            const pk = partitionKey(model);
+            // Drop just this revision's row.
+            await deleteRow(db, { pk, sk: skForEntry(entry) });
+            // If this revision happens to be the published one, clear
+            // the P pointer too (matches DDB's deleteRevision behavior).
+            const published = await getPublishedRevisionRow(model, entryId);
+            if (published && published.id === entry.id) {
+                await deleteRow(db, { pk, sk: publishedSk(entryId) });
+            }
+            // L pointer is left to whoever calls update(latest) next —
+            // the upstream use case re-points L explicitly.
         },
 
-        async getPublishedByIds() {
-            // Stage 6 stores a single draft revision per entry — there
-            // are no published revisions yet. Return empty until the
-            // publish lifecycle lands (stage 6b).
-            return [];
-        },
-        async getRevisions<T extends CmsEntryValues = CmsEntryValues>(
+        async publish<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
-            p: { id: string }
+            p: CmsEntryStorageOperationsPublishParams<T>
         ) {
-            // Single-revision storage: only the entry itself qualifies
-            // as "the revisions of this entry id".
-            const all = await listByPk<CmsEntry>(db, partitionKey(model));
-            const baseEntryId = p.id.includes("#") ? p.id.split("#")[0] : p.id;
-            return all.filter(e => e.entryId === baseEntryId) as unknown as CmsEntry<T>[];
+            const entry = p.entry as unknown as CmsEntry;
+            const { entryId } = splitEntryId(entry.id);
+
+            const initialLatest = await getLatestRevisionRow(model, entryId);
+            if (!initialLatest) {
+                throw new WebinyError(
+                    `Could not publish entry. Could not load latest ("L") record.`,
+                    "PUBLISH_ERROR",
+                    { id: entry.id }
+                );
+            }
+            const initialPublished = await getPublishedRevisionRow(model, entryId);
+
+            // 1. Rewrite the revision row + P pointer with the new data.
+            await writeRow(model, skForEntry(entry), entry);
+            await writeRow(model, publishedSk(entryId), entry);
+
+            const publishingLatest = entry.id === initialLatest.id;
+            if (publishingLatest) {
+                // 2.1 Update L to match the published payload.
+                await writeRow(model, latestSk(entryId), entry);
+                // 2.2 If a different revision was previously published,
+                //     mark its R# row as unpublished.
+                if (initialPublished && initialPublished.id !== entry.id) {
+                    const updated = {
+                        ...initialPublished,
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                    };
+                    await writeRow(model, skForEntry(initialPublished), updated);
+                }
+            } else {
+                // 2.3 We're publishing a non-latest revision. The L
+                //     pointer's status flips from "published" (if it
+                //     was) to "unpublished", and the L's R# row gets
+                //     the same treatment.
+                let latestStatus = initialLatest.status;
+                if (latestStatus === CONTENT_ENTRY_STATUS.PUBLISHED) {
+                    latestStatus = CONTENT_ENTRY_STATUS.UNPUBLISHED;
+                }
+                const updatedLatest = { ...initialLatest, status: latestStatus };
+                await writeRow(model, latestSk(entryId), updatedLatest);
+                await writeRow(model, skForEntry(initialLatest), updatedLatest);
+                // 2.4 If the prior published revision was different from
+                //     the latest, mark its R# row as unpublished too.
+                if (
+                    initialPublished &&
+                    initialPublished.id !== initialLatest.id &&
+                    initialPublished.id !== entry.id
+                ) {
+                    const updated = {
+                        ...initialPublished,
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                    };
+                    await writeRow(model, skForEntry(initialPublished), updated);
+                }
+            }
+
+            // FTS tracks the latest, which may have shifted status.
+            const finalLatest = await getLatestRevisionRow(model, entryId);
+            if (finalLatest) {
+                syncFts(db, entryId, finalLatest, model);
+            }
+
+            return p.entry;
         },
-        async getRevisionById<T extends CmsEntryValues = CmsEntryValues>(
+
+        async unpublish<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
-            p: { id: string }
+            p: CmsEntryStorageOperationsUnpublishParams<T>
         ) {
-            // sk == entry.id == `${entryId}#${revision}`. The use cases
-            // call this with the full revision id to load the row that
-            // backs an update / publish.
-            const row = await getRow<CmsEntry>(db, {
-                pk: partitionKey(model),
-                sk: sortKey(p.id)
-            });
-            return row as unknown as CmsEntry<T> | null;
+            const entry = p.entry as unknown as CmsEntry;
+            const { entryId } = splitEntryId(entry.id);
+            const pk = partitionKey(model);
+
+            // 1. Delete the P pointer.
+            await deleteRow(db, { pk, sk: publishedSk(entryId) });
+            // 2. Rewrite the revision row with the new (unpublished) data.
+            await writeRow(model, skForEntry(entry), entry);
+
+            // 3. If we're unpublishing the latest revision, refresh L too.
+            const initialLatest = await getLatestRevisionRow(model, entryId);
+            if (initialLatest && initialLatest.id === entry.id) {
+                await writeRow(model, latestSk(entryId), entry);
+                syncFts(db, entryId, entry, model);
+            }
+
+            return p.entry;
         },
-        async getPublishedRevisionByEntryId() {
-            // No publish lifecycle yet — drafts only.
-            return null;
-        },
-        async getPreviousRevision() {
-            // Single-revision storage; no "previous" exists.
-            return null;
-        },
-        async createRevisionFrom() {
-            return notImplemented("createRevisionFrom");
-        },
+
         async move() {
             return notImplemented("move");
         },
@@ -436,12 +725,6 @@ export const createEntriesStorageOperations = (
         },
         async deleteMultipleEntries() {
             return notImplemented("deleteMultipleEntries");
-        },
-        async publish() {
-            return notImplemented("publish");
-        },
-        async unpublish() {
-            return notImplemented("unpublish");
         },
         async getUniqueFieldValues() {
             return [];

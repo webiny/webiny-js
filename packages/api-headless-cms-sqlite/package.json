@@ -16,7 +16,7 @@
     "sqlite",
     "cms:sqlite"
   ],
-  "description": "SQLite-backed storage operations for the Webiny Headless CMS. Used by container deployments. Stage 6 of the container refactor: groups + models implemented; entry CRUD basic, revision lifecycle deferred.",
+  "description": "SQLite-backed storage operations for the Webiny Headless CMS. Used by container deployments.",
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
@@ -25,6 +25,7 @@
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",
+    "@webiny/utils": "0.0.0",
     "drizzle-orm": "^0.36.0"
   },
   "devDependencies": {
