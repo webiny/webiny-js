@@ -28,13 +28,25 @@ const GroupComponent = ({ item }: { item: ComponentGroupItem }) => {
     );
 };
 
-export const InsertElements = () => {
+interface InsertElementsProps {
+    search?: string;
+    viewType?: string;
+}
+
+export const InsertElements = ({ search = "", viewType = "list" }: InsertElementsProps) => {
     const groups = useComponentGroups();
+    const query = search.toLowerCase().trim();
 
     return (
         <div className={"p-sm"}>
             {groups.map(group => {
-                if (!group.items.length) {
+                const items = query
+                    ? group.items.filter(item =>
+                          (item.label ?? item.name).toLowerCase().includes(query)
+                      )
+                    : group.items;
+
+                if (!items.length) {
                     return null;
                 }
 
@@ -51,7 +63,7 @@ export const InsertElements = () => {
                             className={"py-sm px-xl flex flex-col gap-y-xs"}
                             data-role={"group-items"}
                         >
-                            {group.items.map(item => {
+                            {items.map(item => {
                                 return (
                                     <Draggable
                                         key={item.name}
@@ -71,36 +83,6 @@ export const InsertElements = () => {
                         </div>
                     </div>
                 );
-
-                // return (
-                //     <Card
-                //         key={group.name}
-                //         title={group.label}
-                //         description={group.description}
-                //         // borderRadius={"none"}
-                //         // padding={""}
-                //     >
-                //         <div className="flex flex-col gap-sm p-sm justify-start">
-                //             {group.items.map(item => {
-                //                 return (
-                //                     <Draggable
-                //                         key={item.name}
-                //                         type="ELEMENT"
-                //                         item={{ componentName: item.name }}
-                //                     >
-                //                         {({ dragRef }) =>
-                //                             dragRef(
-                //                                 <div>
-                //                                     <GroupComponent item={item} />
-                //                                 </div>
-                //                             )
-                //                         }
-                //                     </Draggable>
-                //                 );
-                //             })}
-                //         </div>
-                //     </Card>
-                // );
             })}
         </div>
     );
