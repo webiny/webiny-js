@@ -4,6 +4,7 @@ import { AiPowerUpsSettingsPresenter } from "./AiPowerUpsSettingsPresenter.js";
 import { ProviderSettings } from "../ProvidersSettings.js";
 import { ReaderPersonasSettings } from "../ReaderPersonasSettings.js";
 import { WriterPersonasSettings } from "../WriterPersonasSettings.js";
+import { ProjectsSettings } from "../ProjectsSettings.js";
 
 export const AiPowerUpsSettingsFeature = createFeature({
     name: "AiPowerUps/Settings/Presenter",
@@ -11,6 +12,7 @@ export const AiPowerUpsSettingsFeature = createFeature({
         container.register(ProviderSettings);
         container.register(ReaderPersonasSettings);
         container.register(WriterPersonasSettings);
+        container.register(ProjectsSettings);
         container.register(AiPowerUpsSettingsPresenter);
     },
     resolve(container) {

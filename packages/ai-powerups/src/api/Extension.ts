@@ -7,6 +7,7 @@ import { WbGeneratePageContentFeature } from "./features/WbGeneratePageContent/f
 import { ProvidersFeature } from "./features/Providers/feature.js";
 import { ReaderPersonasFeature } from "./features/ReaderPersonas/feature.js";
 import { WriterPersonasFeature } from "./features/WriterPersonas/feature.js";
+import { ProjectsFeature } from "./features/Projects/feature.js";
 
 export const Extension = createFeature({
     name: "AiPowerUps",
@@ -17,6 +18,7 @@ export const Extension = createFeature({
         ProvidersFeature.register(container);
         ReaderPersonasFeature.register(container);
         WriterPersonasFeature.register(container);
+        ProjectsFeature.register(container);
 
         container.register(AiPowerUpsSettingsGraphQLMapperImpl).inSingletonScope();
         container.register(BaseGraphQLSchema);

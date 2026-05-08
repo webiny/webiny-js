@@ -34,4 +34,14 @@ export interface IAiPowerUpsSettings {
     writerPersonas: {
         presets: IAiPowerUpsPersonaPreset[];
     };
+    projects: {
+        presets: {
+            id: string;
+            name: string;
+            description?: string;
+            instructions?: string;
+            defaultReaderPersonaId?: string;
+            defaultWriterPersonaId?: string;
+        }[];
+    };
 }
