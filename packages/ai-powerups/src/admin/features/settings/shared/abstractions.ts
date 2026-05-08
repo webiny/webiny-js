@@ -12,22 +12,12 @@ export namespace SettingsCache {
     export type Interface = IAiPowerUpsSettingsCache;
 }
 
-// export interface ISettings {
-//     providers: {
-//         presets: {
-//             name: string;
-//             description: string;
-//             model: string;
-//             apiKey: string;
-//         }[];
-//     };
-//     personas: {
-//         presets: {
-//             name: string;
-//             description: string;
-//         };
-//     };
-// };
+export interface IAiPowerUpsPersonaPreset {
+    id: string;
+    name: string;
+    description: string;
+    style?: string;
+}
 
 export interface IAiPowerUpsSettings {
     providers: {
@@ -37,5 +27,11 @@ export interface IAiPowerUpsSettings {
             model: string;
             apiKey: string;
         }[];
+    };
+    readerPersonas: {
+        presets: IAiPowerUpsPersonaPreset[];
+    };
+    writerPersonas: {
+        presets: IAiPowerUpsPersonaPreset[];
     };
 }

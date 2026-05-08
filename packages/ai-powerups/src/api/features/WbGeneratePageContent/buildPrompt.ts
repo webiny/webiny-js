@@ -1,6 +1,47 @@
-export function buildSystemPrompt(components: unknown, tools: unknown): string {
-    return `You are a page content generator. Given a user prompt, generate structured page content using the provided component catalog and available tools.
+interface PersonaInfo {
+    name: string;
+    description: string;
+    style?: string;
+}
 
+interface BuildPromptOptions {
+    readerPersona?: PersonaInfo;
+    writerPersona?: PersonaInfo;
+}
+
+function buildPersonaSections(options?: BuildPromptOptions): string {
+    const sections: string[] = [];
+
+    if (options?.writerPersona) {
+        const p = options.writerPersona;
+        let section = `### Writer Persona\n\nYou are writing as "${p.name}": ${p.description}`;
+        if (p.style) {
+            section += `\nStyle: ${p.style}`;
+        }
+        sections.push(section);
+    }
+
+    if (options?.readerPersona) {
+        const p = options.readerPersona;
+        let section = `### Reader Persona (Target Audience)\n\nYou are writing for "${p.name}": ${p.description}`;
+        if (p.style) {
+            section += `\nExpected tone/style: ${p.style}`;
+        }
+        sections.push(section);
+    }
+
+    return sections.length > 0 ? "\n\n" + sections.join("\n\n") : "";
+}
+
+export function buildSystemPrompt(
+    components: unknown,
+    tools: unknown,
+    options?: BuildPromptOptions
+): string {
+    const personaSections = buildPersonaSections(options);
+
+    return `You are a page content generator. Given a user prompt, generate structured page content using the provided component catalog and available tools.
+${personaSections}
 ###
 
 ### Rich Text Content
