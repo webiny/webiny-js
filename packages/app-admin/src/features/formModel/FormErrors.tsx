@@ -11,8 +11,8 @@ export const FormErrors = observer(({ form }: FormErrorsProps) => {
     const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (form.submitCount > 0 && form.errors.length > 0) {
-            ref.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        if (form.submitCount > 0 && form.errors.length > 0 && ref.current) {
+            ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
         }
     }, [form.submitCount]);
 

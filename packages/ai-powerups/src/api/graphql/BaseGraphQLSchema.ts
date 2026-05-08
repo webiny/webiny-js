@@ -1,4 +1,5 @@
 import { CoreGraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.core.js";
+import { Response, ErrorResponse } from "@webiny/handler-graphql/responses.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
@@ -26,8 +27,20 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 getSettings: JSON
             }
 
+            type AiPowerUpsError {
+                code: String
+                message: String
+                data: JSON
+                stack: String
+            }
+
+            type AiPowerUpsSettingsResponse {
+                data: JSON
+                error: AiPowerUpsError
+            }
+
             type AiPowerUpsMutation {
-                updateSettings(input: JSON!): JSON!
+                updateSettings(input: JSON!): AiPowerUpsSettingsResponse!
                 generatePageContent(prompt: String!, components: JSON!, tools: JSON!, projectId: String, excludedFileIds: [String!], readerPersonaId: String, writerPersonaId: String): JSON!
             }
 
@@ -118,17 +131,17 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                 return async ({ args }) => {
                     const currentResult = await getSettings.execute();
                     if (currentResult.isFail()) {
-                        throw currentResult.error;
+                        return new ErrorResponse(currentResult.error);
                     }
 
                     const assembled = await mapper.fromApi(args.input, currentResult.value);
                     const result = await updateSettings.execute(assembled);
 
                     if (result.isFail()) {
-                        throw result.error;
+                        return new ErrorResponse(result.error);
                     }
 
-                    return mapper.toApi(result.value);
+                    return new Response(await mapper.toApi(result.value));
                 };
             }
         });

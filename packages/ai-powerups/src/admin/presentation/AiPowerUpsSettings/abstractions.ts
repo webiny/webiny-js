@@ -5,7 +5,7 @@ export interface IAiPowerUpsSettingsVm {
     loading: boolean;
     saving: boolean;
     form: FormModel.FormVM | null;
-    error: string | null;
+    errors: string[];
 }
 
 export interface IAiPowerUpsSettingsPresenter {

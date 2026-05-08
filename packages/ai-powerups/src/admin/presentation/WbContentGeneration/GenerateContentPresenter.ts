@@ -7,14 +7,18 @@ import { GeneratePageContentUseCase } from "~/admin/features/generatePageContent
 import { GetSettingsUseCase } from "~/admin/features/settings/getSettings/abstractions.js";
 import type { IAiPowerUpsSettings } from "~/admin/features/settings/shared/abstractions.js";
 
+const SUBMIT_TIMEOUT_MS = 30_000;
+
 class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface {
     private _loading = false;
     private _submitting = false;
     private _processing = false;
+    private _timedOut = false;
     private _components: Record<string, any>[] = [];
     private _createElements: CreateElementsFn = () => {};
     private _form: FormModel.Interface | null = null;
     private _settings: IAiPowerUpsSettings | null = null;
+    private _timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     constructor(
         private toolRegistry: ToolRegistry.Interface,
@@ -31,7 +35,8 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
             form: this._form ? this._form.vm : null,
             loading: this._loading,
             submitting: this._submitting,
-            processing: this._processing
+            processing: this._processing,
+            timedOut: this._timedOut
         };
     }
 
@@ -71,7 +76,12 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
             return;
         }
 
-        this._submitting = true;
+        runInAction(() => {
+            this._submitting = true;
+            this._timedOut = false;
+        });
+
+        this.startTimeout();
 
         try {
             const tools = this.toolRegistry.getTools().map(tool => ({
@@ -93,6 +103,7 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
                 writerPersonaId: data.writerPersona || null
             });
         } catch {
+            this.clearTimeout();
             runInAction(() => {
                 this._submitting = false;
             });
@@ -100,8 +111,11 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
     }
 
     async processAiResponse(responseText: string): Promise<void> {
-        this._processing = true;
-        this._submitting = false;
+        this.clearTimeout();
+        runInAction(() => {
+            this._processing = true;
+            this._submitting = false;
+        });
 
         try {
             const aiResponseJson = JSON.parse(responseText);
@@ -126,8 +140,26 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
     }
 
     cancelPrompt(): void {
+        this.clearTimeout();
         this._processing = false;
         this._submitting = false;
+    }
+
+    private startTimeout(): void {
+        this.clearTimeout();
+        this._timeoutId = setTimeout(() => {
+            runInAction(() => {
+                this._submitting = false;
+                this._timedOut = true;
+            });
+        }, SUBMIT_TIMEOUT_MS);
+    }
+
+    private clearTimeout(): void {
+        if (this._timeoutId !== null) {
+            clearTimeout(this._timeoutId);
+            this._timeoutId = null;
+        }
     }
 
     private buildForm() {

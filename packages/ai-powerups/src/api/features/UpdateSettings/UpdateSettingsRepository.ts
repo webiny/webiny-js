@@ -1,7 +1,9 @@
 import { Result } from "@webiny/feature/api";
 import { KeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
+import type { OutputErrors } from "@webiny/utils/createZodError.js";
 import { AiPowerUpsSettingsGroupHandler } from "~/api/features/shared/index.js";
 import { UpdateSettingsRepository } from "./abstractions.js";
+import { SettingsValidationError } from "./errors.js";
 import type { IAiPowerUpsSettings } from "~/api/types.js";
 import { AI_POWER_UPS_SETTINGS } from "~/api/constants.js";
 
@@ -25,7 +27,7 @@ class UpdateSettingsRepositoryImpl implements UpdateSettingsRepository.Interface
         }
 
         const newSettings = input as unknown as Record<string, unknown>;
-        const errors: string[] = [];
+        const invalidFields: OutputErrors = {};
 
         // Validate all sections first.
         for (const handler of this.handlers) {
@@ -33,13 +35,17 @@ class UpdateSettingsRepositoryImpl implements UpdateSettingsRepository.Interface
             if (!parseResult.success) {
                 for (const issue of parseResult.error.issues) {
                     const fieldPath = [handler.name, ...issue.path.map(String)].join(".");
-                    errors.push(`${fieldPath}: ${issue.message}`);
+                    invalidFields[fieldPath] = {
+                        code: issue.code,
+                        message: issue.message,
+                        data: { path: issue.path }
+                    };
                 }
             }
         }
 
-        if (errors.length > 0) {
-            return Result.fail(new Error(errors.join("; ")));
+        if (Object.keys(invalidFields).length > 0) {
+            return Result.fail(new SettingsValidationError(invalidFields));
         }
 
         // Transform all sections to storage shape.

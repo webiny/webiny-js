@@ -16,6 +16,7 @@ export interface IGenerateContentVm {
     loading: boolean;
     submitting: boolean;
     processing: boolean;
+    timedOut: boolean;
 }
 
 export interface IGenerateContentPresenter {

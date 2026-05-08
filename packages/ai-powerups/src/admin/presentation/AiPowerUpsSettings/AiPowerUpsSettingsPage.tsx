@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import {
     FormView,
     FormErrors,
+    PresenterErrors,
     SimpleForm,
     SimpleFormContent,
     SimpleFormFooter,
@@ -32,12 +33,17 @@ export const AiPowerUpsSettingsPage = observer(() => {
 
     return (
         <div>
-            {vm.form && vm.form.errors.length > 0 ? (
-                <div className={"m-lg mb-0"}>
-                    <FormErrors form={vm.form} />
-                </div>
-            ) : null}
             <SimpleForm size={"xl"}>
+                {vm.errors.length > 0 ? (
+                    <div className={"mb-lg"}>
+                        <PresenterErrors errors={vm.errors} />
+                    </div>
+                ) : null}
+                {vm.form && vm.form.errors.length > 0 ? (
+                    <div className={"mb-lg"}>
+                        <FormErrors form={vm.form} />
+                    </div>
+                ) : null}
                 {vm.loading || vm.saving ? (
                     <OverlayLoader text={vm.saving ? "Saving..." : "Loading..."} />
                 ) : null}

@@ -128,6 +128,7 @@ export { createFieldRenderer, createObjectFieldRenderer } from "./createFieldRen
 
 // View
 export { FormErrors } from "./FormErrors.js";
+export { PresenterErrors } from "./PresenterErrors.js";
 export { FormView, LayoutNodeRenderer, useFormViewRenderers } from "./FormView.js";
 export { useFieldRenderers } from "./useFieldRenderers.js";
 export { useLayoutRenderers } from "./useLayoutRenderers.js";

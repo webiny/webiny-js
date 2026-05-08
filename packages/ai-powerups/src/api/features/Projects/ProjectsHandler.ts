@@ -46,10 +46,13 @@ const presetSchema = z
         const sorted = [...files].sort((a, b) => b.size - a.size);
         const top = sorted
             .slice(0, 3)
-            .map(f => `${f.name} (~${Math.ceil(f.size / CHARS_PER_TOKEN).toLocaleString()} tokens)`);
+            .map(
+                f => `${f.name} (~${Math.ceil(f.size / CHARS_PER_TOKEN).toLocaleString()} tokens)`
+            );
 
         ctx.addIssue({
             code: z.ZodIssueCode.custom,
+            path: ["files"],
             message: `Project "${preset.name}" exceeds the ${TOKEN_BUDGET.toLocaleString()} token budget (~${estimatedTokens.toLocaleString()} tokens). Largest files: ${top.join(", ")}.`
         });
     });

@@ -95,11 +95,20 @@ export const GenerateContentDialog = observer(() => {
     }, []);
 
     useEffect(() => {
-        if (wasSubmitting.current && !vm.submitting) {
+        if (wasSubmitting.current && !vm.submitting && !vm.timedOut) {
             closeDialog();
         }
         wasSubmitting.current = vm.submitting;
     }, [vm.submitting]);
+
+    useEffect(() => {
+        if (vm.timedOut) {
+            toast.showWarningToast({
+                title: "Request timed out",
+                description: "The AI generation took too long. Please try again."
+            });
+        }
+    }, [vm.timedOut]);
 
     const handleSubmit = async () => {
         await presenter.submit();
