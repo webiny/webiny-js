@@ -22,6 +22,7 @@ export const pagesTypeDefs = /* GraphQL */ `
         lastPublishedBy: WbIdentity
         system: CmsEntrySystem
         live: CmsEntryLive
+        revisionDescription: String
         properties: JSON
         metadata: JSON
         bindings: JSON

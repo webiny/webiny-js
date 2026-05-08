@@ -20,6 +20,7 @@ export interface PageData {
     modifiedOn?: string | null;
     system?: WbSystem | null;
     live?: WbLive | null;
+    revisionDescription: string | undefined;
 }
 
 export class Page {
@@ -41,6 +42,7 @@ export class Page {
     public modifiedOn: string;
     public system: WbSystem | null;
     public live: WbLive | null = null;
+    public revisionDescription: string | undefined;
 
     protected constructor(data: PageData) {
         this.id = data.id ?? "";
@@ -61,6 +63,7 @@ export class Page {
         this.modifiedOn = data.modifiedOn ?? "";
         this.system = data.system || null;
         this.live = data.live || null;
+        this.revisionDescription = data.revisionDescription;
     }
 
     static create(data: PageData) {

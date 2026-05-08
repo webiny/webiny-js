@@ -26,6 +26,7 @@ import { UnpublishPageFeature } from "~/features/pages/unpublishPage/index.js";
 import { DuplicatePageFeature } from "~/features/pages/duplicatePage/index.js";
 import { CreatePageRevisionFromFeature } from "~/features/pages/createPageRevisionFrom/index.js";
 import { UpdatePageFeature } from "~/features/pages/updatePage/index.js";
+import { UpdatePageRevisionDescriptionFeature } from "~/features/pages/updatePageRevisionDescription/index.js";
 import { CreatePageFeature as CreatePageHeadlessFeature } from "~/features/pages/createPage/index.js";
 import { GetPageFeature } from "~/features/pages/getPage/index.js";
 import { GetPageRevisionsFeature } from "~/features/pages/getPageRevisions/index.js";
@@ -60,6 +61,7 @@ export const Extension = () => {
             <RegisterFeature feature={DuplicatePageFeature} />
             <RegisterFeature feature={CreatePageRevisionFromFeature} />
             <RegisterFeature feature={UpdatePageFeature} />
+            <RegisterFeature feature={UpdatePageRevisionDescriptionFeature} />
             <RegisterFeature feature={CreatePageHeadlessFeature} />
             <RegisterFeature feature={GetPageFeature} />
             <RegisterFeature feature={GetPageRevisionsFeature} />

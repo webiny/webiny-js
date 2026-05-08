@@ -25,3 +25,4 @@ export { useUnpublishPage } from "~/presentation/pages/hooks/useUnpublishPage.js
 export * from "./updatePage/index.js";
 export { useUpdatePage } from "~/presentation/pages/hooks/useUpdatePage.js";
 export * from "./useGetPageGraphQLFields.js";
+export { useUpdatePageRevisionDescription } from "~/presentation/pages/hooks/useUpdatePageRevisionDescription.js";
