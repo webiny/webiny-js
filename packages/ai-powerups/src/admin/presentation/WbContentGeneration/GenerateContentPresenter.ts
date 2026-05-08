@@ -61,6 +61,7 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
 
         const data = await this._form.submit<{
             prompt: string;
+            project?: string;
             readerPersona?: string;
             writerPersona?: string;
         }>();
@@ -83,6 +84,7 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
                 prompt: data.prompt,
                 components: toJS(this._components),
                 tools,
+                projectId: data.project || null,
                 readerPersonaId: data.readerPersona || null,
                 writerPersonaId: data.writerPersona || null
             });
@@ -127,6 +129,24 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
     private buildForm() {
         return this.formModelFactory.create({
             fields: fields => ({
+                project: fields
+                    .text()
+                    .label("Project")
+                    .description("Select a predefined context to attach.")
+                    .options(() => this.getProjectOptions())
+                    .afterChange((value, form) => {
+                        const projectId = value as string | undefined;
+                        const project = projectId
+                            ? this._settings?.projects?.presets?.find(p => p.id === projectId)
+                            : undefined;
+
+                        if (project?.defaultReaderPersonaId) {
+                            form.field("readerPersona").setValue(project.defaultReaderPersonaId);
+                        }
+                        if (project?.defaultWriterPersonaId) {
+                            form.field("writerPersona").setValue(project.defaultWriterPersonaId);
+                        }
+                    }),
                 readerPersona: fields
                     .text()
                     .label("Reader Persona")
@@ -145,11 +165,23 @@ class GenerateContentPresenterImpl implements GenerateContentPresenter.Interface
                     .renderer("textarea", { rows: 6 })
             }),
             layout: layout => [
+                layout.row("project"),
                 layout.row("readerPersona"),
                 layout.row("writerPersona"),
                 layout.row("prompt")
             ]
         });
+    }
+
+    private getProjectOptions() {
+        const presets = this._settings?.projects?.presets;
+        if (!presets || presets.length === 0) {
+            return [];
+        }
+        return presets.map(preset => ({
+            label: preset.name,
+            value: preset.id
+        }));
     }
 
     private getPersonaOptions(type: "reader" | "writer") {

@@ -4,6 +4,7 @@ export interface GeneratePageContentParams {
     prompt: string;
     components: unknown;
     tools: unknown;
+    projectId?: string | null;
     readerPersonaId?: string | null;
     writerPersonaId?: string | null;
 }

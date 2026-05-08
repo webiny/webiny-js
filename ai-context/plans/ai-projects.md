@@ -39,7 +39,7 @@ The admin side defines the form using the settings group builder pattern (`objec
 
 ---
 
-## [ ] Phase 2: Project Files (DAM Integration)
+## [x] Phase 2: Project Files (DAM Integration)
 
 **User stories**: Attach reference files from the DAM to a project.
 
@@ -59,7 +59,7 @@ Only file metadata is stored in settings — no file content loading happens in 
 
 ---
 
-## [ ] Phase 3: Project Picker in Generate Content Dialog
+## [x] Phase 3: Project Picker in Generate Content Dialog
 
 **User stories**: Pick a project in the Generate Content dialog; default personas auto-populate.
 

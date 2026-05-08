@@ -44,6 +44,10 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
         // TODO: configure this in `ai` as default behavior.
         const sdkTools = this.aiSdkTools.getToolSet();
 
+        const project = params.projectId
+            ? settings.projects?.presets?.find(p => p.id === params.projectId)
+            : undefined;
+
         const readerPersona = params.readerPersonaId
             ? settings.readerPersonas?.presets?.find(p => p.id === params.readerPersonaId)
             : undefined;
@@ -54,7 +58,8 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
 
         const system = buildSystemPrompt(params.components, params.tools, {
             readerPersona,
-            writerPersona
+            writerPersona,
+            project
         });
 
         console.log({

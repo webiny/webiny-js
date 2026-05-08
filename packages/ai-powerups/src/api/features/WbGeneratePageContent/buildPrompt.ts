@@ -4,9 +4,15 @@ interface PersonaInfo {
     style?: string;
 }
 
+interface ProjectInfo {
+    name: string;
+    instructions?: string;
+}
+
 interface BuildPromptOptions {
     readerPersona?: PersonaInfo;
     writerPersona?: PersonaInfo;
+    project?: ProjectInfo;
 }
 
 function buildPersonaSections(options?: BuildPromptOptions): string {
@@ -33,15 +39,25 @@ function buildPersonaSections(options?: BuildPromptOptions): string {
     return sections.length > 0 ? "\n\n" + sections.join("\n\n") : "";
 }
 
+function buildProjectSection(options?: BuildPromptOptions): string {
+    if (!options?.project?.instructions) {
+        return "";
+    }
+
+    const p = options.project;
+    return `\n\n## Project: ${p.name}\n\n${p.instructions}`;
+}
+
 export function buildSystemPrompt(
     components: unknown,
     tools: unknown,
     options?: BuildPromptOptions
 ): string {
     const personaSections = buildPersonaSections(options);
+    const projectSection = buildProjectSection(options);
 
     return `You are a page content generator. Given a user prompt, generate structured page content using the provided component catalog and available tools.
-${personaSections}
+${personaSections}${projectSection}
 ###
 
 ### Rich Text Content

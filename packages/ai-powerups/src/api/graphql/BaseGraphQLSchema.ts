@@ -28,7 +28,7 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
 
             type AiPowerUpsMutation {
                 updateSettings(input: JSON!): JSON!
-                generatePageContent(prompt: String!, components: JSON!, tools: JSON!, readerPersonaId: String, writerPersonaId: String): JSON!
+                generatePageContent(prompt: String!, components: JSON!, tools: JSON!, projectId: String, readerPersonaId: String, writerPersonaId: String): JSON!
             }
 
             extend type Query {
@@ -87,6 +87,7 @@ class BaseGraphQLSchemaImpl implements CoreGraphQLSchemaFactory.Interface {
                             prompt: args.prompt,
                             components: args.components,
                             tools: args.tools,
+                            projectId: args.projectId ?? null,
                             readerPersonaId: args.readerPersonaId ?? null,
                             writerPersonaId: args.writerPersonaId ?? null
                         }
