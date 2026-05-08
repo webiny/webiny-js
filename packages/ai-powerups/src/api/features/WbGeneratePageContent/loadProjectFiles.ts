@@ -1,4 +1,5 @@
 import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
+import { compress, decompress } from "@webiny/utils/features/compression/legacy/gzip.js";
 import type { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 
 interface AssetMetadata {
@@ -22,10 +23,9 @@ interface ProjectFileRef {
 }
 
 const SUPPORTED_MIME_PREFIXES = ["text/"];
-const SUPPORTED_MIME_TYPES = new Set([
-    "application/json",
-    "application/csv"
-]);
+const SUPPORTED_MIME_TYPES = new Set(["application/json", "application/csv"]);
+
+const CACHE_TTL_DAYS = 30;
 
 function isSupportedType(mimeType: string): boolean {
     if (SUPPORTED_MIME_PREFIXES.some(prefix => mimeType.startsWith(prefix))) {
@@ -34,7 +34,23 @@ function isSupportedType(mimeType: string): boolean {
     return SUPPORTED_MIME_TYPES.has(mimeType);
 }
 
+function cacheKey(projectId: string, version: number): string {
+    return `project-context:${projectId}:v${version}`;
+}
+
+function cacheExpiresAt(): Date {
+    const date = new Date();
+    date.setDate(date.getDate() + CACHE_TTL_DAYS);
+    return date;
+}
+
+interface CachedProjectContext {
+    files: ProjectFileContent[];
+}
+
 export async function loadProjectFiles(
+    projectId: string,
+    version: number,
     files: ProjectFileRef[],
     excludedFileIds: string[] | null | undefined,
     keyValueStore: GlobalKeyValueStore.Interface
@@ -43,10 +59,62 @@ export async function loadProjectFiles(
         return [];
     }
 
-    const excluded = new Set(excludedFileIds ?? []);
-    const includedFiles = files.filter(f => !excluded.has(f.id) && isSupportedType(f.mimeType));
+    const allFiles = await getOrAssembleProjectFiles(
+        projectId,
+        version,
+        files,
+        keyValueStore
+    );
 
-    if (includedFiles.length === 0) {
+    if (excludedFileIds && excludedFileIds.length > 0) {
+        const excluded = new Set(excludedFileIds);
+        return allFiles.filter(f => !excluded.has(f.id));
+    }
+
+    return allFiles;
+}
+
+async function getOrAssembleProjectFiles(
+    projectId: string,
+    version: number,
+    files: ProjectFileRef[],
+    keyValueStore: GlobalKeyValueStore.Interface
+): Promise<ProjectFileContent[]> {
+    const key = cacheKey(projectId, version);
+
+    const cached = await keyValueStore.get<string>(key);
+    if (!cached.isFail() && cached.value) {
+        try {
+            const decompressed = await decompress(Buffer.from(cached.value, "base64"));
+            const parsed = JSON.parse(decompressed.toString("utf-8")) as CachedProjectContext;
+            return parsed.files;
+        } catch {
+            // Cache corrupted, fall through to assembly
+        }
+    }
+
+    const assembled = await assembleFromS3(files, keyValueStore);
+
+    try {
+        const payload: CachedProjectContext = { files: assembled };
+        const compressed = await compress(JSON.stringify(payload));
+        await keyValueStore.set(key, compressed.toString("base64"), {
+            expiresAt: cacheExpiresAt()
+        });
+    } catch {
+        // Cache write failure is non-fatal
+    }
+
+    return assembled;
+}
+
+async function assembleFromS3(
+    files: ProjectFileRef[],
+    keyValueStore: GlobalKeyValueStore.Interface
+): Promise<ProjectFileContent[]> {
+    const supportedFiles = files.filter(f => isSupportedType(f.mimeType));
+
+    if (supportedFiles.length === 0) {
         return [];
     }
 
@@ -54,7 +122,7 @@ export async function loadProjectFiles(
     const bucket = String(process.env.S3_BUCKET);
 
     const results = await Promise.all(
-        includedFiles.map(async (file): Promise<ProjectFileContent | null> => {
+        supportedFiles.map(async (file): Promise<ProjectFileContent | null> => {
             const metadataResult = await keyValueStore.get<AssetMetadata>(
                 `FileManager/File/${file.id}/Metadata`
             );

@@ -18,6 +18,7 @@ export interface ProjectPreset {
     defaultReaderPersonaId?: string;
     defaultWriterPersonaId?: string;
     files?: ProjectFileItem[];
+    version: number;
 }
 
 declare module "~/api/types.js" {
@@ -48,6 +49,7 @@ export interface PersistedProjectPreset {
     defaultReaderPersonaId?: string;
     defaultWriterPersonaId?: string;
     files?: PersistedProjectFileItem[];
+    version: number;
 }
 
 export interface PersistedProjects {

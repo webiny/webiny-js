@@ -52,7 +52,13 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
             : undefined;
 
         const projectFiles = project?.files
-            ? await loadProjectFiles(project.files, params.excludedFileIds, this.keyValueStore)
+            ? await loadProjectFiles(
+                  project.id,
+                  project.version ?? 0,
+                  project.files,
+                  params.excludedFileIds,
+                  this.keyValueStore
+              )
             : [];
 
         const readerPersona = params.readerPersonaId

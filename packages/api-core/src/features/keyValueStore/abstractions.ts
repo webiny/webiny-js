@@ -10,6 +10,7 @@ export interface IKeyValueRecord {
 // GlobalKeyValueStore - Non-tenant-aware service
 export interface IGlobalKeyValueStoreOptions {
     scope?: string;
+    expiresAt?: Date;
 }
 
 export interface IGlobalKeyValueStore {
@@ -61,9 +62,18 @@ export interface IKeyValueStoreRepositoryErrors {
 
 type RepositoryError = IKeyValueStoreRepositoryErrors[keyof IKeyValueStoreRepositoryErrors];
 
+export interface IKeyValueStoreSetOptions {
+    expiresAt?: Date;
+}
+
 export interface IKeyValueStoreRepository {
     get<T = unknown>(key: string, scope: string): Promise<Result<T, RepositoryError>>;
-    set(key: string, value: any, scope: string): Promise<Result<void, RepositoryError>>;
+    set(
+        key: string,
+        value: any,
+        scope: string,
+        options?: IKeyValueStoreSetOptions
+    ): Promise<Result<void, RepositoryError>>;
     delete(key: string, scope: string): Promise<Result<void, RepositoryError>>;
 }
 
@@ -80,7 +90,7 @@ export namespace KeyValueStoreRepository {
 
 export interface IKeyValueStorageOperations {
     get(key: string, scope: string): Promise<{ key: string; value: any } | null>;
-    set(key: string, value: any, scope: string): Promise<void>;
+    set(key: string, value: any, scope: string, options?: IKeyValueStoreSetOptions): Promise<void>;
     delete(key: string, scope: string): Promise<void>;
 }
 

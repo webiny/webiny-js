@@ -2,7 +2,8 @@ import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import {
     KeyValueStorageOperations,
-    KeyValueStoreRepository as RepositoryAbstraction
+    KeyValueStoreRepository as RepositoryAbstraction,
+    type IKeyValueStoreSetOptions
 } from "./abstractions.js";
 import { KeyNotFoundError, KeyValueStorageError } from "./errors.js";
 
@@ -35,10 +36,11 @@ class KeyValueStoreRepositoryImpl implements RepositoryAbstraction.Interface {
     async set(
         key: string,
         value: any,
-        scope: string
+        scope: string,
+        options?: IKeyValueStoreSetOptions
     ): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
-            await this.storageOperations.set(key, value, scope);
+            await this.storageOperations.set(key, value, scope, options);
             return Result.ok();
         } catch (error) {
             return Result.fail(new KeyValueStorageError(error as Error));

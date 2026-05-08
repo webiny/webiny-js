@@ -51,6 +51,7 @@ export interface IAiPowerUpsSettings {
                 width?: number;
                 height?: number;
             }[];
+            version: number;
         }[];
     };
 }
