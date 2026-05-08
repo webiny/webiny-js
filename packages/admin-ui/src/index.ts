@@ -55,6 +55,8 @@ export * from "./Tag/index.js";
 export * from "./Tags/index.js";
 export * from "./Text/index.js";
 export * from "./Textarea/index.js";
+export * from "./Toggle/index.js";
+export * from "./ToggleGroup/index.js";
 export * from "./TimeAgo/index.js";
 export * from "./Toast/index.js";
 export * from "./Tooltip/index.js";
