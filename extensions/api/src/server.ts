@@ -1,6 +1,5 @@
 import { existsSync } from "node:fs";
 import fastifyStatic from "@fastify/static";
-import fastifyWebsocket from "@fastify/websocket";
 import { createServer, RoutePlugin } from "@webiny/handler-node";
 import { createModifyFastifyPlugin } from "@webiny/handler";
 import { createDatabase, migrate } from "@webiny/db-sqlite";
@@ -25,7 +24,11 @@ import { createWebsiteBuilderWorkflows } from "@webiny/api-website-builder-workf
 import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-ddb";
 import { createWebsockets } from "@webiny/api-websockets";
-import { MemoryConnectionRegistry, NoopTransport } from "@webiny/api-websockets-memory";
+import {
+    FastifyWebsocketsTransport,
+    MemoryConnectionRegistry,
+    mountFastifyWebsockets
+} from "@webiny/api-websockets-memory";
 import { createScheduler } from "@webiny/api-scheduler";
 import { NodeSchedulerService } from "@webiny/api-scheduler-cron";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
@@ -58,6 +61,12 @@ const main = async () => {
     migrate(database.sqlite);
 
     const storageOperations = createApiCoreSqlite({ db: database });
+
+    // WebSockets registry + transport — instantiated up-front so the
+    // websockets ContextPlugin (createWebsockets) and the Fastify mount
+    // (mountFastifyWebsockets) share the same instances.
+    const wsRegistry = new MemoryConnectionRegistry();
+    const wsTransport = new FastifyWebsocketsTransport();
 
     // -----------------------------------------------------------------------
     // Bootstrap — make sure the root tenant exists on first boot. The
@@ -265,13 +274,13 @@ const main = async () => {
             createHcmsTasks(),
             createBackgroundTasks(),
 
-            // WebSockets — uses the registry + transport injection added
-            // to api-websockets in stage 10 / cluster 10a. In-memory
-            // connection registry (single-process Map) + no-op transport
-            // (real WS server via @fastify/websocket is a follow-on slice).
+            // WebSockets — registry + Fastify-backed transport for the
+            // long-lived container. The transport holds the live socket
+            // map; mountFastifyWebsockets (below) attaches /ws and
+            // populates the map on connect.
             createWebsockets({
-                registry: new MemoryConnectionRegistry(),
-                transport: new NoopTransport()
+                registry: wsRegistry,
+                transport: wsTransport
             }),
 
             // Scheduler — uses the schedulerService injection added to
@@ -294,22 +303,18 @@ const main = async () => {
                 });
             }),
 
-            // Stub WebSocket endpoint — accepts connections so the Admin
-            // UI's WebsocketsContextProvider doesn't error out trying to
-            // resolve a URL. The api-websockets plugin uses NoopTransport
-            // (no real send/broadcast yet), so the connection is just a
-            // shell — sufficient to silence the FM's "no valid URL" log.
-            // A real transport that bridges this socket back into the
-            // websockets registry is a follow-on (cluster 10a).
-            createModifyFastifyPlugin(app => {
-                app.register(fastifyWebsocket);
-                app.register(async fastify => {
-                    fastify.get("/ws", { websocket: true }, (socket /*, request */) => {
-                        socket.on("error", () => {
-                            // Swallow — the browser drops the socket on
-                            // unload and we don't want noisy logs.
-                        });
-                    });
+            // Real WebSocket endpoint — accepts upgrades at /ws, parses
+            // ?token+?tenant from the connect query, and dispatches
+            // $connect / $default / $disconnect events through the full
+            // Webiny preHandler chain (auth + tenancy + per-request
+            // ALS). FastifyWebsocketsTransport (registered via
+            // createWebsockets above) writes server-initiated payloads
+            // back to the live ws sockets.
+            createModifyFastifyPlugin(async app => {
+                await mountFastifyWebsockets({
+                    app,
+                    transport: wsTransport,
+                    registry: wsRegistry
                 });
             }),
 

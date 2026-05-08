@@ -34,6 +34,15 @@ ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=8080
 ENV ADMIN_BUILD_DIR=/app/admin
+# Force the `ws` library's pure-JS frame masking + UTF-8 validation
+# instead of trying to load `bufferutil` / `utf-8-validate`. The
+# bundler partially picks up those optional native modules into the
+# server bundle, but the runtime can't resolve their bindings inside
+# the slim container — leaving frames unmaskable. Disabling them at
+# runtime is the smallest reliable fix; performance impact is
+# negligible for the POC traffic volume.
+ENV WS_NO_BUFFER_UTIL=true
+ENV WS_NO_UTF_8_VALIDATE=true
 
 EXPOSE 8080
 
