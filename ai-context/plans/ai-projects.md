@@ -104,7 +104,7 @@ Supported formats: MD, MDX, TXT, JSON, CSV (read as text). The use case filters 
 
 ---
 
-## [ ] Phase 5: Project Context Cache
+## [x] Phase 5: Project Context Cache
 
 **User stories**: Performance optimization — avoid re-fetching files from S3 on every generation.
 
@@ -123,7 +123,7 @@ Three pieces: (1) Upgrade KeyValueStore abstraction (§7.8) to support `expiresA
 
 ---
 
-## [ ] Phase 6: Anthropic Prompt Cache + Token Budget
+## [x] Phase 6: Anthropic Prompt Cache + Token Budget
 
 **User stories**: Cost/latency optimization via Anthropic prompt caching; token budget guardrails.
 

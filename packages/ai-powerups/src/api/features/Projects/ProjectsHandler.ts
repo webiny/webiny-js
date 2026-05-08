@@ -17,19 +17,45 @@ const fileItemSchema = z.object({
     height: z.number().optional()
 });
 
+const TOKEN_BUDGET = 150_000;
+const CHARS_PER_TOKEN = 4;
+const MAX_CONTEXT_BYTES = TOKEN_BUDGET * CHARS_PER_TOKEN;
+
+const presetSchema = z
+    .object({
+        id: z.string().min(1),
+        name: z.string().min(1),
+        description: z.string().nullish().optional(),
+        instructions: z.string().nullish().optional(),
+        defaultReaderPersonaId: z.string().nullish().optional(),
+        defaultWriterPersonaId: z.string().nullish().optional(),
+        files: z.array(fileItemSchema).nullish().optional(),
+        version: z.number().optional()
+    })
+    .superRefine((preset, ctx) => {
+        const instructionsBytes = preset.instructions?.length ?? 0;
+        const files = preset.files ?? [];
+        const totalFileBytes = files.reduce((sum, f) => sum + f.size, 0);
+        const totalBytes = instructionsBytes + totalFileBytes;
+
+        if (totalBytes <= MAX_CONTEXT_BYTES) {
+            return;
+        }
+
+        const estimatedTokens = Math.ceil(totalBytes / CHARS_PER_TOKEN);
+        const sorted = [...files].sort((a, b) => b.size - a.size);
+        const top = sorted
+            .slice(0, 3)
+            .map(f => `${f.name} (~${Math.ceil(f.size / CHARS_PER_TOKEN).toLocaleString()} tokens)`);
+
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Project "${preset.name}" exceeds the ${TOKEN_BUDGET.toLocaleString()} token budget (~${estimatedTokens.toLocaleString()} tokens). Largest files: ${top.join(", ")}.`
+        });
+    });
+
 const inputSchema = z.object({
-    presets: z.array(
-        z.object({
-            id: z.string().min(1),
-            name: z.string().min(1),
-            description: z.string().nullish().optional(),
-            instructions: z.string().nullish().optional(),
-            defaultReaderPersonaId: z.string().nullish().optional(),
-            defaultWriterPersonaId: z.string().nullish().optional(),
-            files: z.array(fileItemSchema).nullish().optional(),
-            version: z.number().optional()
-        })
-    )
+    presets: z.array(presetSchema)
 });
 
 class ProjectsHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface {

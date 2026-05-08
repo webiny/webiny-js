@@ -69,7 +69,7 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
             ? settings.writerPersonas?.presets?.find(p => p.id === params.writerPersonaId)
             : undefined;
 
-        const system = buildSystemPrompt(params.components, params.tools, {
+        const systemText = buildSystemPrompt(params.components, params.tools, {
             readerPersona,
             writerPersona,
             project: project
@@ -77,10 +77,15 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
                 : undefined
         });
 
-        console.log({
-            system,
-            prompt: params.prompt
-        });
+        const system = {
+            role: "system" as const,
+            content: systemText,
+            providerOptions: {
+                anthropic: {
+                    cacheControl: { type: "ephemeral" }
+                }
+            }
+        };
 
         try {
             const aiResult = await this.ai.generateText({
