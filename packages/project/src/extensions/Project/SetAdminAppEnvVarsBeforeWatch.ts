@@ -6,6 +6,7 @@ import {
 } from "~/abstractions/index.js";
 import { globalConfig } from "@webiny/global-config";
 import { isCI } from "ci-info";
+import { readInstallationId } from "../installationId.js";
 
 class SetAdminAppEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface {
     constructor(
@@ -23,6 +24,13 @@ class SetAdminAppEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface {
         if (projectId) {
             process.env.REACT_APP_WEBINY_PROJECT_ID = projectId;
             process.env.REACT_APP_WCP_PROJECT_ID = projectId;
+        }
+
+        if (!("REACT_APP_WEBINY_INSTALLATION_ID" in process.env)) {
+            const installationId = readInstallationId();
+            if (installationId) {
+                process.env.REACT_APP_WEBINY_INSTALLATION_ID = installationId;
+            }
         }
 
         if (!("REACT_APP_WEBINY_TELEMETRY" in process.env)) {

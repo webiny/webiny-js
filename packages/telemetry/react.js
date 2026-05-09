@@ -11,13 +11,19 @@ let projectId = null;
  * Resolves the WTS client identity for the admin app.
  *
  * Priority for `distinct_id` (machine_id):
- *   1. URL param `wts_did` on first load (printed by the CLI at deploy-end).
- *      Persisted to localStorage so refreshes keep working.
+ *   1. URL param `wts_did` on first load. Persisted to localStorage.
  *   2. localStorage (subsequent loads).
- *   3. `process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID` (build-time fallback).
+ *   3. `process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID` (build-time fallback,
+ *      set by `SetAdminAppEnvVarsBefore{Build,Watch}` from `~/.webiny/config`).
  *
- * Same priority for `project_id`, read from URL param `iid`. Attached as a
- * super-property on every event so PostHog funnels can group per-install.
+ * Priority for `project_id` (installation_id):
+ *   1. URL param `iid` on first load. Persisted to localStorage.
+ *   2. localStorage.
+ *   3. `process.env.REACT_APP_WEBINY_INSTALLATION_ID` (build-time fallback,
+ *      set from `<project>/webiny.installation.json`).
+ *
+ * Attached as a super-property on every admin event so PostHog funnels can
+ * group per-install.
  */
 const initWts = () => {
     if (wtsInstance) {
@@ -25,6 +31,7 @@ const initWts = () => {
     }
 
     let distinctId = process.env.REACT_APP_WEBINY_TELEMETRY_USER_ID;
+    projectId = process.env.REACT_APP_WEBINY_INSTALLATION_ID || null;
 
     if (typeof window !== "undefined") {
         const params = new URLSearchParams(window.location.search);
@@ -55,9 +62,9 @@ const initWts = () => {
             }
         } else {
             try {
-                projectId = window.localStorage.getItem(STORAGE_PROJECT_ID);
+                projectId = window.localStorage.getItem(STORAGE_PROJECT_ID) || projectId;
             } catch {
-                projectId = null;
+                // env-var value (set above) is used as fallback.
             }
         }
     }

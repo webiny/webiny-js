@@ -22,6 +22,12 @@ export const sendEvent = async ({ event, version, properties }) => {
         wcpProperties.wcpProjectId = wcpProjectId;
     }
 
+    const installationProperties = {};
+    const installationId = getInstallationId();
+    if (installationId) {
+        installationProperties.installation_id = installationId;
+    }
+
     const packageJsonPath = path.join(import.meta.dirname, "package.json");
     const packageJson = loadJsonFileSync(packageJsonPath);
 
@@ -30,6 +36,7 @@ export const sendEvent = async ({ event, version, properties }) => {
         properties: {
             ...properties,
             ...wcpProperties,
+            ...installationProperties,
             version: version || packageJson.version,
             ci: isCI,
             newUser: Boolean(globalConfig.get("newUser"))
@@ -45,6 +52,22 @@ const getWcpOrgProjectId = () => {
         return id.split("/");
     }
     return [];
+};
+
+/**
+ * Reads the anonymous per-project installation id from
+ * `<project-root>/webiny.installation.json`. Generated once at
+ * `create-webiny-project` time and tracked in git so it stays stable across
+ * machines that share the project. Returns null if the file is missing or
+ * unreadable — telemetry events still fire, just without the property.
+ */
+const getInstallationId = () => {
+    try {
+        const data = loadJsonFileSync(path.join(process.cwd(), "webiny.installation.json"));
+        return typeof data?.installationId === "string" ? data.installationId : null;
+    } catch {
+        return null;
+    }
 };
 
 export const enable = () => {
