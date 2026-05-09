@@ -1,11 +1,40 @@
 import React, { useEffect } from "react";
 import { Button, Grid, Loader, Alert } from "@webiny/admin-ui";
+import { getMachineId } from "@webiny/telemetry/react.js";
 import { Center } from "./Center.js";
 import { Container } from "./Container.js";
 import type {
     ErrorObject,
     ISystemInstallerPresenter
 } from "~/presentation/installation/presenters/SystemInstaller/abstractions.js";
+
+const INSTALL_FINISH_URL =
+    process.env.REACT_APP_WEBINY_INSTALL_FINISH_URL || "https://www.webiny.com/install/finish";
+
+/**
+ * If telemetry is enabled AND the admin is hosted on CloudFront (production
+ * deployment), route the "Start using Webiny" CTA through the marketing
+ * site's /install/finish page so the website's anonymous wts_did cookie can
+ * be aliased to the deployer's machine_id. Falls through to the local
+ * `finishInstallation` flow otherwise.
+ */
+const buildInstallFinishHref = (currentUrl: string): string | null => {
+    if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") return null;
+
+    if (typeof window === "undefined") return null;
+    const isCloudFrontHost = window.location.hostname.endsWith(".cloudfront.net");
+    const allowAlternate = Boolean(process.env.REACT_APP_WEBINY_INSTALL_FINISH_URL);
+    if (!isCloudFrontHost && !allowAlternate) return null;
+
+    const machineId = getMachineId();
+    if (!machineId) return null;
+
+    const params = new URLSearchParams({
+        machine_id: machineId,
+        return_to: currentUrl
+    });
+    return `${INSTALL_FINISH_URL}?${params.toString()}`;
+};
 
 interface StepProps {
     error?: ErrorObject;
@@ -25,6 +54,17 @@ export const FinishSetupStep = ({
     useEffect(() => {
         installSystem();
     }, []);
+
+    const handleStartUsing = () => {
+        if (typeof window !== "undefined") {
+            const handoff = buildInstallFinishHref(window.location.origin + window.location.pathname);
+            if (handoff) {
+                window.location.assign(handoff);
+                return;
+            }
+        }
+        finishInstallation();
+    };
 
     const subtitle = isInstalled
         ? "Setup complete! Everything went smooth as a breeze!"
@@ -74,7 +114,7 @@ export const FinishSetupStep = ({
                                     variant={"primary"}
                                     size={"lg"}
                                     text={"Start using Webiny"}
-                                    onClick={finishInstallation}
+                                    onClick={handleStartUsing}
                                 />
                             </Grid.Column>
                         ) : (

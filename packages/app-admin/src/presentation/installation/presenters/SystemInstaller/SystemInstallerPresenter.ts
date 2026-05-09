@@ -123,9 +123,11 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
             });
             await this.repository.installSystem(installationInput);
 
+            // We intentionally do NOT send `projectName` or `organizationName` to
+            // telemetry — those are user-typed free-text fields that risk
+            // identifying the user's company. Only the categorical
+            // `referralSource` is forwarded for funnel attribution.
             await this.telemetry.sendEvent("install-wizard-end", {
-                project: basicInfo.projectName,
-                organization: basicInfo.organizationName,
                 referralSource: basicInfo.referralSource
             });
 

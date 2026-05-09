@@ -4,15 +4,14 @@ import jsesc from "jsesc";
 /**
  * The main `sendEvent` function.
  * NOTE: don't use this in your app directly. Instead, use the one from `cli.js` or `react.js` files accordingly.
+ *
+ * Identity is owned by the WTS instance — `cli.js` reads `~/.webiny/config`,
+ * `react.js` reads URL params / localStorage / env. This function only
+ * validates and sanitises the event payload before dispatching.
  */
-export default ({ event, user, properties, wts } = {}) => {
-    // 1. Check for the existence of required base parameters.
+export default ({ event, properties, wts } = {}) => {
     if (!event) {
         throw new Error(`Cannot send event - missing "event" name.`);
-    }
-
-    if (!user) {
-        throw new Error(`Cannot send event - missing "user" ID.`);
     }
 
     if (!properties) {
@@ -23,7 +22,6 @@ export default ({ event, user, properties, wts } = {}) => {
         throw new Error(`Cannot send event - missing "wts" instance.`);
     }
 
-    // 2. Extract properties and check for existence of required properties.
     if (!properties.version) {
         throw new Error(`Cannot send event - missing "version" property.`);
     }
@@ -38,7 +36,6 @@ export default ({ event, user, properties, wts } = {}) => {
         throw new Error(`Cannot send event - missing "newUser" boolean property.`);
     }
 
-    // 2. Sanitize properties.
     const sanitizedProperties = {
         ...properties,
         newUser: properties.newUser === true ? "yes" : "no",
@@ -56,6 +53,5 @@ export default ({ event, user, properties, wts } = {}) => {
         sanitizedProperties[key] = sanitizedValue;
     }
 
-    // 3. Send.
-    return wts.trackEvent(user, event, sanitizedProperties);
+    return wts.track(event, sanitizedProperties);
 };

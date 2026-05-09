@@ -1,17 +1,19 @@
 import { globalConfig } from "@webiny/global-config";
 import { isCI } from "ci-info";
-import { WTS } from "wts-client/node.js";
+import { WTS } from "@webiny/wts-client/node";
 import baseSendEvent from "./sendEvent.js";
 import { loadJsonFileSync } from "load-json-file";
 import path from "path";
 
-export const sendEvent = async ({ event, user, version, properties }) => {
+export const sendEvent = async ({ event, version, properties }) => {
     const shouldSend = isEnabled();
     if (!shouldSend) {
         return;
     }
 
-    const wts = new WTS();
+    // The WTS client reads the machine id from `~/.webiny/config` (user.id field)
+    // via the same path globalConfig writes to. No need to pass user explicitly.
+    const wts = new WTS({ source: "cli" });
 
     const wcpProperties = {};
     const [wcpOrgId, wcpProjectId] = getWcpOrgProjectId();
@@ -25,7 +27,6 @@ export const sendEvent = async ({ event, user, version, properties }) => {
 
     return baseSendEvent({
         event,
-        user: user || globalConfig.get("id"),
         properties: {
             ...properties,
             ...wcpProperties,
