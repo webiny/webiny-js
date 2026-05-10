@@ -319,6 +319,14 @@ export class FormModel implements IFormModel {
                 const path = pathPrefix ? `${pathPrefix}.${field.name}` : field.name;
                 const segment = field.config.label || field.name;
                 if (isObjectField(field)) {
+                    if (field.vm.validation.isValid === false && !ruleErrorPaths.has(path)) {
+                        errors.push({
+                            path,
+                            label: field.config.label,
+                            breadcrumb: [...trail, segment],
+                            message: field.vm.validation.message || "Invalid value."
+                        });
+                    }
                     if (field.config.isList) {
                         for (const [index, item] of field.items.entries()) {
                             collectErrors(item.children, `${path}.${index}`, [
