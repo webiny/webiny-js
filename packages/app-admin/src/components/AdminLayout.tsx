@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout } from "~/index.js";
+import { Layout } from "~/base/ui/Layout.js";
 
 interface AdminLayoutProps {
     title?: string;
