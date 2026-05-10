@@ -1,7 +1,7 @@
-import { FileAfterCreateEventHandler } from "~/features/file/CreateFile/events.js";
+import { FileAfterCreateEventHandler } from "@webiny/api-file-manager/features/file/CreateFile/events.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
-import type { IAiImageEnrichmentTaskInput } from "~/tasks/AiImageEnrichmentTask.js";
-import { AI_IMAGE_ENRICHMENT_TASK_ID } from "~/tasks/AiImageEnrichmentTask.js";
+import type { IAiImageEnrichmentTaskInput } from "./AiImageEnrichmentTask.js";
+import { AI_IMAGE_ENRICHMENT_TASK_ID } from "./AiImageEnrichmentTask.js";
 
 class AiImageEnrichmentAfterCreateHandlerImpl implements FileAfterCreateEventHandler.Interface {
     constructor(private taskService: TaskService.Interface) {}

@@ -12,9 +12,7 @@ const fileItemSchema = z.object({
     name: z.string().min(1),
     size: z.number(),
     mimeType: z.string().min(1),
-    src: z.string().min(1),
-    width: z.number().optional(),
-    height: z.number().optional()
+    src: z.string().min(1)
 });
 
 const TOKEN_BUDGET = 150_000;
@@ -97,9 +95,7 @@ class ProjectsHandlerImpl implements AiPowerUpsSettingsGroupHandler.Interface {
                         name: f.name,
                         size: f.size,
                         mimeType: f.mimeType,
-                        src: f.src,
-                        width: f.width,
-                        height: f.height
+                        src: f.src
                     })),
                     version: changed ? prevVersion + 1 : prevVersion
                 };

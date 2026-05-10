@@ -1,89 +1,6 @@
-interface PersonaInfo {
-    name: string;
-    description: string;
-    style?: string;
-}
-
-interface ProjectFileContent {
-    name: string;
-    content: string;
-}
-
-interface ProjectInfo {
-    name: string;
-    instructions?: string;
-    files?: ProjectFileContent[];
-}
-
-interface BuildPromptOptions {
-    readerPersona?: PersonaInfo;
-    writerPersona?: PersonaInfo;
-    project?: ProjectInfo;
-}
-
-function buildPersonaSections(options?: BuildPromptOptions): string {
-    const sections: string[] = [];
-
-    if (options?.writerPersona) {
-        const p = options.writerPersona;
-        let section = `### Writer Persona\n\nYou are writing as "${p.name}": ${p.description}`;
-        if (p.style) {
-            section += `\nStyle: ${p.style}`;
-        }
-        sections.push(section);
-    }
-
-    if (options?.readerPersona) {
-        const p = options.readerPersona;
-        let section = `### Reader Persona (Target Audience)\n\nYou are writing for "${p.name}": ${p.description}`;
-        if (p.style) {
-            section += `\nExpected tone/style: ${p.style}`;
-        }
-        sections.push(section);
-    }
-
-    return sections.length > 0 ? "\n\n" + sections.join("\n\n") : "";
-}
-
-function buildProjectSection(options?: BuildPromptOptions): string {
-    const project = options?.project;
-    if (!project) {
-        return "";
-    }
-
-    const hasInstructions = !!project.instructions;
-    const hasFiles = project.files && project.files.length > 0;
-
-    if (!hasInstructions && !hasFiles) {
-        return "";
-    }
-
-    const parts: string[] = [`\n\n## Project: ${project.name}`];
-
-    if (hasInstructions) {
-        parts.push(project.instructions!);
-    }
-
-    if (hasFiles) {
-        parts.push("### Reference files");
-        for (const file of project.files!) {
-            parts.push(`--- ${file.name} ---\n${file.content}`);
-        }
-    }
-
-    return parts.join("\n\n");
-}
-
-export function buildSystemPrompt(
-    components: unknown,
-    tools: unknown,
-    options?: BuildPromptOptions
-): string {
-    const personaSections = buildPersonaSections(options);
-    const projectSection = buildProjectSection(options);
-
+export function buildDomainPrompt(components: unknown, tools: unknown): string {
     return `You are a page content generator. Given a user prompt, generate structured page content using the provided component catalog and available tools.
-${personaSections}${projectSection}
+
 ###
 
 ### Rich Text Content
@@ -96,13 +13,13 @@ Example: RichText - Banner - RichText - Image - Banner - RichText
 
 ### Image Selection
 
-When the page content requires images, use the listImagesByTag tool 
-to search for available images. After receiving the results, select 
+When the page content requires images, use the listImagesByTag tool
+to search for available images. After receiving the results, select
 the most appropriate image and reference it in your output using:
 { "tool": "resolveImage", "params": { "id": "<image_id_from_search>" } }
 
-You MUST generate the full page content as JSON after using any tools. 
-Tool calls are for gathering information — your final response must 
+You MUST generate the full page content as JSON after using any tools.
+Tool calls are for gathering information — your final response must
 always be the complete page JSON array.
 
 ### SEO & Content Structure Best Practices
@@ -173,8 +90,8 @@ Note: \`CreateElement\` uses "action" — it is a structural instruction for the
 
 ### Grid Structure Example
 
-When using Webiny/Grid, each column entry must use a CreateElement action 
-to create a Webiny/GridColumn, and the GridColumn's children contain the 
+When using Webiny/Grid, each column entry must use a CreateElement action
+to create a Webiny/GridColumn, and the GridColumn's children contain the
 actual content elements:
 
 \`\`\`json
@@ -214,9 +131,9 @@ actual content elements:
 
 Key rules:
 - "columns" is an array, not an object with numeric keys
-- Each column has a "children" property containing a single CreateElement 
+- Each column has a "children" property containing a single CreateElement
   for Webiny/GridColumn
-- Webiny/GridColumn's "children" is an array of CreateElement actions for 
+- Webiny/GridColumn's "children" is an array of CreateElement actions for
   the actual content
 
 You MUST return parsable JSON string without any extra text or envelopes.`;

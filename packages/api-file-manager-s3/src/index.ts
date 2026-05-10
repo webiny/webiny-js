@@ -6,6 +6,7 @@ import { WriteFileMetadataFeature } from "~/features/WriteFileMetadata/feature.j
 import { ApplyThreatScanningFeature } from "~/enterprise/ApplyThreatScanning/feature.js";
 import { FlushCacheFeature } from "~/features/FlushCache/feature.js";
 import { ExtractMetadataFeature } from "~/features/ExtractMetadata/feature.js";
+import { GetFileContentsFeature } from "~/features/GetFileContents/feature.js";
 export { createFileUploadModifier } from "./utils/FileUploadModifier.js";
 export { createAssetDelivery } from "./assetDelivery/createAssetDelivery.js";
 
@@ -16,6 +17,7 @@ const contextPlugin = new ContextPlugin(context => {
     DeleteFileFromBucketFeature.register(container);
     ExtractMetadataFeature.register(container);
     WriteFileMetadataFeature.register(container);
+    GetFileContentsFeature.register(container);
 
     const wcp = container.resolve(WcpContext);
     if (wcp.canUseFileManagerThreatDetection()) {

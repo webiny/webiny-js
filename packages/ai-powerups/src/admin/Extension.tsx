@@ -25,7 +25,11 @@ const AiPowerUpsSettings = () => {
                 parent={"settings.system"}
                 name={"aiPowerUps"}
                 element={
-                    <Menu.Link text={"AI Power-Ups"} to={getLink(Routes.Settings)} pinnable={true} />
+                    <Menu.Link
+                        text={"AI Power-Ups"}
+                        to={getLink(Routes.Settings)}
+                        pinnable={true}
+                    />
                 }
             />
         </AdminConfig>

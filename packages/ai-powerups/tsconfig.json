@@ -4,6 +4,7 @@
   "references": [
     { "path": "../admin-ui" },
     { "path": "../api-core" },
+    { "path": "../api-file-manager" },
     { "path": "../api-websockets" },
     { "path": "../app" },
     { "path": "../app-admin" },
@@ -29,6 +30,8 @@
       "@webiny/admin-ui": ["../admin-ui/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/app/*": ["../app/src/*"],

@@ -56,9 +56,7 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
             });
         } catch (err) {
             runInAction(() => {
-                this.errors = [
-                    err instanceof Error ? err.message : "Failed to load settings."
-                ];
+                this.errors = [err instanceof Error ? err.message : "Failed to load settings."];
             });
         } finally {
             runInAction(() => {
@@ -88,13 +86,9 @@ class AiPowerUpsSettingsPresenterImpl implements PresenterAbstraction.Interface 
         } catch (err) {
             runInAction(() => {
                 if (err instanceof SettingsValidationError) {
-                    this.errors = Object.values(err.data.invalidFields).map(
-                        e => e.message
-                    );
+                    this.errors = Object.values(err.data.invalidFields).map(e => e.message);
                 } else {
-                    this.errors = [
-                        err instanceof Error ? err.message : "Failed to save settings."
-                    ];
+                    this.errors = [err instanceof Error ? err.message : "Failed to save settings."];
                 }
             });
             return false;

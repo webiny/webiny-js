@@ -12468,6 +12468,7 @@ __metadata:
   dependencies:
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
@@ -12751,11 +12752,9 @@ __metadata:
   resolution: "@webiny/api-file-manager@workspace:packages/api-file-manager"
   dependencies:
     "@types/object-hash": "npm:^3.0.6"
-    "@webiny/ai-powerups": "npm:0.0.0"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di": "npm:^0.2.3"
     "@webiny/error": "npm:0.0.0"
@@ -12768,7 +12767,6 @@ __metadata:
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    ai: "npm:^6.0.175"
     cache-control-parser: "npm:^2.2.0"
     rimraf: "npm:^6.1.3"
     typescript: "npm:6.0.3"

@@ -1,10 +1,7 @@
 import { UpdateSettingsGateway as GatewayAbstraction } from "./abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/features/mainGraphQLClient";
 import type { IAiPowerUpsSettings } from "~/admin/features/settings/shared/abstractions.js";
-import {
-    SettingsValidationError,
-    SettingsUpdateError
-} from "~/admin/domain/errors.js";
+import { SettingsValidationError, SettingsUpdateError } from "~/admin/domain/errors.js";
 
 const UPDATE_SETTINGS = /* GraphQL */ `
     mutation UpdateAiPowerUpsSettings($input: JSON!) {

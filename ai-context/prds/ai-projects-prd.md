@@ -4,7 +4,7 @@
 
 ## 1. Summary
 
-Add a **Projects** concept to the AI Power-Ups settings group. A Project bundles reusable prompting context — instructions, default personas, and reference files from the DAM — that users can attach to a content generation request with one click. The goal is to eliminate the need to re-paste the same brand guidelines, glossaries, and style references into every prompt. Prompt construction is handled in `packages/ai-powerups/src/api/features/WbGeneratePageContent/WbGeneratePageContentUseCase.ts` 
+Add a **Projects** concept to the AI Power-Ups settings group. A Project bundles reusable prompting context — instructions, default personas, and reference files from the DAM — that users can attach to a content generation request with one click. The goal is to eliminate the need to re-paste the same brand guidelines, glossaries, and style references into every prompt. Prompt construction is handled in `packages/ai-powerups/src/api/features/WbGeneratePageContent/WbGeneratePageContentUseCase.ts`
 
 Inspired by Anthropic's "Projects" concept in Claude.ai, scoped to our admin app's content generation flow.
 
@@ -263,7 +263,6 @@ When settings are saved, increment `Project.version` if project data changes. Th
 - **Simpler.** No hashing logic; no risk of accidentally hashing in flapping fields like `updatedAt`.
 - **Predictable.** Devs and ops can read the version in logs and reason about cache state.
 - **Old cache entries clean up themselves** via TTL — no manual cleanup job needed.
-
 
 ### 7.4 Assembly logic (cache miss path)
 

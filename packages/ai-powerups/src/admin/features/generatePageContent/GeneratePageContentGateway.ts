@@ -3,9 +3,25 @@ import type { GeneratePageContentParams } from "./abstractions.js";
 import { MainGraphQLClient } from "@webiny/app/exports/admin.js";
 
 const GENERATE_PAGE_CONTENT = /* GraphQL */ `
-    mutation GeneratePageContent($prompt: String!, $components: JSON!, $tools: JSON!, $projectId: String, $excludedFileIds: [String!], $readerPersonaId: String, $writerPersonaId: String) {
+    mutation GeneratePageContent(
+        $prompt: String!
+        $components: JSON!
+        $tools: JSON!
+        $projectId: String
+        $excludedFileIds: [String!]
+        $readerPersonaId: String
+        $writerPersonaId: String
+    ) {
         aiPowerUps {
-            generatePageContent(prompt: $prompt, components: $components, tools: $tools, projectId: $projectId, excludedFileIds: $excludedFileIds, readerPersonaId: $readerPersonaId, writerPersonaId: $writerPersonaId)
+            generatePageContent(
+                prompt: $prompt
+                components: $components
+                tools: $tools
+                projectId: $projectId
+                excludedFileIds: $excludedFileIds
+                readerPersonaId: $readerPersonaId
+                writerPersonaId: $writerPersonaId
+            )
         }
     }
 `;
