@@ -21,7 +21,6 @@ const BaseMultiFilePicker = ({
     label,
     description,
     note,
-    required,
     disabled,
     validation,
     validate,

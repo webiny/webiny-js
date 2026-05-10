@@ -4,12 +4,7 @@ import { Accordion, Button, IconButton } from "@webiny/admin-ui";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
-import type {
-    IFieldVM,
-    IObjectFieldVM,
-    IObjectFieldItemVM,
-    LayoutNodeVM
-} from "~/features/formModel/index.js";
+import type { IObjectFieldItemVM, LayoutNodeVM } from "~/features/formModel/index.js";
 import { LayoutNodeRenderer } from "~/features/formModel/FormView.js";
 import { resolveItemTitle } from "./resolveItemTitle.js";
 /**
