@@ -51,7 +51,7 @@ export const createRsbuildConfig = ({ cwd }) => {
                 }
             }
         },
-        server: { port: process.env.PORT || 3001 },
+        server: { port: process.env.PORT || 3001, host: "0.0.0.0" },
         html: {
             template: paths.projectRootFolder + "/public/index.html"
         },

@@ -34,45 +34,52 @@ export interface DialogContentProps
     header?: React.ReactNode;
     footer?: React.ReactNode;
     closeButton?: React.ReactNode;
+    overlay?: React.ReactNode;
 }
 
 const DialogContent = React.forwardRef<
     React.ElementRef<typeof DialogPrimitive.Content>,
     DialogContentProps
->(({ className, dismissible, size, header, footer, closeButton, children, ...props }, ref) => {
-    const dismissibleProps = React.useMemo<
-        Pick<DialogPrimitive.DialogContentProps, "onInteractOutside" | "onEscapeKeyDown">
-    >(() => {
-        if (dismissible === false) {
-            return {
-                onInteractOutside: event => event.preventDefault(),
-                onEscapeKeyDown: event => event.preventDefault()
-            };
-        }
+>(
+    (
+        { className, dismissible, size, header, footer, closeButton, overlay, children, ...props },
+        ref
+    ) => {
+        const dismissibleProps = React.useMemo<
+            Pick<DialogPrimitive.DialogContentProps, "onInteractOutside" | "onEscapeKeyDown">
+        >(() => {
+            if (dismissible === false) {
+                return {
+                    onInteractOutside: event => event.preventDefault(),
+                    onEscapeKeyDown: event => event.preventDefault()
+                };
+            }
 
-        return {};
-    }, [dismissible]);
+            return {};
+        }, [dismissible]);
 
-    return (
-        <DialogPrimitive.Content
-            {...dismissibleProps}
-            {...props}
-            ref={ref}
-            className={cn(dialogContentVariants({ size }), className)}
-            // TODO: An optional accessible description to be announced when the dialog is opened. At the moment we skip this.
-            aria-describedby={undefined}
-        >
-            {(header || closeButton) && (
-                <div className="row-start-1 relative">
-                    {header}
-                    {closeButton}
-                </div>
-            )}
-            <div className="row-start-2 min-h-0 overflow-hidden pr-xs">{children}</div>
-            {footer && <div className="row-start-3">{footer}</div>}
-        </DialogPrimitive.Content>
-    );
-});
+        return (
+            <DialogPrimitive.Content
+                {...dismissibleProps}
+                {...props}
+                ref={ref}
+                className={cn(dialogContentVariants({ size }), className)}
+                // TODO: An optional accessible description to be announced when the dialog is opened. At the moment we skip this.
+                aria-describedby={undefined}
+            >
+                {(header || closeButton) && (
+                    <div className="row-start-1 relative">
+                        {header}
+                        {closeButton}
+                    </div>
+                )}
+                <div className="row-start-2 min-h-0 overflow-hidden pr-xs">{children}</div>
+                {footer && <div className="row-start-3">{footer}</div>}
+                {overlay}
+            </DialogPrimitive.Content>
+        );
+    }
+);
 
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 

@@ -283,7 +283,8 @@ export const createEntryData = async <TValues extends CmsEntryValues = CmsEntryV
                 ? {
                       version
                   }
-                : null
+                : null,
+        revisionDescription: ""
     };
 
     if (status !== STATUS_DRAFT) {

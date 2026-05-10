@@ -220,6 +220,32 @@ export const pullRequests = createWorkflow({
                 ...runBuildCacheSteps
             ]
         }),
+        buildProject: createJob({
+            needs: ["constants", "build"],
+            name: "Build project (core, api, admin)",
+            if: NOT_RELEASE_PR,
+            checkout: { path: DIR_WEBINY_JS },
+            steps: [
+                ...yarnCacheSteps,
+                ...runBuildCacheSteps,
+                ...installBuildSteps,
+                {
+                    name: "Build core",
+                    run: "yarn webiny build core",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "Build api",
+                    run: "yarn webiny build api --no-deployment-checks",
+                    "working-directory": DIR_WEBINY_JS
+                },
+                {
+                    name: "Build admin",
+                    run: "yarn webiny build admin --no-deployment-checks",
+                    "working-directory": DIR_WEBINY_JS
+                }
+            ]
+        }),
         staticCodeAnalysis: createJob({
             needs: ["constants"],
             name: "Static code analysis",
@@ -344,35 +370,7 @@ export const pullRequests = createWorkflow({
                     name: "Commit fixes",
                     uses: "stefanzweifel/git-auto-commit-action@v5",
                     with: {
-                        commit_message: "chore: ai fix static analysis [skip ci]",
-                        repository: DIR_WEBINY_JS
-                    }
-                }
-            ]
-        }),
-        aiFixWebinyPkg: createJob({
-            name: "AI Fix Webiny Package",
-            needs: ["constants", "staticCodeAnalysis"],
-            if: "failure() && needs.staticCodeAnalysis.result == 'failure' && needs.constants.outputs.is-fork-pr != 'true'",
-            permissions: { contents: "write" },
-            checkout: { path: DIR_WEBINY_JS },
-            steps: [
-                ...yarnCacheSteps,
-                {
-                    name: "Install dependencies",
-                    run: "yarn --immutable",
-                    "working-directory": DIR_WEBINY_JS
-                },
-                {
-                    name: "Regenerate webiny package",
-                    run: "yarn webiny-scripts generate-webiny-package",
-                    "working-directory": DIR_WEBINY_JS
-                },
-                {
-                    name: "Commit",
-                    uses: "stefanzweifel/git-auto-commit-action@v5",
-                    with: {
-                        commit_message: "chore: regenerate webiny package [skip ci]",
+                        commit_message: "chore: ai fix static analysis",
                         repository: DIR_WEBINY_JS
                     }
                 }

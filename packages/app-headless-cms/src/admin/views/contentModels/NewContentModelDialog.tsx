@@ -3,7 +3,6 @@ import { useRouter, useSnackbar } from "@webiny/app-admin";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input/index.js";
 import { Select } from "@webiny/ui/Select/index.js";
-import { CircularProgress } from "@webiny/ui/Progress/index.js";
 import { validation } from "@webiny/validation";
 import { useApolloClient, useMutation, useQuery } from "../../hooks/index.js";
 import { i18n } from "@webiny/app/i18n/index.js";
@@ -167,6 +166,7 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                         onClose={onClose}
                         data-testid="cms-new-content-model-modal"
                         title={t`New Content Model`}
+                        loading={loading ? { text: "Creating content model..." } : false}
                         actions={
                             <Dialog.ConfirmAction onClick={submit}>
                                 + {t`Create Model`}
@@ -174,7 +174,6 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                         }
                     >
                         <>
-                            {loading && <CircularProgress label={"Creating content model..."} />}
                             <Grid>
                                 <Grid.Column span={12}>
                                     <Bind

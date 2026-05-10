@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useIsMounted, useSnackbar, useRoute, useRouter } from "@webiny/app-admin";
+import { useIsMounted, useRoute, useRouter, useSnackbar } from "@webiny/app-admin";
 import { useCms, useQuery } from "~/admin/hooks/index.js";
 import type { ContentEntriesContext } from "~/admin/views/contentEntries/ContentEntriesContext.js";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries.js";
@@ -13,9 +13,9 @@ import { createReadQuery } from "@webiny/app-headless-cms-common";
 import { getFetchPolicy } from "~/utils/getFetchPolicy.js";
 import { useRecords } from "@webiny/app-aco";
 import type * as Cms from "~/admin/contexts/Cms/index.js";
+import type { OperationError } from "~/admin/contexts/Cms/index.js";
 import { useMockRecords } from "./useMockRecords.js";
 import { ROOT_FOLDER } from "~/admin/constants.js";
-import type { OperationError } from "~/admin/contexts/Cms/index.js";
 import { Routes } from "~/routes.js";
 
 interface UpdateListCacheOptions {
@@ -28,6 +28,7 @@ export type GetEntryParams = Omit<Cms.GetEntryParams, "model">;
 export type CreateEntryParams = Omit<Cms.CreateEntryParams, "model"> & UpdateListCacheOptions;
 export type CreateEntryRevisionFromParams = Omit<Cms.CreateEntryRevisionFromParams, "model">;
 export type UpdateEntryRevisionParams = Omit<Cms.UpdateEntryRevisionParams, "model">;
+export type UpdateRevisionDescriptionParams = Omit<Cms.UpdateRevisionDescriptionParams, "model">;
 export type PublishEntryRevisionParams = Omit<Cms.PublishEntryRevisionParams, "model">;
 export type UnpublishEntryRevisionParams = Omit<Cms.UnpublishEntryRevisionParams, "model">;
 export type DeleteEntryParams = Omit<Cms.DeleteEntryParams, "model">;
@@ -49,6 +50,9 @@ export interface ContentEntryCrud {
     updateEntryRevision: (
         params: UpdateEntryRevisionParams
     ) => Promise<Cms.UpdateEntryRevisionResponse>;
+    updateRevisionDescription: (
+        params: UpdateRevisionDescriptionParams
+    ) => Promise<Cms.UpdateRevisionDescriptionResponse>;
     publishEntryRevision: (
         params: PublishEntryRevisionParams
     ) => Promise<Cms.PublishEntryRevisionResponse>;
@@ -211,6 +215,7 @@ export const ContentEntryProvider = ({
 
     useEffect(() => {
         if (!entryId) {
+            setRevisions([]);
             return;
         }
 
@@ -278,6 +283,19 @@ export const ContentEntryProvider = ({
         return response;
     };
 
+    const updateRevisionDescription: ContentEntryCrud["updateRevisionDescription"] =
+        async params => {
+            setLoading(true);
+            const response = await cms.updateRevisionDescription({ model, ...params });
+            setLoading(false);
+            if (response.entry) {
+                setEntry(response.entry);
+                updateRecordInCache(response.entry);
+                updateRevisionInRevisionsCache(response.entry);
+            }
+            return response;
+        };
+
     const deleteEntry: ContentEntryCrud["deleteEntry"] = async params => {
         const response = await cms.deleteEntry({ model, ...params });
         removeRecordFromCache(params.id);
@@ -305,7 +323,10 @@ export const ContentEntryProvider = ({
     };
 
     const publishEntryRevision: ContentEntryCrud["publishEntryRevision"] = async params => {
-        const response = await cms.publishEntryRevision({ model, ...params });
+        const response = await cms.publishEntryRevision({
+            model,
+            id: params.id
+        });
         if (response.entry) {
             setEntry(response.entry);
             updateRecordInCache(response.entry);
@@ -358,7 +379,8 @@ export const ContentEntryProvider = ({
         setActiveTab,
         showEmptyView: !newEntry && !loading && !revisionId,
         unpublishEntryRevision,
-        updateEntryRevision
+        updateEntryRevision,
+        updateRevisionDescription
     };
 
     return <ContentEntryContext.Provider value={value}>{children}</ContentEntryContext.Provider>;

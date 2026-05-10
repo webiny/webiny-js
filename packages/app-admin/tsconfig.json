@@ -13,7 +13,6 @@
     { "path": "../react-composition" },
     { "path": "../react-properties" },
     { "path": "../sdk" },
-    { "path": "../ui" },
     { "path": "../utils" },
     { "path": "../validation" },
     { "path": "../wcp" }
@@ -49,8 +48,6 @@
       "@webiny/react-properties": ["../react-properties/src"],
       "@webiny/sdk/*": ["../sdk/src/*"],
       "@webiny/sdk": ["../sdk/src"],
-      "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
