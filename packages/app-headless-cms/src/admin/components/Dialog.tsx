@@ -1,18 +1,7 @@
 import styled from "@emotion/styled";
-import { Dialog as BaseDialog } from "@webiny/ui/Dialog/index.js";
-export * from "@webiny/ui/Dialog/index.js";
+import { Dialog as AdminUiDialog, type DialogProps } from "@webiny/admin-ui";
 
-export const Dialog = styled(BaseDialog)`
-    .mdc-dialog__surface {
-        width: 600px;
-        min-width: 600px;
-        overflow: initial;
-    }
+export type { DialogProps };
+export type DialogOnClose = DialogProps["onClose"];
 
-    .mdc-dialog__content {
-        overflow: auto;
-        .mdc-deprecated-list:first-of-type {
-            padding: 0;
-        }
-    }
-`;
+export const Dialog = styled(AdminUiDialog)``;

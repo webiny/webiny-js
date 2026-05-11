@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { useBind } from "@webiny/form";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/index.js";
-import { CircularProgress } from "@webiny/ui/Progress/index.js";
+import { OverlayLoader } from "@webiny/admin-ui";
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
 
 type GetEntry = ReturnType<typeof useContentEntry>["getEntry"];
@@ -27,7 +27,7 @@ const EntryMessage = ({ id, getEntry }: { id: string; getEntry: GetEntry }) => {
     }, []);
 
     if (!entryBind.value) {
-        return <CircularProgress label={"Checking entry..."} />;
+        return <OverlayLoader text={"Checking entry..."} />;
     }
 
     return (

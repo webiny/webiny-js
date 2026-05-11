@@ -1,6 +1,5 @@
 import React from "react";
-import { Cell } from "@webiny/ui/Grid/index.js";
-import { Input } from "@webiny/ui/Input/index.js";
+import { Grid, Input } from "@webiny/admin-ui";
 import { validation } from "@webiny/validation";
 import type { CmsModelFieldValidatorPlugin } from "~/types.js";
 import { Bind } from "@webiny/form";
@@ -15,7 +14,7 @@ const plugin: CmsModelFieldValidatorPlugin = {
         defaultMessage: "Value is too great.",
         renderSettings() {
             return (
-                <Cell span={12}>
+                <Grid.Column span={12}>
                     <Bind
                         name={"settings.value"}
                         validators={validation.create("required,numeric")}
@@ -26,7 +25,7 @@ const plugin: CmsModelFieldValidatorPlugin = {
                             description={"This is the greatest value that will be allowed"}
                         />
                     </Bind>
-                </Cell>
+                </Grid.Column>
             );
         },
         validate: async (value, { validator }) => {
