@@ -37,6 +37,7 @@ import { TrashPageFeature } from "~/features/pages/TrashPage/feature.js";
 import { RestorePageFeature } from "~/features/pages/RestorePage/feature.js";
 import { GetDeletedPageByIdFeature } from "~/features/pages/GetDeletedPageById/feature.js";
 import { GetPageLanguagePathsFeature } from "~/features/pages/GetPageLanguagePaths/feature.js";
+import { UpdatePageRevisionDescriptionFeature } from "./features/pages/UpdatePageRevisionDescription/feature.js";
 // import { TenantModelExtensionFeature } from "~/features/tenantManager/feature.js";
 
 const createContext = () => {
@@ -88,6 +89,7 @@ const createContext = () => {
             TrashPageFeature.register(container);
             RestorePageFeature.register(container);
             UpdatePageFeature.register(container);
+            UpdatePageRevisionDescriptionFeature.register(container);
             PublishPageFeature.register(container);
             UnpublishPageFeature.register(container);
             DuplicatePageFeature.register(container);

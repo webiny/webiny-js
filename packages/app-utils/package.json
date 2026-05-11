@@ -16,7 +16,7 @@
   "dependencies": {
     "@webiny/feature": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "mobx": "^6.15.2"
+    "mobx": "^6.15.3"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
