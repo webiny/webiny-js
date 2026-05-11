@@ -5,7 +5,7 @@ import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as ArrowUpIcon } from "@webiny/icons/expand_less.svg";
 import { ReactComponent as ArrowDownIcon } from "@webiny/icons/expand_more.svg";
-import { AccordionItem } from "@webiny/ui/Accordion/index.js";
+import { Accordion } from "@webiny/admin-ui";
 import { useConfirmationDialog } from "@webiny/app-admin";
 import {
     pullValueAtIndex,
@@ -98,27 +98,27 @@ export const DynamicZoneTemplate = ({
     const icon = normalizeIcon(template.icon);
 
     return (
-        <AccordionItem
+        <Accordion.Item
             title={template.name}
             description={template.description}
             icon={icon ? <FontAwesomeIcon icon={icon} /> : undefined}
             open={open}
             actions={
-                <AccordionItem.Actions>
-                    <AccordionItem.Action
+                <>
+                    <Accordion.Item.Action
                         icon={<ArrowUpIcon />}
                         onClick={moveTemplateUp}
                         disabled={isFirst}
                     />
-                    <AccordionItem.Action
+                    <Accordion.Item.Action
                         icon={<ArrowDownIcon />}
                         onClick={moveTemplateDown}
                         disabled={isLast}
                     />
-                    <AccordionItem.Divider />
-                    <AccordionItem.Action icon={<EditIcon />} onClick={editTemplate} />
-                    <AccordionItem.Action icon={<DeleteIcon />} onClick={deleteTemplate} />
-                </AccordionItem.Actions>
+                    <Accordion.Item.Action.Separator />
+                    <Accordion.Item.Action icon={<EditIcon />} onClick={editTemplate} />
+                    <Accordion.Item.Action icon={<DeleteIcon />} onClick={deleteTemplate} />
+                </>
             }
         >
             {templateToEdit ? (
@@ -135,6 +135,6 @@ export const DynamicZoneTemplate = ({
                 layout={template.layout}
                 onChange={updateFieldsAndLayout}
             />
-        </AccordionItem>
+        </Accordion.Item>
     );
 };

@@ -6,7 +6,7 @@ import type { FolderDto, ListMeta } from "@webiny/app-aco";
 import { createSort, useAcoList, useNavigateFolder } from "@webiny/app-aco";
 import { useContentEntries } from "./useContentEntries.js";
 import type { CmsContentEntry, TableItem } from "~/types.js";
-import type { OnSortingChange, Sorting } from "@webiny/ui/DataTable/index.js";
+import type { OnDataTableSortingChange, DataTableSorting } from "@webiny/admin-ui";
 import { ROOT_FOLDER } from "~/admin/constants.js";
 import { Routes } from "~/routes.js";
 
@@ -36,11 +36,11 @@ export interface ContentEntriesListProviderContext {
     selected: CmsContentEntry[];
     setSearch: (value: string) => void;
     setSelected: (data: CmsContentEntry[]) => void;
-    setSorting: OnSortingChange;
+    setSorting: OnDataTableSortingChange;
     showFilters: () => void;
     showingFilters: boolean;
     showingSelectAll: boolean;
-    sorting: Sorting;
+    sorting: DataTableSorting;
     setFilters: (data: Record<string, any>) => void;
     selectAll: () => void;
     unselectAll: () => void;
@@ -91,7 +91,7 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         refresh
     } = useAcoList<CmsContentEntry>();
 
-    const [sorting, setSorting] = useState<Sorting>([]);
+    const [sorting, setSorting] = useState<DataTableSorting>([]);
     const [search, setSearch] = useState<string>("");
 
     const searchQuery = route.params.search ?? "";

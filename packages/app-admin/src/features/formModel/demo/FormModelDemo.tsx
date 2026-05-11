@@ -37,7 +37,7 @@ export const FormModelDemo = observer(() => {
                     </p>
                 </div>
 
-                <FormView form={form} />
+                <FormView name="Demo" form={form} />
 
                 <div className={"flex flex-wrap gap-sm"}>
                     <Button
@@ -106,7 +106,7 @@ const FieldRenderersSection = observer(() => {
                 </p>
             </div>
 
-            <FormView form={form} />
+            <FormView name="Demo" form={form} />
 
             {formErrors.length > 0 && (
                 <div className={"flex flex-col gap-xs"}>
@@ -179,7 +179,7 @@ const Phase8c1Section = observer(() => {
                 </p>
             </div>
 
-            <FormView form={form} />
+            <FormView name="Demo" form={form} />
 
             <div className={"flex flex-wrap gap-sm"}>
                 <Button
@@ -228,7 +228,7 @@ const Phase11Section = observer(() => {
                 </p>
             </div>
 
-            <FormView form={form} />
+            <FormView name="Demo" form={form} />
 
             {formErrors.length > 0 && (
                 <div className={"flex flex-col gap-xs"}>

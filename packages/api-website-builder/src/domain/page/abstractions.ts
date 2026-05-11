@@ -36,7 +36,7 @@ export interface WbPage extends CmsEntryWbPage {
     system?: ICmsEntrySystem;
     deleted: boolean;
     live: ICmsEntryLive | null;
-    revisionDescription: string | undefined;
+    revisionDescription: string;
 }
 
 export interface WbPageRevision {
@@ -49,7 +49,7 @@ export interface WbPageRevision {
     savedOn: string;
     createdOn: string;
     createdBy: WbIdentity;
-    revisionDescription: string | undefined;
+    revisionDescription: string;
 }
 
 /**

@@ -4,17 +4,23 @@ import { FileManager } from "~/base/ui/FileManager.js";
 import { FilePicker, type FileItemDto } from "@webiny/admin-ui";
 import type { FileManagerFileItem } from "~/base/ui/FileManager.js";
 import type { FileValue } from "~/features/formModel/abstractions.js";
+import type { FileFieldSettings } from "~/features/formModel/fieldTypes/FileFieldType.js";
 
 declare module "../../../features/formModel/abstractions.js" {
     interface IFieldRendererRegistry {
-        filePicker: { fieldType: "file"; settings: undefined };
+        filePicker: { fieldType: "file"; settings: FileFieldSettings };
     }
 }
 
-export const FilePickerRenderer = createFieldRenderer(({ field }) => {
+export const FilePickerRenderer = createFieldRenderer<"filePicker">(({ field }) => {
+    const settings = field.rendererSettings as FileFieldSettings | undefined;
+
     return (
         <FileManager
-            images={true}
+            images={settings?.images}
+            accept={settings?.accept}
+            own={settings?.own}
+            scope={settings?.scope}
             render={({ showFileManager }) => (
                 <FilePicker
                     label={field.label}

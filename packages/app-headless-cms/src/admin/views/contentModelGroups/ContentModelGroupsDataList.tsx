@@ -4,19 +4,7 @@ import orderBy from "lodash/orderBy.js";
 import dotProp from "dot-prop-immutable";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
-import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
-import {
-    DataList,
-    DataListModalOverlay,
-    DataListModalOverlayAction,
-    List,
-    ListActions,
-    ListItem,
-    ListItemMeta,
-    ListItemText,
-    ListItemTextPrimary,
-    ListItemTextSecondary
-} from "@webiny/ui/List/index.js";
+import { DataList, DataListModal, List, DeleteIcon } from "@webiny/admin-ui";
 import { useSnackbar, useRouter, useConfirmationDialog, SearchUI } from "@webiny/app-admin";
 import { Button, Select, Tooltip } from "@webiny/admin-ui";
 import { useApolloClient, useQuery } from "../../hooks/index.js";
@@ -144,7 +132,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
 
     const contentModelGroupsDataListModalOverlay = useMemo(
         () => (
-            <DataListModalOverlay>
+            <DataListModal.Content>
                 <Select
                     value={sort}
                     onChange={setSort}
@@ -155,7 +143,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                         value: sorter.sorters
                     }))}
                 />
-            </DataListModalOverlay>
+            </DataListModal.Content>
         ),
         [sort]
     );
@@ -194,61 +182,54 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                 />
             }
             modalOverlay={contentModelGroupsDataListModalOverlay}
-            modalOverlayAction={
-                <DataListModalOverlayAction data-testid={"default-data-list.filter"} />
-            }
+            modalOverlayAction={<DataListModal.Trigger data-testid={"default-data-list.filter"} />}
             refresh={onRefreshClick}
         >
             {({ data }: { data: CmsGroupWithModels[] }) => (
                 <List data-testid="default-data-list">
                     {data.map(item => (
-                        <ListItem key={item.id} selected={item.id === groupId}>
-                            <ListItemText
-                                onClick={() => {
-                                    goToRoute(Routes.ContentModelGroups.List, { id: item.id });
-                                }}
-                            >
-                                <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
-                                <ListItemTextSecondary>
-                                    {item.contentModels.length
-                                        ? t`{contentModels|count:1:content model:default:content models}`(
-                                              {
-                                                  contentModels: item.contentModels.length
-                                              }
-                                          )
-                                        : t`No content models`}
-                                </ListItemTextSecondary>
-                            </ListItemText>
-                            {canDelete(item, "cms.contentModelGroup") && (
-                                <ListItemMeta>
-                                    <ListActions>
-                                        {item.plugin ? (
-                                            <Tooltip
-                                                content={
-                                                    "Content model group is registered via a plugin."
-                                                }
-                                                side={"bottom"}
-                                                trigger={
-                                                    <DeleteIcon
-                                                        disabled
-                                                        data-testid={
-                                                            "cms.contentModelGroup.list-item.delete"
-                                                        }
-                                                    />
-                                                }
-                                            />
-                                        ) : (
-                                            <DeleteIcon
-                                                onClick={() => deleteItem(item)}
-                                                data-testid={
-                                                    "cms.contentModelGroup.list-item.delete"
-                                                }
-                                            />
-                                        )}
-                                    </ListActions>
-                                </ListItemMeta>
-                            )}
-                        </ListItem>
+                        <List.Item
+                            key={item.id}
+                            selected={item.id === groupId}
+                            title={item.name}
+                            description={
+                                item.contentModels.length
+                                    ? t`{contentModels|count:1:content model:default:content models}`(
+                                          {
+                                              contentModels: item.contentModels.length
+                                          }
+                                      )
+                                    : t`No content models`
+                            }
+                            onClick={() => {
+                                goToRoute(Routes.ContentModelGroups.List, { id: item.id });
+                            }}
+                            actions={
+                                canDelete(item, "cms.contentModelGroup") ? (
+                                    item.plugin ? (
+                                        <Tooltip
+                                            content={
+                                                "Content model group is registered via a plugin."
+                                            }
+                                            side={"bottom"}
+                                            trigger={
+                                                <DeleteIcon
+                                                    disabled
+                                                    data-testid={
+                                                        "cms.contentModelGroup.list-item.delete"
+                                                    }
+                                                />
+                                            }
+                                        />
+                                    ) : (
+                                        <DeleteIcon
+                                            onClick={() => deleteItem(item)}
+                                            data-testid={"cms.contentModelGroup.list-item.delete"}
+                                        />
+                                    )
+                                ) : undefined
+                            }
+                        />
                     ))}
                 </List>
             )}

@@ -5,7 +5,7 @@ import { validation } from "@webiny/validation";
 import type { CmsDynamicZoneTemplate } from "~/types.js";
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
 import { IconPicker } from "~/admin/components/IconPicker.js";
-import { Tags } from "@webiny/ui/Tags/index.js";
+import { Tags } from "@webiny/admin-ui";
 import { Alert, Dialog, Grid, Input, Textarea } from "@webiny/admin-ui";
 
 const typeNameValidator = (value: string) => {

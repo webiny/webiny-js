@@ -2,7 +2,7 @@
  * TODO remove regular model delete at some point.
  */
 import React, { useCallback, useMemo, useState } from "react";
-import { TimeAgo } from "@webiny/ui/TimeAgo/index.js";
+import { TimeAgo } from "@webiny/admin-ui";
 import { SearchUI, useRouter } from "@webiny/app-admin";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import {
@@ -16,7 +16,7 @@ import { ReactComponent as MoreVertIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete.svg";
 import { ReactComponent as CloneIcon } from "@webiny/icons/flip_to_front.svg";
 import { useModels } from "../../hooks/index.js";
-import * as UIL from "@webiny/ui/List/index.js";
+import { DataList, DataListModal, List } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { deserializeSorters } from "../utils.js";
 import orderBy from "lodash/orderBy.js";
@@ -74,16 +74,14 @@ const DisplayIcon = ({ model }: IconProps) => {
         return null;
     }
     return (
-        <UIL.ListItemGraphic>
-            <div className={"text-neutral-muted"}>
-                <Icon
-                    size={"lg"}
-                    color={"inherit"}
-                    label={"Content model icon"}
-                    icon={<FontAwesomeIcon icon={normalizeIcon(model.icon) as IconProp} />}
-                />
-            </div>
-        </UIL.ListItemGraphic>
+        <div className={"text-neutral-muted"}>
+            <Icon
+                size={"lg"}
+                color={"inherit"}
+                label={"Content model icon"}
+                icon={<FontAwesomeIcon icon={normalizeIcon(model.icon) as IconProp} />}
+            />
+        </div>
     );
 };
 
@@ -144,7 +142,7 @@ const ContentModelsDataList = ({
 
     const contentModelsDataListModalOverlay = useMemo(
         () => (
-            <UIL.DataListModalOverlay>
+            <DataListModal.Content>
                 <Select
                     value={sort}
                     onChange={setSort}
@@ -154,7 +152,7 @@ const ContentModelsDataList = ({
                         value: sorter.sorters
                     }))}
                 />
-            </UIL.DataListModalOverlay>
+            </DataListModal.Content>
         ),
         [sort]
     );
@@ -170,7 +168,7 @@ const ContentModelsDataList = ({
 
     return (
         <>
-            <UIL.DataList
+            <DataList
                 loading={loading}
                 data={contentModels}
                 title={t`Content Models`}
@@ -219,13 +217,13 @@ const ContentModelsDataList = ({
                 }
                 modalOverlay={contentModelsDataListModalOverlay}
                 modalOverlayAction={
-                    <UIL.DataListModalOverlayAction data-testid={"default-data-list.filter"} />
+                    <DataListModal.Trigger data-testid={"default-data-list.filter"} />
                 }
                 refresh={onRefreshClick}
             >
                 {({ data = [] }: { data: CmsModel[] }) => {
                     return (
-                        <UIL.List data-testid="default-data-list">
+                        <List data-testid="default-data-list">
                             {data.map(contentModel => {
                                 const disableViewContent = contentModel.fields.length === 0;
                                 const getMessage = () => {
@@ -244,27 +242,20 @@ const ContentModelsDataList = ({
                                 const canEditModel = canEdit(contentModel, "cms.contentModel");
 
                                 return (
-                                    <UIL.ListItem
+                                    <List.Item
                                         key={contentModel.modelId}
                                         className={"group/item"}
-                                    >
-                                        <UIL.ListItemText>
-                                            <DisplayIcon model={contentModel} />
-                                            <UIL.ListItemTextPrimary>
-                                                {contentModel.name}
-                                            </UIL.ListItemTextPrimary>
-                                            <UIL.ListItemTextSecondary>
-                                                {t`Last modified: {time}.`({
-                                                    time: contentModel.savedOn ? (
-                                                        <TimeAgo datetime={contentModel.savedOn} />
-                                                    ) : (
-                                                        "N/A"
-                                                    )
-                                                })}
-                                            </UIL.ListItemTextSecondary>
-                                        </UIL.ListItemText>
-                                        <UIL.ListItemMeta>
-                                            <UIL.ListActions>
+                                        icon={<DisplayIcon model={contentModel} />}
+                                        title={contentModel.name}
+                                        description={t`Last modified: {time}.`({
+                                            time: contentModel.savedOn ? (
+                                                <TimeAgo datetime={contentModel.savedOn} />
+                                            ) : (
+                                                "N/A"
+                                            )
+                                        })}
+                                        actions={
+                                            <>
                                                 <ModelIsBeingDeleted model={contentModel}>
                                                     <span
                                                         className={
@@ -393,15 +384,15 @@ const ContentModelsDataList = ({
                                                         )}
                                                     </DropdownMenu>
                                                 </ModelIsBeingDeleted>
-                                            </UIL.ListActions>
-                                        </UIL.ListItemMeta>
-                                    </UIL.ListItem>
+                                            </>
+                                        }
+                                    />
                                 );
                             })}
-                        </UIL.List>
+                        </List>
                     );
                 }}
-            </UIL.DataList>
+            </DataList>
             {modelToBeDeleted ? (
                 <FullyDeleteModelDialog
                     model={modelToBeDeleted}
