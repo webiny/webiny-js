@@ -49,6 +49,9 @@ export class JsonpackCompression extends CompressionPlugin {
             return await decompress(data.value);
         } catch (ex) {
             console.log(`Could not decompress given data.`, ex.message);
+            console.log({
+                data
+            });
             return null;
         }
     }
