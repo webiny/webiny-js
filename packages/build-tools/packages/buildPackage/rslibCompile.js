@@ -50,7 +50,9 @@ export const rslibCompile = async ({ cwd }) => {
                 // mixedImport emits each SVG as a static asset for the default URL
                 // export. Without a hash, two files named the same (e.g. fullscreen.svg
                 // in different dirs) collide at static/svg/fullscreen.svg.
-                filename: { svg: "[name].[contenthash:8][ext]" }
+                // loader-utils [ext] has no leading dot, so "[name].[hash][ext]" produces
+                // "foo.hashsvg". Use an explicit ".svg" suffix instead.
+                filename: { svg: "[name].[contenthash:8].svg" }
             },
             plugins: [pluginSvgr({ mixedImport: true, svgrOptions: { exportType: "named" } })]
         }
