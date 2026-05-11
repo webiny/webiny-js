@@ -58,6 +58,11 @@ export {
     EntryBeforeUpdateEventHandler,
     EntryAfterUpdateEventHandler
 } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/events.js";
+export { UpdateRevisionDescriptionUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateRevisionDescription/abstractions.js";
+export {
+    EntryBeforeUpdateRevisionDescriptionEventHandler,
+    EntryAfterUpdateRevisionDescriptionEventHandler
+} from "@webiny/api-headless-cms/features/contentEntry/UpdateRevisionDescription/events.js";
 export { UpdateSingletonEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateSingletonEntry/abstractions.js";
 export { GetEntriesByIdsUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntriesByIds/abstractions.js";
 export { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry/abstractions.js";

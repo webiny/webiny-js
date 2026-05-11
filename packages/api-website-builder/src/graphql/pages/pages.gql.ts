@@ -10,7 +10,7 @@ import { resolve } from "~/utils/resolve.js";
 import { WEBSITE_BUILDER_INTEGRATIONS, WEBSITE_BUILDER_SETTINGS } from "~/constants.js";
 import { pagesTypeDefs } from "~/graphql/pages/pages.typeDefs.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import { PageModel } from "~/domain/page/abstractions.js";
+import { PageModel, type WbPageRevision } from "~/domain/page/abstractions.js";
 import { GetPageByIdUseCase } from "~/features/pages/GetPageById/index.js";
 import { GetPageByPathUseCase } from "~/features/pages/GetPageByPath/index.js";
 import { GetPageRevisionsUseCase } from "~/features/pages/GetPageRevisions/index.js";
@@ -29,6 +29,7 @@ import { ListDeletedPagesUseCase } from "~/features/pages/ListDeletedPages/index
 import { TrashPageUseCase } from "~/features/pages/TrashPage/index.js";
 import { RestorePageUseCase } from "~/features/pages/RestorePage/index.js";
 import { GetPageLanguagePathsUseCase } from "~/features/pages/GetPageLanguagePaths/index.js";
+import { UpdatePageRevisionDescriptionUseCase } from "~/features/pages/UpdatePageRevisionDescription/index.js";
 
 export const createPagesSchema = () => {
     const pageGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
@@ -86,7 +87,7 @@ export const createPagesSchema = () => {
                         }
 
                         const revisions = result.value;
-                        return revisions.map(page => {
+                        return revisions.map<WbPageRevision>(page => {
                             return {
                                 id: page.id,
                                 entryId: page.entryId,
@@ -94,7 +95,10 @@ export const createPagesSchema = () => {
                                 title: page.properties.title,
                                 status: page.status,
                                 locked: page.locked,
-                                savedOn: page.savedOn
+                                savedOn: page.savedOn,
+                                createdOn: page.createdOn,
+                                createdBy: page.createdBy,
+                                revisionDescription: page.revisionDescription
                             };
                         });
                     });
@@ -183,6 +187,24 @@ export const createPagesSchema = () => {
                         ensureAuthentication(context);
                         const updatePage = context.container.resolve(UpdatePageUseCase);
                         const result = await updatePage.execute(id, data);
+
+                        if (result.isFail()) {
+                            throw new Error(result.error.message);
+                        }
+
+                        return result.value;
+                    });
+                },
+                updatePageRevisionDescription: async (_, { id, revisionDescription }, context) => {
+                    return resolve(async () => {
+                        ensureAuthentication(context);
+                        const updatePageRevisionDescription = context.container.resolve(
+                            UpdatePageRevisionDescriptionUseCase
+                        );
+                        const result = await updatePageRevisionDescription.execute(
+                            id,
+                            revisionDescription
+                        );
 
                         if (result.isFail()) {
                             throw new Error(result.error.message);

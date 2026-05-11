@@ -20,7 +20,7 @@ declare module "react" {
 }
 
 export const ContentEntry = makeDecoratable("ContentEntry", () => {
-    const { loading, entry, activeTab, setActiveTab } = useContentEntry();
+    const { loading, entry, activeTab, setActiveTab, revisions } = useContentEntry();
     const [invalidFields, setInvalidFields] = useState<FormValidation | undefined>(undefined);
     const { persistEntry } = usePersistEntry({ addItemToListCache: true });
 
@@ -63,7 +63,7 @@ export const ContentEntry = makeDecoratable("ContentEntry", () => {
                         trigger={"Revisions"}
                         disabled={loading}
                         data-testid={"cms.content-form.tabs.revisions"}
-                        content={<RevisionsList />}
+                        content={<RevisionsList revisions={revisions} loading={loading} />}
                     />
                 ]}
             />
