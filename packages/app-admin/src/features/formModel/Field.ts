@@ -13,6 +13,7 @@ import type {
     AfterSetValueCallback,
     OnBlurCallback,
     RequiredWhenCallback,
+    HiddenWhenCallback,
     ComputedFieldCallback
 } from "./abstractions.js";
 
@@ -29,6 +30,7 @@ export class Field implements IField {
     private _afterSetValueCallbacks: AfterSetValueCallback[] = [];
     private _onBlurCallbacks: OnBlurCallback[] = [];
     private _requiredWhenCallbacks: RequiredWhenCallback[] = [];
+    private _hiddenWhenCallbacks: HiddenWhenCallback[] = [];
     private _computed: ComputedFieldCallback | null = null;
     private _computedUntilDirty: ComputedFieldCallback | null = null;
     /** Set once a computedUntilDirty field receives its first user edit. */
@@ -69,6 +71,9 @@ export class Field implements IField {
         }
         if (config.requiredWhenCallbacks) {
             this._requiredWhenCallbacks = [...config.requiredWhenCallbacks];
+        }
+        if (config.hiddenWhenCallbacks) {
+            this._hiddenWhenCallbacks = [...config.hiddenWhenCallbacks];
         }
         if (config.computed) {
             this._computed = config.computed;
@@ -165,6 +170,13 @@ export class Field implements IField {
     get visible(): boolean {
         if (this._hidden) {
             return false;
+        }
+        if (this._form && this._hiddenWhenCallbacks.length > 0) {
+            for (const cb of this._hiddenWhenCallbacks) {
+                if (cb(this._form)) {
+                    return false;
+                }
+            }
         }
         return this._evaluateRules().visible;
     }
@@ -329,9 +341,7 @@ export class Field implements IField {
             addItem: (value?: unknown) => this._addItem(value),
             removeItem: (index: number) => this._removeItem(index),
             focusRequested: this._focusRequested,
-            clearFocusRequest: () => {
-                this._focusRequested = false;
-            }
+            clearFocusRequest: () => this.clearFocusRequest()
         };
     }
 

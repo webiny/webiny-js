@@ -87,6 +87,11 @@ export class WebsocketsContext implements IWebsocketsContextObject {
             return Result.fail(new WebsocketServiceError(error));
         }
 
+        // Defensively filter connections that were created in the last 3 hours.
+        // This protects from attempting to send messages to stale connections.
+        const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
+        connections = connections.filter(c => c.connectedOn >= threeHoursAgo);
+
         return Result.ok(connections);
     }
 

@@ -1,6 +1,7 @@
 import { mdbid } from "@webiny/utils";
 import type { FileData, PresignedPostPayloadData } from "~/types.js";
 import { FileKey } from "~/utils/FileKey.js";
+import { mimeTypes } from "~/utils/mimeTypes.js";
 import type { FileModifier } from "./FileUploadModifier.js";
 
 export interface FileToSign {
@@ -8,6 +9,20 @@ export interface FileToSign {
     key: string;
     type: string;
     size: number;
+}
+
+const extensionToMime = new Map<string, string>();
+for (const [mime, extensions] of Object.entries(mimeTypes)) {
+    for (const ext of extensions) {
+        if (!extensionToMime.has(ext)) {
+            extensionToMime.set(ext, mime);
+        }
+    }
+}
+
+function resolveTypeFromName(name: string): string {
+    const ext = name.slice(name.lastIndexOf(".") + 1).toLowerCase();
+    return extensionToMime.get(ext) || "application/octet-stream";
 }
 
 /**
@@ -26,7 +41,7 @@ export class FileNormalizer {
         const data = {
             ...payload,
             id: payload.id || mdbid(),
-            type: payload.type || "application/octet-stream"
+            type: payload.type || resolveTypeFromName(payload.name)
         };
 
         const key = new FileKey(data);

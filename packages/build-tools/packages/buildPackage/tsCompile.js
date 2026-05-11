@@ -3,7 +3,7 @@ import ts from "typescript";
 import merge from "lodash/merge.js";
 import { replaceTscAliases } from "./tsAliasReplacer.js";
 
-export const tsCompile = async ({ cwd = "", overrides, debug }) => {
+export const tsCompile = async ({ cwd = "", overrides, debug, checkOnly = false }) => {
     // Normalize path separators to forward slashes for consistent behavior on Windows.
     const normalizedCwd = cwd.replace(/\\/g, "/");
 
@@ -29,12 +29,33 @@ export const tsCompile = async ({ cwd = "", overrides, debug }) => {
 
     const filteredFileNames = fileNames.filter(fileName => !fileName.endsWith(".d.ts"));
 
+    if (checkOnly) {
+        options.noEmit = true;
+    }
+
     const program = ts.createProgram({
         projectReferences,
         options,
         rootNames: filteredFileNames,
         configFileParsingDiagnostics: errors
     });
+
+    if (checkOnly) {
+        const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(errors);
+
+        if (allDiagnostics.length) {
+            const formatHost = {
+                getCanonicalFileName: path => path,
+                getCurrentDirectory: () => normalizedCwd,
+                getNewLine: () => ts.sys.newLine
+            };
+            const message = ts.formatDiagnostics(allDiagnostics, formatHost);
+            if (message) {
+                throw { message };
+            }
+        }
+        return;
+    }
 
     const { diagnostics, emitSkipped } = program.emit(
         undefined, // targetSourceFile
