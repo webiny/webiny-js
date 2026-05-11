@@ -5,6 +5,7 @@ import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import { AiPromptContextBuilder } from "~/api/features/AiPromptContext/index.js";
+import { createReadProjectFileTool } from "~/api/features/AiPromptContext/ReadProjectFileTool.js";
 import { WbGeneratePageContentUseCase } from "./abstractions.js";
 import type { WbGeneratePageContentParams } from "./abstractions.js";
 import { buildDomainPrompt } from "./buildPrompt.js";
@@ -50,6 +51,14 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
             writerPersonaId: params.writerPersonaId,
             excludedFileIds: params.excludedFileIds
         });
+
+        if (context.allProjectFiles.length > 0) {
+            const projectFileTool = createReadProjectFileTool(
+                context.allProjectFiles,
+                context.excludedFileIds
+            );
+            Object.assign(sdkTools, projectFileTool);
+        }
 
         const systemText = buildDomainPrompt(params.components, params.tools) + context.toString();
 

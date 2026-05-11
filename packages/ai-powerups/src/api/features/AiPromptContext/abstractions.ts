@@ -32,6 +32,8 @@ export interface AiPromptContext {
     project?: ResolvedProject;
     readerPersona?: ResolvedPersona;
     writerPersona?: ResolvedPersona;
+    allProjectFiles: ProjectFileContent[];
+    excludedFileIds: Set<string>;
     warnings: string[];
     toString(): string;
 }

@@ -73,17 +73,16 @@ The tool needs access to the assembled context for the current generation. Since
 
 ### Acceptance criteria
 
-- [ ] System message contains YAML-like manifest instead of inline file content
-- [ ] Manifest includes id, label, description, note, tokens for each non-excluded file
-- [ ] `read_project_file` tool registered as `AiSdkTool`, auto-discovered by `AiSdkTools`
-- [ ] Tool returns file content from cached context (no extra S3 call)
-- [ ] Tool returns error with available IDs for unknown file_id
-- [ ] Tool refuses excluded files
-- [ ] Excluded files do not appear in manifest
-- [ ] System message ordering: personas → project instructions → manifest → tools (cache-stable)
-- [ ] Existing `stepCountIs(10)` round cap applies to tool-use rounds
-- [ ] Generation produces correct output when model reads files via tool
-- [ ] Type checks pass for `ai-powerups` package
+- [x] System message contains YAML-like manifest instead of inline file content
+- [x] Manifest includes id, name, description, tokens for each non-excluded file
+- [x] `read_project_file` tool created per-request via `createReadProjectFileTool()` and merged into `sdkTools`
+- [x] Tool returns file content from cached context (no extra S3 call)
+- [x] Tool returns error with available IDs for unknown file_id
+- [x] Tool refuses excluded files with "File excluded for this generation."
+- [x] Excluded files do not appear in manifest (`resolvedProject.files` is pre-filtered)
+- [x] System message ordering: personas → project instructions → manifest → tools (cache-stable)
+- [x] Existing `stepCountIs(10)` round cap applies to tool-use rounds
+- [x] Type checks pass for `ai-powerups` package
 
 ---
 

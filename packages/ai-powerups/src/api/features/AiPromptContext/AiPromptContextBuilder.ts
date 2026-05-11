@@ -48,7 +48,7 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
         const settingsResult = await this.getSettings.execute();
         if (settingsResult.isFail()) {
             warnings.push("Failed to load AI PowerUps settings.");
-            return this.buildContext(undefined, undefined, undefined, warnings);
+            return this.buildContext(undefined, undefined, undefined, [], new Set(), warnings);
         }
 
         const settings = settingsResult.value;
@@ -71,21 +71,27 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
             : undefined;
 
         let resolvedProject: ResolvedProject | undefined;
+        let allProjectFiles: ProjectFileContent[] = [];
+        const excludedFileIds = new Set(params.excludedFileIds ?? []);
 
         if (project) {
-            const files = await this.loadProjectFiles(
+            allProjectFiles = await this.getOrAssembleFiles(
                 project.id,
                 project.version ?? 0,
                 project.files ?? [],
-                params.excludedFileIds,
                 warnings
             );
+
+            const visibleFiles =
+                excludedFileIds.size > 0
+                    ? allProjectFiles.filter(f => !excludedFileIds.has(f.id))
+                    : allProjectFiles;
 
             resolvedProject = {
                 name: project.name,
                 instructions: project.instructions,
-                files,
-                totalTokens: files.reduce((sum, f) => sum + f.tokenCount, 0)
+                files: visibleFiles,
+                totalTokens: visibleFiles.reduce((sum, f) => sum + f.tokenCount, 0)
             };
         }
 
@@ -105,19 +111,30 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
               }
             : undefined;
 
-        return this.buildContext(resolvedProject, resolvedReader, resolvedWriter, warnings);
+        return this.buildContext(
+            resolvedProject,
+            resolvedReader,
+            resolvedWriter,
+            allProjectFiles,
+            excludedFileIds,
+            warnings
+        );
     }
 
     private buildContext(
         project: ResolvedProject | undefined,
         readerPersona: ResolvedPersona | undefined,
         writerPersona: ResolvedPersona | undefined,
+        allProjectFiles: ProjectFileContent[],
+        excludedFileIds: Set<string>,
         warnings: string[]
     ): AiPromptContext {
         return {
             project,
             readerPersona,
             writerPersona,
+            allProjectFiles,
+            excludedFileIds,
             warnings,
             toString() {
                 const sections: string[] = [];
@@ -138,27 +155,6 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
                 return sections.length > 0 ? "\n\n" + sections.join("\n\n") : "";
             }
         };
-    }
-
-    private async loadProjectFiles(
-        projectId: string,
-        version: number,
-        files: Array<{ id: string; name: string; mimeType: string }>,
-        excludedFileIds: string[] | null | undefined,
-        warnings: string[]
-    ): Promise<ProjectFileContent[]> {
-        if (files.length === 0) {
-            return [];
-        }
-
-        const allFiles = await this.getOrAssembleFiles(projectId, version, files, warnings);
-
-        if (excludedFileIds && excludedFileIds.length > 0) {
-            const excluded = new Set(excludedFileIds);
-            return allFiles.filter(f => !excluded.has(f.id));
-        }
-
-        return allFiles;
     }
 
     private async getOrAssembleFiles(
