@@ -36,6 +36,20 @@ export interface WbPage extends CmsEntryWbPage {
     system?: ICmsEntrySystem;
     deleted: boolean;
     live: ICmsEntryLive | null;
+    revisionDescription: string | undefined;
+}
+
+export interface WbPageRevision {
+    id: string;
+    entryId: string;
+    version: number;
+    title: string;
+    status: string;
+    locked: boolean;
+    savedOn: string;
+    createdOn: string;
+    createdBy: WbIdentity;
+    revisionDescription: string | undefined;
 }
 
 /**

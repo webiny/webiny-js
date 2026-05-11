@@ -2,17 +2,22 @@ import React from "react";
 import { List, OverlayLoader } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import RevisionListItem from "./RevisionListItem.js";
-import { useContentEntry } from "~/admin/views/contentEntries/hooks/useContentEntry.js";
+import type { CmsContentEntryRevision } from "@webiny/app-headless-cms-common/types/index.js";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisions");
 
-export const RevisionsList = () => {
-    const { entry, revisions, loading } = useContentEntry();
+interface IRevisionsListProps {
+    revisions: CmsContentEntryRevision[];
+    loading: boolean;
+}
+
+export const RevisionsList = (props: IRevisionsListProps) => {
+    const { revisions, loading } = props;
 
     return (
         <div className={"relative"}>
             {loading && <OverlayLoader />}
-            {entry.id && revisions.length ? (
+            {revisions?.length ? (
                 <List data-testid={"cms.content-form.revisions"}>
                     {revisions.map(revision => (
                         <RevisionListItem revision={revision} key={revision.id} />

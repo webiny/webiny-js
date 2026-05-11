@@ -83,6 +83,13 @@ export {
     EntryAfterUpdateEventHandler
 } from "~/features/contentEntry/UpdateEntry/events.js";
 
+// UpdateEntryRevisionDescription
+export { UpdateRevisionDescriptionUseCase } from "~/features/contentEntry/UpdateRevisionDescription/abstractions.js";
+export {
+    EntryBeforeUpdateRevisionDescriptionEventHandler,
+    EntryAfterUpdateRevisionDescriptionEventHandler
+} from "~/features/contentEntry/UpdateRevisionDescription/events.js";
+
 // UpdateSingletonEntry
 export { UpdateSingletonEntryUseCase } from "~/features/contentEntry/UpdateSingletonEntry/abstractions.js";
 

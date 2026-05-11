@@ -37,7 +37,8 @@ describe("UpdatePage", () => {
                 },
                 bindings: {
                     data: "any-data"
-                }
+                },
+                revisionDescription: undefined
             })
         ]);
         detailsCache.addItems([
@@ -59,7 +60,8 @@ describe("UpdatePage", () => {
                 },
                 bindings: {
                     data: "any-data"
-                }
+                },
+                revisionDescription: undefined
             })
         ]);
     });

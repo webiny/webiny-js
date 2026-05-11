@@ -348,4 +348,43 @@ describe("Pages CRUD", () => {
             integrationData
         );
     });
+
+    it("should update page revision description", async () => {
+        const [createResponse] = await handler.wb.createPage({
+            data: pageMocks.pageA
+        });
+        const page = createResponse.data.websiteBuilder.createPage.data;
+
+        const revisionDescription = "Updated revision description";
+
+        const [updateResponse] = await handler.wb.updatePageRevisionDescription({
+            id: page.id,
+            revisionDescription
+        });
+
+        expect(updateResponse.data.websiteBuilder.updatePageRevisionDescription.error).toBeNull();
+        expect(updateResponse.data.websiteBuilder.updatePageRevisionDescription.data).toMatchObject(
+            {
+                id: page.id,
+                revisionDescription
+            }
+        );
+
+        const [updatedPageResponse] = await handler.wb.getPageById({ id: page.id });
+        expect(updatedPageResponse.data.websiteBuilder.getPageById.error).toBeNull();
+        expect(updatedPageResponse.data.websiteBuilder.getPageById.data).toMatchObject({
+            id: page.id,
+            revisionDescription
+        });
+
+        const [revisionsResponse] = await handler.wb.getPageRevisions({ entryId: page.entryId });
+
+        expect(revisionsResponse.data.websiteBuilder.getPageRevisions.error).toBeNull();
+        const revisions = revisionsResponse.data.websiteBuilder.getPageRevisions.data;
+        expect(revisions).toHaveLength(1);
+        expect(revisions[0]).toMatchObject({
+            id: page.id,
+            revisionDescription
+        });
+    });
 });
