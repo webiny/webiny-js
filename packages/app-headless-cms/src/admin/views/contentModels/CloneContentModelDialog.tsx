@@ -1,16 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
-import * as UID from "@webiny/ui/Dialog/index.js";
+
 import { useRouter } from "@webiny/app-admin";
 import { Form } from "@webiny/form";
-import { Input } from "@webiny/ui/Input/index.js";
-import { Select } from "@webiny/ui/Select/index.js";
+import { Input, Button, Textarea, Grid, Select, OverlayLoader } from "@webiny/admin-ui";
+
 import { useToast } from "@webiny/admin-ui";
-import { CircularProgress } from "@webiny/ui/Progress/index.js";
+
 import { validation } from "@webiny/validation";
 import { useApolloClient, useMutation, useQuery } from "../../hooks/index.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { ButtonDefault } from "@webiny/ui/Button/index.js";
-import { Cell, Grid } from "@webiny/ui/Grid/index.js";
+
 import { addModelToGroupCache, addModelToListCache } from "./cache.js";
 import type { CmsModel } from "~/types.js";
 import type {
@@ -42,7 +41,7 @@ const getSelectedGroup = (groups: CmsGroupOption[] | null, model: CmsModel): str
 };
 
 interface CloneContentModelDialogProps {
-    onClose: UID.DialogOnClose;
+    onClose: () => void;
     contentModel: CmsModel;
     closeModal: () => void;
 }
@@ -124,10 +123,13 @@ export const CloneContentModelDialog = ({
     ]);
 
     return (
-        <Dialog open={true} onClose={onClose} data-testid="cms-clone-content-model-modal">
-            {!groups && (
-                <CircularProgress label={"Please wait while we load required information."} />
-            )}
+        <Dialog
+            open={true}
+            onClose={onClose}
+            data-testid="cms-clone-content-model-modal"
+            title={t`Clone Content Model`}
+        >
+            {!groups && <OverlayLoader text={"Please wait while we load required information."} />}
 
             <Form
                 data={{
@@ -149,87 +151,91 @@ export const CloneContentModelDialog = ({
             >
                 {({ Bind, submit }) => (
                     <>
-                        {loading && <CircularProgress />}
-                        <UID.DialogTitle>{t`Clone Content Model`}</UID.DialogTitle>
-                        <UID.DialogContent>
-                            <Grid>
-                                <Cell span={12}>
-                                    <Bind
-                                        name={"name"}
-                                        validators={[
-                                            validation.create("required,maxLength:100"),
-                                            nameValidator
-                                        ]}
-                                    >
-                                        <Input
-                                            label={t`Name`}
-                                            description={t`The name of the content model`}
-                                        />
-                                    </Bind>
-                                </Cell>
-                                <Cell span={12}>
-                                    <Bind
-                                        name={"singularApiName"}
-                                        validators={[
-                                            validation.create("required,maxLength:100"),
-                                            apiNameValidator
-                                        ]}
-                                    >
-                                        <Input
-                                            label={t`Singular API Name`}
-                                            description={t`The API name of the content model. For example: AuthorCategory.`}
-                                            data-testid="cms.newcontentmodeldialog.singularApiName"
-                                        />
-                                    </Bind>
-                                </Cell>
-                                <Cell span={12}>
-                                    <Bind
-                                        name={"pluralApiName"}
-                                        validators={[
-                                            validation.create("required,maxLength:100"),
-                                            apiNameValidator
-                                        ]}
-                                    >
-                                        <Input
-                                            label={t`Plural API Name`}
-                                            description={t`The plural API name of the content model. For example: AuthorCategories.`}
-                                            data-testid="cms.newcontentmodeldialog.pluralApiName"
-                                        />
-                                    </Bind>
-                                </Cell>
-                                <Cell span={12}>
-                                    <Bind name={"group"} validators={validation.create("required")}>
-                                        <Select
-                                            description={t`Choose a content model group`}
-                                            label={t`Content model group`}
-                                            options={groups || []}
-                                        />
-                                    </Bind>
-                                </Cell>
-                                <Cell span={12}>
-                                    <Bind name="icon">
-                                        <IconPicker
-                                            label={t`Icon`}
-                                            description={t`Choose an icon to represent the model.`}
-                                        />
-                                    </Bind>
-                                </Cell>
-                                <Cell span={12}>
-                                    <Bind name="description">
-                                        <Input rows={4} maxLength={200} label={t`Description`} />
-                                    </Bind>
-                                </Cell>
-                            </Grid>
-                        </UID.DialogContent>
-                        <UID.DialogActions>
-                            <ButtonDefault
+                        {loading && <OverlayLoader />}
+                        <Grid>
+                            <Grid.Column span={12}>
+                                <Bind
+                                    name={"name"}
+                                    validators={[
+                                        validation.create("required,maxLength:100"),
+                                        nameValidator
+                                    ]}
+                                >
+                                    <Input
+                                        label={t`Name`}
+                                        description={t`The name of the content model`}
+                                    />
+                                </Bind>
+                            </Grid.Column>
+                            <Grid.Column span={12}>
+                                <Bind
+                                    name={"singularApiName"}
+                                    validators={[
+                                        validation.create("required,maxLength:100"),
+                                        apiNameValidator
+                                    ]}
+                                >
+                                    <Input
+                                        label={t`Singular API Name`}
+                                        description={t`The API name of the content model. For example: AuthorCategory.`}
+                                        data-testid="cms.newcontentmodeldialog.singularApiName"
+                                    />
+                                </Bind>
+                            </Grid.Column>
+                            <Grid.Column span={12}>
+                                <Bind
+                                    name={"pluralApiName"}
+                                    validators={[
+                                        validation.create("required,maxLength:100"),
+                                        apiNameValidator
+                                    ]}
+                                >
+                                    <Input
+                                        label={t`Plural API Name`}
+                                        description={t`The plural API name of the content model. For example: AuthorCategories.`}
+                                        data-testid="cms.newcontentmodeldialog.pluralApiName"
+                                    />
+                                </Bind>
+                            </Grid.Column>
+                            <Grid.Column span={12}>
+                                <Bind name={"group"} validators={validation.create("required")}>
+                                    <Select
+                                        description={t`Choose a content model group`}
+                                        label={t`Content model group`}
+                                        options={groups || []}
+                                    />
+                                </Bind>
+                            </Grid.Column>
+                            <Grid.Column span={12}>
+                                <Bind name="icon">
+                                    <IconPicker
+                                        label={t`Icon`}
+                                        description={t`Choose an icon to represent the model.`}
+                                    />
+                                </Bind>
+                            </Grid.Column>
+                            <Grid.Column span={12}>
+                                <Bind name="description">
+                                    <Textarea maxLength={200} label={t`Description`} />
+                                </Bind>
+                            </Grid.Column>
+                        </Grid>
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                marginTop: "16px"
+                            }}
+                        >
+                            <Button
+                                variant={"secondary"}
                                 onClick={ev => {
                                     submit(ev);
                                 }}
                             >
                                 + {t`Clone`}
-                            </ButtonDefault>
-                        </UID.DialogActions>
+                            </Button>
+                        </div>
                     </>
                 )}
             </Form>

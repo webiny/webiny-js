@@ -19,6 +19,7 @@
     { "path": "../lexical-theme" },
     { "path": "../react-composition" },
     { "path": "../react-properties" },
+    { "path": "../ui" },
     { "path": "../utils" },
     { "path": "../validation" },
     { "path": "../website-builder-sdk" }
@@ -66,6 +67,8 @@
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
       "@webiny/react-properties": ["../react-properties/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],

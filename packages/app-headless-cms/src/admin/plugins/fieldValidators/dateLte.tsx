@@ -1,9 +1,9 @@
 import React from "react";
-import { Cell } from "@webiny/ui/Grid/index.js";
+import { Grid, FormComponentNote } from "@webiny/admin-ui";
 import { validation } from "@webiny/validation";
 import type { CmsModelFieldValidatorPlugin } from "~/types.js";
 import { createInputField } from "./date/createDateInputField.js";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage/index.js";
+
 import { getAvailableValidators } from "./date/availableValidators.js";
 import { useModelField } from "~/admin/hooks/index.js";
 import { Bind } from "@webiny/form";
@@ -13,7 +13,7 @@ function DateLteSettings() {
     const type = field.settings ? field.settings.type : undefined;
     const availableValidators = getAvailableValidators(type).join(",");
     return (
-        <Cell span={12}>
+        <Grid.Column span={12}>
             <Bind name={"settings.type"}>
                 {bind => {
                     if (bind.value !== type) {
@@ -27,14 +27,14 @@ function DateLteSettings() {
                     return (
                         <>
                             {createInputField(field, bind)}
-                            <FormElementMessage>
-                                This is the latest date/time that will be allowed.
-                            </FormElementMessage>
+                            <FormComponentNote
+                                text={"This is the latest date/time that will be allowed."}
+                            />
                         </>
                     );
                 }}
             </Bind>
-        </Cell>
+        </Grid.Column>
     );
 }
 
