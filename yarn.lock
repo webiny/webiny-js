@@ -14303,7 +14303,6 @@ __metadata:
     "@tailwindcss/postcss": "npm:^4.3.0"
     "@types/webpack-env": "npm:^1.18.8"
     chalk: "npm:^5.6.2"
-    chokidar: "npm:^5.0.0"
     css-loader: "npm:^7.1.4"
     fast-glob: "npm:^3.3.3"
     find-up: "npm:^8.0.0"

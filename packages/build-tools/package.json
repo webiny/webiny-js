@@ -29,7 +29,6 @@
     "@tailwindcss/postcss": "^4.3.0",
     "@types/webpack-env": "^1.18.8",
     "chalk": "^5.6.2",
-    "chokidar": "^5.0.0",
     "css-loader": "^7.1.4",
     "fast-glob": "^3.3.3",
     "find-up": "^8.0.0",
