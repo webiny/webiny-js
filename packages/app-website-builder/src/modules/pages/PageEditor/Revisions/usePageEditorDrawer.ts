@@ -5,9 +5,8 @@ export interface PageEditorDrawerContext {
     openRevisionList: (open: boolean) => void;
 }
 
-const { Provider, useHook } = createGenericContext<PageEditorDrawerContext>(
-    "PageEditorDrawerContext"
-);
+const { Provider, useHook } =
+    createGenericContext<PageEditorDrawerContext>("PageEditorDrawerContext");
 
 export const usePageEditorDrawer = useHook;
 export const PageEditorDrawerProvider = Provider;

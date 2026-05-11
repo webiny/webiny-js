@@ -10,7 +10,7 @@ import type { PageRevision } from "~/domain/PageRevision/index.js";
 import type { EditorPage } from "@webiny/website-builder-sdk";
 import { useRouter } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
-import {usePageEditorDrawer} from "~/modules/pages/PageEditor/Revisions/usePageEditorDrawer.js";
+import { usePageEditorDrawer } from "~/modules/pages/PageEditor/Revisions/usePageEditorDrawer.js";
 
 const { Item } = DropdownMenu;
 
@@ -26,8 +26,8 @@ export const RevisionsMenu = () => {
     const { loading, getPageRevisions } = useGetPageRevisions();
     const id = useSelectFromDocument(document => document.id);
     const status = useSelectFromDocument<string, EditorPage>(document => document.status);
-    
-    const {openRevisionList} = usePageEditorDrawer();
+
+    const { openRevisionList } = usePageEditorDrawer();
 
     useEffect(() => {
         const [entryId] = id.split("#");
@@ -48,7 +48,7 @@ export const RevisionsMenu = () => {
         // TODO: make this work without a full app reload
         window.location.pathname = getLink(Routes.Pages.Editor, { id });
     }, []);
-    
+
     const onOpenRevisionList = useCallback(() => {
         openRevisionList(true);
     }, []);
