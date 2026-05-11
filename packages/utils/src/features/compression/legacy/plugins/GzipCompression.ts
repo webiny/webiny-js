@@ -51,16 +51,41 @@ export class GzipCompression extends CompressionPlugin {
         } else if (!data.value) {
             return null;
         }
+        /**
+         * First we need to convert the value to a buffer, if it fails, then we know the data is corrupted and we should return null.
+         */
+        let buf: Buffer;
         try {
-            const buf = await ungzip(convertToBuffer(data.value));
-            const value = buf.toString(FROM_STORAGE_ENCODING);
-            return JSON.parse(value);
+            buf = convertToBuffer(data.value);
+        } catch (ex) {
+            console.log(`Could not convert given data to buffer.`, ex.message);
+            console.log({
+                data
+            });
+            return null;
+        }
+        /**
+         * First let's attempt to ungzip the value, if it fails, then we know the data is corrupted and we should return null.
+         * If it succeeds, then we can attempt to parse the value as JSON, but if that fails, we can just return the string value.
+         */
+        let value: string;
+        try {
+            const decompressed = await ungzip(buf);
+            value = decompressed.toString(FROM_STORAGE_ENCODING);
         } catch (ex) {
             console.log(`Could not decompress given data.`, ex.message);
             console.log({
                 data
             });
             return null;
+        }
+        /**
+         * Legacy systems may have stored regular strings without stringify, so we should attempt to parse the value, but if it fails, just return the string.
+         */
+        try {
+            return JSON.parse(value);
+        } catch {
+            return value;
         }
     }
 }
