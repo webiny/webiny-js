@@ -1,5 +1,5 @@
 import React from "react";
-import { TimeAgo } from "@webiny/ui/TimeAgo/index.js";
+import { TimeAgo } from "@webiny/admin-ui";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 
 export const CellCreated = () => {

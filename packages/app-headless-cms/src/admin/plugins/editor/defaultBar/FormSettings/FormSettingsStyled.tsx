@@ -1,7 +1,7 @@
 import * as React from "react";
 import { css } from "@emotion/css";
 import styled from "@emotion/styled";
-import { Typography } from "@webiny/ui/Typography/index.js";
+import { Heading } from "@webiny/admin-ui";
 
 export const listStyle = css({
     "&.mdc-deprecated-list": {
@@ -28,12 +28,9 @@ export const ListItemTitle = styled("div")({
 });
 
 export const Title = (
-    <Typography
-        style={{ margin: "0 auto", color: "var(--mdc-theme-on-surface)" }}
-        use={"headline6"}
-    >
+    <Heading level={6} style={{ margin: "0 auto", color: "var(--mdc-theme-on-surface)" }}>
         Content model settings
-    </Typography>
+    </Heading>
 );
 
 export const TitleContent = styled("div")({

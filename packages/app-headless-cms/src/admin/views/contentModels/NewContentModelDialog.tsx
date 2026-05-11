@@ -1,8 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { useRouter, useSnackbar } from "@webiny/app-admin";
 import { Form } from "@webiny/form";
-import { Input } from "@webiny/ui/Input/index.js";
-import { Select } from "@webiny/ui/Select/index.js";
+import { Input, Select, Checkbox, Switch, Textarea } from "@webiny/admin-ui";
 import { validation } from "@webiny/validation";
 import { useApolloClient, useMutation, useQuery } from "../../hooks/index.js";
 import { i18n } from "@webiny/app/i18n/index.js";
@@ -19,9 +18,9 @@ import type { CmsModel } from "~/types.js";
 import type { CmsGroupOption } from "./types.js";
 import { createApiNameValidator } from "~/admin/views/contentModels/helpers/apiNameValidator.js";
 import { createNameValidator } from "~/admin/views/contentModels/helpers/nameValidator.js";
-import { Checkbox } from "@webiny/ui/Checkbox/index.js";
+
 import { IconPicker } from "~/admin/components/IconPicker.js";
-import { Switch } from "@webiny/ui/Switch/index.js";
+
 import { Routes } from "~/routes.js";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
@@ -207,11 +206,15 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                 </Grid.Column>
                                 <Grid.Column span={12}>
                                     <Bind name={"singleEntry"} defaultValue={false}>
-                                        <Switch
-                                            description={t`Create a model that can hold only one entry. Cannot be changed later.`}
-                                            label={t`Single entry model`}
-                                            data-testid="cms.newcontentmodeldialog.singleEntry"
-                                        />
+                                        {({ value, onChange }) => (
+                                            <Switch
+                                                checked={Boolean(value)}
+                                                onChange={onChange}
+                                                description={t`Create a model that can hold only one entry. Cannot be changed later.`}
+                                                label={t`Single entry model`}
+                                                data-testid="cms.newcontentmodeldialog.singleEntry"
+                                            />
+                                        )}
                                     </Bind>
                                 </Grid.Column>
                                 <Grid.Column span={12}>
@@ -255,9 +258,8 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                 <Grid.Column span={12}>
                                     <Bind name="description">
                                         {props => (
-                                            <Input
+                                            <Textarea
                                                 {...props}
-                                                rows={4}
                                                 maxLength={200}
                                                 label={t`Description`}
                                                 data-testid="cms.newcontentmodeldialog.description"
@@ -267,11 +269,15 @@ const NewContentModelDialog = ({ open, onClose }: NewContentModelDialogProps) =>
                                 </Grid.Column>
                                 <Grid.Column span={12}>
                                     <Bind name={"defaultFields"} defaultValue={true}>
-                                        <Checkbox
-                                            description={t`Create model with default title (text), description (long text) and image (file) fields`}
-                                            label={t`Create model with default fields`}
-                                            data-testid="cms.newcontentmodeldialog.defaultfields"
-                                        />
+                                        {({ value, onChange }) => (
+                                            <Checkbox
+                                                checked={Boolean(value)}
+                                                onChange={onChange}
+                                                description={t`Create model with default title (text), description (long text) and image (file) fields`}
+                                                label={t`Create model with default fields`}
+                                                data-testid="cms.newcontentmodeldialog.defaultfields"
+                                            />
+                                        )}
                                     </Bind>
                                 </Grid.Column>
                             </Grid>
