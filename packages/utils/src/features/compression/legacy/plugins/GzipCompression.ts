@@ -57,6 +57,9 @@ export class GzipCompression extends CompressionPlugin {
             return JSON.parse(value);
         } catch (ex) {
             console.log(`Could not decompress given data.`, ex.message);
+            console.log({
+                data
+            });
             return null;
         }
     }
