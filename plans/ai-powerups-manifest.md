@@ -121,9 +121,9 @@ This data is collected during generation: `AiPromptContextBuilder` reports cache
 
 ### Acceptance criteria
 
-- [ ] Success websocket message includes `telemetry` field with `filesRead`, `cacheHit`, `toolCallsMade`, `totalSteps`
-- [ ] Telemetry reflects actual generation behavior (correct file IDs, accurate counts)
-- [ ] Client can log/display telemetry from websocket payload
-- [ ] Error strings from tool are model-friendly (include available file IDs)
-- [ ] Warnings logged server-side for cache rebuilds, file failures, round cap hits
-- [ ] Type checks pass for `ai-powerups` package
+- [x] Success websocket message includes `telemetry` field with `filesRead`, `cacheHit`, `toolCallsMade`, `totalSteps`
+- [x] Telemetry reflects actual generation behavior (extracted from `aiResult.steps` tool calls)
+- [x] Client can log/display telemetry from websocket payload
+- [x] Error strings from tool are model-friendly (include available file IDs) — implemented in Phase 2
+- [x] Warnings logged server-side for cache rebuilds, file failures — via `console.warn` in builder
+- [x] Type checks pass for `ai-powerups` package

@@ -48,7 +48,15 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
         const settingsResult = await this.getSettings.execute();
         if (settingsResult.isFail()) {
             warnings.push("Failed to load AI PowerUps settings.");
-            return this.buildContext(undefined, undefined, undefined, [], new Set(), warnings);
+            return this.buildContext(
+                undefined,
+                undefined,
+                undefined,
+                [],
+                new Set(),
+                false,
+                warnings
+            );
         }
 
         const settings = settingsResult.value;
@@ -72,15 +80,18 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
 
         let resolvedProject: ResolvedProject | undefined;
         let allProjectFiles: ProjectFileContent[] = [];
+        let cacheHit = false;
         const excludedFileIds = new Set(params.excludedFileIds ?? []);
 
         if (project) {
-            allProjectFiles = await this.getOrAssembleFiles(
+            const assembled = await this.getOrAssembleFiles(
                 project.id,
                 project.version ?? 0,
                 project.files ?? [],
                 warnings
             );
+            allProjectFiles = assembled.files;
+            cacheHit = assembled.cacheHit;
 
             const visibleFiles =
                 excludedFileIds.size > 0
@@ -117,6 +128,7 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
             resolvedWriter,
             allProjectFiles,
             excludedFileIds,
+            cacheHit,
             warnings
         );
     }
@@ -127,6 +139,7 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
         writerPersona: ResolvedPersona | undefined,
         allProjectFiles: ProjectFileContent[],
         excludedFileIds: Set<string>,
+        cacheHit: boolean,
         warnings: string[]
     ): AiPromptContext {
         return {
@@ -135,6 +148,7 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
             writerPersona,
             allProjectFiles,
             excludedFileIds,
+            cacheHit,
             warnings,
             toString() {
                 const sections: string[] = [];
@@ -162,7 +176,7 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
         version: number,
         files: Array<{ id: string; name: string; mimeType: string }>,
         warnings: string[]
-    ): Promise<ProjectFileContent[]> {
+    ): Promise<{ files: ProjectFileContent[]; cacheHit: boolean }> {
         const key = `AiProjectContext/${projectId}/v${version}`;
 
         const cached = await this.keyValueStore.get<string>(key);
@@ -170,7 +184,7 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
             try {
                 const decompressed = await decompress(Buffer.from(cached.value, "base64"));
                 const parsed = JSON.parse(decompressed.toString("utf-8")) as CachedProjectContext;
-                return parsed.files;
+                return { files: parsed.files, cacheHit: true };
             } catch (error) {
                 console.warn("AiPromptContextBuilder: cache entry corrupted, rebuilding", {
                     key,
@@ -191,7 +205,7 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
             console.warn("AiPromptContextBuilder: cache write failed", { key, error });
         }
 
-        return assembled;
+        return { files: assembled, cacheHit: false };
     }
 
     private async assembleFiles(
