@@ -1,6 +1,7 @@
 import { compress, decompress } from "@webiny/utils/features/compression/legacy/gzip.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
 import { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/index.js";
+import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import {
     AiPromptContextBuilder as Abstraction,
@@ -29,10 +30,15 @@ interface CachedProjectContext {
     files: ProjectFileContent[];
 }
 
+function estimateTokenCount(text: string): number {
+    return Math.ceil(text.length / 4);
+}
+
 class AiPromptContextBuilderImpl implements Abstraction.Interface {
     constructor(
         private getSettings: GetSettingsUseCase.Interface,
         private getFileContents: GetFileContentsByIdUseCase.Interface,
+        private getFile: GetFileUseCase.Interface,
         private keyValueStore: GlobalKeyValueStore.Interface
     ) {}
 
@@ -78,7 +84,8 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
             resolvedProject = {
                 name: project.name,
                 instructions: project.instructions,
-                files
+                files,
+                totalTokens: files.reduce((sum, f) => sum + f.tokenCount, 0)
             };
         }
 
@@ -203,19 +210,35 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
 
         const results = await Promise.all(
             supportedFiles.map(async (file): Promise<ProjectFileContent | null> => {
-                const result = await this.getFileContents.execute(file.id);
+                const [contentsResult, damResult] = await Promise.all([
+                    this.getFileContents.execute(file.id),
+                    this.getFile.execute(file.id)
+                ]);
 
-                if (result.isFail()) {
-                    const msg = `Failed to load file "${file.name}" (${file.id}): ${result.error.message}`;
+                if (contentsResult.isFail()) {
+                    const msg = `Failed to load file "${file.name}" (${file.id}): ${contentsResult.error.message}`;
                     console.warn("AiPromptContextBuilder:", msg);
                     warnings.push(msg);
                     return null;
                 }
 
+                const content = contentsResult.value.buffer.toString("utf-8");
+
+                let description: string | undefined;
+                if (damResult.isFail()) {
+                    console.warn(
+                        `AiPromptContextBuilder: failed to load DAM record for "${file.name}" (${file.id})`
+                    );
+                } else if (damResult.value.description) {
+                    description = damResult.value.description;
+                }
+
                 return {
                     id: file.id,
                     name: file.name,
-                    content: result.value.buffer.toString("utf-8")
+                    content,
+                    description,
+                    tokenCount: estimateTokenCount(content)
                 };
             })
         );
@@ -226,5 +249,10 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
 
 export const AiPromptContextBuilder = Abstraction.createImplementation({
     implementation: AiPromptContextBuilderImpl,
-    dependencies: [GetSettingsUseCase, GetFileContentsByIdUseCase, GlobalKeyValueStore]
+    dependencies: [
+        GetSettingsUseCase,
+        GetFileContentsByIdUseCase,
+        GetFileUseCase,
+        GlobalKeyValueStore
+    ]
 });

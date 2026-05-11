@@ -25,6 +25,7 @@ Durable decisions that apply across all phases:
 Extend the cached `AssembledProjectContext` to carry per-file metadata needed by the manifest: DAM description, token count, label, note. Compute `totalTokens` as a summary field.
 
 During assembly (cache miss path), for each project file:
+
 - Fetch the DAM file record to get `description` (the DAM description populated by the file manager — including the frontmatter extraction we just built).
 - Compute `tokenCount` from extracted text length (approximate: `Math.ceil(chars / 4)`).
 - Carry through `label` and `note` from `ProjectFile` settings if present.
@@ -35,14 +36,14 @@ If DAM description fetch fails for a file, continue with `damDescription: undefi
 
 ### Acceptance criteria
 
-- [ ] `ProjectFileContent` includes `damDescription`, `tokenCount`, `label`, `note` fields
-- [ ] `ResolvedProject` includes `totalTokens` (sum of all file token counts)
-- [ ] Assembly pipeline fetches DAM description for each file (via `GetFileUseCase` or equivalent)
-- [ ] Token count approximated from text length
-- [ ] DAM fetch failure for one file does not break assembly — warning logged, description remains empty
-- [ ] Cached blob includes the new fields; cache key/TTL unchanged
-- [ ] Existing generation flow still works (ProjectSection still inlines content)
-- [ ] Type checks pass for `ai-powerups` package
+- [x] `ProjectFileContent` includes `damDescription`, `tokenCount` fields (label/note deferred — not in data model yet)
+- [x] `ResolvedProject` includes `totalTokens` (sum of all file token counts)
+- [x] Assembly pipeline fetches DAM description for each file (via `GetFileUseCase`)
+- [x] Token count approximated from text length (`Math.ceil(chars / 4)`)
+- [x] DAM fetch failure for one file does not break assembly — warning logged, description remains undefined
+- [x] Cached blob includes the new fields; cache key/TTL unchanged
+- [x] Existing generation flow still works (ProjectSection still inlines content)
+- [x] Type checks pass for `ai-powerups` package
 
 ---
 
@@ -57,6 +58,7 @@ Replace the inline file content approach with a manifest + on-demand tool.
 **Manifest formatting**: Replace `ProjectSection.format()` to emit the YAML-like manifest block instead of raw file content. The manifest lists each file's id, label, description, note (if present), and approximate token count. Includes the instruction: "Use the `read_project_file` tool to read any file when its contents are relevant. Read files only when needed — do not read all files preemptively."
 
 **`read_project_file` tool**: Implement as an `AiSdkTool` in the `ai-powerups` package. The tool:
+
 - Accepts `{ file_id: string }`.
 - Looks up the file in the cached `AssembledProjectContext` (already loaded during context building).
 - Returns `{ content, label, note }` on success.
@@ -92,6 +94,7 @@ The tool needs access to the assembled context for the current generation. Since
 ### What to build
 
 **Websocket telemetry**: Extend the success websocket message to include generation telemetry alongside the compressed content. The `data` payload gains a `telemetry` field:
+
 ```
 {
   action: "aiPowerUps.generatePageContent.content",
@@ -111,6 +114,7 @@ The tool needs access to the assembled context for the current generation. Since
 This data is collected during generation: `AiPromptContextBuilder` reports cache hit/miss; the `read_project_file` tool tracks which files were read; `ai.generateText` result exposes step count and tool calls.
 
 **Error hardening**:
+
 - Unknown `file_id` in tool call → return error string listing valid IDs (already in Phase 2, verify edge cases).
 - Excluded file tool call → return "File excluded for this generation" (already in Phase 2, verify).
 - DAM description fetch failure → `"(no description)"` in manifest (already in Phase 1, verify).

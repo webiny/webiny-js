@@ -11,12 +11,15 @@ export interface ProjectFileContent {
     id: string;
     name: string;
     content: string;
+    description?: string;
+    tokenCount: number;
 }
 
 export interface ResolvedProject {
     name: string;
     instructions?: string;
     files: ProjectFileContent[];
+    totalTokens: number;
 }
 
 export interface ResolvedPersona {
