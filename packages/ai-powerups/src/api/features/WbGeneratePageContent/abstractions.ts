@@ -4,6 +4,10 @@ export interface WbGeneratePageContentParams {
     prompt: string;
     components: unknown;
     tools: unknown;
+    projectId?: string | null;
+    excludedFileIds?: string[] | null;
+    readerPersonaId?: string | null;
+    writerPersonaId?: string | null;
 }
 
 export interface IWbGeneratePageContentUseCase {

@@ -4,9 +4,10 @@ import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { AiSdkTools } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
+import { AiPromptContextBuilder } from "~/api/features/AiPromptContext/index.js";
 import { WbGeneratePageContentUseCase } from "./abstractions.js";
 import type { WbGeneratePageContentParams } from "./abstractions.js";
-import { buildSystemPrompt } from "./buildPrompt.js";
+import { buildDomainPrompt } from "./buildPrompt.js";
 
 function stripCodeFence(text: string): string {
     return text
@@ -17,6 +18,7 @@ function stripCodeFence(text: string): string {
 
 class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.Interface {
     constructor(
+        private promptContextBuilder: AiPromptContextBuilder.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private ai: Ai.Interface,
         private aiSdkTools: AiSdkTools.Interface,
@@ -38,13 +40,28 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
             );
         }
 
-        // Decrypt at point of use.
         const apiKey = this.encryption.decrypt(firstProvider.apiKeyEncrypted);
 
-        // TODO: configure this in `ai` as default behavior.
         const sdkTools = this.aiSdkTools.getToolSet();
 
-        const system = buildSystemPrompt(params.components, params.tools);
+        const context = await this.promptContextBuilder.execute({
+            projectId: params.projectId,
+            readerPersonaId: params.readerPersonaId,
+            writerPersonaId: params.writerPersonaId,
+            excludedFileIds: params.excludedFileIds
+        });
+
+        const systemText = buildDomainPrompt(params.components, params.tools) + context.toString();
+
+        const system = {
+            role: "system" as const,
+            content: systemText,
+            providerOptions: {
+                anthropic: {
+                    cacheControl: { type: "ephemeral" }
+                }
+            }
+        };
 
         try {
             const aiResult = await this.ai.generateText({
@@ -61,8 +78,6 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
                     : {})
             });
 
-            // result.text might be empty if the last step was a tool call.
-            // Find the last step that has text content:
             const text =
                 aiResult.text ||
                 (aiResult.steps.filter(step => step.text.length > 0).pop()?.text ?? "");
@@ -83,5 +98,5 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
 export const WbGeneratePageContentUseCaseImplementation =
     WbGeneratePageContentUseCase.createImplementation({
         implementation: WbGeneratePageContentUseCaseImpl,
-        dependencies: [GetSettingsUseCase, Ai, AiSdkTools, Encryption]
+        dependencies: [AiPromptContextBuilder, GetSettingsUseCase, Ai, AiSdkTools, Encryption]
     });

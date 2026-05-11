@@ -1,14 +1,13 @@
-import "~/types.js";
 import { Output } from "ai";
 import { z } from "zod";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { Ai } from "@webiny/api-core/features/ai/index.js";
 import { Encryption } from "@webiny/api-core/features/encryption/index.js";
-import { GetFileUseCase } from "~/features/file/GetFile/index.js";
-import { UpdateFileUseCase } from "~/features/file/UpdateFile/index.js";
-import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
-import { GetSettingsUseCase as AiPowerUpsGetSettingsUseCase } from "@webiny/ai-powerups/api/features/GetSettings/index.js";
+import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
+import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
+import { GetSettingsUseCase as FmGetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
 import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js";
+import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 
 export const AI_IMAGE_ENRICHMENT_TASK_ID = "fmAiImageEnrichment";
 
@@ -38,10 +37,10 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
 
     constructor(
         private getFile: GetFileUseCase.Interface,
-        private getSettings: GetSettingsUseCase.Interface,
+        private fmSettings: FmGetSettingsUseCase.Interface,
         private updateFile: UpdateFileUseCase.Interface,
         private ai: Ai.Interface,
-        private aiPowerUpsSettings: AiPowerUpsGetSettingsUseCase.Interface,
+        private getSettings: GetSettingsUseCase.Interface,
         private encryption: Encryption.Interface,
         private websocketService?: WebsocketService.Interface
     ) {}
@@ -69,11 +68,11 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
             return controller.response.done("File is not an image; skipping AI enrichment.");
         }
 
-        const settingsResult = await this.getSettings.execute();
+        const settingsResult = await this.fmSettings.execute();
         const srcPrefix = settingsResult.isOk() ? (settingsResult.value.srcPrefix ?? "") : "";
         const imageUrl = `${srcPrefix}${file.key}`;
 
-        const aiSettingsResult = await this.aiPowerUpsSettings.execute();
+        const aiSettingsResult = await this.getSettings.execute();
 
         if (aiSettingsResult.isFail()) {
             return controller.response.error({
@@ -83,8 +82,6 @@ class AiImageEnrichmentTaskImpl implements TaskDefinition.Interface<IAiImageEnri
 
         const aiSettings = aiSettingsResult.value;
 
-        // TODO: for now we're loading first provider, but later we'll be loading
-        // TODO: the right provider via AI Powerups settings.
         const firstProvider = aiSettings.providers.presets[0];
 
         if (!firstProvider) {
@@ -165,10 +162,10 @@ export const AiImageEnrichmentTask = TaskDefinition.createImplementation({
     implementation: AiImageEnrichmentTaskImpl,
     dependencies: [
         GetFileUseCase,
-        GetSettingsUseCase,
+        FmGetSettingsUseCase,
         UpdateFileUseCase,
         Ai,
-        AiPowerUpsGetSettingsUseCase,
+        GetSettingsUseCase,
         Encryption,
         [WebsocketService, { optional: true }]
     ]

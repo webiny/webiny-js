@@ -301,7 +301,17 @@ function convertListNode(domNode: Node): DOMConversionOutput {
 
     return {
         // @ts-expect-error
-        after: normalizeChildren,
+        after: (nodes: Array<ListNode>) => {
+            const normalized = normalizeChildren(nodes);
+            let value = 1;
+            for (const item of normalized) {
+                if ($isListItemNode(item) && !$isListNode(item.getFirstChild())) {
+                    item.setValue(value);
+                    value++;
+                }
+            }
+            return normalized;
+        },
         node
     };
 }
