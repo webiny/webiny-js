@@ -1,6 +1,6 @@
 import { compress, decompress } from "@webiny/utils/features/compression/legacy/gzip.js";
 import { GlobalKeyValueStore } from "@webiny/api-core/features/keyValueStore/index.js";
-import { GetFileContentsUseCase } from "@webiny/api-file-manager/features/file/GetFileContents/index.js";
+import { GetFileContentsByIdUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsById/index.js";
 import { GetSettingsUseCase } from "~/api/features/GetSettings/index.js";
 import {
     AiPromptContextBuilder as Abstraction,
@@ -32,7 +32,7 @@ interface CachedProjectContext {
 class AiPromptContextBuilderImpl implements Abstraction.Interface {
     constructor(
         private getSettings: GetSettingsUseCase.Interface,
-        private getFileContents: GetFileContentsUseCase.Interface,
+        private getFileContents: GetFileContentsByIdUseCase.Interface,
         private keyValueStore: GlobalKeyValueStore.Interface
     ) {}
 
@@ -226,5 +226,5 @@ class AiPromptContextBuilderImpl implements Abstraction.Interface {
 
 export const AiPromptContextBuilder = Abstraction.createImplementation({
     implementation: AiPromptContextBuilderImpl,
-    dependencies: [GetSettingsUseCase, GetFileContentsUseCase, GlobalKeyValueStore]
+    dependencies: [GetSettingsUseCase, GetFileContentsByIdUseCase, GlobalKeyValueStore]
 });
