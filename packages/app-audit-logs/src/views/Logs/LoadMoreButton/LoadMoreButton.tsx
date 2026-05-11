@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import React from "react";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { ButtonPrimary } from "@webiny/ui/Button/index.js";
+import { Button } from "@webiny/admin-ui";
 import { Container } from "./styled.js";
 
 const t = i18n.ns("app-audit-logs/views/logs/load-more-button");
@@ -24,11 +24,11 @@ export const LoadMoreButton = ({
     if (show && windowHeight > tableHeight) {
         return (
             <Container>
-                <ButtonPrimary
+                <Button
                     onClick={onClick}
                     disabled={disabled}
-                    flat={true}
-                >{t`Load more records`}</ButtonPrimary>
+                    variant={"primary"}
+                >{t`Load more records`}</Button>
             </Container>
         );
     }

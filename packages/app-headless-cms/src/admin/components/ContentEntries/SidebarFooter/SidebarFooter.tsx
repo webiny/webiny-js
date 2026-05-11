@@ -9,8 +9,8 @@ export interface ISidebarFooterProps {
 export const SidebarFooter = makeDecoratable(({ children }: ISidebarFooterProps) => {
     return (
         <div className={"px-xs py-sm bg-neutral-base"}>
-            <TrashBin />
             {children}
+            <TrashBin />
         </div>
     );
 });

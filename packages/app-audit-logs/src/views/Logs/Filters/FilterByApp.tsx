@@ -1,6 +1,6 @@
 import React from "react";
 import { useBind, useForm } from "@webiny/form";
-import { Select } from "@webiny/ui/Select/index.js";
+import { Select } from "@webiny/admin-ui";
 import { apps as auditLogsApps } from "@webiny/common-audit-logs";
 import type { IFilterFormData } from "~/views/Logs/Filters/types.js";
 
@@ -25,7 +25,7 @@ export const FilterByApp = () => {
     return (
         <Select
             {...bind}
-            size={"medium"}
+            size={"md"}
             placeholder={"Filter by App"}
             options={[
                 { label: "All", value: "all" },

@@ -456,6 +456,10 @@ export interface CmsEntry<TValues extends CmsEntryValues = CmsEntryValues> {
      * Is this CMS Entry live (no matter the revision).
      */
     live: ICmsEntryLive | null;
+    /**
+     * A revision description.
+     */
+    revisionDescription: string | undefined;
 }
 
 export interface CmsStorageEntry<T extends CmsEntryValues = CmsEntryValues> extends CmsEntry<T> {

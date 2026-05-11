@@ -24,17 +24,16 @@
     "@webiny/icons": "*",
     "@webiny/project": "*",
     "@webiny/project-aws": "*",
-    "@webiny/ui": "*",
     "@webiny/validation": "*",
     "aws-amplify": "^6.17.0",
-    "graphql": "^16.13.2",
+    "graphql": "^16.14.0",
     "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.18.1",
-    "mobx": "^6.15.1",
+    "mobx": "^6.15.3",
     "mobx-react-lite": "^4.1.1",
     "react": "18.3.1",
-    "zod": "4.3.6"
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@types/react": "18.3.28",

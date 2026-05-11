@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ButtonFloating } from "@webiny/ui/Button/index.js";
+import { IconButton } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 
 interface FloatingActionButtonProps {
@@ -16,7 +16,7 @@ const FloatingActionButton = (props: FloatingActionButtonProps) => {
                 right: 20
             }}
         >
-            <ButtonFloating {...props} icon={<AddIcon />} />
+            <IconButton {...props} icon={<AddIcon />} />
         </div>
     );
 };

@@ -12,7 +12,6 @@
     { "path": "../handler-graphql" },
     { "path": "../project" },
     { "path": "../project-aws" },
-    { "path": "../ui" },
     { "path": "../validation" },
     { "path": "../wcp" }
   ],
@@ -45,8 +44,6 @@
       "@webiny/project": ["../project/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],
       "@webiny/project-aws": ["../project-aws/src"],
-      "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

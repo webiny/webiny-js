@@ -1,5 +1,5 @@
 import React from "react";
-import { TimeAgo } from "@webiny/ui/TimeAgo/index.js";
+import { TimeAgo } from "@webiny/admin-ui";
 import { TrashBinListConfig } from "~/Presentation/configs/index.js";
 
 export const CellDeletedOn = () => {

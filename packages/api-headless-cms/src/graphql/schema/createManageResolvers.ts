@@ -7,6 +7,7 @@ import { resolveGetRevisions } from "./resolvers/manage/resolveGetRevisions.js";
 import { resolveGetByIds } from "./resolvers/manage/resolveGetByIds.js";
 import { resolveCreate } from "./resolvers/manage/resolveCreate.js";
 import { resolveUpdate } from "./resolvers/manage/resolveUpdate.js";
+import { resolveUpdateRevisionDescription } from "./resolvers/manage/resolveUpdateRevisionDescription.js";
 import { resolveValidate } from "./resolvers/manage/resolveValidate.js";
 import { resolveMove } from "./resolvers/manage/resolveMove.js";
 import { resolveDelete } from "./resolvers/manage/resolveDelete.js";
@@ -74,6 +75,9 @@ export const createManageResolvers: CreateManageResolvers = ({ models, model, fi
                 normalizeGraphQlInput(resolveCreate)(resolverFactoryParams),
             [`update${model.singularApiName}`]:
                 normalizeGraphQlInput(resolveUpdate)(resolverFactoryParams),
+            [`update${model.singularApiName}RevisionDescription`]: normalizeGraphQlInput(
+                resolveUpdateRevisionDescription
+            )(resolverFactoryParams),
             [`validate${model.singularApiName}`]: resolveValidate(resolverFactoryParams),
             [`move${model.singularApiName}`]: resolveMove(resolverFactoryParams),
             [`delete${model.singularApiName}`]: resolveDelete(resolverFactoryParams),
