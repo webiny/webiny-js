@@ -1,5 +1,18 @@
 import React from "react";
-import { Date } from "@webiny/ui/DateTime/index.js";
+const DateDisplay = ({ date }: { date: string }) => {
+    const formatted = React.useMemo(() => {
+        const d = new globalThis.Date(date);
+        if (isNaN(d.getTime())) {
+            return "";
+        }
+        return new Intl.DateTimeFormat(navigator.language, {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }).format(d);
+    }, [date]);
+    return <>{formatted}</>;
+};
 import { DropdownMenu, Icon, IconButton, List, Text, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
@@ -83,7 +96,7 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                         {t`Last modified by {author} on {time} (#{version})`({
                             // Added this because revisionCreatedBy can be returned as null from GraphQL.
                             author: revision.createdBy?.displayName,
-                            time: <Date date={revision.savedOn} />,
+                            time: <DateDisplay date={revision.savedOn} />,
                             version: revision.version
                         })}
                     </Text>
