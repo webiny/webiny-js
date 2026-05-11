@@ -14,6 +14,12 @@ const GET_PAGE_REVISIONS = /* GraphQL */ `
                     status
                     locked
                     savedOn
+                    createdBy {
+                        id
+                        displayName
+                        type
+                    }
+                    createdOn
                     revisionDescription
                 }
                 error {

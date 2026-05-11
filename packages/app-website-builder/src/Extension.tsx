@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { AdminConfig, RegisterFeature, useContainer } from "@webiny/app-admin";
-import { useRouter } from "@webiny/app-admin";
-import { ReactComponent as PagesIcon } from "@webiny/icons/table_chart.svg";
-import { ReactComponent as PermissionsIcon } from "@webiny/icons/table_chart.svg";
+import { AdminConfig, RegisterFeature, useContainer, useRouter } from "@webiny/app-admin";
+import {
+    ReactComponent as PagesIcon,
+    ReactComponent as PermissionsIcon
+} from "@webiny/icons/table_chart.svg";
 import { PageEditor } from "~/modules/pages/PageEditor.js";
 import { PageList } from "~/modules/pages/PageList.js";
 import { useSettingsDialog } from "~/modules/settings/useSettingsDialog.js";
@@ -37,6 +38,7 @@ import { CreatePageConfig } from "./presentation/pages/CreatePage/CreatePageConf
 import { TranslatePageConfig } from "./presentation/pages/TranslatePage/TranslatePageConfig.js";
 import { CreatePageFeature } from "~/presentation/pages/CreatePage/feature.js";
 import { PageSettingsFeature } from "~/modules/pages/PageEditor/PageSettings/feature.js";
+import { DeletePageRevisionFeature } from "~/features/pages/deletePageRevision/index.js";
 
 const { Security, Menu, Route, Dashboard } = AdminConfig;
 
@@ -55,6 +57,7 @@ export const Extension = () => {
             <RegisterFeature feature={WbPermissionsFeature} />
             <RegisterFeature feature={TranslatePageFeature} />
             <RegisterFeature feature={DeletePageFeature} />
+            <RegisterFeature feature={DeletePageRevisionFeature} />
             <RegisterFeature feature={MovePageFeature} />
             <RegisterFeature feature={PublishPageFeature} />
             <RegisterFeature feature={UnpublishPageFeature} />

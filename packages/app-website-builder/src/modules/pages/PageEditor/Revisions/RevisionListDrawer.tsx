@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { useHotkeys } from "@webiny/app-admin";
-import { RevisionsList } from "~/admin/views/contentEntries/ContentEntry/RevisionsList/RevisionsList.js";
-import { useFullScreenContentEntry } from "../useFullScreenContentEntry.js";
+import { RevisionsList } from "./RevisionsList.js";
 import { Drawer } from "@webiny/admin-ui";
-import { useContentEntry } from "~/admin/views/contentEntries/hooks/index.js";
+import type { Page } from "~/domain/Page/Page.js";
+import {usePageEditorDrawer} from "./usePageEditorDrawer.js";
 
-export const RevisionListDrawer = () => {
-    const { isRevisionListOpen, openRevisionList } = useFullScreenContentEntry();
-    const { revisions, loading } = useContentEntry();
+interface IRevisionListDrawerProps {
+    page: Pick<Page, "id">;
+}
+
+export const RevisionListDrawer = (props: IRevisionListDrawerProps) => {
+    const { page } = props;
+    const {isRevisionListOpen, openRevisionList} = usePageEditorDrawer();
 
     useHotkeys({
         zIndex: 55,
@@ -27,7 +31,7 @@ export const RevisionListDrawer = () => {
             headerSeparator={true}
             width={1000}
         >
-            <RevisionsList revisions={revisions} loading={loading} />
+            <RevisionsList page={page} />
         </Drawer>
     );
 };

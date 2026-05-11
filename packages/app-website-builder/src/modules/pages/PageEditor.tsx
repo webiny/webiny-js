@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { useRoute } from "@webiny/app-admin";
-import { DocumentEditor } from "~/DocumentEditor/DocumentEditor.js";
-import { useGetPage } from "~/features/pages/index.js";
-import { OverlayLoader } from "@webiny/admin-ui";
-import { useGetWebsiteBuilderSettings } from "~/features/index.js";
-import { DefaultPageEditorConfig } from "./PageEditor/DefaultPageEditorConfig.js";
-import { DefaultEditorConfig } from "~/BaseEditor/index.js";
-import { EDITOR_NAME } from "~/modules/pages/constants.js";
-import type { EditorPage } from "@webiny/website-builder-sdk";
-import type { Page } from "~/domain/Page/index.js";
-import { Routes } from "~/routes.js";
-import { WbPageStatus } from "~/constants.js";
+import React, {useEffect, useState} from "react";
+import {useRoute} from "@webiny/app-admin";
+import {DocumentEditor} from "~/DocumentEditor/DocumentEditor.js";
+import {useGetPage} from "~/features/pages/index.js";
+import {OverlayLoader} from "@webiny/admin-ui";
+import {useGetWebsiteBuilderSettings} from "~/features/index.js";
+import {DefaultPageEditorConfig} from "./PageEditor/DefaultPageEditorConfig.js";
+import {DefaultEditorConfig} from "~/BaseEditor/index.js";
+import {EDITOR_NAME} from "~/modules/pages/constants.js";
+import type {EditorPage} from "@webiny/website-builder-sdk";
+import type {Page} from "~/domain/Page/index.js";
+import {Routes} from "~/routes.js";
+import {WbPageStatus} from "~/constants.js";
+import {RevisionListDrawer} from "./PageEditor/Revisions/RevisionListDrawer.js";
+import {PageEditorDrawerProvider} from "./PageEditor/Revisions/usePageEditorDrawer.js";
 
 const getPageDataFromPage = (page: Page): EditorPage => {
     return {
@@ -31,6 +33,8 @@ export const PageEditor = () => {
     const { getSettings } = useGetWebsiteBuilderSettings();
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState<EditorPage | null>(null);
+    
+    const [isRevisionListOpen, openRevisionList] = useState(false);
 
     const { route } = useRoute(Routes.Pages.Editor);
 
@@ -53,14 +57,21 @@ export const PageEditor = () => {
     }
 
     return (
-        <DocumentEditor<EditorPage>
-            key={page.id}
-            document={page}
-            name={EDITOR_NAME}
-            readOnly={page.status !== WbPageStatus.Draft}
+        <PageEditorDrawerProvider
+            openRevisionList={openRevisionList}
+            isRevisionListOpen={isRevisionListOpen}
         >
-            <DefaultEditorConfig />
-            <DefaultPageEditorConfig />
-        </DocumentEditor>
+            <DocumentEditor<EditorPage>
+                key={page.id}
+                document={page}
+                name={EDITOR_NAME}
+                readOnly={page.status !== WbPageStatus.Draft}
+            >
+                <DefaultEditorConfig />
+                <DefaultPageEditorConfig />
+                
+                <RevisionListDrawer page={page}/>
+            </DocumentEditor>
+        </PageEditorDrawerProvider>
     );
 };

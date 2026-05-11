@@ -210,6 +210,8 @@ export const pagesTypeDefs = /* GraphQL */ `
         status: String!
         locked: Boolean!
         savedOn: DateTime!
+        createdOn: DateTime!
+        createdBy: WbIdentity
         revisionDescription: String
     }
 

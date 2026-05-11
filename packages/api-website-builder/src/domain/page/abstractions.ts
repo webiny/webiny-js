@@ -47,6 +47,8 @@ export interface WbPageRevision {
     status: string;
     locked: boolean;
     savedOn: string;
+    createdOn: string;
+    createdBy: WbIdentity;
     revisionDescription: string | undefined;
 }
 

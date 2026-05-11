@@ -96,6 +96,8 @@ export const createPagesSchema = () => {
                                 status: page.status,
                                 locked: page.locked,
                                 savedOn: page.savedOn,
+                                createdOn: page.createdOn,
+                                createdBy: page.createdBy,
                                 revisionDescription: page.revisionDescription
                             };
                         });
