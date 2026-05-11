@@ -8,8 +8,7 @@
     { "path": "../common-audit-logs/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
-    { "path": "../react-properties/tsconfig.build.json" },
-    { "path": "../ui/tsconfig.build.json" }
+    { "path": "../react-properties/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -31,9 +30,7 @@
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
-      "@webiny/react-properties": ["../react-properties/src"],
-      "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"]
+      "@webiny/react-properties": ["../react-properties/src"]
     }
   }
 }
