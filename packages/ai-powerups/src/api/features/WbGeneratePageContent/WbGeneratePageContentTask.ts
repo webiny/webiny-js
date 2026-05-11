@@ -10,6 +10,10 @@ export interface IWbGeneratePageContentTaskInput {
     prompt: string;
     components: unknown;
     tools: unknown;
+    projectId?: string | null;
+    excludedFileIds?: string[] | null;
+    readerPersonaId?: string | null;
+    writerPersonaId?: string | null;
 }
 
 class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGeneratePageContentTaskInput> {
@@ -39,7 +43,11 @@ class WbGeneratePageContentTaskImpl implements TaskDefinition.Interface<IWbGener
         const result = await this.generatePageContent.execute({
             prompt: input.prompt,
             components: input.components,
-            tools: input.tools
+            tools: input.tools,
+            projectId: input.projectId,
+            excludedFileIds: input.excludedFileIds,
+            readerPersonaId: input.readerPersonaId,
+            writerPersonaId: input.writerPersonaId
         });
 
         const identity = this.identityContext.getIdentity();

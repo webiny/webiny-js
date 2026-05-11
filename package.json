@@ -106,6 +106,7 @@
     "add-webiny-package": "node scripts/addWebinyPackage.js",
     "awp": "yarn add-webiny-package",
     "build": "tsx scripts/buildPackages",
+    "check": "tsx scripts/checkPackages",
     "build:api": "yarn webiny ws run build --scope='@webiny/api*' --scope='@webiny/handler*'",
     "build:apps": "yarn webiny ws run build --scope='@webiny/app*'",
     "build:full": "yarn build --build-overrides='{\"tsConfig\":{\"compilerOptions\":{\"skipLibCheck\":false}}}'",

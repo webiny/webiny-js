@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { Grid, Tabs } from "@webiny/admin-ui";
+import { Grid, IconButton, Tabs, Tooltip, useToast } from "@webiny/admin-ui";
+import { ReactComponent as CopyIcon } from "@webiny/icons/content_copy.svg";
+import { ReactComponent as PasteIcon } from "@webiny/icons/content_paste.svg";
+import { DevToolsSection } from "@webiny/react-properties";
 import type {
     IFormVM,
     LayoutNodeVM,
@@ -12,6 +15,7 @@ import type {
 import type { Icon } from "~/components/IconPicker/types.js";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DeveloperMode } from "~/components/DeveloperMode/DeveloperMode.js";
 import { useFieldRenderers } from "~/features/formModel/useFieldRenderers.js";
 import { useLayoutRenderers } from "~/features/formModel/useLayoutRenderers.js";
 
@@ -56,6 +60,7 @@ const useFormViewRenderers = (): FormViewRenderers => {
 export { useFormViewRenderers };
 
 interface FormViewProps {
+    name: string;
     form: IFormVM;
     renderers?: FieldRenderers;
     layoutRenderers?: LayoutRenderers;
@@ -65,7 +70,7 @@ interface FormViewProps {
  * Generic form view that walks layout nodes and renders fields.
  * This component is stateless — it reads from the FormVM and delegates to renderers.
  */
-export const FormView = observer(({ form, renderers, layoutRenderers }: FormViewProps) => {
+export const FormView = observer(({ name, form, renderers, layoutRenderers }: FormViewProps) => {
     const defaultFieldRenderers = useFieldRenderers();
     const defaultLayoutRenderers = useLayoutRenderers();
 
@@ -79,7 +84,9 @@ export const FormView = observer(({ form, renderers, layoutRenderers }: FormView
 
     return (
         <FormViewRenderersContext.Provider value={value}>
-            <div className="w-full flex flex-col gap-4">
+            <DevToolsSection name={name} group="Forms" data={form.getData()} views={"raw"} />
+            <div className="w-full relative flex flex-col gap-4">
+                <DevModeTools form={form} />
                 {form.layout.map((node, index) => (
                     <LayoutNodeRenderer key={index} node={node} />
                 ))}
@@ -205,3 +212,60 @@ const ElementNodeRenderer = observer(({ node }: { node: IElementNodeVM }) => {
 
     return <Renderer field={{ ...node.props } as any} />;
 });
+
+interface DevModelToolsProps {
+    form: IFormVM;
+}
+
+const DevModeTools = ({ form }: DevModelToolsProps) => {
+    const toast = useToast();
+
+    const handleCopy = () => {
+        const data = form.getData();
+        navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+        toast.showSuccessToast({ title: "Form data copied to clipboard." });
+    };
+
+    const handlePaste = async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            const data = JSON.parse(text);
+            form.setData(data);
+            toast.showSuccessToast({ title: "Form data imported from clipboard." });
+        } catch {
+            toast.showWarningToast({
+                title: "Failed to import. Make sure clipboard contains valid JSON."
+            });
+        }
+    };
+    return (
+        <DeveloperMode>
+            <div className="absolute top-0 right-0 w-[200px] h-[80px] z-10 group/devtools">
+                <div className="absolute top-0 right-0 flex gap-xs opacity-0 group-hover/devtools:opacity-100 transition-opacity">
+                    <Tooltip
+                        content="Copy form data to clipboard"
+                        trigger={
+                            <IconButton
+                                variant={"secondary"}
+                                icon={<CopyIcon />}
+                                onClick={handleCopy}
+                                size="sm"
+                            />
+                        }
+                    />
+                    <Tooltip
+                        content="Paste form data from clipboard"
+                        trigger={
+                            <IconButton
+                                variant={"secondary"}
+                                icon={<PasteIcon />}
+                                onClick={handlePaste}
+                                size="sm"
+                            />
+                        }
+                    />
+                </div>
+            </div>
+        </DeveloperMode>
+    );
+};
