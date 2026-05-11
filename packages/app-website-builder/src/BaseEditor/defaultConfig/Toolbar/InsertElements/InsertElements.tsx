@@ -33,7 +33,10 @@ interface InsertElementsProps {
     viewType?: string;
 }
 
-export const InsertElements = ({ search = "", viewType: _viewType = "list" }: InsertElementsProps) => {
+export const InsertElements = ({
+    search = "",
+    viewType: _viewType = "list"
+}: InsertElementsProps) => {
     const groups = useComponentGroups();
     const query = search.toLowerCase().trim();
 
