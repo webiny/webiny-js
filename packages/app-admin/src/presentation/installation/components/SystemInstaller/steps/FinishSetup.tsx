@@ -19,15 +19,23 @@ const INSTALL_FINISH_URL =
  * `finishInstallation` flow otherwise.
  */
 const buildInstallFinishHref = (currentUrl: string): string | null => {
-    if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") return null;
+    if (process.env.REACT_APP_WEBINY_TELEMETRY === "false") {
+        return null;
+    }
 
-    if (typeof window === "undefined") return null;
+    if (typeof window === "undefined") {
+        return null;
+    }
     const isCloudFrontHost = window.location.hostname.endsWith(".cloudfront.net");
     const allowAlternate = Boolean(process.env.REACT_APP_WEBINY_INSTALL_FINISH_URL);
-    if (!isCloudFrontHost && !allowAlternate) return null;
+    if (!isCloudFrontHost && !allowAlternate) {
+        return null;
+    }
 
     const machineId = getMachineId();
-    if (!machineId) return null;
+    if (!machineId) {
+        return null;
+    }
 
     const params = new URLSearchParams({
         machine_id: machineId,
@@ -57,7 +65,9 @@ export const FinishSetupStep = ({
 
     const handleStartUsing = () => {
         if (typeof window !== "undefined") {
-            const handoff = buildInstallFinishHref(window.location.origin + window.location.pathname);
+            const handoff = buildInstallFinishHref(
+                window.location.origin + window.location.pathname
+            );
             if (handoff) {
                 window.location.assign(handoff);
                 return;

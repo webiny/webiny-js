@@ -16,7 +16,9 @@ import { join } from "node:path";
 export function readInstallationId(): string | null {
     try {
         const path = join(process.cwd(), "webiny.installation.json");
-        if (!existsSync(path)) return null;
+        if (!existsSync(path)) {
+            return null;
+        }
         const data = JSON.parse(readFileSync(path, "utf8"));
         return typeof data?.installationId === "string" ? data.installationId : null;
     } catch {

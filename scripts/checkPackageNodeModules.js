@@ -1,7 +1,7 @@
 import fastGlob from "fast-glob";
 import { loadJsonFileSync } from "load-json-file";
 
-const excludedPackages = ["@webiny/di"];
+const excludedPackages = ["@webiny/di", "@webiny/wts-client"];
 
 const target = "./packages/*/package.json";
 

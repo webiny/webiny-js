@@ -82,7 +82,9 @@ export const getMachineId = () => {
     if (typeof window !== "undefined") {
         try {
             const stored = window.localStorage.getItem(STORAGE_MACHINE_ID);
-            if (stored) return stored;
+            if (stored) {
+                return stored;
+            }
         } catch {
             // ignore
         }
