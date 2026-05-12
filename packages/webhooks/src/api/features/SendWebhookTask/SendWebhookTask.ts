@@ -1,0 +1,117 @@
+import "@webiny/tasks/types.js";
+import { TaskDefinition } from "@webiny/api-core/exports/api/tasks.js";
+import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
+import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
+import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
+import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
+import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain/constants.js";
+import type { ISendWebhookTaskInput, ISendWebhookTaskOutput } from "./types.js";
+import type { IWebhookPayload } from "~/api/domain/types.js";
+
+type IRunParams = TaskDefinition.RunParams<ISendWebhookTaskInput, ISendWebhookTaskOutput>;
+
+class SendWebhookTaskDefinition implements TaskDefinition.Interface<
+    ISendWebhookTaskInput,
+    ISendWebhookTaskOutput
+> {
+    id = SEND_WEBHOOK_TASK;
+    title = "Send Webhook";
+    maxIterations = 1;
+    isPrivate = true;
+    databaseLogs = false;
+    description = "POST a signed event payload to a webhook endpoint and log the delivery.";
+
+    constructor(
+        private getWebhookRepository: GetWebhookRepository.Interface,
+        private createDeliveryRepository: CreateWebhookDeliveryRepository.Interface,
+        private signPayload: WebhookSignPayload.Interface,
+        private tenantContext: TenantContext.Interface
+    ) {}
+
+    async run(params: IRunParams) {
+        const { input } = params;
+        const taskId = params.controller.state.getTask().id;
+
+        const webhookResult = await this.getWebhookRepository.execute(input.webhookId);
+        if (webhookResult.isFail()) {
+            return params.controller.response.error(webhookResult.error);
+        }
+        const webhook = webhookResult.value;
+
+        const timestamp = Math.floor(Date.now() / 1000);
+        const payload: IWebhookPayload = {
+            id: taskId,
+            event: input.eventName,
+            timestamp: new Date(timestamp * 1000).toISOString(),
+            webhookId: input.webhookId,
+            tenant: this.tenantContext.getTenant().id,
+            data: input.data
+        };
+        const rawBody = JSON.stringify(payload);
+        const signResult = await this.signPayload.sign(
+            rawBody,
+            timestamp,
+            webhook.values.signingSecret
+        );
+
+        const requestHeaders: Record<string, string> = {
+            "Content-Type": "application/json",
+            "Webiny-Signature": signResult.hash
+        };
+
+        const startTime = Date.now();
+        let responseStatus = 0;
+        let responseBody = "";
+
+        try {
+            const response = await fetch(webhook.values.endpointUrl, {
+                method: "POST",
+                headers: requestHeaders,
+                body: rawBody,
+                signal: AbortSignal.timeout(600_000)
+            });
+            responseStatus = response.status;
+            responseBody = await response.text();
+        } catch (error) {
+            responseStatus = 0;
+            responseBody = (error as Error).message;
+        }
+
+        const responseTime = Date.now() - startTime;
+        const expiresAt = new Date(
+            Date.now() + WEBHOOK_DELIVERY_RETENTION_DAYS * 24 * 60 * 60 * 1000
+        ).toISOString();
+
+        await this.createDeliveryRepository.execute({
+            webhookId: input.webhookId,
+            backgroundTaskId: taskId,
+            eventType: input.eventName,
+            payload,
+            requestHeaders,
+            responseTime,
+            responseStatus,
+            responseBody,
+            expiresAt
+        });
+
+        return params.controller.response.done();
+    }
+
+    createInputValidation({ validator }: TaskDefinition.CreateInputValidationParams) {
+        return {
+            webhookId: validator.string(),
+            eventName: validator.string(),
+            data: validator.record(validator.string(), validator.unknown()).optional()
+        };
+    }
+}
+
+export const SendWebhookTask = TaskDefinition.createImplementation({
+    implementation: SendWebhookTaskDefinition,
+    dependencies: [
+        GetWebhookRepository,
+        CreateWebhookDeliveryRepository,
+        WebhookSignPayload,
+        TenantContext
+    ]
+});
