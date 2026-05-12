@@ -24,7 +24,6 @@ export const TabContainer = styled("div")({
 export interface TabProps {
     name: string;
     label: string;
-    noPadding?: boolean;
     element: React.JSX.Element;
     disabled?: boolean;
     visible?: boolean;
