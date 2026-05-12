@@ -1,16 +1,19 @@
 import React from "react";
-import { SegmentedControl } from "@webiny/admin-ui";
 import { Sidebar } from "~/BaseEditor/config/Sidebar/Sidebar.js";
 import { ScrollableContainer } from "~/BaseEditor/config/Sidebar/ScrollableContainer.js";
+import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
 
-export const StyleSettingsGroup = () => (
-    <SegmentedControl.Tabs.Tab
-        value={"style"}
-        trigger={"Style"}
-        content={
-            <ScrollableContainer tabIndex={-1}>
-                <Sidebar.Elements group={"style"} />
-            </ScrollableContainer>
-        }
-    />
-);
+export const StyleSettingsGroup = () => {
+    const [element] = useActiveElement();
+
+    return (
+        <ScrollableContainer tabIndex={-1}>
+            <Sidebar.Group.Tab
+                name={"style"}
+                label={"Style"}
+                element={<Sidebar.Elements group={"style"} />}
+                noPadding={!!element}
+            />
+        </ScrollableContainer>
+    );
+};

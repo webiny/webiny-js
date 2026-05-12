@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Tabs } from "@webiny/admin-ui";
+import { SegmentedControl } from "@webiny/admin-ui";
 
 export const TabContainer = styled("div")({
     display: "flex",
@@ -30,10 +30,9 @@ export interface TabProps {
     visible?: boolean;
 }
 
-export const Tab = ({ name, label, disabled, element, visible, noPadding }: TabProps) => {
+export const Tab = ({ name, label, disabled, element, visible }: TabProps) => {
     return (
-        <Tabs.Tab
-            className={noPadding ? "p-0" : undefined}
+        <SegmentedControl.Tabs.Tab
             value={name}
             trigger={label}
             disabled={disabled}
