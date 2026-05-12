@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from "react";
 import { ReactComponent as Copy } from "@webiny/icons/content_copy.svg";
 import { FileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
@@ -8,7 +7,7 @@ import { useFile } from "~/presentation/hooks/useFile.js";
 export const CopyFile = () => {
     const { file } = useFile();
     const { copyFileUrl } = useCopyFile({ file });
-    const { OptionsMenuItem } = FileManagerViewConfig.Browser.FileAction;
+    const { OptionsMenuItem } = FileManagerViewConfig.Browser.File.Action;
 
     return (
         <OptionsMenuItem

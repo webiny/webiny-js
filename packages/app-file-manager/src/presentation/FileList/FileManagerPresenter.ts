@@ -80,6 +80,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
                 isUploading: this.fileUploader.vm.isUploading
             },
             tags: this.tagsRepository.tags,
+            showFolders: true,
             viewMode: this._viewMode,
             dragging: this._dragging,
             showingFilters: this._showingFilters,

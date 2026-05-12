@@ -33,7 +33,7 @@ import { ListTagsFeature } from "~/features/tags/feature.js";
 import { GetSettingsFeature } from "~/features/settings/feature.js";
 import {
     FileManagerViewWithConfig,
-    useFileManagerViewConfig
+    useFileManagerConfig
 } from "~/presentation/config/FileManagerViewConfig.js";
 import { outputFileSelectionError } from "~/presentation/config/outputFileSelectionError.js";
 import { FolderTree } from "@webiny/app-aco/presentation/folderTree/FolderTree.js";
@@ -69,7 +69,7 @@ const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
 const FileManagerViewLayout = observer(function FileManagerViewLayout() {
     const { vm, actions } = useFileManagerPresenter();
-    const { browser } = useFileManagerViewConfig();
+    const { browser } = useFileManagerConfig();
     const { showSnackbar } = useSnackbar();
 
     const container = useContainer();
@@ -189,7 +189,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                                     className={"flex flex-col relative"}
                                     style={{ height: "calc(100vh - 45px" }}
                                 >
-                                    <FileManagerHeader />
+                                    <FileManagerHeader browseFiles={browseFiles} />
                                     <div
                                         className={"flex-1"}
                                         {...getDropZoneProps({

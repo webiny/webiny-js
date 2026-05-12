@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import LazyLoad from "react-lazy-load";
 import { makeDecoratable } from "@webiny/app-admin";
 import { Text, TimeAgo, cn, CheckboxPrimitive } from "@webiny/admin-ui";
-import { useFileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
+import { useFileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
 import type { FileItem } from "~/domain/types.js";
 
 export interface FileProps {
@@ -18,7 +18,7 @@ export interface FileProps {
 export type DefaultFileControlsProps = Pick<FileProps, "selected" | "onSelect">;
 
 const DefaultFileControls = ({ onSelect, selected }: DefaultFileControlsProps) => {
-    const { browser } = useFileManagerViewConfig();
+    const { browser } = useFileManagerConfig();
     const { itemActions } = browser.grid;
 
     return (

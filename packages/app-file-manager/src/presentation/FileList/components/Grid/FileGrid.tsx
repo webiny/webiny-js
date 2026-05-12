@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import LazyLoad from "react-lazy-load";
-import { cn, CheckboxPrimitive, Icon, Text, TimeAgo, OverlayLoader } from "@webiny/admin-ui";
+import { cn, CheckboxPrimitive, Text, TimeAgo, OverlayLoader } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
+import { FolderIcon } from "@webiny/app-aco";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
-import { useFileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
+import { useFileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
 import { FileProvider } from "~/presentation/contexts/FileProvider.js";
 import type { FmFile } from "~/features/shared/types.js";
 import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
@@ -38,7 +38,7 @@ const FolderCard = ({ folder, onNavigate }: FolderCardProps) => {
             data-folder-id={folder.id}
         >
             <div style={{ height: 150 }} className={"flex items-center justify-center"}>
-                <Icon icon={<FolderIcon />} label={folder.name} className={"w-[90px] h-[90px]"} />
+                <FolderIcon width={90} height={90} />
             </div>
             <div className={"px-md py-sm-extra"}>
                 <Text size={"sm"} as={"div"} className={"truncate text-neutral-primary"}>
@@ -63,7 +63,7 @@ interface FileCardProps {
 }
 
 const FileCard = observer(function FileCard({ file, selected, onToggle }: FileCardProps) {
-    const { browser, getThumbnailRenderer } = useFileManagerViewConfig();
+    const { browser, getThumbnailRenderer } = useFileManagerConfig();
     const { itemActions } = browser.grid;
 
     const renderer = getThumbnailRenderer(browser.grid.itemThumbnails, file as any);
@@ -160,16 +160,12 @@ export const FileGrid = observer(function FileGrid() {
     const presenter = useFileManagerPresenter();
     const { vm, actions } = presenter;
 
-    // Determine child folders of the current folder.
-    const childFolders = useMemo<IFolderTreeNode[]>(() => {
-        const currentFolder = vm.folders.currentFolder;
-        return currentFolder ? currentFolder.children : vm.folders.tree;
-    }, [vm.folders.currentFolder, vm.folders.tree]);
+    const childFolders = vm.folders.childFolders;
 
     // Handle folder navigation.
     const handleFolderNavigate = useCallback(
         (folderId: string) => {
-            actions.filter.set("folderId", folderId);
+            actions.folders.selectFolder(folderId);
         },
         [actions.filter]
     );
@@ -202,9 +198,14 @@ export const FileGrid = observer(function FileGrid() {
             onClick={handleBackgroundClick}
             data-testid={"fm-file-grid"}
         >
-            {childFolders.map(folder => (
-                <FolderCard key={folder.id} folder={folder} onNavigate={handleFolderNavigate} />
-            ))}
+            {vm.showFolders &&
+                childFolders.map(folder => (
+                    <FolderCard
+                        key={folder.id}
+                        folder={folder}
+                        onNavigate={handleFolderNavigate}
+                    />
+                ))}
             {vm.list.rows.map(file => (
                 <FileCard
                     key={file.id}

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from "react";
 import { ReactComponent as Delete } from "@webiny/icons/delete.svg";
 import { FileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
@@ -12,7 +11,7 @@ export const DeleteFile = () => {
     const { openDialogDeleteFile } = useDeleteFile({
         file
     });
-    const { OptionsMenuItem } = FileManagerViewConfig.Browser.FileAction;
+    const { OptionsMenuItem } = FileManagerViewConfig.Browser.File.Action;
 
     if (!canDelete(file)) {
         return null;

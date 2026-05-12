@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useCallback, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
@@ -11,10 +10,10 @@ import { BulkAction, getFilesLabel } from "./useBulkActionWorker.js";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { UpdateFileFeature } from "~/features/updateFile/feature.js";
 import { useFileModel } from "~/presentation/hooks/useFileModel.js";
-import { ActionEditPresenter } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/ActionEditPresenter.js";
-import { BatchEditorDialog } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/BatchEditorDialog/BatchEditorDialog.js";
-import { GraphQLInputMapper } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/GraphQLInputMapper.js";
-import type { BatchDTO } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/domain/index.js";
+import { ActionEditPresenter } from "~/presentation/FileList/components/BulkActions/ActionEditPresenter.js";
+import { BatchEditorDialog } from "~/presentation/FileList/components/BulkActions/BatchEditorDialog/BatchEditorDialog.js";
+import { GraphQLInputMapper } from "~/presentation/FileList/components/BulkActions/GraphQLInputMapper.js";
+import type { BatchDTO } from "~/presentation/FileList/components/BulkActions/domain/index.js";
 import type { FmFile } from "~/features/shared/types.js";
 
 const { useButtons } = BulkAction;

@@ -1,193 +1,157 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { observer } from "mobx-react-lite";
-import { Heading, Icon, IconButton, Text, Tooltip } from "@webiny/admin-ui";
+import { Button, Heading, Icon, IconButton, Skeleton, Tooltip } from "@webiny/admin-ui";
+import { Filters, type FiltersOnSubmit, FiltersToggle, OptionsMenu } from "@webiny/app-admin";
+import { FolderProvider } from "@webiny/app-aco";
 import { ReactComponent as HomeIcon } from "@webiny/icons/home.svg";
 import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
-import { ReactComponent as ChevronRightIcon } from "@webiny/icons/chevron_right.svg";
-import { ReactComponent as GridIcon } from "@webiny/icons/view_module.svg";
-import { ReactComponent as TableIcon } from "@webiny/icons/view_list.svg";
+import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
+import { ReactComponent as FileUploadIcon } from "@webiny/icons/file_upload.svg";
+import { ReactComponent as GridIcon } from "@webiny/icons/grid_on.svg";
+import { ReactComponent as TableIcon } from "@webiny/icons/format_list_bulleted.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
-import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import { useFileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
+import { SearchBar } from "../Search/SearchBar.js";
 
 const t = i18n.ns("app-file-manager/presentation/header");
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+const Title = observer(function Title() {
+    const { vm } = useFileManagerPresenter();
+    const { browser } = useFileManagerConfig();
+    const { currentFolder, isRootFolder, currentFolderTitle } = vm.folders;
 
-/**
- * Build the breadcrumb path from root to the current folder by walking up
- * the tree. Returns an array ordered from root to the current folder.
- */
-const buildBreadcrumbPath = (
-    currentFolder: IFolderTreeNode | null,
-    tree: IFolderTreeNode[]
-): IFolderTreeNode[] => {
-    if (!currentFolder) {
-        return [];
+    const icon = useMemo(() => {
+        return isRootFolder ? <HomeIcon /> : <FolderIcon />;
+    }, [isRootFolder]);
+
+    if (!currentFolderTitle) {
+        return <Skeleton size={"xl"} />;
     }
 
-    const path: IFolderTreeNode[] = [];
-    const nodeMap = new Map<string, IFolderTreeNode>();
-
-    // Build a flat lookup from the tree.
-    const flatten = (nodes: IFolderTreeNode[]) => {
-        for (const node of nodes) {
-            nodeMap.set(node.id, node);
-            flatten(node.children);
-        }
-    };
-    flatten(tree);
-
-    // Walk up from current folder to root.
-    let cursor: IFolderTreeNode | undefined = currentFolder;
-    while (cursor) {
-        path.unshift(cursor);
-        cursor = cursor.parentId ? nodeMap.get(cursor.parentId) : undefined;
-    }
-
-    return path;
-};
-
-// ---------------------------------------------------------------------------
-// LayoutSwitch — toggles between table and grid view modes.
-// ---------------------------------------------------------------------------
-
-interface LayoutSwitchProps {
-    viewMode: "table" | "grid";
-    onSwitch: (mode: "table" | "grid") => void;
-}
-
-const LayoutSwitch = ({ viewMode, onSwitch }: LayoutSwitchProps) => {
-    const nextMode = viewMode === "table" ? "grid" : "table";
-
     return (
-        <Tooltip
-            side={"bottom"}
-            trigger={
-                <IconButton
-                    icon={viewMode === "table" ? <GridIcon /> : <TableIcon />}
-                    onClick={() => onSwitch(nextMode)}
-                    data-testid={"fm-header-layout-switch"}
-                />
-            }
-            content={viewMode === "table" ? t`Grid layout` : t`Table layout`}
-        />
-    );
-};
-
-// ---------------------------------------------------------------------------
-// FolderBreadcrumb — renders the folder path from root to current folder.
-// ---------------------------------------------------------------------------
-
-interface FolderBreadcrumbProps {
-    currentFolder: IFolderTreeNode | null;
-    tree: IFolderTreeNode[];
-    onNavigate: (folderId: string | null) => void;
-}
-
-const FolderBreadcrumb = ({ currentFolder, tree, onNavigate }: FolderBreadcrumbProps) => {
-    const path = useMemo(() => buildBreadcrumbPath(currentFolder, tree), [currentFolder, tree]);
-
-    return (
-        <div className={"flex items-center gap-xs truncate"}>
-            {/* Root link. */}
-            <button
-                className={
-                    "flex items-center gap-xs cursor-pointer bg-transparent border-none p-none"
-                }
-                onClick={() => onNavigate(null)}
-                data-testid={"fm-breadcrumb-root"}
-            >
-                <Icon icon={<HomeIcon />} label={t`Home`} size={"sm"} color={"neutral-strong"} />
-                {path.length === 0 && (
-                    <Heading level={4} as={"h1"} className={"truncate"}>
-                        {t`File Manager`}
-                    </Heading>
-                )}
-            </button>
-
-            {/* Folder segments. */}
-            {path.map((folder, index) => {
-                const isLast = index === path.length - 1;
-                return (
-                    <React.Fragment key={folder.id}>
-                        <Icon
-                            icon={<ChevronRightIcon />}
-                            label={""}
-                            size={"sm"}
-                            color={"neutral-strong"}
-                        />
-                        {isLast ? (
-                            <div className={"flex items-center gap-xs"}>
-                                <Icon
-                                    icon={<FolderIcon />}
-                                    label={folder.name}
-                                    size={"md"}
-                                    color={"neutral-strong"}
-                                />
-                                <Heading level={4} as={"h1"} className={"truncate"}>
-                                    {folder.name}
-                                </Heading>
-                            </div>
-                        ) : (
-                            <button
-                                className={
-                                    "flex items-center gap-xs cursor-pointer bg-transparent border-none p-none"
-                                }
-                                onClick={() => onNavigate(folder.id)}
-                                data-testid={`fm-breadcrumb-folder-${folder.id}`}
-                            >
-                                <Text
-                                    size={"sm"}
-                                    className={
-                                        "truncate text-neutral-dimmed hover:text-neutral-primary"
-                                    }
-                                >
-                                    {folder.name}
-                                </Text>
-                            </button>
-                        )}
-                    </React.Fragment>
-                );
-            })}
+        <div className={"flex gap-xs items-center"}>
+            <div className={"flex gap-sm items-center truncate"}>
+                <Icon icon={icon} label={currentFolderTitle} size={"md"} color={"neutral-strong"} />
+                <Heading level={4} as={"h1"} className={"truncate"}>
+                    {currentFolderTitle}
+                </Heading>
+            </div>
+            {currentFolder && (
+                <FolderProvider folder={currentFolder as any}>
+                    <OptionsMenu
+                        actions={browser.folder.actions}
+                        data-testid={"folder.title.menu-action"}
+                        trigger={
+                            <IconButton
+                                icon={<MoreVerticalIcon />}
+                                size={"sm"}
+                                iconSize={"lg"}
+                                variant={"ghost"}
+                                disabled={isRootFolder}
+                            />
+                        }
+                    />
+                </FolderProvider>
+            )}
         </div>
     );
-};
+});
 
-// ---------------------------------------------------------------------------
-// FileManagerHeader — main header component.
-// ---------------------------------------------------------------------------
+export interface FileManagerHeaderProps {
+    browseFiles?: () => void;
+}
 
-/**
- * Header component for the File Manager list view.
- * Renders a folder breadcrumb and a layout switch (table/grid).
- * Reads vm.viewMode and vm.folders.currentFolder from the FileListPresenter.
- */
-export const FileManagerHeader = observer(function FileManagerHeader() {
+export const FileManagerHeader = observer(function FileManagerHeader({
+    browseFiles
+}: FileManagerHeaderProps) {
     const { vm, actions } = useFileManagerPresenter();
+    const { browser } = useFileManagerConfig();
 
-    // Navigate to a folder via the breadcrumb.
-    const handleNavigate = useCallback(
-        (folderId: string | null) => {
-            if (folderId) {
-                actions.filter.set("folderId", folderId);
+    const applyFilters: FiltersOnSubmit = data => {
+        if (!Object.keys(data).length) {
+            return;
+        }
+
+        const convertedFilters = browser.filtersToWhere.reduce(
+            (current: Record<string, unknown>, converter: (d: Record<string, unknown>) => Record<string, unknown>) => converter(current),
+            data as Record<string, unknown>
+        );
+
+        for (const [key, value] of Object.entries(convertedFilters)) {
+            if (value === undefined || value === null || value === "") {
+                actions.filter.clear(key);
             } else {
-                actions.filter.clear("folderId");
+                actions.filter.set(key, value);
             }
-        },
-        [actions.filter]
-    );
+        }
+    };
 
     return (
-        <div className={"flex pt-md px-lg items-center justify-between"} data-testid={"fm-header"}>
-            <FolderBreadcrumb
-                currentFolder={vm.folders.currentFolder}
-                tree={vm.folders.tree}
-                onNavigate={handleNavigate}
+        <div data-testid={"fm-header"}>
+            <div className={"pl-lg pr-md py-sm-extra flex items-center justify-between"}>
+                <Title />
+            </div>
+            <div className={"pl-lg pr-md py-xs flex items-center gap-sm"}>
+                <div className={"flex-1"}>
+                    <SearchBar />
+                </div>
+                <div className={"flex gap-xs items-center"}>
+                    <FiltersToggle
+                        onFiltersToggle={() =>
+                            vm.showingFilters ? actions.hideFilters() : actions.showFilters()
+                        }
+                        showingFilters={vm.showingFilters}
+                        data-testid="fm.list-entries.toggle-filters"
+                    />
+                    <Tooltip
+                        side={"bottom"}
+                        content={
+                            vm.viewMode === "table" ? t`Switch to Grid` : t`Switch to Table`
+                        }
+                        trigger={
+                            <IconButton
+                                variant={"ghost"}
+                                size={"md"}
+                                icon={vm.viewMode === "table" ? <GridIcon /> : <TableIcon />}
+                                onClick={() =>
+                                    actions.setViewMode(
+                                        vm.viewMode === "table" ? "grid" : "table"
+                                    )
+                                }
+                                data-testid={"fm-header-layout-switch"}
+                            />
+                        }
+                    />
+                </div>
+                <div className={"flex gap-xs items-center"}>
+                    {browseFiles && vm.permissions.canCreate && (
+                        <Button
+                            onClick={browseFiles}
+                            size={"md"}
+                            text={t`Upload`}
+                            icon={<FileUploadIcon />}
+                            data-testid={"fm-header-upload-button"}
+                        />
+                    )}
+                    {vm.permissions.canCreate && (
+                        <Button
+                            variant={"secondary"}
+                            size={"md"}
+                            onClick={() => actions.folders.createFolder()}
+                            text={t`New Folder`}
+                            icon={<AddIcon />}
+                            data-testid={"fm-header-new-folder-button"}
+                        />
+                    )}
+                </div>
+            </div>
+            <Filters
+                filters={browser.filters}
+                show={vm.showingFilters}
+                onChange={applyFilters}
             />
-            <LayoutSwitch viewMode={vm.viewMode} onSwitch={actions.setViewMode} />
         </div>
     );
 });

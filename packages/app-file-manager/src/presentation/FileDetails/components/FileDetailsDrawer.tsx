@@ -4,7 +4,7 @@ import { Drawer } from "@webiny/admin-ui";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
 import { useFileManagerPresenter } from "~/presentation/FileList/index.js";
-import { useFileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
+import { useFileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
 import { FileProvider } from "~/presentation/contexts/FileProvider.js";
 import { Content } from "~/presentation/FileDetails/components/Content.js";
 import { Preview } from "~/presentation/FileDetails/components/Preview.js";
@@ -23,7 +23,7 @@ const parseWidth = (width: string) => {
 const FileDetailsContent = observer(function FileDetailsContent() {
     const { vm } = useFileManagerPresenter();
     const fileDetails = vm.fileDetails;
-    const { fileDetails: fileDetailsConfig } = useFileManagerViewConfig();
+    const { fileDetails: fileDetailsConfig } = useFileManagerConfig();
 
     if (!fileDetails) {
         return null;
@@ -51,7 +51,7 @@ const FileDetailsContent = observer(function FileDetailsContent() {
 export const FileDetailsDrawer = observer(function FileDetailsDrawer() {
     const { vm, actions } = useFileManagerPresenter();
     const fileDetails = vm.fileDetails;
-    const { fileDetails: fileDetailsConfig } = useFileManagerViewConfig();
+    const { fileDetails: fileDetailsConfig } = useFileManagerConfig();
 
     const { drawerWidth } = parseWidth(fileDetailsConfig.width);
 

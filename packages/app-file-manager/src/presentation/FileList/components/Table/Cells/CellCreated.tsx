@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from "react";
 import { TimeAgo } from "@webiny/admin-ui";
 import { FileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";

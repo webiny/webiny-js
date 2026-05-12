@@ -3,8 +3,7 @@ import { Wcp } from "@webiny/app-admin";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import { FileManagerViewConfig as FileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
 import { FilterByType } from "~/presentation/FileList/components/Filters/FilterByType.js";
-import { BulkActionDelete, BulkActionMove } from "~/presentation/FileList/components/BulkActions/index.js";
-import { ActionEdit } from "~/presentation/FileList/legacy/BulkActions/index.js";
+import { BulkActionDelete, BulkActionEdit, BulkActionMove } from "~/presentation/FileList/components/BulkActions/index.js";
 import { Tags, AccessControl } from "~/presentation/config/fields/index.js";
 import {
     CellActions,
@@ -36,7 +35,7 @@ export const DefaultFileManagerConfig = () => {
             <Browser.FilterByTags />
             <Browser.Filter name={"type"} element={<FilterByType />} />
             {/* Bulk Actions */}
-            <Browser.BulkAction name={"edit"} element={<ActionEdit />} />
+            <Browser.BulkAction name={"edit"} element={<BulkActionEdit />} />
             <Browser.BulkAction name={"move"} element={<BulkActionMove />} />
             <Browser.BulkAction name={"delete"} element={<BulkActionDelete />} />
             {/* Folder Actions */}

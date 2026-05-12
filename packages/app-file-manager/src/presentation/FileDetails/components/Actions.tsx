@@ -1,8 +1,8 @@
 import React from "react";
-import { useFileManagerViewConfig } from "~/index.js";
+import { useFileManagerConfig } from "~/index.js";
 
 export const Actions = () => {
-    const { fileDetails } = useFileManagerViewConfig();
+    const { fileDetails } = useFileManagerConfig();
 
     return (
         <div className={"flex justify-start gap-xs"}>

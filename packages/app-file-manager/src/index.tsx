@@ -7,5 +7,5 @@ export {
 } from "./modules/FileManagerApiProvider/FileManagerApiContext/index.js";
 export {
     FileManagerViewConfig,
-    useFileManagerViewConfig
+    useFileManagerConfig
 } from "./presentation/config/FileManagerViewConfig.js";

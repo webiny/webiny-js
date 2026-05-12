@@ -28,7 +28,7 @@ interface FileManagerViewConfigData {
     fileDetails: FileDetailsConfig;
 }
 
-export function useFileManagerViewConfig() {
+export function useFileManagerConfig() {
     const config = base.useConfig();
     const acoConfig = useAcoConfig(config);
 

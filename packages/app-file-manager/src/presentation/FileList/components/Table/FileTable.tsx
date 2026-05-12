@@ -4,7 +4,7 @@ import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-u
 import { createRecordsData, Table as AcoTable } from "@webiny/app-aco";
 import type { FolderTableRow, RecordTableRow } from "@webiny/app-aco";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
-import { useFileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
+import { useFileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
 import type { FmFile } from "~/features/shared/types.js";
 import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 
@@ -60,17 +60,17 @@ const toDataTableSorting = (
  */
 export const FileTable = observer(function FileTable() {
     const presenter = useFileManagerPresenter();
-    const { browser } = useFileManagerViewConfig();
+    const { browser } = useFileManagerConfig();
     const { vm, actions } = presenter;
 
-    // Build table data: folder rows above file rows.
     const data = useMemo<FileTableItem[]>(() => {
-        const currentFolder = vm.folders.currentFolder;
-        const childFolders = currentFolder ? currentFolder.children : vm.folders.tree;
-        const folderRows = toFolderTableRows(childFolders);
         const fileRows = createRecordsData(vm.list.rows);
+        if (!vm.showFolders) {
+            return fileRows;
+        }
+        const folderRows = toFolderTableRows(vm.folders.childFolders);
         return [...folderRows, ...fileRows];
-    }, [vm.folders.currentFolder, vm.folders.tree, vm.list.rows]);
+    }, [vm.showFolders, vm.folders.childFolders, vm.list.rows]);
 
     // Build selected rows for the DataTable.
     const selected = useMemo<FileTableItem[]>(() => {

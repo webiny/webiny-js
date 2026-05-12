@@ -341,8 +341,8 @@ describe("FileListPresenter", () => {
     // View mode persistence via LocalStorage.
     // -----------------------------------------------------------------------
 
-    it("should default viewMode to 'table'", () => {
-        expect(presenter.vm.viewMode).toBe("table");
+    it("should default viewMode to 'grid'", () => {
+        expect(presenter.vm.viewMode).toBe("grid");
     });
 
     it("should update viewMode and persist to localStorage", () => {

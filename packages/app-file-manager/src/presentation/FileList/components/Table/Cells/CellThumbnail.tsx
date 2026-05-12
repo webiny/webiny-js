@@ -1,11 +1,10 @@
-// @ts-nocheck
 import React from "react";
 import { useFile } from "~/presentation/hooks/useFile.js";
-import { useFileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
+import { useFileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
 
 export const CellThumbnail = () => {
     const { file } = useFile();
-    const { browser, getThumbnailRenderer } = useFileManagerViewConfig();
+    const { browser, getThumbnailRenderer } = useFileManagerConfig();
 
     const renderer = getThumbnailRenderer(browser.table.cellThumbnails, file);
 

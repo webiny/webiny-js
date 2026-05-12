@@ -64,10 +64,16 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     actions: IListActions = {
         search: {
             set: (query: string) => {
+                if (this._search === query) {
+                    return;
+                }
                 this._search = query;
                 this.debouncedRequery();
             },
             clear: () => {
+                if (this._search === "") {
+                    return;
+                }
                 this._search = "";
                 this.requery();
             }
