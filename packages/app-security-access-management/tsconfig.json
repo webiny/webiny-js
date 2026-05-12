@@ -6,7 +6,6 @@
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../form" },
-    { "path": "../ui" },
     { "path": "../validation" }
   ],
   "compilerOptions": {
@@ -24,8 +23,6 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
-      "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
     }

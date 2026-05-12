@@ -1,10 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import debounce from "lodash/debounce.js";
-import { MultiAutoComplete } from "@webiny/ui/AutoComplete/index.js";
+import { MultiAutoComplete } from "@webiny/admin-ui";
 import { RouteLink } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { useReferences } from "./useReferences.js";
-import { renderItem, renderListItemOptions } from "./renderItem.js";
 import { NewEntryButton } from "./NewEntryButton.js";
 import { useNewRefEntry } from "../hooks/useNewRefEntry.js";
 import type { CmsModelField } from "~/types.js";
@@ -28,10 +27,41 @@ const ContentEntriesMultiAutocomplete = ({ bind }: ContentEntriesMultiAutocomple
     const rules = useFieldEffectiveRules(field);
     const { models } = useModels();
     const [showNewEntryModal, setShowNewEntryModal] = useState(false);
-    const { options, setSearch, entries, loading, onChange } = useReferences({ bind, field });
+    const {
+        options: rawOptions,
+        setSearch,
+        entries,
+        loading,
+        onChange
+    } = useReferences({
+        bind,
+        field
+    });
     const disabled = !rules.canEdit || rules.disabled;
 
     const { renderNewEntryModal, refModelId, help } = useNewRefEntry({ field });
+
+    const options = useMemo(
+        () => rawOptions.map(opt => ({ label: opt.name, value: opt.entryId, item: opt })),
+        [rawOptions]
+    );
+
+    const currentValues = useMemo(() => entries.map(e => e.entryId), [entries]);
+
+    const onValuesChange = useCallback(
+        (entryIds: string[]) => {
+            const selectedItems = entryIds
+                .map(id => options.find(o => o.value === id)?.item)
+                .filter(Boolean) as OptionItem[];
+            onChange(selectedItems);
+        },
+        [options, onChange]
+    );
+
+    const onValueSearch = useCallback(
+        debounce((search: string) => setSearch(search), 250),
+        [setSearch]
+    );
 
     const entryWarning = (entry: OptionItem, index: number): React.ReactElement | null => {
         const { id, modelId, name, published } = entry;
@@ -58,17 +88,13 @@ const ContentEntriesMultiAutocomplete = ({ bind }: ContentEntriesMultiAutocomple
 
     const refEntryOnChange = useCallback(
         (value: OptionItem) => {
-            /**
-             * Append new selected entry at the end of existing entries.
-             */
             onChange([...entries, value]);
             setShowNewEntryModal(false);
         },
-
         [onChange, entries]
     );
 
-    const model = models.find(model => model.modelId === refModelId);
+    const model = models.find(m => m.modelId === refModelId);
 
     if (renderNewEntryModal) {
         return (
@@ -81,20 +107,16 @@ const ContentEntriesMultiAutocomplete = ({ bind }: ContentEntriesMultiAutocomple
                     />
                 ) : null}
                 <MultiAutoComplete
-                    {...bind}
-                    renderItem={renderItem}
-                    renderListItemLabel={renderItem}
-                    renderListItemOptions={renderListItemOptions}
-                    useMultipleSelectionList
-                    onChange={onChange}
+                    validation={bind.validation}
                     loading={loading}
-                    value={entries}
+                    values={currentValues}
                     options={options}
                     label={field.label}
-                    onInput={debounce(setSearch, 250)}
+                    onValuesChange={onValuesChange}
+                    onValueSearch={onValueSearch}
                     description={<>{field.help}</>}
                     note={warning}
-                    noResultFound={<NewEntryButton onClick={() => setShowNewEntryModal(true)} />}
+                    emptyMessage={<NewEntryButton onClick={() => setShowNewEntryModal(true)} />}
                 />
             </>
         );
@@ -102,21 +124,17 @@ const ContentEntriesMultiAutocomplete = ({ bind }: ContentEntriesMultiAutocomple
 
     return (
         <MultiAutoComplete
-            {...bind}
             disabled={disabled}
-            renderItem={renderItem}
-            renderListItemLabel={renderItem}
-            renderListItemOptions={renderListItemOptions}
-            useMultipleSelectionList
-            onChange={onChange}
+            validation={bind.validation}
             loading={loading}
-            value={entries}
+            values={currentValues}
             options={options}
             label={field.label}
-            onInput={debounce(setSearch, 250)}
+            onValuesChange={onValuesChange}
+            onValueSearch={onValueSearch}
             description={<>{field.help}</>}
             note={warning}
-            noResultFound={help}
+            emptyMessage={help}
         />
     );
 };

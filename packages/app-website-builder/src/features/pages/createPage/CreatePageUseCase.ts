@@ -14,7 +14,8 @@ class CreatePageUseCaseImpl implements UseCaseAbstraction.Interface {
                 bindings: params.bindings,
                 extensions: params.extensions,
                 live: null,
-                system: null
+                system: null,
+                revisionDescription: undefined
             })
         );
     }

@@ -14,8 +14,8 @@ describe("context", () => {
 
         const license = License.fromLicenseDto(testProjectLicense);
 
-        BuildParamsFeature.register(container, license);
-        FeatureFlagsFeature.register(container, license);
+        BuildParamsFeature.register(container);
+        FeatureFlagsFeature.register(container);
         WcpFeature.register(container, license);
 
         const wcpContext = container.resolve(WcpContext);

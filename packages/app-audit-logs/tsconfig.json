@@ -8,8 +8,7 @@
     { "path": "../common-audit-logs" },
     { "path": "../form" },
     { "path": "../react-composition" },
-    { "path": "../react-properties" },
-    { "path": "../ui" }
+    { "path": "../react-properties" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -31,9 +30,7 @@
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
-      "@webiny/react-properties": ["../react-properties/src"],
-      "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"]
+      "@webiny/react-properties": ["../react-properties/src"]
     }
   }
 }

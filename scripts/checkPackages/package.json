@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "name": "@webiny-scripts/check-packages",
+  "version": "0.0.0",
+  "type": "module",
+  "sideEffects": false,
+  "bin": "./src/index.js",
+  "main": "./src/index.js",
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "serialize-error": "^13.0.1",
+    "tsx": "^4.21.0",
+    "yargs": "^18.0.0"
+  }
+}

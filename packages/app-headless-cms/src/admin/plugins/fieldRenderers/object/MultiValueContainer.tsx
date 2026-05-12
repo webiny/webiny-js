@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { generateAlphaNumericLowerCaseId } from "@webiny/utils";
-import { Cell } from "@webiny/ui/Grid/index.js";
+import { Grid } from "@webiny/admin-ui";
 import { useConfirmationDialog } from "@webiny/app-admin";
 import type {
     BindComponentRenderProp,
@@ -127,7 +127,7 @@ export const MultiValueContainer = (props: MultiValueContainerProps) => {
                             isExpanded={itemState[index] ?? false}
                             toggleExpanded={() => toggleItemState(index)}
                         >
-                            <Cell span={12}>
+                            <Grid.Column span={12}>
                                 <Fields
                                     Bind={Bind}
                                     contentModel={model}
@@ -135,7 +135,7 @@ export const MultiValueContainer = (props: MultiValueContainerProps) => {
                                     layout={settings.layout}
                                     gridClassName={fieldsGridStyle}
                                 />
-                            </Cell>
+                            </Grid.Column>
                         </MultiValueItemContainer>
                     </ObjectItem>
                 );

@@ -2,7 +2,7 @@ import * as React from "react";
 import Helmet from "react-helmet";
 import { css } from "@emotion/css";
 import styled from "@emotion/styled";
-import { Typography } from "@webiny/ui/Typography/index.js";
+import { Text } from "@webiny/admin-ui";
 import authErrorImg from "./SecureRouteError.svg";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { useRouter } from "@webiny/app-admin";
@@ -61,10 +61,10 @@ export const ModelIsBeingDeletedError = (props: IModelIsBeingDeletedProps) => {
             <Helmet title={"Cannot access the model!"} />
             <Image />
 
-            <Typography use={"body1"} className={styles.bodyStyle}>
+            <Text size={"md"} className={styles.bodyStyle}>
                 Model <strong>{props.model.name}</strong> is being deleted and cannot be accessed or
                 changed.
-            </Typography>
+            </Text>
 
             <p>
                 <br />

@@ -21,6 +21,7 @@ class ProviderSettingsImpl implements AiPowerUpsSettingsGroup.Interface {
         form.fields(fields => ({
             presets: fields
                 .object()
+                .label("Presets")
                 .renderer("objectAccordionMultiple", {
                     container: false,
                     addItemLabel: "Add provider",

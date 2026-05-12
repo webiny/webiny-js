@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Typography } from "@webiny/ui/Typography/index.js";
+import { Text } from "@webiny/admin-ui";
 import { SimpleLink } from "@webiny/app-admin";
 import { createNewEntryUrl } from "./createEntryUrl.js";
 import { i18n } from "@webiny/app/i18n/index.js";
@@ -14,7 +14,7 @@ const referenceMultipleModelsLabel = t`The creation of reference values from wit
  when a single reference model is selected. To reference values from multiple models,
  please make sure the referenced values exist before setting the reference.`;
 
-const HelpTextTypography = styled(Typography)`
+const HelpTextTypography = styled(Text)`
     & {
         display: inline-block;
         color: var(--mdc-theme-text-secondary-on-background) !important;
@@ -22,7 +22,7 @@ const HelpTextTypography = styled(Typography)`
 `;
 
 export const ReferenceMultipleModelsHelpText = () => {
-    return <HelpTextTypography use={"caption"}>{referenceMultipleModelsLabel}</HelpTextTypography>;
+    return <HelpTextTypography>{referenceMultipleModelsLabel}</HelpTextTypography>;
 };
 
 interface MissingEntryHelpTextProps {
@@ -30,7 +30,7 @@ interface MissingEntryHelpTextProps {
 }
 const MissingEntryHelpText = ({ refModelId }: MissingEntryHelpTextProps) => {
     return (
-        <HelpTextTypography use={"caption"}>
+        <HelpTextTypography>
             {missingEntryLabel({
                 newEntryLink: (
                     <SimpleLink

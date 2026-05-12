@@ -3,7 +3,7 @@ import type { CmsErrorResponse, CmsModel } from "~/types.js";
 import { FullyDeleteModelStateStatus } from "../types.js";
 import { Information } from "./Information.js";
 import { Confirmation } from "./Confirmation.js";
-import { CircularProgress } from "@webiny/ui/Progress/index.js";
+import { OverlayLoader } from "@webiny/admin-ui";
 import { Processed } from "./Processed.js";
 
 export interface IContentProps {
@@ -26,7 +26,7 @@ export const Content = ({ confirmation, setConfirmation, error, model, status }:
     return (
         <>
             {status === FullyDeleteModelStateStatus.CONFIRMED && (
-                <CircularProgress label={"Starting the deletion process..."} />
+                <OverlayLoader text={"Starting the deletion process..."} />
             )}
             <Confirmation
                 model={model}

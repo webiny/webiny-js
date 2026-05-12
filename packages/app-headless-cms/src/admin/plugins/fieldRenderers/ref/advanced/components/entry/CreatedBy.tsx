@@ -1,7 +1,7 @@
 import React from "react";
 import type { CmsIdentity } from "~/types.js";
 import { Box } from "./Box.js";
-import { TimeAgo } from "@webiny/ui/TimeAgo/index.js";
+import { TimeAgo } from "@webiny/admin-ui";
 
 interface CreatedByProps {
     createdBy: CmsIdentity;

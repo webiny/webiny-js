@@ -60,6 +60,7 @@ export interface IFieldConfig {
     afterSetValueCallbacks?: AfterSetValueCallback[];
     onBlurCallbacks?: OnBlurCallback[];
     requiredWhenCallbacks?: RequiredWhenCallback[];
+    hiddenWhenCallbacks?: HiddenWhenCallback[];
     computed?: ComputedFieldCallback;
     computedUntilDirty?: ComputedFieldCallback;
     tags?: string[];
@@ -73,6 +74,8 @@ export interface IRequiredWhenCallbackConfig {
 }
 
 export type RequiredWhenCallback = IRequiredWhenCallbackConfig;
+
+export type HiddenWhenCallback = (form: IFormModel) => boolean;
 
 export type ComputedFieldCallback = (form: IFormModel) => unknown;
 
@@ -619,6 +622,7 @@ export interface ILayoutModifier {
 export interface IFormError {
     path: string;
     label?: string;
+    breadcrumb?: string[];
     message: string;
 }
 
@@ -627,6 +631,10 @@ export interface IFormVM {
     errors: IFormError[];
     isDirty: boolean;
     isValid: boolean | null;
+    submitCount: number;
+    focusField(path: string): void;
+    getData(): Record<string, unknown>;
+    setData(data: Record<string, unknown>): void;
 }
 
 /**
@@ -673,6 +681,7 @@ export interface IFormModel<T = Record<string, any>> {
     readonly isDirty: boolean;
     readonly isValid: boolean | null;
     readonly submitted: boolean;
+    readonly submitCount: number;
     readonly errors: IFormError[];
     readonly vm: IFormVM;
     getFieldBuilders(predicate?: (builder: IFieldBuilder) => boolean): IFieldBuilder[];
@@ -737,6 +746,7 @@ export namespace FormModel {
     export type FormRuleFunction = FormRuleFn;
     export type FormRuleType = FormRule;
     export type RequiredWhen = (form: IFormModel) => boolean;
+    export type HiddenWhen = HiddenWhenCallback;
     export type Computed = ComputedFieldCallback;
 }
 
@@ -801,6 +811,7 @@ export interface IFieldBuilder<
               : [settings: FieldRendererSettings<TName>]
     ): this;
     hidden(): this;
+    hiddenWhen(fn: (form: IFormModel) => boolean): this;
     required(message?: string): this;
     /**
      * Conditional required check. Multiple `requiredWhen()` calls chain — the
