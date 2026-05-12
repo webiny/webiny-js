@@ -1,1 +1,3 @@
 - seg controls in sidebars via presenters?
+- revisit icons of elements
+- 

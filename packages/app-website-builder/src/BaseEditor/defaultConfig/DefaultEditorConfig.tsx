@@ -1,7 +1,6 @@
 import React from "react";
-import { Text } from "@webiny/admin-ui";
 import { EditorConfig } from "~/BaseEditor/config/index.js";
-import { LayoutIllustration } from "./Toolbar/Navigator/LayoutIllustration.js";
+import { SidebarEmptyState } from "./Sidebar/SidebarEmptyState.js";
 import { StyleSettingsGroup } from "./Sidebar/StyleSettings/StyleSettingsGroup.js";
 import { StyleProperties } from "./Sidebar/StyleSettings/StyleProperties.js";
 import { ElementSettingsGroup } from "./Sidebar/ElementSettings/ElementSettingsGroup.js";
@@ -17,12 +16,7 @@ const { Ui } = EditorConfig;
 const ClickToActivate = () => {
     return (
         <Ui.NoActiveElement>
-            <div className={"flex flex-col items-center gap-md px-md text-center mt-[200px]"}>
-                <LayoutIllustration />
-                <Text size={"sm"} className={"text-neutral-strong"}>
-                    {"Select an element in the canvas to edit properties."}
-                </Text>
-            </div>
+            <SidebarEmptyState message={"Select an element in the canvas to edit properties."} />
         </Ui.NoActiveElement>
     );
 };

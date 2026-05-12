@@ -1,15 +1,7 @@
 import React, { useMemo, useCallback } from "react";
 import get from "lodash/get.js";
 import { observer } from "mobx-react-lite";
-import {
-    type NodeDto,
-    Tree,
-    type TreeProps,
-    Tooltip,
-    Text,
-    Button,
-    ScrollArea
-} from "@webiny/admin-ui";
+import { type NodeDto, Tree, type TreeProps, Tooltip, ScrollArea } from "@webiny/admin-ui";
 import { ReactComponent as VisibilityNone } from "@webiny/icons/visibility_off.svg";
 import type { Document } from "@webiny/website-builder-sdk";
 import { useActiveElement } from "~/BaseEditor/hooks/useActiveElement.js";
@@ -19,8 +11,7 @@ import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import { Commands } from "~/BaseEditor/index.js";
 import { InlineSvg } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/InlineSvg.js";
 import { useStyles } from "~/BaseEditor/hooks/useStyles.js";
-import { useToolbarTabs } from "~/BaseEditor/config/Toolbar/ToolbarTabsContext.js";
-import { LayoutIllustration } from "./LayoutIllustration.js";
+import { NavigatorEmptyState } from "./NavigatorEmptyState.js";
 
 // Node type for the Tree component.
 type ElementNode = NodeDto<{
@@ -145,25 +136,6 @@ function getElementNodeData({
         };
     }, {});
 }
-
-const NavigatorEmptyState = () => {
-    const { setActiveTab } = useToolbarTabs();
-
-    return (
-        <div className={"flex flex-col items-center gap-md px-md text-center mt-[200px]"}>
-            <LayoutIllustration />
-            <Text size={"sm"} className={"text-neutral-strong"}>
-                {"You do not have any items in your layout. Add your first item in Insert panel."}
-            </Text>
-            <Button
-                variant={"secondary"}
-                text={"Add item"}
-                size={"sm"}
-                onClick={() => setActiveTab("insert")}
-            />
-        </div>
-    );
-};
 
 export const Navigator = observer(() => {
     const editor = useDocumentEditor();
