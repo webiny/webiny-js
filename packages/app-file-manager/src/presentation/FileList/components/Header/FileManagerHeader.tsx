@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { Button, Heading, Icon, IconButton, Skeleton, Tooltip } from "@webiny/admin-ui";
 import { Filters, type FiltersOnSubmit, FiltersToggle, OptionsMenu } from "@webiny/app-admin";
-import { FolderProvider } from "@webiny/app-aco";
+import { FolderNode, FolderProvider } from "@webiny/app-aco";
 import { ReactComponent as HomeIcon } from "@webiny/icons/home.svg";
 import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
@@ -39,7 +39,7 @@ const Title = observer(function Title() {
                 </Heading>
             </div>
             {currentFolder && (
-                <FolderProvider folder={currentFolder as any}>
+                <FolderProvider folder={FolderNode.toFolderDto(currentFolder)}>
                     <OptionsMenu
                         actions={browser.folder.actions}
                         data-testid={"folder.title.menu-action"}
