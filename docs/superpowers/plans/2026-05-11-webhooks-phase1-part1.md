@@ -55,74 +55,27 @@ __tests__/                               (part 2)
 
 ---
 
-## Task 1: Shared abstraction tokens in `api-core`
+## ✅ Task 1: Shared abstraction tokens in `api-core` — DONE
 
-**Files:**
-- Create: `packages/api-core/src/features/webhooks/abstractions.ts`
+**Actual structure (differs from original plan):**
 
-All three DI tokens live in a single file under `api-core` so downstream packages (bridge features, app code) can import them without taking a dependency on the full `@webiny/webhooks` package.
+Each token lives in its own subdirectory with its own `abstractions.ts`. `IWebhookEventDefinition` is defined in `api-core` (not imported from `@webiny/webhooks` — that would be circular).
 
-- [ ] **Step 1: Create `packages/api-core/src/features/webhooks/abstractions.ts`**
-
-```ts
-import { createAbstraction } from "@webiny/feature/api";
-import type { IWebhookEventDefinition } from "@webiny/webhooks/src/api/domain/types.js";
-
-export interface IWebhookDispatcher {
-    dispatch(eventName: string, data: object): Promise<void>;
-}
-
-/** Routes a domain event to all matching enabled webhooks via background tasks. */
-export const WebhookDispatcher = createAbstraction<IWebhookDispatcher>(
-    "Webhooks/WebhookDispatcher"
-);
-
-export namespace WebhookDispatcher {
-    export type Interface = IWebhookDispatcher;
-}
-
-export interface IWebhookEventProvider {
-    getAvailableEvents(): Promise<IWebhookEventDefinition[]>;
-}
-
-/** Implemented by each bridge package; contributes subscribable events to the UI event picker. */
-export const WebhookEventProvider = createAbstraction<IWebhookEventProvider>(
-    "Webhooks/WebhookEventProvider"
-);
-
-export namespace WebhookEventProvider {
-    export type Interface = IWebhookEventProvider;
-}
-
-export interface IWebhookSignPayload {
-    /** Returns Stripe-format signature header value: `t={timestamp},v1={hmac-sha256}` */
-    sign(rawBody: string, timestamp: number, secret: string): Promise<string>;
-}
-
-/** Signs webhook payloads using HMAC-SHA256 with the per-webhook signing secret. */
-export const WebhookSignPayload = createAbstraction<IWebhookSignPayload>(
-    "Webhooks/WebhookSignPayload"
-);
-
-export namespace WebhookSignPayload {
-    export type Interface = IWebhookSignPayload;
-}
+```
+packages/api-core/src/features/webhooks/
+├── WebhookDispatcher/
+│   └── abstractions.ts
+├── WebhookEventProvider/
+│   └── abstractions.ts    ← also owns IWebhookEventDefinition
+├── WebhookSignPayload/
+│   └── abstractions.ts    ← sign() returns IWebhookSignPayloadResponse { hash }
+└── index.ts
 ```
 
-- [ ] **Step 2: Build `api-core` to confirm no type errors**
-
-```bash
-yarn build -p @webiny/api-core 2>&1 | tail -20
-```
-
-Expected: build succeeds.
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add packages/api-core/src/features/webhooks/abstractions.ts
-git commit -m "feat(api-core): add shared webhook abstraction tokens"
-```
+**Key decisions:**
+- `sign()` returns `IWebhookSignPayloadResponse { hash: string }` (not `string`) — extensible without breaking callers.
+- `IWebhookEventDefinition` lives here, not in `@webiny/webhooks`, to avoid circular dependency.
+- Committed across two commits: `09c0a4b` (initial) and `e0a4003` (sign response object).
 
 ---
 
