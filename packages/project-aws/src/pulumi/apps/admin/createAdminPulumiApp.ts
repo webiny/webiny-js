@@ -1,8 +1,8 @@
 import { createReactPulumiApp } from "~/pulumi/apps/index.js";
 import { getProjectSdk } from "@webiny/project";
-import { AdminPulumi, ApplyAdminCustomDomains } from "~/abstractions/features/pulumi/index.js";
+import { AdminPulumi, SetAdminCustomDomains } from "~/abstractions/features/pulumi/index.js";
 import { adminPulumi } from "~/pulumi/features/AdminPulumi/index.js";
-import { DefaultApplyAdminCustomDomains } from "~/pulumi/features/ApplyAdminCustomDomains/index.js";
+import { DefaultSetAdminCustomDomains } from "~/pulumi/features/SetAdminCustomDomains/index.js";
 import { withServiceManifest } from "~/pulumi/index.js";
 import { AdminCustomDomains as adminCustomDomainsExt } from "~/pulumi/extensions/AdminCustomDomains.js";
 
@@ -12,8 +12,8 @@ export const createAdminPulumiApp = async () => {
     const sdk = await getProjectSdk();
     const projectConfig = await sdk.getProjectConfig();
 
-    // Register the ApplyAdminCustomDomains singleton so it can be injected into AdminPulumi impls.
-    sdk.getContainer().register(DefaultApplyAdminCustomDomains);
+    // Register the SetAdminCustomDomains singleton so it can be injected into AdminPulumi impls.
+    sdk.getContainer().register(DefaultSetAdminCustomDomains);
 
     const baseApp = createReactPulumiApp({
         name: "admin",
@@ -37,7 +37,7 @@ export const createAdminPulumiApp = async () => {
             const pulumiHandlers = sdk.getContainer().resolve(AdminPulumi);
 
             // Execute directly so implementations run before the CloudFront resource is created,
-            // allowing them to modify cloudfront.config (e.g. via injected ApplyAdminCustomDomains).
+            // allowing them to modify cloudfront.config (e.g. via injected SetAdminCustomDomains).
             await pulumiHandlers.execute(app as AdminPulumiApp);
         }
     });

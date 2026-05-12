@@ -2,13 +2,12 @@ import { createAbstraction } from "@webiny/project/abstractions/createAbstractio
 import type { ApiPulumiApp } from "~/pulumi/apps/api/createApiPulumiApp.js";
 import type { CustomDomainParams } from "~/pulumi/apps/customDomain.js";
 
-export interface IApplyApiCustomDomains {
+export interface ISetApiCustomDomains {
     apply(app: ApiPulumiApp, params: CustomDomainParams): void;
 }
 
-export const ApplyApiCustomDomains =
-    createAbstraction<IApplyApiCustomDomains>("ApplyApiCustomDomains");
+export const SetApiCustomDomains = createAbstraction<ISetApiCustomDomains>("SetApiCustomDomains");
 
-export namespace ApplyApiCustomDomains {
-    export type Interface = IApplyApiCustomDomains;
+export namespace SetApiCustomDomains {
+    export type Interface = ISetApiCustomDomains;
 }

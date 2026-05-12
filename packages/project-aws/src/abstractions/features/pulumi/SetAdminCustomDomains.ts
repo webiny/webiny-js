@@ -2,13 +2,13 @@ import { createAbstraction } from "@webiny/project/abstractions/createAbstractio
 import type { AdminPulumiApp } from "~/pulumi/apps/admin/createAdminPulumiApp.js";
 import type { CustomDomainParams } from "~/pulumi/apps/customDomain.js";
 
-export interface IApplyAdminCustomDomains {
+export interface ISetAdminCustomDomains {
     apply(app: AdminPulumiApp, params: CustomDomainParams): void;
 }
 
-export const ApplyAdminCustomDomains =
-    createAbstraction<IApplyAdminCustomDomains>("ApplyAdminCustomDomains");
+export const SetAdminCustomDomains =
+    createAbstraction<ISetAdminCustomDomains>("SetAdminCustomDomains");
 
-export namespace ApplyAdminCustomDomains {
-    export type Interface = IApplyAdminCustomDomains;
+export namespace SetAdminCustomDomains {
+    export type Interface = ISetAdminCustomDomains;
 }

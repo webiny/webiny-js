@@ -24,9 +24,9 @@ import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
-import { ApiPulumi, ApplyApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
+import { ApiPulumi, SetApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
-import { DefaultApplyApiCustomDomains } from "~/pulumi/features/ApplyApiCustomDomains/index.js";
+import { DefaultSetApiCustomDomains } from "~/pulumi/features/SetApiCustomDomains/index.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -138,8 +138,8 @@ export const createApiPulumiApp = () => {
             });
             // <-------------------- Enterprise end -------------------->
 
-            // Register ApplyApiCustomDomains singleton so it can be injected into ApiPulumi impls.
-            sdk.getContainer().register(DefaultApplyApiCustomDomains);
+            // Register SetApiCustomDomains singleton so it can be injected into ApiPulumi impls.
+            sdk.getContainer().register(DefaultSetApiCustomDomains);
 
             const isProduction = app.env.isProduction;
 
@@ -239,7 +239,7 @@ export const createApiPulumiApp = () => {
             const scheduler = app.addModule(ApiScheduler);
 
             // Execute ApiPulumi implementations directly so they run before the CloudFront resource
-            // is created, allowing them to modify cloudfront config (e.g. via ApplyApiCustomDomains).
+            // is created, allowing them to modify cloudfront config (e.g. via SetApiCustomDomains).
             sdk.getContainer().registerComposite(apiPulumi);
             const pulumiHandlers = sdk.getContainer().resolve(ApiPulumi);
             await pulumiHandlers.execute(app as ApiPulumiApp);
