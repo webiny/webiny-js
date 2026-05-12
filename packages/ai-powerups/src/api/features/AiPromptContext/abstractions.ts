@@ -1,5 +1,44 @@
 import { createAbstraction } from "@webiny/feature/api";
 
+// ============================================================================
+// ProjectFileCache
+// ============================================================================
+
+export interface IProjectFileCache {
+    get(projectId: string, version: number): Promise<{ files: ProjectFileContent[]; hit: boolean }>;
+    set(projectId: string, version: number, files: ProjectFileContent[]): Promise<void>;
+}
+
+export const ProjectFileCache = createAbstraction<IProjectFileCache>("ProjectFileCache");
+
+export namespace ProjectFileCache {
+    export type Interface = IProjectFileCache;
+}
+
+// ============================================================================
+// ProjectFileAssembler
+// ============================================================================
+
+export interface IProjectFileAssembler {
+    execute(
+        projectId: string,
+        version: number,
+        files: Array<{ id: string; name: string; mimeType: string }>,
+        warnings: string[]
+    ): Promise<{ files: ProjectFileContent[]; cacheHit: boolean }>;
+}
+
+export const ProjectFileAssembler =
+    createAbstraction<IProjectFileAssembler>("ProjectFileAssembler");
+
+export namespace ProjectFileAssembler {
+    export type Interface = IProjectFileAssembler;
+}
+
+// ============================================================================
+// AiPromptContext
+// ============================================================================
+
 export interface AiPromptContextParams {
     projectId?: string | null;
     readerPersonaId?: string | null;

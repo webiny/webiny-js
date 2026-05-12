@@ -89,7 +89,7 @@ class WbGeneratePageContentUseCaseImpl implements WbGeneratePageContentUseCase.I
                 toolChoice: "auto",
                 prompt: params.prompt,
                 ...(Object.keys(sdkTools).length > 0
-                    ? { tools: sdkTools, stopWhen: stepCountIs(10) }
+                    ? { tools: sdkTools, stopWhen: stepCountIs(20) }
                     : {})
             });
 
