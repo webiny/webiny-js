@@ -3,7 +3,7 @@ import type { AdminPulumiApp } from "~/pulumi/apps/admin/createAdminPulumiApp.js
 import { applyCustomDomain, type CustomDomainParams } from "~/pulumi/apps/customDomain.js";
 
 class DefaultSetAdminCustomDomainsImpl implements SetAdminCustomDomains.Interface {
-    apply(app: AdminPulumiApp, params: CustomDomainParams): void {
+    set(app: AdminPulumiApp, params: CustomDomainParams): void {
         applyCustomDomain(app.resources.cloudfront, params);
     }
 }

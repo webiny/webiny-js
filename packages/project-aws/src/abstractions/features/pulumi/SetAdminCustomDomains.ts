@@ -3,7 +3,7 @@ import type { AdminPulumiApp } from "~/pulumi/apps/admin/createAdminPulumiApp.js
 import type { CustomDomainParams } from "~/pulumi/apps/customDomain.js";
 
 export interface ISetAdminCustomDomains {
-    apply(app: AdminPulumiApp, params: CustomDomainParams): void;
+    set(app: AdminPulumiApp, params: CustomDomainParams): void;
 }
 
 export const SetAdminCustomDomains =

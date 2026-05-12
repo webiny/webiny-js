@@ -3,7 +3,7 @@ import type { ApiPulumiApp } from "~/pulumi/apps/api/createApiPulumiApp.js";
 import type { CustomDomainParams } from "~/pulumi/apps/customDomain.js";
 
 export interface ISetApiCustomDomains {
-    apply(app: ApiPulumiApp, params: CustomDomainParams): void;
+    set(app: ApiPulumiApp, params: CustomDomainParams): void;
 }
 
 export const SetApiCustomDomains = createAbstraction<ISetApiCustomDomains>("SetApiCustomDomains");

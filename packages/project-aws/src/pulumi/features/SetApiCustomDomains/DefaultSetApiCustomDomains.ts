@@ -4,7 +4,7 @@ import { applyCustomDomain, type CustomDomainParams } from "~/pulumi/apps/custom
 import { ApiCloudfront } from "~/pulumi/apps/api/ApiCloudfront.js";
 
 class DefaultSetApiCustomDomainsImpl implements SetApiCustomDomains.Interface {
-    apply(app: ApiPulumiApp, params: CustomDomainParams): void {
+    set(app: ApiPulumiApp, params: CustomDomainParams): void {
         applyCustomDomain(app.getModule(ApiCloudfront), params);
     }
 }
