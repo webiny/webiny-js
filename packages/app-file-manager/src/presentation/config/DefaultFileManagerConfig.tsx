@@ -3,7 +3,8 @@ import { Wcp } from "@webiny/app-admin";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import { FileManagerViewConfig as FileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
 import { FilterByType } from "~/presentation/FileList/components/Filters/FilterByType.js";
-import { ActionDelete, ActionEdit, ActionMove } from "~/presentation/FileList/legacy/BulkActions/index.js";
+import { BulkActionDelete, BulkActionMove } from "~/presentation/FileList/components/BulkActions/index.js";
+import { ActionEdit } from "~/presentation/FileList/legacy/BulkActions/index.js";
 import { Tags, AccessControl } from "~/presentation/config/fields/index.js";
 import {
     CellActions,
@@ -36,8 +37,8 @@ export const DefaultFileManagerConfig = () => {
             <Browser.Filter name={"type"} element={<FilterByType />} />
             {/* Bulk Actions */}
             <Browser.BulkAction name={"edit"} element={<ActionEdit />} />
-            <Browser.BulkAction name={"move"} element={<ActionMove />} />
-            <Browser.BulkAction name={"delete"} element={<ActionDelete />} />
+            <Browser.BulkAction name={"move"} element={<BulkActionMove />} />
+            <Browser.BulkAction name={"delete"} element={<BulkActionDelete />} />
             {/* Folder Actions */}
             <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
             <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
