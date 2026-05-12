@@ -24,7 +24,7 @@ import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
-import { ApiPulumi, SetApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
+import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
 import { DefaultSetApiCustomDomains } from "~/pulumi/features/SetApiCustomDomains/index.js";
 
