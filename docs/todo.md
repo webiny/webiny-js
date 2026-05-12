@@ -1,5 +1,6 @@
 - revisit icons of elements
 - icons for groups in sdk
 - sidebar.group.tab and toolbar.tab?
-- search
-- navigator paddings
+- search via presenter? or inline state?
+- navigator padding?
+- left: 300, - 300 must be var

@@ -77,7 +77,7 @@ export const Navigator = observer(() => {
     }
 
     return (
-        <ScrollArea className={"h-full"}>
+        <ScrollArea className={"h-full pt-xs"}>
             <Tree
                 key={treeKey}
                 autoExpandOnDragOver={false}

@@ -4,10 +4,9 @@ import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as ListIcon } from "@webiny/icons/format_list_bulleted.svg";
 import { ReactComponent as GridIcon } from "@webiny/icons/grid_view.svg";
 import { ReactComponent as DashboardIcon } from "@webiny/icons/dashboard_customize.svg";
-import { Draggable } from "~/BaseEditor/components/Draggable.js";
 import { useComponentGroups } from "./useComponentGroups.js";
-import { ListItem } from "./ListItem.js";
-import { GridItem } from "./GridItem.js";
+import { GroupItemsList } from "./GroupItemsList.js";
+import { GroupItemsGrid } from "./GroupItemsGrid.js";
 
 const VIEW_ITEMS = [
     { value: "list", icon: <Icon icon={<ListIcon />} label={"List view"} /> },
@@ -26,7 +25,8 @@ export const InsertElements = () => {
             <div className={"flex-shrink-0 flex items-center gap-xs mb-md"}>
                 <InputPrimitive
                     value={search}
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={value => setSearch(value ?? "")}
+                    onEscape={() => setSearch("")}
                     placeholder={"Search..."}
                     startIcon={<Icon icon={<SearchIcon />} label={"Search"} />}
                     variant={"secondary"}
@@ -65,34 +65,11 @@ export const InsertElements = () => {
                                         {group.label}
                                     </Text>
                                 </div>
-                                <div
-                                    className={
-                                        isGrid
-                                            ? "grid grid-cols-3 gap-sm px-lg py-sm"
-                                            : "py-sm px-xl flex flex-col gap-y-xs"
-                                    }
-                                    data-role={"group-items"}
-                                >
-                                    {items.map(item => (
-                                        <Draggable
-                                            key={item.name}
-                                            type="ELEMENT"
-                                            item={{ componentName: item.name }}
-                                        >
-                                            {({ dragRef }) =>
-                                                dragRef(
-                                                    <div>
-                                                        {isGrid ? (
-                                                            <GridItem item={item} />
-                                                        ) : (
-                                                            <ListItem item={item} />
-                                                        )}
-                                                    </div>
-                                                )
-                                            }
-                                        </Draggable>
-                                    ))}
-                                </div>
+                                {isGrid ? (
+                                    <GroupItemsGrid items={items} />
+                                ) : (
+                                    <GroupItemsList items={items} />
+                                )}
                             </div>
                         );
                     })}
