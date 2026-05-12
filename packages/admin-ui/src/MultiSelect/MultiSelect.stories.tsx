@@ -75,21 +75,12 @@ export const Disabled: Story = {
     }
 };
 
-export const WithSelectionLabel: Story = {
+export const WithSelectionCount: Story = {
     args: {
         ...Default.args,
         label: "Label",
         value: ["option-1", "option-2", "option-3"],
-        selectionLabel: true
-    }
-};
-
-export const WithCustomSelectionLabel: Story = {
-    args: {
-        ...Default.args,
-        label: "Label",
-        value: ["option-1", "option-2", "option-3"],
-        selectionLabel: (count: number) => `${count} files included`
+        showSelectionCount: true
     }
 };
 

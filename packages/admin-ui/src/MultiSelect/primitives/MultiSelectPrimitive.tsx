@@ -24,10 +24,10 @@ interface MultiSelectPrimitiveProps {
     invalid?: boolean;
     displayResetAction?: boolean;
     /**
-     * When `true`, shows "{count} items selected" in the trigger instead of the comma-separated
-     * label list. Pass a function for a custom message: `count => \`${count} files included\``
+     * When `true`, shows "{count} items selected" in the trigger instead of the full
+     * comma-separated label list.
      */
-    selectionLabel?: boolean | ((count: number) => string);
+    showSelectionCount?: boolean;
     size?: VariantProps<typeof selectTriggerVariants>["size"];
     variant?: VariantProps<typeof selectTriggerVariants>["variant"];
 }
@@ -174,23 +174,16 @@ const DecoratableMultiSelectPrimitive = ({
     disabled,
     invalid,
     displayResetAction = true,
-    selectionLabel,
+    showSelectionCount,
     size,
     variant
 }: MultiSelectPrimitiveProps) => {
     const displayValue = useMemo(() => {
-        if (value.length === 0) {
-            return "";
-        }
-        if (selectionLabel === true) {
-            return `${value.length} items selected`;
-        }
-        if (typeof selectionLabel === "function") {
-            return selectionLabel(value.length);
-        }
+        if (value.length === 0) return "";
+        if (showSelectionCount) return `${value.length} items selected`;
         const labelMap = new Map(options.map(o => [o.value, o.label]));
         return value.map(v => labelMap.get(v) ?? v).join(", ");
-    }, [value, options, selectionLabel]);
+    }, [value, options, showSelectionCount]);
 
     const toggle = useCallback(
         (optionValue: string) => {
