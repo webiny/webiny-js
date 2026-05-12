@@ -6,6 +6,7 @@ import { Layout } from "./Layout.js";
 import type { ElementsProps as BaseElementsProps } from "../Elements.js";
 import { Elements as BaseElements } from "../Elements.js";
 import { createGetId } from "../createGetId.js";
+import { Tab } from "./Tab.js";
 
 const SCOPE = "toolbar";
 
@@ -42,5 +43,6 @@ const Elements = makeDecoratable("ToolbarElements", (props: ElementsProps) => {
 export const Toolbar = Object.assign(BaseToolbar, {
     Layout,
     Element: BaseToolbarElement,
-    Elements
+    Elements,
+    Tab
 });
