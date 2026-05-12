@@ -1,14 +1,9 @@
-// @ts-nocheck
 import React, { Fragment } from "react";
-/**
- * Package react-lazy-load has no types.
- */
-// @ts-expect-error
 import LazyLoad from "react-lazy-load";
 import { makeDecoratable } from "@webiny/app-admin";
 import { Text, TimeAgo, cn, CheckboxPrimitive } from "@webiny/admin-ui";
 import { useFileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
-import type { FileItem } from "@webiny/app-admin/types.js";
+import type { FileItem } from "~/domain/types.js";
 
 export interface FileProps {
     file: FileItem;
@@ -71,7 +66,7 @@ const DefaultFileBody = ({ selected, onSelect, children }: DefaultFileBodyProps)
             <DefaultFileControls selected={selected} onSelect={onSelect} />
             <LazyLoad
                 height={150}
-                offsetVertical={300}
+                offset={300}
                 data-testid={"fm-file-wrapper-file-preview"}
                 className={cn([
                     "wby-bg-neutral-muted",

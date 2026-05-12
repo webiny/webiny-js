@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useCallback } from "react";
 import { IconButton, Tooltip } from "@webiny/admin-ui";
 
