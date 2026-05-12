@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { FormModel } from "@webiny/app-admin/features/formModel/abstractions.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
 
 // ---------------------------------------------------------------------------
 // FolderTreeNode
@@ -33,12 +34,13 @@ export interface IFolderOperationState {
 // ---------------------------------------------------------------------------
 
 export interface IFolderTreeViewModel {
+    folders: FolderDto[];
     tree: IFolderTreeNode[];
     currentFolderId: string | null;
-    currentFolder: IFolderTreeNode | null;
+    currentFolder: FolderDto | null;
     isRootFolder: boolean;
     currentFolderTitle: string;
-    childFolders: IFolderTreeNode[];
+    childFolders: FolderDto[];
     loading: boolean;
     loadingNodeIds: string[];
     operation: IFolderOperationState;

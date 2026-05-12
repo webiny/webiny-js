@@ -27,7 +27,6 @@ import type { FolderActionConfig } from "~/config/AcoConfig.js";
 import type {
     IFolderTreeCallbacks,
     IFolderTreeViewModel,
-    IFolderTreeNode,
     IFolderOperationState
 } from "./abstractions.js";
 
@@ -142,41 +141,6 @@ export interface UncontrolledFolderTreeProps extends Omit<
     onFolderClick?: (folderId: string | null) => void;
 }
 
-function flattenTreeToFolderDtos(tree: IFolderTreeNode[]): FolderDto[] {
-    const result: FolderDto[] = [];
-    const emptyIdentity = { id: "", displayName: "", type: "" };
-
-    const walk = (nodes: IFolderTreeNode[]) => {
-        for (const node of nodes) {
-            result.push({
-                id: node.id,
-                title: node.name,
-                slug: node.slug,
-                type: "",
-                parentId: node.parentId,
-                path: "",
-                permissions: [],
-                hasNonInheritedPermissions: node.hasNonInheritedPermissions,
-                canManagePermissions: node.canManagePermissions,
-                canManageStructure: node.canManageStructure,
-                canManageContent: true,
-                createdBy: emptyIdentity,
-                createdOn: "",
-                savedBy: emptyIdentity,
-                savedOn: "",
-                modifiedBy: null,
-                modifiedOn: null,
-                extensions: {}
-            });
-            if (node.children.length > 0) {
-                walk(node.children);
-            }
-        }
-    };
-    walk(tree);
-    return result;
-}
-
 export const FolderTree = ({
     vm,
     actions,
@@ -192,7 +156,7 @@ export const FolderTree = ({
 
     const focusedFolderId = vm.currentFolderId ?? ROOT_FOLDER;
 
-    const folders = useMemo(() => flattenTreeToFolderDtos(vm.tree), [vm.tree]);
+    const folders = vm.folders;
 
     const localFolders = useMemo(() => {
         if (!folders.length) {

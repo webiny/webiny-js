@@ -1,5 +1,9 @@
 import { BatchEditorDialogPresenter } from "./BatchEditorDialogPresenter.js";
-import type { BatchDTO, FieldDTO, OperatorDTO } from "~/presentation/FileList/components/BulkActions/domain/index.js";
+import type {
+    BatchDTO,
+    FieldDTO,
+    OperatorDTO
+} from "~/presentation/FileList/components/BulkActions/domain/index.js";
 import { OperatorType } from "~/presentation/FileList/components/BulkActions/domain/index.js";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 

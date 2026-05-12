@@ -72,10 +72,7 @@ export const CellName = () => {
 
     if (isFolderRow(row)) {
         return (
-            <FolderCellName
-                folder={row.data}
-                onClick={id => actions.folders.selectFolder(id)}
-            />
+            <FolderCellName folder={row.data} onClick={id => actions.folders.selectFolder(id)} />
         );
     }
 

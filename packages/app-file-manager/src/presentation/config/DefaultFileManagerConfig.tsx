@@ -3,7 +3,11 @@ import { Wcp } from "@webiny/app-admin";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import { FileManagerViewConfig as FileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
 import { FilterByType } from "~/presentation/FileList/components/Filters/FilterByType.js";
-import { BulkActionDelete, BulkActionEdit, BulkActionMove } from "~/presentation/FileList/components/BulkActions/index.js";
+import {
+    BulkActionDelete,
+    BulkActionEdit,
+    BulkActionMove
+} from "~/presentation/FileList/components/BulkActions/index.js";
 import { Tags, AccessControl } from "~/presentation/config/fields/index.js";
 import {
     CellActions,

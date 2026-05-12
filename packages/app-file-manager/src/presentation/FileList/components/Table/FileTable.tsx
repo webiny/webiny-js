@@ -6,38 +6,16 @@ import type { FolderTableRow, RecordTableRow } from "@webiny/app-aco";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { useFileManagerConfig } from "~/presentation/config/FileManagerViewConfig.js";
 import type { FmFile } from "~/features/shared/types.js";
-import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import type { FolderDto } from "@webiny/app-aco";
 
 export type FileTableItem = FolderTableRow | RecordTableRow<FmFile>;
 
-/**
- * Map IFolderTreeNode to a FolderDto-compatible shape for the ACO table.
- */
-const toFolderTableRows = (nodes: IFolderTreeNode[]): FolderTableRow[] => {
-    return nodes.map(node => ({
-        id: node.id,
+const toFolderTableRows = (folders: FolderDto[]): FolderTableRow[] => {
+    return folders.map(folder => ({
+        id: folder.id,
         $type: "FOLDER" as const,
         $selectable: false,
-        data: {
-            id: node.id,
-            title: node.name,
-            slug: node.slug,
-            type: "",
-            parentId: node.parentId,
-            path: "",
-            permissions: [],
-            hasNonInheritedPermissions: node.hasNonInheritedPermissions,
-            canManagePermissions: node.canManagePermissions,
-            canManageStructure: node.canManageStructure,
-            canManageContent: true,
-            createdBy: { id: "", displayName: "", type: "" },
-            createdOn: "",
-            savedBy: { id: "", displayName: "", type: "" },
-            savedOn: "",
-            modifiedBy: null,
-            modifiedOn: null,
-            extensions: {}
-        }
+        data: folder
     }));
 };
 

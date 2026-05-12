@@ -17,6 +17,8 @@ import { GetFolderAncestorsUseCase } from "~/features/folders/getFolderAncestors
 import { GetFolderLevelPermissionUseCase } from "~/features/folders/getFolderLevelPermission/abstractions.js";
 import { FormModelFactory } from "@webiny/app-admin/features/formModel/abstractions.js";
 import type { Folder } from "~/domain/folder/Folder.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { FolderDtoMapper } from "~/domain/folder/FolderDtoMapper.js";
 
 type FolderChangeCallback = (folderId: string | null) => void;
 
@@ -55,21 +57,30 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
             }
         );
 
-        this.loadFolders();
+        void this.loadFolders();
     }
 
     get vm(): IFolderTreeViewModel {
         const tree = this.buildTree();
-        const currentFolder = this.findNode(this.currentFolderId, tree);
+        const allFolders = this.foldersCache.getItems();
+        const currentNode = this.findNode(this.currentFolderId, tree);
+        const currentFolder = this.findFolder(this.currentFolderId);
+        const childNodes = currentNode
+            ? currentNode.children
+            : tree.filter(n => n.id !== ROOT_FOLDER);
         return {
+            folders: allFolders.map(f => FolderDtoMapper.toDTO(f)),
             tree,
             currentFolderId: this.currentFolderId,
-            currentFolder,
+            currentFolder: currentFolder ? FolderDtoMapper.toDTO(currentFolder) : null,
             isRootFolder: this.currentFolderId === null,
-            currentFolderTitle: currentFolder?.name ?? "All Files",
-            childFolders: currentFolder
-                ? currentFolder.children
-                : tree.filter(n => n.id !== ROOT_FOLDER),
+            currentFolderTitle: currentNode?.name ?? "All Files",
+            childFolders: childNodes
+                .map(n => {
+                    const folder = allFolders.find(f => f.id === n.id);
+                    return folder ? FolderDtoMapper.toDTO(folder) : null;
+                })
+                .filter((f): f is FolderDto => f !== null),
             loading: this.loading,
             loadingNodeIds: this._loadingNodeIds,
             operation: this.operation
@@ -320,6 +331,14 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
         }
 
         return roots;
+    }
+
+    private findFolder(folderId: string | null): Folder | null {
+        if (!folderId) {
+            return null;
+        }
+
+        return this.foldersCache.getItem(f => f.id === folderId) ?? null;
     }
 
     private findNode(folderId: string | null, nodes: IFolderTreeNode[]): IFolderTreeNode | null {

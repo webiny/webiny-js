@@ -91,12 +91,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
 
     const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
         if (!vm.list.pagination.loading && vm.list.rows.length === 0) {
-            return (
-                <Empty
-                    isSearchResult={!vm.showFolders}
-                    browseFiles={browseFiles}
-                />
-            );
+            return <Empty isSearchResult={!vm.showFolders} browseFiles={browseFiles} />;
         }
 
         if (vm.viewMode === "table") {
@@ -139,11 +134,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                                         <Heading level={5}>{t`File Manager`}</Heading>
                                     </div>
                                     <Separator />
-                                    <div
-                                        className={
-                                            "shrink-0 overflow-y-auto max-h-[66vh]"
-                                        }
-                                    >
+                                    <div className={"shrink-0 overflow-y-auto max-h-[66vh]"}>
                                         <FolderTree
                                             vm={vm.folders}
                                             actions={actions.folders}
@@ -156,11 +147,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                                     {browser.filterByTags ? (
                                         <>
                                             <Separator />
-                                            <div
-                                                className={
-                                                    "flex-1 overflow-y-auto min-h-0"
-                                                }
-                                            >
+                                            <div className={"flex-1 overflow-y-auto min-h-0"}>
                                                 <TagsList
                                                     loading={false}
                                                     activeTags={

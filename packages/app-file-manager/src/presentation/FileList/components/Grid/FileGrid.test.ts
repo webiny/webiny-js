@@ -2,7 +2,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { observable } from "mobx";
 import type { IFileManagerPresenter, IFileManagerViewModel } from "../../abstractions.js";
-import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
+import type { FolderDto } from "@webiny/app-aco";
 import type { FmFile } from "~/features/shared/types.js";
 
 // ---------------------------------------------------------------------------
@@ -28,16 +28,28 @@ function createMockFile(overrides: Partial<FmFile> = {}): FmFile {
     };
 }
 
-function createMockFolderNode(overrides: Partial<IFolderTreeNode> = {}): IFolderTreeNode {
+const emptyIdentity = { id: "", displayName: "", type: "" };
+
+function createMockFolderDto(overrides: Partial<FolderDto> = {}): FolderDto {
     return {
         id: "folder-1",
-        name: "Documents",
+        title: "Documents",
         slug: "documents",
+        type: "",
         parentId: null,
-        children: [],
+        path: "",
+        permissions: [],
         hasNonInheritedPermissions: false,
         canManagePermissions: false,
         canManageStructure: true,
+        canManageContent: false,
+        createdBy: emptyIdentity,
+        createdOn: "",
+        savedBy: emptyIdentity,
+        savedOn: "",
+        modifiedBy: null,
+        modifiedOn: null,
+        extensions: {},
         ...overrides
     };
 }
@@ -69,6 +81,7 @@ function createMockPresenter(
             error: null
         },
         folders: {
+            folders: [],
             tree: [],
             currentFolderId: null,
             currentFolder: null,
@@ -150,86 +163,72 @@ function createMockPresenter(
 // ---------------------------------------------------------------------------
 
 describe("FileGrid — child folder resolution", () => {
-    it("should use top-level tree when no current folder is selected", () => {
-        const tree = [
-            createMockFolderNode({ id: "f1", name: "Docs" }),
-            createMockFolderNode({ id: "f2", name: "Photos" })
+    it("should use vm.folders.childFolders when no current folder is selected", () => {
+        const childFolders = [
+            createMockFolderDto({ id: "f1", title: "Docs" }),
+            createMockFolderDto({ id: "f2", title: "Photos" })
         ];
         const presenter = createMockPresenter({
             folders: observable({
-                tree,
+                folders: childFolders,
+                tree: [],
                 currentFolderId: null,
                 currentFolder: null,
                 loading: false,
                 operation: { active: false, mode: null },
                 isRootFolder: true,
                 currentFolderTitle: "All Files",
-                childFolders: [],
+                childFolders,
                 loadingNodeIds: []
             })
         });
 
-        // Replicate the component logic: currentFolder ? currentFolder.children : tree.
-        const currentFolder = presenter.vm.folders.currentFolder;
-        const childFolders = currentFolder ? currentFolder.children : presenter.vm.folders.tree;
-
-        expect(childFolders).toHaveLength(2);
-        expect(childFolders[0].id).toBe("f1");
-        expect(childFolders[1].id).toBe("f2");
+        expect(presenter.vm.folders.childFolders).toHaveLength(2);
+        expect(presenter.vm.folders.childFolders[0].id).toBe("f1");
+        expect(presenter.vm.folders.childFolders[1].id).toBe("f2");
     });
 
-    it("should use currentFolder.children when a folder is selected", () => {
-        const childA = createMockFolderNode({ id: "child-a", name: "Sub A" });
-        const childB = createMockFolderNode({ id: "child-b", name: "Sub B" });
-        const parent = createMockFolderNode({
-            id: "parent",
-            name: "Parent",
-            children: [childA, childB]
-        });
+    it("should expose child folders via vm.folders.childFolders when a folder is selected", () => {
+        const childA = createMockFolderDto({ id: "child-a", title: "Sub A" });
+        const childB = createMockFolderDto({ id: "child-b", title: "Sub B" });
 
         const presenter = createMockPresenter({
             folders: observable({
-                tree: [parent],
+                folders: [],
+                tree: [],
                 currentFolderId: "parent",
-                currentFolder: parent,
+                currentFolder: null,
                 loading: false,
                 operation: { active: false, mode: null },
-                isRootFolder: true,
-                currentFolderTitle: "All Files",
-                childFolders: [],
+                isRootFolder: false,
+                currentFolderTitle: "Parent",
+                childFolders: [childA, childB],
                 loadingNodeIds: []
             })
         });
 
-        const currentFolder = presenter.vm.folders.currentFolder;
-        const childFolders = currentFolder ? currentFolder.children : presenter.vm.folders.tree;
-
-        expect(childFolders).toHaveLength(2);
-        expect(childFolders[0].id).toBe("child-a");
-        expect(childFolders[1].id).toBe("child-b");
+        expect(presenter.vm.folders.childFolders).toHaveLength(2);
+        expect(presenter.vm.folders.childFolders[0].id).toBe("child-a");
+        expect(presenter.vm.folders.childFolders[1].id).toBe("child-b");
     });
 
-    it("should return empty array when current folder has no children", () => {
-        const leaf = createMockFolderNode({ id: "leaf", name: "Leaf", children: [] });
-
+    it("should return empty childFolders when current folder has no children", () => {
         const presenter = createMockPresenter({
             folders: observable({
-                tree: [leaf],
+                folders: [],
+                tree: [],
                 currentFolderId: "leaf",
-                currentFolder: leaf,
+                currentFolder: null,
                 loading: false,
                 operation: { active: false, mode: null },
-                isRootFolder: true,
-                currentFolderTitle: "All Files",
+                isRootFolder: false,
+                currentFolderTitle: "Leaf",
                 childFolders: [],
                 loadingNodeIds: []
             })
         });
 
-        const currentFolder = presenter.vm.folders.currentFolder;
-        const childFolders = currentFolder ? currentFolder.children : presenter.vm.folders.tree;
-
-        expect(childFolders).toHaveLength(0);
+        expect(presenter.vm.folders.childFolders).toHaveLength(0);
     });
 });
 

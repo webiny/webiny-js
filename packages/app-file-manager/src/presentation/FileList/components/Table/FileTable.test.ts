@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { observable } from "mobx";
 import type { IFileManagerPresenter, IFileManagerViewModel } from "../../abstractions.js";
 import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
@@ -116,6 +116,7 @@ function createMockPresenter(
             error: null
         },
         folders: {
+            folders: [],
             tree: [],
             currentFolderId: null,
             currentFolder: null,

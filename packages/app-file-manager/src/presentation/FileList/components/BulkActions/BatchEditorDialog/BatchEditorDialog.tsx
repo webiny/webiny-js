@@ -7,7 +7,10 @@ import type { FormAPI } from "@webiny/form";
 import type { BatchEditorFormData } from "./BatchEditorDialogPresenter.js";
 import { BatchEditorDialogPresenter } from "./BatchEditorDialogPresenter.js";
 import { BatchEditor } from "~/presentation/FileList/components/BulkActions/BatchEditorDialog/BatchEditor.js";
-import type { BatchDTO, FieldDTO } from "~/presentation/FileList/components/BulkActions/domain/index.js";
+import type {
+    BatchDTO,
+    FieldDTO
+} from "~/presentation/FileList/components/BulkActions/domain/index.js";
 
 interface BatchEditorDialogProps {
     fields: FieldDTO[];

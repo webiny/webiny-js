@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { Button, Heading, Icon, IconButton, Skeleton, Tooltip } from "@webiny/admin-ui";
 import { Filters, type FiltersOnSubmit, FiltersToggle, OptionsMenu } from "@webiny/app-admin";
-import { FolderNode, FolderProvider } from "@webiny/app-aco";
+import { FolderProvider } from "@webiny/app-aco";
 import { ReactComponent as HomeIcon } from "@webiny/icons/home.svg";
 import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
@@ -39,7 +39,7 @@ const Title = observer(function Title() {
                 </Heading>
             </div>
             {currentFolder && (
-                <FolderProvider folder={FolderNode.toFolderDto(currentFolder)}>
+                <FolderProvider folder={currentFolder}>
                     <OptionsMenu
                         actions={browser.folder.actions}
                         data-testid={"folder.title.menu-action"}
@@ -75,7 +75,10 @@ export const FileManagerHeader = observer(function FileManagerHeader({
         }
 
         const convertedFilters = browser.filtersToWhere.reduce(
-            (current: Record<string, unknown>, converter: (d: Record<string, unknown>) => Record<string, unknown>) => converter(current),
+            (
+                current: Record<string, unknown>,
+                converter: (d: Record<string, unknown>) => Record<string, unknown>
+            ) => converter(current),
             data as Record<string, unknown>
         );
 
@@ -93,65 +96,53 @@ export const FileManagerHeader = observer(function FileManagerHeader({
             <div className={"pl-lg pr-md py-sm-extra flex items-center justify-between"}>
                 <Title />
             </div>
-            <div className={"pl-lg pr-md py-xs flex items-center gap-sm"}>
-                <div className={"flex-1"}>
-                    <SearchBar />
-                </div>
-                <div className={"flex gap-xs items-center"}>
-                    <FiltersToggle
-                        onFiltersToggle={() =>
-                            vm.showingFilters ? actions.hideFilters() : actions.showFilters()
-                        }
-                        showingFilters={vm.showingFilters}
-                        data-testid="fm.list-entries.toggle-filters"
-                    />
-                    <Tooltip
-                        side={"bottom"}
-                        content={
-                            vm.viewMode === "table" ? t`Switch to Grid` : t`Switch to Table`
-                        }
-                        trigger={
-                            <IconButton
-                                variant={"ghost"}
-                                size={"md"}
-                                icon={vm.viewMode === "table" ? <GridIcon /> : <TableIcon />}
-                                onClick={() =>
-                                    actions.setViewMode(
-                                        vm.viewMode === "table" ? "grid" : "table"
-                                    )
-                                }
-                                data-testid={"fm-header-layout-switch"}
-                            />
-                        }
-                    />
-                </div>
-                <div className={"flex gap-xs items-center"}>
-                    {browseFiles && vm.permissions.canCreate && (
-                        <Button
-                            onClick={browseFiles}
+            <div className={"px-md py-xs flex items-center gap-sm"}>
+                <SearchBar />
+                <FiltersToggle
+                    onFiltersToggle={() =>
+                        vm.showingFilters ? actions.hideFilters() : actions.showFilters()
+                    }
+                    showingFilters={vm.showingFilters}
+                    data-testid="fm.list-entries.toggle-filters"
+                />
+                <Tooltip
+                    side={"bottom"}
+                    content={vm.viewMode === "table" ? t`Switch to Grid` : t`Switch to Table`}
+                    trigger={
+                        <IconButton
+                            variant={"ghost"}
                             size={"md"}
-                            text={t`Upload`}
-                            icon={<FileUploadIcon />}
-                            data-testid={"fm-header-upload-button"}
+                            icon={vm.viewMode === "table" ? <GridIcon /> : <TableIcon />}
+                            onClick={() =>
+                                actions.setViewMode(vm.viewMode === "table" ? "grid" : "table")
+                            }
+                            data-testid={"fm-header-layout-switch"}
                         />
-                    )}
-                    {vm.permissions.canCreate && (
-                        <Button
-                            variant={"secondary"}
-                            size={"md"}
-                            onClick={() => actions.folders.createFolder(vm.folders.currentFolderId ?? undefined)}
-                            text={t`New Folder`}
-                            icon={<AddIcon />}
-                            data-testid={"fm-header-new-folder-button"}
-                        />
-                    )}
-                </div>
+                    }
+                />
+                {vm.permissions.canCreate && (
+                    <Button
+                        variant={"secondary"}
+                        size={"md"}
+                        onClick={() =>
+                            actions.folders.createFolder(vm.folders.currentFolderId ?? undefined)
+                        }
+                        text={t`New Folder`}
+                        icon={<AddIcon />}
+                        data-testid={"fm-header-new-folder-button"}
+                    />
+                )}
+                {browseFiles && vm.permissions.canCreate && (
+                    <Button
+                        onClick={browseFiles}
+                        size={"md"}
+                        text={t`Upload`}
+                        icon={<FileUploadIcon />}
+                        data-testid={"fm-header-upload-button"}
+                    />
+                )}
             </div>
-            <Filters
-                filters={browser.filters}
-                show={vm.showingFilters}
-                onChange={applyFilters}
-            />
+            <Filters filters={browser.filters} show={vm.showingFilters} onChange={applyFilters} />
         </div>
     );
 });

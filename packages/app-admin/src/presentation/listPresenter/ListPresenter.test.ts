@@ -7,7 +7,6 @@ import {
     type IDataSource,
     type IDataSourceQuery,
     type IDataSourceMeta,
-    type IDataSourceResult,
     type IListPresenter
 } from "./abstractions.js";
 

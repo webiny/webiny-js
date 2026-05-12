@@ -340,7 +340,7 @@ describe("FolderTreePresenter", () => {
             expect(presenter.vm.currentFolderId).toBe("root-1");
         });
 
-        it("should update currentFolder to the matching tree node", async () => {
+        it("should update currentFolder to the matching folder", async () => {
             const folders = createFlatFolders();
             const { presenter } = createTestPresenter(folders);
 
@@ -351,7 +351,7 @@ describe("FolderTreePresenter", () => {
             presenter.selectFolder("child-1");
             expect(presenter.vm.currentFolder).not.toBeNull();
             expect(presenter.vm.currentFolder!.id).toBe("child-1");
-            expect(presenter.vm.currentFolder!.name).toBe("Invoices");
+            expect(presenter.vm.currentFolder!.title).toBe("Invoices");
         });
 
         it("should set currentFolder to null when selecting root (null)", async () => {
@@ -380,7 +380,7 @@ describe("FolderTreePresenter", () => {
 
             presenter.selectFolder("grandchild-1");
             expect(presenter.vm.currentFolder).not.toBeNull();
-            expect(presenter.vm.currentFolder!.name).toBe("2024");
+            expect(presenter.vm.currentFolder!.title).toBe("2024");
         });
     });
 

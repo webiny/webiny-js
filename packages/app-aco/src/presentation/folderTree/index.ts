@@ -11,9 +11,6 @@ export type {
     IFolderTreeCallbacks
 } from "./abstractions.js";
 
-// Mappers.
-export { FolderNode } from "./FolderNode.js";
-
 // Components.
 export { UncontrolledFolderTree } from "./FolderTree.js";
 export type { PresenterFolderTreeProps, UncontrolledFolderTreeProps } from "./FolderTree.js";

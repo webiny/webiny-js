@@ -75,6 +75,7 @@ function createMockListPresenter(): ListPresenter.Interface<FmFile> {
 
 function createMockFolderTreePresenter(): FolderTreePresenter.Interface {
     const state = observable({
+        folders: [],
         tree: [],
         currentFolderId: null as string | null,
         currentFolder: null,

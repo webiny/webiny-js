@@ -9,7 +9,6 @@ import { FileModelProvider } from "~/modules/FileManagerApiProvider/FileManagerA
  * Then we'll be able to remove this blocking provider, and make the app bootstrap even snappier.
  */
 
-
 const fileManagerApiProvider: Decorator<
     GenericComponent<{ children: React.ReactNode }>
 > = Original => {
