@@ -1,11 +1,13 @@
 import React from "react";
-import { useToolbarTabs } from "~/BaseEditor/config/Toolbar/ToolbarTabsContext.js";
+import { Tabs, Icon } from "@webiny/admin-ui";
+import { ReactComponent as TreeIcon } from "@webiny/icons/account_tree.svg";
 import { Navigator } from "./Navigator.js";
 
-export const NavigatorTab = () => {
-    const { activeTab } = useToolbarTabs();
-    if (activeTab !== "navigator") {
-        return null;
-    }
-    return <Navigator />;
-};
+export const NavigatorTab = () => (
+    <Tabs.Tab
+        value={"navigator"}
+        trigger={"Navigator"}
+        icon={<Icon icon={<TreeIcon />} label={"Navigator"} />}
+        content={<Navigator />}
+    />
+);

@@ -1,8 +1,17 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Tabs as TabsPrimitive } from "radix-ui";
 import { makeDecoratable, type VariantProps, withStaticProps } from "~/utils.js";
 import type { ITabsContext, TabItem, TabProps, tabListVariants } from "./components/index.js";
-import { Content, List, Tab, TabsContext, Trigger } from "./components/index.js";
+import {
+    Content,
+    List,
+    Tab,
+    TabsContext,
+    Trigger,
+    SegmentedTabsContext
+} from "./components/index.js";
+import { SegmentedControl } from "~/SegmentedControl/index.js";
+import type { SegmentedControlPrimitiveProps } from "~/SegmentedControl/index.js";
 
 const Root = TabsPrimitive.Root;
 
@@ -11,6 +20,22 @@ interface TabsProps extends Omit<TabsPrimitive.TabsProps, "children"> {
     size?: VariantProps<typeof tabListVariants>["size"];
     spacing?: VariantProps<typeof tabListVariants>["spacing"];
     separator?: VariantProps<typeof tabListVariants>["separator"];
+    /**
+     * "segmented" replaces the tab trigger list with a SegmentedControl.
+     */
+    variant?: "default" | "segmented";
+    /**
+     * Visual variant forwarded to SegmentedControl when variant="segmented".
+     */
+    segmentedVariant?: SegmentedControlPrimitiveProps["variant"];
+    /**
+     * Extra className applied to the SegmentedControl wrapper when variant="segmented".
+     */
+    segmentedHeaderClassName?: string;
+    /**
+     * Extra className applied to each tab content panel when variant="segmented".
+     */
+    contentClassName?: string;
 }
 
 const DecoratableTabs = ({
@@ -19,12 +44,15 @@ const DecoratableTabs = ({
     spacing,
     separator,
     tabs: tabComponents,
+    variant = "default",
+    segmentedVariant,
+    segmentedHeaderClassName,
+    contentClassName,
     ...props
 }: TabsProps) => {
     const [tabs, setTabs] = useState<TabItem[]>([]);
 
     const defaultValue = useMemo(() => {
-        // `defaultValue` prop works only at first render so we need to use the `tabComponents` instead of the `TabItems`
         return (
             initialValue ||
             tabComponents.find(tab => !tab.props.disabled && tab.props.visible !== false)?.props
@@ -32,9 +60,45 @@ const DecoratableTabs = ({
         );
     }, [initialValue, tabComponents]);
 
-    const triggers = useMemo(
-        () => (
-            // We need to generate a key like this to trigger a proper component re-render when child tabs change.
+    const [activeValue, setActiveValue] = useState(
+        () =>
+            initialValue ||
+            tabComponents.find(tab => !tab.props.disabled && tab.props.visible !== false)?.props
+                .value ||
+            ""
+    );
+
+    // Fallback: auto-select first tab when no defaultValue was provided and tabs register.
+    useEffect(() => {
+        if (variant === "segmented" && !activeValue && tabs.length > 0) {
+            setActiveValue(tabs[0].value);
+        }
+    }, [tabs]);
+
+    const segmentedItems = useMemo(
+        () =>
+            tabs
+                .filter(tab => tab.visible !== false)
+                .map(tab => ({ value: tab.value, label: tab.trigger, icon: tab.icon })),
+        [tabs]
+    );
+
+    const triggers = useMemo(() => {
+        if (variant === "segmented") {
+            return (
+                <div className={segmentedHeaderClassName}>
+                    <SegmentedControl
+                        items={segmentedItems}
+                        value={activeValue}
+                        onChange={setActiveValue}
+                        variant={segmentedVariant}
+                        fullWidth
+                    />
+                </div>
+            );
+        }
+
+        return (
             <List
                 key={tabs.map(tab => tab.id).join(";")}
                 size={size}
@@ -54,9 +118,18 @@ const DecoratableTabs = ({
                     />
                 ))}
             </List>
-        ),
-        [tabs, size, spacing]
-    );
+        );
+    }, [
+        tabs,
+        variant,
+        activeValue,
+        segmentedItems,
+        segmentedHeaderClassName,
+        segmentedVariant,
+        size,
+        spacing,
+        separator
+    ]);
 
     const contents = useMemo(
         () =>
@@ -65,11 +138,16 @@ const DecoratableTabs = ({
                     key={tab.id}
                     value={tab.value}
                     content={tab.content}
-                    spacing={tab.spacing ?? spacing}
-                    className={tab.className}
+                    spacing={variant === "segmented" ? undefined : (tab.spacing ?? spacing)}
+                    className={
+                        contentClassName ??
+                        (variant === "segmented"
+                            ? "flex-1 min-h-0 !bg-transparent !rounded-none"
+                            : undefined)
+                    }
                 />
             )),
-        [tabs, spacing]
+        [tabs, spacing, variant, contentClassName]
     );
 
     const context: ITabsContext = useMemo(
@@ -94,13 +172,30 @@ const DecoratableTabs = ({
         [setTabs]
     );
 
-    return (
-        <Root {...props} defaultValue={defaultValue}>
+    const rootProps =
+        variant === "segmented"
+            ? { ...props, value: activeValue, onValueChange: setActiveValue }
+            : { ...props, defaultValue };
+
+    const inner = (
+        <Root {...rootProps}>
             {triggers}
             {contents}
             <TabsContext.Provider value={context}>{tabComponents}</TabsContext.Provider>
         </Root>
     );
+
+    if (variant === "segmented") {
+        return (
+            <SegmentedTabsContext.Provider
+                value={{ activeTab: activeValue, setActiveTab: setActiveValue }}
+            >
+                {inner}
+            </SegmentedTabsContext.Provider>
+        );
+    }
+
+    return inner;
 };
 
 const BaseTabs = makeDecoratable("Tabs", DecoratableTabs);

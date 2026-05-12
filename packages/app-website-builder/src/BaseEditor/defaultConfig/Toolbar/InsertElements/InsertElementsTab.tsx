@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { ScrollArea, InputPrimitive, Icon, ToggleGroupPrimitive } from "@webiny/admin-ui";
+import { Tabs, ScrollArea, InputPrimitive, Icon, ToggleGroupPrimitive } from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as ListIcon } from "@webiny/icons/format_list_bulleted.svg";
 import { ReactComponent as GridIcon } from "@webiny/icons/grid_view.svg";
-import { useToolbarTabs } from "~/BaseEditor/config/Toolbar/ToolbarTabsContext.js";
+import { ReactComponent as InsertIcon } from "@webiny/icons/add_circle_outline.svg";
 import { InsertElements } from "./InsertElements.js";
 
 const VIEW_ITEMS = [
@@ -11,20 +11,15 @@ const VIEW_ITEMS = [
     { value: "grid", icon: <Icon icon={<GridIcon />} label={"Grid view"} /> }
 ];
 
-export const InsertElementsTab = () => {
-    const { activeTab } = useToolbarTabs();
+const InsertElementsContent = () => {
     const [search, setSearch] = useState("");
     const [viewType, setViewType] = useState("list");
-
-    if (activeTab !== "insert") {
-        return null;
-    }
 
     return (
         <div className={"h-full flex flex-col"}>
             <div
                 className={
-                    "flex-shrink-0 flex items-center gap-xs px-sm py-xs border-b-neutral-dimmed"
+                    "flex-shrink-0 flex items-center gap-xs px-sm py-xs border-b-sm border-b-neutral-dimmed"
                 }
             >
                 <InputPrimitive
@@ -49,3 +44,12 @@ export const InsertElementsTab = () => {
         </div>
     );
 };
+
+export const InsertElementsTab = () => (
+    <Tabs.Tab
+        value={"insert"}
+        trigger={"Insert"}
+        icon={<Icon icon={<InsertIcon />} label={"Insert Element"} />}
+        content={<InsertElementsContent />}
+    />
+);

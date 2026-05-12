@@ -2,11 +2,18 @@ import React from "react";
 import { makeDecoratable } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
 
+export interface ElementTabConfig {
+    value: string;
+    label: string;
+    icon?: React.ReactNode;
+}
+
 export interface ElementConfig {
     name: string;
     group: string;
     scope: string;
     element: React.JSX.Element;
+    tab?: ElementTabConfig;
 }
 
 export interface ElementProps {
@@ -27,11 +34,12 @@ export interface ElementProps {
     remove?: boolean;
     before?: string;
     after?: string;
+    tab?: ElementTabConfig;
 }
 
 export const Element = makeDecoratable(
     "EditorElement",
-    ({ id, name, element, group, scope, remove, before, after }: ElementProps) => {
+    ({ id, name, element, group, scope, remove, before, after, tab }: ElementProps) => {
         const getId = useIdGenerator("element");
         const realId = id ?? name;
 
@@ -57,6 +65,7 @@ export const Element = makeDecoratable(
                 {scope ? (
                     <Property id={getId(realId, "scope")} name={"scope"} value={scope} />
                 ) : null}
+                {tab ? <Property id={getId(realId, "tab")} name={"tab"} value={tab} /> : null}
             </Property>
         );
     }
