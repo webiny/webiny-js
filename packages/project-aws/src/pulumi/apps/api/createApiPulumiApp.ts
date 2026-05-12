@@ -24,10 +24,9 @@ import { getProjectSdk } from "@webiny/project";
 import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
 import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
 import { handleGuardDutyEvents } from "./handleGuardDutyEvents.js";
-import { ApiPulumi } from "~/abstractions/features/pulumi/index.js";
+import { ApiPulumi, ApplyApiCustomDomains } from "~/abstractions/features/pulumi/index.js";
 import { apiPulumi } from "~/pulumi/features/ApiPulumi/index.js";
-import { ApiCustomDomains as apiCustomDomainsExt } from "~/pulumi/extensions/ApiCustomDomains.js";
-import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
+import { DefaultApplyApiCustomDomains } from "~/pulumi/features/ApplyApiCustomDomains/index.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -139,14 +138,8 @@ export const createApiPulumiApp = () => {
             });
             // <-------------------- Enterprise end -------------------->
 
-            // Overrides must be applied via a handler, registered at the very start of the program.
-            // By doing this, we're ensuring user's adjustments are not applied to late.
-            sdk.getContainer().registerComposite(apiPulumi);
-            const pulumiHandlers = sdk.getContainer().resolve(ApiPulumi);
-
-            app.addHandler(() => {
-                return pulumiHandlers.execute(app as ApiPulumiApp);
-            });
+            // Register ApplyApiCustomDomains singleton so it can be injected into ApiPulumi impls.
+            sdk.getContainer().register(DefaultApplyApiCustomDomains);
 
             const isProduction = app.env.isProduction;
 
@@ -245,15 +238,11 @@ export const createApiPulumiApp = () => {
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const scheduler = app.addModule(ApiScheduler);
 
-            const [apiCustomDomains] = projectConfig.extensionsByType(apiCustomDomainsExt);
-            if (apiCustomDomains) {
-                const { domains, sslMethod, certificateArn } = apiCustomDomains.params;
-                applyCustomDomain(cloudfront, {
-                    domains,
-                    sslSupportMethod: sslMethod,
-                    acmCertificateArn: certificateArn
-                });
-            }
+            // Execute ApiPulumi implementations directly so they run before the CloudFront resource
+            // is created, allowing them to modify cloudfront config (e.g. via ApplyApiCustomDomains).
+            sdk.getContainer().registerComposite(apiPulumi);
+            const pulumiHandlers = sdk.getContainer().resolve(ApiPulumi);
+            await pulumiHandlers.execute(app as ApiPulumiApp);
 
             app.addOutputs({
                 awsAccountId: getAwsAccountId(app),

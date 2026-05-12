@@ -7,7 +7,6 @@ import { BlueGreenDeployments } from "~/pulumi/extensions/BlueGreenDeployments.j
 import { CorePulumi } from "./CorePulumi.js";
 import { ApiPulumi } from "./ApiPulumi.js";
 import { AdminPulumi } from "./AdminPulumi.js";
-
 export { AwsTags };
 export { Vpc };
 export { OpenSearch };
