@@ -16,10 +16,28 @@ export class ProjectSection {
         }
 
         if (hasFiles) {
-            parts.push("### Reference files");
-            for (const file of project.files) {
-                parts.push(`--- ${file.name} ---\n${file.content}`);
-            }
+            parts.push(
+                [
+                    "### Available reference files",
+                    "",
+                    `You have access to ${project.files.length} reference files for this project. Use the`,
+                    "`read_project_file` tool to read any file when its contents are relevant",
+                    "to the user's request. Read files only when needed — do not read all files",
+                    "preemptively.",
+                    "",
+                    "Files:",
+                    "",
+                    ...project.files.map(file => {
+                        const lines = [
+                            `- id: "${file.id}"`,
+                            `  name: "${file.name}"`,
+                            `  description: "${file.description || "(no description)"}"`,
+                            `  tokens: ~${file.tokenCount}`
+                        ];
+                        return lines.join("\n");
+                    })
+                ].join("\n")
+            );
         }
 
         return parts.join("\n\n");

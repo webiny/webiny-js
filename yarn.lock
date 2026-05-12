@@ -12526,6 +12526,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     ai: "npm:^6.0.177"
+    front-matter: "npm:^4.0.2"
     lodash: "npm:^4.18.1"
     mobx: "npm:^6.15.3"
     mobx-react-lite: "npm:^4.1.1"
