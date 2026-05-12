@@ -6,6 +6,8 @@ function isMarkdownFile(name: string): boolean {
     return name.endsWith(".md") || name.endsWith(".mdx");
 }
 
+type Frontmatter = { description?: string; title?: string; tags?: string[] };
+
 class ExtractFrontmatterBeforeCreateHandlerImpl implements FileBeforeCreateEventHandler.Interface {
     constructor(private getFileContentsByKey: GetFileContentsByKeyUseCase.Interface) {}
 
@@ -28,9 +30,16 @@ class ExtractFrontmatterBeforeCreateHandlerImpl implements FileBeforeCreateEvent
         const content = result.value.buffer.toString("utf-8");
 
         try {
-            const parsed = frontmatter<{ description?: string }>(content);
+            const parsed = frontmatter<Frontmatter>(content);
+            // Description takes precedence over title.
             if (parsed.attributes.description) {
                 file.description = parsed.attributes.description;
+            } else if (parsed.attributes.title) {
+                file.description = parsed.attributes.title;
+            }
+
+            if (parsed.attributes.tags) {
+                file.tags = parsed.attributes.tags;
             }
         } catch {
             // Malformed frontmatter — skip silently.
