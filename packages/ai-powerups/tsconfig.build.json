@@ -4,6 +4,7 @@
   "references": [
     { "path": "../admin-ui/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
+    { "path": "../api-file-manager/tsconfig.build.json" },
     { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
@@ -29,6 +30,8 @@
       "@webiny/admin-ui": ["../admin-ui/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/app/*": ["../app/src/*"],

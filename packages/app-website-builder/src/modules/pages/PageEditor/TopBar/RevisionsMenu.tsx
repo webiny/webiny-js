@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Button, DropdownMenu } from "@webiny/admin-ui";
+import { Button, DropdownMenu, Text } from "@webiny/admin-ui";
 import { ReactComponent as ArrowDown } from "@webiny/icons/keyboard_arrow_down.svg";
 import { ReactComponent as Draft } from "@webiny/icons/draw.svg";
 import { ReactComponent as Unpublished } from "@webiny/icons/lock.svg";
@@ -10,6 +10,7 @@ import type { PageRevision } from "~/domain/PageRevision/index.js";
 import type { EditorPage } from "@webiny/website-builder-sdk";
 import { useRouter } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
+import { usePageEditorDrawer } from "~/modules/pages/PageEditor/Revisions/usePageEditorDrawer.js";
 
 const { Item } = DropdownMenu;
 
@@ -25,6 +26,8 @@ export const RevisionsMenu = () => {
     const { loading, getPageRevisions } = useGetPageRevisions();
     const id = useSelectFromDocument(document => document.id);
     const status = useSelectFromDocument<string, EditorPage>(document => document.status);
+
+    const { openRevisionList } = usePageEditorDrawer();
 
     useEffect(() => {
         const [entryId] = id.split("#");
@@ -46,6 +49,10 @@ export const RevisionsMenu = () => {
         window.location.pathname = getLink(Routes.Pages.Editor, { id });
     }, []);
 
+    const onOpenRevisionList = useCallback(() => {
+        openRevisionList(true);
+    }, []);
+
     return (
         <DropdownMenu
             trigger={
@@ -58,21 +65,34 @@ export const RevisionsMenu = () => {
                 />
             }
         >
-            {revisions.map(revision => (
+            {revisions.slice(0, 5).map(revision => (
                 <Item
                     key={revision.id}
                     className={"cursor-pointer"}
                     onClick={() => goToRevision(revision.id)}
-                    disabled={revision.locked}
                     icon={
                         <Item.Icon
                             label={revision.getLabel()}
                             element={statusIcon[revision.status]}
                         />
                     }
-                    text={revision.getLabel()}
+                    text={<Text size={"sm"}>{revision.getLabel()}</Text>}
                 />
             ))}
+            {revisions.length > 5 ? (
+                <>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item
+                        key={"revisions-all"}
+                        onClick={onOpenRevisionList}
+                        text={
+                            <>
+                                <Text size={"sm"}>Show All Revisions</Text>
+                            </>
+                        }
+                    />
+                </>
+            ) : null}
         </DropdownMenu>
     );
 };

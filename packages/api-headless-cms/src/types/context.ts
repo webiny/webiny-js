@@ -118,6 +118,15 @@ export interface CmsEntryContext {
         options?: UpdateCmsEntryOptionsInput
     ) => Promise<CmsEntry<TInput>>;
     /**
+     * Update entry revision description.
+     * It does not matter if the entry is published/unpublished or any other state.
+     */
+    updateRevisionDescription: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string,
+        revisionDescription: string | undefined
+    ) => Promise<CmsEntry<T>>;
+    /**
      * Validate the entry - either new one or existing one.
      */
     validateEntry: <T extends CmsEntryValues = CmsEntryValues>(

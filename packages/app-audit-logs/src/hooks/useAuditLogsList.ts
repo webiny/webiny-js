@@ -7,7 +7,7 @@ import {
     LIST_AUDIT_LOGS
 } from "~/hooks/graphql.js";
 import type { IAuditLog, IAuditLogsMeta } from "~/types.js";
-import type { OnSortingChange, Sorting } from "@webiny/ui/DataTable/index.js";
+import type { OnDataTableSortingChange, DataTableSorting } from "@webiny/admin-ui";
 import { transformRawAuditLog } from "~/utils/transformRawAuditLog.js";
 import { listAuditLogsSchema } from "~/hooks/schema.js";
 
@@ -20,8 +20,8 @@ export interface UseAuditLogs {
     setWhere: (where: Partial<IListAuditLogsVariablesWhere>) => void;
     setLimit: (limit: number) => void;
     after?: string;
-    sorting: Sorting;
-    setSorting: OnSortingChange;
+    sorting: DataTableSorting;
+    setSorting: OnDataTableSortingChange;
     showingFilters: boolean;
     showFilters: () => void;
     hideFilters: () => void;
@@ -35,45 +35,28 @@ export const useAuditLogsList = (): UseAuditLogs => {
         limit: 25
     });
 
-    const setWhere = useCallback(
-        (where: Partial<IListAuditLogsVariablesWhere>) => {
-            setVariables(prev => ({
-                ...prev,
-                where
-            }));
-        },
-        [variables]
-    );
-    const setSort = useCallback(
-        (sort: "ASC" | "DESC") => {
-            setVariables(prev => ({
-                ...prev,
-                sort
-            }));
-        },
-        [variables]
-    );
-    const setAfter = useCallback(
-        (after?: string) => {
-            setVariables(prev => ({
-                ...prev,
-                after
-            }));
-        },
-        [variables]
-    );
-    const setLimit = useCallback(
-        (limit: number) => {
-            setVariables(prev => ({
-                ...prev,
-                limit
-            }));
-        },
-        [variables]
-    );
+    const [accumulatedRecords, setAccumulatedRecords] = useState<IAuditLog[]>([]);
+
+    const setWhere = useCallback((where: Partial<IListAuditLogsVariablesWhere>) => {
+        setVariables(prev => ({ ...prev, where, after: undefined }));
+        setAccumulatedRecords([]);
+    }, []);
+
+    const setSort = useCallback((sort: "ASC" | "DESC") => {
+        setVariables(prev => ({ ...prev, sort, after: undefined }));
+        setAccumulatedRecords([]);
+    }, []);
+
+    const setAfter = useCallback((after?: string) => {
+        setVariables(prev => ({ ...prev, after }));
+    }, []);
+
+    const setLimit = useCallback((limit: number) => {
+        setVariables(prev => ({ ...prev, limit }));
+    }, []);
 
     const [showingFilters, setShowingFilters] = useState(false);
-    const [acoSorting, setAcoSorting] = useState<Sorting>([]);
+    const [acoSorting, setAcoSorting] = useState<DataTableSorting>([]);
 
     useEffect(() => {
         const sort = acoSorting[0];
@@ -88,21 +71,23 @@ export const useAuditLogsList = (): UseAuditLogs => {
         fetchPolicy: "network-only"
     });
 
-    const records = useMemo((): IAuditLog[] => {
+    useEffect(() => {
         if (!logs.data?.auditLogs.listAuditLogs.data) {
-            return [];
+            return;
         }
         const items = listAuditLogsSchema.safeParse(logs.data.auditLogs.listAuditLogs.data);
         if (!items.success) {
             console.error(items.error);
-            return [];
+            return;
         }
-        return items.data.map(auditLog => {
-            return transformRawAuditLog({
-                auditLog
-            });
-        });
+        const newRecords = items.data.map(auditLog => transformRawAuditLog({ auditLog }));
+        if (variables.after) {
+            setAccumulatedRecords(prev => [...prev, ...newRecords]);
+        } else {
+            setAccumulatedRecords(newRecords);
+        }
     }, [logs.data?.auditLogs]);
+
     const meta = useMemo(() => {
         if (!logs.data?.auditLogs.listAuditLogs.meta) {
             return {
@@ -113,7 +98,7 @@ export const useAuditLogsList = (): UseAuditLogs => {
         return logs.data.auditLogs.listAuditLogs.meta;
     }, [logs.data?.auditLogs]);
 
-    const sorting = useMemo((): Sorting => {
+    const sorting = useMemo((): DataTableSorting => {
         return [
             {
                 id: "createdOn",
@@ -124,7 +109,7 @@ export const useAuditLogsList = (): UseAuditLogs => {
 
     return {
         isListLoading: logs.loading,
-        records,
+        records: accumulatedRecords,
         meta,
         listMoreRecords: () => {
             setAfter(meta.cursor || undefined);

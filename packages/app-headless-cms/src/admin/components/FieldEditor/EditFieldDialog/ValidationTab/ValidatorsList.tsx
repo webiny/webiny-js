@@ -3,16 +3,16 @@ import { css } from "@emotion/css";
 import cloneDeep from "lodash/cloneDeep.js";
 import debounce from "lodash/debounce.js";
 import { plugins } from "@webiny/plugins";
-import { Switch } from "@webiny/ui/Switch/index.js";
+import { Switch } from "@webiny/admin-ui";
 import { Form, Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { Input } from "@webiny/ui/Input/index.js";
+import { Input } from "@webiny/admin-ui";
 import type { CmsModelFieldValidator, CmsModelFieldValidatorPlugin } from "~/types.js";
 import type { Validator } from "@webiny/validation/types.js";
-import { Accordion, AccordionItem } from "@webiny/ui/Accordion/index.js";
+import { Accordion } from "@webiny/admin-ui";
 import type { CmsModelFieldValidatorConfigAdapter } from "~/utils/CmsModelFieldValidatorConfigAdapter.js";
 import styled from "@emotion/styled";
-import { Tooltip } from "@webiny/ui/Tooltip/index.js";
+import { Tooltip } from "@webiny/admin-ui";
 import { Grid } from "@webiny/admin-ui";
 
 const Variable = styled.span`
@@ -122,20 +122,18 @@ const ValidatorItem = ({ validator, value, onChange }: ValidatorItemProps) => {
     const renderSettings = plugin.renderSettings || renderEmpty;
 
     const actions = !validator.isRequired() ? (
-        <AccordionItem.Actions>
-            <Switch
-                label="Enabled"
-                value={validatorIndex >= 0}
-                onChange={() =>
-                    onEnabledChange({
-                        data,
-                        validationValue: value,
-                        onChangeValidation: onChange,
-                        validator: validator
-                    })
-                }
-            />
-        </AccordionItem.Actions>
+        <Switch
+            label="Enabled"
+            checked={validatorIndex >= 0}
+            onChange={() =>
+                onEnabledChange({
+                    data,
+                    validationValue: value,
+                    onChangeValidation: onChange,
+                    validator: validator
+                })
+            }
+        />
     ) : null;
 
     const description = [<span key={"msg"}>This message will be displayed to the user.</span>];
@@ -147,9 +145,14 @@ const ValidatorItem = ({ validator, value, onChange }: ValidatorItemProps) => {
             const variable = variables[i];
 
             description.push(
-                <Tooltip key={variable.name} content={variable.description} placement={"bottom"}>
-                    <Variable dangerouslySetInnerHTML={{ __html: `{${variable.name}}` }} />
-                </Tooltip>
+                <Tooltip
+                    key={variable.name}
+                    content={variable.description}
+                    side={"bottom"}
+                    trigger={
+                        <Variable dangerouslySetInnerHTML={{ __html: `{${variable.name}}` }} />
+                    }
+                />
             );
 
             if (i < variables.length - 1) {
@@ -160,7 +163,7 @@ const ValidatorItem = ({ validator, value, onChange }: ValidatorItemProps) => {
     }
 
     return (
-        <AccordionItem
+        <Accordion.Item
             key={validator.getName()}
             data-testid={`cms.editor.field-validator.${validator.getName()}`}
             interactive={false}
@@ -208,7 +211,7 @@ const ValidatorItem = ({ validator, value, onChange }: ValidatorItemProps) => {
                     )}
                 </Form>
             )}
-        </AccordionItem>
+        </Accordion.Item>
     );
 };
 

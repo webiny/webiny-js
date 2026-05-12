@@ -92,6 +92,7 @@ export const createManageSDL: CreateManageSDL = ({
             meta: ${singularName}Meta
             wbyAco_location: WbyAcoLocation
             live: CmsEntryLive
+            revisionDescription: String
             
             values: ${singularName}Values
         }
@@ -219,6 +220,8 @@ export const createManageSDL: CreateManageSDL = ({
             create${singularName}From(revision: ID!, data: ${singularName}Input, options: CreateRevisionCmsEntryOptionsInput): ${singularName}Response
     
             update${singularName}(revision: ID!, data: ${singularName}Input!, options: UpdateCmsEntryOptionsInput): ${singularName}Response
+            
+            update${singularName}RevisionDescription(revision: ID!, revisionDescription: String): ${singularName}Response
 
             validate${singularName}(revision: ID, data: ${singularName}Input!): CmsEntryValidationResponse!
             

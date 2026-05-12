@@ -12,11 +12,6 @@ export const PageFormWorkflowState = () => {
                 return (
                     <div className={"max-w-screen bg-white p-sm"} data-affects-preview={"height"}>
                         {stateBar}
-                        {/*{state ? (
-                            <Alert className={"mb-md mt-md"} type="danger">
-                                Any changes you do on the page will not be stored!
-                            </Alert>
-                        ) : null}*/}
                     </div>
                 );
             }}

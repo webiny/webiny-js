@@ -1,19 +1,8 @@
 import React, { useCallback, useMemo, useState } from "react";
 import orderBy from "lodash/orderBy.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import {
-    DataList,
-    ScrollList,
-    ListItem,
-    ListItemText,
-    ListItemTextSecondary,
-    ListItemMeta,
-    ListActions,
-    DataListModalOverlayAction,
-    DataListModalOverlay,
-    ListItemTextPrimary
-} from "@webiny/ui/List/index.js";
-import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
+import { List, DataList, DataListModal, DeleteIcon } from "@webiny/admin-ui";
+
 import { useRouter, SearchUI, useSnackbar, useConfirmationDialog } from "@webiny/app-admin";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import type { ListRolesResponse } from "./graphql.js";
@@ -112,7 +101,7 @@ export const RolesDataList = ({ activeId }: RolesDataListProps) => {
 
     const rolesDataListModalOverlay = useMemo(
         () => (
-            <DataListModalOverlay>
+            <DataListModal.Content>
                 <Grid>
                     <Grid.Column span={12}>
                         <Select
@@ -126,7 +115,7 @@ export const RolesDataList = ({ activeId }: RolesDataListProps) => {
                         />
                     </Grid.Column>
                 </Grid>
-            </DataListModalOverlay>
+            </DataListModal.Content>
         ),
         [sort]
     );
@@ -159,47 +148,41 @@ export const RolesDataList = ({ activeId }: RolesDataListProps) => {
                 />
             }
             modalOverlay={rolesDataListModalOverlay}
-            modalOverlayAction={
-                <DataListModalOverlayAction data-testid={"default-data-list.filter"} />
-            }
+            modalOverlayAction={<DataListModal.Trigger data-testid={"default-data-list.filter"} />}
         >
             {({ data }: { data: Role[] }) => (
-                <ScrollList data-testid="default-data-list">
+                <List data-testid="default-data-list">
                     {data.map(item => (
-                        <ListItem key={item.id} selected={item.id === activeId}>
-                            <ListItemText
-                                onClick={() => {
-                                    goToRoute(Routes.Roles.List, { id: item.id });
-                                }}
-                            >
-                                <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
-                                <ListItemTextSecondary>{item.description}</ListItemTextSecondary>
-                            </ListItemText>
-
-                            <ListItemMeta>
-                                <ListActions>
-                                    {item.system || item.plugin ? (
-                                        <Tooltip
-                                            content={
-                                                <span>
-                                                    {item.system
-                                                        ? t`Cannot delete system roles.`
-                                                        : t`Cannot delete roles registered via extensions.`}
-                                                </span>
-                                            }
-                                            trigger={<DeleteIcon disabled />}
-                                        />
-                                    ) : (
-                                        <DeleteIcon
-                                            onClick={() => deleteItem(item)}
-                                            data-testid={"default-data-list.delete"}
-                                        />
-                                    )}
-                                </ListActions>
-                            </ListItemMeta>
-                        </ListItem>
+                        <List.Item
+                            key={item.id}
+                            selected={item.id === activeId}
+                            title={item.name}
+                            description={item.description}
+                            onClick={() => {
+                                goToRoute(Routes.Roles.List, { id: item.id });
+                            }}
+                            actions={
+                                item.system || item.plugin ? (
+                                    <Tooltip
+                                        content={
+                                            <span>
+                                                {item.system
+                                                    ? t`Cannot delete system roles.`
+                                                    : t`Cannot delete roles registered via extensions.`}
+                                            </span>
+                                        }
+                                        trigger={<DeleteIcon disabled />}
+                                    />
+                                ) : (
+                                    <DeleteIcon
+                                        onClick={() => deleteItem(item)}
+                                        data-testid={"default-data-list.delete"}
+                                    />
+                                )
+                            }
+                        />
                     ))}
-                </ScrollList>
+                </List>
             )}
         </DataList>
     );

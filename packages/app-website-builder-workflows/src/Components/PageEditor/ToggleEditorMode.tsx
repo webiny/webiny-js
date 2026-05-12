@@ -10,8 +10,9 @@ export const ToggleEditorMode = observer(() => {
     const hasState = !!presenter.vm.state?.state;
 
     useEffect(() => {
+        const options = editor.getEditorOptions();
         editor.updateEditor(state => {
-            state.isReadOnly = hasState;
+            state.isReadOnly = options.isReadOnly || hasState;
         });
     }, [hasState]);
 

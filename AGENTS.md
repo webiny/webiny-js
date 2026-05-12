@@ -17,7 +17,8 @@ When new backend features are discovered, update `ai-context/core-features-refer
 
 ## Building
 
-- When building a single package, use `yarn build -p <package-name> --no-cache --safe-replace`, e.g., `yarn build -p @webiny/api-core --safe-replace`.
+- When type checking, use `yarn check -p <package-name>`, e.g., `yarn check -p @webiny/api-core`
+- When building a single package, use `yarn build -p <package-name>`, e.g., `yarn build -p @webiny/api-core`.
 - To build all packages, simply run `yarn build`.
 - To build all packages without caching, use `yarn build --no-cache `.
 

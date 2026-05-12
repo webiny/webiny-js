@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { useBind } from "@webiny/form";
-import { Select } from "@webiny/ui/Select/index.js";
+import { Select } from "@webiny/admin-ui";
 import { LIST_USERS } from "~/graphql.js";
 import type { User } from "~/types.js";
 
@@ -30,7 +30,5 @@ export const FilterByCreatedBy = () => {
         ];
     }, [listUsers]);
 
-    return (
-        <Select {...bind} size={"medium"} placeholder={"Filter by Initiator"} options={options} />
-    );
+    return <Select {...bind} size={"md"} placeholder={"Filter by Initiator"} options={options} />;
 };

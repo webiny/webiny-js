@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import { useBind } from "@webiny/form";
-import { CircularProgress } from "@webiny/ui/Progress/index.js";
+import { Textarea, Text } from "@webiny/admin-ui";
+import { OverlayLoader } from "@webiny/admin-ui";
 import styled from "@emotion/styled";
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types/index.js";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/index.js";
@@ -26,6 +27,19 @@ const EntryMessage = ({ id, entryType, getEntry }: EntryMessageProps) => {
         name: "entry"
     });
 
+    const [description, setDescription] = useState("");
+
+    const onRevisionDescriptionChange = useCallback(
+        (value: string) => {
+            setDescription(value);
+            entryBind.onChange({
+                ...entryBind.value,
+                revisionDescription: value
+            });
+        },
+        [entryBind.value]
+    );
+
     useEffect(() => {
         getEntry({ id }).then(response => {
             entryBind.onChange(response.entry);
@@ -33,15 +47,21 @@ const EntryMessage = ({ id, entryType, getEntry }: EntryMessageProps) => {
     }, []);
 
     if (!entryBind.value) {
-        return <CircularProgress label={"Checking entry..."} />;
+        return <OverlayLoader text={"Checking entry..."} />;
     }
 
     return (
-        <p>
-            You are about to publish a {entryType} titled{" "}
-            <Title>{entryBind.value.meta.title}</Title>.<br />
-            Are you sure you want to continue?
-        </p>
+        <>
+            <p>
+                You are about to publish a {entryType} titled{" "}
+                <Title>{entryBind.value.meta.title}</Title>.<br />
+                Are you sure you want to continue?
+            </p>
+            <Text as={"div"} size={"sm"} className={"mt-2"}>
+                Write a revision description (optional):
+            </Text>
+            <Textarea onChange={onRevisionDescriptionChange} value={description} />
+        </>
     );
 };
 
@@ -53,8 +73,24 @@ export const ShowConfirmationOnPublish = useContentEntry.createDecorator(baseHoo
         const { contentModel } = hook;
         const entryType = contentModel.name.toLowerCase();
 
-        const onAccept = async (entry: CmsContentEntry) => {
-            const response = await hook.publishEntryRevision({ id: entry.id });
+        const onAccept = async (
+            entry: Pick<CmsContentEntry, "id" | "revisionDescription" | "meta">
+        ) => {
+            const updateEntryDescriptionResponse = await hook.updateRevisionDescription({
+                id: entry.id,
+                revisionDescription: entry.revisionDescription || ""
+            });
+            if (updateEntryDescriptionResponse.error) {
+                showErrorSnackbar(
+                    `Could not update revision description for ${entry.meta.title}! (${updateEntryDescriptionResponse.error.message})`
+                );
+
+                return updateEntryDescriptionResponse;
+            }
+
+            const response = await hook.publishEntryRevision({
+                id: entry.id
+            });
 
             if (response.error) {
                 showErrorSnackbar(
@@ -82,9 +118,12 @@ export const ShowConfirmationOnPublish = useContentEntry.createDecorator(baseHoo
                     acceptLabel: "Yes, publish!",
                     cancelLabel: "Cancel",
                     loadingLabel: `Publishing ${entryType}...`,
-                    onAccept: async ({ entry }) => resolve(await onAccept(entry)),
-                    onClose: () =>
-                        resolve({ error: { message: "Publishing was aborted.", code: "ABORTED" } })
+                    onAccept: async ({ entry }) => {
+                        resolve(await onAccept(entry));
+                    },
+                    onClose: () => {
+                        resolve({ error: { message: "Publishing was aborted.", code: "ABORTED" } });
+                    }
                 });
             });
         };

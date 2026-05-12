@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import type { CmsErrorResponse, CmsModel } from "~/types.js";
-import { Input } from "@webiny/ui/Input/index.js";
+import { Input } from "@webiny/admin-ui";
 import { createValidationValue } from "./validationValue.js";
 import { Alert } from "@webiny/admin-ui";
 

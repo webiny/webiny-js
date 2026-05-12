@@ -38,7 +38,7 @@ const GraphQLPlaygroundExtension = ({ createApolloClient }: GraphQLPlaygroundPro
                         />
                     }
                 />
-                <HasPermission any={["dev-tools.*", "graphql-playground.*"]}>
+                <HasPermission any={["dev-tools.*", "dev-tools.graphql-playground.*"]}>
                     <Menu
                         name={"dev-tools.graphql"}
                         parent={"dev-tools"}

@@ -50,6 +50,7 @@ const CreateNewRevisionMenuItem = () => {
     return (
         <OptionsMenuItem
             icon={<NewReleaseIcon />}
+            disabled={!entry.id}
             label={`Create New Revision`}
             onAction={onClick}
             data-testid={"cms.content-form.header.createNewRevision"}

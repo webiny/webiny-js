@@ -44,6 +44,7 @@ export default /* GraphQL */ `
         meta: ReviewApiModelMeta
         wbyAco_location: WbyAcoLocation
         live: CmsEntryLive
+        revisionDescription: String
 
         values: ReviewApiModelValues
     }
@@ -434,6 +435,11 @@ export default /* GraphQL */ `
             revision: ID!
             data: ReviewApiModelInput!
             options: UpdateCmsEntryOptionsInput
+        ): ReviewApiModelResponse
+
+        updateReviewApiModelRevisionDescription(
+            revision: ID!
+            revisionDescription: String
         ): ReviewApiModelResponse
 
         validateReviewApiModel(

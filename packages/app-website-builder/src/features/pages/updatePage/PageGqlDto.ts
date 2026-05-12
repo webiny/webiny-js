@@ -17,4 +17,5 @@ export interface PageGqlDto {
     savedOn: string;
     modifiedBy: WbIdentity | null;
     modifiedOn: string | null;
+    revisionDescription: string | undefined;
 }

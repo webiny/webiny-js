@@ -52,6 +52,7 @@ export default /* GraphQL */ `
         meta: ProductApiSingularMeta
         wbyAco_location: WbyAcoLocation
         live: CmsEntryLive
+        revisionDescription: String
 
         values: ProductApiSingularValues
     }
@@ -621,6 +622,11 @@ export default /* GraphQL */ `
             revision: ID!
             data: ProductApiSingularInput!
             options: UpdateCmsEntryOptionsInput
+        ): ProductApiSingularResponse
+
+        updateProductApiSingularRevisionDescription(
+            revision: ID!
+            revisionDescription: String
         ): ProductApiSingularResponse
 
         validateProductApiSingular(

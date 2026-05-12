@@ -1,5 +1,6 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { WebinyError } from "@webiny/error";
+import type { IKeyValueStoreSetOptions } from "@webiny/api-core/features/keyValueStore/abstractions.js";
 import { KeyValueStoreDynamoTable } from "./KeyValueStoreDynamoTable.js";
 
 interface KeyValueRecord {
@@ -30,7 +31,11 @@ export class KeyValueStoreStorageOperations {
                 return null;
             }
 
-            // Return the user-facing key without scope prefix
+            const ttl = Number(entry.expiresAt);
+            if (ttl && ttl <= Math.floor(Date.now() / 1000)) {
+                return null;
+            }
+
             return {
                 key,
                 value: entry.data.value,
@@ -45,7 +50,12 @@ export class KeyValueStoreStorageOperations {
         }
     }
 
-    async set(key: string, value: any, scope: string): Promise<void> {
+    async set(
+        key: string,
+        value: any,
+        scope: string,
+        options?: IKeyValueStoreSetOptions
+    ): Promise<void> {
         try {
             const scopedKey = this.createScopedKey(key, scope);
             const keys = this.table.createKeys({ scopedKey });
@@ -53,6 +63,9 @@ export class KeyValueStoreStorageOperations {
             await this.entity.put({
                 ...keys,
                 TYPE: "KeyValueStore",
+                expiresAt: options?.expiresAt
+                    ? Math.floor(options.expiresAt.getTime() / 1000)
+                    : undefined,
                 data: {
                     key,
                     value,

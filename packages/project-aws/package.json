@@ -18,8 +18,8 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.28.0",
-    "@pulumi/pulumi": "^3.234.0",
+    "@pulumi/aws": "^7.29.0",
+    "@pulumi/pulumi": "^3.237.0",
     "@pulumi/random": "^4.19.2",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-layers": "0.0.0",
@@ -38,7 +38,7 @@
     "react": "18.3.1",
     "replace-in-path": "^1.1.0",
     "ts-morph": "^28.0.0",
-    "zod": "4.3.6"
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.24",

@@ -5,20 +5,7 @@ import { Avatar, Button, Grid, Select, Tooltip } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { useSecurity } from "@webiny/app-admin";
-import {
-    DataList,
-    ScrollList,
-    ListItem,
-    ListItemText,
-    ListItemTextSecondary,
-    ListItemMeta,
-    ListActions,
-    ListItemGraphic,
-    DataListModalOverlayAction,
-    DataListModalOverlay,
-    ListItemTextPrimary
-} from "@webiny/ui/List/index.js";
-import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
+import { List, DataList, DataListModal, DeleteIcon } from "@webiny/admin-ui";
 import { useRouter, useSnackbar, useConfirmationDialog, SearchUI } from "@webiny/app-admin";
 import { DELETE_USER, LIST_USERS } from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
@@ -119,7 +106,7 @@ const UsersDataList = () => {
 
     const usersDataListModalOverlay = useMemo(
         () => (
-            <DataListModalOverlay>
+            <DataListModal.Content>
                 <Grid>
                     <Grid.Column span={12}>
                         <Select
@@ -133,7 +120,7 @@ const UsersDataList = () => {
                         />
                     </Grid.Column>
                 </Grid>
-            </DataListModalOverlay>
+            </DataListModal.Content>
         ),
         [sort]
     );
@@ -165,22 +152,20 @@ const UsersDataList = () => {
                 />
             }
             modalOverlay={usersDataListModalOverlay}
-            modalOverlayAction={
-                <DataListModalOverlayAction data-testid={"default-data-list.filter"} />
-            }
+            modalOverlayAction={<DataListModal.Trigger data-testid={"default-data-list.filter"} />}
             showOptions={{
                 refresh: false
             }}
         >
             {({ data }: { data: UserItem[] }) => (
-                <ScrollList data-testid="default-data-list">
+                <List data-testid="default-data-list">
                     {data.map(item => (
-                        <ListItem
+                        <List.Item
                             key={item.id}
                             selected={item.id === id}
-                            style={{ height: "auto" }}
-                        >
-                            <ListItemGraphic>
+                            title={`${item.firstName} ${item.lastName}`}
+                            description={item.email}
+                            icon={
                                 <Avatar
                                     image={
                                         <Avatar.Image
@@ -194,38 +179,28 @@ const UsersDataList = () => {
                                         </Avatar.Fallback>
                                     }
                                 />
-                            </ListItemGraphic>
-                            <ListItemText
-                                onClick={() => {
-                                    goToRoute(Routes.Users.List, { id: item.id });
-                                }}
-                            >
-                                <ListItemTextPrimary>
-                                    {item.firstName} {item.lastName}
-                                </ListItemTextPrimary>
-                                <ListItemTextSecondary>{item.email}</ListItemTextSecondary>
-                            </ListItemText>
-
-                            <ListItemMeta>
-                                <ListActions>
-                                    {identity && identity.id !== item.id ? (
-                                        <DeleteIcon
-                                            onClick={() => deleteItem(item)}
-                                            data-testid={"default-data-list.delete"}
-                                        />
-                                    ) : (
-                                        <Tooltip
-                                            content={
-                                                <span>{t`You can't delete your own user account.`}</span>
-                                            }
-                                            trigger={<DeleteIcon disabled />}
-                                        />
-                                    )}
-                                </ListActions>
-                            </ListItemMeta>
-                        </ListItem>
+                            }
+                            onClick={() => {
+                                goToRoute(Routes.Users.List, { id: item.id });
+                            }}
+                            actions={
+                                identity && identity.id !== item.id ? (
+                                    <DeleteIcon
+                                        onClick={() => deleteItem(item)}
+                                        data-testid={"default-data-list.delete"}
+                                    />
+                                ) : (
+                                    <Tooltip
+                                        content={
+                                            <span>{t`You can't delete your own user account.`}</span>
+                                        }
+                                        trigger={<DeleteIcon disabled />}
+                                    />
+                                )
+                            }
+                        />
                     ))}
-                </ScrollList>
+                </List>
             )}
         </DataList>
     );

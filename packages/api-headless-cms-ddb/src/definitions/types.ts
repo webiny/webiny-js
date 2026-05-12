@@ -65,6 +65,7 @@ export interface IEntryEntityAttributesData {
     meta?: GenericRecord;
     system?: ICmsEntrySystem;
     live: ICmsEntryLive | null;
+    revisionDescription: string | undefined;
 }
 
 export type IEntryEntityAttributes = IStandardEntityAttributes<IEntryEntityAttributesData>;
