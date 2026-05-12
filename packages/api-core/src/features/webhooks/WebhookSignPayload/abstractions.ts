@@ -1,8 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 
+export interface IWebhookSignPayloadResponse {
+    hash: string;
+}
+
 export interface IWebhookSignPayload {
-    /** Returns Stripe-format header value: `t={timestamp},v1={hmac-sha256}`. */
-    sign(rawBody: string, timestamp: number, secret: string): Promise<string>;
+    sign(rawBody: string, timestamp: number, secret: string): Promise<IWebhookSignPayloadResponse>;
 }
 
 /** Signs webhook payloads using HMAC-SHA256 with the webhook's own signing secret. */
@@ -12,4 +15,5 @@ export const WebhookSignPayload = createAbstraction<IWebhookSignPayload>(
 
 export namespace WebhookSignPayload {
     export type Interface = IWebhookSignPayload;
+    export type Response = IWebhookSignPayloadResponse;
 }
