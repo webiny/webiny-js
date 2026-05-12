@@ -1,5 +1,4 @@
 export * from "./SegmentedControl.js";
-export * from "./SegmentedControlTab.js";
 export * from "./SegmentedControlTabs.js";
 export { useSegmentedTabs } from "./SegmentedControlTabsContext.js";
 export * from "./primitives/index.js";

@@ -150,19 +150,19 @@ export const Disabled: Story = {
 export const TabsDefault: Story = {
     render: () => (
         <SegmentedControl.Tabs>
-            <SegmentedControl.Tab
+            <SegmentedControl.Tabs.Tab
                 value={"account"}
                 trigger={"Account"}
                 icon={<Icon icon={<PersonIcon />} label={"Account"} />}
                 content={<div className={"p-md"}>{"Account content"}</div>}
             />
-            <SegmentedControl.Tab
+            <SegmentedControl.Tabs.Tab
                 value={"security"}
                 trigger={"Security"}
                 icon={<Icon icon={<LockIcon />} label={"Security"} />}
                 content={<div className={"p-md"}>{"Security content"}</div>}
             />
-            <SegmentedControl.Tab
+            <SegmentedControl.Tabs.Tab
                 value={"preferences"}
                 trigger={"Preferences"}
                 icon={<Icon icon={<SettingsIcon />} label={"Preferences"} />}
@@ -175,17 +175,17 @@ export const TabsDefault: Story = {
 export const TabsDimmed: Story = {
     render: () => (
         <SegmentedControl.Tabs variant={"dimmed"}>
-            <SegmentedControl.Tab
+            <SegmentedControl.Tabs.Tab
                 value={"account"}
                 trigger={"Account"}
                 content={<div className={"p-md"}>{"Account content"}</div>}
             />
-            <SegmentedControl.Tab
+            <SegmentedControl.Tabs.Tab
                 value={"security"}
                 trigger={"Security"}
                 content={<div className={"p-md"}>{"Security content"}</div>}
             />
-            <SegmentedControl.Tab
+            <SegmentedControl.Tabs.Tab
                 value={"preferences"}
                 trigger={"Preferences"}
                 content={<div className={"p-md"}>{"Preferences content"}</div>}
@@ -211,12 +211,12 @@ const SwitchFromContent = () => {
 export const TabsProgrammaticSwitch: Story = {
     render: () => (
         <SegmentedControl.Tabs variant={"dimmed"}>
-            <SegmentedControl.Tab
+            <SegmentedControl.Tabs.Tab
                 value={"account"}
                 trigger={"Account"}
                 content={<SwitchFromContent />}
             />
-            <SegmentedControl.Tab
+            <SegmentedControl.Tabs.Tab
                 value={"security"}
                 trigger={"Security"}
                 content={<div className={"p-md"}>{"Security content"}</div>}

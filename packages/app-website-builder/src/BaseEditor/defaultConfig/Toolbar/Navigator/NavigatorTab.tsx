@@ -4,7 +4,7 @@ import { ReactComponent as TreeIcon } from "@webiny/icons/account_tree.svg";
 import { Navigator } from "./Navigator.js";
 
 export const NavigatorTab = () => (
-    <SegmentedControl.Tab
+    <SegmentedControl.Tabs.Tab
         value={"navigator"}
         trigger={"Navigator"}
         icon={<Icon icon={<TreeIcon />} label={"Navigator"} />}

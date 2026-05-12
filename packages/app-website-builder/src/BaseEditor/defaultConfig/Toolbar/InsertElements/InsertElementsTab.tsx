@@ -52,7 +52,7 @@ const InsertElementsContent = () => {
 };
 
 export const InsertElementsTab = () => (
-    <SegmentedControl.Tab
+    <SegmentedControl.Tabs.Tab
         value={"insert"}
         trigger={"Insert"}
         icon={<Icon icon={<InsertIcon />} label={"Insert Element"} />}

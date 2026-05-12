@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Tabs } from "radix-ui";
-import { cn } from "~/utils.js";
+import { cn, withStaticProps } from "~/utils.js";
 import { SegmentedControlPrimitive } from "./primitives/index.js";
 import type { SegmentedControlPrimitiveProps } from "./primitives/index.js";
 import {
     SegmentedControlTabsContext,
     type SegmentedTabItem
 } from "./SegmentedControlTabsContext.js";
+import { SegmentedControlTab } from "./SegmentedControlTab.js";
 
 export interface SegmentedControlTabsProps {
     children: React.ReactNode;
@@ -16,7 +17,7 @@ export interface SegmentedControlTabsProps {
     headerClassName?: string;
 }
 
-export const SegmentedControlTabs = ({
+const BaseSegmentedControlTabs = ({
     children,
     variant,
     defaultValue,
@@ -92,3 +93,7 @@ export const SegmentedControlTabs = ({
         </SegmentedControlTabsContext.Provider>
     );
 };
+
+export const SegmentedControlTabs = withStaticProps(BaseSegmentedControlTabs, {
+    Tab: SegmentedControlTab
+});
