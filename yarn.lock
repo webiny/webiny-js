@@ -14998,6 +14998,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/webhooks@workspace:packages/webhooks":
+  version: 0.0.0-use.local
+  resolution: "@webiny/webhooks@workspace:packages/webhooks"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^0.2.3"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/tasks": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    typescript: "npm:6.0.3"
+    vitest: "npm:^4.1.5"
+    zod: "npm:4.4.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/website-builder-nextjs@workspace:packages/website-builder-nextjs":
   version: 0.0.0-use.local
   resolution: "@webiny/website-builder-nextjs@workspace:packages/website-builder-nextjs"

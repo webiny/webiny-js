@@ -1,0 +1,41 @@
+import { BaseError } from "@webiny/feature/api";
+
+export class WebhookNotFoundError extends BaseError {
+    override readonly code = "WEBHOOK_NOT_FOUND" as const;
+
+    constructor(id: string) {
+        super({ message: `Webhook "${id}" was not found.` });
+    }
+}
+
+export class WebhookDeliveryNotFoundError extends BaseError {
+    override readonly code = "WEBHOOK_DELIVERY_NOT_FOUND" as const;
+
+    constructor(id: string) {
+        super({ message: `Webhook delivery "${id}" was not found.` });
+    }
+}
+
+export class WebhookValidationError extends BaseError {
+    override readonly code = "WEBHOOK_VALIDATION_ERROR" as const;
+
+    constructor(message: string) {
+        super({ message });
+    }
+}
+
+export class WebhookPersistenceError extends BaseError {
+    override readonly code = "WEBHOOK_PERSISTENCE_ERROR" as const;
+
+    constructor(error: Error) {
+        super({ message: error.message });
+    }
+}
+
+export class WebhookModelNotFoundError extends BaseError {
+    override readonly code = "WEBHOOK_MODEL_NOT_FOUND" as const;
+
+    constructor(modelId: string) {
+        super({ message: `Webhook model "${modelId}" was not found.` });
+    }
+}
