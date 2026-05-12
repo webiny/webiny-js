@@ -17,7 +17,7 @@ import {
     DeleteFile,
     EditFile,
     MoveFile
-} from "~/presentation/FileList/legacy/Table/index.js";
+} from "~/presentation/FileList/components/Table/index.js";
 import { GridItemDefaultRenderer } from "~/presentation/config/thumbnailRenderers/GridItemDefaultRenderer.js";
 import { GridItemImageRenderer } from "~/presentation/config/thumbnailRenderers/GridItemImageRenderer.js";
 import { FileActions } from "~/presentation/FileActions/index.js";
