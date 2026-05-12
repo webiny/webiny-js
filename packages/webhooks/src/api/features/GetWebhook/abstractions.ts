@@ -1,8 +1,28 @@
-import { type Result, BaseError, createAbstraction } from "@webiny/feature/api";
+import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { IWebhook } from "~/api/domain/types.js";
+import type {
+    WebhookNotFoundError,
+    WebhookModelNotFoundError,
+    WebhookPersistenceError
+} from "~/api/domain/errors.js";
+
+type IError = WebhookNotFoundError | WebhookModelNotFoundError | WebhookPersistenceError;
+
+export interface IGetWebhookUseCase {
+    execute(id: string): Promise<Result<IWebhook, IError>>;
+}
+
+export const GetWebhookUseCase = createAbstraction<IGetWebhookUseCase>(
+    "Webhooks/GetWebhookUseCase"
+);
+
+export namespace GetWebhookUseCase {
+    export type Interface = IGetWebhookUseCase;
+    export type Error = IError;
+}
 
 export interface IGetWebhookRepository {
-    execute(id: string): Promise<Result<IWebhook, BaseError>>;
+    execute(id: string): Promise<Result<IWebhook, IError>>;
 }
 
 export const GetWebhookRepository = createAbstraction<IGetWebhookRepository>(
@@ -11,4 +31,5 @@ export const GetWebhookRepository = createAbstraction<IGetWebhookRepository>(
 
 export namespace GetWebhookRepository {
     export type Interface = IGetWebhookRepository;
+    export type Error = IError;
 }

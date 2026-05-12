@@ -1,0 +1,49 @@
+import { Result } from "@webiny/feature/api";
+import { ResendWebhookDeliveryUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { GetWebhookDeliveryRepository } from "~/api/features/GetWebhookDelivery/abstractions.js";
+import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
+import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
+import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
+import type { IWebhookPayload } from "~/api/domain/types.js";
+
+class ResendWebhookDeliveryUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(
+        private getDeliveryRepository: GetWebhookDeliveryRepository.Interface,
+        private getWebhookRepository: GetWebhookRepository.Interface,
+        private taskService: TaskService.Interface
+    ) {}
+
+    async execute(deliveryId: string): Promise<Result<boolean, UseCaseAbstraction.Error>> {
+        const deliveryResult = await this.getDeliveryRepository.execute(deliveryId);
+        if (deliveryResult.isFail()) {
+            return Result.fail(deliveryResult.error);
+        }
+
+        const delivery = deliveryResult.value;
+
+        const webhookResult = await this.getWebhookRepository.execute(delivery.values.webhookId);
+        if (webhookResult.isFail()) {
+            return Result.fail(webhookResult.error);
+        }
+
+        const originalPayload = delivery.values.payload as IWebhookPayload | null;
+        const data = originalPayload?.data ?? {};
+
+        await this.taskService.trigger({
+            definition: SEND_WEBHOOK_TASK,
+            name: `Resend webhook: ${delivery.values.eventType}`,
+            input: {
+                webhookId: delivery.values.webhookId,
+                eventName: delivery.values.eventType,
+                data
+            }
+        });
+
+        return Result.ok(true);
+    }
+}
+
+export default UseCaseAbstraction.createImplementation({
+    implementation: ResendWebhookDeliveryUseCaseImpl,
+    dependencies: [GetWebhookDeliveryRepository, GetWebhookRepository, TaskService]
+});

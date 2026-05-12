@@ -1,0 +1,95 @@
+import { Result } from "@webiny/feature/api";
+import { GetModelUseCase } from "@webiny/api-headless-cms/exports/api/cms/model.js";
+import { GetLatestRevisionByEntryIdUseCase } from "@webiny/api-headless-cms/exports/api/cms/entry.js";
+import { CompressionHandler } from "@webiny/utils/exports/api.js";
+import { GetWebhookDeliveryRepository as RepositoryAbstraction } from "./abstractions.js";
+import {
+    WebhookDeliveryNotFoundError,
+    WebhookModelNotFoundError,
+    WebhookPersistenceError
+} from "~/api/domain/errors.js";
+import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
+import type { IWebhookDelivery } from "~/api/domain/types.js";
+
+interface IRawDeliveryValues {
+    webhookId: string;
+    backgroundTaskId: string;
+    eventType: string;
+    payload: string;
+    requestHeaders: string;
+    responseTime: number;
+    responseStatus: number;
+    responseBody: string;
+    expiresAt: string;
+}
+
+class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private getModelUseCase: GetModelUseCase.Interface,
+        private getLatestRevision: GetLatestRevisionByEntryIdUseCase.Interface,
+        private compressionHandler: CompressionHandler.Interface
+    ) {}
+
+    async execute(id: string): Promise<Result<IWebhookDelivery, RepositoryAbstraction.Error>> {
+        try {
+            const modelResult = await this.getModelUseCase.execute(WEBHOOK_DELIVERY_MODEL_ID);
+            if (modelResult.isFail()) {
+                return Result.fail(new WebhookModelNotFoundError(WEBHOOK_DELIVERY_MODEL_ID));
+            }
+
+            const entryResult = await this.getLatestRevision.execute<IRawDeliveryValues>(
+                modelResult.value,
+                { id }
+            );
+
+            if (entryResult.isFail()) {
+                return Result.fail(new WebhookDeliveryNotFoundError(id));
+            }
+
+            const entry = entryResult.value;
+            const raw = entry.values;
+
+            const [payload, requestHeaders, responseBody] = await Promise.all([
+                this.safeDecompress<object>(raw.payload),
+                this.safeDecompress<object>(raw.requestHeaders),
+                this.safeDecompress<string>(raw.responseBody)
+            ]);
+
+            const delivery: IWebhookDelivery = {
+                id: entry.entryId,
+                values: {
+                    webhookId: raw.webhookId,
+                    backgroundTaskId: raw.backgroundTaskId,
+                    eventType: raw.eventType,
+                    payload,
+                    requestHeaders,
+                    responseTime: raw.responseTime,
+                    responseStatus: raw.responseStatus,
+                    responseBody,
+                    expiresAt: raw.expiresAt
+                },
+                createdOn: entry.createdOn
+            };
+
+            return Result.ok(delivery);
+        } catch (error) {
+            return Result.fail(new WebhookPersistenceError(error as Error));
+        }
+    }
+
+    private async safeDecompress<T>(stored: string): Promise<T | null> {
+        if (!stored) {
+            return null;
+        }
+        try {
+            return await this.compressionHandler.decompress<T>(JSON.parse(stored));
+        } catch {
+            return null;
+        }
+    }
+}
+
+export default RepositoryAbstraction.createImplementation({
+    implementation: GetWebhookDeliveryRepositoryImpl,
+    dependencies: [GetModelUseCase, GetLatestRevisionByEntryIdUseCase, CompressionHandler]
+});
