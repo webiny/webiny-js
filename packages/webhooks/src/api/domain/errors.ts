@@ -39,3 +39,11 @@ export class WebhookModelNotFoundError extends BaseError {
         super({ message: `Webhook model "${modelId}" was not found.` });
     }
 }
+
+export class WebhookVerificationFailedError extends BaseError {
+    override readonly code = "WEBHOOK_VERIFICATION_FAILED" as const;
+
+    constructor(message: string) {
+        super({ message });
+    }
+}

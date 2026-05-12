@@ -10177,6 +10177,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stablelib/base64@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "@stablelib/base64@npm:1.0.1"
+  checksum: 10/93f3edb05d5a828a775d23ebde49884abeb456b8946942acbe6a0815630e769c59c06c7275983031c8707bdcefc1c62917aaa99522ff1ec5f457704c83b686da
+  languageName: node
+  linkType: hard
+
 "@standard-schema/spec@npm:^1.1.0":
   version: 1.1.0
   resolution: "@standard-schema/spec@npm:1.1.0"
@@ -15013,6 +15020,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
+    standardwebhooks: "npm:^1.0.0"
     typescript: "npm:6.0.3"
     vitest: "npm:^4.1.5"
     zod: "npm:4.4.3"
@@ -19745,6 +19753,13 @@ __metadata:
   version: 2.1.1
   resolution: "fast-safe-stringify@npm:2.1.1"
   checksum: 10/dc1f063c2c6ac9533aee14d406441f86783a8984b2ca09b19c2fe281f9ff59d315298bc7bc22fd1f83d26fe19ef2f20e2ddb68e96b15040292e555c5ced0c1e4
+  languageName: node
+  linkType: hard
+
+"fast-sha256@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "fast-sha256@npm:1.3.0"
+  checksum: 10/3bef0491f10a254348ec11dcddb26e4d951cfd3b4c0662ea5843ad1be3fe184ed74d640df68565fcc60f6437548cddf49e3ac886f88a69e05b5142e862840bf9
   languageName: node
   linkType: hard
 
@@ -29294,6 +29309,16 @@ __metadata:
   version: 0.0.2
   resolution: "stackback@npm:0.0.2"
   checksum: 10/2d4dc4e64e2db796de4a3c856d5943daccdfa3dd092e452a1ce059c81e9a9c29e0b9badba91b43ef0d5ff5c04ee62feb3bcc559a804e16faf447bac2d883aa99
+  languageName: node
+  linkType: hard
+
+"standardwebhooks@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "standardwebhooks@npm:1.0.0"
+  dependencies:
+    "@stablelib/base64": "npm:^1.0.0"
+    fast-sha256: "npm:^1.3.0"
+  checksum: 10/02b74a3e4cd131affe8bf18945360747a5a0bf81c1d62a7bbbea3d40976b4fef4bb37de71a35cdc0fdc4d6f0d951a3b6031052e78bd086dc9b09b629b82d3919
   languageName: node
   linkType: hard
 

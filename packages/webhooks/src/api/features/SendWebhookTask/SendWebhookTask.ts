@@ -38,25 +38,26 @@ class SendWebhookTaskDefinition implements TaskDefinition.Interface<
         }
         const webhook = webhookResult.value;
 
-        const timestamp = Math.floor(Date.now() / 1000);
+        const now = new Date();
         const payload: IWebhookPayload = {
             id: taskId,
             event: input.eventName,
-            timestamp: new Date(timestamp * 1000).toISOString(),
+            timestamp: now.toISOString(),
             webhookId: input.webhookId,
             tenant: this.tenantContext.getTenant().id,
             data: input.data
         };
         const rawBody = JSON.stringify(payload);
-        const signResult = await this.signPayload.sign(
+        const signHeaders = await this.signPayload.sign(
+            taskId,
+            now,
             rawBody,
-            timestamp,
             webhook.values.signingSecret
         );
 
         const requestHeaders: Record<string, string> = {
             "Content-Type": "application/json",
-            "Webiny-Signature": signResult.hash
+            ...signHeaders
         };
 
         const startTime = Date.now();

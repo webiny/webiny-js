@@ -18,9 +18,15 @@ const makeWebhook = (): IWebhook => ({
         endpointUrl: "https://example.com/hook",
         enabled: true,
         events: ["product.entry.published"],
-        signingSecret: "whsec_test_secret"
+        signingSecret: "whsec_dGVzdHNlY3JldA=="
     }
 });
+
+const SIGN_HEADERS: WebhookSignPayload.Headers = {
+    "webhook-id": "task-123",
+    "webhook-timestamp": "1000",
+    "webhook-signature": "v1,abc123"
+};
 
 describe("SendWebhookTask", () => {
     let container: Container;
@@ -41,7 +47,7 @@ describe("SendWebhookTask", () => {
             execute: createDeliveryMock
         });
         container.registerInstance(WebhookSignPayload, {
-            sign: vi.fn().mockResolvedValue({ hash: "t=1000,v1=abc123" })
+            sign: vi.fn().mockResolvedValue(SIGN_HEADERS)
         });
         container.registerInstance(TenantContext, {
             getTenant: vi.fn().mockReturnValue({ id: "root" }),
@@ -72,7 +78,7 @@ describe("SendWebhookTask", () => {
         }
     });
 
-    it("POSTs to endpoint and logs a successful delivery", async () => {
+    it("POSTs to endpoint with Standard Webhooks headers and logs a successful delivery", async () => {
         fetchMock.mockResolvedValue({
             status: 200,
             text: vi.fn().mockResolvedValue("OK")
@@ -97,7 +103,9 @@ describe("SendWebhookTask", () => {
                 method: "POST",
                 headers: expect.objectContaining({
                     "Content-Type": "application/json",
-                    "Webiny-Signature": "t=1000,v1=abc123"
+                    "webhook-id": "task-123",
+                    "webhook-timestamp": "1000",
+                    "webhook-signature": "v1,abc123"
                 })
             })
         );

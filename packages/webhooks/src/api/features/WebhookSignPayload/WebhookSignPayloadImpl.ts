@@ -1,15 +1,20 @@
-import { createHmac } from "node:crypto";
+import { Webhook } from "standardwebhooks";
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
 
 class WebhookSignPayloadImpl implements WebhookSignPayload.Interface {
     async sign(
-        rawBody: string,
-        timestamp: number,
+        msgId: string,
+        timestamp: Date,
+        rawBody: string | Buffer,
         secret: string
-    ): Promise<WebhookSignPayload.Response> {
-        const signedPayload = `${timestamp}.${rawBody}`;
-        const hmac = createHmac("sha256", secret).update(signedPayload).digest("hex");
-        return { hash: `t=${timestamp},v1=${hmac}` };
+    ): Promise<WebhookSignPayload.Headers> {
+        const wh = new Webhook(secret);
+        const signature = wh.sign(msgId, timestamp, rawBody);
+        return {
+            "webhook-id": msgId,
+            "webhook-timestamp": String(Math.floor(timestamp.getTime() / 1000)),
+            "webhook-signature": signature
+        };
     }
 }
 

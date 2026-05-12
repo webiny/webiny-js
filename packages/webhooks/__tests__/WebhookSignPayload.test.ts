@@ -3,19 +3,25 @@ import { Container } from "@webiny/di";
 import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/index.js";
 import { WebhookSignPayloadFeature } from "~/api/features/WebhookSignPayload/feature.js";
 
+// Standard Webhooks secrets are base64-encoded (optionally prefixed with "whsec_").
+const SECRET = "whsec_dGVzdHNlY3JldA==";
+
 describe("WebhookSignPayload", () => {
-    it("returns Stripe-format signature: t={timestamp},v1={hmac}", async () => {
+    it("returns Standard Webhooks headers for a signed payload", async () => {
         const container = new Container();
         WebhookSignPayloadFeature.register(container);
 
         const signer = container.resolve(WebhookSignPayload);
 
+        const msgId = "msg_01abc";
+        const timestamp = new Date("2024-01-01T00:00:00Z");
         const rawBody = '{"event":"test"}';
-        const timestamp = 1700000000;
-        const secret = "whsec_test_secret";
-        const result = await signer.sign(rawBody, timestamp, secret);
 
-        expect(result.hash).toMatch(/^t=1700000000,v1=[a-f0-9]{64}$/);
+        const headers = await signer.sign(msgId, timestamp, rawBody, SECRET);
+
+        expect(headers["webhook-id"]).toBe(msgId);
+        expect(headers["webhook-timestamp"]).toBe(String(Math.floor(timestamp.getTime() / 1000)));
+        expect(headers["webhook-signature"]).toMatch(/^v1,/);
     });
 
     it("produces consistent signatures for the same input", async () => {
@@ -24,21 +30,23 @@ describe("WebhookSignPayload", () => {
 
         const signer = container.resolve(WebhookSignPayload);
 
-        const sig1 = await signer.sign("body", 1000, "whsec_abc");
-        const sig2 = await signer.sign("body", 1000, "whsec_abc");
+        const timestamp = new Date("2024-01-01T00:00:00Z");
+        const h1 = await signer.sign("msg_1", timestamp, "body", SECRET);
+        const h2 = await signer.sign("msg_1", timestamp, "body", SECRET);
 
-        expect(sig1.hash).toBe(sig2.hash);
+        expect(h1["webhook-signature"]).toBe(h2["webhook-signature"]);
     });
 
-    it("produces different signatures for different timestamps", async () => {
+    it("produces different signatures for different message IDs", async () => {
         const container = new Container();
         WebhookSignPayloadFeature.register(container);
 
         const signer = container.resolve(WebhookSignPayload);
 
-        const sig1 = await signer.sign("body", 1000, "whsec_abc");
-        const sig2 = await signer.sign("body", 2000, "whsec_abc");
+        const timestamp = new Date("2024-01-01T00:00:00Z");
+        const h1 = await signer.sign("msg_a", timestamp, "body", SECRET);
+        const h2 = await signer.sign("msg_b", timestamp, "body", SECRET);
 
-        expect(sig1.hash).not.toBe(sig2.hash);
+        expect(h1["webhook-signature"]).not.toBe(h2["webhook-signature"]);
     });
 });
