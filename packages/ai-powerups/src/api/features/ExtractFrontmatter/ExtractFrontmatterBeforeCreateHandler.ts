@@ -1,6 +1,6 @@
 import frontmatter from "front-matter";
-import { FileBeforeCreateEventHandler } from "~/features/file/CreateFile/events.js";
-import { GetFileContentsByKeyUseCase } from "~/features/file/GetFileContentsByKey/index.js";
+import { FileBeforeCreateEventHandler } from "@webiny/api-file-manager/features/file/CreateFile/events.js";
+import { GetFileContentsByKeyUseCase } from "@webiny/api-file-manager/features/file/GetFileContentsByKey/index.js";
 
 function isMarkdownFile(name: string): boolean {
     return name.endsWith(".md") || name.endsWith(".mdx");

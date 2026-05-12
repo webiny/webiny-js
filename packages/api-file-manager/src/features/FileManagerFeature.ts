@@ -10,7 +10,6 @@ import { SettingsInstallerFeature } from "~/features/settings/SettingsInstaller/
 import { GetSettingsFeature } from "~/features/settings/GetSettings/feature.js";
 import { UpdateSettingsFeature } from "~/features/settings/UpdateSettings/feature.js";
 import { ListImagesByTagToolFeature } from "~/features/file/ListImagesByTagTool/feature.js";
-import { ExtractFrontmatterFeature } from "~/features/file/ExtractFrontmatter/feature.js";
 
 export const FileManagerFeature = createFeature({
     name: "FileManager",
@@ -26,6 +25,5 @@ export const FileManagerFeature = createFeature({
         GetSettingsFeature.register(container);
         UpdateSettingsFeature.register(container);
         ListImagesByTagToolFeature.register(container);
-        ExtractFrontmatterFeature.register(container);
     }
 });
