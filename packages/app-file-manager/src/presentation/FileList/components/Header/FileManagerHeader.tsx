@@ -139,7 +139,7 @@ export const FileManagerHeader = observer(function FileManagerHeader({
                         <Button
                             variant={"secondary"}
                             size={"md"}
-                            onClick={() => actions.folders.createFolder()}
+                            onClick={() => actions.folders.createFolder(vm.folders.currentFolderId ?? undefined)}
                             text={t`New Folder`}
                             icon={<AddIcon />}
                             data-testid={"fm-header-new-folder-button"}

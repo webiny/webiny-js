@@ -18,7 +18,6 @@ export const SearchBar = observer(function SearchBar() {
     return (
         <DelayedOnChange
             value={vm.list.search}
-            delay={300}
             onChange={value => {
                 if (value) {
                     actions.search.set(value);
