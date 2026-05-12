@@ -1,5 +1,5 @@
 import React from "react";
-import { makeDecoratable } from "~/index.js";
+import { makeDecoratable } from "@webiny/react-composition";
 import type { DropdownMenuItemProps } from "@webiny/admin-ui";
 import { DropdownMenu } from "@webiny/admin-ui";
 

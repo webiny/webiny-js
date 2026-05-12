@@ -19,23 +19,15 @@ Status: replace
 All Apollo v2 packages. Replace with single `@apollo/client` v3+.
 https://www.apollographql.com/docs/react/migrating/apollo-client-3-migration
 
-## @babel/code-frame, @babel/compat-data, @babel/core, @babel/helper-define-polyfill-provider, @babel/helper-environment-visitor, @babel/parser, @babel/plugin-proposal-throw-expressions, @babel/plugin-transform-modules-commonjs, @babel/plugin-transform-runtime, @babel/preset-env, @babel/preset-react, @babel/preset-typescript, @babel/register, @babel/runtime, @babel/template, @babel/traverse, @babel/types
+## @babel/code-frame
 
 Status: ok
-Standard toolchain. SWC is faster but migration is large.
+Used at runtime in `api-headless-cms` for GraphQL error formatting. All other `@babel/*` packages have been removed — build toolchain migrated to rslib/SWC.
 
-## babel-plugin-dynamic-import-node
+## babel-plugin-dynamic-import-node, babel-plugin-macros, babel-plugin-module-resolver
 
-Status: replace
-Native ESM dynamic `import()` works in Node 22+. No polyfill needed.
-
-## babel-plugin-macros
-
-Status: ok
-
-## babel-plugin-module-resolver
-
-Status: ok
+Status: done
+Removed. No longer needed after rslib/SWC migration.
 
 ## boolean
 
@@ -96,8 +88,8 @@ Node 22+ supports `--env-file`. For scripts, use `dotenv` or inline env.
 
 ## cross-fetch
 
-Status: replace
-`fetch` is built-in since Node 18. Remove entirely.
+Status: done
+Removed from `project-aws-template` and admin app entry point. Native `fetch` is built-in since Node 18.
 
 ## crypto-hash
 
@@ -431,8 +423,8 @@ Babel macro, deprecated pattern. Use `fs.readFileSync` at build time or raw load
 
 ## regenerator-runtime
 
-Status: replace
-Polyfill that enables `async/await` and generator functions (`function*`) by transpiling them into state machines. Babel injects it via `@babel/preset-env` or `@babel/plugin-transform-runtime` when targeting older environments. Used in React (browser) code. All modern browsers and Node 22+ support async/await and generators natively, so it can be removed if browser targets are modern. Check Babel `targets` config to confirm it's not being auto-injected.
+Status: done
+Removed from `project-aws-template` and admin app entry point. Babel is gone so nothing auto-injects it, and modern browsers/Node 22+ support async/await natively.
 
 ## replace-in-path
 

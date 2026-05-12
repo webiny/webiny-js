@@ -6,7 +6,7 @@ import { ReactComponent as UpgradeIcon } from "@webiny/icons/electric_bolt.svg";
 import { AdminConfig } from "~/config/AdminConfig.js";
 import { HasPermission } from "~/presentation/security/components/HasPermission.js";
 import { Menu } from "~/config/AdminConfig/Menu.js";
-import { useWcp } from "~/index.js";
+import { useWcp } from "~/presentation/wcp/useWcp.js";
 
 export const Menus = React.memo(() => {
     const wcp = useWcp();
