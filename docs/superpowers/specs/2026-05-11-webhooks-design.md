@@ -56,8 +56,9 @@ Both models are private/system models — registered in code, not visible in the
 | `slug` | text | URL-safe, derived from name when empty, unique per tenant |
 | `endpointUrl` | text | HTTPS required; localhost HTTP allowed |
 | `description` | long-text | Optional |
-| `enabled` | boolean | Defaults to true |
+| `enabled` | boolean | Defaults to false; user must explicitly enable after creation |
 | `events` | text[] | Multi-value. Stores full event name strings e.g. `product.entry.published` |
+| `signingSecret` | text | User-defined secret used to sign the webhook payload. Required. |
 
 **WebhookDelivery:**
 
@@ -113,14 +114,14 @@ interface IWebhookSignPayload {
 }
 ```
 
-Signature format matches Stripe convention: HMAC-SHA256 over `{timestamp}.{rawBody}` using the tenant's webhook signing secret.
+Signature format matches Stripe convention: HMAC-SHA256 over `{timestamp}.{rawBody}` using the webhook's own `signingSecret`.
 
 ### 2.3 `SendWebhookTask` (Background Task)
 
 Input: `{ webhookId, eventName, data }`
 
 Execution steps:
-1. Fetch `Webhook` entry from CMS (endpointUrl, slug).
+1. Fetch `Webhook` entry from CMS (endpointUrl, slug, signingSecret).
 2. Build full event payload:
    ```json
    {
@@ -208,14 +209,13 @@ All queries and mutations live in `api-webhooks`.
 ### Event Picker
 - `listAvailableWebhookEvents` — collects from all `IWebhookEventProvider` implementations, returns grouped list
 
+### Testing
+- `triggerWebhook(id, payload)` — fires a test delivery regardless of `enabled` state; `payload` is a free-form JSON object provided by the user; logs a `WebhookDelivery` entry like any real delivery
+
 ### Delivery Log
 - `listWebhookDeliveries(webhookId)` — paginated
 - `getWebhookDelivery(deliveryId)` — full detail: payload sent, headers, response status, response body
 - `resendWebhookDelivery(deliveryId)` — reads original delivery's payload, dispatches a new `SendWebhookTask`, creates a new `WebhookDelivery` entry with a fresh `expiresAt`
-
-### Secret Management
-- `getWebhookSecret` — returns the tenant's current signing secret
-- `rotateWebhookSecret` — generates a new secret; old secret is immediately invalidated
 
 ---
 
