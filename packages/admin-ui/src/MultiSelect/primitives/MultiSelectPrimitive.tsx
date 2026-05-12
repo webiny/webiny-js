@@ -179,9 +179,15 @@ const DecoratableMultiSelectPrimitive = ({
     variant
 }: MultiSelectPrimitiveProps) => {
     const displayValue = useMemo(() => {
-        if (value.length === 0) return "";
-        if (selectionLabel === true) return `${value.length} items selected`;
-        if (typeof selectionLabel === "function") return selectionLabel(value.length);
+        if (value.length === 0) {
+            return "";
+        }
+        if (selectionLabel === true) {
+            return `${value.length} items selected`;
+        }
+        if (typeof selectionLabel === "function") {
+            return selectionLabel(value.length);
+        }
         const labelMap = new Map(options.map(o => [o.value, o.label]));
         return value.map(v => labelMap.get(v) ?? v).join(", ");
     }, [value, options, selectionLabel]);
