@@ -51,6 +51,7 @@ function createMockPresenter(
             sort: null,
             filters: {},
             search: "",
+            appliedQuery: null,
             pagination: {
                 hasMore: false,
                 loading: false,
@@ -276,6 +277,7 @@ describe("FileGrid — selection action wiring", () => {
                 },
                 empty: false,
                 emptyWithFilters: false,
+                appliedQuery: null,
                 error: null
             })
         });
@@ -319,6 +321,7 @@ describe("FileGrid — loading state", () => {
                 },
                 empty: true,
                 emptyWithFilters: false,
+                appliedQuery: null,
                 error: null
             })
         });
@@ -351,6 +354,7 @@ describe("FileGrid — loading state", () => {
                 },
                 empty: false,
                 emptyWithFilters: false,
+                appliedQuery: null,
                 error: null
             })
         });

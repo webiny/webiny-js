@@ -17,6 +17,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
     private _selectedIds: Set<string> = new Set();
     private _lastSelectedIndex = -1;
     private _error: IListError | null = null;
+    private _appliedQuery: IDataSourceQuery | null = null;
     private _dataSource: IDataSource<TRow> | null = null;
     private _debounceMs = 300;
     private _debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -43,6 +44,7 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             sort: this._sort,
             filters: this._filters,
             search: this._search,
+            appliedQuery: this._appliedQuery,
             pagination: {
                 hasMore: meta.hasMoreItems,
                 loading,
@@ -197,8 +199,10 @@ class ListPresenterImpl<TRow> implements IListPresenter<TRow> {
             return;
         }
         this._error = null;
+        const query = this.buildQuery();
         try {
-            await this._dataSource.query(this.buildQuery());
+            await this._dataSource.query(query);
+            this._appliedQuery = query;
         } catch (err) {
             this._error = this.toListError(err);
         }

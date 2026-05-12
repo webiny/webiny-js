@@ -80,7 +80,7 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
                 isUploading: this.fileUploader.vm.isUploading
             },
             tags: this.tagsRepository.tags,
-            showFolders: true,
+            showFolders: this.shouldShowFolders(),
             viewMode: this._viewMode,
             dragging: this._dragging,
             showingFilters: this._showingFilters,
@@ -194,6 +194,24 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
             }
         }
     };
+
+    private shouldShowFolders(): boolean {
+        const { appliedQuery } = this.listPresenter.vm;
+        if (!appliedQuery) {
+            return true;
+        }
+
+        if (appliedQuery.search) {
+            return false;
+        }
+
+        const filterKeys = Object.keys(appliedQuery.filters ?? {}).filter(k => k !== "folderId");
+        if (filterKeys.length > 0) {
+            return false;
+        }
+
+        return true;
+    }
 
     init(overlayConfig?: IFileManagerOverlayConfig): void {
         this._overlayConfig = overlayConfig ?? null;

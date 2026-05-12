@@ -93,7 +93,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
         if (!vm.list.pagination.loading && vm.list.rows.length === 0) {
             return (
                 <Empty
-                    isSearchResult={Boolean(vm.list.search)}
+                    isSearchResult={!vm.showFolders}
                     browseFiles={browseFiles}
                 />
             );

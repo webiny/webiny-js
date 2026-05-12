@@ -24,27 +24,36 @@ import type { FmFile } from "../../features/shared/types.js";
 // ---------------------------------------------------------------------------
 
 function createMockListPresenter(): ListPresenter.Interface<FmFile> {
+    const vmState = observable({
+        rows: [] as FmFile[],
+        sort: null as { field: string; direction: "ASC" | "DESC" } | null,
+        filters: {} as Record<string, unknown>,
+        search: "",
+        appliedQuery: null as
+            | import("@webiny/app-admin/presentation/listPresenter/abstractions.js").IDataSourceQuery
+            | null,
+        pagination: {
+            hasMore: false,
+            loading: false,
+            loadingMore: false,
+            totalCount: 0,
+            currentCount: 0
+        },
+        selection: {
+            selectedIds: new Set<string>(),
+            selectedCount: 0,
+            allSelected: false
+        },
+        empty: true,
+        emptyWithFilters: false,
+        error: null as
+            | import("@webiny/app-admin/presentation/listPresenter/abstractions.js").IListError
+            | null
+    });
+
     return {
-        vm: {
-            rows: [],
-            sort: null,
-            filters: {},
-            search: "",
-            pagination: {
-                hasMore: false,
-                loading: false,
-                loadingMore: false,
-                totalCount: 0,
-                currentCount: 0
-            },
-            selection: {
-                selectedIds: new Set(),
-                selectedCount: 0,
-                allSelected: false
-            },
-            empty: true,
-            emptyWithFilters: false,
-            error: null
+        get vm() {
+            return vmState;
         },
         actions: {
             search: { set: vi.fn(), clear: vi.fn() },
@@ -482,5 +491,62 @@ describe("FileListPresenter", () => {
 
         // Should not throw.
         expect(() => presenter.actions.selectFile(file)).not.toThrow();
+    });
+
+    // -----------------------------------------------------------------------
+    // showFolders computed from appliedQuery.
+    // -----------------------------------------------------------------------
+
+    it("should show folders when appliedQuery is null", () => {
+        presenter.init();
+        expect(presenter.vm.showFolders).toBe(true);
+    });
+
+    it("should show folders when appliedQuery has no search and only folderId filter", () => {
+        presenter.init();
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).appliedQuery = {
+                filters: { folderId: "root" }
+            };
+        });
+        expect(presenter.vm.showFolders).toBe(true);
+    });
+
+    it("should hide folders when appliedQuery has a search", () => {
+        presenter.init();
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).appliedQuery = {
+                search: "photo",
+                filters: { folderId: "root" }
+            };
+        });
+        expect(presenter.vm.showFolders).toBe(false);
+    });
+
+    it("should hide folders when appliedQuery has non-folderId filters", () => {
+        presenter.init();
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).appliedQuery = {
+                filters: { folderId: "root", tags: ["photo"] }
+            };
+        });
+        expect(presenter.vm.showFolders).toBe(false);
+    });
+
+    it("should show folders again when appliedQuery filters are cleared", () => {
+        presenter.init();
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).appliedQuery = {
+                filters: { folderId: "root", type: "image" }
+            };
+        });
+        expect(presenter.vm.showFolders).toBe(false);
+
+        runInAction(() => {
+            (mocks.listPresenter.vm as any).appliedQuery = {
+                filters: { folderId: "root" }
+            };
+        });
+        expect(presenter.vm.showFolders).toBe(true);
     });
 });

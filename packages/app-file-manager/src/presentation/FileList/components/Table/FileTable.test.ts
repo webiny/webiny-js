@@ -98,6 +98,7 @@ function createMockPresenter(
             sort: null,
             filters: {},
             search: "",
+            appliedQuery: null,
             pagination: {
                 hasMore: false,
                 loading: false,

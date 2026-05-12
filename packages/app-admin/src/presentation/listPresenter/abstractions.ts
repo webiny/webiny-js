@@ -62,6 +62,7 @@ export interface IListViewModel<TRow> {
     sort: { field: string; direction: "ASC" | "DESC" } | null;
     filters: Record<string, unknown>;
     search: string;
+    appliedQuery: IDataSourceQuery | null;
     pagination: {
         hasMore: boolean;
         loading: boolean;

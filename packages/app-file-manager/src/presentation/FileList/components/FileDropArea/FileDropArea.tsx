@@ -11,8 +11,8 @@ interface DropAreaContainerProps {
 const DropAreaContainer = ({ empty, children }: DropAreaContainerProps) => (
     <div
         className={cn([
-            "wby-w-full wby-h-full wby-p-lg wby-flex wby-items-center wby-justify-center",
-            empty ? "wby-bg-neutral-base" : "wby-pt-xxl wby-bg-neutral-xstrong/20"
+            "w-full h-full p-lg flex items-center justify-center",
+            empty ? "bg-neutral-base" : "pt-xxl bg-neutral-xstrong/20"
         ])}
     >
         {children}
@@ -36,11 +36,11 @@ const DropAreaBox = ({ children, empty }: DropAreaBoxProps) => (
                 : {})
         }}
         className={cn([
-            "-wby-translate-y-xl",
-            "wby-flex wby-flex-col wby-items-center wby-justify-center wby-gap-lg",
-            "wby-p-lg wby-rounded-3xl",
-            "wby-bg-neutral-base",
-            !empty && "wby-shadow-md"
+            "-translate-y-xl",
+            "flex flex-col items-center justify-center gap-lg",
+            "p-lg rounded-3xl",
+            "bg-neutral-base",
+            !empty && "shadow-md"
         ])}
     >
         {children}
@@ -54,18 +54,18 @@ interface DropAreaContentProps {
 }
 
 const DropAreaContent = ({ title, description }: DropAreaContentProps) => (
-    <div className={"wby-flex wby-flex-col wby-items-center wby-justify-center wby-gap-sm"}>
-        <div className={"wby-fill-neutral-strong"}>
+    <div className={"flex flex-col items-center justify-center gap-sm"}>
+        <div className={"fill-neutral-strong"}>
             <UploadIcon width={75} height={75} />
         </div>
-        <div className={"wby-text-center"}>
+        <div className={"text-center"}>
             {title && (
-                <Heading level={4} className={"wby-text-neutral-strong"}>
+                <Heading level={4} className={"text-neutral-strong"}>
                     {title}
                 </Heading>
             )}
             {description && (
-                <Text as={"div"} style={{ width: "300px" }} className={"wby-text-neutral-strong"}>
+                <Text as={"div"} style={{ width: "300px" }} className={"text-neutral-strong"}>
                     {description}
                 </Text>
             )}

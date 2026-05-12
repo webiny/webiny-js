@@ -165,6 +165,7 @@ describe("ListPresenter", () => {
             expect(vm.sort).toBeNull();
             expect(vm.filters).toEqual({});
             expect(vm.search).toBe("");
+            expect(vm.appliedQuery).toBeNull();
             expect(vm.pagination.loading).toBe(false);
             expect(vm.pagination.totalCount).toBe(0);
             expect(vm.empty).toBe(true);
@@ -915,6 +916,100 @@ describe("ListPresenter", () => {
                 sort: { field: "name", direction: "ASC" },
                 cursor: undefined
             });
+        });
+    });
+
+    // -----------------------------------------------------------------------
+    // appliedQuery
+    // -----------------------------------------------------------------------
+
+    describe("appliedQuery", () => {
+        it("should be null before init", () => {
+            const presenter = createPresenter();
+            expect(presenter.vm.appliedQuery).toBeNull();
+        });
+
+        it("should be set after initial query completes", async () => {
+            const { presenter } = await createInitializedPresenter();
+
+            expect(presenter.vm.appliedQuery).toEqual({
+                search: undefined,
+                filters: undefined,
+                sort: undefined,
+                cursor: undefined
+            });
+        });
+
+        it("should not include search while user is typing (before debounce)", async () => {
+            const { presenter } = await createInitializedPresenter();
+
+            presenter.actions.search.set("hello");
+
+            expect(presenter.vm.search).toBe("hello");
+            expect(presenter.vm.appliedQuery?.search).toBeUndefined();
+        });
+
+        it("should include search after debounced query completes", async () => {
+            const { presenter } = await createInitializedPresenter();
+
+            presenter.actions.search.set("hello");
+            vi.advanceTimersByTime(300);
+
+            await vi.waitFor(() => {
+                expect(presenter.vm.pagination.loading).toBe(false);
+            });
+
+            expect(presenter.vm.appliedQuery?.search).toBe("hello");
+        });
+
+        it("should update when filters change and query completes", async () => {
+            const { presenter, dataSource } = await createInitializedPresenter();
+            const initialCallCount = dataSource.query.mock.calls.length;
+
+            presenter.actions.filter.set("type", "image");
+
+            await vi.waitFor(() => {
+                expect(dataSource.query.mock.calls.length).toBe(initialCallCount + 1);
+                expect(presenter.vm.pagination.loading).toBe(false);
+            });
+
+            expect(presenter.vm.appliedQuery?.filters).toEqual({ type: "image" });
+        });
+
+        it("should not update when query fails", async () => {
+            const dataSource = createMockDataSource();
+            const { presenter } = await createInitializedPresenter(dataSource);
+            const queryBeforeFailure = presenter.vm.appliedQuery;
+
+            dataSource.query.mockRejectedValueOnce(new Error("fail"));
+            await presenter.actions.refresh();
+
+            expect(presenter.vm.error).not.toBeNull();
+            expect(presenter.vm.appliedQuery).toBe(queryBeforeFailure);
+        });
+
+        it("should clear search after search.clear() query completes", async () => {
+            const { presenter, dataSource } = await createInitializedPresenter();
+            const initialCallCount = dataSource.query.mock.calls.length;
+
+            presenter.actions.search.set("hello");
+            vi.advanceTimersByTime(300);
+
+            await vi.waitFor(() => {
+                expect(dataSource.query.mock.calls.length).toBe(initialCallCount + 1);
+                expect(presenter.vm.pagination.loading).toBe(false);
+            });
+
+            expect(presenter.vm.appliedQuery?.search).toBe("hello");
+
+            presenter.actions.search.clear();
+
+            await vi.waitFor(() => {
+                expect(dataSource.query.mock.calls.length).toBe(initialCallCount + 2);
+                expect(presenter.vm.pagination.loading).toBe(false);
+            });
+
+            expect(presenter.vm.appliedQuery?.search).toBeUndefined();
         });
     });
 });
