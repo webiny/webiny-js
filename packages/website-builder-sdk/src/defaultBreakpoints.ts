@@ -28,7 +28,8 @@ export const defaultBreakpoints: NonNullable<WebsiteBuilderThemeInput["breakpoin
     },
     mobile: {
         title: "Mobile",
-        description: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+        description: `Styles added here will apply at 430px and below.`,
+        icon: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
   <g clip-path="url(#clip0_6405_34405)">
     <path d="M11.333 0.673293L4.66634 0.666626C3.93301 0.666626 3.33301 1.26663 3.33301 1.99996V14C3.33301 14.7333 3.93301 15.3333 4.66634 15.3333H11.333C12.0663 15.3333 12.6663 14.7333 12.6663 14V1.99996C12.6663 1.26663 12.0663 0.673293 11.333 0.673293ZM11.333 12.6666H4.66634V3.33329H11.333V12.6666Z" fill="#9DA4B0"/>
   </g>

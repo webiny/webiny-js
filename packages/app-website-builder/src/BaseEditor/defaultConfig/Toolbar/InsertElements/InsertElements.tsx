@@ -7,21 +7,37 @@ import { Draggable } from "~/BaseEditor/components/Draggable.js";
 import { useComponentGroups } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/useComponentGroups.js";
 import { ReactComponent as DashboardIcon } from "@webiny/icons/dashboard_customize.svg";
 
-const GroupComponent = ({ item }: { item: ComponentGroupItem }) => {
-    const components = useSelectFromEditor<Record<string, ComponentManifest>>(state => {
-        return state.components ?? {};
-    });
+const useComponent = (name: string) => {
+    return useSelectFromEditor<ComponentManifest | undefined>(state => state.components?.[name]);
+};
 
-    const component = components[item.name];
-
-    if (!component) {
-        return <></>;
-    }
+const ListItem = ({ item }: { item: ComponentGroupItem }) => {
+    const component = useComponent(item.name);
+    if (!component) return <></>;
 
     return (
         <div className="flex flex-row items-center p-sm bg-neutral-light rounded-lg gap-sm cursor-grab fill-neutral-strong">
             <Icon label="Icon" icon={<InlineSvg src={component.image!} />} size={"md"} />
-            <div className="text-sm font-medium text-neutral-primary text-center">
+            <div className="text-sm font-medium text-neutral-primary">
+                {component.label ?? component.name}
+            </div>
+        </div>
+    );
+};
+
+const GridItem = ({ item }: { item: ComponentGroupItem }) => {
+    const component = useComponent(item.name);
+    if (!component) return <></>;
+
+    return (
+        <div className="flex flex-col items-center justify-center gap-sm px-sm py-md bg-neutral-light rounded-lg cursor-grab fill-neutral-strong w-[80px] min-h-[80px]">
+            <Icon
+                label="Icon"
+                icon={<InlineSvg src={component.image!} />}
+                size={"lg"}
+                color={"neutral-strong"}
+            />
+            <div className="text-sm font-medium text-neutral-strong text-center leading-tight">
                 {component.label ?? component.name}
             </div>
         </div>
@@ -33,12 +49,10 @@ interface InsertElementsProps {
     viewType?: string;
 }
 
-export const InsertElements = ({
-    search = "",
-    viewType: _viewType = "list"
-}: InsertElementsProps) => {
+export const InsertElements = ({ search = "", viewType = "list" }: InsertElementsProps) => {
     const groups = useComponentGroups();
     const query = search.toLowerCase().trim();
+    const isGrid = viewType === "grid";
 
     return (
         <div className={"p-sm"}>
@@ -63,26 +77,32 @@ export const InsertElements = ({
                         </div>
 
                         <div
-                            className={"py-sm px-xl flex flex-col gap-y-xs"}
+                            className={
+                                isGrid
+                                    ? "grid grid-cols-3 gap-sm px-lg py-sm"
+                                    : "py-sm px-xl flex flex-col gap-y-xs"
+                            }
                             data-role={"group-items"}
                         >
-                            {items.map(item => {
-                                return (
-                                    <Draggable
-                                        key={item.name}
-                                        type="ELEMENT"
-                                        item={{ componentName: item.name }}
-                                    >
-                                        {({ dragRef }) =>
-                                            dragRef(
-                                                <div>
-                                                    <GroupComponent item={item} />
-                                                </div>
-                                            )
-                                        }
-                                    </Draggable>
-                                );
-                            })}
+                            {items.map(item => (
+                                <Draggable
+                                    key={item.name}
+                                    type="ELEMENT"
+                                    item={{ componentName: item.name }}
+                                >
+                                    {({ dragRef }) =>
+                                        dragRef(
+                                            <div>
+                                                {isGrid ? (
+                                                    <GridItem item={item} />
+                                                ) : (
+                                                    <ListItem item={item} />
+                                                )}
+                                            </div>
+                                        )
+                                    }
+                                </Draggable>
+                            ))}
                         </div>
                     </div>
                 );

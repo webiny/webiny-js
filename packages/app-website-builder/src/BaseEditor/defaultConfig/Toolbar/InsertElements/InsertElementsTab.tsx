@@ -24,7 +24,7 @@ export const InsertElementsTab = () => {
         <div className={"h-full flex flex-col"}>
             <div
                 className={
-                    "flex-shrink-0 flex items-center gap-xs px-sm py-xs border-b-sm border-b-neutral-dimmed"
+                    "flex-shrink-0 flex items-center gap-xs px-sm py-xs border-b-neutral-dimmed"
                 }
             >
                 <InputPrimitive
