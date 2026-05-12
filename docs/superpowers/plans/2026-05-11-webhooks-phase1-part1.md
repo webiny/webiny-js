@@ -1,10 +1,10 @@
-# Webhooks Phase 1 — `api-webhooks` Core Package (Part 1 of 4)
+# Webhooks Phase 1 — `webhooks` Core Package (Part 1 of 4)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Create the `packages/api-webhooks` package with package scaffold, domain types, shared abstractions, and CMS model definitions.
+**Goal:** Create the `packages/webhooks` package with package scaffold, domain types, shared abstractions (in `api-core`), and CMS model definitions.
 
-**Architecture:** A new standalone package that owns the Webhook and WebhookDelivery CMS models, the background task for HTTP delivery, the WebhookDispatcher that routes domain events to tasks, and all CRUD/secret/event GraphQL operations. Bridge packages (phases 2-5) depend on this package — this package does not depend on them.
+**Architecture:** A new standalone package that owns the Webhook and WebhookDelivery CMS models, the background task for HTTP delivery, the WebhookDispatcher that routes domain events to tasks, and all CRUD/event GraphQL operations. The three shared DI abstraction tokens live in `packages/api-core/src/features/webhooks/abstractions.ts`. Bridge packages (phases 2-5) depend on this package — this package does not depend on them.
 
 **Tech Stack:** TypeScript ESM, `@webiny/feature/api` DI container, `@webiny/api-headless-cms` for CMS model storage, `@webiny/tasks` background task runner, `node:crypto` HMAC-SHA256.
 
@@ -18,59 +18,126 @@
 ## File Map
 
 ```
-packages/api-webhooks/
+packages/api-core/src/features/webhooks/
+└── abstractions.ts             ← NEW task (add to api-core)
+
+packages/webhooks/
 ├── package.json
 ├── tsconfig.json
 ├── index.ts
-├── src/
-│   ├── domain/
-│   │   ├── types.ts
-│   │   ├── constants.ts
-│   │   └── errors.ts
-│   ├── abstractions/
-│   │   ├── WebhookDispatcher.ts
-│   │   ├── WebhookEventProvider.ts
-│   │   └── WebhookSignPayload.ts
-│   ├── models/
-│   │   ├── WebhookModel.ts
-│   │   ├── WebhookDeliveryModel.ts
-│   │   └── WebhookSettingsModel.ts
-│   ├── features/
-│   │   ├── WebhookSignPayload/      (part 2)
-│   │   ├── WebhookDispatcher/       (part 2)
-│   │   ├── SendWebhookTask/         (part 2)
-│   │   ├── CreateWebhook/           (part 3)
-│   │   ├── GetWebhook/              (part 3)
-│   │   ├── ListWebhooks/            (part 3)
-│   │   ├── UpdateWebhook/           (part 3)
-│   │   ├── DeleteWebhook/           (part 3)
-│   │   ├── CreateWebhookDelivery/   (part 3)
-│   │   ├── GetWebhookDelivery/      (part 3)
-│   │   ├── ListWebhookDeliveries/   (part 3)
-│   │   ├── ResendWebhookDelivery/   (part 3)
-│   │   ├── GetWebhookSecret/        (part 3)
-│   │   ├── RotateWebhookSecret/     (part 3)
-│   │   └── ListAvailableWebhookEvents/ (part 3)
-│   ├── graphql/                     (part 4)
-│   ├── exports/api/webhooks.ts      (part 4)
-│   └── Extension.ts                 (part 4)
-└── __tests__/                       (part 2)
+└── src/
+    └── api/
+        ├── domain/
+        │   ├── types.ts
+        │   ├── constants.ts
+        │   └── errors.ts
+        ├── models/
+        │   ├── WebhookModel.ts
+        │   └── WebhookDeliveryModel.ts
+        ├── features/
+        │   ├── WebhookSignPayload/      (part 2)
+        │   ├── WebhookDispatcher/       (part 2)
+        │   ├── SendWebhookTask/         (part 2)
+        │   ├── CreateWebhook/           (part 3)
+        │   ├── GetWebhook/              (part 3)
+        │   ├── ListWebhooks/            (part 3)
+        │   ├── UpdateWebhook/           (part 3)
+        │   ├── DeleteWebhook/           (part 3)
+        │   ├── CreateWebhookDelivery/   (part 3)
+        │   ├── GetWebhookDelivery/      (part 3)
+        │   ├── ListWebhookDeliveries/   (part 3)
+        │   ├── ResendWebhookDelivery/   (part 3)
+        │   └── ListAvailableWebhookEvents/ (part 3)
+        └── graphql/                     (part 4)
+        └── Extension.ts                 (part 4)
+__tests__/                               (part 2)
 ```
 
 ---
 
-## Task 1: Package scaffold
+## Task 1: Shared abstraction tokens in `api-core`
 
 **Files:**
-- Create: `packages/api-webhooks/package.json`
-- Create: `packages/api-webhooks/tsconfig.json`
-- Create: `packages/api-webhooks/index.ts`
+- Create: `packages/api-core/src/features/webhooks/abstractions.ts`
+
+All three DI tokens live in a single file under `api-core` so downstream packages (bridge features, app code) can import them without taking a dependency on the full `@webiny/webhooks` package.
+
+- [ ] **Step 1: Create `packages/api-core/src/features/webhooks/abstractions.ts`**
+
+```ts
+import { createAbstraction } from "@webiny/feature/api";
+import type { IWebhookEventDefinition } from "@webiny/webhooks/src/api/domain/types.js";
+
+export interface IWebhookDispatcher {
+    dispatch(eventName: string, data: object): Promise<void>;
+}
+
+/** Routes a domain event to all matching enabled webhooks via background tasks. */
+export const WebhookDispatcher = createAbstraction<IWebhookDispatcher>(
+    "Webhooks/WebhookDispatcher"
+);
+
+export namespace WebhookDispatcher {
+    export type Interface = IWebhookDispatcher;
+}
+
+export interface IWebhookEventProvider {
+    getAvailableEvents(): Promise<IWebhookEventDefinition[]>;
+}
+
+/** Implemented by each bridge package; contributes subscribable events to the UI event picker. */
+export const WebhookEventProvider = createAbstraction<IWebhookEventProvider>(
+    "Webhooks/WebhookEventProvider"
+);
+
+export namespace WebhookEventProvider {
+    export type Interface = IWebhookEventProvider;
+}
+
+export interface IWebhookSignPayload {
+    /** Returns Stripe-format signature header value: `t={timestamp},v1={hmac-sha256}` */
+    sign(rawBody: string, timestamp: number, secret: string): Promise<string>;
+}
+
+/** Signs webhook payloads using HMAC-SHA256 with the per-webhook signing secret. */
+export const WebhookSignPayload = createAbstraction<IWebhookSignPayload>(
+    "Webhooks/WebhookSignPayload"
+);
+
+export namespace WebhookSignPayload {
+    export type Interface = IWebhookSignPayload;
+}
+```
+
+- [ ] **Step 2: Build `api-core` to confirm no type errors**
+
+```bash
+yarn build -p @webiny/api-core 2>&1 | tail -20
+```
+
+Expected: build succeeds.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add packages/api-core/src/features/webhooks/abstractions.ts
+git commit -m "feat(api-core): add shared webhook abstraction tokens"
+```
+
+---
+
+## Task 2: Package scaffold
+
+**Files:**
+- Create: `packages/webhooks/package.json`
+- Create: `packages/webhooks/tsconfig.json`
+- Create: `packages/webhooks/index.ts`
 
 - [ ] **Step 1: Create `package.json`**
 
 ```json
 {
-  "name": "@webiny/api-webhooks",
+  "name": "@webiny/webhooks",
   "version": "0.0.0",
   "type": "module",
   "exports": {
@@ -78,13 +145,11 @@ packages/api-webhooks/
     "./*": "./*"
   },
   "description": "Webhooks feature for Webiny",
-  "keywords": [
-    "api-webhooks:base"
-  ],
+  "keywords": ["webhooks:base"],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/api-webhooks"
+    "directory": "packages/webhooks"
   },
   "license": "MIT",
   "dependencies": {
@@ -120,6 +185,9 @@ packages/api-webhooks/
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-headless-cms" },
+    { "path": "../api-website-builder" },
+    { "path": "../api-file-manager" },
+    { "path": "../api-tenant-manager" },
     { "path": "../api-core" },
     { "path": "../error" },
     { "path": "../feature" },
@@ -138,6 +206,12 @@ packages/api-webhooks/
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],
+      "@webiny/api-website-builder": ["../api-website-builder/src"],
+      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/api-tenant-manager/*": ["../api-tenant-manager/src/*"],
+      "@webiny/api-tenant-manager": ["../api-tenant-manager/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/error/*": ["../error/src/*"],
@@ -162,10 +236,7 @@ packages/api-webhooks/
 - [ ] **Step 3: Create `index.ts`**
 
 ```ts
-export { Extension } from "./src/Extension.js";
-export { WebhookDispatcher } from "./src/abstractions/WebhookDispatcher.js";
-export { WebhookEventProvider } from "./src/abstractions/WebhookEventProvider.js";
-export { WebhookSignPayload } from "./src/abstractions/WebhookSignPayload.js";
+export { Extension } from "./src/api/Extension.js";
 ```
 
 - [ ] **Step 4: Install dependencies and regenerate tsconfigs**
@@ -181,31 +252,29 @@ Expected: no errors.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/api-webhooks/package.json packages/api-webhooks/tsconfig.json packages/api-webhooks/index.ts
-git commit -m "feat(api-webhooks): add package scaffold"
+git add packages/webhooks/package.json packages/webhooks/tsconfig.json packages/webhooks/index.ts
+git commit -m "feat(webhooks): add package scaffold"
 ```
 
 ---
 
-## Task 2: Domain types, constants, and errors
+## Task 3: Domain types, constants, and errors
 
 **Files:**
-- Create: `packages/api-webhooks/src/domain/types.ts`
-- Create: `packages/api-webhooks/src/domain/constants.ts`
-- Create: `packages/api-webhooks/src/domain/errors.ts`
+- Create: `packages/webhooks/src/api/domain/types.ts`
+- Create: `packages/webhooks/src/api/domain/constants.ts`
+- Create: `packages/webhooks/src/api/domain/errors.ts`
 
-- [ ] **Step 1: Create `src/domain/constants.ts`**
+- [ ] **Step 1: Create `src/api/domain/constants.ts`**
 
 ```ts
 export const WEBHOOK_MODEL_ID = "webhook";
 export const WEBHOOK_DELIVERY_MODEL_ID = "webhookDelivery";
-export const WEBHOOK_SETTINGS_MODEL_ID = "webhookSettings";
-export const WEBHOOK_SETTINGS_ENTRY_ID = "webhookSettings";
 export const SEND_WEBHOOK_TASK = "sendWebhook";
 export const WEBHOOK_DELIVERY_RETENTION_DAYS = 90;
 ```
 
-- [ ] **Step 2: Create `src/domain/types.ts`**
+- [ ] **Step 2: Create `src/api/domain/types.ts`**
 
 ```ts
 export interface IWebhookValues {
@@ -215,6 +284,7 @@ export interface IWebhookValues {
     description?: string;
     enabled: boolean;
     events: string[];
+    signingSecret: string;
 }
 
 export interface IWebhook {
@@ -256,15 +326,6 @@ export interface ICreateDeliveryInput {
     expiresAt: string;
 }
 
-export interface IWebhookSettingsValues {
-    secret: string;
-}
-
-export interface IWebhookSettings {
-    id: string;
-    values: IWebhookSettingsValues;
-}
-
 export interface IWebhookEventDefinition {
     app: string;
     modelId: string;
@@ -304,7 +365,7 @@ export interface IWebhookPayload {
 }
 ```
 
-- [ ] **Step 3: Create `src/domain/errors.ts`**
+- [ ] **Step 3: Create `src/api/domain/errors.ts`**
 
 ```ts
 import { BaseError } from "@webiny/feature/api";
@@ -318,12 +379,6 @@ export class WebhookNotFoundError extends BaseError {
 export class WebhookDeliveryNotFoundError extends BaseError {
     constructor(id: string) {
         super(`Webhook delivery "${id}" was not found.`, "WEBHOOK_DELIVERY_NOT_FOUND");
-    }
-}
-
-export class WebhookSettingsNotFoundError extends BaseError {
-    constructor() {
-        super("Webhook settings not found.", "WEBHOOK_SETTINGS_NOT_FOUND");
     }
 }
 
@@ -349,7 +404,7 @@ export class WebhookModelNotFoundError extends BaseError {
 - [ ] **Step 4: Build to confirm no type errors**
 
 ```bash
-yarn build -p @webiny/api-webhooks 2>&1 | tail -20
+yarn build -p @webiny/webhooks 2>&1 | tail -20
 ```
 
 Expected: build succeeds.
@@ -357,91 +412,8 @@ Expected: build succeeds.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/api-webhooks/src/domain/
-git commit -m "feat(api-webhooks): add domain types, constants, and errors"
-```
-
----
-
-## Task 3: Shared abstractions
-
-**Files:**
-- Create: `packages/api-webhooks/src/abstractions/WebhookDispatcher.ts`
-- Create: `packages/api-webhooks/src/abstractions/WebhookEventProvider.ts`
-- Create: `packages/api-webhooks/src/abstractions/WebhookSignPayload.ts`
-
-- [ ] **Step 1: Create `src/abstractions/WebhookDispatcher.ts`**
-
-```ts
-import { createAbstraction } from "@webiny/feature/api";
-
-export interface IWebhookDispatcher {
-    dispatch(eventName: string, data: object): Promise<void>;
-}
-
-/** Routes a domain event to all matching enabled webhooks via background tasks. */
-export const WebhookDispatcher = createAbstraction<IWebhookDispatcher>(
-    "Webhooks/WebhookDispatcher"
-);
-
-export namespace WebhookDispatcher {
-    export type Interface = IWebhookDispatcher;
-}
-```
-
-- [ ] **Step 2: Create `src/abstractions/WebhookEventProvider.ts`**
-
-```ts
-import { createAbstraction } from "@webiny/feature/api";
-import type { IWebhookEventDefinition } from "~/domain/types.js";
-
-export interface IWebhookEventProvider {
-    getAvailableEvents(): Promise<IWebhookEventDefinition[]>;
-}
-
-/** Implemented by each bridge package; contributes subscribable events to the UI event picker. */
-export const WebhookEventProvider = createAbstraction<IWebhookEventProvider>(
-    "Webhooks/WebhookEventProvider"
-);
-
-export namespace WebhookEventProvider {
-    export type Interface = IWebhookEventProvider;
-}
-```
-
-- [ ] **Step 3: Create `src/abstractions/WebhookSignPayload.ts`**
-
-```ts
-import { createAbstraction } from "@webiny/feature/api";
-
-export interface IWebhookSignPayload {
-    /** Returns Stripe-format signature header value: `t={timestamp},v1={hmac-sha256}` */
-    sign(rawBody: string, timestamp: number): Promise<string>;
-}
-
-/** Signs webhook payloads using HMAC-SHA256 with the tenant's webhook secret. */
-export const WebhookSignPayload = createAbstraction<IWebhookSignPayload>(
-    "Webhooks/WebhookSignPayload"
-);
-
-export namespace WebhookSignPayload {
-    export type Interface = IWebhookSignPayload;
-}
-```
-
-- [ ] **Step 4: Build**
-
-```bash
-yarn build -p @webiny/api-webhooks 2>&1 | tail -20
-```
-
-Expected: build succeeds.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add packages/api-webhooks/src/abstractions/
-git commit -m "feat(api-webhooks): add shared abstractions (WebhookDispatcher, WebhookEventProvider, WebhookSignPayload)"
+git add packages/webhooks/src/api/domain/
+git commit -m "feat(webhooks): add domain types, constants, and errors"
 ```
 
 ---
@@ -449,19 +421,18 @@ git commit -m "feat(api-webhooks): add shared abstractions (WebhookDispatcher, W
 ## Task 4: CMS Models
 
 **Files:**
-- Create: `packages/api-webhooks/src/models/WebhookModel.ts`
-- Create: `packages/api-webhooks/src/models/WebhookDeliveryModel.ts`
-- Create: `packages/api-webhooks/src/models/WebhookSettingsModel.ts`
+- Create: `packages/webhooks/src/api/models/WebhookModel.ts`
+- Create: `packages/webhooks/src/api/models/WebhookDeliveryModel.ts`
 
 The models are private/system — registered in code, invisible in the content editor. They use the builder tags `["$publishing:false", "$hidden:true"]`.
 
-`WebhookSettings` is a singleton model (one entry per tenant, accessed by fixed id `"webhookSettings"`).
+- [ ] **Step 1: Create `src/api/models/WebhookModel.ts`**
 
-- [ ] **Step 1: Create `src/models/WebhookModel.ts`**
+Note: `enabled` defaults to `false` and `signingSecret` is a required field on the model.
 
 ```ts
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
-import { WEBHOOK_MODEL_ID } from "~/domain/constants.js";
+import { WEBHOOK_MODEL_ID } from "~/api/domain/constants.js";
 
 class WebhookModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
@@ -491,7 +462,7 @@ class WebhookModelFactory implements ModelFactory.Interface {
             enabled: fields
                 .boolean()
                 .label("Enabled")
-                .defaultValue(true)
+                .defaultValue(false)
                 .renderer("switch"),
             events: fields
                 .text()
@@ -500,7 +471,13 @@ class WebhookModelFactory implements ModelFactory.Interface {
                 .defaultValue([])
                 .renderer("textInputs", {
                     multiValue: { addValueButtonLabel: "Add Event" }
-                })
+                }),
+            signingSecret: fields
+                .text()
+                .label("Signing Secret")
+                .required()
+                .description("HMAC-SHA256 signing secret in whsec_<random> format.")
+                .renderer("textInput")
         }));
 
         return [model];
@@ -513,13 +490,13 @@ export default ModelFactory.createImplementation({
 });
 ```
 
-- [ ] **Step 2: Create `src/models/WebhookDeliveryModel.ts`**
+- [ ] **Step 2: Create `src/api/models/WebhookDeliveryModel.ts`**
 
 Compressed fields (`payload`, `requestHeaders`, `responseBody`) store `JSON.stringify(ICompressedValue)` in longText fields.
 
 ```ts
 import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
-import { WEBHOOK_DELIVERY_MODEL_ID } from "~/domain/constants.js";
+import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
 
 class WebhookDeliveryModelFactory implements ModelFactory.Interface {
     async execute(builder: ModelFactory.Builder) {
@@ -576,59 +553,19 @@ export default ModelFactory.createImplementation({
 });
 ```
 
-- [ ] **Step 3: Create `src/models/WebhookSettingsModel.ts`**
-
-Singleton model — one entry per tenant, accessed by the fixed entry id `WEBHOOK_SETTINGS_ENTRY_ID = "webhookSettings"`.
-
-```ts
-import { ModelFactory } from "@webiny/api-headless-cms/features/modelBuilder/index.js";
-import { WEBHOOK_SETTINGS_MODEL_ID } from "~/domain/constants.js";
-
-class WebhookSettingsModelFactory implements ModelFactory.Interface {
-    async execute(builder: ModelFactory.Builder) {
-        const model = builder
-            .public({
-                modelId: WEBHOOK_SETTINGS_MODEL_ID,
-                name: "Webhook Settings",
-                group: "hidden"
-            })
-            .description("Stores the per-tenant webhook signing secret.")
-            .singularApiName("WebhookSettings")
-            .pluralApiName("WebhookSettings")
-            .tags(["$publishing:false", "$hidden:true"]);
-
-        model.fields(fields => ({
-            secret: fields
-                .text()
-                .label("Secret")
-                .required()
-                .description("HMAC-SHA256 signing secret in whsec_<random> format.")
-                .renderer("textInput")
-        }));
-
-        return [model];
-    }
-}
-
-export default ModelFactory.createImplementation({
-    implementation: WebhookSettingsModelFactory,
-    dependencies: []
-});
-```
-
-- [ ] **Step 4: Build**
+- [ ] **Step 3: Build**
 
 ```bash
-yarn build -p @webiny/api-webhooks 2>&1 | tail -20
+yarn build -p @webiny/webhooks 2>&1 | tail -20
 ```
 
 Expected: build succeeds.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 4: Commit**
 
 ```bash
-git add packages/api-webhooks/src/models/
-git commit -m "feat(api-webhooks): add CMS models (Webhook, WebhookDelivery, WebhookSettings)"
+git add packages/webhooks/src/api/models/
+git commit -m "feat(webhooks): add CMS models (Webhook, WebhookDelivery)"
 ```
 
 ---

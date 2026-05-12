@@ -16,33 +16,57 @@ Delivery is asynchronous — each webhook fires as an independent background tas
 
 ## 1. Package Structure
 
-Five packages — one core, four bridge packages:
+Two packages:
 
 ```
-api-webhooks                    — core feature
-api-headless-cms-webhooks       — bridge: CMS entry events
-api-website-builder-webhooks    — bridge: page events
-api-file-manager-webhooks       — bridge: file + folder events
-api-tenant-manager-webhooks     — bridge: tenant events
+api-core        — gains webhooks abstractions at src/features/webhooks/
+webhooks        — new package; contains api/ and app/ sub-trees
+```
+
+### `api-core/src/features/webhooks/`
+
+Holds the shared DI abstraction tokens consumed by the `webhooks` package and any external integrations:
+
+- `IWebhookDispatcher` — routes domain events to enabled webhooks via background tasks
+- `IWebhookEventProvider` — contributes subscribable events to the UI event picker
+- `IWebhookSignPayload` — signs webhook payloads with HMAC-SHA256
+
+### `packages/webhooks/src/`
+
+```
+api/
+  features/
+    Webhook/            — CMS model + CRUD use cases
+    WebhookDelivery/    — CMS model + delivery use cases
+    WebhookDispatcher/  — IWebhookDispatcher implementation
+    WebhookSignPayload/ — IWebhookSignPayload implementation
+    SendWebhookTask/    — background task
+    cms/                — CMS entry event bridge (was api-headless-cms-webhooks)
+    websiteBuilder/     — page event bridge (was api-website-builder-webhooks)
+    fileManager/        — file event bridge (was api-file-manager-webhooks)
+    tenantManager/      — tenant event bridge (was api-tenant-manager-webhooks)
+  graphql/
+  Extension.ts
+app/                    — frontend UI (future)
 ```
 
 ### Dependency graph (no circular dependencies)
 
 ```
-api-headless-cms  ←────────────────────────────────── api-webhooks
-                  ←── api-headless-cms-webhooks ──→ api-webhooks
-api-website-builder ←── api-website-builder-webhooks ──→ api-webhooks
-api-file-manager    ←── api-file-manager-webhooks    ──→ api-webhooks
-api-tenant-manager  ←── api-tenant-manager-webhooks  ──→ api-webhooks
+api-core             ←── webhooks (implements abstractions)
+api-headless-cms     ←── webhooks/api/features/cms
+api-website-builder  ←── webhooks/api/features/websiteBuilder
+api-file-manager     ←── webhooks/api/features/fileManager
+api-tenant-manager   ←── webhooks/api/features/tenantManager
 ```
 
-- `api-webhooks` depends on `api-headless-cms` for CMS model storage only.
-- Source packages (`api-headless-cms`, `api-website-builder`, etc.) never depend on `api-webhooks`.
-- Bridge packages are the only ones that depend on both sides.
+- `api-core` owns the abstraction tokens; `webhooks` implements them and depends on all source packages.
+- Source packages never depend on `webhooks`.
+- No separate bridge packages — bridge logic lives as feature folders inside `webhooks/src/api/features/`.
 
 ---
 
-## 2. `api-webhooks` Internals
+## 2. `webhooks` Package Internals
 
 ### 2.1 Private CMS Models
 
@@ -76,7 +100,9 @@ Both models are private/system models — registered in code, not visible in the
 
 ### 2.2 Core Abstractions
 
-**`WebhookDispatcher`** — called by bridge packages when a domain event fires:
+All three tokens live in `api-core/src/features/webhooks/abstractions.ts`.
+
+**`WebhookDispatcher`** — called by bridge features when a domain event fires:
 
 ```ts
 interface IWebhookDispatcher {
@@ -103,7 +129,7 @@ interface WebhookEventDefinition {
 }
 ```
 
-`api-webhooks` collects all registered `IWebhookEventProvider` implementations via the DI container and merges them for the `listAvailableWebhookEvents` GraphQL query.
+`webhooks` collects all registered `IWebhookEventProvider` implementations via the DI container and merges them for the `listAvailableWebhookEvents` GraphQL query.
 
 **`WebhookSignPayload`** — placeholder abstraction, internal storage mechanism deferred:
 
@@ -144,22 +170,22 @@ No automatic retries. Users can manually resend from the UI.
 
 ---
 
-## 3. Bridge Package Pattern
+## 3. Bridge Feature Pattern
 
-Each bridge package registers two things in the DI container:
+Each bridge feature folder (`webhooks/src/api/features/{bridge}/`) registers two things in the DI container:
 
 ### 3.1 `IWebhookEventProvider` implementation
 
 Produces the list of subscribable events for the UI accordion.
 
-- **CMS bridge** — dynamic: queries all content models at runtime, generates 5 events per model (`created`, `updated`, `deleted`, `published`, `unpublished`). Event name pattern: `{modelId}.entry.{action}`.
+- **`cms/`** — dynamic: queries all content models at runtime, generates 5 events per model (`created`, `updated`, `deleted`, `published`, `unpublished`). Event name pattern: `{modelId}.entry.{action}`.
 - **Other bridges** — static: hardcoded list of their model IDs and supported actions.
 
 ### 3.2 `IEventHandler` per domain event
 
 Hooks into existing lifecycle events from the source package and calls `WebhookDispatcher`.
 
-Example (`api-headless-cms-webhooks`):
+Example (`webhooks/src/api/features/cms/`):
 
 ```ts
 class OnEntryPublishedHandler implements IEventHandler<EntryAfterPublishEvent> {
@@ -173,7 +199,7 @@ class OnEntryPublishedHandler implements IEventHandler<EntryAfterPublishEvent> {
 }
 ```
 
-All four bridge packages follow this same structure — register an event provider and one handler per supported domain event.
+All four bridge folders follow this same structure — register an event provider and one handler per supported domain event.
 
 **CMS events** (5 per content model, dynamic):
 - `{modelId}.entry.created`
@@ -197,7 +223,7 @@ All four bridge packages follow this same structure — register an event provid
 
 ## 4. GraphQL API
 
-All queries and mutations live in `api-webhooks`.
+All queries and mutations live in `webhooks/src/api/graphql/`.
 
 ### Webhook CRUD
 - `listWebhooks` — paginated, filterable by enabled/disabled
@@ -226,7 +252,7 @@ All queries and mutations live in `api-webhooks`.
 ```
 1. GraphQL mutation: publishEntry("product", entryId)
 2. PublishEntryUseCase publishes EntryAfterPublishEvent
-3. api-headless-cms-webhooks: OnEntryPublishedHandler.handle()
+3. webhooks/api/features/cms: OnEntryPublishedHandler.handle()
 4.   → webhookDispatcher.dispatch("product.entry.published", { modelId, entryId, entry })
 5.   → queries Webhook CMS model: enabled webhooks where events ∋ "product.entry.published"
 6.   → for each match: dispatch SendWebhookTask({ webhookId, eventName, data })
@@ -256,4 +282,4 @@ resendWebhookDelivery(deliveryId)
 
 - Automatic retries on failure (manual resend only)
 - `WebhookSignPayload` internal storage mechanism (abstraction + placeholder implementation only)
-- App-layer UI (`api-*` packages only in this phase)
+- App-layer UI (`webhooks/src/app/` deferred; `api/` only in this phase)

@@ -1,4 +1,4 @@
-# Webhooks Phase 1 — `api-webhooks` Core Package (Part 2 of 4)
+# Webhooks Phase 1 — `webhooks` Core Package (Part 2 of 4)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -12,38 +12,25 @@
 
 ## Task 5: `WebhookSignPayload` implementation
 
-Signs a raw body string with HMAC-SHA256 using the tenant's webhook secret. Returns the Stripe-format `t={timestamp},v1={hmac}` header value.
+Signs a raw body string with HMAC-SHA256 using the webhook's signing secret. Returns the Stripe-format `t={timestamp},v1={hmac}` header value. The secret is passed directly as a parameter (it lives on each webhook entry).
 
 **Files:**
-- Create: `packages/api-webhooks/src/features/WebhookSignPayload/WebhookSignPayloadImpl.ts`
-- Create: `packages/api-webhooks/src/features/WebhookSignPayload/feature.ts`
-- Create: `packages/api-webhooks/__tests__/WebhookSignPayload.test.ts`
+- Create: `packages/webhooks/src/api/features/WebhookSignPayload/WebhookSignPayloadImpl.ts`
+- Create: `packages/webhooks/src/api/features/WebhookSignPayload/feature.ts`
+- Create: `packages/webhooks/__tests__/WebhookSignPayload.test.ts`
 
 - [ ] **Step 1: Write failing test**
 
 ```ts
-// packages/api-webhooks/__tests__/WebhookSignPayload.test.ts
-import { describe, it, expect, vi } from "vitest";
+// packages/webhooks/__tests__/WebhookSignPayload.test.ts
+import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di";
-import { WebhookSignPayload } from "~/abstractions/WebhookSignPayload.js";
-import { WebhookSignPayloadFeature } from "~/features/WebhookSignPayload/feature.js";
+import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/abstractions.js";
+import { WebhookSignPayloadFeature } from "~/api/features/WebhookSignPayload/feature.js";
 
 describe("WebhookSignPayload", () => {
     it("returns Stripe-format signature: t={timestamp},v1={hmac}", async () => {
         const container = new Container();
-
-        // Mock GetWebhookSecretRepository
-        const GetWebhookSecretRepository = await import(
-            "~/features/GetWebhookSecret/abstractions.js"
-        );
-        container
-            .bind(GetWebhookSecretRepository.GetWebhookSecretRepository.token)
-            .toConstantValue({
-                execute: vi.fn().mockResolvedValue({
-                    isFail: () => false,
-                    value: { id: "webhookSettings", values: { secret: "whsec_test_secret" } }
-                })
-            });
 
         WebhookSignPayloadFeature.register(container);
 
@@ -53,7 +40,8 @@ describe("WebhookSignPayload", () => {
 
         const rawBody = '{"event":"test"}';
         const timestamp = 1700000000;
-        const signature = await signer.sign(rawBody, timestamp);
+        const secret = "whsec_test_secret";
+        const signature = await signer.sign(rawBody, timestamp, secret);
 
         expect(signature).toMatch(/^t=1700000000,v1=[a-f0-9]{64}$/);
     });
@@ -61,26 +49,14 @@ describe("WebhookSignPayload", () => {
     it("produces consistent signatures for the same input", async () => {
         const container = new Container();
 
-        const GetWebhookSecretRepository = await import(
-            "~/features/GetWebhookSecret/abstractions.js"
-        );
-        container
-            .bind(GetWebhookSecretRepository.GetWebhookSecretRepository.token)
-            .toConstantValue({
-                execute: vi.fn().mockResolvedValue({
-                    isFail: () => false,
-                    value: { id: "webhookSettings", values: { secret: "whsec_abc" } }
-                })
-            });
-
         WebhookSignPayloadFeature.register(container);
 
         const signer = container.resolve<WebhookSignPayload.Interface>(
             WebhookSignPayload.token
         );
 
-        const sig1 = await signer.sign("body", 1000);
-        const sig2 = await signer.sign("body", 1000);
+        const sig1 = await signer.sign("body", 1000, "whsec_abc");
+        const sig2 = await signer.sign("body", 1000, "whsec_abc");
 
         expect(sig1).toBe(sig2);
     });
@@ -88,26 +64,14 @@ describe("WebhookSignPayload", () => {
     it("produces different signatures for different timestamps", async () => {
         const container = new Container();
 
-        const GetWebhookSecretRepository = await import(
-            "~/features/GetWebhookSecret/abstractions.js"
-        );
-        container
-            .bind(GetWebhookSecretRepository.GetWebhookSecretRepository.token)
-            .toConstantValue({
-                execute: vi.fn().mockResolvedValue({
-                    isFail: () => false,
-                    value: { id: "webhookSettings", values: { secret: "whsec_abc" } }
-                })
-            });
-
         WebhookSignPayloadFeature.register(container);
 
         const signer = container.resolve<WebhookSignPayload.Interface>(
             WebhookSignPayload.token
         );
 
-        const sig1 = await signer.sign("body", 1000);
-        const sig2 = await signer.sign("body", 2000);
+        const sig1 = await signer.sign("body", 1000, "whsec_abc");
+        const sig2 = await signer.sign("body", 2000, "whsec_abc");
 
         expect(sig1).not.toBe(sig2);
     });
@@ -117,28 +81,19 @@ describe("WebhookSignPayload", () => {
 - [ ] **Step 2: Run test to verify it fails**
 
 ```bash
-yarn test packages/api-webhooks 2>&1 | tail -20
+yarn test packages/webhooks 2>&1 | tail -20
 ```
 
 Expected: FAIL — `WebhookSignPayloadFeature` not found / module not found.
 
-- [ ] **Step 3: Create `src/features/WebhookSignPayload/WebhookSignPayloadImpl.ts`**
+- [ ] **Step 3: Create `src/api/features/WebhookSignPayload/WebhookSignPayloadImpl.ts`**
 
 ```ts
 import { createHmac } from "node:crypto";
-import { Result } from "@webiny/feature/api";
-import { WebhookSignPayload } from "~/abstractions/WebhookSignPayload.js";
-import { GetWebhookSecretRepository } from "~/features/GetWebhookSecret/abstractions.js";
+import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class WebhookSignPayloadImpl implements WebhookSignPayload.Interface {
-    constructor(private getSecretRepository: GetWebhookSecretRepository.Interface) {}
-
-    async sign(rawBody: string, timestamp: number): Promise<string> {
-        const secretResult = await this.getSecretRepository.execute();
-        if (secretResult.isFail()) {
-            throw secretResult.error;
-        }
-        const secret = secretResult.value.values.secret;
+    async sign(rawBody: string, timestamp: number, secret: string): Promise<string> {
         const signedPayload = `${timestamp}.${rawBody}`;
         const hmac = createHmac("sha256", secret).update(signedPayload).digest("hex");
         return `t=${timestamp},v1=${hmac}`;
@@ -147,11 +102,11 @@ class WebhookSignPayloadImpl implements WebhookSignPayload.Interface {
 
 export default WebhookSignPayload.createImplementation({
     implementation: WebhookSignPayloadImpl,
-    dependencies: [GetWebhookSecretRepository]
+    dependencies: []
 });
 ```
 
-- [ ] **Step 4: Create `src/features/WebhookSignPayload/feature.ts`**
+- [ ] **Step 4: Create `src/api/features/WebhookSignPayload/feature.ts`**
 
 ```ts
 import { createFeature } from "@webiny/feature/api";
@@ -168,7 +123,7 @@ export const WebhookSignPayloadFeature = createFeature({
 - [ ] **Step 5: Run test to verify it passes**
 
 ```bash
-yarn test packages/api-webhooks 2>&1 | tail -20
+yarn test packages/webhooks 2>&1 | tail -20
 ```
 
 Expected: PASS for all 3 WebhookSignPayload tests.
@@ -176,8 +131,8 @@ Expected: PASS for all 3 WebhookSignPayload tests.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/api-webhooks/src/features/WebhookSignPayload/ packages/api-webhooks/__tests__/WebhookSignPayload.test.ts
-git commit -m "feat(api-webhooks): implement WebhookSignPayload with HMAC-SHA256 signing"
+git add packages/webhooks/src/api/features/WebhookSignPayload/ packages/webhooks/__tests__/WebhookSignPayload.test.ts
+git commit -m "feat(webhooks): implement WebhookSignPayload with HMAC-SHA256 signing"
 ```
 
 ---
@@ -187,22 +142,22 @@ git commit -m "feat(api-webhooks): implement WebhookSignPayload with HMAC-SHA256
 Queries enabled webhooks subscribed to `eventName`, then dispatches one `SendWebhookTask` per match. Fire-and-forget — does not await task completion.
 
 **Files:**
-- Create: `packages/api-webhooks/src/features/WebhookDispatcher/WebhookDispatcherImpl.ts`
-- Create: `packages/api-webhooks/src/features/WebhookDispatcher/feature.ts`
-- Create: `packages/api-webhooks/__tests__/WebhookDispatcher.test.ts`
+- Create: `packages/webhooks/src/api/features/WebhookDispatcher/WebhookDispatcherImpl.ts`
+- Create: `packages/webhooks/src/api/features/WebhookDispatcher/feature.ts`
+- Create: `packages/webhooks/__tests__/WebhookDispatcher.test.ts`
 
 - [ ] **Step 1: Write failing test**
 
 ```ts
-// packages/api-webhooks/__tests__/WebhookDispatcher.test.ts
+// packages/webhooks/__tests__/WebhookDispatcher.test.ts
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
-import { WebhookDispatcher } from "~/abstractions/WebhookDispatcher.js";
-import { WebhookDispatcherFeature } from "~/features/WebhookDispatcher/feature.js";
-import { ListWebhooksRepository } from "~/features/ListWebhooks/abstractions.js";
+import { WebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
+import { WebhookDispatcherFeature } from "~/api/features/WebhookDispatcher/feature.js";
+import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions.js";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
-import type { IWebhook } from "~/domain/types.js";
+import type { IWebhook } from "~/api/domain/types.js";
 
 const makeWebhook = (id: string, slug: string, events: string[]): IWebhook => ({
     id,
@@ -309,19 +264,19 @@ describe("WebhookDispatcher", () => {
 - [ ] **Step 2: Run test to verify it fails**
 
 ```bash
-yarn test packages/api-webhooks 2>&1 | tail -20
+yarn test packages/webhooks 2>&1 | tail -20
 ```
 
 Expected: FAIL — `WebhookDispatcherFeature` not found.
 
-- [ ] **Step 3: Create `src/features/WebhookDispatcher/WebhookDispatcherImpl.ts`**
+- [ ] **Step 3: Create `src/api/features/WebhookDispatcher/WebhookDispatcherImpl.ts`**
 
 ```ts
 import { Result } from "@webiny/feature/api";
-import { WebhookDispatcher } from "~/abstractions/WebhookDispatcher.js";
-import { ListWebhooksRepository } from "~/features/ListWebhooks/abstractions.js";
+import { WebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
+import { ListWebhooksRepository } from "~/api/features/ListWebhooks/abstractions.js";
 import { TaskService } from "@webiny/api-core/exports/api/tasks.js";
-import { SEND_WEBHOOK_TASK } from "~/domain/constants.js";
+import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
 
 class WebhookDispatcherImpl implements WebhookDispatcher.Interface {
     constructor(
@@ -358,7 +313,7 @@ export default WebhookDispatcher.createImplementation({
 });
 ```
 
-- [ ] **Step 4: Create `src/features/WebhookDispatcher/feature.ts`**
+- [ ] **Step 4: Create `src/api/features/WebhookDispatcher/feature.ts`**
 
 ```ts
 import { createFeature } from "@webiny/feature/api";
@@ -375,7 +330,7 @@ export const WebhookDispatcherFeature = createFeature({
 - [ ] **Step 5: Run test to verify it passes**
 
 ```bash
-yarn test packages/api-webhooks 2>&1 | tail -20
+yarn test packages/webhooks 2>&1 | tail -20
 ```
 
 Expected: PASS for all 3 WebhookDispatcher tests.
@@ -383,23 +338,23 @@ Expected: PASS for all 3 WebhookDispatcher tests.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/api-webhooks/src/features/WebhookDispatcher/ packages/api-webhooks/__tests__/WebhookDispatcher.test.ts
-git commit -m "feat(api-webhooks): implement WebhookDispatcher"
+git add packages/webhooks/src/api/features/WebhookDispatcher/ packages/webhooks/__tests__/WebhookDispatcher.test.ts
+git commit -m "feat(webhooks): implement WebhookDispatcher"
 ```
 
 ---
 
 ## Task 7: `SendWebhookTask` background task
 
-Fetches the webhook, builds the event payload, signs it, POSTs it (10-minute timeout), then writes a `WebhookDelivery` log entry regardless of outcome.
+Fetches the webhook, reads `signingSecret` from the entry, builds the event payload, signs it, POSTs it (10-minute timeout), then writes a `WebhookDelivery` log entry regardless of outcome.
 
 **Files:**
-- Create: `packages/api-webhooks/src/features/SendWebhookTask/types.ts`
-- Create: `packages/api-webhooks/src/features/SendWebhookTask/SendWebhookTask.ts`
-- Create: `packages/api-webhooks/src/features/SendWebhookTask/feature.ts`
-- Create: `packages/api-webhooks/__tests__/SendWebhookTask.test.ts`
+- Create: `packages/webhooks/src/api/features/SendWebhookTask/types.ts`
+- Create: `packages/webhooks/src/api/features/SendWebhookTask/SendWebhookTask.ts`
+- Create: `packages/webhooks/src/api/features/SendWebhookTask/feature.ts`
+- Create: `packages/webhooks/__tests__/SendWebhookTask.test.ts`
 
-- [ ] **Step 1: Create `src/features/SendWebhookTask/types.ts`**
+- [ ] **Step 1: Create `src/api/features/SendWebhookTask/types.ts`**
 
 ```ts
 export interface ISendWebhookTaskInput {
@@ -416,18 +371,18 @@ export interface ISendWebhookTaskOutput {
 - [ ] **Step 2: Write failing test**
 
 ```ts
-// packages/api-webhooks/__tests__/SendWebhookTask.test.ts
+// packages/webhooks/__tests__/SendWebhookTask.test.ts
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { Container } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { TaskDefinition } from "@webiny/api-core/exports/api/tasks.js";
-import { WebhookSignPayload } from "~/abstractions/WebhookSignPayload.js";
+import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/abstractions.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
-import { GetWebhookRepository } from "~/features/GetWebhook/abstractions.js";
-import { CreateWebhookDeliveryRepository } from "~/features/CreateWebhookDelivery/abstractions.js";
-import { SendWebhookTaskFeature } from "~/features/SendWebhookTask/feature.js";
-import { SEND_WEBHOOK_TASK } from "~/domain/constants.js";
-import type { IWebhook } from "~/domain/types.js";
+import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
+import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
+import { SendWebhookTaskFeature } from "~/api/features/SendWebhookTask/feature.js";
+import { SEND_WEBHOOK_TASK } from "~/api/domain/constants.js";
+import type { IWebhook } from "~/api/domain/types.js";
 
 const makeWebhook = (): IWebhook => ({
     id: "wh-1",
@@ -436,7 +391,8 @@ const makeWebhook = (): IWebhook => ({
         slug: "shop-sync",
         endpointUrl: "https://example.com/hook",
         enabled: true,
-        events: ["product.entry.published"]
+        events: ["product.entry.published"],
+        signingSecret: "whsec_test_secret"
     }
 });
 
@@ -582,22 +538,22 @@ describe("SendWebhookTask", () => {
 - [ ] **Step 3: Run test to verify it fails**
 
 ```bash
-yarn test packages/api-webhooks 2>&1 | tail -20
+yarn test packages/webhooks 2>&1 | tail -20
 ```
 
 Expected: FAIL — `SendWebhookTaskFeature` not found.
 
-- [ ] **Step 4: Create `src/features/SendWebhookTask/SendWebhookTask.ts`**
+- [ ] **Step 4: Create `src/api/features/SendWebhookTask/SendWebhookTask.ts`**
 
 ```ts
 import { TaskDefinition } from "@webiny/api-core/exports/api/tasks.js";
 import { TenantContext } from "@webiny/api-core/exports/api/tenancy.js";
-import { WebhookSignPayload } from "~/abstractions/WebhookSignPayload.js";
-import { GetWebhookRepository } from "~/features/GetWebhook/abstractions.js";
-import { CreateWebhookDeliveryRepository } from "~/features/CreateWebhookDelivery/abstractions.js";
-import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/domain/constants.js";
+import { WebhookSignPayload } from "@webiny/api-core/features/webhooks/abstractions.js";
+import { GetWebhookRepository } from "~/api/features/GetWebhook/abstractions.js";
+import { CreateWebhookDeliveryRepository } from "~/api/features/CreateWebhookDelivery/abstractions.js";
+import { SEND_WEBHOOK_TASK, WEBHOOK_DELIVERY_RETENTION_DAYS } from "~/api/domain/constants.js";
 import type { ISendWebhookTaskInput, ISendWebhookTaskOutput } from "./types.js";
-import type { IWebhookPayload } from "~/domain/types.js";
+import type { IWebhookPayload } from "~/api/domain/types.js";
 
 type IRunParams = TaskDefinition.RunParams<ISendWebhookTaskInput, ISendWebhookTaskOutput>;
 
@@ -627,6 +583,7 @@ class SendWebhookTaskDefinition
             return params.controller.response.error(webhookResult.error);
         }
         const webhook = webhookResult.value;
+        const signingSecret = webhook.values.signingSecret;
 
         const timestamp = Math.floor(Date.now() / 1000);
         const payload: IWebhookPayload = {
@@ -638,7 +595,7 @@ class SendWebhookTaskDefinition
             data: input.data
         };
         const rawBody = JSON.stringify(payload);
-        const signature = await this.signPayload.sign(rawBody, timestamp);
+        const signature = await this.signPayload.sign(rawBody, timestamp, signingSecret);
 
         const requestHeaders: Record<string, string> = {
             "Content-Type": "application/json",
@@ -703,7 +660,7 @@ export const SendWebhookTask = TaskDefinition.createImplementation({
 });
 ```
 
-- [ ] **Step 5: Create `src/features/SendWebhookTask/feature.ts`**
+- [ ] **Step 5: Create `src/api/features/SendWebhookTask/feature.ts`**
 
 ```ts
 import { createFeature } from "@webiny/feature/api";
@@ -720,7 +677,7 @@ export const SendWebhookTaskFeature = createFeature({
 - [ ] **Step 6: Run test to verify it passes**
 
 ```bash
-yarn test packages/api-webhooks 2>&1 | tail -20
+yarn test packages/webhooks 2>&1 | tail -20
 ```
 
 Expected: PASS for all 3 SendWebhookTask tests.
@@ -728,8 +685,8 @@ Expected: PASS for all 3 SendWebhookTask tests.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add packages/api-webhooks/src/features/SendWebhookTask/ packages/api-webhooks/__tests__/SendWebhookTask.test.ts
-git commit -m "feat(api-webhooks): implement SendWebhookTask"
+git add packages/webhooks/src/api/features/SendWebhookTask/ packages/webhooks/__tests__/SendWebhookTask.test.ts
+git commit -m "feat(webhooks): implement SendWebhookTask"
 ```
 
 ---

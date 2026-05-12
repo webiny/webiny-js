@@ -1,143 +1,44 @@
-# Webhooks Phase 3 — `api-website-builder-webhooks` WB Bridge
+# Webhooks Phase 3 — Website Builder Bridge (`webhooks/features/websiteBuilder`)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Create `packages/api-website-builder-webhooks` — the bridge package that hooks into Website Builder page lifecycle events and feeds them into the webhook dispatcher.
+**Goal:** Add a `websiteBuilder` feature folder inside `packages/webhooks/src/api/features/` that hooks into Website Builder page lifecycle events and feeds them into the webhook dispatcher.
 
-**Architecture:** Pure bridge — depends on both `api-website-builder` (events) and `api-webhooks` (dispatcher). Neither depends on this package. Static event provider (5 hardcoded events for `pbPage`).
+**Architecture:** Feature folder inside `packages/webhooks` — no separate package. Depends on `api-website-builder` (events) and `api-core` (dispatcher abstraction). Neither depends on this folder. Static event provider (5 hardcoded events for `pbPage`). The bridge's `feature.ts` is imported by `packages/webhooks/src/api/Extension.ts`.
 
-**Prerequisite:** Phase 1 (`api-webhooks`) must be complete.
+**Prerequisite:** Phase 1 (`webhooks` core) must be complete.
 
 ---
 
 ## File Map
 
 ```
-packages/api-website-builder-webhooks/
-├── package.json
-├── tsconfig.json
-├── index.ts
-└── src/
-    ├── WbWebhookEventProvider.ts
-    ├── handlers/
-    │   ├── OnPageCreatedHandler.ts
-    │   ├── OnPageUpdatedHandler.ts
-    │   ├── OnPageDeletedHandler.ts
-    │   ├── OnPagePublishedHandler.ts
-    │   └── OnPageUnpublishedHandler.ts
-    └── Extension.ts
+packages/webhooks/src/api/features/websiteBuilder/
+├── abstractions.ts
+├── WbWebhookEventProvider.ts
+├── handlers/
+│   ├── OnPageCreatedHandler.ts
+│   ├── OnPageUpdatedHandler.ts
+│   ├── OnPageDeletedHandler.ts
+│   ├── OnPagePublishedHandler.ts
+│   └── OnPageUnpublishedHandler.ts
+└── feature.ts
 ```
 
 ---
 
-## Task 1: Package scaffold
-
-**Files:**
-- Create: `packages/api-website-builder-webhooks/package.json`
-- Create: `packages/api-website-builder-webhooks/tsconfig.json`
-- Create: `packages/api-website-builder-webhooks/index.ts`
-
-- [ ] **Step 1: Create `package.json`**
-
-```json
-{
-  "name": "@webiny/api-website-builder-webhooks",
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    ".": "./index.js",
-    "./*": "./*"
-  },
-  "description": "Website Builder page webhook bridge for Webiny",
-  "keywords": [
-    "api-website-builder-webhooks:base"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/api-website-builder-webhooks"
-  },
-  "license": "MIT",
-  "dependencies": {
-    "@webiny/api-website-builder": "0.0.0",
-    "@webiny/api-webhooks": "0.0.0",
-    "@webiny/feature": "0.0.0"
-  },
-  "devDependencies": {
-    "@webiny/build-tools": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
-    "typescript": "6.0.3"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  }
-}
-```
-
-- [ ] **Step 2: Create `tsconfig.json`**
-
-```json
-{
-  "extends": "../../tsconfig.json",
-  "include": ["src"],
-  "references": [
-    { "path": "../api-website-builder" },
-    { "path": "../api-webhooks" },
-    { "path": "../feature" }
-  ],
-  "compilerOptions": {
-    "rootDirs": ["./src"],
-    "outDir": "./dist",
-    "declarationDir": "./dist",
-    "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],
-      "@webiny/api-website-builder": ["../api-website-builder/src"],
-      "@webiny/api-webhooks/*": ["../api-webhooks/src/*"],
-      "@webiny/api-webhooks": ["../api-webhooks/src"],
-      "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"]
-    }
-  }
-}
-```
-
-- [ ] **Step 3: Create `index.ts`**
-
-```ts
-export { Extension } from "./src/Extension.js";
-```
-
-- [ ] **Step 4: Install and regenerate tsconfigs**
-
-```bash
-yarn > /dev/null 2>&1
-node scripts/generateTsConfigsInPackages.js
-yarn adio
-```
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add packages/api-website-builder-webhooks/
-git commit -m "feat(api-website-builder-webhooks): add package scaffold"
-```
-
----
-
-## Task 2: `WbWebhookEventProvider`
+## Task 1: `WbWebhookEventProvider`
 
 Static event provider — returns 5 hardcoded events for `pbPage` (no async lookups needed).
 
 **Files:**
-- Create: `packages/api-website-builder-webhooks/src/WbWebhookEventProvider.ts`
+- Create: `packages/webhooks/src/api/features/websiteBuilder/WbWebhookEventProvider.ts`
 
-- [ ] **Step 1: Create `src/WbWebhookEventProvider.ts`**
+- [ ] **Step 1: Create `src/api/features/websiteBuilder/WbWebhookEventProvider.ts`**
 
 ```ts
-import { WebhookEventProvider } from "@webiny/api-webhooks/src/abstractions/WebhookEventProvider.js";
-import type { IWebhookEventDefinition } from "@webiny/api-webhooks/src/domain/types.js";
+import { WebhookEventProvider } from "~/api/abstractions/WebhookEventProvider.js";
+import type { IWebhookEventDefinition } from "~/api/domain/types.js";
 
 const STATIC_EVENTS: IWebhookEventDefinition[] = [
     {
@@ -186,9 +87,9 @@ export default WebhookEventProvider.createImplementation({
 
 ---
 
-## Task 3: Page lifecycle event handlers
+## Task 2: Page lifecycle event handlers
 
-One handler per WB page action. Each calls `WebhookDispatcher.dispatch()` with the event name and page data.
+One handler per WB page action. Each calls `IWebhookDispatcher.dispatch()` with the event name and page data.
 
 **Note on payloads:**
 - `PageAfterCreatePayload`: `{ page: WbPage }`
@@ -200,23 +101,22 @@ One handler per WB page action. Each calls `WebhookDispatcher.dispatch()` with t
 All handlers import from `@webiny/api-website-builder/exports/api/website-builder/page.js`.
 
 **Files:**
-- Create: `packages/api-website-builder-webhooks/src/handlers/OnPageCreatedHandler.ts`
-- Create: `packages/api-website-builder-webhooks/src/handlers/OnPageUpdatedHandler.ts`
-- Create: `packages/api-website-builder-webhooks/src/handlers/OnPageDeletedHandler.ts`
-- Create: `packages/api-website-builder-webhooks/src/handlers/OnPagePublishedHandler.ts`
-- Create: `packages/api-website-builder-webhooks/src/handlers/OnPageUnpublishedHandler.ts`
+- Create: `packages/webhooks/src/api/features/websiteBuilder/handlers/OnPageCreatedHandler.ts`
+- Create: `packages/webhooks/src/api/features/websiteBuilder/handlers/OnPageUpdatedHandler.ts`
+- Create: `packages/webhooks/src/api/features/websiteBuilder/handlers/OnPageDeletedHandler.ts`
+- Create: `packages/webhooks/src/api/features/websiteBuilder/handlers/OnPagePublishedHandler.ts`
+- Create: `packages/webhooks/src/api/features/websiteBuilder/handlers/OnPageUnpublishedHandler.ts`
 
-- [ ] **Step 1: Create `src/handlers/OnPageCreatedHandler.ts`**
+- [ ] **Step 1: Create `src/api/features/websiteBuilder/handlers/OnPageCreatedHandler.ts`**
 
 ```ts
-import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     PageAfterCreateEventHandler
 } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnPageCreatedHandlerImpl implements PageAfterCreateEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: PageAfterCreateEventHandler.Event): Promise<void> {
         const { page } = event.payload;
@@ -230,21 +130,20 @@ class OnPageCreatedHandlerImpl implements PageAfterCreateEventHandler.Interface 
 
 export default PageAfterCreateEventHandler.createImplementation({
     implementation: OnPageCreatedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
-- [ ] **Step 2: Create `src/handlers/OnPageUpdatedHandler.ts`**
+- [ ] **Step 2: Create `src/api/features/websiteBuilder/handlers/OnPageUpdatedHandler.ts`**
 
 ```ts
-import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     PageAfterUpdateEventHandler
 } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnPageUpdatedHandlerImpl implements PageAfterUpdateEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: PageAfterUpdateEventHandler.Event): Promise<void> {
         const { page } = event.payload;
@@ -258,21 +157,20 @@ class OnPageUpdatedHandlerImpl implements PageAfterUpdateEventHandler.Interface 
 
 export default PageAfterUpdateEventHandler.createImplementation({
     implementation: OnPageUpdatedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
-- [ ] **Step 3: Create `src/handlers/OnPageDeletedHandler.ts`**
+- [ ] **Step 3: Create `src/api/features/websiteBuilder/handlers/OnPageDeletedHandler.ts`**
 
 ```ts
-import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     PageAfterDeleteEventHandler
 } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnPageDeletedHandlerImpl implements PageAfterDeleteEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: PageAfterDeleteEventHandler.Event): Promise<void> {
         const { page } = event.payload;
@@ -286,21 +184,20 @@ class OnPageDeletedHandlerImpl implements PageAfterDeleteEventHandler.Interface 
 
 export default PageAfterDeleteEventHandler.createImplementation({
     implementation: OnPageDeletedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
-- [ ] **Step 4: Create `src/handlers/OnPagePublishedHandler.ts`**
+- [ ] **Step 4: Create `src/api/features/websiteBuilder/handlers/OnPagePublishedHandler.ts`**
 
 ```ts
-import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     PageAfterPublishEventHandler
 } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnPagePublishedHandlerImpl implements PageAfterPublishEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: PageAfterPublishEventHandler.Event): Promise<void> {
         const { page } = event.payload;
@@ -314,21 +211,20 @@ class OnPagePublishedHandlerImpl implements PageAfterPublishEventHandler.Interfa
 
 export default PageAfterPublishEventHandler.createImplementation({
     implementation: OnPagePublishedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
-- [ ] **Step 5: Create `src/handlers/OnPageUnpublishedHandler.ts`**
+- [ ] **Step 5: Create `src/api/features/websiteBuilder/handlers/OnPageUnpublishedHandler.ts`**
 
 ```ts
-import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     PageAfterUnpublishEventHandler
 } from "@webiny/api-website-builder/exports/api/website-builder/page.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnPageUnpublishedHandlerImpl implements PageAfterUnpublishEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: PageAfterUnpublishEventHandler.Event): Promise<void> {
         const { page } = event.payload;
@@ -342,18 +238,19 @@ class OnPageUnpublishedHandlerImpl implements PageAfterUnpublishEventHandler.Int
 
 export default PageAfterUnpublishEventHandler.createImplementation({
     implementation: OnPageUnpublishedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
 ---
 
-## Task 4: Extension and final build
+## Task 3: `feature.ts` and registration in main `Extension.ts`
 
 **Files:**
-- Create: `packages/api-website-builder-webhooks/src/Extension.ts`
+- Create: `packages/webhooks/src/api/features/websiteBuilder/feature.ts`
+- Modify: `packages/webhooks/src/api/Extension.ts`
 
-- [ ] **Step 1: Create `src/Extension.ts`**
+- [ ] **Step 1: Create `src/api/features/websiteBuilder/feature.ts`**
 
 ```ts
 import { createFeature } from "@webiny/feature/api";
@@ -364,7 +261,7 @@ import OnPageDeletedHandler from "./handlers/OnPageDeletedHandler.js";
 import OnPagePublishedHandler from "./handlers/OnPagePublishedHandler.js";
 import OnPageUnpublishedHandler from "./handlers/OnPageUnpublishedHandler.js";
 
-export const Extension = createFeature({
+export const websiteBuilderWebhooksFeature = createFeature({
     name: "WbWebhooks",
     register(container) {
         container.register(WbWebhookEventProvider);
@@ -377,32 +274,39 @@ export const Extension = createFeature({
 });
 ```
 
-- [ ] **Step 2: Build**
+- [ ] **Step 2: Import and register `websiteBuilderWebhooksFeature` in `src/api/Extension.ts`**
+
+Add the import:
+
+```ts
+import { websiteBuilderWebhooksFeature } from "~/api/features/websiteBuilder/feature.js";
+```
+
+And include `websiteBuilderWebhooksFeature` in the features array (or container registration) inside `Extension.ts`.
+
+- [ ] **Step 3: Build**
 
 ```bash
-yarn build -p @webiny/api-website-builder-webhooks 2>&1 | tail -20
+yarn build -p @webiny/webhooks 2>&1 | tail -20
 ```
 
 Expected: build succeeds.
 
-- [ ] **Step 3: Run before-commit checklist**
+- [ ] **Step 4: Run before-commit checklist**
 
 ```bash
 git add .
-yarn > /dev/null 2>&1
-node scripts/generateTsConfigsInPackages.js
-yarn adio
 yarn format > /dev/null 2>&1
 yarn lint
 yarn webiny sync-dependencies
 git add .
 ```
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add packages/api-website-builder-webhooks/
-git commit -m "feat(api-website-builder-webhooks): WB page lifecycle webhook bridge"
+git add packages/webhooks/
+git commit -m "feat(webhooks): WB page lifecycle webhook bridge"
 ```
 
 ---

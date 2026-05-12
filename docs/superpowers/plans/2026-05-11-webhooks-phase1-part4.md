@@ -1,4 +1,4 @@
-# Webhooks Phase 1 — `api-webhooks` Core Package (Part 4 of 4)
+# Webhooks Phase 1 — `webhooks` Core Package (Part 4 of 4)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -19,23 +19,23 @@
 | `WebhookCrudSchema.ts` | `type WebhookQuery`, `type WebhookMutation`, `extend type Query`, `extend type Mutation`, all Webhook types, CRUD resolvers | — |
 | `WebhookDeliverySchema.ts` | Delivery types, delivery resolvers | `extend type WebhookQuery`, `extend type WebhookMutation` |
 | `WebhookEventSchema.ts` | Event types, event resolver | `extend type WebhookQuery` |
-| `WebhookSecretSchema.ts` | Secret types, secret resolvers | `extend type WebhookQuery`, `extend type WebhookMutation` |
+| `WebhookTriggerSchema.ts` | Trigger types, triggerWebhook resolver | `extend type WebhookMutation` |
 
 ### 11a: `WebhookCrudSchema`
 
 **Files:**
-- Create: `packages/api-webhooks/src/graphql/WebhookCrudSchema.ts`
+- Create: `packages/webhooks/src/api/graphql/WebhookCrudSchema.ts`
 
-- [ ] **Step 1: Create `src/graphql/WebhookCrudSchema.ts`**
+- [ ] **Step 1: Create `src/api/graphql/WebhookCrudSchema.ts`**
 
 ```ts
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { Response, ErrorResponse } from "@webiny/handler-graphql";
-import { ListWebhooksUseCase } from "~/features/ListWebhooks/abstractions.js";
-import { GetWebhookUseCase } from "~/features/GetWebhook/abstractions.js";
-import { CreateWebhookUseCase } from "~/features/CreateWebhook/abstractions.js";
-import { UpdateWebhookUseCase } from "~/features/UpdateWebhook/abstractions.js";
-import { DeleteWebhookUseCase } from "~/features/DeleteWebhook/abstractions.js";
+import { ListWebhooksUseCase } from "~/api/features/ListWebhooks/abstractions.js";
+import { GetWebhookUseCase } from "~/api/features/GetWebhook/abstractions.js";
+import { CreateWebhookUseCase } from "~/api/features/CreateWebhook/abstractions.js";
+import { UpdateWebhookUseCase } from "~/api/features/UpdateWebhook/abstractions.js";
+import { DeleteWebhookUseCase } from "~/api/features/DeleteWebhook/abstractions.js";
 
 class WebhookCrudSchema implements GraphQLSchemaFactory.Interface {
     async execute(
@@ -62,6 +62,7 @@ class WebhookCrudSchema implements GraphQLSchemaFactory.Interface {
                 description: String
                 enabled: Boolean!
                 events: [String!]!
+                signingSecret: String!
                 createdOn: DateTime
                 modifiedOn: DateTime
             }
@@ -224,16 +225,16 @@ export default GraphQLSchemaFactory.createImplementation({
 ### 11b: `WebhookDeliverySchema`
 
 **Files:**
-- Create: `packages/api-webhooks/src/graphql/WebhookDeliverySchema.ts`
+- Create: `packages/webhooks/src/api/graphql/WebhookDeliverySchema.ts`
 
-- [ ] **Step 2: Create `src/graphql/WebhookDeliverySchema.ts`**
+- [ ] **Step 2: Create `src/api/graphql/WebhookDeliverySchema.ts`**
 
 ```ts
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { Response, ErrorResponse } from "@webiny/handler-graphql";
-import { ListWebhookDeliveriesUseCase } from "~/features/ListWebhookDeliveries/abstractions.js";
-import { GetWebhookDeliveryUseCase } from "~/features/GetWebhookDelivery/abstractions.js";
-import { ResendWebhookDeliveryUseCase } from "~/features/ResendWebhookDelivery/abstractions.js";
+import { ListWebhookDeliveriesUseCase } from "~/api/features/ListWebhookDeliveries/abstractions.js";
+import { GetWebhookDeliveryUseCase } from "~/api/features/GetWebhookDelivery/abstractions.js";
+import { ResendWebhookDeliveryUseCase } from "~/api/features/ResendWebhookDelivery/abstractions.js";
 
 class WebhookDeliverySchema implements GraphQLSchemaFactory.Interface {
     async execute(
@@ -340,14 +341,14 @@ export default GraphQLSchemaFactory.createImplementation({
 ### 11c: `WebhookEventSchema`
 
 **Files:**
-- Create: `packages/api-webhooks/src/graphql/WebhookEventSchema.ts`
+- Create: `packages/webhooks/src/api/graphql/WebhookEventSchema.ts`
 
-- [ ] **Step 3: Create `src/graphql/WebhookEventSchema.ts`**
+- [ ] **Step 3: Create `src/api/graphql/WebhookEventSchema.ts`**
 
 ```ts
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { Response, ErrorResponse } from "@webiny/handler-graphql";
-import { ListAvailableWebhookEventsUseCase } from "~/features/ListAvailableWebhookEvents/abstractions.js";
+import { ListAvailableWebhookEventsUseCase } from "~/api/features/ListAvailableWebhookEvents/abstractions.js";
 
 class WebhookEventSchema implements GraphQLSchemaFactory.Interface {
     async execute(
@@ -397,66 +398,45 @@ export default GraphQLSchemaFactory.createImplementation({
 
 ---
 
-### 11d: `WebhookSecretSchema`
+### 11d: `WebhookTriggerSchema`
 
 **Files:**
-- Create: `packages/api-webhooks/src/graphql/WebhookSecretSchema.ts`
+- Create: `packages/webhooks/src/api/graphql/WebhookTriggerSchema.ts`
 
-- [ ] **Step 4: Create `src/graphql/WebhookSecretSchema.ts`**
+- [ ] **Step 4: Create `src/api/graphql/WebhookTriggerSchema.ts`**
+
+Adds `triggerWebhook(id: ID!, payload: JSON!): WebhookTriggerResponse` — fires a test delivery regardless of enabled state, using the caller-supplied payload.
 
 ```ts
 import { GraphQLSchemaFactory } from "@webiny/handler-graphql/graphql/abstractions.js";
 import { Response, ErrorResponse } from "@webiny/handler-graphql";
-import { GetWebhookSecretUseCase } from "~/features/GetWebhookSecret/abstractions.js";
-import { RotateWebhookSecretUseCase } from "~/features/RotateWebhookSecret/abstractions.js";
+import { TriggerWebhookUseCase } from "~/api/features/TriggerWebhook/abstractions.js";
 
-class WebhookSecretSchema implements GraphQLSchemaFactory.Interface {
+class WebhookTriggerSchema implements GraphQLSchemaFactory.Interface {
     async execute(
         builder: GraphQLSchemaFactory.SchemaBuilder
     ): Promise<GraphQLSchemaFactory.SchemaBuilder> {
         builder.addTypeDefs(/* GraphQL */ `
-            type WebhookSecret {
-                secret: String!
-            }
-
-            type WebhookSecretResponse {
-                data: WebhookSecret
+            type WebhookTriggerResponse {
+                data: WebhookDelivery
                 error: WebhookError
             }
 
-            extend type WebhookQuery {
-                getWebhookSecret: WebhookSecretResponse!
-            }
-
             extend type WebhookMutation {
-                rotateWebhookSecret: WebhookSecretResponse!
+                triggerWebhook(id: ID!, payload: JSON!): WebhookTriggerResponse!
             }
         `);
 
-        builder.addResolver({
-            path: "WebhookQuery.getWebhookSecret",
-            dependencies: [GetWebhookSecretUseCase],
-            resolver: (getSecret: GetWebhookSecretUseCase.Interface) => {
-                return async () => {
-                    const result = await getSecret.execute();
+        builder.addResolver<{ id: string; payload: Record<string, unknown> }>({
+            path: "WebhookMutation.triggerWebhook",
+            dependencies: [TriggerWebhookUseCase],
+            resolver: (triggerWebhook: TriggerWebhookUseCase.Interface) => {
+                return async ({ args }) => {
+                    const result = await triggerWebhook.execute(args.id, args.payload);
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
                     }
-                    return new Response({ secret: result.value.values.secret });
-                };
-            }
-        });
-
-        builder.addResolver({
-            path: "WebhookMutation.rotateWebhookSecret",
-            dependencies: [RotateWebhookSecretUseCase],
-            resolver: (rotateSecret: RotateWebhookSecretUseCase.Interface) => {
-                return async () => {
-                    const result = await rotateSecret.execute();
-                    if (result.isFail()) {
-                        return new ErrorResponse(result.error);
-                    }
-                    return new Response({ secret: result.value.values.secret });
+                    return new Response(result.value);
                 };
             }
         });
@@ -466,7 +446,7 @@ class WebhookSecretSchema implements GraphQLSchemaFactory.Interface {
 }
 
 export default GraphQLSchemaFactory.createImplementation({
-    implementation: WebhookSecretSchema,
+    implementation: WebhookTriggerSchema,
     dependencies: []
 });
 ```
@@ -474,7 +454,7 @@ export default GraphQLSchemaFactory.createImplementation({
 - [ ] **Step 5: Build schemas**
 
 ```bash
-yarn build -p @webiny/api-webhooks 2>&1 | tail -20
+yarn build -p @webiny/webhooks 2>&1 | tail -20
 ```
 
 Expected: build succeeds.
@@ -482,8 +462,8 @@ Expected: build succeeds.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/api-webhooks/src/graphql/
-git commit -m "feat(api-webhooks): add GraphQL schemas (CRUD, delivery, events, secret)"
+git add packages/webhooks/src/api/graphql/
+git commit -m "feat(webhooks): add GraphQL schemas (CRUD, delivery, events, trigger)"
 ```
 
 ---
@@ -491,11 +471,11 @@ git commit -m "feat(api-webhooks): add GraphQL schemas (CRUD, delivery, events, 
 ## Task 12: Extension, exports, and final wiring
 
 **Files:**
-- Create: `packages/api-webhooks/src/Extension.ts`
-- Create: `packages/api-webhooks/src/exports/api/webhooks.ts`
-- Modify: `packages/api-webhooks/index.ts`
+- Create: `packages/webhooks/src/api/Extension.ts`
+- Create: `packages/webhooks/src/exports/api/webhooks.ts`
+- Modify: `packages/webhooks/index.ts`
 
-- [ ] **Step 1: Create `src/Extension.ts`**
+- [ ] **Step 1: Create `src/api/Extension.ts`**
 
 This is the single entry point consumers call. It registers all models, features, schemas, and the background task.
 
@@ -503,11 +483,10 @@ This is the single entry point consumers call. It registers all models, features
 import { createFeature } from "@webiny/feature/api";
 import WebhookModel from "./models/WebhookModel.js";
 import WebhookDeliveryModel from "./models/WebhookDeliveryModel.js";
-import WebhookSettingsModel from "./models/WebhookSettingsModel.js";
 import WebhookCrudSchema from "./graphql/WebhookCrudSchema.js";
 import WebhookDeliverySchema from "./graphql/WebhookDeliverySchema.js";
 import WebhookEventSchema from "./graphql/WebhookEventSchema.js";
-import WebhookSecretSchema from "./graphql/WebhookSecretSchema.js";
+import WebhookTriggerSchema from "./graphql/WebhookTriggerSchema.js";
 import { CreateWebhookFeature } from "./features/CreateWebhook/feature.js";
 import { GetWebhookFeature } from "./features/GetWebhook/feature.js";
 import { ListWebhooksFeature } from "./features/ListWebhooks/feature.js";
@@ -517,8 +496,7 @@ import { CreateWebhookDeliveryFeature } from "./features/CreateWebhookDelivery/f
 import { GetWebhookDeliveryFeature } from "./features/GetWebhookDelivery/feature.js";
 import { ListWebhookDeliveriesFeature } from "./features/ListWebhookDeliveries/feature.js";
 import { ResendWebhookDeliveryFeature } from "./features/ResendWebhookDelivery/feature.js";
-import { GetWebhookSecretFeature } from "./features/GetWebhookSecret/feature.js";
-import { RotateWebhookSecretFeature } from "./features/RotateWebhookSecret/feature.js";
+import { TriggerWebhookFeature } from "./features/TriggerWebhook/feature.js";
 import { ListAvailableWebhookEventsFeature } from "./features/ListAvailableWebhookEvents/feature.js";
 import { WebhookSignPayloadFeature } from "./features/WebhookSignPayload/feature.js";
 import { WebhookDispatcherFeature } from "./features/WebhookDispatcher/feature.js";
@@ -530,13 +508,12 @@ export const Extension = createFeature({
         // CMS models
         container.register(WebhookModel);
         container.register(WebhookDeliveryModel);
-        container.register(WebhookSettingsModel);
 
         // GraphQL
         container.register(WebhookCrudSchema);
         container.register(WebhookDeliverySchema);
         container.register(WebhookEventSchema);
-        container.register(WebhookSecretSchema);
+        container.register(WebhookTriggerSchema);
 
         // Core implementations
         WebhookSignPayloadFeature.register(container);
@@ -556,9 +533,8 @@ export const Extension = createFeature({
         ListWebhookDeliveriesFeature.register(container);
         ResendWebhookDeliveryFeature.register(container);
 
-        // Secret + events
-        GetWebhookSecretFeature.register(container);
-        RotateWebhookSecretFeature.register(container);
+        // Trigger + events
+        TriggerWebhookFeature.register(container);
         ListAvailableWebhookEventsFeature.register(container);
     }
 });
@@ -570,9 +546,9 @@ Public API surface for bridge packages.
 
 ```ts
 // Abstractions bridge packages implement or consume
-export { WebhookDispatcher } from "~/abstractions/WebhookDispatcher.js";
-export { WebhookEventProvider } from "~/abstractions/WebhookEventProvider.js";
-export { WebhookSignPayload } from "~/abstractions/WebhookSignPayload.js";
+export { WebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
+export { WebhookEventProvider } from "@webiny/api-core/features/webhooks/abstractions.js";
+export { WebhookSignPayload } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 // Domain types bridge packages reference
 export type {
@@ -580,15 +556,13 @@ export type {
     IWebhookValues,
     IWebhookDelivery,
     IWebhookDeliveryValues,
-    IWebhookSettings,
-    IWebhookSettingsValues,
     IWebhookEventDefinition,
     IWebhookPayload,
     IListMeta
-} from "~/domain/types.js";
+} from "~/api/domain/types.js";
 
 // Extension for framework wiring
-export { Extension } from "~/Extension.js";
+export { Extension } from "~/api/Extension.js";
 ```
 
 - [ ] **Step 3: Update `index.ts` to include exports path**
@@ -596,18 +570,18 @@ export { Extension } from "~/Extension.js";
 Replace the current `index.ts`:
 
 ```ts
-export { Extension } from "./src/Extension.js";
-export { WebhookDispatcher } from "./src/abstractions/WebhookDispatcher.js";
-export { WebhookEventProvider } from "./src/abstractions/WebhookEventProvider.js";
-export { WebhookSignPayload } from "./src/abstractions/WebhookSignPayload.js";
+export { Extension } from "./src/api/Extension.js";
+export { WebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
+export { WebhookEventProvider } from "@webiny/api-core/features/webhooks/abstractions.js";
+export { WebhookSignPayload } from "@webiny/api-core/features/webhooks/abstractions.js";
 ```
 
-(No change needed — this is already correct from Task 1. Verify it matches.)
+(Verify it matches what was set up in Task 1.)
 
 - [ ] **Step 4: Final build**
 
 ```bash
-yarn build -p @webiny/api-webhooks 2>&1 | tail -20
+yarn build -p @webiny/webhooks 2>&1 | tail -20
 ```
 
 Expected: build succeeds.
@@ -615,7 +589,7 @@ Expected: build succeeds.
 - [ ] **Step 5: Run all tests**
 
 ```bash
-yarn test packages/api-webhooks 2>&1 | tail -30
+yarn test packages/webhooks 2>&1 | tail -30
 ```
 
 Expected: all tests PASS.
@@ -638,18 +612,18 @@ Expected: no errors. Fix any lint issues before committing.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add packages/api-webhooks/src/Extension.ts packages/api-webhooks/src/exports/ packages/api-webhooks/index.ts
-git commit -m "feat(api-webhooks): add Extension entry point and public exports"
+git add packages/webhooks/src/api/Extension.ts packages/webhooks/src/exports/ packages/webhooks/index.ts
+git commit -m "feat(webhooks): add Extension entry point and public exports"
 ```
 
 ---
 
 ## Phase 1 complete
 
-`packages/api-webhooks` is now a fully functional core webhook package:
+`packages/webhooks` is now a fully functional core webhook package:
 
-- **3 CMS models** — Webhook, WebhookDelivery, WebhookSettings
-- **15 use cases** — full CRUD, delivery log, secret management, event discovery
+- **2 CMS models** — Webhook, WebhookDelivery
+- **14 use cases** — full CRUD, delivery log, trigger, event discovery
 - **1 background task** — `SendWebhookTask` (HTTP POST + delivery log)
 - **2 core implementations** — `WebhookSignPayload` (HMAC-SHA256), `WebhookDispatcher` (event router)
 - **4 GraphQL schemas** — complete `webhooks { ... }` query and mutation namespace

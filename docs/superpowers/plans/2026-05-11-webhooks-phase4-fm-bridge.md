@@ -1,147 +1,44 @@
-# Webhooks Phase 4 — `api-file-manager-webhooks` FM Bridge
+# Webhooks Phase 4 — File Manager Bridge (`webhooks/features/fileManager`)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Create `packages/api-file-manager-webhooks` — the bridge package that hooks into File Manager file and folder lifecycle events and feeds them into the webhook dispatcher.
+**Goal:** Add a `fileManager` feature folder inside `packages/webhooks/src/api/features/` that hooks into File Manager file and folder lifecycle events and feeds them into the webhook dispatcher.
 
-**Architecture:** Pure bridge — depends on `api-file-manager` (file events), `api-aco` (folder events), and `api-webhooks` (dispatcher). Neither source package depends on this package. Static event provider (5 hardcoded events: 2 file + 3 folder).
+**Architecture:** Feature folder inside `packages/webhooks` — no separate package. Depends on `api-file-manager` (file events), `api-aco` (folder events), and `api-core` (dispatcher abstraction). Neither source package depends on this folder. Static event provider (5 hardcoded events: 2 file + 3 folder). The bridge's `feature.ts` is imported by `packages/webhooks/src/api/Extension.ts`.
 
-**Prerequisite:** Phase 1 (`api-webhooks`) must be complete.
+**Prerequisite:** Phase 1 (`webhooks` core) must be complete.
 
 ---
 
 ## File Map
 
 ```
-packages/api-file-manager-webhooks/
-├── package.json
-├── tsconfig.json
-├── index.ts
-└── src/
-    ├── FmWebhookEventProvider.ts
-    ├── handlers/
-    │   ├── OnFileCreatedHandler.ts
-    │   ├── OnFileDeletedHandler.ts
-    │   ├── OnFolderCreatedHandler.ts
-    │   ├── OnFolderUpdatedHandler.ts
-    │   └── OnFolderDeletedHandler.ts
-    └── Extension.ts
+packages/webhooks/src/api/features/fileManager/
+├── abstractions.ts
+├── FmWebhookEventProvider.ts
+├── handlers/
+│   ├── OnFileCreatedHandler.ts
+│   ├── OnFileDeletedHandler.ts
+│   ├── OnFolderCreatedHandler.ts
+│   ├── OnFolderUpdatedHandler.ts
+│   └── OnFolderDeletedHandler.ts
+└── feature.ts
 ```
 
 ---
 
-## Task 1: Package scaffold
-
-**Files:**
-- Create: `packages/api-file-manager-webhooks/package.json`
-- Create: `packages/api-file-manager-webhooks/tsconfig.json`
-- Create: `packages/api-file-manager-webhooks/index.ts`
-
-- [ ] **Step 1: Create `package.json`**
-
-```json
-{
-  "name": "@webiny/api-file-manager-webhooks",
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    ".": "./index.js",
-    "./*": "./*"
-  },
-  "description": "File Manager file and folder webhook bridge for Webiny",
-  "keywords": [
-    "api-file-manager-webhooks:base"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/api-file-manager-webhooks"
-  },
-  "license": "MIT",
-  "dependencies": {
-    "@webiny/api-aco": "0.0.0",
-    "@webiny/api-file-manager": "0.0.0",
-    "@webiny/api-webhooks": "0.0.0",
-    "@webiny/feature": "0.0.0"
-  },
-  "devDependencies": {
-    "@webiny/build-tools": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
-    "typescript": "6.0.3"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  }
-}
-```
-
-- [ ] **Step 2: Create `tsconfig.json`**
-
-```json
-{
-  "extends": "../../tsconfig.json",
-  "include": ["src"],
-  "references": [
-    { "path": "../api-aco" },
-    { "path": "../api-file-manager" },
-    { "path": "../api-webhooks" },
-    { "path": "../feature" }
-  ],
-  "compilerOptions": {
-    "rootDirs": ["./src"],
-    "outDir": "./dist",
-    "declarationDir": "./dist",
-    "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/api-aco/*": ["../api-aco/src/*"],
-      "@webiny/api-aco": ["../api-aco/src"],
-      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
-      "@webiny/api-file-manager": ["../api-file-manager/src"],
-      "@webiny/api-webhooks/*": ["../api-webhooks/src/*"],
-      "@webiny/api-webhooks": ["../api-webhooks/src"],
-      "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"]
-    }
-  }
-}
-```
-
-- [ ] **Step 3: Create `index.ts`**
-
-```ts
-export { Extension } from "./src/Extension.js";
-```
-
-- [ ] **Step 4: Install and regenerate tsconfigs**
-
-```bash
-yarn > /dev/null 2>&1
-node scripts/generateTsConfigsInPackages.js
-yarn adio
-```
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add packages/api-file-manager-webhooks/
-git commit -m "feat(api-file-manager-webhooks): add package scaffold"
-```
-
----
-
-## Task 2: `FmWebhookEventProvider`
+## Task 1: `FmWebhookEventProvider`
 
 Static event provider — returns 5 hardcoded events (2 file, 3 folder).
 
 **Files:**
-- Create: `packages/api-file-manager-webhooks/src/FmWebhookEventProvider.ts`
+- Create: `packages/webhooks/src/api/features/fileManager/FmWebhookEventProvider.ts`
 
-- [ ] **Step 1: Create `src/FmWebhookEventProvider.ts`**
+- [ ] **Step 1: Create `src/api/features/fileManager/FmWebhookEventProvider.ts`**
 
 ```ts
-import { WebhookEventProvider } from "@webiny/api-webhooks/src/abstractions/WebhookEventProvider.js";
-import type { IWebhookEventDefinition } from "@webiny/api-webhooks/src/domain/types.js";
+import { WebhookEventProvider } from "~/api/abstractions/WebhookEventProvider.js";
+import type { IWebhookEventDefinition } from "~/api/domain/types.js";
 
 const STATIC_EVENTS: IWebhookEventDefinition[] = [
     {
@@ -190,7 +87,7 @@ export default WebhookEventProvider.createImplementation({
 
 ---
 
-## Task 3: File lifecycle event handlers
+## Task 2: File lifecycle event handlers
 
 File events are imported from `@webiny/api-file-manager/exports/api/file-manager/file.js`.
 
@@ -201,20 +98,19 @@ File events are imported from `@webiny/api-file-manager/exports/api/file-manager
 The `File` type is the domain file object with an `id` field.
 
 **Files:**
-- Create: `packages/api-file-manager-webhooks/src/handlers/OnFileCreatedHandler.ts`
-- Create: `packages/api-file-manager-webhooks/src/handlers/OnFileDeletedHandler.ts`
+- Create: `packages/webhooks/src/api/features/fileManager/handlers/OnFileCreatedHandler.ts`
+- Create: `packages/webhooks/src/api/features/fileManager/handlers/OnFileDeletedHandler.ts`
 
-- [ ] **Step 1: Create `src/handlers/OnFileCreatedHandler.ts`**
+- [ ] **Step 1: Create `src/api/features/fileManager/handlers/OnFileCreatedHandler.ts`**
 
 ```ts
-import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     FileAfterCreateEventHandler
 } from "@webiny/api-file-manager/exports/api/file-manager/file.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnFileCreatedHandlerImpl implements FileAfterCreateEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: FileAfterCreateEventHandler.Event): Promise<void> {
         const { file } = event.payload;
@@ -228,21 +124,20 @@ class OnFileCreatedHandlerImpl implements FileAfterCreateEventHandler.Interface 
 
 export default FileAfterCreateEventHandler.createImplementation({
     implementation: OnFileCreatedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
-- [ ] **Step 2: Create `src/handlers/OnFileDeletedHandler.ts`**
+- [ ] **Step 2: Create `src/api/features/fileManager/handlers/OnFileDeletedHandler.ts`**
 
 ```ts
-import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     FileAfterDeleteEventHandler
 } from "@webiny/api-file-manager/exports/api/file-manager/file.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnFileDeletedHandlerImpl implements FileAfterDeleteEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: FileAfterDeleteEventHandler.Event): Promise<void> {
         const { file } = event.payload;
@@ -256,13 +151,13 @@ class OnFileDeletedHandlerImpl implements FileAfterDeleteEventHandler.Interface 
 
 export default FileAfterDeleteEventHandler.createImplementation({
     implementation: OnFileDeletedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
 ---
 
-## Task 4: Folder lifecycle event handlers
+## Task 3: Folder lifecycle event handlers
 
 Folder events are imported from `@webiny/api-aco/exports/api/aco/folder.js`. Folders live in `api-aco`, not `api-file-manager`.
 
@@ -274,21 +169,20 @@ Folder events are imported from `@webiny/api-aco/exports/api/aco/folder.js`. Fol
 The `Folder` type is the ACO folder domain object with an `id` field.
 
 **Files:**
-- Create: `packages/api-file-manager-webhooks/src/handlers/OnFolderCreatedHandler.ts`
-- Create: `packages/api-file-manager-webhooks/src/handlers/OnFolderUpdatedHandler.ts`
-- Create: `packages/api-file-manager-webhooks/src/handlers/OnFolderDeletedHandler.ts`
+- Create: `packages/webhooks/src/api/features/fileManager/handlers/OnFolderCreatedHandler.ts`
+- Create: `packages/webhooks/src/api/features/fileManager/handlers/OnFolderUpdatedHandler.ts`
+- Create: `packages/webhooks/src/api/features/fileManager/handlers/OnFolderDeletedHandler.ts`
 
-- [ ] **Step 1: Create `src/handlers/OnFolderCreatedHandler.ts`**
+- [ ] **Step 1: Create `src/api/features/fileManager/handlers/OnFolderCreatedHandler.ts`**
 
 ```ts
-import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     FolderAfterCreateEventHandler
 } from "@webiny/api-aco/exports/api/aco/folder.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnFolderCreatedHandlerImpl implements FolderAfterCreateEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: FolderAfterCreateEventHandler.Event): Promise<void> {
         const { folder } = event.payload;
@@ -302,21 +196,20 @@ class OnFolderCreatedHandlerImpl implements FolderAfterCreateEventHandler.Interf
 
 export default FolderAfterCreateEventHandler.createImplementation({
     implementation: OnFolderCreatedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
-- [ ] **Step 2: Create `src/handlers/OnFolderUpdatedHandler.ts`**
+- [ ] **Step 2: Create `src/api/features/fileManager/handlers/OnFolderUpdatedHandler.ts`**
 
 ```ts
-import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     FolderAfterUpdateEventHandler
 } from "@webiny/api-aco/exports/api/aco/folder.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnFolderUpdatedHandlerImpl implements FolderAfterUpdateEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: FolderAfterUpdateEventHandler.Event): Promise<void> {
         const { folder } = event.payload;
@@ -330,21 +223,20 @@ class OnFolderUpdatedHandlerImpl implements FolderAfterUpdateEventHandler.Interf
 
 export default FolderAfterUpdateEventHandler.createImplementation({
     implementation: OnFolderUpdatedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
-- [ ] **Step 3: Create `src/handlers/OnFolderDeletedHandler.ts`**
+- [ ] **Step 3: Create `src/api/features/fileManager/handlers/OnFolderDeletedHandler.ts`**
 
 ```ts
-import type { IEventHandler } from "@webiny/api-core/features/eventPublisher/index.js";
 import {
     FolderAfterDeleteEventHandler
 } from "@webiny/api-aco/exports/api/aco/folder.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnFolderDeletedHandlerImpl implements FolderAfterDeleteEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: FolderAfterDeleteEventHandler.Event): Promise<void> {
         const { folder } = event.payload;
@@ -358,18 +250,19 @@ class OnFolderDeletedHandlerImpl implements FolderAfterDeleteEventHandler.Interf
 
 export default FolderAfterDeleteEventHandler.createImplementation({
     implementation: OnFolderDeletedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
 ---
 
-## Task 5: Extension and final build
+## Task 4: `feature.ts` and registration in main `Extension.ts`
 
 **Files:**
-- Create: `packages/api-file-manager-webhooks/src/Extension.ts`
+- Create: `packages/webhooks/src/api/features/fileManager/feature.ts`
+- Modify: `packages/webhooks/src/api/Extension.ts`
 
-- [ ] **Step 1: Create `src/Extension.ts`**
+- [ ] **Step 1: Create `src/api/features/fileManager/feature.ts`**
 
 ```ts
 import { createFeature } from "@webiny/feature/api";
@@ -380,7 +273,7 @@ import OnFolderCreatedHandler from "./handlers/OnFolderCreatedHandler.js";
 import OnFolderUpdatedHandler from "./handlers/OnFolderUpdatedHandler.js";
 import OnFolderDeletedHandler from "./handlers/OnFolderDeletedHandler.js";
 
-export const Extension = createFeature({
+export const fileManagerWebhooksFeature = createFeature({
     name: "FmWebhooks",
     register(container) {
         container.register(FmWebhookEventProvider);
@@ -393,32 +286,39 @@ export const Extension = createFeature({
 });
 ```
 
-- [ ] **Step 2: Build**
+- [ ] **Step 2: Import and register `fileManagerWebhooksFeature` in `src/api/Extension.ts`**
+
+Add the import:
+
+```ts
+import { fileManagerWebhooksFeature } from "~/api/features/fileManager/feature.js";
+```
+
+And include `fileManagerWebhooksFeature` in the features array (or container registration) inside `Extension.ts`.
+
+- [ ] **Step 3: Build**
 
 ```bash
-yarn build -p @webiny/api-file-manager-webhooks 2>&1 | tail -20
+yarn build -p @webiny/webhooks 2>&1 | tail -20
 ```
 
 Expected: build succeeds.
 
-- [ ] **Step 3: Run before-commit checklist**
+- [ ] **Step 4: Run before-commit checklist**
 
 ```bash
 git add .
-yarn > /dev/null 2>&1
-node scripts/generateTsConfigsInPackages.js
-yarn adio
 yarn format > /dev/null 2>&1
 yarn lint
 yarn webiny sync-dependencies
 git add .
 ```
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add packages/api-file-manager-webhooks/
-git commit -m "feat(api-file-manager-webhooks): FM file and folder lifecycle webhook bridge"
+git add packages/webhooks/
+git commit -m "feat(webhooks): FM file and folder lifecycle webhook bridge"
 ```
 
 ---

@@ -1,14 +1,14 @@
-# Webhooks Phase 5 — `api-tenant-manager-webhooks` Tenant Bridge
+# Webhooks Phase 5 — Tenant Manager Bridge (`webhooks/features/tenantManager`)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Create `packages/api-tenant-manager-webhooks` — the bridge package that hooks into tenant lifecycle events and feeds them into the webhook dispatcher. Because `tenant-manager` does not yet dispatch domain events for create/update/delete, this plan first adds those events to `tenant-manager`, then wires the bridge.
+**Goal:** Add a `tenantManager` feature folder inside `packages/webhooks/src/api/features/` that hooks into tenant lifecycle events and feeds them into the webhook dispatcher. Because `tenant-manager` does not yet dispatch domain events for create/update/delete, this plan first adds those events to `tenant-manager`, then wires the bridge.
 
 **Architecture:**
 1. Modify `packages/tenant-manager` to add `TenantAfterCreateEvent`, `TenantAfterUpdateEvent`, `TenantAfterDeleteEvent` domain events and their handler abstractions.
-2. Create `packages/api-tenant-manager-webhooks` — depends on `tenant-manager` (events) and `api-webhooks` (dispatcher).
+2. Add a `tenantManager` feature folder inside `packages/webhooks` — depends on `tenant-manager` (events) and `api-core` (dispatcher abstraction). The bridge's `feature.ts` is imported by `packages/webhooks/src/api/Extension.ts`.
 
-**Prerequisite:** Phase 1 (`api-webhooks`) must be complete.
+**Prerequisite:** Phase 1 (`webhooks` core) must be complete.
 
 ---
 
@@ -32,17 +32,14 @@ packages/tenant-manager/
         └── api/
             └── tenant-manager.ts       ← MODIFIED (add 3 exports)
 
-packages/api-tenant-manager-webhooks/
-├── package.json
-├── tsconfig.json
-├── index.ts
-└── src/
-    ├── TmWebhookEventProvider.ts
-    ├── handlers/
-    │   ├── OnTenantCreatedHandler.ts
-    │   ├── OnTenantUpdatedHandler.ts
-    │   └── OnTenantDeletedHandler.ts
-    └── Extension.ts
+packages/webhooks/src/api/features/tenantManager/
+├── abstractions.ts
+├── TmWebhookEventProvider.ts
+├── handlers/
+│   ├── OnTenantCreatedHandler.ts
+│   ├── OnTenantUpdatedHandler.ts
+│   └── OnTenantDeletedHandler.ts
+└── feature.ts
 ```
 
 ---
@@ -343,114 +340,18 @@ git commit -m "feat(tenant-manager): add TenantAfterCreate/Update/Delete domain 
 
 ---
 
-## Task 5: Bridge package scaffold
-
-**Files:**
-- Create: `packages/api-tenant-manager-webhooks/package.json`
-- Create: `packages/api-tenant-manager-webhooks/tsconfig.json`
-- Create: `packages/api-tenant-manager-webhooks/index.ts`
-
-- [ ] **Step 1: Create `package.json`**
-
-```json
-{
-  "name": "@webiny/api-tenant-manager-webhooks",
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    ".": "./index.js",
-    "./*": "./*"
-  },
-  "description": "Tenant lifecycle webhook bridge for Webiny",
-  "keywords": [
-    "api-tenant-manager-webhooks:base"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/api-tenant-manager-webhooks"
-  },
-  "license": "MIT",
-  "dependencies": {
-    "@webiny/api-webhooks": "0.0.0",
-    "@webiny/feature": "0.0.0",
-    "@webiny/tenant-manager": "0.0.0"
-  },
-  "devDependencies": {
-    "@webiny/build-tools": "0.0.0",
-    "@webiny/project-utils": "0.0.0",
-    "typescript": "6.0.3"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  }
-}
-```
-
-- [ ] **Step 2: Create `tsconfig.json`**
-
-```json
-{
-  "extends": "../../tsconfig.json",
-  "include": ["src"],
-  "references": [
-    { "path": "../api-webhooks" },
-    { "path": "../feature" },
-    { "path": "../tenant-manager" }
-  ],
-  "compilerOptions": {
-    "rootDirs": ["./src"],
-    "outDir": "./dist",
-    "declarationDir": "./dist",
-    "paths": {
-      "~/*": ["./src/*"],
-      "@webiny/api-webhooks/*": ["../api-webhooks/src/*"],
-      "@webiny/api-webhooks": ["../api-webhooks/src"],
-      "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"],
-      "@webiny/tenant-manager/*": ["../tenant-manager/src/*"],
-      "@webiny/tenant-manager": ["../tenant-manager/src"]
-    }
-  }
-}
-```
-
-- [ ] **Step 3: Create `index.ts`**
-
-```ts
-export { Extension } from "./src/Extension.js";
-```
-
-- [ ] **Step 4: Install and regenerate tsconfigs**
-
-```bash
-yarn > /dev/null 2>&1
-node scripts/generateTsConfigsInPackages.js
-yarn adio
-```
-
-- [ ] **Step 5: Commit scaffold**
-
-```bash
-git add packages/api-tenant-manager-webhooks/
-git commit -m "feat(api-tenant-manager-webhooks): add package scaffold"
-```
-
----
-
-## Task 6: `TmWebhookEventProvider`
+## Task 5: `TmWebhookEventProvider`
 
 Static event provider — returns 3 hardcoded tenant events.
 
 **Files:**
-- Create: `packages/api-tenant-manager-webhooks/src/TmWebhookEventProvider.ts`
+- Create: `packages/webhooks/src/api/features/tenantManager/TmWebhookEventProvider.ts`
 
-- [ ] **Step 1: Create `src/TmWebhookEventProvider.ts`**
+- [ ] **Step 1: Create `src/api/features/tenantManager/TmWebhookEventProvider.ts`**
 
 ```ts
-import { WebhookEventProvider } from "@webiny/api-webhooks/src/abstractions/WebhookEventProvider.js";
-import type { IWebhookEventDefinition } from "@webiny/api-webhooks/src/domain/types.js";
+import { WebhookEventProvider } from "~/api/abstractions/WebhookEventProvider.js";
+import type { IWebhookEventDefinition } from "~/api/domain/types.js";
 
 const STATIC_EVENTS: IWebhookEventDefinition[] = [
     {
@@ -487,7 +388,7 @@ export default WebhookEventProvider.createImplementation({
 
 ---
 
-## Task 7: Tenant lifecycle event handlers
+## Task 6: Tenant lifecycle event handlers
 
 **Note on payloads:**
 - `TenantAfterCreatePayload`: `{ tenant: Tenant }`
@@ -497,20 +398,20 @@ export default WebhookEventProvider.createImplementation({
 All handlers import from `@webiny/tenant-manager/exports/api/tenant-manager.js`.
 
 **Files:**
-- Create: `packages/api-tenant-manager-webhooks/src/handlers/OnTenantCreatedHandler.ts`
-- Create: `packages/api-tenant-manager-webhooks/src/handlers/OnTenantUpdatedHandler.ts`
-- Create: `packages/api-tenant-manager-webhooks/src/handlers/OnTenantDeletedHandler.ts`
+- Create: `packages/webhooks/src/api/features/tenantManager/handlers/OnTenantCreatedHandler.ts`
+- Create: `packages/webhooks/src/api/features/tenantManager/handlers/OnTenantUpdatedHandler.ts`
+- Create: `packages/webhooks/src/api/features/tenantManager/handlers/OnTenantDeletedHandler.ts`
 
-- [ ] **Step 1: Create `src/handlers/OnTenantCreatedHandler.ts`**
+- [ ] **Step 1: Create `src/api/features/tenantManager/handlers/OnTenantCreatedHandler.ts`**
 
 ```ts
 import {
     TenantAfterCreateEventHandler
 } from "@webiny/tenant-manager/exports/api/tenant-manager.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnTenantCreatedHandlerImpl implements TenantAfterCreateEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: TenantAfterCreateEventHandler.Event): Promise<void> {
         const { tenant } = event.payload;
@@ -524,20 +425,20 @@ class OnTenantCreatedHandlerImpl implements TenantAfterCreateEventHandler.Interf
 
 export default TenantAfterCreateEventHandler.createImplementation({
     implementation: OnTenantCreatedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
-- [ ] **Step 2: Create `src/handlers/OnTenantUpdatedHandler.ts`**
+- [ ] **Step 2: Create `src/api/features/tenantManager/handlers/OnTenantUpdatedHandler.ts`**
 
 ```ts
 import {
     TenantAfterUpdateEventHandler
 } from "@webiny/tenant-manager/exports/api/tenant-manager.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnTenantUpdatedHandlerImpl implements TenantAfterUpdateEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: TenantAfterUpdateEventHandler.Event): Promise<void> {
         const { tenant } = event.payload;
@@ -551,20 +452,20 @@ class OnTenantUpdatedHandlerImpl implements TenantAfterUpdateEventHandler.Interf
 
 export default TenantAfterUpdateEventHandler.createImplementation({
     implementation: OnTenantUpdatedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
-- [ ] **Step 3: Create `src/handlers/OnTenantDeletedHandler.ts`**
+- [ ] **Step 3: Create `src/api/features/tenantManager/handlers/OnTenantDeletedHandler.ts`**
 
 ```ts
 import {
     TenantAfterDeleteEventHandler
 } from "@webiny/tenant-manager/exports/api/tenant-manager.js";
-import { WebhookDispatcher } from "@webiny/api-webhooks/src/abstractions/WebhookDispatcher.js";
+import { IWebhookDispatcher } from "@webiny/api-core/features/webhooks/abstractions.js";
 
 class OnTenantDeletedHandlerImpl implements TenantAfterDeleteEventHandler.Interface {
-    constructor(private webhookDispatcher: WebhookDispatcher.Interface) {}
+    constructor(private webhookDispatcher: IWebhookDispatcher) {}
 
     async handle(event: TenantAfterDeleteEventHandler.Event): Promise<void> {
         const { tenantId } = event.payload;
@@ -577,18 +478,19 @@ class OnTenantDeletedHandlerImpl implements TenantAfterDeleteEventHandler.Interf
 
 export default TenantAfterDeleteEventHandler.createImplementation({
     implementation: OnTenantDeletedHandlerImpl,
-    dependencies: [WebhookDispatcher]
+    dependencies: [IWebhookDispatcher]
 });
 ```
 
 ---
 
-## Task 8: Extension and final build
+## Task 7: `feature.ts` and registration in main `Extension.ts`
 
 **Files:**
-- Create: `packages/api-tenant-manager-webhooks/src/Extension.ts`
+- Create: `packages/webhooks/src/api/features/tenantManager/feature.ts`
+- Modify: `packages/webhooks/src/api/Extension.ts`
 
-- [ ] **Step 1: Create `src/Extension.ts`**
+- [ ] **Step 1: Create `src/api/features/tenantManager/feature.ts`**
 
 ```ts
 import { createFeature } from "@webiny/feature/api";
@@ -597,7 +499,7 @@ import OnTenantCreatedHandler from "./handlers/OnTenantCreatedHandler.js";
 import OnTenantUpdatedHandler from "./handlers/OnTenantUpdatedHandler.js";
 import OnTenantDeletedHandler from "./handlers/OnTenantDeletedHandler.js";
 
-export const Extension = createFeature({
+export const tenantManagerWebhooksFeature = createFeature({
     name: "TmWebhooks",
     register(container) {
         container.register(TmWebhookEventProvider);
@@ -608,34 +510,41 @@ export const Extension = createFeature({
 });
 ```
 
-- [ ] **Step 2: Build**
+- [ ] **Step 2: Import and register `tenantManagerWebhooksFeature` in `src/api/Extension.ts`**
+
+Add the import:
+
+```ts
+import { tenantManagerWebhooksFeature } from "~/api/features/tenantManager/feature.js";
+```
+
+And include `tenantManagerWebhooksFeature` in the features array (or container registration) inside `Extension.ts`.
+
+- [ ] **Step 3: Build**
 
 ```bash
-yarn build -p @webiny/api-tenant-manager-webhooks 2>&1 | tail -20
+yarn build -p @webiny/webhooks 2>&1 | tail -20
 ```
 
 Expected: build succeeds.
 
-- [ ] **Step 3: Run before-commit checklist**
+- [ ] **Step 4: Run before-commit checklist**
 
 ```bash
 git add .
-yarn > /dev/null 2>&1
-node scripts/generateTsConfigsInPackages.js
-yarn adio
 yarn format > /dev/null 2>&1
 yarn lint
 yarn webiny sync-dependencies
 git add .
 ```
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 5: Commit**
 
 ```bash
-git add packages/api-tenant-manager-webhooks/ packages/tenant-manager/
-git commit -m "feat(api-tenant-manager-webhooks): tenant lifecycle webhook bridge"
+git add packages/webhooks/ packages/tenant-manager/
+git commit -m "feat(webhooks): tenant lifecycle webhook bridge"
 ```
 
 ---
 
-**All phases complete.** All bridge packages are now ready. To wire everything into an API handler, register the `Extension` from each bridge package alongside `api-webhooks`'s `Extension` in the application's API handler configuration.
+**All phases complete.** All bridge feature folders are now wired into `packages/webhooks/src/api/Extension.ts`. No separate bridge packages exist — everything lives under `packages/webhooks/src/api/features/`.
