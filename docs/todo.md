@@ -1,2 +1,5 @@
 - revisit icons of elements
 - icons for groups in sdk
+- sidebar.group.tab and toolbar.tab?
+- search
+- navigator paddings

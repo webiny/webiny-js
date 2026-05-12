@@ -22,12 +22,8 @@ export const InsertElements = () => {
     const isGrid = viewType === "grid";
 
     return (
-        <div className={"h-full flex flex-col"}>
-            <div
-                className={
-                    "flex-shrink-0 flex items-center gap-xs px-sm py-xs border-b-sm border-b-neutral-dimmed"
-                }
-            >
+        <div className={"h-full flex flex-col mb-sm pt-sm"}>
+            <div className={"flex-shrink-0 flex items-center gap-xs mb-md"}>
                 <InputPrimitive
                     value={search}
                     onChange={e => setSearch(e.target.value)}
@@ -45,7 +41,7 @@ export const InsertElements = () => {
                 />
             </div>
             <ScrollArea className={"flex-1"}>
-                <div className={"p-sm"}>
+                <div>
                     {groups.map(group => {
                         const items = query
                             ? group.items.filter(item =>

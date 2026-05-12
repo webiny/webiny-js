@@ -14,15 +14,13 @@ export interface SegmentedControlTabsProps {
     variant?: SegmentedControlPrimitiveProps["variant"];
     defaultValue?: string;
     className?: string;
-    headerClassName?: string;
 }
 
 const BaseSegmentedControlTabs = ({
     children,
     variant,
     defaultValue,
-    className,
-    headerClassName
+    className
 }: SegmentedControlTabsProps) => {
     const [tabs, setTabs] = useState<SegmentedTabItem[]>([]);
     const [activeTab, setActiveTab] = useState(defaultValue ?? "");
@@ -69,15 +67,13 @@ const BaseSegmentedControlTabs = ({
     return (
         <SegmentedControlTabsContext.Provider value={context}>
             <Tabs.Root value={activeTab} onValueChange={setActiveTab} className={className}>
-                <div className={headerClassName}>
-                    <SegmentedControlPrimitive
-                        items={items}
-                        value={activeTab}
-                        onChange={setActiveTab}
-                        variant={variant}
-                        fullWidth
-                    />
-                </div>
+                <SegmentedControlPrimitive
+                    items={items}
+                    value={activeTab}
+                    onChange={setActiveTab}
+                    variant={variant}
+                    fullWidth
+                />
                 {tabs.map(tab => (
                     <Tabs.Content
                         key={tab.id}

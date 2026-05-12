@@ -6,13 +6,11 @@ export const Layout = () => {
     return (
         <div
             data-role={"editor-toolbar"}
-            className={"bg-neutral-base border-r-sm border-r-neutral-dimmed h-full flex flex-col"}
+            className={
+                "bg-neutral-base border-r-sm border-r-neutral-dimmed h-full flex flex-col p-sm"
+            }
         >
-            <SegmentedControl.Tabs
-                className={"flex-1 flex flex-col min-h-0"}
-                variant={"dimmed"}
-                headerClassName={"flex-shrink-0 px-sm py-sm"}
-            >
+            <SegmentedControl.Tabs className={"flex-1 flex flex-col min-h-0"} variant={"dimmed"}>
                 <Toolbar.Elements group={"tabs"} />
             </SegmentedControl.Tabs>
         </div>

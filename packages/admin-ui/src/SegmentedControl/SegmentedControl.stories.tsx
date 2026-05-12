@@ -200,7 +200,7 @@ const SwitchFromContent = () => {
         <div className={"p-md flex flex-col gap-sm"}>
             <p>{"Account content"}</p>
             <Button
-                variant={"outlined"}
+                variant={"secondary"}
                 text={"Go to Security"}
                 onClick={() => setActiveTab("security")}
             />
