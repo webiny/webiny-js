@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { Tabs, ScrollArea, InputPrimitive, Icon, ToggleGroupPrimitive } from "@webiny/admin-ui";
+import {
+    SegmentedControl,
+    ScrollArea,
+    InputPrimitive,
+    Icon,
+    ToggleGroupPrimitive
+} from "@webiny/admin-ui";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { ReactComponent as ListIcon } from "@webiny/icons/format_list_bulleted.svg";
 import { ReactComponent as GridIcon } from "@webiny/icons/grid_view.svg";
@@ -46,7 +52,7 @@ const InsertElementsContent = () => {
 };
 
 export const InsertElementsTab = () => (
-    <Tabs.Tab
+    <SegmentedControl.Tab
         value={"insert"}
         trigger={"Insert"}
         icon={<Icon icon={<InsertIcon />} label={"Insert Element"} />}

@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
+import { ReactComponent as LockIcon } from "@webiny/icons/notifications.svg";
+import { ReactComponent as PersonIcon } from "@webiny/icons/person.svg";
+import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { SegmentedControl } from "./SegmentedControl.js";
 import { Icon } from "~/Icon/index.js";
-import { ReactComponent as LockIcon } from "@webiny/icons/notifications.svg";
+import { Button } from "~/Button/index.js";
+import { useSegmentedTabs } from "./SegmentedControlTabsContext.js";
 
 const meta: Meta<typeof SegmentedControl> = {
     title: "Components/Form/SegmentedControl",
@@ -139,4 +143,84 @@ export const Disabled: Story = {
             </div>
         );
     }
+};
+
+// SegmentedControl.Tabs stories
+
+export const TabsDefault: Story = {
+    render: () => (
+        <SegmentedControl.Tabs>
+            <SegmentedControl.Tab
+                value={"account"}
+                trigger={"Account"}
+                icon={<Icon icon={<PersonIcon />} label={"Account"} />}
+                content={<div className={"p-md"}>{"Account content"}</div>}
+            />
+            <SegmentedControl.Tab
+                value={"security"}
+                trigger={"Security"}
+                icon={<Icon icon={<LockIcon />} label={"Security"} />}
+                content={<div className={"p-md"}>{"Security content"}</div>}
+            />
+            <SegmentedControl.Tab
+                value={"preferences"}
+                trigger={"Preferences"}
+                icon={<Icon icon={<SettingsIcon />} label={"Preferences"} />}
+                content={<div className={"p-md"}>{"Preferences content"}</div>}
+            />
+        </SegmentedControl.Tabs>
+    )
+};
+
+export const TabsDimmed: Story = {
+    render: () => (
+        <SegmentedControl.Tabs variant={"dimmed"}>
+            <SegmentedControl.Tab
+                value={"account"}
+                trigger={"Account"}
+                content={<div className={"p-md"}>{"Account content"}</div>}
+            />
+            <SegmentedControl.Tab
+                value={"security"}
+                trigger={"Security"}
+                content={<div className={"p-md"}>{"Security content"}</div>}
+            />
+            <SegmentedControl.Tab
+                value={"preferences"}
+                trigger={"Preferences"}
+                content={<div className={"p-md"}>{"Preferences content"}</div>}
+            />
+        </SegmentedControl.Tabs>
+    )
+};
+
+const SwitchFromContent = () => {
+    const { setActiveTab } = useSegmentedTabs();
+    return (
+        <div className={"p-md flex flex-col gap-sm"}>
+            <p>{"Account content"}</p>
+            <Button
+                variant={"outlined"}
+                text={"Go to Security"}
+                onClick={() => setActiveTab("security")}
+            />
+        </div>
+    );
+};
+
+export const TabsProgrammaticSwitch: Story = {
+    render: () => (
+        <SegmentedControl.Tabs variant={"dimmed"}>
+            <SegmentedControl.Tab
+                value={"account"}
+                trigger={"Account"}
+                content={<SwitchFromContent />}
+            />
+            <SegmentedControl.Tab
+                value={"security"}
+                trigger={"Security"}
+                content={<div className={"p-md"}>{"Security content"}</div>}
+            />
+        </SegmentedControl.Tabs>
+    )
 };
