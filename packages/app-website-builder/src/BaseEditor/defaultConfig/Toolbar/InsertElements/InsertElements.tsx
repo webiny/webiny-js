@@ -13,7 +13,9 @@ const useComponent = (name: string) => {
 
 const ListItem = ({ item }: { item: ComponentGroupItem }) => {
     const component = useComponent(item.name);
-    if (!component) return <></>;
+    if (!component) {
+        return <></>;
+    }
 
     return (
         <div className="flex flex-row items-center p-sm bg-neutral-light rounded-lg gap-sm cursor-grab fill-neutral-strong">
@@ -27,7 +29,9 @@ const ListItem = ({ item }: { item: ComponentGroupItem }) => {
 
 const GridItem = ({ item }: { item: ComponentGroupItem }) => {
     const component = useComponent(item.name);
-    if (!component) return <></>;
+    if (!component) {
+        return <></>;
+    }
 
     return (
         <div className="flex flex-col items-center justify-center gap-sm px-sm py-md bg-neutral-light rounded-lg cursor-grab fill-neutral-strong w-[80px] min-h-[80px]">
