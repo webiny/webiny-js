@@ -1,3 +1,2 @@
-- seg controls in sidebars via presenters?
 - revisit icons of elements
 - icons for groups in sdk
