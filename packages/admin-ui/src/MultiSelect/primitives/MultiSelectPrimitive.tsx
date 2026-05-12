@@ -179,8 +179,12 @@ const DecoratableMultiSelectPrimitive = ({
     variant
 }: MultiSelectPrimitiveProps) => {
     const displayValue = useMemo(() => {
-        if (value.length === 0) return "";
-        if (showSelectionCount) return `${value.length} items selected`;
+        if (value.length === 0) {
+            return "";
+        }
+        if (showSelectionCount) {
+            return `${value.length} items selected`;
+        }
         const labelMap = new Map(options.map(o => [o.value, o.label]));
         return value.map(v => labelMap.get(v) ?? v).join(", ");
     }, [value, options, showSelectionCount]);
