@@ -46,25 +46,6 @@ When new backend features are discovered, update `ai-context/core-features-refer
   - fix: for bug fixes
   - docs: for documentation changes
 
-## Entry Data Factory Pattern (`api-headless-cms`)
-
-Entry data factories are injectable features, not imported functions. When writing use cases in `packages/api-headless-cms` that need to produce domain entry objects:
-
-- **Do not** import from `~/crud/contentEntry/entryDataFactories/`
-- **Do** inject the factory token via `createImplementation` dependencies and call `this.xyzFactory.create(...)`
-- Factories live in `packages/api-headless-cms/src/features/contentEntry/entryDataFactories/`
-- Token scope: `"Cms/Entry/<FactoryName>"` (e.g. `"Cms/Entry/CreateEntryDataFactory"`)
-- All factories are singletons
-
-Available factories:
-
-- `CreateEntryDataFactory` — new entry from raw input
-- `UpdateEntryDataFactory` — update existing entry
-- `CreateEntryRevisionFromDataFactory` — new revision from existing entry
-- `CreatePublishEntryDataFactory` — transition to published state
-- `CreateUnpublishEntryDataFactory` — transition to unpublished state
-- `CreateRepublishEntryDataFactory` — re-publish with refreshed references
-
 ## Webiny
 
 This project uses the Webiny framework.
