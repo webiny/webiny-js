@@ -138,5 +138,5 @@
     "./extensions": "./extensions.js",
     "./api/tenant-manager": "./api/tenant-manager.js"
   },
-  "exportGenerationHash": "980c41b79d47102032d187f4fc724526e8aa96fc8c1b8cc4eff1290c0748fd86"
+  "exportGenerationHash": "f117d5544b5f3f9ffe3bacaad79a372d4690fdd5f960980f452385e740e06d6a"
 }
