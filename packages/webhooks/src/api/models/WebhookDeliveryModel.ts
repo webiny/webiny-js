@@ -20,6 +20,7 @@ class WebhookDeliveryModelFactory implements ModelFactory.Interface {
                 .text()
                 .label("Background Task ID")
                 .required()
+                .minLength(16, "Background Task ID must be at least 16 characters long.")
                 .renderer("textInput"),
             eventType: fields.text().label("Event Type").required().renderer("textInput"),
             payload: fields
@@ -40,12 +41,7 @@ class WebhookDeliveryModelFactory implements ModelFactory.Interface {
                 .longText()
                 .label("Response Body")
                 .description("JSON.stringify(ICompressedValue) — body returned by the endpoint.")
-                .renderer("textarea"),
-            expiresAt: fields
-                .datetime()
-                .label("Expires At")
-                .description("Set to createdOn + 90 days. Enforces retention policy.")
-                .renderer("dateTimeInput")
+                .renderer("textarea")
         }));
 
         return [model];
