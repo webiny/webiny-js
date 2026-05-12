@@ -33,7 +33,7 @@ export const SettingsView = observer(function SettingsView() {
     const { vm } = presenter;
 
     useEffect(() => {
-        presenter.load();
+        void presenter.load();
     }, [presenter]);
 
     const handleSave = async () => {
@@ -49,7 +49,7 @@ export const SettingsView = observer(function SettingsView() {
                 {(vm.loading || vm.saving) && <OverlayLoader />}
                 <SimpleFormHeader title="General Settings" />
                 <SimpleFormContent>
-                    <FormView form={vm.form} />
+                    <FormView name={"File Manager Settings"} form={vm.form} />
                 </SimpleFormContent>
                 <SimpleFormFooter>
                     <Button text={"Save settings"} onClick={handleSave} />

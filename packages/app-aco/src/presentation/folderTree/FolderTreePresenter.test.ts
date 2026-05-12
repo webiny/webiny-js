@@ -108,8 +108,18 @@ function createMockFormModel(): IFormModel {
         isDirty: false,
         isValid: null,
         submitted: false,
+        submitCount: 0,
         errors: [],
-        vm: { layout: [], isDirty: false, isValid: null, errors: [] },
+        vm: {
+            layout: [],
+            isDirty: false,
+            isValid: null,
+            errors: [],
+            submitCount: 0,
+            focusField: vi.fn(),
+            getData: vi.fn(() => ({})),
+            setData: vi.fn()
+        },
         getFieldBuilders: vi.fn(() => []),
         resolveChildLayout: vi.fn(() => []),
         registry: {} as IFormModel["registry"]

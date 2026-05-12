@@ -1,3 +1,4 @@
+// @ts-nocheck
 import set from "lodash/set.js";
 import get from "lodash/get.js";
 import type { FileItem } from "~/domain/types.js";

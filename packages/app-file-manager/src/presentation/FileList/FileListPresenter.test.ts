@@ -176,7 +176,16 @@ function createMockFileDetailsPresenter(): IFileDetailsPresenter {
         vm: {
             file: null,
             loading: null,
-            form: { layout: [], errors: [], isDirty: false, isValid: null },
+            form: {
+                layout: [],
+                errors: [],
+                isDirty: false,
+                isValid: null,
+                submitCount: 0,
+                focusField: vi.fn(),
+                getData: vi.fn(() => ({})),
+                setData: vi.fn()
+            },
             previewUrl: null,
             permissions: { canEdit: true, canDelete: true }
         },

@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { Drawer } from "@webiny/admin-ui";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { FormView } from "@webiny/app-admin/features/formModel/FormView.js";
-import { useFileManagerPresenter } from "../../FileList/FileManagerPresenterProvider.js";
+import { useFileManagerPresenter } from "~/presentation/FileList/index.js";
 import { useFileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
 import { FileProvider } from "~/presentation/contexts/FileProvider.js";
 import { Content } from "~/presentation/FileDetails/components/Content.js";
@@ -41,7 +41,7 @@ const FileDetailsContent = observer(function FileDetailsContent() {
             </Content.Panel>
             <Content.Panel flex={rightFlex}>
                 <div className={"p-lg"}>
-                    <FormView form={fileDetails.vm.form} />
+                    <FormView name="File Details" form={fileDetails.vm.form} />
                 </div>
             </Content.Panel>
         </Content>

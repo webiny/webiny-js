@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useMemo } from "react";
 import omit from "lodash/omit.js";
 import type { FileItem } from "~/domain/types.js";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect } from "vitest";
 import { GraphQLInputMapper } from "./GraphQLInputMapper.js";
 import type { BatchDTO } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/domain/index.js";

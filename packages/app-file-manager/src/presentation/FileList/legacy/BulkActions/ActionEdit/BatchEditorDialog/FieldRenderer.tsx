@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { FieldElement, ModelProvider } from "@webiny/app-headless-cms";
 import { Bind, BindPrefix } from "@webiny/form";

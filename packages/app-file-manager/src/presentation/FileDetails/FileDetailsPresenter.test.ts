@@ -23,6 +23,10 @@ function createMockFormModel(overrides?: Partial<IFormVM>): IFormModel {
         errors: [],
         isDirty: false,
         isValid: true,
+        submitCount: 0,
+        focusField: vi.fn(),
+        getData: vi.fn(() => ({})),
+        setData: vi.fn(),
         ...overrides
     };
 

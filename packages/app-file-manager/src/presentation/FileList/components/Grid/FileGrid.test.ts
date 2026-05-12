@@ -138,7 +138,8 @@ function createMockPresenter(
                 cancelOperation: vi.fn()
             }
         },
-        init: vi.fn()
+        init: vi.fn(),
+        dispose: vi.fn()
     };
 }
 

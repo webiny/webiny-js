@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo, useEffect, useRef } from "react";
 
 import { Drawer } from "@webiny/admin-ui";

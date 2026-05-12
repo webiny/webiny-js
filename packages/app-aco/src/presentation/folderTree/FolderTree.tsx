@@ -115,7 +115,7 @@ const FolderOperationDialog = observer(function FolderOperationDialog({
                 }
             >
                 {loading && <OverlayLoader text={loadingLabel} />}
-                <FormView form={operation.form.vm} />
+                <FormView name={"Folder Tree"} form={operation.form.vm} />
             </Dialog>
         );
     }
@@ -134,7 +134,10 @@ export interface PresenterFolderTreeProps {
     hiddenFolderIds?: string[];
 }
 
-export interface UncontrolledFolderTreeProps extends Omit<PresenterFolderTreeProps, "vm" | "actions"> {
+export interface UncontrolledFolderTreeProps extends Omit<
+    PresenterFolderTreeProps,
+    "vm" | "actions"
+> {
     focusedFolderId?: string | null;
     onFolderClick?: (folderId: string | null) => void;
 }
@@ -227,8 +230,7 @@ export const FolderTree = ({
 
     const handleDrop: TreeProps["onDrop"] = async (_, { dragSourceId, dropTargetId }) => {
         try {
-            const targetParentId =
-                dropTargetId !== ROOT_FOLDER ? (dropTargetId as string) : null;
+            const targetParentId = dropTargetId !== ROOT_FOLDER ? (dropTargetId as string) : null;
             await actions.moveFolder(dragSourceId as string, targetParentId);
         } catch (error) {
             showSnackbar((error as Error).message);

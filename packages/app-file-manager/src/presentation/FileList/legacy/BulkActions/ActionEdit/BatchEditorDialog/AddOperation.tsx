@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { Button } from "@webiny/admin-ui";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";

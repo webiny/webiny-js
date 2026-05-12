@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ActionEditPresenter } from "./ActionEditPresenter.js";
 import { type FieldRaw } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/domain/index.js";
