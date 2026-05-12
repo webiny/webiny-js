@@ -5,8 +5,8 @@ import { cn, CheckboxPrimitive, Icon, Text, TimeAgo, OverlayLoader } from "@webi
 import { i18n } from "@webiny/app/i18n/index.js";
 import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
-import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
-import { FileProvider } from "~/contexts/FileProvider.js";
+import { useFileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
+import { FileProvider } from "~/presentation/contexts/FileProvider.js";
 import type { FmFile } from "~/features/shared/types.js";
 import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 

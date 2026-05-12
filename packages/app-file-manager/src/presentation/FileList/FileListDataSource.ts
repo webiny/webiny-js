@@ -8,7 +8,7 @@ import type { IListFilesUseCase } from "../../features/listFiles/abstractions.js
 import type { IGetDescendantFoldersUseCase } from "@webiny/app-aco/features/folders/getDescendantFolders/abstractions.js";
 import type { IListCache } from "@webiny/app-admin/features/listCache/index.js";
 import type { FmFile } from "../../features/shared/types.js";
-import { DEFAULT_SCOPE } from "../../constants.js";
+import { DEFAULT_SCOPE } from "~/domain/constants.js";
 
 export class FileListDataSource implements IDataSource<FmFile> {
     private _meta: IDataSourceMeta = { cursor: null, hasMoreItems: false, totalCount: 0 };
@@ -101,6 +101,10 @@ export class FileListDataSource implements IDataSource<FmFile> {
 
         const includeSubFolders = where["includeSubFolders"] === true;
         delete where["includeSubFolders"];
+
+        const tags = where["tags"] as string[] | undefined;
+        const tagsRule = (where["tags_rule"] as string) || "OR";
+        delete where["tags"];
         delete where["tags_rule"];
 
         if (this.scope) {
@@ -109,10 +113,23 @@ export class FileListDataSource implements IDataSource<FmFile> {
             where["tags_not_startsWith"] = DEFAULT_SCOPE;
         }
 
+        if (tags && tags.length > 0) {
+            const andConditions: Record<string, unknown>[] = [];
+            if (tagsRule === "OR") {
+                andConditions.push({ tags_in: tags });
+            } else {
+                andConditions.push(...tags.map(tag => ({ tags_in: [tag] })));
+            }
+            where["AND"] = andConditions;
+        }
+
         if (where["folderId"]) {
             const currentFolderId = where["folderId"] as string;
+            const isRoot = currentFolderId === "root";
 
-            if ((params.search || includeSubFolders) && this.getDescendantFoldersUseCase) {
+            if (params.search && isRoot) {
+                // Search from root: no location filter — search all folders.
+            } else if ((params.search || includeSubFolders) && this.getDescendantFoldersUseCase) {
                 const descendants = this.getDescendantFoldersUseCase.execute(currentFolderId);
                 const folderIds = descendants.map(f => f.id);
                 where["location"] = { folderId_in: folderIds };

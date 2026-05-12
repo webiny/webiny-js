@@ -2,7 +2,7 @@ import React from "react";
 import { useCallback } from "react";
 import { OverlayLayout } from "@webiny/app-admin";
 import { useHotkeys } from "@webiny/app-admin";
-import { FileManagerView } from "../../../FileManagerView.js";
+import { FileManagerView } from "~/presentation/FileManager/FileManagerView.js";
 import type { FmFile } from "~/features/shared/types.js";
 
 export interface FilePickerProps {

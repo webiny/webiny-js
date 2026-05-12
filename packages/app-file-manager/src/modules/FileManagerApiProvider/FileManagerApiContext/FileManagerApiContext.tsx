@@ -30,8 +30,8 @@ import {
 } from "../graphql.js";
 import type { FileManagerSecurityPermission } from "@webiny/app-admin/types.js";
 import { getFileUploader } from "./getFileUploader.js";
-import type { FileItem, Settings } from "~/types.js";
-import { useFileModel } from "~/hooks/useFileModel.js";
+import type { FileItem, Settings } from "~/domain/types.js";
+import { useFileModel } from "~/presentation/hooks/useFileModel.js";
 import { getFileGraphQLSelection } from "./getFileGraphQLSelection.js";
 
 export interface ListTagsResponseItem {

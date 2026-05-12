@@ -9,19 +9,17 @@ import type { CmsModelField } from "@webiny/app-headless-cms-common/types/index.
 import { BulkAction, getFilesLabel } from "./useBulkActionWorker.js";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { UpdateFileFeature } from "~/features/updateFile/feature.js";
-import { useFileModel } from "~/hooks/useFileModel.js";
-import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
-import { ActionEditPresenter } from "~/components/BulkActions/ActionEdit/ActionEditPresenter.js";
-import { BatchEditorDialog } from "~/components/BulkActions/ActionEdit/BatchEditorDialog/BatchEditorDialog.js";
-import { GraphQLInputMapper } from "~/components/BulkActions/ActionEdit/GraphQLInputMapper.js";
-import type { BatchDTO } from "~/components/BulkActions/ActionEdit/domain/index.js";
+import { useFileModel } from "~/presentation/hooks/useFileModel.js";
+import { ActionEditPresenter } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/ActionEditPresenter.js";
+import { BatchEditorDialog } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/BatchEditorDialog/BatchEditorDialog.js";
+import { GraphQLInputMapper } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/GraphQLInputMapper.js";
+import type { BatchDTO } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/domain/index.js";
 import type { FmFile } from "~/features/shared/types.js";
 
 const { useButtons } = BulkAction;
 
 export const BulkActionEdit = observer(function BulkActionEdit() {
     const { fields: allModelFields } = useFileModel();
-    const config = useFileManagerViewConfig();
     const { ButtonDefault } = useButtons();
 
     const { vm } = useFileManagerPresenter();
@@ -31,12 +29,7 @@ export const BulkActionEdit = observer(function BulkActionEdit() {
     const worker = useWorker();
     const { showConfirmationDialog, showResultsDialog } = useDialog();
 
-    const fields = useMemo(() => {
-        if (!config.fileDetails.fields.find(field => field.name === "tags")) {
-            return allModelFields.filter(field => field.fieldId !== "tags");
-        }
-        return allModelFields;
-    }, [config, allModelFields]);
+    const fields = allModelFields;
 
     const presenter = useMemo<ActionEditPresenter>(() => {
         return new ActionEditPresenter();

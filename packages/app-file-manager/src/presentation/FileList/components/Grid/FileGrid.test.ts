@@ -35,6 +35,9 @@ function createMockFolderNode(overrides: Partial<IFolderTreeNode> = {}): IFolder
         slug: "documents",
         parentId: null,
         children: [],
+        hasNonInheritedPermissions: false,
+        canManagePermissions: false,
+        canManageStructure: true,
         ...overrides
     };
 }

@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
-import type { FileItem } from "~/types.js";
-import type { Settings } from "~/types.js";
+import type { FileItem } from "~/domain/types.js";
+import type { Settings } from "~/domain/types.js";
 import type { ListTagsResponseItem } from "~/modules/FileManagerApiProvider/FileManagerApiContext/FileManagerApiContext.js";
 
 export interface FmError {

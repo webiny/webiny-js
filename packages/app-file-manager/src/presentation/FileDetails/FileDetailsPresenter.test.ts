@@ -184,9 +184,9 @@ describe("FileDetailsPresenter", () => {
     // Initial state.
     // -----------------------------------------------------------------------
 
-    it("should have null file and loading=false before loadFile is called", () => {
+    it("should have null file and loading=null before loadFile is called", () => {
         expect(presenter.vm.file).toBeNull();
-        expect(presenter.vm.loading).toBe(false);
+        expect(presenter.vm.loading).toBeNull();
     });
 
     it("should have a form vm with layout and isDirty=false initially", () => {
@@ -211,10 +211,10 @@ describe("FileDetailsPresenter", () => {
         expect(presenter.vm.file!.name).toBe("photo.jpg");
     });
 
-    it("should set loading=false after loadFile completes", async () => {
+    it("should set loading=null after loadFile completes", async () => {
         await presenter.loadFile("file-1");
 
-        expect(presenter.vm.loading).toBe(false);
+        expect(presenter.vm.loading).toBeNull();
     });
 
     it("should call GetFileUseCase.execute with the file id", async () => {
@@ -328,7 +328,7 @@ describe("FileDetailsPresenter", () => {
 
     it("should set loading=true during loadFile and false after", async () => {
         // Capture loading state during execution.
-        let loadingDuringExecution = false;
+        let loadingDuringExecution: string | null = null;
 
         (mocks.getFileUseCase.execute as ReturnType<typeof vi.fn>).mockImplementation(async () => {
             loadingDuringExecution = presenter.vm.loading;
@@ -337,7 +337,7 @@ describe("FileDetailsPresenter", () => {
 
         await presenter.loadFile("file-1");
 
-        expect(loadingDuringExecution).toBe(true);
-        expect(presenter.vm.loading).toBe(false);
+        expect(loadingDuringExecution).toBe("Loading file...");
+        expect(presenter.vm.loading).toBeNull();
     });
 });

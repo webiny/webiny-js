@@ -3,13 +3,13 @@ import { AdminConfig, RegisterFeature } from "@webiny/app-admin";
 import { FolderTreeFieldRenderer } from "@webiny/app-aco/presentation/folderTree/FolderTreeFieldRenderer.js";
 import { SettingsModule } from "~/modules/Settings/index.js";
 import { FileManagerApiProviderModule } from "~/modules/FileManagerApiProvider/index.js";
-import { FileManagerRendererModule } from "~/modules/FileManagerRenderer/index.js";
+import { DefaultFileManagerConfig } from "~/presentation/config/DefaultFileManagerConfig.js";
 import { HeadlessCmsModule } from "~/modules/HeadlessCms/index.js";
 import { EnterpriseModule } from "~/modules/Enterprise/index.js";
 import { SecurityPermissions } from "./modules/SecurityPermissions.js";
 import { FmPermissionsFeature } from "~/features/permissions/feature.js";
 import { GetFileFeature } from "~/features/getFile/feature.js";
-import { ResolveImageToolFeature } from "~/presentation/resolveImageTool/feature.js";
+import { ResolveImageToolFeature } from "~/features/resolveImageTool/feature.js";
 import { ListFilesFeature } from "~/features/listFiles/index.js";
 import { UpdateFileFeature } from "~/features/updateFile/index.js";
 import { DeleteFileFeature } from "~/features/deleteFile/index.js";
@@ -19,6 +19,7 @@ import { GetSettingsFeature } from "~/features/settings/index.js";
 import { SharedCacheFeature } from "~/features/shared/index.js";
 import { FileManagerPresenterFeature } from "~/presentation/FileList/index.js";
 import { FileManagerRoutes } from "~/modules/FileManagerRoutes.js";
+import { FileManagerRendererDecorator } from "~/presentation/FileManager/FileManagerRenderer.js";
 
 export const FileManager = () => {
     return (
@@ -48,7 +49,8 @@ export const FileManager = () => {
             <FileManagerRoutes />
             <SettingsModule />
             <FileManagerApiProviderModule />
-            <FileManagerRendererModule />
+            <FileManagerRendererDecorator />
+            <DefaultFileManagerConfig />
             <HeadlessCmsModule />
             <EnterpriseModule />
             <SecurityPermissions />

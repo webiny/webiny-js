@@ -175,7 +175,7 @@ function createMockFileDetailsPresenter(): IFileDetailsPresenter {
     return {
         vm: {
             file: null,
-            loading: false,
+            loading: null,
             form: { layout: [], errors: [], isDirty: false, isValid: null },
             previewUrl: null,
             permissions: { canEdit: true, canDelete: true }

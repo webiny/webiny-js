@@ -1,5 +1,5 @@
 import { createFieldsList } from "@webiny/app-headless-cms-common";
-import type { useFileModel } from "~/hooks/useFileModel.js";
+import type { useFileModel } from "~/presentation/hooks/useFileModel.js";
 
 export const getFileGraphQLSelection = (model: ReturnType<typeof useFileModel>) => {
     const fields = createFieldsList({ model, fields: model.fields });

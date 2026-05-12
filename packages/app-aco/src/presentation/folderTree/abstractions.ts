@@ -11,6 +11,9 @@ export interface IFolderTreeNode {
     slug: string;
     parentId: string | null;
     children: IFolderTreeNode[];
+    hasNonInheritedPermissions: boolean;
+    canManagePermissions: boolean;
+    canManageStructure: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -48,10 +51,14 @@ export interface IFolderTreeViewModel {
 export interface IFolderTreeCallbacks {
     selectFolder(folderId: string | null): void;
     createFolder(parentFolderId?: string): void;
+    editFolder(folderId: string): void;
+    deleteFolder(folderId: string): Promise<void>;
     moveFolder(folderId: string, targetParentId: string | null): Promise<void>;
     loadChildFolders(parentIds: string[]): Promise<void>;
     canManageStructure(folderId: string): boolean;
     getAncestorIds(folderId: string): string[];
+    submitOperation(): Promise<boolean>;
+    cancelOperation(): void;
 }
 
 // ---------------------------------------------------------------------------

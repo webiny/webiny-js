@@ -4,7 +4,7 @@ import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-u
 import { createRecordsData, Table as AcoTable } from "@webiny/app-aco";
 import type { FolderTableRow, RecordTableRow } from "@webiny/app-aco";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
-import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
+import { useFileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
 import type { FmFile } from "~/features/shared/types.js";
 import type { IFolderTreeNode } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 
@@ -26,10 +26,10 @@ const toFolderTableRows = (nodes: IFolderTreeNode[]): FolderTableRow[] => {
             parentId: node.parentId,
             path: "",
             permissions: [],
-            hasNonInheritedPermissions: false,
-            canManagePermissions: false,
-            canManageStructure: false,
-            canManageContent: false,
+            hasNonInheritedPermissions: node.hasNonInheritedPermissions,
+            canManagePermissions: node.canManagePermissions,
+            canManageStructure: node.canManageStructure,
+            canManageContent: true,
             createdBy: { id: "", displayName: "", type: "" },
             createdOn: "",
             savedBy: { id: "", displayName: "", type: "" },

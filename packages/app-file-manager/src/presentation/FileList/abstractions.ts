@@ -90,6 +90,7 @@ export interface IFileManagerPresenter {
     vm: IFileManagerViewModel;
     actions: IFileManagerActions;
     init(overlayConfig?: IFileManagerOverlayConfig): void;
+    dispose(): void;
 }
 
 export const FileManagerPresenter =

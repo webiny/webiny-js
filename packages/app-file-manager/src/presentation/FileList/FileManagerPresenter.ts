@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction, computed, runInAction } from "mobx";
+import { makeAutoObservable, reaction, computed } from "mobx";
 import {
     FileManagerPresenter as Abstraction,
     type IFileManagerPresenter,
@@ -11,7 +11,6 @@ import { ListPresenter } from "@webiny/app-admin/presentation/listPresenter/abst
 import { FolderTreePresenter } from "@webiny/app-aco/presentation/folderTree/abstractions.js";
 import { FileDetailsPresenter } from "../FileDetails/abstractions.js";
 import { FileManagerPermissions } from "../../features/permissions/abstractions.js";
-import { GetSettingsRepository } from "../../features/settings/abstractions.js";
 import { ListTagsRepository } from "../../features/tags/abstractions.js";
 import { FileUploader } from "../../features/fileUploader/abstractions.js";
 import { LocalStorage } from "@webiny/app/features/localStorage";
@@ -22,9 +21,10 @@ import type { FmFile } from "../../features/shared/types.js";
 import type { IFileDetailsPresenter } from "../FileDetails/abstractions.js";
 
 const VIEW_MODE_KEY = "fm:viewMode";
+const LAST_FOLDER_KEY = "fm:lastFolder";
 
 class FileManagerPresenterImpl implements IFileManagerPresenter {
-    private _viewMode: "table" | "grid" = "table";
+    private _viewMode: "table" | "grid" = "grid";
     private _dragging = false;
     private _overlayConfig: IFileManagerOverlayConfig | null = null;
     private _disposeReaction: (() => void) | null = null;
@@ -36,7 +36,6 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         private folderTreePresenter: FolderTreePresenter.Interface,
         private fileDetailsPresenter: FileDetailsPresenter.Interface,
         private permissions: FileManagerPermissions.Interface,
-        private settingsRepository: GetSettingsRepository.Interface,
         private tagsRepository: ListTagsRepository.Interface,
         private fileUploader: FileUploader.Interface,
         private localStorage: LocalStorage.Interface,
@@ -198,6 +197,10 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
     init(overlayConfig?: IFileManagerOverlayConfig): void {
         this._overlayConfig = overlayConfig ?? null;
 
+        const initialFolderId = overlayConfig
+            ? "root"
+            : (this.localStorage.get<string>(LAST_FOLDER_KEY) ?? "root");
+
         const dataSource = new FileListDataSource(
             this.listFilesUseCase,
             this.filesListCache,
@@ -208,16 +211,32 @@ class FileManagerPresenterImpl implements IFileManagerPresenter {
         this.listPresenter.init({
             dataSource,
             initialSort: { field: "createdOn", direction: "DESC" },
-            initialFilters: { folderId: "root" },
+            initialFilters: { folderId: initialFolderId },
             limit: 50
         });
+
+        if (initialFolderId !== "root") {
+            this.folderTreePresenter.selectFolder(initialFolderId);
+        }
 
         this._disposeReaction = reaction(
             () => this.folderTreePresenter.vm.currentFolderId,
             folderId => {
-                this.listPresenter.actions.filter.set("folderId", folderId ?? "root");
+                const effectiveFolderId = folderId ?? "root";
+                this.listPresenter.actions.filter.set("folderId", effectiveFolderId);
+
+                if (!this._overlayConfig) {
+                    this.localStorage.set(LAST_FOLDER_KEY, effectiveFolderId);
+                }
             }
         );
+
+        void this.tagsRepository.execute({});
+    }
+
+    dispose(): void {
+        this._disposeReaction?.();
+        this._disposeReaction = null;
     }
 }
 
@@ -228,7 +247,6 @@ export const FileManagerPresenter = Abstraction.createImplementation({
         FolderTreePresenter,
         FileDetailsPresenter,
         FileManagerPermissions,
-        GetSettingsRepository,
         ListTagsRepository,
         FileUploader,
         LocalStorage,

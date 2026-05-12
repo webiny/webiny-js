@@ -4,7 +4,7 @@ import { useRouter } from "@webiny/app-admin";
 import { AdminLayout } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-admin";
 import { ReactComponent as FileManagerIcon } from "@webiny/icons/folder_open.svg";
-import { FileManagerView } from "~/presentation/FileManagerView.js";
+import { FileManagerView } from "~/presentation/FileManager/FileManagerView.js";
 import { Routes } from "~/routes.js";
 
 const { Menu, Route } = AdminConfig;
@@ -26,7 +26,7 @@ export const FileManagerRoutes = () => {
                 />
                 <Menu
                     name={"fileManager"}
-                    pin={"start"}
+                    after={"home"}
                     element={
                         <Menu.Link
                             text={"File Manager"}

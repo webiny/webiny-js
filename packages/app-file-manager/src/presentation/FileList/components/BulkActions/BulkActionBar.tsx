@@ -4,7 +4,7 @@ import { ReactComponent as Close } from "@webiny/icons/close.svg";
 import { Buttons } from "@webiny/app-admin";
 import { observer } from "mobx-react-lite";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
-import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
+import { useFileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
 
 export const getFilesLabel = (count = 0): string => {
     return `${count} ${count === 1 ? "file" : "files"}`;

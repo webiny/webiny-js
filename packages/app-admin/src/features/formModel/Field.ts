@@ -117,9 +117,14 @@ export class Field implements IField {
             return;
         }
 
+        const wasComputed = this._computedUntilDirty && !this._computedOverridden && this._form;
+        const computedValue = wasComputed ? this._computedUntilDirty!(this._form!) : undefined;
+
         this._value = transformed;
         if (this._computedUntilDirty && this._isUIChange) {
-            this._computedOverridden = true;
+            if (!wasComputed || transformed !== computedValue) {
+                this._computedOverridden = true;
+            }
         }
 
         for (const cb of this._afterChangeCallbacks) {

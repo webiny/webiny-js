@@ -11,22 +11,23 @@ const withSourceMapUrl = (file, code) => {
     return [code, "", `//# sourceMappingURL=${name}.js.map`].join("\n");
 };
 
-const getDistCopyFilePath = ({ file, cwd }) => {
+const getDistCopyFilePath = ({ file, cwd, outputDir }) => {
     const relativeDir = relative(cwd, file);
-    return join(cwd, relativeDir.replace("src", "dist"));
+    return join(outputDir, relativeDir.replace(/^src[\\/]/, ""));
 };
 
-const getDistFilePaths = ({ file, cwd }) => {
+const getDistFilePaths = ({ file, cwd, outputDir }) => {
     const { dir, name } = parse(file);
 
     const relativeDir = relative(cwd, dir);
 
-    const code = join(cwd, relativeDir.replace("src", "dist"), name + ".js");
-    const map = join(cwd, relativeDir.replace("src", "dist"), name + ".js.map");
+    const code = join(outputDir, relativeDir.replace(/^src[\\/]?/, ""), name + ".js");
+    const map = join(outputDir, relativeDir.replace(/^src[\\/]?/, ""), name + ".js.map");
     return { code, map };
 };
 
-export const babelCompile = async ({ cwd }) => {
+export const babelCompile = async ({ cwd, outputDir }) => {
+    outputDir = outputDir || join(cwd, "dist");
     // We're passing "*.*" just because we want to copy all files that cannot be compiled.
     // We want to have the same behaviour that the Babel CLI's "--copy-files" flag provides.
     const pattern = join(cwd, "src/**/*.*").replace(/\\/g, "/");
@@ -56,7 +57,7 @@ export const babelCompile = async ({ cwd }) => {
         }
 
         // All other files should be copied as-is.
-        copies.push(copyFile(file, cwd));
+        copies.push(copyFile(file, cwd, outputDir));
     }
 
     // At this point, just wait for compilations to be completed, so we can proceed with writing the files ASAP.
@@ -67,7 +68,7 @@ export const babelCompile = async ({ cwd }) => {
         const [file, result] = await compilations[i];
         const { code, map } = result;
 
-        const paths = getDistFilePaths({ file, cwd });
+        const paths = getDistFilePaths({ file, cwd, outputDir });
         fs.mkdirSync(dirname(paths.code), { recursive: true });
 
         // Save the compiled JS file.
@@ -82,10 +83,10 @@ export const babelCompile = async ({ cwd }) => {
     return Promise.all([...writes, ...copies]);
 };
 
-function copyFile(file, cwd) {
+function copyFile(file, cwd, outputDir) {
     return new Promise((resolve, reject) => {
         try {
-            const destPath = getDistCopyFilePath({ file, cwd });
+            const destPath = getDistCopyFilePath({ file, cwd, outputDir });
             if (!fs.existsSync(dirname(destPath))) {
                 fs.mkdirSync(dirname(destPath), { recursive: true });
             }

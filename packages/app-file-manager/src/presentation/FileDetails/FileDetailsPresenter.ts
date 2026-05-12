@@ -15,7 +15,7 @@ import type { FmFile } from "../../features/shared/types.js";
 
 class FileDetailsPresenterImpl implements IFileDetailsPresenter {
     private file: FmFile | null = null;
-    private loading = false;
+    private loading: string | null = null;
     private form: IFormModel;
 
     constructor(
@@ -47,7 +47,7 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
 
     async loadFile(id: string): Promise<void> {
         runInAction(() => {
-            this.loading = true;
+            this.loading = "Loading file...";
         });
 
         try {
@@ -58,53 +58,86 @@ class FileDetailsPresenterImpl implements IFileDetailsPresenter {
                     this.form = this.buildForm();
                     this.form.setData({
                         name: result.file.name ?? "",
+                        description: result.file.description ?? "",
                         tags: result.file.tags ?? [],
                         accessControl: result.file.accessControl?.type ?? "public"
                     });
+
+                    if (!this.permissions.canEdit("file", result.file)) {
+                        this.form.field("name").setDisabled(true);
+                        this.form.field("description").setDisabled(true);
+                        this.form.field("tags").setDisabled(true);
+                        this.form.field("accessControl").setDisabled(true);
+                    }
                 }
             });
         } finally {
             runInAction(() => {
-                this.loading = false;
+                this.loading = null;
             });
         }
     }
 
-    async saveFile(): Promise<void> {
+    async saveFile(): Promise<boolean> {
         if (!this.file) {
-            return;
+            return false;
         }
 
         const data = await this.form.submit();
         if (!data) {
-            return;
+            return false;
         }
 
-        await this.updateFileUseCase.execute({
-            id: this.file.id,
-            data: {
-                name: data.name as string,
-                tags: data.tags as string[],
-                accessControl: { type: data.accessControl as "public" | "private-authenticated" }
-            }
+        runInAction(() => {
+            this.loading = "Saving changes...";
         });
+
+        try {
+            await this.updateFileUseCase.execute({
+                id: this.file.id,
+                data: {
+                    name: data.name as string,
+                    description: data.description as string,
+                    tags: data.tags as string[],
+                    accessControl: {
+                        type: data.accessControl as "public" | "private-authenticated"
+                    }
+                }
+            });
+            return true;
+        } finally {
+            runInAction(() => {
+                this.loading = null;
+            });
+        }
     }
 
     private buildForm(): IFormModel {
         return this.formModelFactory.create({
             fields: fields => ({
-                name: fields.text().label("Name"),
-                tags: fields.text().label("Tags"),
+                name: fields.text().label("Name").required().placeholder("Enter name"),
+                description: fields
+                    .text()
+                    .label("Description")
+                    .renderer("textarea")
+                    .placeholder("Enter description"),
+                tags: fields.text().label("Tags").list().renderer("tags").placeholder("Add tags"),
                 accessControl: fields
                     .text()
                     .label("Access Control")
+                    .help("Control who can access this file.")
                     .options([
                         { label: "Public", value: "public" },
                         { label: "Private (Authenticated)", value: "private-authenticated" }
                     ])
                     .defaultValue("public")
             }),
-            layout: layout => [layout.row("name"), layout.row("tags"), layout.row("accessControl")]
+            layout: layout => [
+                layout.row("name"),
+                layout.row("description"),
+                layout.row("tags"),
+                layout.row("accessControl")
+            ]
         });
     }
 

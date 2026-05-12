@@ -78,6 +78,9 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
 
     selectFolder(folderId: string | null): void {
         this.currentFolderId = folderId;
+        if (folderId) {
+            void this.loadChildFolders([folderId]);
+        }
     }
 
     onFolderChange(callback: FolderChangeCallback): () => void {
@@ -137,7 +140,19 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
         const form = this.formModelFactory.create({
             fields: fields => ({
                 title: fields.text().label("Title").required("Title is required"),
-                slug: fields.text().label("Slug").required("Slug is required"),
+                slug: fields
+                    .text()
+                    .label("Slug")
+                    .required("Slug is required")
+                    .computedUntilDirty(f => {
+                        const title = f.field("title").getValue();
+                        return slugify(String(title ?? ""), {
+                            replacement: "-",
+                            lower: true,
+                            remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
+                            trim: false
+                        });
+                    }),
                 parentId: fields
                     .text()
                     .label("Parent folder")
@@ -147,20 +162,6 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
         });
 
         form.setData({ parentId: parentFolderId ?? null });
-
-        form.field("title").addAfterChange(value => {
-            const currentSlug = form.field("slug").getValue<string>();
-            if (!currentSlug) {
-                form.field("slug").setValue(
-                    slugify(String(value ?? ""), {
-                        replacement: "-",
-                        lower: true,
-                        remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
-                        trim: false
-                    })
-                );
-            }
-        });
 
         this.operation = {
             active: true,
@@ -180,7 +181,19 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
         const form = this.formModelFactory.create({
             fields: fields => ({
                 title: fields.text().label("Name").required("Name is required"),
-                slug: fields.text().label("Slug").required("Slug is required")
+                slug: fields
+                    .text()
+                    .label("Slug")
+                    .required("Slug is required")
+                    .computedUntilDirty(f => {
+                        const title = f.field("title").getValue();
+                        return slugify(String(title ?? ""), {
+                            replacement: "-",
+                            lower: true,
+                            remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g,
+                            trim: false
+                        });
+                    })
             }),
             layout: layout => [layout.row("title"), layout.row("slug")]
         });
@@ -289,7 +302,10 @@ class FolderTreePresenterImpl implements Abstraction.Interface {
                 name: folder.title,
                 slug: folder.slug,
                 parentId: folder.parentId,
-                children: []
+                children: [],
+                hasNonInheritedPermissions: folder.hasNonInheritedPermissions ?? false,
+                canManagePermissions: folder.canManagePermissions ?? false,
+                canManageStructure: folder.canManageStructure ?? true
             });
         }
 

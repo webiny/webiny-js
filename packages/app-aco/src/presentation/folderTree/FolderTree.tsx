@@ -2,13 +2,18 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Tree,
     Tooltip,
+    Dialog,
+    Text,
+    OverlayLoader,
     type NodeDto,
     type TreeProps,
     type WithDefaultNodeData,
     type DropOptions
 } from "@webiny/admin-ui";
 import { useFeature } from "@webiny/app";
-import { useSnackbar } from "@webiny/app-admin";
+import { observer } from "mobx-react-lite";
+import { useSnackbar, FormView } from "@webiny/app-admin";
+import { i18n } from "@webiny/app/i18n/index.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import { FolderProvider } from "~/contexts/folder.js";
 import { Node } from "~/components/FolderTree/Node/Node.js";
@@ -19,7 +24,104 @@ import { createTreeData, createInitialOpenList } from "~/components/FolderTree/L
 import { FolderTreePresenterFeature } from "./feature.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import type { FolderActionConfig } from "~/config/AcoConfig.js";
-import type { IFolderTreeCallbacks, IFolderTreeViewModel } from "./abstractions.js";
+import type {
+    IFolderTreeCallbacks,
+    IFolderTreeViewModel,
+    IFolderTreeNode,
+    IFolderOperationState
+} from "./abstractions.js";
+
+const t = i18n.ns("app-aco/presentation/folder-tree");
+
+const FolderOperationDialog = observer(function FolderOperationDialog({
+    operation,
+    actions
+}: {
+    operation: IFolderOperationState;
+    actions: IFolderTreeCallbacks;
+}) {
+    const [loading, setLoading] = useState(false);
+
+    if (!operation.active) {
+        return null;
+    }
+
+    const handleClose = () => {
+        if (!loading) {
+            actions.cancelOperation();
+        }
+    };
+
+    const withLoading = async (fn: () => Promise<unknown>) => {
+        setLoading(true);
+        try {
+            await fn();
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (operation.mode === "delete") {
+        return (
+            <Dialog
+                open={true}
+                onClose={handleClose}
+                title={t`Delete Folder`}
+                actions={
+                    <>
+                        <Dialog.CancelAction onClick={handleClose} text={t`Cancel`} />
+                        <Dialog.ConfirmAction
+                            onClick={() => {
+                                if (operation.folderId) {
+                                    void withLoading(() =>
+                                        actions.deleteFolder(operation.folderId!)
+                                    );
+                                }
+                            }}
+                            text={t`Delete`}
+                        />
+                    </>
+                }
+            >
+                {loading && <OverlayLoader text={t`Deleting folder...`} />}
+                <Text size={"md"}>
+                    {t`Are you sure you want to delete this folder? This action cannot be undone.`}
+                </Text>
+            </Dialog>
+        );
+    }
+
+    if ((operation.mode === "create" || operation.mode === "edit") && operation.form) {
+        const title = operation.mode === "create" ? t`Create Folder` : t`Edit Folder`;
+        const confirmLabel = operation.mode === "create" ? t`Create` : t`Save`;
+        const loadingLabel =
+            operation.mode === "create" ? t`Creating folder...` : t`Saving folder...`;
+
+        return (
+            <Dialog
+                open={true}
+                onClose={handleClose}
+                title={title}
+                actions={
+                    <>
+                        <Dialog.CancelAction onClick={handleClose} text={t`Cancel`} />
+                        <Dialog.ConfirmAction
+                            onClick={() => {
+                                void withLoading(() => actions.submitOperation());
+                            }}
+                            text={confirmLabel}
+                        />
+                    </>
+                }
+            >
+                {loading && <OverlayLoader text={loadingLabel} />}
+                <FormView form={operation.form.vm} />
+            </Dialog>
+        );
+    }
+
+    return null;
+});
 
 export interface PresenterFolderTreeProps {
     vm: IFolderTreeViewModel;
@@ -37,13 +139,11 @@ export interface UncontrolledFolderTreeProps extends Omit<PresenterFolderTreePro
     onFolderClick?: (folderId: string | null) => void;
 }
 
-function flattenTreeToFolderDtos(
-    tree: { id: string; name: string; slug: string; parentId: string | null; children: any[] }[]
-): FolderDto[] {
+function flattenTreeToFolderDtos(tree: IFolderTreeNode[]): FolderDto[] {
     const result: FolderDto[] = [];
     const emptyIdentity = { id: "", displayName: "", type: "" };
 
-    const walk = (nodes: typeof tree) => {
+    const walk = (nodes: IFolderTreeNode[]) => {
         for (const node of nodes) {
             result.push({
                 id: node.id,
@@ -53,9 +153,9 @@ function flattenTreeToFolderDtos(
                 parentId: node.parentId,
                 path: "",
                 permissions: [],
-                hasNonInheritedPermissions: false,
-                canManagePermissions: false,
-                canManageStructure: true,
+                hasNonInheritedPermissions: node.hasNonInheritedPermissions,
+                canManagePermissions: node.canManagePermissions,
+                canManageStructure: node.canManageStructure,
                 canManageContent: true,
                 createdBy: emptyIdentity,
                 createdOn: "",
@@ -117,9 +217,12 @@ export const FolderTree = ({
     const handleChangeOpen: TreeProps["onChangeOpen"] = async nodes => {
         const folderIds = nodes.map(node => node.id);
         const updatedOpenIds = [...new Set([ROOT_FOLDER, ...folderIds])];
+        const newlyOpened = updatedOpenIds.filter(id => !openFolderIds.includes(id));
         setOpenFolderIds(updatedOpenIds);
 
-        await actions.loadChildFolders(folderIds);
+        if (newlyOpened.length > 0) {
+            await actions.loadChildFolders(newlyOpened);
+        }
     };
 
     const handleDrop: TreeProps["onDrop"] = async (_, { dragSourceId, dropTargetId }) => {
@@ -245,6 +348,7 @@ export const FolderTree = ({
             {enableCreate && (
                 <div className={"m-xs-plus mt-sm-plus mb-lg pl-sm-extra"}>{createButton}</div>
             )}
+            <FolderOperationDialog operation={vm.operation} actions={actions} />
         </div>
     );
 };

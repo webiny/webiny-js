@@ -7,7 +7,7 @@ import { useFeature } from "@webiny/app";
 import { BulkAction, getFilesLabel } from "./useBulkActionWorker.js";
 import { useFileManagerPresenter } from "../../FileManagerPresenterProvider.js";
 import { UpdateFileFeature } from "~/features/updateFile/feature.js";
-import { ROOT_FOLDER } from "~/constants.js";
+import { ROOT_FOLDER } from "~/domain/constants.js";
 
 export const BulkActionMove = observer(function BulkActionMove() {
     const { useWorker, useButtons, useDialog } = BulkAction;

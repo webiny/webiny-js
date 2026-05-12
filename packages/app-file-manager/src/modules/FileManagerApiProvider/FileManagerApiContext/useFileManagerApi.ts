@@ -1,4 +1,4 @@
-import type { FileItem } from "~/types.js";
+import type { FileItem } from "~/domain/types.js";
 import React from "react";
 import type { FileManagerApiContextData } from "./FileManagerApiContext.js";
 import { FileManagerApiContext } from "./FileManagerApiContext.js";
