@@ -53,7 +53,9 @@ export const InsertElements = () => {
                               )
                             : group.items;
 
-                        if (!items.length) return null;
+                        if (!items.length) {
+                            return null;
+                        }
 
                         return (
                             <div key={group.name} className={"p-sm flex flex-col gap-y-sm"}>

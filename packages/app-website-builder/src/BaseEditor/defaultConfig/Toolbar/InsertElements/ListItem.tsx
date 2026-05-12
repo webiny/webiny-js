@@ -10,7 +10,9 @@ const useComponent = (name: string) => {
 
 export const ListItem = ({ item }: { item: ComponentGroupItem }) => {
     const component = useComponent(item.name);
-    if (!component) return <></>;
+    if (!component) {
+        return <></>;
+    }
 
     return (
         <div className="flex flex-row items-center p-sm bg-neutral-light rounded-lg gap-sm cursor-grab fill-neutral-strong">
