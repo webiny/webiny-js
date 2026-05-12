@@ -16,4 +16,5 @@ export const WebhookVerifyPayload = createAbstraction<IWebhookVerifyPayload>(
 
 export namespace WebhookVerifyPayload {
     export type Interface = IWebhookVerifyPayload;
+    export type Headers = IWebhookSignPayloadHeaders;
 }
