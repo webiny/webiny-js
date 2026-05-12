@@ -22,9 +22,7 @@ interface BatchEditorDialogProps {
 
 export const BatchEditorDialog = observer((props: BatchEditorDialogProps) => {
     const presenter = useMemo<BatchEditorDialogPresenter>(() => {
-        const presenter = new BatchEditorDialogPresenter();
-        presenter.load(props.batch, props.fields);
-        return presenter;
+        return new BatchEditorDialogPresenter();
     }, []);
 
     const ref = useRef<FormAPI | null>(null);

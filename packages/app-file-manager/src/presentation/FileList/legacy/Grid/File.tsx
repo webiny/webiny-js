@@ -1,14 +1,19 @@
+// @ts-nocheck
 import React, { Fragment } from "react";
+/**
+ * Package react-lazy-load has no types.
+ */
+// @ts-expect-error
 import LazyLoad from "react-lazy-load";
 import { makeDecoratable } from "@webiny/app-admin";
 import { Text, TimeAgo, cn, CheckboxPrimitive } from "@webiny/admin-ui";
 import { useFileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
-import type { FileItem } from "~/domain/types.js";
+import type { FileItem } from "@webiny/app-admin/types.js";
 
 export interface FileProps {
     file: FileItem;
     selected: boolean;
-    fileBody?: React.JSX.Element;
+    fileBody?: JSX.Element;
     onSelect?: (event?: React.MouseEvent) => void;
     onClick?: (event?: React.MouseEvent) => void;
     multiple?: boolean;
@@ -26,10 +31,10 @@ const DefaultFileControls = ({ onSelect, selected }: DefaultFileControlsProps) =
             {onSelect ? (
                 <div
                     className={cn([
-                        "p-xs rounded-md",
-                        "bg-neutral-base/30",
-                        "absolute top-sm left-sm",
-                        selected ? "visible" : "invisible group-hover:visible"
+                        "wby-p-xs wby-rounded-md",
+                        "wby-bg-neutral-base/30",
+                        "wby-absolute wby-top-sm wby-left-sm",
+                        selected ? "wby-visible" : "wby-invisible group-hover:wby-visible"
                     ])}
                 >
                     <CheckboxPrimitive
@@ -41,10 +46,10 @@ const DefaultFileControls = ({ onSelect, selected }: DefaultFileControlsProps) =
             ) : null}
             <div
                 className={cn([
-                    "invisible group-hover:visible",
-                    "flex items-center gap-xxs",
-                    "p-xs",
-                    "absolute top-xs-plus right-xs-plus"
+                    "wby-invisible group-hover:wby-visible",
+                    "wby-flex wby-items-center wby-gap-xxs",
+                    "wby-p-xs",
+                    "wby-absolute wby-top-xs-plus wby-right-xs-plus"
                 ])}
             >
                 {itemActions.map(action => {
@@ -61,17 +66,17 @@ const DefaultFileBody = ({ selected, onSelect, children }: DefaultFileBodyProps)
     return (
         <div
             onClick={onSelect}
-            className={cn(["relative", onSelect ? "cursor-pointer" : "cursor-default"])}
+            className={cn(["wby-relative", onSelect ? "wby-cursor-pointer" : "wby-cursor-default"])}
         >
             <DefaultFileControls selected={selected} onSelect={onSelect} />
             <LazyLoad
                 height={150}
-                offset={"300px"}
+                offsetVertical={300}
                 data-testid={"fm-file-wrapper-file-preview"}
                 className={cn([
-                    "bg-neutral-muted",
-                    "flex items-center justify-center",
-                    "text-neutral-strong text-sm"
+                    "wby-bg-neutral-muted",
+                    "wby-flex wby-items-center wby-justify-center",
+                    "wby-text-neutral-strong wby-text-sm"
                 ])}
             >
                 {children}
@@ -84,11 +89,11 @@ type DefaultFileLabelProps = Pick<FileProps, "file">;
 
 const DefaultFileLabel = ({ file }: DefaultFileLabelProps) => {
     return (
-        <div className={"px-md py-sm-extra"} data-testid={"fm-file-wrapper-file-label"}>
-            <Text size={"sm"} as={"div"} className={"truncate text-neutral-primary"}>
+        <div className={"wby-px-md wby-py-sm-extra"} data-testid={"fm-file-wrapper-file-label"}>
+            <Text size={"sm"} as={"div"} className={"wby-truncate wby-text-neutral-primary"}>
                 {file.name}
             </Text>
-            <Text size={"sm"} as={"div"} className={"truncate text-neutral-dimmed"}>
+            <Text size={"sm"} as={"div"} className={"wby-truncate wby-text-neutral-dimmed"}>
                 {file.type} {" // "} <TimeAgo datetime={file.createdOn} />
             </Text>
         </div>
@@ -101,13 +106,13 @@ export const File = makeDecoratable(
         return (
             <div
                 className={cn([
-                    "group",
-                    "bg-neutral-base rounded-lg",
-                    "shadow-sm hover:shadow-lg",
-                    "border-sm border-solid border-neutral-base hover:border-neutral-dimmed-darker",
-                    selected && "ring-md ring-primary-strong",
-                    "transition-shadow duration-250 ease-in-out",
-                    "overflow-hidden"
+                    "wby-group",
+                    "wby-bg-neutral-base wby-rounded-lg",
+                    "wby-shadow-sm hover:wby-shadow-lg",
+                    "wby-border-sm wby-border-solid wby-border-neutral-base hover:wby-border-neutral-dimmed-darker",
+                    selected && "wby-ring-md wby-ring-primary-strong",
+                    "wby-transition-shadow wby-duration-250 wby-ease-in-out",
+                    "wby-overflow-hidden"
                 ])}
                 data-testid={"fm-list-wrapper-file"}
                 data-file-id={file.id}

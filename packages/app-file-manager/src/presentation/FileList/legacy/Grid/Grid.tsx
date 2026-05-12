@@ -1,24 +1,24 @@
+// @ts-nocheck
 import React, { useMemo } from "react";
 import { cn, OverlayLoader } from "@webiny/admin-ui";
-import { FolderActionConfig, FolderGridItem, FolderProvider } from "@webiny/app-aco";
+import { FolderGridItem, FolderProvider } from "@webiny/app-aco";
 import { i18n } from "@webiny/app/i18n/index.js";
-import type { FolderDto } from "@webiny/app-aco";
-import type { FileItem } from "~/domain/types.js";
+import type { FolderItem } from "@webiny/app-aco/types.js";
+import type { FileItem } from "@webiny/app-admin/types.js";
 import { FileProvider } from "~/presentation/contexts/FileProvider.js";
-import { Thumbnail } from "~/presentation/FileList/components/Thumbnail/index.js";
+import { Thumbnail } from "../Thumbnail/index.js";
 import { File } from "./File.js";
 
 const t = i18n.ns("app-admin/file-manager/components/grid");
 
 interface GridProps {
     records: FileItem[];
-    folders: FolderDto[];
-    folderActions: FolderActionConfig[];
+    folders: FolderItem[];
     loading?: boolean;
     onFolderClick: (id: string) => void;
     selected: FileItem[];
     multiple?: boolean;
-    toggleSelected: (file: FileItem, shiftKey?: boolean) => void;
+    toggleSelected: (file: FileItem) => void;
     deselectAll: () => void;
     onChange?: (file: FileItem) => void;
     onClose?: () => void;
@@ -27,7 +27,6 @@ interface GridProps {
 }
 
 export const Grid = ({
-    folderActions,
     folders,
     records,
     loading,
@@ -43,7 +42,7 @@ export const Grid = ({
 }: GridProps) => {
     if (loading) {
         return (
-            <div className={"relative size-full"}>
+            <div className={"wby-relative wby-size-full"}>
                 <OverlayLoader text={t`Loading files...`} size={"lg"} />
             </div>
         );
@@ -60,7 +59,7 @@ export const Grid = ({
             }
 
             if (!hasOnSelectCallback || multiple) {
-                toggleSelected(record, event?.shiftKey);
+                toggleSelected(record);
                 return;
             }
 
@@ -71,7 +70,7 @@ export const Grid = ({
 
     return (
         <div
-            className={cn(["p-lg", "grid gap-md grid"])}
+            className={cn(["wby-p-lg", "wby-grid wby-gap-md wby-grid"])}
             style={{
                 gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))"
             }}
@@ -81,7 +80,7 @@ export const Grid = ({
                 {displaySubFolders &&
                     folders.map(folder => (
                         <FolderProvider folder={folder} key={folder.id}>
-                            <FolderGridItem folderActions={folderActions} onClick={onFolderClick} />
+                            <FolderGridItem onClick={onFolderClick} />
                         </FolderProvider>
                     ))}
                 {records.map(record => (

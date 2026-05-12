@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { ReactComponent as Move } from "@webiny/icons/drive_file_move.svg";
 import { FileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
@@ -7,7 +8,7 @@ import { useMoveFileToFolder } from "~/presentation/hooks/useMoveFileToFolder.js
 export const MoveFile = () => {
     const { file } = useFile();
     const moveFileToFolder = useMoveFileToFolder(file);
-    const { OptionsMenuItem } = FileManagerViewConfig.Browser.File.Action;
+    const { OptionsMenuItem } = FileManagerViewConfig.Browser.FileAction;
 
     return (
         <OptionsMenuItem

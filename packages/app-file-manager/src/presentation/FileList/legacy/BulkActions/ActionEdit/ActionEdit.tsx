@@ -2,7 +2,10 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
-import { FileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
+import {
+    FileManagerViewConfig,
+    useFileManagerViewConfig
+} from "~/presentation/config/FileManagerViewConfig.js";
 import { useFileModel } from "~/presentation/hooks/useFileModel.js";
 import type { BatchDTO } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/domain/index.js";
 import { BatchEditorDialog } from "./BatchEditorDialog/index.js";
@@ -14,9 +17,16 @@ const { useButtons } = FileManagerViewConfig.Browser.BulkAction;
 
 export const ActionEdit = observer(() => {
     const { fields: allModelFields } = useFileModel();
+    const config = useFileManagerViewConfig();
     const { ButtonDefault } = useButtons();
 
-    const fields = allModelFields;
+    const fields = useMemo(() => {
+        if (!config.fileDetails.fields.find(field => field.name === "tags")) {
+            return allModelFields.filter(field => field.fieldId !== "tags");
+        }
+
+        return allModelFields;
+    }, [config, allModelFields]);
 
     const worker = useActionEditWorker(fields);
 

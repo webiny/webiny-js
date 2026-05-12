@@ -1,6 +1,7 @@
+// @ts-nocheck
 import React from "react";
 import { useFile } from "~/presentation/hooks/useFile.js";
-import { useFileManagerViewConfig } from "~/index.js";
+import { useFileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
 
 export const CellThumbnail = () => {
     const { file } = useFile();

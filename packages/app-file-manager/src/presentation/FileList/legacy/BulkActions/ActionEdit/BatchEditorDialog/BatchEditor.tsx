@@ -34,7 +34,7 @@ export const BatchEditor = observer((props: BatchEditorProps) => {
     }, []);
 
     return (
-        <div className={"py-lg"}>
+        <div className={"wby-py-lg"}>
             <Form
                 ref={formRef}
                 data={props.vm.data}
@@ -43,7 +43,7 @@ export const BatchEditor = observer((props: BatchEditorProps) => {
             >
                 {() => (
                     <>
-                        <Accordion variant={"container"}>
+                        <Accordion variant={"container"} background={"light"}>
                             {props.vm.data.operations.map((operation, operationIndex) => (
                                 <Accordion.Item
                                     key={`operation-${operationIndex}`}

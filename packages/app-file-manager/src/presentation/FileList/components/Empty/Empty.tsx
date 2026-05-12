@@ -4,7 +4,7 @@ import type { FilesRenderChildren } from "react-butterfiles";
 import { useFileManagerApi } from "~/index.js";
 import { NoPermissions } from "~/presentation/FileList/components/NoPermissions/index.js";
 import { NoResults } from "~/presentation/FileList/components/NoResults/index.js";
-import { FileDropArea } from "~/presentation/FileList/legacy/FileDropArea/index.js";
+import { FileDropArea } from "~/presentation/FileList/components/FileDropArea/index.js";
 
 interface EmptyViewProps {
     browseFiles: FilesRenderChildren["browseFiles"];

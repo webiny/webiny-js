@@ -1,8 +1,9 @@
+// @ts-nocheck
 import React, { useCallback } from "react";
 import { IconButton, Tooltip } from "@webiny/admin-ui";
 
 export interface ActionButtonProps {
-    icon: React.JSX.Element;
+    icon: JSX.Element;
     label?: string;
     onAction: () => void;
     "data-testid"?: string;

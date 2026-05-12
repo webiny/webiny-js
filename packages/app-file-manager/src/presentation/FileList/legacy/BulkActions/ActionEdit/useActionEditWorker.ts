@@ -1,30 +1,31 @@
 // @ts-nocheck
 import { useMemo } from "react";
 import omit from "lodash/omit.js";
-import type { FileItem } from "~/domain/types.js";
+import type { FileItem } from "@webiny/app-admin/types.js";
 import { prepareFormData } from "@webiny/app-headless-cms-common";
 import type { CmsModelField } from "@webiny/app-headless-cms-common/types/index.js";
 import type { BatchDTO } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/domain/index.js";
 import { GraphQLInputMapper } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/GraphQLInputMapper.js";
-import { useFeature } from "@webiny/app";
-import { UpdateFileFeature } from "~/features/updateFile/feature.js";
-import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
+import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
 import { getFilesLabel } from "~/presentation/FileList/legacy/BulkActions/index.js";
+import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext/index.js";
 import { FileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
 
 const { useWorker, useDialog: useBulkActionDialog } = FileManagerViewConfig.Browser.BulkAction;
 
 export function useActionEditWorker(fields: CmsModelField[]) {
-    const { useCase: updateFileUseCase } = useFeature(UpdateFileFeature);
-    const { vm } = useFileManagerPresenter();
+    const { updateFile } = useFileManagerView();
     const { showConfirmationDialog, showResultsDialog } = useBulkActionDialog();
     const worker = useWorker();
+    const { canEdit } = useFileManagerApi();
 
     const filesLabel = useMemo(() => {
         return getFilesLabel(worker.items.length);
     }, [worker.items.length]);
 
-    const canEditAll = vm.permissions.canEdit;
+    const canEditAll = useMemo(() => {
+        return worker.items.every(item => canEdit(item));
+    }, [worker.items]);
 
     const openWorkerDialog = (batch: BatchDTO) => {
         showConfirmationDialog({
@@ -48,7 +49,7 @@ export function useActionEditWorker(fields: CmsModelField[]) {
 
                         const fileData = prepareFormData(output, fields);
 
-                        await updateFileUseCase.execute({ id: item.id, data: fileData });
+                        await updateFile(item.id, fileData);
 
                         report.success({
                             title: `${item.name}`,
@@ -57,7 +58,7 @@ export function useActionEditWorker(fields: CmsModelField[]) {
                     } catch (e) {
                         report.error({
                             title: `${item.name}`,
-                            message: (e as Error).message
+                            message: e.message
                         });
                     }
                 });

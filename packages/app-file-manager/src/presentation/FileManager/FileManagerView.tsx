@@ -1,11 +1,11 @@
-import React, { useMemo, useEffect, useCallback, useState } from "react";
+import React, { useMemo, useEffect, useCallback } from "react";
 import { DiContainerProvider, useContainer, useFeature } from "@webiny/app";
 import { observer } from "mobx-react-lite";
 import type { FilesRenderChildren } from "react-butterfiles";
 import Files from "react-butterfiles";
 import debounce from "lodash/debounce.js";
 import type { positionValues } from "react-custom-scrollbars";
-import { type DataTableSorting, Heading, Scrollbar, Separator } from "@webiny/admin-ui";
+import { Heading, Scrollbar, Separator } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import {
     LeftPanel,
@@ -38,25 +38,19 @@ import {
 import { outputFileSelectionError } from "~/presentation/config/outputFileSelectionError.js";
 import { FolderTree } from "@webiny/app-aco/presentation/folderTree/FolderTree.js";
 import { BottomInfoBar } from "~/presentation/FileList/components/BottomInfoBar/index.js";
-import { BulkActions } from "~/presentation/FileList/legacy/BulkActions/index.js";
-import { FileDropPlaceholder } from "~/presentation/FileList/legacy/FileDropPlaceholder/index.js";
+import { BulkActionBar } from "~/presentation/FileList/components/BulkActions/index.js";
+import { FileDropPlaceholder } from "~/presentation/FileList/components/FileDropPlaceholder/index.js";
 import { Empty } from "~/presentation/FileList/components/Empty/index.js";
 import { FileDetailsDrawer } from "~/presentation/FileDetails/components/FileDetailsDrawer.js";
-import { Filters } from "~/presentation/FileList/legacy/Filters/index.js";
-import { Grid } from "~/presentation/FileList/legacy/Grid/index.js";
-import { Header } from "~/presentation/FileList/legacy/Header/index.js";
-import type { TableProps } from "~/presentation/FileList/legacy/Table/index.js";
-import { Table } from "~/presentation/FileList/legacy/Table/index.js";
+import { FileGrid } from "~/presentation/FileList/components/Grid/index.js";
+import { FileManagerHeader } from "~/presentation/FileList/components/Header/FileManagerHeader.js";
+import { FileTable } from "~/presentation/FileList/components/Table/index.js";
 import { TagsList } from "~/presentation/FileList/components/TagsList/index.js";
-import { UploadStatus } from "~/presentation/FileList/legacy/UploadStatus/index.js";
-import { ROOT_FOLDER } from "~/domain/constants.js";
+import { UploadProgress } from "~/presentation/FileList/components/Upload/index.js";
 import { GetSettingsRepository } from "~/features/settings/abstractions.js";
-import { toFolderDto } from "~/presentation/adapters/toFolderDto.js";
 
 import type { FmFile } from "~/features/shared/types.js";
-import type { FileItem, TableItem } from "~/domain/types.js";
 import type { IFileManagerOverlayConfig } from "~/presentation/FileList/abstractions.js";
-import type { ListFilesSort, ListFilesSortItem } from "~/modules/FileManagerApiProvider/graphql.js";
 
 export interface FileManagerViewProps {
     onChange?: (files: FmFile[]) => void;
@@ -68,20 +62,6 @@ export interface FileManagerViewProps {
 }
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
-
-const createSort = (sorting?: DataTableSorting): ListFilesSort | undefined => {
-    if (!sorting?.length) {
-        return undefined;
-    }
-    return sorting.reduce<ListFilesSort>((items, item) => {
-        const sort = `${item.id}_${item.desc ? "DESC" : "ASC"}` as ListFilesSortItem;
-        if (items.includes(sort)) {
-            return items;
-        }
-        items.push(sort);
-        return items;
-    }, []);
-};
 
 // ---------------------------------------------------------------------------
 // Layout — uses original UI components, wired to the presenter.
@@ -96,40 +76,9 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
     const settingsRepository = useMemo(() => container.resolve(GetSettingsRepository), [container]);
     const settings = settingsRepository.settings;
 
-    const [tableSorting, setTableSorting] = useState<DataTableSorting>([]);
-
-    useEffect(() => {
-        if (!tableSorting?.length) {
-            return;
-        }
-        const sort = createSort(tableSorting);
-        if (!sort) {
-            return;
-        }
-        const item = sort[0];
-        const lastUnderscore = item.lastIndexOf("_");
-        const field = item.substring(0, lastUnderscore);
-        const direction = item.substring(lastUnderscore + 1) as "ASC" | "DESC";
-        actions.sort.set(field, direction);
-    }, [tableSorting]);
-
     const uploadFiles = async (files: File[]) => {
         await actions.upload(files);
     };
-
-    const files: FileItem[] = vm.list.rows;
-    const folders = useMemo(
-        () => vm.folders.childFolders.map(toFolderDto),
-        [vm.folders.childFolders]
-    );
-    const selectedFiles = useMemo(
-        () => vm.list.rows.filter(f => vm.list.selection.selectedIds.has(f.id)),
-        [vm.list.rows, vm.list.selection.selectedIds]
-    );
-    const activeFilters = Object.entries(vm.list.filters).filter(
-        ([k, v]) => k !== "folderId" && v !== undefined && v !== null && v !== ""
-    );
-    const isSearch = Boolean(vm.list.search) || activeFilters.length > 0;
 
     const loadMoreOnScroll = useCallback(
         debounce(async ({ scrollFrame }: { scrollFrame: positionValues }) => {
@@ -141,82 +90,20 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
     );
 
     const renderList = (browseFiles: FilesRenderChildren["browseFiles"]) => {
-        if (!vm.list.pagination.loading && isSearch && files.length === 0) {
-            return <Empty isSearchResult={true} browseFiles={browseFiles} />;
-        }
-
-        if (!vm.list.pagination.loading && files.length === 0 && folders.length === 0) {
-            return <Empty isSearchResult={false} browseFiles={browseFiles} />;
-        }
-
-        if (vm.viewMode === "table") {
-            const getSelectableRow = (rows: TableItem[]) =>
-                rows.filter(row => row.$type === "RECORD").map(row => row.data as FileItem);
-
-            const onSelectRow: TableProps["onSelectRow"] = vm.isOverlay
-                ? rows => {
-                      const selected = getSelectableRow(rows);
-                      if (vm.multiple) {
-                          actions.selection.selectRows(selected.map(f => f.id));
-                      } else if (selected[0]) {
-                          actions.selectFile(selected[0]);
-                      }
-                  }
-                : rows => {
-                      const selected = getSelectableRow(rows);
-                      actions.selection.selectRows(selected.map(f => f.id));
-                  };
-
-            const onToggleRow: TableProps["onToggleRow"] = vm.isOverlay
-                ? row => {
-                      const selected = getSelectableRow([row]);
-                      if (vm.multiple) {
-                          actions.selection.toggle(selected[0]?.id);
-                      } else if (selected[0]) {
-                          actions.selectFile(selected[0]);
-                      }
-                  }
-                : row => {
-                      const selected = getSelectableRow([row]);
-                      if (selected[0]) {
-                          actions.selection.toggle(selected[0].id);
-                      }
-                  };
-
+        if (!vm.list.pagination.loading && vm.list.rows.length === 0) {
             return (
-                <Table
-                    onSelectRow={onSelectRow}
-                    onToggleRow={onToggleRow}
-                    sorting={tableSorting}
-                    onSortingChange={setTableSorting}
+                <Empty
+                    isSearchResult={Boolean(vm.list.search)}
+                    browseFiles={browseFiles}
                 />
             );
         }
 
-        return (
-            <Grid
-                folderActions={browser.folder.actions}
-                folders={vm.list.search ? [] : folders}
-                records={files}
-                loading={vm.list.pagination.loading}
-                onFolderClick={(id: string) =>
-                    actions.folders.selectFolder(id === ROOT_FOLDER ? null : id)
-                }
-                selected={selectedFiles}
-                multiple={vm.multiple}
-                toggleSelected={(file: FileItem, shiftKey?: boolean) =>
-                    actions.selection.toggle(file.id, shiftKey)
-                }
-                deselectAll={() => actions.selection.deselectAll()}
-                onChange={(value: FileItem[] | FileItem) => {
-                    const items = Array.isArray(value) ? value : [value];
-                    items.forEach(f => actions.selectFile(f));
-                }}
-                onClose={() => {}}
-                hasOnSelectCallback={vm.isOverlay}
-                displaySubFolders={vm.list.filters["includeSubFolders"] !== false}
-            />
-        );
+        if (vm.viewMode === "table") {
+            return <FileTable />;
+        }
+
+        return <FileGrid />;
     };
 
     const withOverlay = (element: React.ReactElement) => {
@@ -302,7 +189,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                                     className={"flex flex-col relative"}
                                     style={{ height: "calc(100vh - 45px" }}
                                 >
-                                    <Header browseFiles={browseFiles} />
+                                    <FileManagerHeader />
                                     <div
                                         className={"flex-1"}
                                         {...getDropZoneProps({
@@ -321,8 +208,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                                         })}
                                         data-testid={"fm-list-wrapper"}
                                     >
-                                        <BulkActions />
-                                        <Filters />
+                                        <BulkActionBar />
                                         <Scrollbar
                                             onScrollFrame={scrollFrame =>
                                                 loadMoreOnScroll({ scrollFrame })
@@ -331,12 +217,7 @@ const FileManagerViewLayout = observer(function FileManagerViewLayout() {
                                             {renderList(browseFiles)}
                                         </Scrollbar>
                                         {vm.dragging && <FileDropPlaceholder />}
-                                        <UploadStatus
-                                            numberOfFiles={vm.upload.jobs.length}
-                                            progress={vm.upload.overallProgress.percentage}
-                                            isVisible={vm.upload.isUploading}
-                                            setIsVisible={() => {}}
-                                        />
+                                        <UploadProgress />
                                     </div>
                                     <BottomInfoBar
                                         accept={vm.accept}

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import set from "lodash/set.js";
 import get from "lodash/get.js";
-import type { FileItem } from "~/domain/types.js";
+import type { FileItem } from "@webiny/app-admin/types.js";
 import type { BatchDTO } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/domain/index.js";
 import { OperatorType } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/domain/index.js";
 

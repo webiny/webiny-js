@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Field, FieldDTO, Operator, OperatorDTO } from "./Field.js";
+import type { Field, FieldDTO, Operator, OperatorDTO } from "./Field.js";
 
 export class FieldMapper {
     static toDTO(configuration: Field[]): FieldDTO[] {

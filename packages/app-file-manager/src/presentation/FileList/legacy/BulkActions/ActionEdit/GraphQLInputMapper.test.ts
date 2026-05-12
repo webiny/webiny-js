@@ -1,9 +1,8 @@
 // @ts-nocheck
-import { describe, it, expect } from "vitest";
 import { GraphQLInputMapper } from "./GraphQLInputMapper.js";
 import type { BatchDTO } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/domain/index.js";
 import { OperatorType } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/domain/index.js";
-import type { FileItem } from "~/domain/types.js";
+import type { FileItem } from "@webiny/app-admin/types.js";
 
 const fileMock: FileItem = {
     id: "12345678",
@@ -13,20 +12,17 @@ const fileMock: FileItem = {
     createdOn: new Date().toISOString(),
     createdBy: {
         id: "123",
-        displayName: "123",
-        type: "admin"
+        displayName: "123"
     },
     savedOn: new Date().toISOString(),
     savedBy: {
         id: "123",
-        displayName: "123",
-        type: "admin"
+        displayName: "123"
     },
     modifiedOn: new Date().toISOString(),
     modifiedBy: {
         id: "123",
-        displayName: "123",
-        type: "admin"
+        displayName: "123"
     },
     src: `https://demo.website.com/files/12345678/filenameA.png`,
     key: `12345678/filenameA.png`,
@@ -34,7 +30,7 @@ const fileMock: FileItem = {
     size: 123456,
     type: "image/png",
     tags: ["sketch", "file-a", "webiny"],
-    metadata: {}
+    aliases: []
 };
 
 describe("GraphQLInputMapper", () => {

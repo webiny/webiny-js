@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Batch, BatchDTO } from "./Batch.js";
+import type { Batch, BatchDTO } from "./Batch.js";
 
 export class BatchMapper {
     static toDTO(input: Batch): BatchDTO {

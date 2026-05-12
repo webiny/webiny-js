@@ -10,7 +10,7 @@ interface AddOperationProps {
 
 export const AddOperation = ({ disabled, onClick }: AddOperationProps) => {
     return (
-        <div className={"mt-lg text-center"}>
+        <div className={"wby-mt-lg wby-text-center"}>
             <Button
                 onClick={onClick}
                 text={"Add new operation"}

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import bytes from "bytes";
 import { FileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";

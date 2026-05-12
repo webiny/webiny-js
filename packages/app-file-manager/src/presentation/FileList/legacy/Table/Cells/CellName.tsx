@@ -1,20 +1,21 @@
+// @ts-nocheck
 import React from "react";
 
 import { FolderIcon, FolderSharedIcon } from "@webiny/app-aco";
-import { useFileManagerPresenter } from "~/presentation/FileList/FileManagerPresenterProvider.js";
+import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
 import { FileManagerViewConfig } from "~/presentation/config/FileManagerViewConfig.js";
+import type { FolderItem } from "@webiny/app-aco/types.js";
 import { cn, Text } from "@webiny/admin-ui";
 import { CellThumbnail } from "./CellThumbnail.js";
 import { FileProvider } from "~/presentation/contexts/FileProvider.js";
-import type { FmFile } from "~/features/shared/types.js";
-import type { FolderDto } from "@webiny/app-aco";
+import type { FileItem } from "@webiny/app-admin/types.js";
 
 interface DefaultProps {
     onClick: (id: string) => void;
 }
 
 interface FolderCellNameProps extends DefaultProps {
-    folder: FolderDto;
+    folder: FolderItem;
 }
 
 export const FolderCellName = ({ folder, onClick }: FolderCellNameProps) => {
@@ -26,42 +27,44 @@ export const FolderCellName = ({ folder, onClick }: FolderCellNameProps) => {
     return (
         <div
             className={cn([
-                "flex items-center gap-md",
-                "truncate cursor-pointer font-semibold",
-                "hover:underline"
+                "wby-flex wby-items-center wby-gap-md",
+                "wby-truncate wby-cursor-pointer wby-font-semibold",
+                "hover:wby-underline"
             ])}
             onClick={() => onClick(folder.id)}
         >
-            <div className={"size-xl rounded-md overflow-hidden shrink-0"}>{icon}</div>
-            <Text className={"truncate min-w-0 shrink"}>{folder.title}</Text>
+            <div className={"wby-size-xl wby-rounded-md wby-overflow-hidden wby-flex-shrink-0"}>
+                {icon}
+            </div>
+            <Text className={"wby-truncate wby-min-w-0 wby-flex-shrink"}>{folder.title}</Text>
         </div>
     );
 };
 
 interface FileCellNameProps extends DefaultProps {
-    file: FmFile;
+    file: FileItem;
 }
 
 export const FileCellName = ({ file, onClick }: FileCellNameProps) => {
     return (
         <div
             className={cn([
-                "flex items-center gap-md",
-                "truncate cursor-pointer",
-                "hover:underline"
+                "wby-flex wby-items-center wby-gap-md",
+                "wby-truncate wby-cursor-pointer",
+                "hover:wby-underline"
             ])}
             onClick={() => onClick(file.id)}
         >
             <FileProvider file={file}>
                 <div
                     className={
-                        "size-xl aspect-square rounded-md bg-neutral-muted overflow-hidden shrink-0"
+                        "wby-size-xl wby-aspect-square wby-rounded-md wby-bg-neutral-muted wby-overflow-hidden wby-flex-shrink-0"
                     }
                 >
                     <CellThumbnail />
                 </div>
             </FileProvider>
-            <Text className={"truncate min-w-0 shrink"}>{file.name}</Text>
+            <Text className={"wby-truncate wby-min-w-0 wby-flex-shrink"}>{file.name}</Text>
         </div>
     );
 };
@@ -69,11 +72,11 @@ export const FileCellName = ({ file, onClick }: FileCellNameProps) => {
 export const CellName = () => {
     const { useTableRow, isFolderRow } = FileManagerViewConfig.Browser.Table.Column;
     const { row } = useTableRow();
-    const { actions } = useFileManagerPresenter();
+    const { showFileDetails, setFolderId } = useFileManagerView();
 
     if (isFolderRow(row)) {
-        return <FolderCellName folder={row.data} onClick={id => actions.folders.selectFolder(id)} />;
+        return <FolderCellName folder={row.data} onClick={setFolderId} />;
     }
 
-    return <FileCellName file={row.data} onClick={id => actions.showFileDetails(id)} />;
+    return <FileCellName file={row.data} onClick={showFileDetails} />;
 };

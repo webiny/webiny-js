@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ActionEditPresenter } from "./ActionEditPresenter.js";
-import { type FieldRaw } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/domain/index.js";
+import type { FieldRaw } from "~/presentation/FileList/legacy/BulkActions/ActionEdit/domain/index.js";
+import { jest } from "@jest/globals";
 
 describe("ActionEditPresenter", () => {
     const extensionFields = [
@@ -24,7 +24,7 @@ describe("ActionEditPresenter", () => {
             renderer: {
                 name: "ref-inputs"
             },
-            list: true,
+            multipleValues: true,
             settings: {
                 models: [
                     {
@@ -64,7 +64,7 @@ describe("ActionEditPresenter", () => {
                         message: "Value is required."
                     }
                 ],
-                list: false,
+                multipleValues: false,
                 predefinedValues: {
                     values: [],
                     enabled: false
@@ -85,7 +85,7 @@ describe("ActionEditPresenter", () => {
                 },
                 listValidation: [],
                 validation: [],
-                list: false,
+                multipleValues: false,
                 predefinedValues: {
                     values: [],
                     enabled: false
@@ -100,7 +100,7 @@ describe("ActionEditPresenter", () => {
     let presenter: ActionEditPresenter;
 
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
         presenter = new ActionEditPresenter();
     });
 

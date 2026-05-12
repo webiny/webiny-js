@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { CmsModelField } from "@webiny/app-headless-cms-common/types/model.js";
+import type { CmsModelField } from "@webiny/app-headless-cms-common/types/model.js";
 
 export type FieldRaw = CmsModelField;
 
@@ -62,7 +62,7 @@ export class Operator {
             }
         ];
 
-        if (field.list) {
+        if (field.multipleValues) {
             operators.push({
                 label: "Append to existing values",
                 value: OperatorType.APPEND
