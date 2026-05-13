@@ -25,9 +25,11 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
             }
 
             const [compressedPayload, compressedHeaders, compressedBody] = await Promise.all([
-                this.compressionHandler.compress(input.payload),
-                this.compressionHandler.compress(input.requestHeaders),
-                this.compressionHandler.compress(input.responseBody)
+                input.payload ? this.compressionHandler.compress(input.payload) : null,
+                input.requestHeaders
+                    ? this.compressionHandler.compress(input.requestHeaders)
+                    : null,
+                input.responseBody ? this.compressionHandler.compress(input.responseBody) : null
             ]);
 
             const id = randomBytes(8).toString("hex");
@@ -36,13 +38,14 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 id,
                 values: {
                     webhookId: input.webhookId,
-                    backgroundTaskId: input.backgroundTaskId,
+                    backgroundTaskId: input.backgroundTaskId ?? null,
                     eventType: input.eventType,
-                    payload: JSON.stringify(compressedPayload),
-                    requestHeaders: JSON.stringify(compressedHeaders),
-                    responseTime: input.responseTime,
-                    responseStatus: input.responseStatus,
-                    responseBody: JSON.stringify(compressedBody),
+                    status: input.status,
+                    payload: compressedPayload ? JSON.stringify(compressedPayload) : null,
+                    requestHeaders: compressedHeaders ? JSON.stringify(compressedHeaders) : null,
+                    responseTime: input.responseTime ?? null,
+                    responseStatus: input.responseStatus ?? null,
+                    responseBody: compressedBody ? JSON.stringify(compressedBody) : null,
                     expiresAt: input.expiresAt
                 }
             });
@@ -55,13 +58,14 @@ class CreateWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Inter
                 id,
                 values: {
                     webhookId: input.webhookId,
-                    backgroundTaskId: input.backgroundTaskId,
+                    backgroundTaskId: input.backgroundTaskId ?? null,
                     eventType: input.eventType,
-                    payload: input.payload,
-                    requestHeaders: input.requestHeaders,
-                    responseTime: input.responseTime,
-                    responseStatus: input.responseStatus,
-                    responseBody: input.responseBody,
+                    status: input.status,
+                    payload: input.payload ?? null,
+                    requestHeaders: input.requestHeaders ?? null,
+                    responseTime: input.responseTime ?? null,
+                    responseStatus: input.responseStatus ?? null,
+                    responseBody: input.responseBody ?? null,
                     expiresAt: input.expiresAt
                 }
             };

@@ -75,6 +75,7 @@ class TriggerWebhookUseCaseImpl implements UseCaseAbstraction.Interface {
             webhookId,
             backgroundTaskId: triggerId,
             eventType: "webhook.test",
+            status: responseStatus > 0 ? "delivered" : "failed",
             payload: webhookPayload,
             requestHeaders,
             responseTime,

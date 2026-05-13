@@ -9,17 +9,18 @@ import {
     WebhookPersistenceError
 } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
-import type { IWebhookDelivery } from "~/api/domain/types.js";
+import type { IWebhookDelivery, WebhookDeliveryStatus } from "~/api/domain/types.js";
 
 interface IRawDeliveryValues {
     webhookId: string;
-    backgroundTaskId: string;
+    backgroundTaskId: string | null;
     eventType: string;
-    payload: string;
-    requestHeaders: string;
-    responseTime: number;
-    responseStatus: number;
-    responseBody: string;
+    status: WebhookDeliveryStatus;
+    payload: string | null;
+    requestHeaders: string | null;
+    responseTime: number | null;
+    responseStatus: number | null;
+    responseBody: string | null;
     expiresAt: string;
 }
 
@@ -61,6 +62,7 @@ class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interfac
                     webhookId: raw.webhookId,
                     backgroundTaskId: raw.backgroundTaskId,
                     eventType: raw.eventType,
+                    status: raw.status,
                     payload,
                     requestHeaders,
                     responseTime: raw.responseTime,
@@ -77,7 +79,7 @@ class GetWebhookDeliveryRepositoryImpl implements RepositoryAbstraction.Interfac
         }
     }
 
-    private async safeDecompress<T>(stored: string): Promise<T | null> {
+    private async safeDecompress<T>(stored: string | null): Promise<T | null> {
         if (!stored) {
             return null;
         }

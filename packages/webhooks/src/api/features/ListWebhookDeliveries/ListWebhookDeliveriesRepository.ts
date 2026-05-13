@@ -7,14 +7,15 @@ import {
 } from "./abstractions.js";
 import { WebhookModelNotFoundError, WebhookPersistenceError } from "~/api/domain/errors.js";
 import { WEBHOOK_DELIVERY_MODEL_ID } from "~/api/domain/constants.js";
-import type { IListWebhookDeliveriesInput } from "~/api/domain/types.js";
+import type { IListWebhookDeliveriesInput, WebhookDeliveryStatus } from "~/api/domain/types.js";
 
 interface IRawDeliveryListValues {
     webhookId: string;
-    backgroundTaskId: string;
+    backgroundTaskId: string | null;
     eventType: string;
-    responseTime: number;
-    responseStatus: number;
+    status: WebhookDeliveryStatus;
+    responseTime: number | null;
+    responseStatus: number | null;
     expiresAt: string;
 }
 
@@ -55,6 +56,7 @@ class ListWebhookDeliveriesRepositoryImpl implements RepositoryAbstraction.Inter
                         webhookId: entry.values.webhookId,
                         backgroundTaskId: entry.values.backgroundTaskId,
                         eventType: entry.values.eventType,
+                        status: entry.values.status,
                         payload: null,
                         requestHeaders: null,
                         responseTime: entry.values.responseTime,

@@ -11,6 +11,7 @@ import { ListWebhooksFeature } from "./features/ListWebhooks/feature.js";
 import { UpdateWebhookFeature } from "./features/UpdateWebhook/feature.js";
 import { DeleteWebhookFeature } from "./features/DeleteWebhook/feature.js";
 import { CreateWebhookDeliveryFeature } from "./features/CreateWebhookDelivery/feature.js";
+import { UpdateWebhookDeliveryFeature } from "./features/UpdateWebhookDelivery/feature.js";
 import { GetWebhookDeliveryFeature } from "./features/GetWebhookDelivery/feature.js";
 import { ListWebhookDeliveriesFeature } from "./features/ListWebhookDeliveries/feature.js";
 import { ResendWebhookDeliveryFeature } from "./features/ResendWebhookDelivery/feature.js";
@@ -49,6 +50,7 @@ export const Extension = createFeature({
 
         // Delivery log.
         CreateWebhookDeliveryFeature.register(container);
+        UpdateWebhookDeliveryFeature.register(container);
         GetWebhookDeliveryFeature.register(container);
         ListWebhookDeliveriesFeature.register(container);
         ResendWebhookDeliveryFeature.register(container);

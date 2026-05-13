@@ -16,13 +16,9 @@ class WebhookDeliveryModelFactory implements ModelFactory.Interface {
 
         model.fields(fields => ({
             webhookId: fields.text().label("Webhook ID").required().renderer("textInput"),
-            backgroundTaskId: fields
-                .text()
-                .label("Background Task ID")
-                .required()
-                .minLength(16, "Background Task ID must be at least 16 characters long.")
-                .renderer("textInput"),
+            backgroundTaskId: fields.text().label("Background Task ID").renderer("textInput"),
             eventType: fields.text().label("Event Type").required().renderer("textInput"),
+            status: fields.text().label("Status").required().renderer("textInput"),
             payload: fields
                 .longText()
                 .label("Payload")

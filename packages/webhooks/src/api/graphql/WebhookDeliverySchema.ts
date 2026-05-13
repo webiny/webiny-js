@@ -13,8 +13,9 @@ class WebhookDeliverySchema implements GraphQLSchemaFactory.Interface {
             type WebhookDelivery {
                 id: ID!
                 webhookId: ID!
-                backgroundTaskId: String!
+                backgroundTaskId: String
                 eventType: String!
+                status: String!
                 payload: JSON
                 requestHeaders: JSON
                 responseTime: Int

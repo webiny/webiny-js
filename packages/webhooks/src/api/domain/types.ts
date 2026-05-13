@@ -1,3 +1,5 @@
+export type WebhookDeliveryStatus = "pending" | "delivering" | "delivered" | "failed";
+
 export interface IWebhookValues {
     name: string;
     slug: string;
@@ -18,12 +20,13 @@ export interface IWebhook {
 /** Delivery as read back from CMS (fields decompressed). */
 export interface IWebhookDeliveryValues {
     webhookId: string;
-    backgroundTaskId: string;
+    backgroundTaskId: string | null;
     eventType: string;
+    status: WebhookDeliveryStatus;
     payload: object | null;
     requestHeaders: object | null;
-    responseTime: number;
-    responseStatus: number;
+    responseTime: number | null;
+    responseStatus: number | null;
     responseBody: string | null;
     expiresAt: string;
 }
@@ -37,14 +40,26 @@ export interface IWebhookDelivery {
 /** Raw input for creating a delivery (before compression). */
 export interface ICreateDeliveryInput {
     webhookId: string;
-    backgroundTaskId: string;
+    backgroundTaskId?: string | null;
     eventType: string;
-    payload: object;
-    requestHeaders: object;
-    responseTime: number;
-    responseStatus: number;
-    responseBody: string;
+    status: WebhookDeliveryStatus;
+    payload?: object | null;
+    requestHeaders?: object | null;
+    responseTime?: number | null;
+    responseStatus?: number | null;
+    responseBody?: string | null;
     expiresAt: string;
+}
+
+/** Partial update for an existing delivery. */
+export interface IUpdateDeliveryInput {
+    backgroundTaskId?: string;
+    status?: WebhookDeliveryStatus;
+    payload?: object;
+    requestHeaders?: object;
+    responseTime?: number;
+    responseStatus?: number;
+    responseBody?: string;
 }
 
 export interface IWebhookEventDefinition {

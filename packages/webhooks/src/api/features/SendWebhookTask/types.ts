@@ -1,9 +1,8 @@
 export interface ISendWebhookTaskInput {
     webhookId: string;
     eventName: string;
+    deliveryId: string;
     data: object;
 }
 
-export interface ISendWebhookTaskOutput {
-    deliveryId?: string;
-}
+export interface ISendWebhookTaskOutput {}
