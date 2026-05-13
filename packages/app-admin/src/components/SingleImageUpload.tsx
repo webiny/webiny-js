@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
-import type { FileManagerFileItem } from "~/index.js";
-import { FileManager } from "~/index.js";
+import type { FileManagerFileItem } from "~/base/ui/FileManager.js";
+import { FileManager } from "~/base/ui/FileManager.js";
 import type { FormComponentProps } from "@webiny/admin-ui";
 import { FileItem, FilePicker, type FilePickerProps } from "@webiny/admin-ui";
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { createProvider, Provider } from "~/index.js";
+import { createProvider, Provider } from "@webiny/app";
 import { SystemInstaller } from "./SystemInstaller.js";
 
 const SystemInstallerHoc = createProvider(Original => {
